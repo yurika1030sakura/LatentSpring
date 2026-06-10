@@ -1,0 +1,19 @@
+# QM9 data-processing config for process_qm9.py.
+# Adapted from baselines/flowmol3/configs/configs_dataprocessing/geom_5_kekulized.yaml
+# restricted to QM9's 5 elements (C, H, N, O, F).
+
+dataset:
+  atom_map:
+    - C
+    - H
+    - N
+    - O
+    - F
+  dataset_name: qm9
+  dataset_size:
+  processed_data_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/data/qm9_processed/
+  raw_data_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/data/qm9_raw/
+  confs_per_mol: 1
+
+# process_qm9.py only reads config['dataset']; the rest is ignored but present
+# so that we can re-use this file with downstream model configs if needed.

@@ -1,0 +1,17 @@
+[project]
+name = "cfm_mol"
+version = "0.1.0"
+description = "Product-manifold constrained flow matching for 3D molecules."
+authors = [{name = "Yuli Li", email = "renhaozhang@umass.edu"}]
+requires-python = ">=3.10"
+dependencies = [
+    "torch",
+    "rdkit",
+]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["cfm_mol*"]

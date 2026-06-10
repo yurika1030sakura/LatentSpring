@@ -1,0 +1,121 @@
+# Constrained-flow-matching config for QM9.
+#
+# Derived from baselines/flowmol3/configs/flowmol3.yml with:
+#   - dataset switched from geom to qm9
+#   - batch size reduced for single-GPU smoke run
+#   - wandb disabled by default
+#
+# Our constraint patch is applied in cfm_mol/flow_model.py:patch_flowmol,
+# invoked by scripts/run_train.py. No config key for the patch itself --
+# the d_min table is built from the atom_map at runtime.
+
+training:
+  output_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/runs/qm9_cfm
+  batch_size: 64
+  num_workers: 4
+  ema_decay: 0
+  max_num_edges: 20000
+  trainer_args:
+    max_epochs: 200
+    accelerator: gpu
+    devices: 1
+    num_nodes: 1
+    accumulate_grad_batches: 1
+    limit_val_batches: 0.1
+    gradient_clip_val: 1.0
+
+  evaluation:
+    mols_to_sample: 50
+    sample_interval: 0.1
+    val_loss_interval: 0.1
+
+wandb:
+  project: cfm_mol
+  entity:
+  name: qm9_cfm_initial
+  mode: disabled        # switch to 'online' when ready
+
+lr_scheduler:
+  base_lr: 1.0e-4
+  warmup_length: 0.0
+  restart_interval: 0
+  restart_type: 'linear'
+  weight_decay: 1.0e-12
+
+dataset:
+  raw_data_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/data/qm9_raw/
+  processed_data_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/data/qm9_processed/
+  atom_map: ['C', 'H', 'N', 'O', 'F']   # QM9 has only these 5
+  dataset_name: qm9
+  dataset_size:
+  confs_per_mol:
+
+checkpointing:
+  save_last: True
+  save_top_k: 3
+  monitor: 'val_total_loss'
+  every_n_epochs: 5
+
+mol_fm:
+  explicit_aromaticity: false
+  distort_p: 0.2
+  fake_atom_p: 0.3
+  parameterization: ctmc
+  time_scaled_loss: True
+  total_loss_weights:
+    x: 3.0
+    a: 0.4
+    c: 1.0
+    e: 2.0
+  prior_config:
+    x:
+      align: True
+      type: 'centered-normal'
+      kwargs: {std: 1.0}
+    a:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+    c:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+    e:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+
+vector_field:
+  self_conditioning: True
+  stochasticity: 30.0
+  high_confidence_threshold: 0.9
+  n_vec_channels: 32
+  update_edge_w_distance: True
+  n_hidden_scalars: 256
+  n_hidden_edge_feats: 128
+  s_message_dim:
+  v_message_dim:
+  n_expansion_gvps: 3
+  attention: False
+  n_heads: 32
+  n_recycles: 1
+  separate_mol_updaters: True
+  n_molecule_updates: 4       # reduced from 6 for QM9 smaller molecules
+  convs_per_update: 1
+  n_cp_feats: 4
+  n_message_gvps: 3
+  n_update_gvps: 3
+  message_norm: sum
+  rbf_dmax: 10
+  rbf_dim: 32
+  time_embedding_dim: 64
+  a_token_dim: 64
+  c_token_dim: 64
+  e_token_dim: 64
+
+interpolant_scheduler:
+  schedule_type:
+    x: 'linear'
+    a: 'linear'
+    c: 'linear'
+    e: 'linear'

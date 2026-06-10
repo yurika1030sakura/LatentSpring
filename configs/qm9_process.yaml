@@ -1,0 +1,19 @@
+# Data processing config for QM9 (used by baselines/flowmol3/process_qm9.py).
+# Only the `dataset` block is consulted by process_qm9.py; the rest mirrors
+# the geom processing config for completeness.
+
+dataset:
+  atom_map:
+    - C
+    - H
+    - N
+    - O
+    - F
+  dataset_name: qm9
+  dataset_size: null
+  raw_data_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/data/qm9_raw/
+  processed_data_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/data/qm9_processed/
+  confs_per_mol:
+
+mol_fm:
+  explicit_aromaticity: false

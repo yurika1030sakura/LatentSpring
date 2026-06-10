@@ -1,0 +1,220 @@
+# Plan B: OMol25 4M-subset training with constrained + physics-aware
+# flow matching on H100 (single GPU, gpu_requeue partition, preemptible).
+#
+# **Bond-free training (2026-04-21)**:
+# OMol25 provides no bond orders. Rather than infer with xyz2mol (25%+
+# failure on TM complexes), we commit to bond-free training:
+#   - preprocess outputs empty bond_idxs/bond_types
+#   - MoleculeDataset reads this as "all pair edges = class 0 (no bond)"
+#   - this config sets total_loss_weights.e = 0 so bond head gets no signal
+#   - bond perception is deferred to post-hoc xyz2mol on generated geometry
+# This aligns with the physics-informed narrative: QM basis variables
+# (positions, atoms, charges, forces) drive generation; bonds are post-hoc.
+#
+# Derived from configs/qm9_cfm.yaml, with:
+#   - dataset_name switched to omol25
+#   - atom_map expanded to 83 elements
+#   - batch size tuned for H100 80GB, max_atoms=200
+#   - bond loss weight = 0 (bond-free)
+#
+# Constraint patch (cfm_mol/flow_model.py:patch_flowmol) still applied for
+# position + atom-type manifold. Physics drift (OMol25 NP) via
+# cfm_mol/physics_drift.py, late-only (t > 0.7) schedule.
+
+training:
+  output_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/runs/omol25_4m_cfm
+  batch_size: 16               # bumped from 8; baseline matched to BGFM run
+  num_workers: 12
+  ema_decay: 0
+  max_num_edges: 40000         # adaptive batching
+  trainer_args:
+    max_epochs: 20             # matched to BGFM run for fair ablation comparison
+    accelerator: gpu
+    devices: 1                 # override to 4 in DDP launcher
+    num_nodes: 1
+    accumulate_grad_batches: 2
+    limit_val_batches: 50      # cap: OMol25 val set is ~10k
+    gradient_clip_val: 1.0
+    precision: bf16-mixed      # H200 native bf16
+
+  evaluation:
+    mols_to_sample: 20
+    sample_interval: 1.0       # every epoch (epoch is large)
+    val_loss_interval: 0.25
+
+wandb:
+  project: cfm_mol
+  entity:
+  name: omol25_4m_cfm_planB
+  mode: disabled
+
+lr_scheduler:
+  base_lr: 2.0e-4              # slightly higher: more data, larger batch
+  warmup_length: 0.02
+  restart_interval: 0
+  restart_type: 'linear'
+  weight_decay: 1.0e-12
+
+dataset:
+  dataset_name: omol25
+  raw_data_dir: /n/netscratch/ryl_lab/Lab/omol25/train_4M
+  processed_data_dir: /n/netscratch/ryl_lab/Lab/yulili_cfm_mol/omol25_4m_processed
+  max_atoms: 200
+  bond_tolerance: 1.2
+  atom_map:
+    - H
+    - He
+    - Li
+    - Be
+    - B
+    - C
+    - N
+    - O
+    - F
+    - Ne
+    - Na
+    - Mg
+    - Al
+    - Si
+    - P
+    - S
+    - Cl
+    - Ar
+    - K
+    - Ca
+    - Sc
+    - Ti
+    - V
+    - Cr
+    - Mn
+    - Fe
+    - Co
+    - Ni
+    - Cu
+    - Zn
+    - Ga
+    - Ge
+    - As
+    - Se
+    - Br
+    - Kr
+    - Rb
+    - Sr
+    - Y
+    - Zr
+    - Nb
+    - Mo
+    - Tc
+    - Ru
+    - Rh
+    - Pd
+    - Ag
+    - Cd
+    - In
+    - Sn
+    - Sb
+    - Te
+    - I
+    - Xe
+    - Cs
+    - Ba
+    - La
+    - Ce
+    - Pr
+    - Nd
+    - Pm
+    - Sm
+    - Eu
+    - Gd
+    - Tb
+    - Dy
+    - Ho
+    - Er
+    - Tm
+    - Yb
+    - Lu
+    - Hf
+    - Ta
+    - W
+    - Re
+    - Os
+    - Ir
+    - Pt
+    - Au
+    - Hg
+    - Tl
+    - Pb
+    - Bi
+  dataset_size:
+  confs_per_mol:
+
+checkpointing:
+  save_last: True
+  save_top_k: 3
+  monitor: 'val_total_loss'
+  every_n_epochs: 1
+  every_n_train_steps: 50000
+
+mol_fm:
+  explicit_aromaticity: false
+  distort_p: 0.2
+  fake_atom_p: 0.0            # OMol25 has reliable geometry; skip fakes
+  parameterization: ctmc
+  time_scaled_loss: True
+  total_loss_weights:
+    x: 3.0
+    a: 0.4
+    c: 1.0
+    e: 0.0                    # bond-free: bond head unsupervised
+  prior_config:
+    x:
+      align: True
+      type: 'centered-normal'
+      kwargs: {std: 1.0}
+    a:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+    c:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+    e:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+
+vector_field:
+  self_conditioning: True
+  stochasticity: 30.0
+  high_confidence_threshold: 0.9
+  n_vec_channels: 32
+  update_edge_w_distance: True
+  n_hidden_scalars: 256
+  n_hidden_edge_feats: 128
+  s_message_dim:
+  v_message_dim:
+  n_expansion_gvps: 3
+  attention: False
+  n_heads: 32
+  n_recycles: 1
+  separate_mol_updaters: True
+  n_molecule_updates: 6       # OMol25 molecules larger (up to 120 atoms)
+  convs_per_update: 1
+  n_cp_feats: 4
+  n_message_gvps: 3
+  n_update_gvps: 3
+  message_norm: sum
+  rbf_dmax: 10
+  rbf_dim: 32
+  time_embedding_dim: 64
+  a_token_dim: 64
+  c_token_dim: 64
+  e_token_dim: 64
+
+interpolant_scheduler:
+  schedule_type:
+    x: 'linear'
+    a: 'linear'
+    c: 'linear'
+    e: 'linear'

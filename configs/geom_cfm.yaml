@@ -1,0 +1,123 @@
+# Constrained-flow-matching config for GEOM-Drugs (10-organic atom map).
+#
+# Derived from baselines/flowmol3/configs/flowmol3.yml with:
+#   - devices reduced from 4 to 1 (single-GPU training initially)
+#   - batch_size reduced proportionally
+#   - output_dir points at our runs/geom_cfm
+#   - wandb entity/name updated for our project
+#   - dataset paths made absolute
+#
+# Our constraint patch is applied inside scripts/run_train.py via
+# cfm_mol.flow_model.patch_flowmol (ablation flags controlled by CLI:
+# --no-tangent, --no-retract, --no-gluing, --no-patch).
+
+training:
+  output_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/runs/geom_cfm
+  batch_size: 12
+  num_workers: 6
+  ema_decay: 0
+  max_num_edges: 50000
+  trainer_args:
+    max_epochs: 20
+    accelerator: gpu
+    devices: 1
+    num_nodes: 1
+    accumulate_grad_batches: 4   # emulate multi-GPU batch with grad accum
+    limit_val_batches: 0.002
+    gradient_clip_val: 1.0
+
+  evaluation:
+    mols_to_sample: 100
+    sample_interval: 0.05
+    val_loss_interval: 0.05
+
+wandb:
+  project: cfm_mol
+  entity:
+  name: geom_cfm_full
+  mode: disabled     # switch to 'online' after wandb login
+
+lr_scheduler:
+  base_lr: 1.0e-4
+  warmup_length: 0.0
+  restart_interval: 0
+  restart_type: 'linear'
+  weight_decay: 1.0e-12
+
+dataset:
+  raw_data_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/baselines/flowmol3/data/geom_raw/
+  processed_data_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/baselines/flowmol3/data/geom_5_kekulized/
+  atom_map: ['C', 'H', 'N', 'O', 'F', 'P', 'S', 'Cl', 'Br', 'I']
+  dataset_name: geom
+  dataset_size:
+  confs_per_mol:
+
+checkpointing:
+  save_last: True
+  save_top_k: 3
+  monitor: 'val_total_loss'
+  every_n_epochs: 1
+
+mol_fm:
+  explicit_aromaticity: false
+  distort_p: 0.2
+  fake_atom_p: 0.3
+  parameterization: ctmc
+  time_scaled_loss: True
+  total_loss_weights:
+    x: 3.0
+    a: 0.4
+    c: 1.0
+    e: 2.0
+  prior_config:
+    x:
+      align: True
+      type: 'centered-normal'
+      kwargs: {std: 1.0}
+    a:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+    c:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+    e:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+
+vector_field:
+  self_conditioning: True
+  stochasticity: 30.0
+  high_confidence_threshold: 0.9
+  n_vec_channels: 32
+  update_edge_w_distance: True
+  n_hidden_scalars: 256
+  n_hidden_edge_feats: 128
+  s_message_dim:
+  v_message_dim:
+  n_expansion_gvps: 3
+  attention: False
+  n_heads: 32
+  n_recycles: 1
+  separate_mol_updaters: True
+  n_molecule_updates: 6
+  convs_per_update: 1
+  n_cp_feats: 4
+  n_message_gvps: 3
+  n_update_gvps: 3
+  message_norm: sum
+  rbf_dmax: 10
+  rbf_dim: 32
+  time_embedding_dim: 64
+  a_token_dim: 64
+  c_token_dim: 64
+  e_token_dim: 64
+
+interpolant_scheduler:
+  schedule_type:
+    x: 'linear'
+    a: 'linear'
+    c: 'linear'
+    e: 'linear'
