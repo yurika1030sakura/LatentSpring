@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project status (Apr 2026)
+## Project status (Jun 2026)
 
 **Target venue: ICLR 2027 (submission ~2026-09-25).** Paper title is
 **Boltzmann-Guided Flow Matching (BGFM)**: a 3D molecular generator whose
@@ -34,6 +34,38 @@ bond supervision, valence tables), it is wrong:
 5. **OMol25 as primary training data** (not QM9/GEOM). OMol25 is
    QM-native: stores positions + atoms + DFT forces/energies, no bonds.
    83-element coverage.
+
+## Architecture: monkey-patching FlowMol3
+
+This codebase does NOT fork FlowMol3. Instead it extends it via runtime
+monkey-patches applied to the `CTMCVectorField` instance after
+`model_from_config(cfg)` returns. Understanding this pattern is essential:
+
+**Layer 1 — Geometric constraints** (`cfm_mol/flow_model.py::patch_flowmol`):
+Patches 5 methods on `model.vector_field` (the `CTMCVectorField`):
+  - Hook 1 (gluing): wraps `sample_conditional_path` → retracts `x_t` onto the steric fibre after interpolation
+  - Hook 2 (tangent): wraps the inner `vector_field` helper → tangent-projects velocity before Euler step
+  - Hook 3 (retract): wraps `step` → stashes graph context, retracts `x_t` after Euler update, optionally applies BGFM score guidance at sampling time
+  - Hook 4a (train_time_discrete): wraps `sample_conditional_path` → projects a_t + e_t onto valence manifold during training
+  - Hook 4b (discrete_projection): wraps `integrate` → projects final a_1 + e_1 at sample time
+
+Bond-free mode (`total_loss_weights.e == 0`) auto-disables hooks 4a/4b since they assume bond semantics.
+
+**Layer 2 — BGFM training loss** (`cfm_mol/bgfm_train_hook.py::patch_flowmol_bgfm`):
+Replaces `model.training_step` with a wrapper that:
+  1. Optionally shifts FM target by `α * F(x₁)` (force-corrected FM, if `force_correction_alpha > 0`)
+  2. Runs original FM training step → `fm_total`
+  3. For each `t_eval` in `t_eval_values`: builds auxiliary graph on the conditional path (or endpoint), runs forward pass, derives score via `score_from_fm_velocity`, computes force loss
+  4. Optionally computes energy-consistency loss via FFJORD reverse-time ODE (if `λ₂ > 0`)
+  5. Combines: `total = fm_total + λ₁ * L_force + λ₂ * L_energy + λ₃ * L_anchor`
+
+**Entry point** (`scripts/run_train.py`):
+  1. `read_config_file` → pops `bgfm` sub-block from `cfg.mol_fm` (FlowMol3's `__init__` doesn't know about it)
+  2. `model_from_config(cfg)` → constructs FlowMol3 `CTMCVectorField`
+  3. `patch_flowmol(model, d_min)` → Layer 1
+  4. `patch_flowmol_bgfm(model, bgfm_cfg)` → Layer 2
+  5. Wraps `sample_analyzer.analyze` with error guard (early-training samples are degenerate)
+  6. `pl.Trainer.fit(model, datamodule)`
 
 ## Two-environment architecture (important)
 
@@ -68,16 +100,40 @@ Configs point `output_dir` into `runs/` under holylabs and `processed_data_dir` 
 
 ### Method (the interesting code)
 
-- `cfm_mol/flow_model.py::patch_flowmol` — 5 hooks that patch FlowMol3's CTMCVectorField. Geometric hooks (tangent/retract/gluing, `d_min` pair-distance) always active; bond-valence hooks (discrete_projection, train_time_discrete) auto-disabled when `total_loss_weights.e == 0` (bond-free).
-- `cfm_mol/bgfm_train_hook.py::patch_flowmol_bgfm` — training-step monkey-patch that runs an auxiliary forward at (x_1, t_eval ~ 0.95), derives the implied score, and adds `λ_1 L_force`. Auto-invoked from `scripts/run_train.py` when `mol_fm.bgfm.enabled = true`.
-- `cfm_mol/bgfm_loss.py` — score-from-FM-velocity (Gaussian-prior closed form), exact + Hutchinson divergence estimators, force/energy loss, warmup/ramp schedule. 11 unit tests in `tests/test_bgfm_loss.py`.
+- `cfm_mol/flow_model.py::patch_flowmol` — 5 hooks on CTMCVectorField (see Architecture section above). Also contains `_apply_bgfm_score_guidance` for inference-time score-guided sampling with configurable schedule (late_linear, late_quadratic, constant).
+- `cfm_mol/bgfm_train_hook.py::patch_flowmol_bgfm` — training-step monkey-patch (see Architecture section above). Key config knobs: `probe_mode` (path vs endpoint), `force_loss_type` (mse/cosine/norm_mse), `force_target_mode` (true/shuffle_atoms for negative-control ablation), `force_correction_alpha` (FM target shifting by α·F).
+- `cfm_mol/bgfm_loss.py` — core loss math:
+  - `score_from_fm_velocity(v_theta, x_t, t)` — closed-form score of FM marginal: `s = (t·v - x) / ((1-t)·σ²)`. Clamped at `SCORE_NORM_CAP=1000` per-atom.
+  - `divergence_exact_atomwise` — O(3N) backward passes, reference for tests.
+  - `divergence_hutchinson` — single backward pass per sample, used in training.
+  - `force_loss` / `force_direction_loss` / `score_force_cosine` — L_force variants.
+  - `energy_loss_variance` — L_energy = Var(log p + E/kT).
+  - `bgfm_total_loss` — combines with warmup/ramp schedule.
+- `cfm_mol/bgfm_density.py` — FFJORD-style log-density via reverse-time ODE + divergence accumulation (`log_density_via_flow`). Contains per-molecule energy-consistency losses:
+  - `energy_consistency_loss_per_mol` — within-parent variance of (log p + E/kT) across K perturbations. Replaces the deprecated cross-batch form which was broken by per-molecule log Z spread.
+  - `energy_consistency_loss_per_mol_with_anchor` — variance + anchor in one FFJORD pass.
+  - `energy_anchor_loss` — L_anchor = mean((log p + E/kT + log_Z_pred)²) to prevent trivial-constant failure.
+- `cfm_mol/log_z_predictor.py` — `LogZPredictor`: tiny (~few k params) invariant network predicting per-molecule log Z from atom-type counts + charge. Zero-initialized so model starts at no-op. Used by anchor loss.
+- `cfm_mol/perturbation_loader.py` — `PerturbationLoader`: stateful iterator over pre-computed geometric perturbation shards (K perturbations per parent molecule). Iterated inside the training hook every `energy_every_k_steps`, separate from Lightning's main DataLoader.
+- `cfm_mol/kt_conditioning.py` — temperature conditioning: `patch_kT_conditioning` adds residual kT projection to vector_field's scalar_embedding via forward hook. Zero-initialized final layer → no-op at init, safe to resume from any checkpoint. `sample_kT` draws log-uniform kT in [kT_min, kT_max].
 - `cfm_mol/physics_drift.py` — inference-time drift (Level-1 OMol25 forces). Currently unused in training; reserved for Paper 2 scaffold-conditioned generation.
 - `cfm_mol/projection.py` — valence/connectivity projections. **Dead code under bond-free**, kept for Paper 2/3 re-use.
+- `cfm_mol/fibre_dgl.py` — DGL↔padded-tensor bridge. `retract_dgl` and `tangent_project_dgl` convert between FlowMol3's flat `(total_atoms, 3)` and the padded `(B, N, 3)` used by `cfm_mol/fibre.py`.
+- `cfm_mol/domain.py` — admissible manifold: `valence_ok`, `steric_ok`, `connectivity_ok`, `default_d_min_table` (covalent-radius-based, scale=0.7).
+- `cfm_mol/data/omol25.py` — OMol25 dataset adapter: ASE LMDB → FlowMol3-style DGL graph. Produces `x_1_true`, `a_1_true`, `c_1_true`, `e_1_true` ndata/edata matching `MoleculeDataset`.
 
 ### Preprocess
 
 - `scripts/preprocess_omol25.py` — LMDB → FlowMol3-native .pt. Reads DFT forces/energies via `atoms.calc.results` (SinglePointCalculator pattern — **not** `atoms.info`). Stores `atom_types` as int8 indices (4× disk savings vs bool one-hot at 83 elements). Supports `--shard_size` for 100M-scale output.
-- `scripts/write_omol25_valencies.py` — writes permissive `train_data_valencies_omol25.json` so FlowMol3's `SampleAnalyzer` doesn't refuse to construct. (Validity metrics it reports during training are uninformative for bond-free; we use xyz2mol post-hoc instead.)
+- `scripts/write_omol25_valencies.py` — writes permissive `train_data_valencies_omol25.json` so FlowMol3's `SampleAnalyzer` doesn't refuse to construct.
+- `scripts/precompute_energy_perturbations.py` — generates K geometric perturbations per parent molecule with OMol25 energies, stored as shards. Required when `λ₂ > 0`.
+
+### Evaluation (two-stage Boltzmann eval)
+
+- `scripts/eval_boltzmann_stage1.py` (in `envs/flowmol`) — loads checkpoint, generates M perturbations per held-out molecule, computes log p_theta via FFJORD, exports to JSON.
+- `scripts/eval_boltzmann_stage2.py` (in `envs/omol25`) — reads Stage 1 JSON, computes OMol25 DFT energies for each perturbation, outputs correlation (log p vs -E/kT) and Boltzmann R² per molecule.
+- `scripts/eval_cell_metrics.py` — computes ablation cell metrics (validity, uniqueness, novelty).
+- `scripts/evaluate_validity.py` — xyz2mol-based validity check for bond-free outputs.
 
 ### Theory / paper drafts
 
@@ -90,6 +146,7 @@ Configs point `output_dir` into `runs/` under holylabs and `processed_data_dir` 
 - `configs/omol25_4m_bgfm.yaml` — **primary training config** (bond-free, BGFM enabled, `λ_1=0.1, λ_2=0.0, kT=1.0`)
 - `configs/omol25_4m_cfm.yaml` — Level-1 ablation baseline (same as bgfm but `bgfm.enabled=false`)
 - `configs/geom_cfm_bondfree.yaml` — Cell (2) ablation: bond-free on FlowMol3's GEOM home field
+- `configs/omol25_4m_bgfm_energy_v8*.yaml` — energy-consistency experiment variants (v8a room-T, v8b T-conditional, v8c energy-only)
 
 ## Common commands
 
@@ -122,7 +179,35 @@ All launchers support SIGUSR1 checkpoint-and-resume for gpu_requeue preemption. 
 ```bash
 cd /n/holylabs/ryl_lab/Lab/yulili_cfm_mol
 conda activate /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/envs/flowmol
-python -m pytest tests/test_bgfm_loss.py -v   # 11 tests, ~22s
+
+# All tests
+python -m pytest tests/ -v
+
+# Individual test files
+python -m pytest tests/test_bgfm_loss.py -v         # 11 tests, ~22s — score, divergence, force/energy loss
+python -m pytest tests/test_bgfm_density.py -v       # FFJORD log-density, within-group variance
+python -m pytest tests/test_flowmol_loss_weighting.py -v  # FlowMol3 loss weight broadcasting
+
+# Single test by name
+python -m pytest tests/test_bgfm_loss.py -v -k "test_divergence_exact_linear_vf"
+```
+
+### Boltzmann evaluation (two-stage, cross-env)
+
+```bash
+# Stage 1 (envs/flowmol): compute log p_theta for perturbations
+conda activate envs/flowmol
+python scripts/eval_boltzmann_stage1.py \
+    --checkpoint <ckpt> --config <config> \
+    --eval_data /n/netscratch/ryl_lab/Lab/yulili_cfm_mol/omol25_4m_processed \
+    --n_molecules 60 --n_perturb 16 --sigma 0.15 \
+    --out_dir runs/eval/boltzmann/<tag>
+
+# Stage 2 (envs/omol25): compute OMol25 energies + correlation
+conda activate envs/omol25
+python scripts/eval_boltzmann_stage2.py \
+    --samples_json runs/eval/boltzmann/<tag>/boltzmann_samples.json \
+    --out_dir runs/eval/boltzmann/<tag>
 ```
 
 ### Ablation matrix for Paper 1
@@ -135,12 +220,38 @@ python -m pytest tests/test_bgfm_loss.py -v   # 11 tests, ~22s
 | (4b) | Same ckpt as 4a | — | Zero-shot transfer to GEOM (strong OOD claim) |
 | (4c) | Same ckpt | — | Eval on tmQM / kraken / hypervalent (killer figure) |
 
+## Config knobs reference
+
+Key `bgfm:` sub-block settings in training configs:
+
+| Key | Values | Effect |
+|---|---|---|
+| `enabled` | true/false | Master switch for BGFM |
+| `lambda_1` | float | Force loss weight |
+| `lambda_2` | float | Energy loss weight (0 = disabled) |
+| `lambda_3` | float | Anchor loss weight (prevents trivial-constant failure) |
+| `kT` | float (eV) | Fixed temperature. 1.0 keeps F/kT tame; 0.025 = room-T |
+| `kT_conditioning` | true/false | Sample kT per step, condition model on kT |
+| `kT_min/kT_max` | float (eV) | Range for kT sampling when conditioning |
+| `force_loss_type` | mse/cosine/norm_mse | MSE on full score, or direction-only variants |
+| `force_target_mode` | true/shuffle_atoms | `shuffle_atoms` is negative-control ablation |
+| `probe_mode` | path/endpoint | `path` evaluates score on conditional path; `endpoint` at x₁ |
+| `t_eval_values` | list[float] | Times to probe score (e.g. [0.85, 0.92, 0.97]) |
+| `force_correction_alpha` | float | FM target shifting: x₁ → x₁ + α·F(x₁). 0 = off |
+| `warmup_frac/ramp_frac` | float | Schedule: FM-only warmup, then linear ramp to full λ |
+| `energy_perturbation_shards` | list[path] | Required when λ₂ > 0 |
+| `energy_every_k_steps` | int | Amortize expensive FFJORD (default: every step) |
+| `energy_n_ode_steps` | int | Reverse-time ODE resolution (default: 8) |
+
 ## Training loop gotchas
 
-1. **Python stdout buffering under SLURM**: always use `python -u` and `export PYTHONUNBUFFERED=1` in launchers, otherwise output only flushes at job end. We've been bitten — `scripts/preprocess_omol25.slurm` has this fixed.
+1. **Python stdout buffering under SLURM**: always use `python -u` and `export PYTHONUNBUFFERED=1` in launchers, otherwise output only flushes at job end.
 2. **FlowMol3's `SampleAnalyzer` needs a valency JSON** (`train_data_valencies_*.json` glob pattern). It raises FileNotFoundError at model init if absent. `write_omol25_valencies.py` produces a permissive 83-element one. `SampleAnalyzer.analyze()` is wrapped with `_safe_analyze` in `scripts/run_train.py` to swallow its RDKit-valence crashes on bond-free outputs.
 3. **`n_atoms_histogram.pt` is a tuple `(values, counts)`, not a single tensor.** FlowMol3's `build_n_atoms_dist` unpacks two values; our preprocess writes both.
-4. **Energy consistency term (`λ_2 > 0`) is disabled in v1** because it requires a trajectory divergence integral (expensive + unstable). Enable in Week 3 grid search after force-only stability is confirmed.
+4. **Energy consistency term (`λ_2 > 0`) requires pre-computed perturbation shards** from `scripts/precompute_energy_perturbations.py`. The perturbation loader runs outside Lightning's DataLoader and iterates inside the training hook.
+5. **Cross-batch energy variance is mathematically broken** — use per-molecule form only (`energy_consistency_loss_per_mol`). The cross-batch form picks up per-molecule log Z spread (~1e9), not Boltzmann deviation. The deprecated `energy_consistency_loss` in `bgfm_density.py` is kept only for unit test validation.
+6. **Score formula diverges at t=1** — `score_from_fm_velocity` has a `(1-t)` denominator; always evaluate at `t_eval < 1` (e.g., 0.95). Per-atom norm capped at 1000.
+7. **NaN guards in training hook** — both force and energy losses check `torch.isfinite` and skip contribution (with logging) if NaN, preventing optimizer poisoning.
 
 ## Things NOT to do
 
@@ -149,3 +260,4 @@ python -m pytest tests/test_bgfm_loss.py -v   # 11 tests, ~22s
 - **Don't delete `cfm_mol/projection.py` or valence code paths.** They're dead under bond-free but reserved for Paper 2 scaffold-conditioned fine-tuning.
 - **Don't preprocess OMol25 data in `envs/flowmol`**. fairchem-core is only in `envs/omol25`.
 - **Don't write OMol25 labels from `atoms.info` or `atoms.arrays['forces']`**. Use ASE's standard API: `atoms.get_potential_energy()` and `atoms.get_forces()` (OMol25 stores via `SinglePointCalculator`).
+- **Don't pop `bgfm` from config before `model_from_config`** is called — `run_train.py` already handles this. Passing unknown keys to FlowMol3's `__init__` will crash.

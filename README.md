@@ -1,115 +1,174 @@
-# Product-Manifold Constrained Flow Matching for Molecules
+# Boltzmann-Guided Flow Matching (BGFM)
 
-Implementation of the method proposed in `g3_proposal/methods_derivation.tex`
-Section 3 + Appendix A.
+A 3D molecular generator whose learned density is pushed to match the
+**physical Boltzmann distribution** under a universal neural potential
+(OMol25, 83 elements). Unifies flow matching + score matching + Boltzmann
+generator ideas in a single training loop.
 
-## Goal
+Target venue: **ICLR 2027** (submission ~2026-09-25).
 
-A 3D molecular flow-matching model whose samples satisfy valence, steric
-exclusion, and connectivity **by construction at every step of the flow ODE**
-— no post-hoc RDKit sanitization, no discarded samples.
+> **Note:** earlier versions of this README described a reflected-diffusion /
+> valence-constrained framing. That has been superseded. For day-to-day
+> guidance see `CLAUDE.md` and `AGENTS.md`; for the method derivation see
+> `notes/bgfm_method.md`; for proofs see `notes/appendix_A_v4.tex`.
 
-Novelty vs prior constrained generative work:
+## One-line pitch
 
-| Prior                                                  | Limitation                                        |
-| ------------------------------------------------------ | ------------------------------------------------- |
-| Lipman / Chen–Lipman 2023/24 (flow matching on fixed manifolds) | fibre doesn't depend on a discrete state |
-| Gat et al. 2024 (discrete flow matching)               | discrete only, no continuous fibre                |
-| SafeFlow (ICLR 2025) (CBF + flow matching, robotics)   | fixed obstacle set, continuous only               |
-| Lou-Ermon ICML 2023, Fishman TMLR 2023, Christopher NeurIPS 2024 (reflected/projected diffusion) | stochastic, fixed domain |
+Most 3D molecular generators only *imitate* a dataset — they produce molecules
+that look valid but are not physically equilibrated, and collapse outside the
+chemistry they were trained on. **BGFM trains a flow-matching generator so
+that how likely it thinks a shape is matches how stable physics says that
+shape is** (the Boltzmann law), using a single universal neural potential
+(OMol25) as the physics signal. The model works across organic, organo-
+metallic, and transition-metal chemistry from one trained checkpoint.
 
-Ours: **a coupled discrete–continuous fibre bundle**
-$\mathcal{M} = \bigsqcup_{(a,b) \in \mathcal{M}_{\mathrm{conn}}} \{(a,b)\} \times \mathcal{M}_{\mathrm{ster}}(a)$
-with a flow whose velocity is tangent-projected onto the fibre and whose
-coordinate is retracted onto the new fibre whenever the discrete base state
-jumps. Consistency theorem + gluing lemma in Appendix A of the proposal.
+## Method at a glance
+
+```
+L_total = L_FM + λ₁·L_force + λ₂·L_energy   (+ optional λ₃·L_anchor)
+```
+
+- **L_FM** — standard flow matching: velocity MSE on positions + cross-entropy
+  on element/charge.
+- **L_force** — model's implied score must equal physics force `F/kT`. Read
+  off a single velocity by closed form `s = (t·v − x) / ((1−t)·σ²)`. Cheap
+  per-step signal.
+- **L_energy** — within-molecule variance of `log p + E/kT` across K
+  precomputed geometric perturbations. Cancels the per-molecule partition
+  function. Optional invariant log-Z anchor prevents trivial-constant
+  solutions.
+
+**Bond-free.** Bonds are not generated (OMol25 has no bond labels).
+Connectivity is recovered post-hoc with xyz2mol on the generated geometry.
+
+**Architecture.** No FlowMol3 fork — `CTMCVectorField` is extended via runtime
+monkey-patches in `cfm_mol/flow_model.py::patch_flowmol` (geometric hooks)
+and `cfm_mol/bgfm_train_hook.py::patch_flowmol_bgfm` (training loss).
 
 ## Repo layout
 
 ```
-yulili_cfm_mol/
-├── baselines/                  # frozen external repos
-│   ├── flowmol3/               # Dunni3/FlowMol — THE skeleton for our fork (joint FM)
-│   ├── midi/                   # cvignac/MiDi — discrete-diffusion reference
-│   ├── reflected_diffusion/    # louaaron/Reflected-Diffusion — reflection code reference
-│   ├── safediffuser/           # Xiao et al. ICLR 2025 — CBF-invariant denoising
-│   ├── mctd/                   # Ahn-ML ICML 2025 — Monte Carlo Tree Diffusion
-│   └── diffusion_mrmp/         # RAISE-Lab UVA — projected diffusion robotics
-├── cfm_mol/                    # OUR code
-│   ├── domain.py               # valence / steric / connectivity checks (App A Defs 1-4)
-│   ├── fibre.py                # tangent projection, retraction, interpolant, Euler step
-│   ├── flow.py                 # CFM regression loss + toy velocity net for pipeline tests
-│   ├── projection.py           # discrete projections; gluing retract
-│   ├── flow_model.py           # TODO: FlowMol3 fork
-│   ├── sampling.py             # TODO: ODE integrator with discrete flow + gluing
-│   ├── train.py                # TODO: training entry point
-│   └── test_fibre.py           # sanity + end-to-end tests
-├── notes/
-│   ├── MODIFICATION_PLAN.md    # file-by-file plan for FlowMol3 fork
-│   ├── gaps.md                 # unresolved math/engineering issues
-│   └── robotics_analogy.md     # robotics safe-diffusion/FM analogy
-└── configs/
-    └── qm9_cfm.yaml            # TODO: training config
+bgfm/
+├── cfm_mol/                       # OUR code
+│   ├── bgfm_loss.py               # score, divergence, force / energy losses
+│   ├── bgfm_density.py            # FFJORD log-density, per-mol energy variance
+│   ├── bgfm_train_hook.py         # patch_flowmol_bgfm — training-step wrapper
+│   ├── flow_model.py              # patch_flowmol — geometric hooks
+│   ├── kt_conditioning.py         # temperature conditioning
+│   ├── log_z_predictor.py         # invariant log-Z head for anchor loss
+│   ├── perturbation_loader.py     # K-perturbation shard iterator
+│   ├── data/omol25.py             # OMol25 LMDB → FlowMol3-style DGL graph
+│   ├── domain.py / fibre*.py      # geometric checks + projections
+│   └── projection.py              # dead under bond-free; reserved for Paper 2
+├── configs/
+│   ├── omol25_4m_bgfm.yaml        # primary BGFM training config
+│   ├── omol25_4m_cfm.yaml         # Level-1 ablation (FM-only, bond-free)
+│   ├── geom_cfm_bondfree.yaml     # ablation on FlowMol3's GEOM home field
+│   └── omol25_4m_bgfm_energy_v8*.yaml   # energy-consistency variants
+├── scripts/
+│   ├── run_train.py               # entry point (loads cfg, applies patches, fits)
+│   ├── preprocess_omol25.py       # OMol25 LMDB → FlowMol3-native .pt
+│   ├── precompute_energy_perturbations.py   # K perturbations + OMol25 labels
+│   ├── eval_boltzmann_stage1.py   # log p_theta on held-out molecules (envs/flowmol)
+│   ├── eval_boltzmann_stage2.py   # OMol25 energies + R² (envs/omol25)
+│   └── launch_omol25_bgfm_*.sh    # SLURM launchers (H100 / A100)
+├── tests/                         # pytest: bgfm_loss, bgfm_density, loss weights
+├── CLAUDE.md                      # authoritative project guide
+└── AGENTS.md                      # AI-agent guidance (locked decisions, gotchas)
 ```
 
-## Status (Apr 2026)
+## Two-environment setup
 
-**Working**:
-- `domain.py` — valence / steric / connectivity checks (Appendix A Defs 1-4).
-- `fibre.py` — tangent projection, retraction, straight-line CFM interpolant,
-  Euler step on the fibre, prior sampler.
-- `flow.py` — CFM regression loss; `LinearVelocityNet` toy net for pipeline
-  tests.
-- `test_fibre.py` — 7 tests passing including gradient flow through `cfm_loss`.
+Torch version conflict forces env separation — **do not merge them**.
 
-**TODO**:
-- `flow_model.py` — fork FlowMol3 velocity head; wire `cfm_loss`.
-- `projection.py::project_valence` (Week 3) and `project_connectivity` (Week 4).
-- `sampling.py` — full ODE integrator with discrete flow + gluing.
-- `configs/qm9_cfm.yaml`, `train.py` — training entry points.
+- **`envs/flowmol/`** — torch 2.2, DGL, PyTorch Lightning, flowmol3. Used for
+  **training and inference**.
+- **`envs/omol25/`** — torch 2.8, fairchem-core 2.19. Used for **OMol25
+  preprocessing and post-hoc energy evaluation only**.
+
+```bash
+source /n/sw/Mambaforge-23.3.1-1/etc/profile.d/conda.sh
+conda activate /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/envs/flowmol  # or envs/omol25
+```
 
 ## Quick start
 
 ```bash
-cd /n/holylabs/ryl_lab/Lab/yulili_cfm_mol
-conda run -n chemistry python -m cfm_mol.test_fibre
+# Tests (in envs/flowmol)
+python -m pytest tests/ -v
+
+# Preprocess OMol25 (in envs/omol25)
+sbatch scripts/preprocess_omol25.slurm
+
+# BGFM training (in envs/flowmol)
+sbatch scripts/launch_omol25_bgfm_h100.sh    # primary; H100 80GB
+sbatch scripts/launch_omol25_bgfm_a100.sh    # backup; A100 80GB
+
+# Level-1 baseline (FM only, no BGFM)
+sbatch scripts/launch_omol25_train_h200.sh
+
+# Boltzmann evaluation (two-stage, cross-env)
+conda activate envs/flowmol
+python scripts/eval_boltzmann_stage1.py --checkpoint <ckpt> --config <cfg> ...
+conda activate envs/omol25
+python scripts/eval_boltzmann_stage2.py --samples_json <stage1_out>/boltzmann_samples.json ...
 ```
 
-Expected: 7 "ok:" lines followed by "all tests passed."
+Launchers support SIGUSR1 checkpoint-and-resume on `gpu_requeue` preemption
+and accept `[config] [resume_ckpt]` as positional args.
 
-## Milestones (13-week preprint target)
+## Current results (Jun 2026)
 
-- [x] Skeleton + 7 sanity tests passing.
-- [ ] **Week 1** Reproduce FlowMol3 QM9 baseline (99.9% validity).
-- [ ] **Week 2** Wire `cfm_loss` into FlowMol3 training; one QM9 epoch; verify
-  loss converges and constrained samples are valid.
-- [ ] **Week 3** Implement `project_valence`; train full QM9 with discrete
-  projections active.
-- [ ] **Week 4** Implement `project_connectivity` + gluing retract in sampler.
-  **Kill switch**: if validity on QM9 doesn't match FlowMol3 at equal compute,
-  pause.
-- [ ] **Week 5** Scale to GEOM-Drugs.
-- [ ] **Weeks 6-7** Curate OOD slices (tmQM, kraken, hypervalent, radicals).
-- [ ] **Weeks 8-10** OOD benchmarks vs EDM, MiDi, DiGress, VEDA, FlowMol3,
-  Branching Flows. **Kill switch**: if baselines don't degrade on OOD, pivot
-  to chemistry-only framing.
-- [ ] **Weeks 11-13** Write preprint.
+Headline metric — **per-molecule perturbation R²** on held-out molecules:
+jiggle one molecule into many shapes, ask the model how likely each is
+(`log p`) and physics how stable each is (`−E/kT`), measure linear fit.
 
-## Scoop risk
+Best checkpoint (v7c, step 50k):
 
-Fioretto / Christopher, Ahn-ML (MCTD), MCTD-ME protein authors all adjacent.
-Weekly arxiv monitor:
+| Slice                | R²        | slope | frac r > 0.5 |
+|----------------------|-----------|-------|--------------|
+| Overall (≤50 atoms)  | **0.278** | 0.840 | 67.5%        |
+| Organic (CHNOFS)     | **0.380** | 0.800 | 65%          |
+| **Transition metal** | **0.501** | 1.40  | **80%**      |
 
-- `site:arxiv.org "flow matching" molecule valid`
-- `site:arxiv.org "product manifold" flow`
-- `site:arxiv.org "constrained flow matching"`
-- Fioretto / Christopher / Fishman / Lipman / Chen / Ahn-ML author feeds
+vs flow-matching-only baseline R² = 0.091 → **~3× tighter** Boltzmann
+alignment. The strongest slice is **transition metals**, validating the
+universal-chemistry claim where it matters most (no prior physics-based
+molecular generator handles metals).
 
-## Environment
+## Key configs
 
-```bash
-conda activate chemistry   # torch, rdkit already installed
-```
+| Config                              | Purpose                                         |
+|-------------------------------------|-------------------------------------------------|
+| `configs/omol25_4m_bgfm.yaml`       | Primary BGFM training (`λ₁=0.1, λ₂=0.0, kT=1.0`) |
+| `configs/omol25_4m_cfm.yaml`        | Level-1 ablation (BGFM disabled)                |
+| `configs/geom_cfm_bondfree.yaml`    | Cell (2): bond-free on FlowMol3's home field    |
+| `configs/omol25_4m_bgfm_energy_v8*` | Energy-consistency variants (room-T, T-cond, energy-only) |
+
+Key `bgfm:` knobs: `lambda_1/2/3`, `kT`, `kT_conditioning`, `force_loss_type`
+(mse / cosine / norm_mse), `probe_mode` (path / endpoint), `t_eval_values`,
+`force_correction_alpha`, `warmup_frac/ramp_frac`. See `CLAUDE.md` for the
+full reference.
+
+## Locked design decisions
+
+These are settled — see `CLAUDE.md` for rationale and pivot dates:
+
+1. **Flow matching, not reflected SDE.**
+2. **Bond-free** (`total_loss_weights.e = 0`).
+3. **BGFM three-term loss** with frozen physics labels and within-molecule
+   variance form.
+4. **`max_atoms = 200`** (covers BINAP-Pd-substrate TS complexes).
+5. **OMol25 as primary training data**, not QM9/GEOM.
+
+## Storage layout
+
+- Code + small runs: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/`
+- Preprocessed data + checkpoints: `/n/netscratch/ryl_lab/Lab/yulili_cfm_mol/`
+  (90-day purge)
+- Raw OMol25: `/n/netscratch/ryl_lab/Lab/omol25/` (4M) and
+  `/n/netscratch/ryl_lab/Lab/omol25_100m/` (100M)
+- Do **not** write to `/n/home04/yulili/` (95 GB quota, mostly full).
 
 ## License
 
