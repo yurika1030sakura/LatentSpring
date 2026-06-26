@@ -1,9 +1,23 @@
 # ── Heavy / external / generated (never push) ───────────────────────────
-envs/                 # 18G conda environments
-runs/                 # 15G training outputs + checkpoints
-data/                 # 2.2G processed data
-baselines/            # 12G forked external repos (own licenses)
+# On UMass Unity these are symlinks into ~/scratch_workspace/bgfm/ (see README
+# "Storage layout"). They hold model weights, datasets, and logs — never push.
+envs/                 # conda environments (symlink -> scratch)
+runs/                 # training outputs + checkpoints (symlink -> scratch)
+data/                 # raw data (symlink -> scratch)
+processed_data/       # preprocessed tensors (symlink -> scratch)
+checkpoints/          # model weights (symlink -> scratch)
+logs/                 # SLURM / training logs (symlink -> scratch)
+baselines/            # forked external repos (own licenses)
 notes/                # internal strategy / drafts (excluded from this push)
+
+# The same names as bare symlinks (a symlink is not matched by a trailing-slash
+# dir pattern, so anchor them explicitly to keep scratch links out of git).
+/envs
+/runs
+/data
+/processed_data
+/checkpoints
+/logs
 
 # ── Python ──────────────────────────────────────────────────────────────
 __pycache__/
