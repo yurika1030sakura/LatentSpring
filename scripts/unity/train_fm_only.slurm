@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -J omol25_fm_only
 #SBATCH --partition=gpu
-#SBATCH --gres=gpu:2080_ti:1
+#SBATCH --gres=gpu:l40s:1
 #SBATCH --account=pi_bsilva_umass_edu
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=48G

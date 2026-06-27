@@ -28,11 +28,17 @@ def get_config() -> ml_collections.ConfigDict:
     config.eval_every_steps = 1000
     config.generate_every_steps = 1000
 
-    # Padding budgets sized for OMol25 (up to ~200 atoms / molecule). Dynamic
-    # padding keeps these as upper bounds.
-    config.compute_padding_dynamically = True
+    # FIXED padding (not dynamic): variable shapes retrace the jitted train/eval
+    # steps and trip chex's assert_max_traces. Budgets must hold the densest
+    # single OMol25 molecule (~200 atoms can be near-fully-connected at 5 A).
+    config.compute_padding_dynamically = False
     config.max_n_graphs = 2
-    config.max_n_nodes = 256
-    config.max_n_edges = 20000
+    config.max_n_nodes = 512
+    config.max_n_edges = 50000
+
+    # OMol25 has focus->target distances > 3 A (metal-ligand, longer bonds), which
+    # overflow the radial spline's default max_radius=3.0 -> inf radial/position
+    # loss. Widen it to cover the 5 A neighbour cutoff.
+    config.target_position_predictor.radial_predictor.max_radius = 6.0
     config.radial_cutoff = 5.0
     return config

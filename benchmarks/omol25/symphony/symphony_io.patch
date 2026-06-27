@@ -70,6 +70,75 @@ index c79eac4..7608fb5 100644
      raise ValueError(
          f"Unknown dataset: {config.dataset}. Available datasets: qm9, platonic_solids, geom_drugs, tmqm, cath"
      )
+diff --git a/symphony/data/fragments.py b/symphony/data/fragments.py
+index 54fbecf..b43ed66 100644
+--- a/symphony/data/fragments.py
++++ b/symphony/data/fragments.py
+@@ -214,9 +214,14 @@ def _make_middle_fragment(
+             )
+ 
+     if mode == "nn":
+-        min_dist = dist[mask].min()
+-        mask = mask & (dist < min_dist + nn_tolerance)
+-        del min_dist
++        # BGFM: OMol25 has disconnected systems (e.g. far metal+ligand at the
++        # radial cutoff), so the visited->unvisited frontier can be empty. Guard
++        # the .min() to avoid a zero-size reduction crash; leave mask empty.
++        valid = dist[mask]
++        if valid.size > 0:
++            min_dist = valid.min()
++            mask = mask & (dist < min_dist + nn_tolerance)
++            del min_dist
+     if mode == "radius":
+         mask = mask & (dist < max_radius)
+ 
+diff --git a/symphony/data/input_pipeline.py b/symphony/data/input_pipeline.py
+index 9ad553b..10e9ec7 100755
+--- a/symphony/data/input_pipeline.py
++++ b/symphony/data/input_pipeline.py
+@@ -92,22 +92,29 @@ def create_fragments_dataset(
+                             structure, radial_cutoff=radial_cutoff
+                         )
+ 
+-                    frag_generator = fragments.generate_fragments(
+-                        rng=structure_rng,
+-                        graph=structure,
+-                        num_species=num_species,
+-                        nn_tolerance=nn_tolerance,
+-                        max_radius=max_radius,
+-                        mode=fragment_logic,
+-                        heavy_first=heavy_first,
+-                        max_targets_per_graph=max_targets_per_graph,
+-                        transition_first=transition_first,
+-                    )
++                    # BGFM: OMol25 contains disconnected systems (e.g. a metal far
++                    # from its ligands at the 5 A cutoff); their autoregressive
++                    # fragmentation raises "No targets found." Materialize + skip
++                    # such molecules so the iterator keeps going.
++                    try:
++                        frag_list = list(fragments.generate_fragments(
++                            rng=structure_rng,
++                            graph=structure,
++                            num_species=num_species,
++                            nn_tolerance=nn_tolerance,
++                            max_radius=max_radius,
++                            mode=fragment_logic,
++                            heavy_first=heavy_first,
++                            max_targets_per_graph=max_targets_per_graph,
++                            transition_first=transition_first,
++                        ))
++                    except ValueError:
++                        continue
+ 
+                     if fragment_number == -1:
+-                        yield from frag_generator
++                        yield from frag_list
+                     else:
+-                        for i, frag in enumerate(frag_generator):
++                        for i, frag in enumerate(frag_list):
+                             if i == fragment_number:
+                                 yield frag
+                                 break
 diff --git a/symphony/models/utils/create_model.py b/symphony/models/utils/create_model.py
 index ba8d82e..512c6c7 100644
 --- a/symphony/models/utils/create_model.py
