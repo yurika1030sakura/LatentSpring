@@ -27,5 +27,11 @@ PIP="$PREFIX/bin/pip"
     "git+https://github.com/ACEsuit/mace-jax"
 cd /home/renhaozhang_umass_edu/bgfm/baselines/symphony
 "$PIP" install -e . --no-deps
+# GPU jax (for GPU training): jaxlib cuda12 + the MATCHING cuDNN 8.9 (jaxlib
+# 0.4.23 is +cuda12.cudnn89; the cuda12_pip extra wrongly pulls cuDNN 9). At
+# runtime set LD_LIBRARY_PATH to the pip nvidia libs + XLA_PYTHON_CLIENT_MEM_FRACTION
+# (see scripts/unity/train_symphony.slurm). Skip this block for a CPU-only env.
+"$PIP" install --no-cache-dir "jax[cuda12_pip]==0.4.23" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+"$PIP" install --no-cache-dir --no-deps "nvidia-cudnn-cu12==8.9.7.29" "numpy==1.24.3" "scipy==1.11.4" "ml-dtypes==0.2.0"
 echo "verify:"
 "$PREFIX/bin/python" -c "import symphony.train; from symphony.data.datasets import omol25; print('symphony OK | species', omol25.OMol25Dataset.get_atomic_numbers().shape[0])" 2>&1 | tail -1

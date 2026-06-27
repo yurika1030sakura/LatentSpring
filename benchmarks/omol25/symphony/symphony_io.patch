@@ -17,7 +17,7 @@ index 8715113..c81cbff 100644
          raise ValueError(f"Unknown dataset: {dataset}")
  
 diff --git a/configs/root_dirs.py b/configs/root_dirs.py
-index 5aaebcb..9391ae0 100644
+index 5aaebcb..ddfd211 100644
 --- a/configs/root_dirs.py
 +++ b/configs/root_dirs.py
 @@ -6,6 +6,9 @@ import os
@@ -26,7 +26,7 @@ index 5aaebcb..9391ae0 100644
      """Get the root directory for the dataset."""
 +    # BGFM: OMol25 on UMass Unity (holds omol25_symphony.npz).
 +    if dataset == "omol25":
-+        return "/home/renhaozhang_umass_edu/scratch_workspace/bgfm/processed_data/omol25_smoke"
++        return "/home/renhaozhang_umass_edu/scratch_workspace/bgfm/processed_data/omol25_50k"
      hostname, username = os.uname()[1], os.environ.get("USER")
  
      if hostname == "radish":
