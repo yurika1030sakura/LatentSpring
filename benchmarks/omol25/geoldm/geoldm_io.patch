@@ -1,0 +1,43 @@
+diff --git a/configs/datasets_config.py b/configs/datasets_config.py
+index 9b1847a..5284918 100644
+--- a/configs/datasets_config.py
++++ b/configs/datasets_config.py
+@@ -150,5 +150,9 @@ def get_dataset_info(dataset_name, remove_h):
+             return qm9_second_half
+         else:
+             raise Exception('Missing config for %s without hydrogens' % dataset_name)
++    elif dataset_name == 'omol25':
++        # BGFM: OMol25 (83 elements, bond-free), auto-generated. I/O only.
++        from configs.omol25_config import omol25_info
++        return omol25_info
+     else:
+         raise Exception("Wrong dataset %s" % dataset_name)
+diff --git a/qm9/dataset.py b/qm9/dataset.py
+index cb0f59d..8512233 100644
+--- a/qm9/dataset.py
++++ b/qm9/dataset.py
+@@ -63,6 +63,24 @@ def retrieve_dataloaders(cfg):
+                 shuffle=shuffle)
+         del split_data
+         charge_scale = None
++    elif 'omol25' in cfg.dataset:
++        # BGFM: OMol25 (bond-free, 83 elements). Reuses PreprocessQM9 collate;
++        # only the dataset source is swapped. I/O only.
++        from qm9.omol25_data import OMol25EDMDataset
++        from configs.datasets_config import get_dataset_info
++        info = get_dataset_info(cfg.dataset, getattr(cfg, 'remove_h', False))
++        n_species = len(info['atom_decoder'])
++        preprocess = PreprocessQM9(load_charges=cfg.include_charges)
++        dataloaders = {}
++        for key, fsplit in [('train', 'train'), ('valid', 'val'), ('test', 'test')]:
++            ds = OMol25EDMDataset(cfg.datadir, fsplit, n_species=n_species)
++            dataloaders[key] = DataLoader(
++                ds, batch_size=cfg.batch_size,
++                shuffle=(key == 'train'),
++                num_workers=cfg.num_workers,
++                collate_fn=preprocess.collate_fn,
++                drop_last=True)
++        charge_scale = None
+     else:
+         raise ValueError(f'Unknown dataset {cfg.dataset}')
+ 
