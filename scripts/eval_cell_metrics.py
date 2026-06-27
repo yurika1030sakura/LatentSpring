@@ -185,8 +185,14 @@ def main() -> int:
                 n_molecules=n_take, n_timesteps=args.n_timesteps, device=device,
             )
         for m in mols:
-            atom_idx = m.atom_types.argmax(dim=-1).cpu().numpy()
-            sym = [atom_map[i] for i in atom_idx]
+            # FlowMol3's SampledMolecule.atom_types is a list of element-symbol
+            # strings (already argmax-decoded in extract_moldata_from_graph).
+            # Older variants stored a one-hot tensor; handle both robustly.
+            at = m.atom_types
+            if hasattr(at, "argmax"):
+                sym = [atom_map[i] for i in at.argmax(dim=-1).cpu().numpy()]
+            else:
+                sym = list(at)
             z = np.array([SYMBOL_TO_Z[s] for s in sym], dtype=np.int64)
             pos = m.positions.detach().cpu().numpy().astype(np.float64)
             samples.append({"atomic_numbers": z.tolist(),
