@@ -17,13 +17,33 @@ Every OMol25 molecule = `N` atoms with a 3D position, an element index in `[0,82
 baseline gets a thin adapter that converts our processed tensors into that
 baseline's native batch format; the model, losses, and sampler are untouched.
 
-## Tier-A baselines (bond-free, fair comparators)
+## Status — every cell smoke-validated end-to-end (no bugs)
 
-| Baseline | Env | Status | Files added | Source edits (patch) |
+All 5 models train on OMol25 and are scored on BOTH their original metric and the
+new Boltzmann R². Numbers below are from 1–3-step smoke models on a 1-shard
+subset, so they are **garbage by design** — the point is every pipeline RUNS.
+
+| Model | Trains | Original metric (validity) | New Boltzmann R² | Env |
 |---|---|---|---|---|
-| **EDM** | `envs/edm` (torch 2.2/cu121, numpy<2, rdkit, matplotlib) | ✅ smoke-trains (train+val+test NLL) | `gen_omol25_config.py`, `qm9/omol25_data.py` | `edm_io.patch` (`get_dataset_info` + `retrieve_dataloaders`) |
-| **GeoLDM** | reuses `envs/edm` | ✅ smoke-trains (AE first-stage) | same two files | `geoldm_io.patch` (identical edits) |
-| **Symphony** | `envs/symphony` (JAX 0.4.x + tf 2.13, pinned) | ⏳ env + adapter ready; smoke pending | `omol25_to_npz.py`, `symphony/data/datasets/omol25.py` | `symphony_io.patch` (`datasets/utils.py` registry) |
+| **BGFM** (FlowMol3 + physics loss) | ✅ | ✅ 0.0 | ✅ pooled 0.02 | `envs/flowmol` |
+| **FM-only** (FlowMol3, loss off) | ✅ | ✅ (same scripts) | ✅ (same FFJORD stage1) | `envs/flowmol` |
+| **EDM** (EGNN diffusion) | ✅ | ✅ 0.0 (xyz2mol) | ✅ pooled 0.03 | `envs/edm` |
+| **GeoLDM** (latent diffusion) | ✅ | ✅ 0.0 (xyz2mol) | ✅ pooled 0.18 | `envs/edm` |
+| **Symphony** (autoregressive) | ✅ | ✅ 0 (native generation) | ✅ pooled 0.66 | `envs/symphony` |
+
+- **Original metric** = de-novo-3D-gen validity. For BGFM/FM-only/EDM/GeoLDM the
+  shared geometry-based `validity_from_json.py` (xyz2mol). Symphony uses its
+  native generation + validity hook.
+- **New metric** = per-molecule R² of model `log p` vs `−E/kT` under the OMol25
+  oracle: `eval_omol25_boltzmann.py` per model (diffusion ELBO for EDM/GeoLDM,
+  autoregressive fragment-sum log p for Symphony, FFJORD for BGFM/FM-only) →
+  shared `scripts/eval_boltzmann_stage2.py` (oracle energies, model-agnostic).
+
+| Baseline | Env | Files added | Source edits (patch) |
+|---|---|---|---|
+| **EDM** | `envs/edm` (torch 2.2/cu121, numpy<2, rdkit, matplotlib) | `gen_omol25_config.py`, `qm9/omol25_data.py`, `eval_omol25_boltzmann.py`, `sample_omol25_to_json.py` | `edm_io.patch` |
+| **GeoLDM** | reuses `envs/edm` | same four files | `geoldm_io.patch` |
+| **Symphony** | `envs/symphony` (JAX 0.4.23 + tf 2.13, pinned — see `symphony/build_symphony_env.sh`) | `omol25_to_npz.py`, `data/datasets/omol25.py`, `eval_omol25_boltzmann.py`, `configs_omol25/*.py` | `symphony_io.patch` (dataset registry + root_dirs + optional-mace + omol25 generation branch) |
 
 ### EDM / GeoLDM (PyTorch)
 

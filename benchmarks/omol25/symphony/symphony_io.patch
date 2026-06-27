@@ -1,3 +1,35 @@
+diff --git a/analyses/generate_molecules.py b/analyses/generate_molecules.py
+index 8715113..c81cbff 100644
+--- a/analyses/generate_molecules.py
++++ b/analyses/generate_molecules.py
+@@ -259,6 +259,13 @@ def generate_molecules(
+         avg_edges_per_graph = 512 * 5
+         species_to_atomic_numbers = cath.CATHDataset.species_to_atomic_numbers()
+         atoms_to_species = cath.CATHDataset.atoms_to_species()
++    elif dataset == "omol25":  # BGFM: OMol25 (83 elements, bond-free)
++        from symphony.data.datasets import omol25 as _omol25
++        max_num_atoms = 200
++        avg_nodes_per_graph = 50
++        avg_edges_per_graph = 500
++        species_to_atomic_numbers = _omol25.OMol25Dataset.species_to_atomic_numbers()
++        atoms_to_species = _omol25.OMol25Dataset.atoms_to_species()
+     else:
+         raise ValueError(f"Unknown dataset: {dataset}")
+ 
+diff --git a/configs/root_dirs.py b/configs/root_dirs.py
+index 5aaebcb..9391ae0 100644
+--- a/configs/root_dirs.py
++++ b/configs/root_dirs.py
+@@ -6,6 +6,9 @@ import os
+ 
+ def get_root_dir(dataset: str) -> Optional[str]:
+     """Get the root directory for the dataset."""
++    # BGFM: OMol25 on UMass Unity (holds omol25_symphony.npz).
++    if dataset == "omol25":
++        return "/home/renhaozhang_umass_edu/scratch_workspace/bgfm/processed_data/omol25_smoke"
+     hostname, username = os.uname()[1], os.environ.get("USER")
+ 
+     if hostname == "radish":
 diff --git a/symphony/data/datasets/utils.py b/symphony/data/datasets/utils.py
 index c79eac4..7608fb5 100644
 --- a/symphony/data/datasets/utils.py
@@ -38,3 +70,20 @@ index c79eac4..7608fb5 100644
      raise ValueError(
          f"Unknown dataset: {config.dataset}. Available datasets: qm9, platonic_solids, geom_drugs, tmqm, cath"
      )
+diff --git a/symphony/models/utils/create_model.py b/symphony/models/utils/create_model.py
+index ba8d82e..512c6c7 100644
+--- a/symphony/models/utils/create_model.py
++++ b/symphony/models/utils/create_model.py
+@@ -21,7 +21,11 @@ from symphony.models.radius_predictors.rational_quadratic_spline import (
+ from symphony.models.continuous_position_predictor import TargetPositionPredictor
+ from symphony.models.predictor import Predictor
+ from symphony.models.focus_predictor import FocusAndTargetSpeciesPredictor
+-from symphony.models.embedders import nequip, nequip_old, marionette, e3schnet, mace, allegro
++from symphony.models.embedders import nequip, nequip_old, marionette, e3schnet, allegro
++try:
++    from symphony.models.embedders import mace  # mace_jax needs flax.nnx (flax>=0.8)
++except Exception:  # not used by the default model; keep it optional under pinned flax 0.7.5
++    mace = None
+ 
+ 
+ def get_activation(activation: str) -> Callable[[jnp.ndarray], jnp.ndarray]:
