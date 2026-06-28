@@ -59,3 +59,19 @@ index cb0f59d..6a0783b 100644
      else:
          raise ValueError(f'Unknown dataset {cfg.dataset}')
  
+diff --git a/train_test.py b/train_test.py
+index 7f87ee7..6eba716 100644
+--- a/train_test.py
++++ b/train_test.py
+@@ -73,7 +73,10 @@ def train_epoch(args, loader, epoch, model, model_dp, model_ema, ema, device, dt
+                   f"RegTerm: {reg_term.item():.1f}, "
+                   f"GradNorm: {grad_norm:.1f}")
+         nll_epoch.append(nll.item())
+-        if (epoch % args.test_epochs == 0) and (i % args.visualize_every_batch == 0) and not (epoch == 0 and i == 0):
++        # BGFM: skip EDM's in-epoch viz samplers (sample_chain/sizes) for OMol25 —
++        # they hardcode n_nodes for qm9/geom only (ValueError otherwise) and assume
++        # QM9 elements. Training + val/test NLL are unaffected.
++        if (epoch % args.test_epochs == 0) and (i % args.visualize_every_batch == 0) and not (epoch == 0 and i == 0) and 'omol25' not in args.dataset:
+             start = time.time()
+             if len(args.conditioning) > 0:
+                 save_and_sample_conditional(args, device, model_ema, prop_dist, dataset_info, epoch=epoch)
