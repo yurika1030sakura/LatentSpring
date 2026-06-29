@@ -299,6 +299,7 @@ def energy_consistency_loss_per_mol(
     n_hutchinson: int = 1,
     prior_std: float = 1.0,
     kT_tensor: torch.Tensor | None = None,
+    discrete_log_p: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, dict]:
     """L_energy = mean_m Var_k(log p_theta(x_{m,k}) + E(x_{m,k}) / kT).
 
@@ -328,16 +329,29 @@ def energy_consistency_loss_per_mol(
         model, g_pert, node_batch_idx, upper_edge_mask,
         n_ode_steps=n_ode_steps, n_hutchinson=n_hutchinson, prior_std=prior_std,
         for_training=True, kT=kT_tensor)
+    # Module 3.5 (joint density): if the caller provides a per-graph
+    # discrete log-probability log p_theta(c), combine it with the
+    # coordinate-conditional FFJORD integral so that the variance is
+    # computed on the joint log-density log p_theta(x) = log p_theta(r|c)
+    # + log p_theta(c). When discrete_log_p is None, this falls back to
+    # the position-only formulation.
+    if discrete_log_p is not None:
+        log_p_joint = log_p + discrete_log_p
+    else:
+        log_p_joint = log_p
     # kT can be a scalar (fixed-T training) or a (B,) tensor per virtual mol
     # (T-conditional training). The variance loss is computed per-parent so we
     # need E/kT to broadcast correctly.
     if kT_tensor is not None:
         # kT_tensor has shape (M*K,) — per virtual molecule
-        residual = log_p + energies / kT_tensor
+        residual = log_p_joint + energies / kT_tensor
     else:
-        residual = log_p + energies / float(kT)
+        residual = log_p_joint + energies / float(kT)
     loss, diag = within_group_variance_loss(residual, parent_id)
     diag["logp_mean"] = float(log_p.detach().mean().item())
+    if discrete_log_p is not None:
+        diag["logp_joint_mean"] = float(log_p_joint.detach().mean().item())
+        diag["logp_discrete_mean"] = float(discrete_log_p.detach().mean().item())
     return loss, diag
 
 

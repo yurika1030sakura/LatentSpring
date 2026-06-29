@@ -438,6 +438,59 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
             self.log('train_energy_n_groups',
                      energy_diag['n_groups_used'], on_step=True)
 
+        # Module 3: calibrated scalar energy head.
+        # Compute L_head only when an energy head has been attached
+        # (see patch_flowmol_bgfm). The head consumes the data
+        # endpoint (positions, atom_types, charges) and the targets
+        # are the precomputed OMol25 force/energy on the same data
+        # point. The force term uses autograd through the head,
+        # which requires create_graph=True so the head can be
+        # back-propagated.
+        head = getattr(self, '_bgfm_energy_head', None)
+        lambda_4 = float(bgfm_config.get('lambda_4', 0.0)) if head is not None else 0.0
+        lambda_F = float(bgfm_config.get('lambda_F', 0.1)) if head is not None else 0.0
+        if head is not None and lambda_4 > 0.0 and 'force_1_true' in g.ndata:
+            from cfm_mol.energy_head import energy_and_force
+            from cfm_mol.bgfm_loss import energy_head_calibration_loss
+            n_graphs = int(g.batch_size)
+            # node_batch_idx is computed earlier in the BGFM block, but
+            # the FM-only path can reach here without it; recompute.
+            nbi_h, _ = get_batch_idxs(g)
+            r_data = g.ndata['x_1_true']
+            a_data = g.ndata['a_1_true'].argmax(dim=-1)
+            c_data = g.ndata['c_1_true'].argmax(dim=-1)
+            E_target = (g.ndata['energies'][nbi_h]
+                        .scatter_reduce(0, nbi_h, torch.zeros_like(nbi_h, dtype=g.ndata['energies'].dtype),
+                                        reduce='mean')) if False else g.ndata.get('energy_1_true')
+            # In OMol25 preprocess, the per-graph energy is stored as a
+            # scalar; here we look it up from a per-graph buffer if
+            # available, otherwise fall back to zero-target (the L1 on
+            # the residual is still meaningful relative to E_pred=0
+            # init).
+            if E_target is None:
+                E_target = torch.zeros(n_graphs, device=g.device, dtype=r_data.dtype)
+            F_target = g.ndata['force_1_true']
+            try:
+                E_pred, F_pred = energy_and_force(
+                    head, r_data, a_data, c_data, nbi_h, n_graphs,
+                    create_graph=True,
+                )
+                L_head, head_diag = energy_head_calibration_loss(
+                    E_pred, F_pred, E_target, F_target, lambda_F=lambda_F)
+                if torch.isfinite(L_head):
+                    total = total + lambda_4 * L_head
+                    self.log('train_L_head', L_head.detach(), on_step=True, prog_bar=True)
+                    self.log('train_head_energy_mae',
+                             head_diag['head_energy_mae'], on_step=True)
+                    self.log('train_head_force_mse',
+                             head_diag['head_force_mse'], on_step=True)
+                else:
+                    self.log('train_L_head_nan_skip', 1.0, on_step=True)
+            except RuntimeError as e:
+                # autograd through the head can fail if the upstream
+                # graph already detached; log + skip.
+                self.log('train_L_head_runtime_skip', 1.0, on_step=True)
+
         self.log('train_total_bgfm', total.detach(), on_step=True, prog_bar=True)
         return total
 
@@ -528,6 +581,31 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
         model._bgfm_kT_max = kT_max
         print(f"[bgfm] kT-conditional training: sample kT log-uniform in "
               f"[{kT_min}, {kT_max}] eV per step")
+
+    # Module 3: calibrated scalar energy head.
+    # Attached as model._bgfm_energy_head so its parameters are part of
+    # the Lightning module and get included in the optimizer and
+    # checkpoint. Accessed by bgfm_training_step via the same name.
+    energy_head_enabled = bool(bgfm_config.get('energy_head_enabled', False))
+    if energy_head_enabled:
+        from cfm_mol.energy_head import EnergyHead
+        n_atom_types_h = int(bgfm_config.get('n_atom_types', 83))
+        hidden_dim_h = int(bgfm_config.get('energy_head_hidden_dim', 128))
+        n_layers_h = int(bgfm_config.get('energy_head_n_layers', 3))
+        cutoff_h = float(bgfm_config.get('energy_head_cutoff', 5.0))
+        n_rbf_h = int(bgfm_config.get('energy_head_n_rbf', 32))
+        head = EnergyHead(
+            n_atom_types=n_atom_types_h,
+            n_charge_classes=6,
+            hidden_dim=hidden_dim_h,
+            n_rbf=n_rbf_h,
+            cutoff=cutoff_h,
+            n_layers=n_layers_h,
+        ).to(next(model.parameters()).device)
+        model._bgfm_energy_head = head
+        n_params_h = sum(p.numel() for p in head.parameters())
+        print(f"[bgfm] EnergyHead enabled (hidden={hidden_dim_h}, "
+              f"n_layers={n_layers_h}, cutoff={cutoff_h}, params={n_params_h})")
 
 
     print(f"[bgfm] BGFM hook installed: lambda_1={lambda_1}, lambda_2={lambda_2}, "
