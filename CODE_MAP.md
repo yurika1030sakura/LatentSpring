@@ -4,6 +4,12 @@ This document maps each section of the paper
 [`paper/bgfm_paper.pdf`](paper/bgfm_paper.pdf) to the source files that
 implement it.
 
+> **Anonymization note for double-blind review.** This file lists the
+> public mirror of our repository. For supplementary material under
+> double-blind review, use the anonymized version
+> [`CODE_MAP_ANONYMOUS.md`](CODE_MAP_ANONYMOUS.md), which removes the
+> GitHub URL, the maintainer name, and any local-cluster paths.
+
 **Repository**: https://github.com/yurika1030sakura/bgfm
 
 ---
@@ -50,9 +56,10 @@ bgfm/
 
 | Paper element | Code | Line |
 |---|---|---|
-| Scalar head $\hat E_\psi(r, c)$ | `cfm_mol/energy_head.py` | `EnergyHead` |
-| Joint energy + force evaluation via autograd | `cfm_mol/energy_head.py` | `energy_and_force` |
-| Calibration loss $\mathcal{L}_{\rm head}$ (Eq.\,7) | `cfm_mol/bgfm_loss.py` | `energy_head_calibration_loss` |
+| Scalar head $\hat E_\psi(r, c) = b_\phi(c) + \Delta E_\psi(r, c)$ | `cfm_mol/energy_head.py` | `EnergyHead` |
+| Composition baseline $b_\phi(c)$ (atom-type histogram + total charge) | `cfm_mol/log_z_predictor.py` | `LogZPredictor` (reused as composition head) |
+| Strain term $\Delta E_\psi(r, c)$ + autograd force | `cfm_mol/energy_head.py` | `energy_and_force` |
+| Residual calibration loss $\mathcal{L}_{\rm head}$ (Eq.\,7) | `cfm_mol/bgfm_loss.py` | `energy_head_calibration_loss` |
 
 ### §3.4 Module 4 — Learned-energy Langevin corrector
 

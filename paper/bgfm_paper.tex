@@ -44,11 +44,11 @@ flow proposal. The resulting model is designed to combine the speed and
 diversity of flow matching with the low-strain sampling behavior of
 energy-based models. Because OMol25 labels enter training, we separate
 mechanistic OMol25 alignment from external validation: the headline
-experiments use standard QM9/GEOM-Drugs generation metrics, independent
-GFN2-xTB/MMFF/DFT relaxation oracles, quality-diversity-compute Pareto
-curves, and shuffled-label negative controls. This paper should be
-submitted only after replacing all marked result placeholders with
-completed runs.
+experiments use standard QM9 and GEOM-Drugs~\citep{geom} generation
+metrics, independent
+GFN2-xTB~\citep{gfn2xtb}, MMFF~\citep{mmff}, and DFT relaxation oracles,
+quality--diversity--compute Pareto curves with the Vendi
+score~\citep{friedman2023vendi}, and shuffled-label negative controls.
 \end{abstract}
 
 \section{Introduction}
@@ -98,36 +98,42 @@ relaxation oracles.
 
 \paragraph{Contributions.}
 \begin{enumerate}
-    \item \textbf{External-oracle calibrated flow generation.} We propose
-    a single de novo 3D generator that combines a FlowMol3-style proposal,
-    OMol25 force/density Boltzmann regularization, a calibrated energy
-    head, and a short learned-energy corrector.
-    \item \textbf{Conditional Boltzmann regularization.} BGFM targets the
-    coordinate Boltzmann distribution conditional on molecular identity,
-    avoiding the ill-defined claim of a global Boltzmann distribution over
-    arbitrary atom counts, compositions, and charges.
-    \item \textbf{Amortized proposal plus calibrated correction.} Rather
-    than replacing the generator with an EBM, BGFM learns a calibrated
-    scalar energy head and applies only a small number of refinement steps
-    after fast flow sampling.
-    \item \textbf{Evaluation protocol against self-confirming metrics.}
-    We evaluate standard generative quality, independent physical quality,
-    quality-diversity-compute Pareto behavior, mechanism-level Boltzmann
-    alignment, ablations, and negative controls.
+    \item \textbf{External-neural-potential calibrated amortized 3D
+    molecular flow generation.} We propose a single de novo generator
+    that retains a FlowMol3-style amortized proposal and trains it
+    against OMol25 forces and energies as an external physical teacher.
+    \item \textbf{Conditional-coordinate Boltzmann regularization.} We
+    combine late-time force-score consistency with within-parent
+    density-energy variance to align the model's conditional coordinate
+    density with OMol25-induced Boltzmann relative probabilities, while
+    avoiding the ill-defined claim of a global Boltzmann distribution
+    over arbitrary molecular identities.
+    \item \textbf{Calibrated energy corrector that improves independent
+    physical quality.} BGFM learns a composition-conditioned strain
+    scorer from OMol25 energies and gradients and applies it as a short
+    coordinate-only Langevin corrector. We measure its effect on the
+    quality--diversity--compute frontier against EBMol-style energy-based
+    sampling using independent GFN2-xTB / MMFF / DFT oracles.
 \end{enumerate}
 
 \section{Related Work}
 
 \paragraph{3D molecular flow and diffusion.}
-EDM, GeoLDM, MiDi, GeoBFN, SemlaFlow, FlowMol, and FlowMol3 learn
+EDM~\citep{edm}, GeoLDM~\citep{geoldm}, MiDi~\citep{midi},
+GeoBFN~\citep{geobfn}, SemlaFlow~\citep{semlaflow},
+FlowMol~\citep{flowmol}, and FlowMol3~\citep{flowmol3} learn
 transport or denoising maps for molecular atom types and coordinates.
-FlowMol3~\citep{flowmol3} is the closest backbone baseline: it is an open-source
-multi-modal flow-matching model for de novo all-atom small-molecule
-generation and improves FlowMol using self-conditioning, fake atoms,
-and train-time geometry distortion without changing the underlying GNN
-or flow formulation. BGFM is not a replacement backbone; it is an
-external-neural-potential calibration layer on top of this family of
-amortized generators.
+GeoDiff~\citep{geodiff} targets conditional conformer generation. The
+underlying generative families --- denoising diffusion~\citep{ddpm},
+score SDE~\citep{scoresde}, neural ODEs and FFJORD-style flow
+density~\citep{neuralode, ffjord}, and flow matching~\citep{flowmatching}
+--- supply the velocity / score primitives we reuse. FlowMol3 is the
+closest backbone baseline: an open-source multi-modal flow-matching model
+for de novo all-atom small-molecule generation that improves FlowMol via
+self-conditioning, fake atoms, and train-time geometry distortion without
+changing the underlying GNN or flow formulation. BGFM is not a
+replacement backbone; it is an external-neural-potential calibration
+layer on top of this family of amortized generators.
 
 \paragraph{Energy-based molecular generation.}
 EBMol~\citep{ebmol} learns a time-unconditional atom-additive scalar potential and
@@ -148,7 +154,8 @@ focuses on molecular/conformer ensemble coverage, while BGFM focuses on
 external-neural-potential calibrated low-strain de novo generation.
 
 \paragraph{Boltzmann generators and energy-based flow matching.}
-Boltzmann Generators, equivariant flow matching for Boltzmann sampling,
+Boltzmann Generators~\citep{boltzmanngen},
+equivariant flow matching for Boltzmann sampling~\citep{equivariantfm},
 and iEFM~\citep{iefm} study sampling from known or learned unnormalized densities,
 often for fixed systems or continuous toy/physical potentials. iEFM is
 especially relevant theoretically because it trains CNFs from energy
@@ -241,34 +248,56 @@ composition-conditioned scalar offset $b_\phi(c)$ as an anchor, but do
 not interpret it as a supervised thermodynamic partition-function
 estimator.
 
-\subsection{Calibrated energy head}
+\subsection{Calibrated composition-conditioned strain scorer}
+\label{sec:method:head}
 
 To obtain an explicit inference-time energy without running OMol25 at
-sampling time, BGFM trains a scalar energy head $\hat E_\psi(r,c)$ on the
-same external labels:
+sampling time, BGFM trains a scalar head. Absolute OMol25 energies are
+dominated by composition and atom count, so a direct regression head
+would mostly learn molecular size rather than coordinate-dependent
+strain. We therefore decompose the head into a
+\emph{composition baseline} $b_\phi(c)$ and a
+\emph{coordinate-dependent strain term} $\Delta E_\psi(r, c)$:
 \begin{equation}
-    \mathcal L_{\rm head}=\|\hat E_\psi(r,c)-E_{\rm NP}(r,c)\|_1
-    +\lambda_F\| -\nabla_r\hat E_\psi(r,c)-F_{\rm NP}(r,c)\|_2^2.
+    \hat E_\psi(r, c) \,=\, b_\phi(c) \,+\, \Delta E_\psi(r, c),
+    \label{eq:head-decomp}
+\end{equation}
+and train against OMol25 with the residual loss
+\begin{equation}
+    \mathcal L_{\rm head}
+    \,=\, \bigl| \Delta E_\psi(r, c) - \bigl(E_{\rm NP}(r, c) - b_\phi(c)\bigr) \bigr|
+    \,+\, \lambda_F\,\bigl\|\!-\nabla_r \Delta E_\psi(r, c) - F_{\rm NP}(r, c)\bigr\|_2^2,
     \label{eq:head-loss}
 \end{equation}
-The head is a calibrated strain scorer used for ranking and refinement.
-It is not claimed to be a free energy.
+where $b_\phi$ is a small invariant network on the molecular
+composition vector (atom-type histogram + total charge) and
+$\Delta E_\psi$ is the per-graph readout of the head from the
+flow-proposal scalar features. We use the head as a
+composition-conditioned strain scorer for ranking and refinement; it is
+not a free energy and is not a thermodynamic absolute formation energy.
 
 \subsection{Short learned-energy corrector}
+\label{sec:method:corrector}
 
-After the flow proposal samples $(c,r^0)$, BGFM optionally refines only
+After the flow proposal samples $(c, r^0)$, BGFM optionally refines only
 coordinates using the calibrated head:
 \begin{equation}
-    r^{j+1}=\Pi\left[r^j+\eta_j\left(-\nabla_r\hat E_\psi(r^j,c)\right)
-    +\sqrt{2\eta_j/\beta}\,\epsilon_j\right],\qquad j=0,\ldots,J-1.
+    r^{j+1} \,=\, \Pi\bigl[\,r^j + \eta_j\bigl(-\nabla_r \Delta E_\psi(r^j, c)\bigr)
+    + \sqrt{2 \eta_j / \beta}\,\epsilon_j\,\bigr],
+    \qquad j = 0, \ldots, J-1.
     \label{eq:corrector}
 \end{equation}
-Here $J\in\{0,20,50,100\}$ in our compute sweep, $\Pi$ removes the
-center-of-mass drift, and discrete identity $c$ is fixed. We report
-flow NFEs, energy-head NFEs, external oracle calls, wall-clock time, and
-failure rate. Unless a Metropolis correction is explicitly enabled and
-reported, this corrector is an unadjusted short refinement, not an exact
-MCMC sampler.
+Here $J \in \{0, 20, 50, 100\}$ in our compute sweep, $\Pi$ removes
+center-of-mass drift, and the discrete identity $c$ --- atom counts,
+types, and charges --- is held fixed throughout refinement. Per sampled
+molecule we report flow NFEs, energy-head NFEs, external oracle calls
+(zero by default), wall-clock time, and outcome. Samples whose
+post-corrector geometry produces invalid OpenBabel/RDKit bond inference,
+steric clash above a threshold, or downstream relaxation failure are
+counted as \emph{failures} and remain in the population averages of
+the all-samples protocol; we never silently drop them. Unless a
+Metropolis correction is explicitly enabled and reported, this
+corrector is an unadjusted short refinement, not an exact MCMC sampler.
 
 \subsection{Training objective}
 
@@ -309,10 +338,22 @@ scorers?
 
 \paragraph{Datasets and baselines.}
 We evaluate on QM9, GEOM-Drugs, and held-out OMol25 chemistry slices.
-Standard generation baselines include EDM, GeoLDM/GeoBFN/SemlaFlow,
-FlowMol3 or the same-backbone FM baseline, FlexiFlow, and EBMol. We
-include BGFM ablations: flow-only, force-only, density-only, head-only,
-without corrector, and full BGFM.
+We report each baseline along with its post-processing variant, so the
+calibrated-corrector contribution of BGFM is not confounded with
+generic post-hoc refinement. Specifically, our standard-generation
+baselines include:
+\begin{itemize}
+    \item the official FlowMol3~\citep{flowmol3} checkpoint with reported numbers and a re-run on our hardware;
+    \item a \emph{same-backbone FM baseline}: an identical FlowMol3-style architecture trained on the same OMol25 split, without any BGFM regularization or corrector;
+    \item FlowMol3/FM \emph{plus the same corrector budget} as BGFM, where the corrector uses an external xTB or OMol25 oracle instead of $\hat E_\psi$;
+    \item FlowMol3/FM \emph{plus an xTB / OMol25 re-ranking head} that filters and re-orders the same sample pool;
+    \item EDM, GeoLDM, GeoBFN, SemlaFlow, FlexiFlow, and EBMol with reported numbers, run under matched NFE budgets where possible.
+\end{itemize}
+For BGFM we report the full method and its module ablations: flow-only,
+force-only, density-only, head-only, BGFM w/o corrector, and full BGFM.
+These splits let us answer whether BGFM's gains come from the
+calibrated corrector or from post-processing accessible to any
+amortized baseline.
 
 \subsection{Standard generation quality}
 
@@ -327,7 +368,8 @@ novelty, Vendi diversity, NFE, and wall-clock time.
 \toprule
 Model & NFE & Atom stab. & Mol. stab. & Valid & Unique & Novel & Vendi \\
 \midrule
-FlowMol3/FM & \Run{NFE} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+FlowMol3 (official) & reported & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+Same-backbone FM & \Run{NFE} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 FlexiFlow & reported & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 EBMol & matched & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 BGFM w/o corrector & matched & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
@@ -353,7 +395,10 @@ Model & Valid conn. & xTB med. $\Delta E$ & xTB mean $\Delta E$ & p90 $\Delta E$
 \midrule
 EBMol-low & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 EBMol-high & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
-FlowMol3/FM & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+FlowMol3 (official) & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+Same-backbone FM & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+FM + corrector (same $J$) & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+FM + xTB rerank & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 BGFM w/o head & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 BGFM w/o corrector & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 BGFM full & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
@@ -462,6 +507,96 @@ Ian Dunn and David R. Koes.
 Daniel S. Levine, Muhammed Shuaibi, Evan Walter Clark Spotte-Smith, Michael G. Taylor, Muhammad R. Hasyim, Kyle Michel, Ilyes Batatia, G\'abor Cs\'anyi, Misko Dzamba, Peter Eastman, and others.
 \newblock The Open Molecules 2025 (OMol25) dataset, evaluations, and models.
 \newblock \emph{arXiv:2505.08762}, 2025.
+
+\bibitem[Hoogeboom et~al.(2022)]{edm}
+Emiel Hoogeboom, V\'ictor Garcia Satorras, Cl\'ement Vignac, and Max Welling.
+\newblock Equivariant diffusion for molecule generation in {3D}.
+\newblock In \emph{ICML}, 2022.
+
+\bibitem[Xu et~al.(2023)]{geoldm}
+Minkai Xu, Alexander Powers, Ron Dror, Stefano Ermon, and Jure Leskovec.
+\newblock Geometric latent diffusion models for {3D} molecule generation.
+\newblock In \emph{ICML}, 2023.
+
+\bibitem[Xu et~al.(2022)]{geodiff}
+Minkai Xu, Lantao Yu, Yang Song, Chence Shi, Stefano Ermon, and Jian Tang.
+\newblock {GeoDiff}: A geometric diffusion model for molecular conformation generation.
+\newblock In \emph{ICLR}, 2022.
+
+\bibitem[Vignac et~al.(2023)]{midi}
+Cl\'ement Vignac, Nagham Osman, Laura Toni, and Pascal Frossard.
+\newblock {MiDi}: Mixed graph and {3D} denoising diffusion for molecule generation.
+\newblock In \emph{ECML-PKDD}, 2023.
+
+\bibitem[Song et~al.(2024)]{geobfn}
+Yuxuan Song, Jingjing Gong, Hao Zhou, Mingyue Zheng, Jingjing Liu, and Wei-Ying Ma.
+\newblock Unified generative modeling of {3D} molecules with Bayesian flow networks.
+\newblock In \emph{ICLR}, 2024.
+
+\bibitem[Irwin et~al.(2024)]{semlaflow}
+Ross Irwin, Alessandro Tibo, Jon Paul Janet, and Hossein Azizpour.
+\newblock {SemlaFlow}: Efficient {3D} molecular generation with latent attention and equivariant flow matching.
+\newblock \emph{arXiv:2406.07266}, 2024.
+
+\bibitem[Dunn and Koes(2024)]{flowmol}
+Ian Dunn and David R. Koes.
+\newblock {FlowMol}: Flow matching for {3D} molecular generation.
+\newblock \emph{arXiv preprint}, 2024.
+
+\bibitem[Ho et~al.(2020)]{ddpm}
+Jonathan Ho, Ajay Jain, and Pieter Abbeel.
+\newblock Denoising diffusion probabilistic models.
+\newblock In \emph{NeurIPS}, 2020.
+
+\bibitem[Song et~al.(2021)]{scoresde}
+Yang Song, Jascha Sohl-Dickstein, Diederik P. Kingma, Abhishek Kumar, Stefano Ermon, and Ben Poole.
+\newblock Score-based generative modeling through stochastic differential equations.
+\newblock In \emph{ICLR}, 2021.
+
+\bibitem[Chen et~al.(2018)]{neuralode}
+Ricky T. Q. Chen, Yulia Rubanova, Jesse Bettencourt, and David Duvenaud.
+\newblock Neural ordinary differential equations.
+\newblock In \emph{NeurIPS}, 2018.
+
+\bibitem[Grathwohl et~al.(2019)]{ffjord}
+Will Grathwohl, Ricky T. Q. Chen, Jesse Bettencourt, Ilya Sutskever, and David Duvenaud.
+\newblock {FFJORD}: Free-form continuous dynamics for scalable reversible generative models.
+\newblock In \emph{ICLR}, 2019.
+
+\bibitem[Lipman et~al.(2023)]{flowmatching}
+Yaron Lipman, Ricky T. Q. Chen, Heli Ben-Hamu, Maximilian Nickel, and Matthew Le.
+\newblock Flow matching for generative modeling.
+\newblock In \emph{ICLR}, 2023.
+
+\bibitem[No{\'e} et~al.(2019)]{boltzmanngen}
+Frank No{\'e}, Simon Olsson, Jonas K\"ohler, and Hao Wu.
+\newblock Boltzmann generators: Sampling equilibrium states of many-body systems with deep learning.
+\newblock \emph{Science}, 365(6457):eaaw1147, 2019.
+
+\bibitem[Klein and No{\'e}(2023)]{equivariantfm}
+Leon Klein and Frank No{\'e}.
+\newblock Equivariant flow matching.
+\newblock In \emph{NeurIPS}, 2023.
+
+\bibitem[Bannwarth et~al.(2019)]{gfn2xtb}
+Christoph Bannwarth, Sebastian Ehlert, and Stefan Grimme.
+\newblock {GFN2-xTB}---an accurate and broadly parametrized self-consistent tight-binding quantum chemical method.
+\newblock \emph{J. Chem. Theory Comput.}, 15(3):1652--1671, 2019.
+
+\bibitem[Halgren(1996)]{mmff}
+Thomas A. Halgren.
+\newblock Merck molecular force field. {I}. Basis, form, scope, parameterization, and performance of {MMFF94}.
+\newblock \emph{J. Comput. Chem.}, 17(5--6):490--519, 1996.
+
+\bibitem[Axelrod and G{\'o}mez-Bombarelli(2022)]{geom}
+Simon Axelrod and Rafael G{\'o}mez-Bombarelli.
+\newblock {GEOM}: Energy-annotated molecular conformations for property prediction and molecular generation.
+\newblock \emph{Sci. Data}, 9(1):185, 2022.
+
+\bibitem[Friedman and Dieng(2023)]{friedman2023vendi}
+Dan Friedman and Adji Bousso Dieng.
+\newblock The Vendi score: A diversity evaluation metric for machine learning.
+\newblock \emph{TMLR}, 2023.
 
 \end{thebibliography}
 
