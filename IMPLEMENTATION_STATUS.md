@@ -77,15 +77,34 @@ bgfm:
 ## How a reviewer can verify
 
 ```bash
-# 1. Run the full smoke test (CPU is fine).
+# 1. Run the full BGFM module smoke test (CPU is fine).
 python tests/test_bgfm_smoke.py
 
-# 2. Inspect the wiring points.
+# 2. Run the evaluation-script smoke test (CPU is fine).
+python tests/test_eval_smoke.py
+
+# 3. Inspect the wiring points.
 grep -n 'energy_head\|EnergyHead\|joint_density' \
     cfm_mol/bgfm_train_hook.py cfm_mol/bgfm_density.py
 
-# 3. Run a tiny end-to-end training step (requires the FlowMol3
+# 4. Run a tiny end-to-end training step (requires the FlowMol3
 #    backbone and the OMol25 perturbation shard).
 sbatch scripts/launch_omol25_bgfm_h200.sh \
        configs/omol25_4m_bgfm_v10_full.yaml "" 42
 ```
+
+## Evaluation scripts (Q1 through Q6 from the paper)
+
+All four scripts that the audit listed as ``NotImplementedError`` are now
+functional Python with no stubs:
+
+| Audit item | Source file | Smoke coverage |
+|---|---|---|
+| Q1 (QM9, EBMol protocol) | ``scripts/eval_qm9_ebmol_protocol.py`` | ``test_qm9_eval_returns_metric_keys`` |
+| Q1 (GEOM-Drugs, EBMol revised) | ``scripts/eval_geomdrugs_ebmol_protocol.py`` | ``test_geomdrugs_eval_returns_metric_keys`` |
+| Q2 (independent GFN2-xTB relaxation) | ``scripts/eval_xtb_relaxation.py`` | ``test_xtb_summary_helpers`` (parser-level; full xtb sweep requires ``xtb`` on PATH) |
+| Q6 (cross-model ranking) | ``scripts/eval_cross_model_ranking.py`` | ``test_cross_model_ranking_correlations`` |
+
+``test_eval_smoke.py`` confirms each script's public entry points
+produce the expected metric keys and that the correlation /
+percentile / AUROC helpers match hand-computed values on tiny inputs.
