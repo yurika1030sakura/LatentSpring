@@ -325,156 +325,329 @@ checkpoint. During training, $\log kT$ is sampled log-uniform per step
 over $[0.025,1.0]$ eV.
 
 
-\section{Evaluation protocol}
+\section{Experiments}
 \label{sec:exp}
 
-A valid evaluation must not rely on metrics that closely mirror the
-training objective. We treat the OMol25 log-density vs.\ energy
-correlation as a \emph{mechanism check} and base our main claims on
-benchmarks and oracles that are independent of training supervision.
-The protocol has six tiers (Sections~\ref{sec:exp:mech}--\ref{sec:exp:controls}).
+\paragraph{Experimental questions.}
+Our experiments are designed to answer five questions.
+First, does BGFM preserve the standard chemical validity and diversity
+expected from de novo 3D molecular generators?
+Second, does BGFM improve physical quality under independent evaluators,
+rather than only under the OMol25 neural potential used for training?
+Third, does the proposed objective actually align conditional coordinate
+densities with local Boltzmann relative probabilities?
+Fourth, are the gains caused by correct energy and force information
+rather than by arbitrary regularization or evaluation leakage?
+Finally, compared with energy-based samplers such as EBMol, does BGFM
+offer a better quality--diversity--compute frontier by retaining an
+amortized flow generator while injecting external neural-potential
+supervision?
 
-\subsection{Tier 0 (mechanism check, not main result):
-local Boltzmann correlation under OMol25}
-\label{sec:exp:mech}
+\paragraph{Evaluation philosophy.}
+Since BGFM is trained with OMol25-derived energies and forces,
+OMol25-based correlation is treated as a mechanism diagnostic rather
+than the primary external benchmark. Our headline physical-quality
+results use independent evaluators: GFN2-xTB relaxation
+\citep{bannwarth2019gfn2}, MMFF \citep{halgren1996mmff} relaxation on
+organic subsets, and a small DFT validation subset. This separates
+three claims that are often conflated in physically guided generation:
+standard generative quality, transferable physical quality, and
+mechanistic Boltzmann alignment.
 
-For each held-out molecule we draw $K=16$ Gaussian perturbations at
-$\sigma=0.15$\,\AA, compute $\log p_\theta^{\rm pos}$ via FFJORD
-($H{=}2$, $K_{\rm ODE}{=}8$) and OMol25 energy $E$, and report the
-within-molecule Pearson $R^2$ of $(\log p_\theta, -E/kT)$ plus the
-linear-fit slope. This verifies that BGFM has implemented the target
-the loss specifies (Section~\ref{sec:method:energy}); a positive number
-here is necessary but \emph{not sufficient} for a Boltzmann claim,
-because both the loss and the evaluator use OMol25.
-We therefore subordinate this metric to the independent tiers below.
+\paragraph{Comparison to EBMol.}
+EBMol \citep{anonymous2025ebmol} learns a persistent scalar energy
+landscape and samples it with Mirror-Langevin dynamics and parallel
+tempering. BGFM takes a complementary route: it keeps an amortized
+FlowMol3-style generator, but regularizes its conditional coordinate
+density using an external universal neural potential. We therefore
+compare not only final validity and stability, but also the
+quality--diversity--compute frontier: the number of valid, connected,
+unique, low-strain molecules produced per GPU-hour.
 
-\subsection{Tier 1: QM9 EBMol-protocol benchmark}
+\paragraph{Avoiding self-fulfilling evaluation.}
+To test whether improvements come from correct physical information
+rather than arbitrary loss shaping, we include shuffled-force,
+shuffled-energy, wrong-parent-grouping, wrong-temperature,
+force-norm-only, and random-regularizer controls. A valid BGFM
+improvement should transfer to independent xTB/MMFF/DFT metrics and
+should disappear or weaken under these negative controls.
+
+\subsection{Benchmarks and baselines}
+\label{sec:exp:bench}
+
+We evaluate on three regimes. The first is the standard QM9
+benchmark, where we report atom stability, molecule stability,
+validity, uniqueness, valid-and-unique rate, and novelty on $10{,}000$
+generated molecules. The second is GEOM-Drugs
+\citep{axelrod2022geom}, where we follow the revised evaluation
+protocol used by recent physically grounded 3D generation work: bond
+inference is performed with OpenBabel, formal charge and aromaticity
+are inferred prior to RDKit sanitization, and diversity is measured
+with the Vendi score \citep{friedman2023vendi}. The third is an
+OMol25-based broad-chemistry benchmark, where we evaluate held-out
+slices by charge, atom count, element composition, conformational
+flexibility, and, when supported by the evaluator, metal-containing or
+electrolyte-like species.
+
+We compare against four classes of baselines. \emph{Data references}
+and \emph{noise references} provide sanity checks. \emph{Standard 3D
+generative baselines} include EDM \citep{hoogeboom2022edm}, GeoLDM
+\citep{xu2023geoldm}, GeoBFN \citep{song2024geobfn}, SLDM/SemlaFlow
+when checkpoints are available, and FlowMol3 \citep{stark2024flowmol3}.
+EBMol \citep{anonymous2025ebmol} is our primary energy-based
+competitor. Finally, we include \emph{controlled BGFM variants} built
+on the same FlowMol3-style backbone: FM without BGFM, BGFM-force,
+BGFM-energy, BGFM-full, and BGFM-T. When reporting an optional
+refinement variant, BGFM++ denotes BGFM with a calibrated scalar
+energy head and a short learned-energy Langevin or MALA correction
+stage (Appendix~\ref{app:bgfm-pp}); all oracle calls, refinement
+steps, NFEs, and wall-clock costs are reported.
+
+\subsection{Experiment 1: standard unconditional generation}
 \label{sec:exp:qm9}
 
-We follow the EBMol \citep{anonymous2025ebmol} QM9 protocol exactly:
-$10{,}000$ generated samples, identical train/test split, OpenBabel
-bond inference, RDKit sanitization, NFE budgets matching
-EBMol's reported settings ($930$, $1370$, $1810$). Metrics: atom
-stability, molecule stability, validity, uniqueness, valid \& unique,
-novelty, NFE-matched comparison.
+\textbf{Goal.} Show BGFM does not sacrifice ordinary generative
+quality.
 
-EBMol's strongest QM9 configuration achieves molecule stability
-$97.09\%$ at NFE $=1810$ but uniqueness drops to $82.30\%$ and novelty
-to $42.08\%$. Because the FM backbone preserves sample diversity by
-construction, our target claim on QM9 is
-\emph{matched or comparable stability at substantially higher
-uniqueness and novelty}.
+\textbf{Protocol.} For each model, we generate $10{,}000$ molecules
+using the same atom-count distribution as the corresponding
+benchmark. On QM9 we follow the standard EDM-style protocol; on
+GEOM-Drugs we use the revised OpenBabel/RDKit protocol. Tables
+include model parameters, NFEs, wall-clock time, post-processing
+steps, and the number of failed samples.
 
-\subsection{Tier 2: GEOM-Drugs EBMol-protocol benchmark}
-\label{sec:exp:geom}
+EBMol's strongest QM9 row (NFE $=1810$) reports atom stability
+$99.76\%$, molecule stability $97.09\%$, validity $98.93\%$,
+uniqueness $82.30\%$, novelty $42.08\%$. EBMol's GEOM-Drugs row at
+NFE $=7240$ reports diversity $645.0$ vs.\ data diversity $901.7$.
+Our target claim is therefore the Pareto frontier rather than absolute
+peak stability: matched stability with substantially higher
+uniqueness, novelty, and diversity.
 
-We follow EBMol's GEOM-Drugs Revisited protocol: $10{,}000$ samples,
-OpenBabel + RDKit + revised valency tables, NFE budgets
-$\{1080, 1960, 3720, 7240\}$, and the Vendi diversity score. Metrics:
-atom stability, molecule stability, validity, uniqueness, novelty,
-diversity, structural distributions (bond length, bond angle, torsion)
-on valid-and-connected samples.
+\begin{table}[t]
+\centering
+\small
+\caption{Standard unconditional generation metrics on QM9 and
+GEOM-Drugs (revised OpenBabel/RDKit protocol). The key comparison is
+not maximum stability alone, but the quality--diversity--compute
+frontier. Numbers will be filled when EBMol checkpoints are released
+and BGFM v8/v9 evaluations complete.}
+\label{tab:standard_generation}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Model & NFE & Params & Atom $\uparrow$ & Mol $\uparrow$ & Valid $\uparrow$ & Unique $\uparrow$ & Novel $\uparrow$ & Div $\uparrow$ \\
+\midrule
+EDM            & 1000    & -- & -- & -- & -- & -- & -- & -- \\
+GeoLDM         & 1000    & -- & -- & -- & -- & -- & -- & -- \\
+GeoBFN         & 1000    & -- & -- & -- & -- & -- & -- & -- \\
+FlowMol3       & matched & -- & -- & -- & -- & -- & -- & -- \\
+EBMol-low      & 930/1080  & -- & -- & -- & -- & -- & -- & -- \\
+EBMol-high     & 1810/7240 & -- & -- & -- & -- & -- & -- & -- \\
+FM backbone    & matched & -- & -- & -- & -- & -- & -- & -- \\
+BGFM-force     & matched & -- & -- & -- & -- & -- & -- & -- \\
+BGFM-energy    & matched & -- & -- & -- & -- & -- & -- & -- \\
+BGFM-full      & matched & -- & -- & -- & -- & -- & -- & -- \\
+BGFM++         & matched & -- & -- & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-EBMol on GEOM-Drugs shows the canonical quality/diversity trade-off:
-diversity falls from $1096.8$ at NFE $1080$ to $645.0$ at NFE $7240$
-(data diversity $901.7$). Our target claim is the
-\emph{Pareto frontier}: at matched molecule stability, BGFM preserves
-higher diversity; or at matched diversity, BGFM achieves lower
-relaxation energy.
-
-\subsection{Tier 3: independent physical oracle}
+\subsection{Experiment 2: independent physical quality}
 \label{sec:exp:oracle}
 
-The decisive test for a Boltzmann claim is whether quality improves
-under an oracle that did \emph{not} participate in training. Although
-BGFM is trained against OMol25, we evaluate physical quality of
-generated samples with GFN2-xTB \citep{bannwarth2019gfn2}, MMFF
-\citep{halgren1996mmff}, and a small DFT subset ($200$--$500$ molecules)
-none of which appear in any BGFM training loss. Metrics:
-\begin{itemize}
-\item median and mean $\Delta E_{\rm relax}$ after xTB optimization
-\item maximum residual force before relaxation
-\item RMSD after relaxation
-\item number of xTB / DFT optimizer steps to convergence
-\item relaxation failure rate
-\item bond-length, bond-angle, and torsion distribution shift
-  vs.\ a held-out reference set
-\end{itemize}
-EBMol's best GEOM-Drugs configuration (NFE $7240$) achieves median
-xTB relaxation energy $1.78$\,kcal/mol and mean $5.27$\,kcal/mol.
-We target EBMol's $1960$-NFE row first, then ascend.
+\textbf{Goal.} Directly answer the criticism ``you trained on OMol25
+energy/force, so OMol25 evaluation is biased.''
 
-\subsection{Tier 4: downstream BFGS relaxation cost}
-\label{sec:exp:bfgs}
+\textbf{Protocol.} Generate $10{,}000$ samples per model. For each
+generated molecule we run GFN2-xTB \citep{bannwarth2019gfn2}
+relaxation and record the energy decrease $\Delta E_{\rm relax}$, the
+initial force norm, the number of optimization steps, the convergence
+failure rate, and the RMSD after relaxation. On organic subsets we
+additionally report MMFF94 \citep{halgren1996mmff} relaxation
+statistics. For a random subset of $200$--$500$ valid-and-connected
+molecules per model, we perform DFT single-point calculations or
+short DFT relaxations as a high-cost validation set.
 
-For $200$ held-out molecules, we sample one starting geometry per model
-and run OMol25 BFGS until $\|F\|_\infty < 0.05$\,eV/\AA{} (capped at
-$200$ steps), reporting mean step count and convergence rate. This is
-relevant for deployment in quantum-chemistry workflows where
-relaxation cost dominates the budget; it uses OMol25 as oracle and is
-therefore reported with care alongside the independent xTB oracle of
-Tier 3.
+We report two versions of each metric: a \textbf{valid-connected-only}
+protocol that matches prior structural-energy tables, and an
+\textbf{all-samples} protocol that counts invalid, disconnected, or
+failed molecules explicitly. The all-samples version prevents models
+from appearing physically strong only after aggressive filtering.
 
-\subsection{Tier 5: cross-model energy ranking}
-\label{sec:exp:ranking}
+\begin{table}[t]
+\centering
+\small
+\caption{Independent physical quality on GEOM-Drugs. The primary
+quantities are computed using evaluators not identical to the OMol25
+labels used during BGFM training. EBMol's reference numbers (NFE
+$=7240$) are median xTB $\Delta E = 1.78$ kcal/mol, mean $5.27$.}
+\label{tab:independent_physics}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Model & V-c $\uparrow$ & med $\Delta E \downarrow$ & mean $\Delta E \downarrow$ & p90 $\Delta E \downarrow$ & $\|F\|\downarrow$ & Steps $\downarrow$ & Fail $\downarrow$ & Div $\uparrow$ \\
+\midrule
+EBMol-low   & -- & -- & -- & -- & -- & -- & -- & -- \\
+EBMol-high  & -- & -- & -- & -- & -- & -- & -- & -- \\
+FlowMol3    & -- & -- & -- & -- & -- & -- & -- & -- \\
+FM backbone & -- & -- & -- & -- & -- & -- & -- & -- \\
+BGFM-force  & -- & -- & -- & -- & -- & -- & -- & -- \\
+BGFM-energy & -- & -- & -- & -- & -- & -- & -- & -- \\
+BGFM-full   & -- & -- & -- & -- & -- & -- & -- & -- \\
+BGFM++      & -- & -- & -- & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-EBMol claims its learned energy can rank physical quality of samples
-generated by other models (reported Pearson $r{=}0.65$ vs.\ xTB
-$\Delta E$). For BGFM we construct a composite scorer
+\subsection{Experiment 3: quality--diversity--compute frontier}
+\label{sec:exp:pareto}
+
+\textbf{Goal.} Translate EBMol's mode-concentration trade-off (its
+GEOM-Drugs diversity drops from $1096.8$ at NFE $1080$ to $645.0$ at
+NFE $7240$) into a benchmark BGFM is well-positioned to win.
+
+\textbf{Protocol.} We compare methods at multiple compute budgets.
+For EBMol we evaluate the reported low-, medium-, and high-NFE
+samplers. For BGFM we report matched ODE budgets and matched
+wall-clock budgets; for BGFM++ we additionally sweep the number of
+learned-energy refinement steps. We plot molecule stability, median
+xTB $\Delta E_{\rm relax}$, and valid-connected-low-energy throughput
+against Vendi diversity, NFEs, and wall-clock time.
+
+We define a throughput metric
 \begin{equation}
-    S(x)=\log p_\theta^{\rm pos}(r\mid c) - \beta E_{\rm NP}(r,c) - a_\phi(c),
-    \label{eq:scorer}
+    \mathrm{VLU}_{\tau} = \frac{\#\{\text{valid, connected, unique samples with }\Delta E_{\rm xTB}<\tau\}}{\text{GPU-hours}},
+    \label{eq:vlu}
 \end{equation}
-combining the FFJORD log-density, the OMol25 energy, and the
-composition-conditioned offset. We pool generated samples from EDM,
-FlowMol3, EBMol, and BGFM, then evaluate the Pearson, Spearman, and
-AUROC scores of $S(x)$ versus GFN2-xTB $\Delta E_{\rm relax}$.
-This is a cross-model evaluation: BGFM cannot self-rank because the
-sample set includes other generators.
+for thresholds $\tau\in\{2,5,10\}$ kcal/mol. This measures how many
+chemically valid, physically low-strain, non-duplicate molecules a
+method delivers per fixed computational budget.
 
-\subsection{Tier 6: ablations and negative controls}
+\subsection{Experiment 4: mechanistic Boltzmann consistency}
+\label{sec:exp:mech}
+
+\textbf{Goal.} \emph{Mechanism diagnostic only}, not the main external
+benchmark.
+
+\textbf{Protocol.} For held-out parent molecules, we construct
+perturbation clouds using perturbation families not identical to the
+training shards: unseen Gaussian noise levels, torsion rotations,
+bond stretches, angle bends, RDKit conformer perturbations, and
+short xTB or OMol25 Langevin perturbations. For each perturbation
+$r_m^{(k)}$ of parent $m$ we estimate
+$\log p_\theta^{\rm pos}(r_m^{(k)}\mid c_m)$ and compare to
+$-E_{\rm oracle}(r_m^{(k)},c_m)/kT$.
+
+We report within-parent centered Pearson correlation, Spearman
+correlation, the slope of $\log p_\theta^{\rm pos}$ vs.\ $-E/kT$, the
+slope calibration error, and the residual variance, separately for
+three oracle tiers: \textbf{OMol25} (the direct mechanism diagnostic),
+\textbf{GFN2-xTB} (independent), and a \textbf{DFT subset} (high-cost
+validation).
+
+\textbf{Current verified result.} BGFM force-only at training step
+$50{,}000$ reaches within-molecule $R^2 = 0.278$ overall vs.\ $0.091$
+for the FM baseline (a $3.0\times$ improvement), and $R^2 = 0.501$ on
+transition-metal molecules, under the post-2026-06-29 bug-fixed eval
+pipeline (Appendix~\ref{app:bugs}). \emph{This number verifies that
+BGFM has implemented its intended target; the headline claims are
+supported by Experiments~\ref{sec:exp:qm9}--\ref{sec:exp:pareto} and
+the cross-oracle generalization within this experiment.}
+
+\subsection{Experiment 5: ablations and negative controls}
 \label{sec:exp:controls}
 
-The mechanism check and oracle scores together do not prove that the
-BGFM losses drove the improvement. We therefore train and evaluate:
-\begin{itemize}
-\item \textbf{Architecture ablations}: FM baseline, BGFM force-only,
-  BGFM energy-only, BGFM full, BGFM full + sampling-time energy
-  guidance.
-\item \textbf{Shuffled-energy control}: train with $\{E\}$ permuted
-  across parents within each batch. Should ablate Tier 3 lift.
-\item \textbf{Shuffled-force control}: train with $\{F\}$ permuted
-  across atoms. Should ablate Tier 3 lift on force-sensitive metrics.
-\item \textbf{Wrong-$kT$ control}: evaluate with $kT_{\rm eval}\ne
-  kT_{\rm train}$. Should reduce slope of Tier 0 fit.
-\item \textbf{Wrong-parent control}: evaluate Tier 0 with perturbations
-  shuffled across parents. Should collapse Tier 0 lift.
-\item \textbf{Held-out perturbation type}: train on Gaussian
-  perturbations; evaluate also on torsion rotation, bond stretch,
-  angle bend, RDKit conformer noise, and xTB-relaxed perturbations.
-\item \textbf{Held-out chemistry slice}: report all Tier 3 metrics
-  separately on (i) CHNOFS organic, (ii) charged species,
-  (iii) heteroatom-rich, (iv) transition-metal complexes,
-  (v) molecules with $N\geq 30$ atoms.
-\end{itemize}
-The headline causal story is: real BGFM lifts Tier 3 independent
-oracle metrics; shuffled controls leave Tier 3 unchanged even if they
-sometimes lift Tier 0. Causality is established by the gap between
-these two outcomes, not by Tier 0 alone.
+\textbf{Goal.} Establish causality. The headline story is that real
+BGFM lifts the independent xTB / DFT metrics; shuffled-label controls
+leave these metrics unchanged even if they sometimes lift the
+training-correlated metric.
 
-\subsection{Current verified result (Tier 0 only)}
-\label{sec:exp:current}
+We train and evaluate \emph{architecture ablations} (FM without BGFM,
+BGFM-force, BGFM-energy, BGFM-full, BGFM-T) and \emph{negative
+controls} (shuffled forces across atoms, shuffled forces across
+molecules, force-norm-only supervision, shuffled energies within
+perturbation groups, shuffled parent grouping, wrong-$kT$ evaluation,
+and a random scalar regularizer with the same weight schedule).
 
-On the OMol25 4M held-out set with the bug-fixed eval pipeline
-(Appendix~\ref{app:bugs}), BGFM force-only at training step $50{,}000$
-reaches within-molecule $R^2=0.278$ overall vs.\ $R^2=0.091$ for the
-FM baseline, a $3.0\times$ improvement; per-slice $R^2$ reaches
-$0.501$ on transition-metal molecules. This number is
-\emph{mechanism-level} and is consistent with the loss having been
-optimized. The Tier 1--3 main tables (QM9, GEOM-Drugs, independent
-xTB / MMFF / DFT) require runs against the EBMol checkpoints and are
-the camera-ready deliverables.
+\begin{table}[t]
+\centering
+\small
+\caption{Ablations and negative controls. Correct energy and force
+labels should improve both the OMol25 mechanism metric and
+independent xTB/DFT physical quality; shuffled-label controls should
+not.}
+\label{tab:ablation_controls}
+\begin{tabular}{lrrrrr}
+\toprule
+Model/control & OMol25 corr.$\uparrow$ & xTB med $\Delta E \downarrow$ & DFT $\Delta E \downarrow$ & Valid $\uparrow$ & Div $\uparrow$ \\
+\midrule
+FM backbone            & -- & -- & -- & -- & -- \\
+BGFM true labels       & -- & -- & -- & -- & -- \\
+BGFM-force only        & -- & -- & -- & -- & -- \\
+BGFM-energy only       & -- & -- & -- & -- & -- \\
+Shuffled force         & -- & -- & -- & -- & -- \\
+Shuffled energy        & -- & -- & -- & -- & -- \\
+Wrong parent grouping  & -- & -- & -- & -- & -- \\
+Wrong $kT$             & -- & -- & -- & -- & -- \\
+Random regularizer     & -- & -- & -- & -- & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
 
+\subsection{Experiment 6: energy-based ranking and filtering}
+\label{sec:exp:ranking}
+
+\textbf{Goal.} Beat EBMol on its central capability claim: that an
+explicit scalar energy predicts physical strain on samples generated
+by other models.
+
+\textbf{Protocol.} We construct a cross-model pool containing samples
+from EDM, GeoLDM, FlowMol3, EBMol, FM, BGFM, deliberately strained
+perturbations, and relaxed reference structures. We score each
+molecule using the EBMol learned energy, the OMol25 energy, the BGFM
+density-energy score
+\begin{equation}
+    S_{\rm BGFM}(x) = \log p_\theta^{\rm pos}(r\mid c) - \beta E_{\rm OMol25}(r,c) - b_\phi(c),
+    \label{eq:scorer}
+\end{equation}
+and, when available, the BGFM++ calibrated scalar energy head. Ground
+truth is GFN2-xTB relaxation energy, xTB force norms, and DFT subset
+energy decrease. Metrics are Pearson, Spearman, AUROC for identifying
+the top $10\%$ high-strain molecules, and the median relaxation
+energy after keeping the top-scored $10\%$, $20\%$, and $50\%$ of
+samples.
+
+The target is to beat EBMol's reported Pearson $r=0.65$ vs.\ xTB
+relaxation energy decrease, using a scorer whose components are
+fully explicit.
+
+\subsection{Experiment 7: broad-chemistry OMol25 generalization}
+\label{sec:exp:broad}
+
+\textbf{Goal.} BGFM's universal-NP training opens chemistry coverage
+that QM9 and GEOM-Drugs do not exercise.
+
+\textbf{Protocol.} We evaluate BGFM on held-out OMol25 chemistry
+slices stressing broad element coverage, charge states, molecular
+size, and coordination environments. Results are reported separately
+for (i) neutral vs.\ charged molecules, (ii) small vs.\ large atom
+counts, (iii) heteroatom-rich molecules, (iv) flexible molecules,
+(v) rare-element cases, and (vi) metal-containing or electrolyte-like
+systems where the evaluator supports them. The main comparison is
+between the FlowMol3-style FM backbone and BGFM variants; if an
+EBMol-style model is retrained on an OMol25 subset, it is clearly
+labeled as our reimplementation.
+
+\paragraph{Summary.}
+This evaluation separates three claims that should not be conflated:
+standard de novo generation quality, transferable physical quality
+under independent oracles, and the mechanistic Boltzmann alignment
+induced by BGFM. OMol25-based Boltzmann correlation
+(Experiment~\ref{sec:exp:mech}) is used to verify the proposed
+mechanism, while the headline comparison to EBMol is based on standard
+QM9/GEOM metrics (Experiment~\ref{sec:exp:qm9}), independent physical
+relaxation metrics (Experiment~\ref{sec:exp:oracle}), and
+quality--diversity--compute Pareto curves
+(Experiment~\ref{sec:exp:pareto}).
 
 \section{Limitations and BGFM++ extension}
 \label{sec:limits}
