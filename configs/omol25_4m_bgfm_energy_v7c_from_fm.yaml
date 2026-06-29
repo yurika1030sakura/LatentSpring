@@ -170,21 +170,25 @@ mol_fm:
       kwargs: {}
 
   # BGFM (Boltzmann-Guided Flow Matching) block. Read by
-  # cfm_mol.bgfm_train_hook.patch_flowmol_bgfm. First-pass defaults
-  # chosen for stability; grid-search in Week 3 will refine.
+  # cfm_mol.bgfm_train_hook.patch_flowmol_bgfm.
+  #
+  # NOTE (audit 2026-06-29):
+  #   v7c is NOT pure force-only. It uses lambda_1=0.05 (force) AND
+  #   lambda_2=0.001 (FFJORD density-energy variance, small but nonzero).
+  #   Paper and CODE_MAP should describe v7c as "mixed force + small
+  #   energy at kT = 1 eV", NOT "force-only".
+  #   For a true force-only ablation, use --override_bgfm_lambda_2 0 at
+  #   run_train.py (see notes/EXPERT_AUDIT_2026-06-29.md).
   #
   # kT = 1 eV (NOT 0.025 = room-T): gives F/kT ~ 0.5 mean, 50 max on
   #   OMol25 forces. Room-T kT would give F/kT ~ 2000 max, destabilizing
-  #   MSE. Physical Boltzmann interpretation recovered via lambda_2
-  #   (energy term) which uses variance form that is kT-scale-invariant.
-  # lambda_1 = 0.1: conservative; scales up if training stable.
-  # lambda_2 disabled in v1 (energy loss needs divergence integral,
-  #   deferred to Week 3/4 after force-only stability confirmed).
+  #   MSE.
+  # lambda_1 = 0.05: conservative force-score weight.
   bgfm:
     enabled: true
     lambda_1: 0.05
     force_loss_type: cosine
-    lambda_2: 0.001
+    lambda_2: 0.001             # mixed force + small energy (NOT pure force-only)
                                 # mini smoke showed L_energy ~ 559 at init;
                                 # 0.003 * 559 ~ 1.7 puts it at ~FM-loss scale
                                 # (informs without dominating).

@@ -214,7 +214,8 @@ mol_fm:
     # v8 uses new precomputed shards with sigmas {0.03,0.06,0.10,0.20,0.40}
     # narrower lower bound matches room-T thermal fluctuations
     energy_perturbation_shards:
-      - /n/netscratch/ryl_lab/Lab/yulili_cfm_mol/omol25_4m_processed/perturbation_val_n10000_s0.pt
+      # val shard excluded from training to avoid leakage (audit 2026-06-29)
+      #       - /n/netscratch/ryl_lab/Lab/yulili_cfm_mol/omol25_4m_processed/perturbation_val_n10000_s0.pt
       - /n/netscratch/ryl_lab/Lab/yulili_cfm_mol/omol25_4m_processed/perturbation_train_n30000_s0.pt
     energy_b_parents: 1         # v5: drop to 1 to fit h=4
                                 # (was 4; reduced for memory headroom — OOMs at 4 even on A100-80GB)

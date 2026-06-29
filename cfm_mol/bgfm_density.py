@@ -1,13 +1,13 @@
 """BGFM energy-consistency: log-density via flow change-of-variables.
 
-This module implements the *second* BGFM loss term (lambda_2 * L_energy),
-which is what makes the "Boltzmann" in Boltzmann-Guided Flow Matching real:
-force consistency alone (lambda_1) only enforces the local gradient
-condition score = F/kT; the energy term enforces the global shape
-log p_theta(x) = -E(x)/kT + const, i.e., the Boltzmann distribution.
+This module implements the *second* BGFM loss term (lambda_2 * L_energy).
+It estimates a **position-only** FFJORD density for coordinates r,
+conditioned on fixed molecular identity/composition c.  The loss enforces
+local relative Boltzmann consistency within perturbations of the same parent
+molecule; it is not an exact global molecular Boltzmann sampler.
 
 Density of a data point under the learned position flow (conditioned on
-fixed atom types/charges, since E(x) = E(positions | atoms)):
+fixed atom types/charges, since E(r,c) = E(positions | atoms)):
 
     log p_theta(x_1) = log p_0(x_0) - integral_0^1 div(v_theta^x)(x_t, t) dt,
         where x_0 = phi_1^{-1}(x_1)  (reverse-time ODE from data to prior).
@@ -351,11 +351,10 @@ def energy_anchor_loss(
     """L_anchor = mean_m ((log p_theta(x_{m,k}) + E(x_{m,k}) / kT + log Z_pred(m))^2).
 
     The mathematical complement to L_energy_per_mol: where the variance form
-    only fixes the SHAPE of log p(x|m) up to a per-molecule constant, the
-    anchor form pins the absolute level via a learnable predictor of log Z_m
-    from invariant features. Together they prevent the trivial-constant
-    failure mode of the variance loss (model satisfies Var by predicting
-    constant log p per parent).
+    only fixes relative probabilities up to a per-molecule additive constant,
+    the anchor form stabilizes that offset via a small invariant composition
+    head.  The head is not supervised by true thermodynamic log Z and should
+    not be interpreted as a guaranteed partition-function estimator.
 
     Args:
         log_p:       (M*K,) log-density at each virtual molecule (from

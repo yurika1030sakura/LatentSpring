@@ -199,8 +199,8 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
     # implicit gradient-descent step on the OMol25 potential. The flow then
     # learns to map prior samples to force-corrected (lower-energy) targets
     # rather than raw data. The induced density at t=1 is provably closer
-    # to Boltzmann than the raw-data distribution, with no auxiliary losses,
-    # no FFJORD integration, no score-from-velocity singularity. Set
+    # to a lower-energy local target. Treat this as a heuristic augmentation
+    # / ablation rather than a formal Boltzmann guarantee. Set
     # `force_correction_alpha = 0` to disable (default).
     #
     # Mathematical view: targeting (x_1 + alpha*F) is exactly one Euler
@@ -467,7 +467,7 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
             from cfm_mol.log_z_predictor import LogZPredictor
             log_z_pred = LogZPredictor(
                 n_atom_types=n_atom_types, hidden_dim=log_z_hidden,
-            ).to("cuda")
+            ).to(next(model.parameters()).device)
             # Make it part of the lightning module so its parameters get
             # included in the optimizer + checkpointed alongside the main model.
             # Lightning Module + nn.Module sub-attribute auto-registers params.
@@ -476,17 +476,19 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
             print(f"[bgfm] LogZPredictor enabled (lambda_3={lambda_3}, "
                   f"hidden={log_z_hidden}, params={n_params})")
 
-        if kT_conditioning:
-            from cfm_mol.kt_conditioning import patch_kT_conditioning
-            # n_hidden_scalars must match the vector_field's scalar embedding dim.
-            # Read it from the model config (vector_field block).
-            n_hidden_scalars = int(getattr(model.vector_field, 'n_hidden_scalars', 256))
-            patch_kT_conditioning(model.vector_field, n_hidden_scalars)
-            model._bgfm_kT_conditioning = True
-            model._bgfm_kT_min = kT_min
-            model._bgfm_kT_max = kT_max
-            print(f"[bgfm] kT-conditional training: sample kT log-uniform in "
-                  f"[{kT_min}, {kT_max}] eV per step")
+
+    # kT conditioning is independent of the energy-density term: force-only
+    # T-conditional ablations still need the vector field to accept kT.
+    if kT_conditioning:
+        from cfm_mol.kt_conditioning import patch_kT_conditioning
+        n_hidden_scalars = int(getattr(model.vector_field, 'n_hidden_scalars', 256))
+        patch_kT_conditioning(model.vector_field, n_hidden_scalars)
+        model._bgfm_kT_conditioning = True
+        model._bgfm_kT_min = kT_min
+        model._bgfm_kT_max = kT_max
+        print(f"[bgfm] kT-conditional training: sample kT log-uniform in "
+              f"[{kT_min}, {kT_max}] eV per step")
+
 
     print(f"[bgfm] BGFM hook installed: lambda_1={lambda_1}, lambda_2={lambda_2}, "
           f"kT={kT} eV, force_loss_type={force_loss_type}, "

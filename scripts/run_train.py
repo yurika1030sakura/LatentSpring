@@ -242,6 +242,14 @@ def parse_args():
                    help='Override cfg.training.trainer_args.max_epochs.')
     p.add_argument('--override_bgfm_lambda_1', type=float, default=None,
                    help='Override bgfm.lambda_1.')
+    p.add_argument('--override_bgfm_lambda_2', type=float, default=None,
+                   help='Override bgfm.lambda_2 for energy-density ablations.')
+    p.add_argument('--override_bgfm_lambda_3', type=float, default=None,
+                   help='Override bgfm.lambda_3 for anchor ablations.')
+    p.add_argument('--override_bgfm_kT', type=float, default=None,
+                   help='Override bgfm.kT in eV.')
+    p.add_argument('--override_bgfm_energy_every_k_steps', type=int, default=None,
+                   help='Override bgfm.energy_every_k_steps.')
     p.add_argument('--override_bgfm_force_loss_type',
                    choices=['mse', 'cosine', 'norm_mse'], default=None,
                    help='Override bgfm.force_loss_type.')
@@ -278,6 +286,14 @@ def main():
     if bgfm_cfg is not None:
         if args.override_bgfm_lambda_1 is not None:
             bgfm_cfg['lambda_1'] = float(args.override_bgfm_lambda_1)
+        if args.override_bgfm_lambda_2 is not None:
+            bgfm_cfg['lambda_2'] = float(args.override_bgfm_lambda_2)
+        if args.override_bgfm_lambda_3 is not None:
+            bgfm_cfg['lambda_3'] = float(args.override_bgfm_lambda_3)
+        if args.override_bgfm_kT is not None:
+            bgfm_cfg['kT'] = float(args.override_bgfm_kT)
+        if args.override_bgfm_energy_every_k_steps is not None:
+            bgfm_cfg['energy_every_k_steps'] = int(args.override_bgfm_energy_every_k_steps)
         if args.override_bgfm_force_loss_type is not None:
             bgfm_cfg['force_loss_type'] = args.override_bgfm_force_loss_type
         if args.override_bgfm_force_target_mode is not None:

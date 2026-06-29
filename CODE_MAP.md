@@ -150,7 +150,7 @@ bgfm/
 |---|---|---|
 | Entry point | `scripts/run_train.py` | top-level |
 | H200 launcher | `scripts/launch_omol25_bgfm_energy_h200.sh` | top-level |
-| Top-level loss assembly per step | `cfm_mol/bgfm_loss.py` | `compute_bgfm_step:453` |
+| Top-level BGFM training integration | `cfm_mol/bgfm_train_hook.py` | `bgfm_training_step` + `patch_flowmol_bgfm` (`cfm_mol/bgfm_loss.py:compute_bgfm_step` is a stub — real assembly lives in the train hook) |
 
 ---
 
@@ -268,7 +268,7 @@ math is implemented correctly:
 
 | Paper claim | Config | Run dir | Ckpt step | Note |
 |---|---|---|---|---|
-| $R^2 = 0.278$ (force-only, current) | `omol25_4m_bgfm_energy_v7c_from_fm.yaml` | `runs/omol25_4m_bgfm_energy_v7c_from_fm/lightning_logs/version_19207322/` | 50000 | Baseline-of-novelty |
+| $R^2 = 0.278$ (mixed force + small energy, $kT=1$ eV) | `omol25_4m_bgfm_energy_v7c_from_fm.yaml` | `runs/omol25_4m_bgfm_energy_v7c_from_fm/lightning_logs/version_19207322/` | 50000 | $\lambda_1=0.05$, $\lambda_2=0.001$, $\lambda_3=0$. **Not pure force-only** — see config header note. |
 | $R^2 = $ [v8 pending] | `omol25_4m_bgfm_energy_v8a_room_T.yaml` | `runs/omol25_4m_bgfm_energy_v8a_room_T/lightning_logs/version_2014691{6,7,8}/` | 95000 (NaN at 100k) | Best 3 seeds; pending eval |
 | T-conditional [v8 pending] | `omol25_4m_bgfm_energy_v8b_T_conditional.yaml` | `runs/omol25_4m_bgfm_energy_v8b_T_conditional/lightning_logs/version_20147027/` | 95000 (NaN at 98k) | Best variant |
 | Energy-only ablation [pending] | `omol25_4m_bgfm_energy_v8c_energy_only.yaml` | `runs/omol25_4m_bgfm_energy_v8c_energy_only/lightning_logs/version_20147028/` | 55000 (NaN at 57k) | Force off |

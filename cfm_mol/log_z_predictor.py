@@ -1,10 +1,10 @@
-"""Per-molecule log-Z auxiliary head for the BGFM anchor loss.
+"""Composition-conditioned offset head for the BGFM anchor loss.
 
-Predicts the per-molecule normalization constant log Z_m from INVARIANT
-features only (atom-type counts, total charge, n_atoms). Deliberately
-under-parameterized so it cannot trivially absorb arbitrary per-molecule
-offsets -- this is what breaks the trivial-constant failure mode of the
-variance-only L_energy.
+Predicts a per-molecule scalar offset b_phi(c) from INVARIANT features only
+(atom-type counts, total charge, n_atoms).  It is not supervised by true
+thermodynamic log Z and should not be interpreted as a guaranteed partition-
+function estimator.  It stabilizes the additive offset left unconstrained by
+the within-parent variance loss.
 
 Architecture (~few k params, vs ~6M in the main flow model):
   per_atom_contrib  = per-element scalar embedding (n_atom_types -> 1)
@@ -53,7 +53,7 @@ class LogZPredictor(nn.Module):
         node_batch_idx: torch.Tensor,
         atom_charges_raw: torch.Tensor | None = None,
     ) -> torch.Tensor:
-        """Return (B,) log Z prediction per graph.
+        """Return (B,) composition-offset prediction per graph.
 
         Args:
             atom_type_idx: (N_total,) int atom-type indices (0..n_atom_types-1)
