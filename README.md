@@ -188,22 +188,62 @@ with warm-up + ramp schedule on `λ₁, λ₂, λ₃`.
 
 ---
 
+## Evaluation strategy (post-2026-06-29 audit)
+
+The Boltzmann-correlation metric originally used as the headline result
+(per-mol $R^2$ of $\log p_\theta$ vs.\ $-E_{\rm OMol25}/kT$) is
+informative but **too close to the training objective** to serve as the
+main claim. A reviewer can reasonably argue that any model trained
+against OMol25 force/energy will improve on an OMol25 metric. The
+evaluation has therefore been restructured into seven tiers — Tier 0 is
+a mechanism check; Tiers 1–6 are the basis for claims:
+
+| Tier | Question it answers | Evaluator |
+|---|---|---|
+| **0 — mechanism check** | Did BGFM optimize what its loss specifies? | OMol25 log p vs. energy (per-mol R²) — *NOT the headline* |
+| **1 — QM9 (EBMol protocol)** | Do we match EBMol on standard generation metrics? | atom/mol stability, validity, uniqueness, novelty at matched NFE |
+| **2 — GEOM-Drugs (EBMol protocol)** | Same on the drug-like benchmark | atom/mol stability, validity, Vendi diversity, NFE ∈ {1080, 1960, 3720, 7240} |
+| **3 — Independent physical oracle** | Is the geometry actually physical? | **GFN2-xTB** + MMFF + small DFT subset (none in training loss) |
+| **4 — Downstream BFGS** | Are samples cheap to relax for a QC pipeline? | OMol25 BFGS step count (use with care since OMol25 is also the training oracle) |
+| **5 — Cross-model ranking** | Can our scorer rank other generators' samples? | $S(x) = \log p_\theta - \beta E - a_\phi(c)$ vs. xTB $\Delta E$, pooled across EDM/FlowMol3/EBMol/BGFM |
+| **6 — Negative controls** | Did the loss actually drive the lift? | shuffled-energy, shuffled-force, wrong-kT, wrong-parent controls — should NOT lift Tier 3 |
+
+Scripts:
+- Tier 0: `scripts/eval_boltzmann_stage1.py` + `scripts/eval_boltzmann_stage2.py`
+- Tier 1: `scripts/eval_qm9_ebmol_protocol.py` *(scaffolded)*
+- Tier 2: `scripts/eval_geomdrugs_ebmol_protocol.py` *(scaffolded)*
+- Tier 3: `scripts/eval_xtb_relaxation.py` *(scaffolded)*
+- Tier 4: `scripts/level2_relax_comparison.py`
+- Tier 5: `scripts/eval_cross_model_ranking.py` *(scaffolded)*
+- Tier 6: `scripts/eval_negative_controls.py` *(scaffolded)*
+
+Full roadmap:
+[`notes/EBMOL_BENCHMARK_PLAN_2026-06-29_CN.md`](notes/EBMOL_BENCHMARK_PLAN_2026-06-29_CN.md).
+
 ## Current results (verified 2026-06-29)
 
-| Variant | Step | R² (Level 1, all val) | Note |
+| Variant | Step | Tier 0 R² (mechanism check) | Note |
 |---|---|---|---|
 | FM baseline | 50k | 0.091 | flow-matching only |
-| BGFM v7c (force-only + small energy) | 50k | **0.278** | 3.0× over FM baseline |
+| BGFM v7c (mixed force + small energy, kT=1 eV) | 50k | **0.278** | 3.0× over FM baseline — mechanism-level only |
 | BGFM v8a (full BGFM @ 300 K) | step ≥ 95k (NaN at ~98k) | **[pending re-eval]** | bug-fixed eval running |
 | BGFM v8b (T-conditional) | step 95k | **[pending re-eval]** | best variant pre-NaN |
 | BGFM v8c (energy + anchor only) | step 55k | **[pending re-eval]** | ablation: no force loss |
 
+**Tier 1–6 are the main results.** They are pending — they require
+sampling against EBMol checkpoints (Tiers 1–2), running GFN2-xTB on
+~10k generated molecules (Tier 3), and pooling samples across EDM /
+FlowMol3 / EBMol / BGFM (Tier 5).
+
 **Note on R² numbers reported before 2026-06-29:** prior Stage-1 eval
 hardcoded `charge = 0` and `spin = 1` for every record, which is wrong
 for ~44% of OMol25 val molecules. The fix landed 2026-06-29
-(`scripts/eval_boltzmann_stage1.py`); all reported numbers above will be
-updated as the re-evaluation completes. See
-`notes/EXPERT_AUDIT_2026-06-29.md` for the full audit.
+(`scripts/eval_boltzmann_stage1.py`); the v7c row above will be
+re-measured under the fix. See
+[`notes/EXPERT_AUDIT_2026-06-29.md`](notes/EXPERT_AUDIT_2026-06-29.md)
+for the full audit and
+[`notes/EBMOL_BENCHMARK_PLAN_2026-06-29_CN.md`](notes/EBMOL_BENCHMARK_PLAN_2026-06-29_CN.md)
+for the post-audit evaluation roadmap.
 
 ---
 

@@ -168,24 +168,68 @@ bgfm/
 | BGFM-T-cond v8b config | `configs/omol25_4m_bgfm_energy_v8b_T_conditional.yaml` |
 | BGFM-energy-only v8c config | `configs/omol25_4m_bgfm_energy_v8c_energy_only.yaml` |
 
-### §4.2 Level 1 — Boltzmann correlation $R^2$
+### §4.2 Tier 0 — Boltzmann correlation $R^2$ (mechanism check only)
+
+This is the OMol25 self-consistency metric. It is reported but **not the
+headline**: it is too close to the training objective to make a Boltzmann
+claim on its own. Demoted to mechanism verification per the 2026-06-29
+audit. See `notes/EBMOL_BENCHMARK_PLAN_2026-06-29_CN.md`.
 
 | Paper element | Code | Line |
 |---|---|---|
 | Per-molecule FFJORD log p eval | `scripts/eval_boltzmann_stage1.py` | `main:56` |
 | Sample perturbations + OMol25 E | `scripts/eval_boltzmann_stage1.py` | inside molecule loop |
 | Per-mol OOM catch (added 2026-06) | `scripts/eval_boltzmann_stage1.py` | try/except around `log_density_via_flow` |
+| Charge fix + T-conditional support | `scripts/eval_boltzmann_stage1.py` | `mol_charge`, `--kT`, kT projection install |
 | $R^2$ aggregation | `scripts/eval_boltzmann_stage2.py` | top-level |
 | SLURM eval launcher | `scripts/run_boltzmann_eval.slurm` | entire file |
 
-### §4.3 Level 2 — Downstream BFGS relaxation cost
+### §4.3 Tier 1 — QM9 (EBMol protocol)
+
+| Paper element | Code |
+|---|---|
+| 10k QM9 generation + standard metrics | `scripts/eval_qm9_ebmol_protocol.py` *(scaffolded)* |
+| NFE budgets {930, 1370, 1810} | CLI `--nfe` |
+
+### §4.4 Tier 2 — GEOM-Drugs (EBMol protocol)
+
+| Paper element | Code |
+|---|---|
+| 10k GEOM-Drugs generation + Vendi diversity | `scripts/eval_geomdrugs_ebmol_protocol.py` *(scaffolded)* |
+| NFE budgets {1080, 1960, 3720, 7240} | CLI `--nfe` |
+
+### §4.5 Tier 3 — Independent physical oracle (GFN2-xTB)
+
+| Paper element | Code |
+|---|---|
+| xTB relaxation $\Delta E$, RMSD, step count, failure rate | `scripts/eval_xtb_relaxation.py` *(scaffolded)* |
+| Pre-relax sample input | output of Tier 1 / Tier 2 scripts |
+
+### §4.6 Tier 4 — Downstream BFGS relaxation cost (OMol25)
 
 | Paper element | Code |
 |---|---|
 | Sample from BGFM, then BFGS-relax via OMol25 | `scripts/level2_relax_comparison.py` |
 | SLURM launcher | `scripts/run_level2_relax.slurm` |
 
-### §4.4 Level 3 — MD-equivalent sampling efficiency
+Reported alongside Tier 3 because OMol25 is also the training oracle.
+
+### §4.7 Tier 5 — Cross-model energy ranking
+
+| Paper element | Code |
+|---|---|
+| Pooled-sample scorer $S(x)$ vs xTB $\Delta E$ | `scripts/eval_cross_model_ranking.py` *(scaffolded)* |
+| Required inputs: per-model samples + per-model xTB CSVs | output of Tier 3 across {EDM, FlowMol3, EBMol, BGFM} |
+
+### §4.8 Tier 6 — Ablations and negative controls
+
+| Paper element | Code |
+|---|---|
+| Shuffled-energy / shuffled-force / wrong-kT shards | `scripts/eval_negative_controls.py` *(scaffolded)* |
+| Architecture ablations | `scripts/run_train.py` with `--override_bgfm_lambda_{1,2,3}` |
+| Held-out perturbation types | future shards via `scripts/precompute_energy_perturbations.py` |
+
+### §4.9 Optional MD-equivalent sampling efficiency (legacy Level 3)
 
 | Paper element | Code |
 |---|---|
