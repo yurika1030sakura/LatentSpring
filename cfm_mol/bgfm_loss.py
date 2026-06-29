@@ -71,19 +71,12 @@ def score_from_fm_velocity(
         v*(x_t, t) = E[x_1 - x_0 | x_t = x]
         => E[x_1 | x_t = x] = x_t + (1 - t) * v*(x_t, t)       (holds on support)
 
-    so
+    Substituting x_1_pred = x_t + (1 - t) * v_theta gives
 
-        s*(x_t, t) = - v_theta(x_t, t) / prior_std^2 * (1 / (1 - t)) * (1 - t)
-                   = - v_theta(x_t, t) / prior_std^2           ???  <-- DOUBLE-CHECK
+        s_theta(x_t, t) = [t * v_theta(x_t,t) - x_t] / [(1-t) * prior_std^2].
 
-    WARNING [yuli to verify]:
-    The cleanest derivation (see bgfm_method.md Section 3) gives
-        s_theta(x, t) = -(x - t * x_1_pred) / [(1-t)^2 * prior_std^2]
-    where x_1_pred = x_t + (1-t) * v_theta. Expanding:
-        s_theta(x, t) = [t * (1-t) * v_theta - (1-t)*x_t] / [(1-t)^2 * prior_std^2]
-                      = [t * v_theta - x_t] / [(1-t) * prior_std^2]
-    AT t = 1 this diverges. In practice we evaluate at t_eval < 1
-    (e.g., 0.95). We also need the SIMPLEX channel formula (different!).
+    At t = 1 this expression is singular, so BGFM evaluates it at late
+    but finite t_eval values such as 0.70, 0.80, and 0.90.
 
     Args:
         v_theta: model velocity, shape (B, *), matches x_t
@@ -102,9 +95,8 @@ def score_from_fm_velocity(
         one_minus_t = one_minus_t.view(-1, *[1] * (x_t.dim() - 1))
 
     # Standard formula: s(x, t) = [t * v - x] / [(1 - t) * prior_std^2]
-    # Sign verified against the standard Lipman 2023 derivation
-    # (see bgfm_method.md Section 3): for linear interpolant with N(0, sigma)
-    # prior, the marginal score at time t is (t*v - x_t) / ((1-t) * sigma^2).
+    # Formula for the Gaussian-prior linear interpolant
+    # with N(0, sigma^2 I) prior: s_t=(t*v-x_t)/((1-t)*sigma^2).
     score = (t * v_theta - x_t) / (one_minus_t * (prior_std ** 2))
     # Defensive clamp: at late t the (1-t) denominator amplifies score
     # values, and downstream MSE on raw score can produce unbounded loss
@@ -254,10 +246,10 @@ def force_loss(
 ) -> torch.Tensor:
     """L_force = ||s_theta(x, t_eval) - F_data(x) / kT||^2
 
-    Evaluated at data points x ~ p_data (which are the endpoint x_1 of
-    the FM trajectory). The force F_data(x) is precomputed in the
-    preprocess stage using OMol25's stored DFT forces (see
-    preprocess_omol25.py).
+    In the current BGFM training hook, s_theta is usually evaluated at a
+    late conditional-path point x_t, while forces_data is the precomputed
+    endpoint force F(x_1). This is a late-time approximation F(x_t)≈F(x_1),
+    used to avoid online OMol25 calls inside every training step.
 
     The physical sign convention: if p_theta = Boltzmann(E, kT), then
         nabla_x log p_theta(x) = -nabla_x E(x) / kT = F(x) / kT

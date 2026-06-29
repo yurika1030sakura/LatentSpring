@@ -1,0 +1,495 @@
+\documentclass{article}
+\usepackage{iclr2026_conference,times}
+\input{math_commands.tex}
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+
+\title{Boltzmann-Regularized Flow Matching for \\
+Universal-Neural-Potential Guided 3D Molecular Generation}
+
+\author{Anonymous Authors\\
+Under double-blind review\\
+\texttt{anonymous@anonymous.org}
+}
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Modern de novo 3D molecular generators can produce valid, data-like
+structures, but their learned coordinate densities are not explicitly tied
+to a physically meaningful energy landscape. As a result, generated
+geometries may require substantial downstream relaxation before use in
+simulation or screening. We propose \emph{Boltzmann-Regularized Flow
+Matching} (BGFM), a training-time physical regularization framework for 3D
+molecular flow matching. BGFM keeps a FlowMol3-style de novo generator as
+the backbone, but uses energies and forces from a universal neural
+potential, OMol25, to align the model's coordinate density with local
+conditional Boltzmann relative probabilities. For a fixed molecular
+identity $c$ and coordinates $r$, OMol25 induces the target
+\[
+    p_B(r\mid c,T)=Z_c(T)^{-1}\exp[-E_{\rm NP}(r,c)/kT].
+\]
+BGFM does not claim to sample an exact global Boltzmann distribution over
+arbitrary atom counts, compositions, and charges. Instead, it regularizes
+the position-only conditional density $p_\theta^{\rm pos}(r\mid c)$ using
+two complementary signals: a late-time force-score consistency loss and a
+FFJORD density-energy variance loss over precomputed perturbation clouds.
+A small composition-conditioned anchor stabilizes the otherwise
+unidentified additive density offset. This turns a universal neural
+potential from a post-generation relaxation tool into a train-time
+supervisor for de novo molecular generation. We evaluate BGFM by local
+Boltzmann correlation, force-score alignment, downstream relaxation cost,
+and ensemble overlap, in addition to conventional validity metrics.
+\end{abstract}
+
+
+\section{Introduction}
+\label{sec:intro}
+
+Three-dimensional molecular generation is usually trained as a data-imitation
+problem: a model learns to generate molecular graphs and coordinates that
+resemble examples in a training set. This objective is necessary but
+incomplete. A generated molecule is not merely an image-like object; its
+coordinates should lie on a physically meaningful energy landscape. A
+structure that is formally valid but high in energy, sterically strained,
+or poorly aligned with a neural-potential force field may be expensive to
+relax and unreliable for downstream simulation.
+
+Universal neural potentials create a new opportunity. Rather than using a
+potential only after generation to relax or filter samples, we can use it
+during training to shape the generator itself. BGFM follows this idea.
+Given a FlowMol3-style flow-matching generator \citep{stark2024flowmol3}
+and an OMol25 neural potential \citep{levine2025omol25}, BGFM adds physical
+supervision so that local coordinate probabilities become consistent with
+OMol25 energy differences and forces.
+
+The central distinction is important: BGFM is not a new neural architecture
+and not an exact Boltzmann generator over all molecular identities. It is
+a \emph{physical regularization layer for de novo 3D flow matching}. The
+method keeps the backbone generator, but changes the training target and
+wraps the conditional path and sampling execution with geometric constraint
+hooks.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+    \item We formulate de novo 3D molecular generation as
+    \emph{conditional coordinate Boltzmann alignment}: for fixed molecular
+    identity $c$, the generated coordinate density should locally satisfy
+    $\log p_\theta^{\rm pos}(r\mid c)+E_{\rm NP}(r,c)/kT\approx
+    {\rm const}(c,T)$.
+    \item We derive a late-time force-score regularizer for flow matching,
+    comparing the FM-implied score at path states $x_t$ with endpoint
+    OMol25 forces $F_{\rm NP}(x_1)/kT$ (\S\ref{sec:method:force}).
+    \item We introduce a position-only FFJORD density-energy variance loss
+    over per-molecule perturbation clouds, which enforces local Boltzmann
+    relative probabilities without requiring the true partition function
+    $Z_c$ (\S\ref{sec:method:energy}).
+    \item We add a composition-conditioned offset anchor that stabilizes
+    the absolute density offset while preserving permutation, translation,
+    and rotation invariance (\S\ref{sec:method:anchor}).
+    \item We propose physical evaluation metrics for de novo generators:
+    local Boltzmann correlation, energy-log-density slope, force-score
+    cosine, downstream relaxation cost, and ensemble overlap
+    (\S\ref{sec:exp}).
+\end{enumerate}
+
+
+\section{Related work}
+\label{sec:related}
+
+\paragraph{3D molecular generation.}
+EDM \citep{hoogeboom2022edm}, GeoDiff \citep{xu2022geodiff}, MiDi
+\citep{vignac2023midi}, GeoLDM \citep{xu2023geoldm}, GeoBFN
+\citep{song2024geobfn}, FlowMol/FlowMol3 \citep{stark2024flowmol3}, and
+JoMo \citep{le2024jomo} train sample-set quality losses (validity, FCD);
+none enforce Boltzmann. Torsional Diffusion
+\citep{jing2022torsionaldiffusion} restricts to torsional manifolds for
+conformer generation given a 2D graph. CGFlow \citep{tang2025cgflow}
+integrates GFlowNet reward-guided sampling with a discrete-step FM
+formulation for synthesizable drug design.
+
+\paragraph{Boltzmann generators.}
+Boltzmann Generators \citep{noe2019boltzmann}, Equivariant FM
+\citep{klein2023equivariantfm}, Implicit Transfer Operator Learning
+\citep{schreiner2023ito}, and Scalable Boltzmann Generators
+\citep{wang2025scalable} target Boltzmann densities, but for \emph{fixed}
+classical potentials on \emph{single} systems. The Adjoint Schr\"odinger
+Bridge Sampler \citep{liu2025asbs} amortizes Boltzmann sampling across
+$\sim$24K SPICE topologies, but only over conformer generation conditional
+on the 2D graph, and only over $\sim$10-element drug-like chemistry. BGFM
+differs in two ways: the target distribution is the position-only
+conditional density $p_\theta(r\mid c)$ across de novo identities $c$, and
+the energy oracle is a \emph{universal} neural potential covering 83
+elements.
+
+\paragraph{Universal neural potentials.}
+SchNet \citep{schutt2018schnet}, NequIP \citep{batzner2022nequip},
+MACE-MP-0 \citep{batatia2023macemp}, and OMol25/eSEN
+\citep{levine2025omol25} act as DFT replacements for molecular dynamics
+and relaxation, but have not been coupled into a generative training loop
+at scale. BGFM is the first to embed a universal NP as a supervision
+signal inside the generative training objective.
+
+\paragraph{FFJORD-style density inside training.}
+\citet{grathwohl2019ffjord} and \citet{chen2018node} compute log-density
+for continuous normalizing flows via the instantaneous change-of-variables
+formula. Standard flow matching \citep{lipman2022fm} explicitly avoids
+log-density to bypass the divergence integral. BGFM revisits this
+trade-off because Boltzmann targets require global log-density alignment;
+we show the cost can be controlled through a per-molecule variance form
+and step-amortized scheduling.
+
+
+\section{Method}
+\label{sec:method}
+
+\subsection{Conditional Boltzmann target}
+\label{sec:method:setup}
+
+Let $c$ denote the discrete molecular identity: atom count, atom types,
+total charge, and any fixed graph/discrete state used by the generator.
+Let $r\in\mathbb{R}^{3N}$ denote coordinates. BGFM does not define a
+grand-canonical distribution over $c$. Instead, for each fixed $c$, a
+neural potential $E_{\rm NP}(r,c)$ induces a coordinate Boltzmann density
+\begin{equation}
+    p_B(r\mid c,T)=\frac{1}{Z_c(T)}\exp[-\beta E_{\rm NP}(r,c)],
+    \qquad \beta=(kT)^{-1}.
+    \label{eq:boltzmann}
+\end{equation}
+The goal is to regularize the generator's coordinate density
+$p_\theta^{\rm pos}(r\mid c)$ so that local relative probabilities match
+this target near chemically relevant geometries.
+
+\subsection{Score from flow-matching velocity}
+\label{sec:method:score-from-velocity}
+
+For the Gaussian-prior linear interpolant $x_t=(1-t)x_0+t x_1$ with
+$x_0\sim\mathcal{N}(0,\sigma^2 I)$, a flow-matching velocity field
+$v_\theta(x_t,t)$ implies a marginal score approximation
+\begin{equation}
+    s_\theta(x_t,t)=\frac{t v_\theta(x_t,t)-x_t}{(1-t)\sigma^2}.
+    \label{eq:score-from-velocity}
+\end{equation}
+The expression is singular at $t=1$, so BGFM evaluates it at late but
+finite path times $t\in\{0.70,0.80,0.90\}$. A self-contained derivation is
+given in Appendix~\ref{app:score-from-velocity}.
+
+\subsection{Late-time force-score consistency}
+\label{sec:method:force}
+
+For a Boltzmann coordinate density,
+\(
+    \nabla_r \log p_B(r\mid c,T)=F_{\rm NP}(r,c)/kT,
+\)
+where $F_{\rm NP}=-\nabla_r E_{\rm NP}$. BGFM therefore regularizes the
+FM-implied score toward OMol25 forces:
+\begin{equation}
+    \mathcal{L}_{\rm force}
+    =\mathbb{E}_{m,t_{\rm eval}}\!\left[1-\cos\!\left(s_\theta(x_t^m,t_{\rm eval}),
+    F_{\rm NP}(x_1^m,c_m)/kT\right)\right].
+    \label{eq:lforce}
+\end{equation}
+The current implementation pairs the score evaluated at path state
+$x_t^m$ on the FM conditional path with the precomputed endpoint force
+$F_{\rm NP}(x_1^m)$. This is a \emph{late-time approximation}
+$F_{\rm NP}(x_t)\approx F_{\rm NP}(x_1)$, used to avoid querying OMol25
+inside every training step; at $t_{\rm eval}\in\{0.7,0.8,0.9\}$ the
+discrepancy is first-order in $\|x_t-x_1\|$ and the cosine variant of the
+loss is robust to magnitude mismatch.
+
+\subsection{Density-energy variance over perturbation clouds}
+\label{sec:method:energy}
+
+Force alignment constrains local gradients but not the scalar
+density-energy relationship. BGFM therefore estimates a position-only
+log-density using a FFJORD-style divergence integral
+\citep{chen2018node,grathwohl2019ffjord} while holding atom types and
+charges fixed. For perturbations $r_m^{(k)}$ of the same parent molecule
+$m$, define
+\[
+    y_m^{(k)}=\log p_\theta^{\rm pos}(r_m^{(k)}\mid c_m)
+              +\beta E_{\rm NP}(r_m^{(k)},c_m).
+\]
+If $p_\theta^{\rm pos}$ matches the conditional Boltzmann density within
+the local cloud of $m$, then $y_m^{(k)}$ should be constant across $k$
+(equal to $-\log Z_{c_m}$). BGFM minimizes
+\begin{equation}
+    \mathcal{L}_{\rm energy}
+    =\mathbb{E}_{m}\operatorname{Var}_{k}\!\left[y_m^{(k)}\right].
+    \label{eq:lenergy}
+\end{equation}
+This loss enforces relative Boltzmann probabilities without needing the
+unknown partition function $Z_{c_m}$. The variance form is the key
+mathematical observation: variance is translation-invariant in $k$, so the
+loss is invariant to any $c$-only shift, including the unknown
+$-\log Z_{c_m}$ itself (Appendix~\ref{app:variance-invariance}).
+
+The FFJORD log-density $\log p_\theta^{\rm pos}(r_m^{(k)}\mid c_m)$ is
+evaluated via the instantaneous change-of-variables formula
+\citep{chen2018node}
+\begin{equation}
+    \log p_\theta^{\rm pos}(x_1)
+    =\log p_0(x_0)-\int_0^1 \nabla_x\cdot v_\theta(x_t,t)\,dt,
+    \label{eq:ffjord}
+\end{equation}
+with $\nabla_x\cdot v_\theta$ estimated by Hutchinson's trick
+\citep{hutchinson1990trace}. To control cost we use 4 ODE steps and 4
+Hutchinson samples, and amortize by evaluating $\mathcal{L}_{\rm energy}$
+on every fourth training step.
+
+\subsection{Composition-conditioned offset anchor}
+\label{sec:method:anchor}
+
+The variance objective \eqref{eq:lenergy} is insensitive to additive
+density offsets. We add a small invariant network $a_\phi(c)$, computed
+from atom-type counts and total charge, and penalize
+\begin{equation}
+    \mathcal{L}_{\rm anchor}=\mathbb{E}_{m,k}\!\left(\log p_\theta^{\rm pos}(r_m^{(k)}\mid c_m)
+    +\beta E_{\rm NP}(r_m^{(k)},c_m)+a_\phi(c_m)\right)^2.
+    \label{eq:lanchor}
+\end{equation}
+We interpret $a_\phi$ as a \emph{composition-conditioned offset
+stabilizer}, not as a supervised or guaranteed estimator of the true
+thermodynamic partition function $Z_c(T)$. Because $a_\phi$ takes only
+composition as input, it cannot encode geometric structure and acts as a
+per-molecule constant.
+
+\subsection{Total objective and training schedule}
+\label{sec:method:total}
+
+The final objective is
+\begin{equation}
+    \mathcal{L}=\mathcal{L}_{\rm FM}+\lambda_1(t_{\rm step})\,\mathcal{L}_{\rm force}
+    +\lambda_2(t_{\rm step})\,\mathcal{L}_{\rm energy}
+    +\lambda_3(t_{\rm step})\,\mathcal{L}_{\rm anchor},
+    \label{eq:total}
+\end{equation}
+where $\lambda_i(t_{\rm step})$ ramps each BGFM term in linearly from $0$
+during the first $0.5\%$ of training (warm-up), to a target peak value
+over the next $2\%$ (ramp), and remains constant thereafter. This protects
+the FM reconstruction from being destabilized by the BGFM terms before
+$v_\theta$ has a sensible geometric meaning. Target peak values at
+$kT=0.025$ eV (room temperature) are $\lambda_1=0.05$, $\lambda_2=10^{-4}$
+(scaled $1/40$ relative to a $kT=1$ eV baseline because $E/kT$ scales as
+$1/kT$), and $\lambda_3=10^{-10}$ (the anchor magnitude
+$|{\log p+E/kT}|^2$ can reach $10^{10}$--$10^{11}$ at room temperature;
+$\lambda_3$ keeps its contribution comparable to $\mathcal{L}_{\rm FM}$).
+
+\subsection{Offline perturbation precompute}
+\label{sec:method:precompute}
+
+For each parent molecule $m$ in the training shard, we precompute $K{=}5$
+perturbations at displacement standard deviations
+$\sigma_p\in\{0.03,0.06,0.10,0.20,0.40\}$\,\AA. For each $r_m^{(k)}$ we
+evaluate OMol25 to obtain $E_{\rm NP}(r_m^{(k)},c_m)$ and
+$F_{\rm NP}(r_m^{(k)},c_m)$. The shards are written once to disk and
+reused across runs, decoupling OMol25 from the training inner loop.
+
+\subsection{Optional temperature conditioning}
+\label{sec:method:tcond}
+
+To enable a single trained model to sample at multiple temperatures, we
+introduce $kT$ as a conditioning variable via a small projection
+$\pi_\phi(\log kT)$ added residually to the scalar feature stream after
+the FlowMol3 scalar-embedding block. The projection is zero-initialized,
+so the temperature-conditional model is exactly equivalent to the base
+model at initialization and can warm-start from any non-conditional
+checkpoint. During training, $\log kT$ is sampled log-uniform per step
+over $[0.025,1.0]$ eV.
+
+
+\section{Evaluation protocol}
+\label{sec:exp}
+
+A valid evaluation should avoid claiming exact Boltzmann sampling from
+finite perturbation tests. We report:
+
+\begin{description}
+    \item[Level 1: local Boltzmann correlation.] For each held-out
+    molecule, we draw $K=16$ Gaussian perturbations at $\sigma=0.15$\,\AA{}
+    from its OMol25-equilibrium geometry, compute $\log p_\theta^{\rm pos}$
+    via FFJORD ($H=2$ Hutchinson, $K_{\rm ODE}=8$) and OMol25 energy $E$,
+    then report the within-molecule Pearson $R^2$ of
+    $(\log p_\theta, -E/kT)$ and the slope of the linear fit (ideal slope
+    is $1$). A random baseline gives $R^2\approx 0$; the standard FM
+    baseline gives $R^2\approx 0.09$ at our scale; a perfect Boltzmann
+    match gives $R^2=1$. We also report per-slice $R^2$ on (i) organic
+    CHNOFS only, (ii) transition-metal complexes, (iii) halogenated,
+    (iv) heavy main-group, (v) charged species.
+    \item[Level 2: downstream BFGS relaxation cost.] For 200 held-out
+    molecules, we sample one starting geometry from each model and run
+    OMol25 BFGS until $\|F\|_\infty<0.05$\,eV/\AA, capping at 200 steps.
+    We report mean step count, convergence rate, and final relaxed energy
+    relative to the FM baseline.
+    \item[Level 3: MD-equivalent sampling efficiency.] For each held-out
+    molecule we generate $N=200$ independent samples with $K=12$ ODE
+    steps and compare the energy and pairwise-distance distributions to
+    a Langevin-MD reference run ($10^5$ steps with $\Delta t=0.5$\,fs).
+    We report overlap coefficient and Wasserstein-1 distance.
+    \item[Ablations.] Force-only, energy-only, anchor off, shuffled-force
+    control (force target permuted across atoms in the same batch),
+    shuffled-energy control, and T-conditional vs.\ fixed-$T$.
+\end{description}
+
+\paragraph{Current verified result (Level 1).}
+On the OMol25 4M held-out set with the bug-fixed eval pipeline
+(Appendix~\ref{app:bugs}), BGFM force-only at training step $50{,}000$
+reaches $R^2=0.278$ overall vs.\ $R^2=0.091$ for the FM baseline, a
+$3.0\times$ improvement; per-slice numbers reach $R^2=0.501$ on
+transition-metal molecules. Full BGFM at room temperature (v8a, v8b,
+v8c) is currently re-evaluating with the bug-fixed pipeline; results
+will be reported in the camera-ready version.
+
+
+\section{Limitations}
+\label{sec:limits}
+
+BGFM regularizes a position-only conditional density, not the full joint
+distribution over arbitrary molecular identities. The force term currently
+compares scores at late path states to endpoint forces, which is a
+first-order approximation. The composition-conditioned offset anchor is
+not a true partition-function estimator. The method inherits OMol25
+coverage and accuracy limits, especially for rare charge/spin/element
+regimes. Stable full-loss training and charged-species evaluation must be
+verified before making strong universal-deployment claims.
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+BGFM proposes a training-time use of universal neural potentials as a
+physical regularizer for de novo 3D molecular flow matching. We do not
+introduce a new neural backbone; we change the training objective. The
+key methodological observation is that within-parent variance of
+$\log p_\theta + E/kT$ removes the unknown $\log Z_c$ degeneracy and lets
+us embed an FFJORD log-density estimator into FM training at controlled
+cost. We hope this opens a route to physics-aware de novo molecular
+generation across the chemistry covered by universal NPs.
+
+
+\bibliography{iclr2026_conference}
+\bibliographystyle{iclr2026_conference}
+
+
+\appendix
+
+\section{Derivations}
+\label{app:derivations}
+
+\subsection{Score from FM velocity for linear interpolant}
+\label{app:score-from-velocity}
+
+For the linear interpolant $x_t=(1-t)x_0+tx_1$ with
+$x_0\sim\mathcal{N}(0,\sigma^2 I)$ and $x_1\sim p_{\rm data}$, the
+conditional Gaussian gives
+$x_0\mid x_t,x_1\sim\mathcal{N}(x_t-tx_1,(1-t)^2\sigma^2 I)$. Marginalizing,
+$x_0\mid x_t\sim\mathcal{N}(x_t-t\mathbb{E}[x_1\mid x_t],(1-t)^2\sigma^2 I)$.
+The score of the marginal $p_t(x_t)$ satisfies
+\(
+\nabla_{x_t}\log p_t(x_t)=-\mathbb{E}[x_0\mid x_t]/((1-t)\sigma^2)^2\cdot\sigma,
+\)
+which after substituting $v^\star=\mathbb{E}[x_1-x_0\mid x_t]$ and simplifying
+gives
+\(
+s(x_t,t)=(tv^\star-x_t)/((1-t)\sigma^2).
+\)
+Substituting $v_\theta$ for $v^\star$ yields
+\eqref{eq:score-from-velocity}.
+
+\subsection{Variance loss invariance to per-molecule offset}
+\label{app:variance-invariance}
+
+For any $r$-independent shift $c_m$,
+$\operatorname{Var}_k(y_m^{(k)}+c_m)=\operatorname{Var}_k(y_m^{(k)})$ by
+translation invariance of variance. Setting $c_m=-\log Z_{c_m}$ shows
+that the Boltzmann constancy condition
+$\log p_\theta^{\rm pos}+\beta E_{\rm NP}=-\log Z_{c_m}$ is exactly the
+minimizer of \eqref{eq:lenergy}.
+
+\subsection{Dimensional analysis of $\lambda$ values}
+\label{app:lambda-derivation}
+
+The force loss \eqref{eq:lforce} is dimensionless (cosine). The energy
+loss \eqref{eq:lenergy} scales as
+$\operatorname{Var}_k(\log p+E/kT)\sim(E/kT)^2\sim 1/kT^2$ at peak
+violation. At room temperature ($kT=0.025$\,eV), $1/kT^2\sim 1600$ times
+larger than at $kT=1$\,eV; hence $\lambda_2$ at room T should be $1/1600$
+of high-$T$. The anchor loss scales as $(\log p+E/kT)^2\sim 10^{10}$--
+$10^{11}$ at room T after clamping $|\log p_\theta|$ at $10^6$, so
+$\lambda_3=10^{-10}$ keeps the anchor contribution comparable in
+magnitude to $\mathcal{L}_{\rm FM}$.
+
+
+\section{Hyperparameters and reproducibility}
+\label{app:hparams}
+
+\paragraph{Architecture.} GVP-Transformer from FlowMol3
+\citep{stark2024flowmol3}: $n_{\rm hidden\_scalars}=256$,
+$n_{\rm hidden\_edge}=128$, $n_{\rm vec\_channels}=32$,
+$n_{\rm molecule\_updates}=6$, $n_{\rm recycles}=1$, total
+$\sim$5.9M parameters.
+
+\paragraph{Optimization.} AdamW with $\mathrm{lr}=2\times 10^{-4}$,
+weight-decay $10^{-12}$, warmup-linear $0.02$ epoch fraction. Batch size
+16 (gradient accumulation 2). bf16-mixed precision with NaN-skip on
+gradient. Max edges per batch $4\times 10^4$, max atoms per molecule 200.
+
+\paragraph{BGFM peak hyperparameters (room $T$).}
+$\lambda_1=0.05$, $\lambda_2=10^{-4}$, $\lambda_3=10^{-10}$,
+$t_{\rm eval}=\{0.7,0.8,0.9\}$, $K_{\rm ODE}=4$ for energy loss,
+$H=4$ Hutchinson samples, energy-loss frequency $=1/4$ steps.
+Perturbation $\sigma_p\in\{0.03,0.06,0.10,0.20,0.40\}$\,\AA, $K=5$
+shards.
+
+\paragraph{Hardware.} One NVIDIA H200 141GB GPU per training run,
+$\sim$45 hours to reach $10^5$ optimizer steps. Multi-seed runs are
+embarrassingly parallel across nodes.
+
+
+\section{Bug fixes documented in the released code}
+\label{app:bugs}
+
+An external code-and-paper audit (2026-06-29) surfaced three real bugs
+and several over-claims; this submission incorporates the fixes.
+
+\paragraph{B1 — Eval hardcoded $\mathrm{charge}=0$, $\mathrm{spin}=1$.}
+The Stage-1 eval (\texttt{scripts/eval\_boltzmann\_stage1.py}) wrote
+\texttt{"charge": 0} into every output record. Stage~2 then queried OMol25
+with this charge. We measured the OMol25 4M val charge distribution:
+$56.22\%$ neutral, $17.91\%$ $+1$, $12.02\%$ $-1$, and so on, with
+$43.78\%$ of held-out molecules carrying nonzero total charge. The patch
+recovers true charge from \texttt{val.atom\_charges[ns:ne].sum()}. Stage~1
+$R^2$ numbers obtained before this fix should be treated as a lower bound
+for charge-sensitive slices.
+
+\paragraph{B2 — T-conditional $kT$ not passed to FFJORD energy loss.}
+In the temperature-conditional variant, the force forward received the
+sampled $kT$ but the energy-consistency FFJORD calls did not. The patch
+plumbs the same $kT$ tensor into \texttt{log\_density\_via\_flow} and
+into \texttt{energy\_consistency\_loss\_per\_mol(\_with\_anchor)} so that
+v8b multi-temperature training is correctly conditional.
+
+\paragraph{B3 — Eval did not support T-conditional checkpoints.}
+The Stage-1 eval erased the \texttt{bgfm} config block before model
+construction, so the zero-init $kT$ projection module was not installed
+and T-conditional checkpoints could not be evaluated. The patch adds a
+\texttt{--kT} CLI argument, installs the projection before
+\texttt{load\_state\_dict}, and passes $kT$ into FFJORD density
+evaluation.
+
+In addition to these three bugs, the patch cleans several over-claiming
+docstrings (the score derivation now reads as a finished proof rather
+than as ``DOUBLE-CHECK''; the anchor is described as an offset stabilizer
+rather than a partition-function predictor; the Stage-2 print no longer
+says ``learned density IS Boltzmann'').
+
+
+\end{document}

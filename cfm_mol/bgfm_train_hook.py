@@ -120,7 +120,7 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
     Expected keys in bgfm_config:
         enabled: bool
         lambda_1: float
-        lambda_2: float (must be 0.0 in current hook; energy term not active)
+        lambda_2: float (energy-consistency term, active when > 0)
         kT: float                 (fixed temperature in eV, used if kT_conditioning off)
         kT_conditioning: bool     (Phase B: sample kT per step, condition model on kT)
         kT_min, kT_max: float     (range for sampling if kT_conditioning enabled)
@@ -146,9 +146,9 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
     energy_enabled = lambda_2 > 0.0
     # Optional anchor loss (Plan C). Active iff lambda_3 > 0.
     # Adds (log p + E/kT + log_Z_pred(mol))^2 to the energy step, where
-    # log_Z_pred is a small invariant aux network. Prevents the trivial-
-    # constant failure mode of the variance-only L_energy (model can satisfy
-    # Var by predicting constant log p per parent).
+    # log_Z_pred is a small invariant aux network. This stabilizes the absolute
+    # density offset; variance-only L_energy constrains relative probabilities
+    # but is insensitive to per-parent additive constants.
     lambda_3 = float(bgfm_config.get('lambda_3', 0.0))
     anchor_enabled = energy_enabled and lambda_3 > 0.0
     log_z_hidden = int(bgfm_config.get('log_z_hidden_dim', 16))
@@ -364,6 +364,10 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
             pert_loader = self._bgfm_perturbation_loader  # lazily initialized below
             (g_pert, energies_pert, parent_id_pert,
              nbi_pert, uem_pert) = pert_loader.next_batch()
+            kT_pert = None
+            if getattr(self, '_bgfm_kT_conditioning', False):
+                kT_pert = torch.full((g_pert.batch_size,), float(kT_step),
+                                     device=g_pert.device, dtype=torch.float32)
             if anchor_enabled:
                 # Combined variance + anchor in a single FFJORD pass.
                 from cfm_mol.bgfm_density import energy_consistency_loss_per_mol_with_anchor
@@ -380,14 +384,15 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
                         atom_type_idx=parent_atom_idx,
                         parent_node_batch_idx=parent_nbi,
                         atom_charges_raw=parent_charges,
-                        kT=kT_step,
+                        kT=kT_step, kT_tensor=kT_pert,
                         n_ode_steps=energy_n_ode_steps,
                         n_hutchinson=energy_n_hutchinson, prior_std=1.0)
             else:
                 from cfm_mol.bgfm_density import energy_consistency_loss_per_mol
                 L_energy, energy_diag = energy_consistency_loss_per_mol(
                     self, g_pert, nbi_pert, uem_pert,
-                    energies=energies_pert, parent_id=parent_id_pert, kT=kT_step,
+                    energies=energies_pert, parent_id=parent_id_pert,
+                    kT=kT_step, kT_tensor=kT_pert,
                     n_ode_steps=energy_n_ode_steps,
                     n_hutchinson=energy_n_hutchinson, prior_std=1.0)
                 L_anchor = None

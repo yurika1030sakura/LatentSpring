@@ -130,8 +130,8 @@ def main() -> int:
     print(f"  mean slope (ideal=1)   : {slopes.mean():.3f}")
     print(f"  POOLED R^2 (centered)  : {pooled_r2:.3f}   <-- headline Boltzmann-alignment")
     print(f"\n  Interpretation:")
-    print(f"    r ~ 1, slope ~ 1, pooled R^2 high  =>  learned density IS Boltzmann.")
-    print(f"    r ~ 0                              =>  density unrelated to energy (not Boltzmann).")
+    print(f"    r ~ 1, slope ~ 1, pooled R^2 high  =>  local coordinate density is Boltzmann-aligned on these perturbations.")
+    print(f"    r ~ 0                              =>  density unrelated to energy on this perturbation test.")
     print(f"\n[boltz2] wrote {args.out_csv}")
     return 0
 

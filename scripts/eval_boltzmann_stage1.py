@@ -70,6 +70,8 @@ def main() -> int:
     ap.add_argument("--out_dir", type=Path, required=True)
     ap.add_argument("--no_patch", action="store_true")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--kT", type=float, default=None,
+                    help="Optional kT (eV) to pass into T-conditional models during FFJORD density eval.")
     ap.add_argument("--max_atoms_filter", type=int, default=None,
                     help="Optional: only pick val molecules with <= this many atoms")
     ap.add_argument("--chemistry_slice", type=str, default=None,
@@ -89,6 +91,7 @@ def main() -> int:
     from cfm_mol.bgfm_density import log_density_via_flow
 
     cfg = read_config_file(args.config)
+    bgfm_eval_cfg = dict(cfg.get("mol_fm", {}).get("bgfm", {}) or {})
     cfg.get("mol_fm", {}).pop("bgfm", None)
     cfg["dataset"]["processed_data_dir"] = str(args.eval_data)
     atom_map = cfg["dataset"]["atom_map"]
@@ -109,6 +112,15 @@ def main() -> int:
         patch_flowmol(model, d_min, tangent=True, retract=True, gluing=True,
                       discrete_projection=not bond_free,
                       train_time_discrete=not bond_free, atom_map=atom_map)
+
+    # If this is a T-conditional checkpoint, install the same zero-init kT
+    # conditioning module before loading weights and pass kT to FFJORD below.
+    if bool(bgfm_eval_cfg.get("kT_conditioning", False)):
+        from cfm_mol.kt_conditioning import patch_kT_conditioning
+        n_hidden_scalars = int(getattr(model.vector_field, 'n_hidden_scalars', 256))
+        patch_kT_conditioning(model.vector_field, n_hidden_scalars)
+        if args.kT is None:
+            args.kT = float(bgfm_eval_cfg.get("kT", 0.025))
 
     state = torch.load(str(args.checkpoint), map_location="cpu")
     sd = state.get("state_dict", state)
@@ -212,6 +224,11 @@ def main() -> int:
         atom_idx = g0.ndata['a_1_true'].argmax(dim=-1).cpu().numpy()
         # Map atom indices to Z (atom_map may have fewer than periodic length)
         z = np.array([SYMBOL_TO_Z[atom_map[i]] for i in atom_idx], dtype=np.int64)
+        # Preserve molecular charge for OMol25 Stage-2 evaluation.  The OMol25
+        # preprocessing convention stores total molecular charge either as the
+        # sum of per-atom charges or on atom 0; summing works for both.
+        ns, ne = int(val.node_idx_array[di, 0]), int(val.node_idx_array[di, 1])
+        mol_charge = int(val.atom_charges[ns:ne].sum().item())
 
         # Build batched graph of (1 + n_perturb) copies of this molecule.
         graphs = []
@@ -237,12 +254,24 @@ def main() -> int:
         nbi, _ = get_batch_idxs(gbatch)
         uem = get_upper_edge_mask(gbatch)
 
-        with torch.enable_grad():
-            logp = log_density_via_flow(
-                model, gbatch, nbi, uem,
-                n_ode_steps=args.n_ode_steps,
-                n_hutchinson=args.n_hutchinson, prior_std=1.0)
-        logp = logp.detach().cpu().numpy()
+        try:
+            with torch.enable_grad():
+                kT_tensor = None
+                if args.kT is not None:
+                    kT_tensor = torch.full((gbatch.batch_size,), float(args.kT),
+                                           device=device, dtype=torch.float32)
+                logp = log_density_via_flow(
+                    model, gbatch, nbi, uem,
+                    n_ode_steps=args.n_ode_steps,
+                    n_hutchinson=args.n_hutchinson, prior_std=1.0,
+                    kT=kT_tensor)
+            logp = logp.detach().cpu().numpy()
+        except torch.cuda.OutOfMemoryError:
+            print(f"[boltz1] OOM at gi={gi} n_atoms={n_atoms} — skipping",
+                  flush=True)
+            del gbatch
+            torch.cuda.empty_cache()
+            continue
 
         for p in range(args.n_perturb + 1):
             records.append({
@@ -250,7 +279,7 @@ def main() -> int:
                 "pert_id": p,
                 "atomic_numbers": z.tolist(),
                 "positions": pert_positions[p].astype(float).tolist(),
-                "charge": 0,
+                "charge": mol_charge,
                 "spin": 1,
                 "log_p_theta": float(logp[p]),
             })
