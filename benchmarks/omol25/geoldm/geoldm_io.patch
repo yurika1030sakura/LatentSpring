@@ -12,6 +12,19 @@ index 9b1847a..5284918 100644
 +        return omol25_info
      else:
          raise Exception("Wrong dataset %s" % dataset_name)
+diff --git a/main_qm9.py b/main_qm9.py
+index 5fa08a9..863cd87 100644
+--- a/main_qm9.py
++++ b/main_qm9.py
+@@ -266,7 +266,7 @@ def main():
+             if isinstance(model, en_diffusion.EnVariationalDiffusion):
+                 wandb.log(model.log_info(), commit=True)
+ 
+-            if not args.break_train_epoch and args.train_diffusion:
++            if not args.break_train_epoch and args.train_diffusion and args.n_stability_samples > 0:
+                 analyze_and_save(args=args, epoch=epoch, model_sample=model_ema, nodes_dist=nodes_dist,
+                                  dataset_info=dataset_info, device=device,
+                                  prop_dist=prop_dist, n_samples=args.n_stability_samples)
 diff --git a/qm9/dataset.py b/qm9/dataset.py
 index cb0f59d..8512233 100644
 --- a/qm9/dataset.py
