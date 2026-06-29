@@ -219,6 +219,26 @@ mol_fm:
     corrector_eta_init: 1.0e-3
     corrector_eta_final: 1.0e-4
     corrector_metropolis: false
+
+    # Module 5: energy-residual drift on the vector field.
+    # v_BGFM(x_t, t) = v_theta(x_t, t)
+    #                  + alpha(t) * P_SE3[-grad_r Delta E_psi(r_t, c)].
+    # lambda_5 weights the stability penalty on the drift magnitude.
+    # See cfm_mol/energy_residual_drift.py.
+    lambda_5: 0.01
+    drift_alpha_max: 0.1
+    drift_t_on: 0.5
+    drift_power: 2.0
+
+    # Module 6: corrector-aware training.
+    # Random J in {0, .., corrector_aware_J_max} short Langevin steps
+    # are run from the data endpoint during training. The stability
+    # penalty discourages large displacements and uphill energy moves.
+    # See cfm_mol/corrector_aware.py.
+    lambda_6: 0.05
+    corrector_aware_J_max: 3
+    corrector_aware_eta: 1.0e-3
+    corrector_aware_delta_max: 0.5
     
     # Joint discrete-continuous density estimator (Method 3.5).
     # When enabled, density-energy and anchor losses use

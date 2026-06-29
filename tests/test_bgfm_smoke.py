@@ -144,6 +144,77 @@ def test_density_loss_with_joint_density():
     print(f"[smoke] joint density variance-invariance: OK ({loss_no.item():.6f})")
 
 
+def test_energy_residual_drift():
+    """v_BGFM = v_theta + alpha(t) * P_SE3[-grad_r Delta_E_psi]."""
+    from cfm_mol.energy_head import EnergyHead, energy_and_force
+    from cfm_mol.energy_residual_drift import (
+        alpha_schedule, project_translation_free, bgfm_velocity, drift_stability_loss,
+    )
+
+    positions, atom_types, charges, node_batch_idx, B, _, _ = _make_synthetic_batch()
+    head = EnergyHead(n_atom_types=83, hidden_dim=64, n_layers=2)
+
+    def _ef(r):
+        return energy_and_force(head, r, atom_types, charges, node_batch_idx, B, create_graph=False)
+
+    v_theta = torch.randn_like(positions) * 0.1
+    t = torch.linspace(0.0, 1.0, B)
+    v_bgfm, alpha_per_atom = bgfm_velocity(
+        v_theta, _ef, positions, t, node_batch_idx, B,
+        alpha_max=0.1, t_on=0.5, power=2.0, project_se3=True,
+    )
+    assert v_bgfm.shape == v_theta.shape
+    assert torch.isfinite(v_bgfm).all()
+    # alpha(t=0) = 0, so the early-time velocity must equal v_theta.
+    early_mask = (t[node_batch_idx] < 0.5)
+    assert torch.allclose(v_bgfm[early_mask], v_theta[early_mask], atol=1e-6), \
+        "drift must be zero before t_on"
+    # SE(3) projection: per-graph centroid of v_bgfm - v_theta must be ~0.
+    drift = v_bgfm - v_theta
+    centroid = torch.zeros(B, 3)
+    counts = torch.zeros(B)
+    centroid.index_add_(0, node_batch_idx, drift)
+    counts.index_add_(0, node_batch_idx, torch.ones_like(node_batch_idx, dtype=drift.dtype))
+    centroid = centroid / counts.clamp_min(1.0).unsqueeze(-1)
+    assert centroid.abs().max() < 1e-5, "SE(3) projection failed"
+
+    # Stability loss is finite and non-negative.
+    L_stab = drift_stability_loss(drift)
+    assert torch.isfinite(L_stab) and L_stab >= 0
+    print(f"[smoke] energy-residual drift: OK, mean drift norm {drift.norm(dim=-1).mean().item():.4f}")
+
+
+def test_corrector_aware_training_step():
+    """Random-J corrector unroll + stability penalty produces finite loss."""
+    from cfm_mol.energy_head import EnergyHead, energy_and_force
+    from cfm_mol.corrector_aware import (
+        _sample_J, unrolled_corrector, corrector_stability_loss,
+    )
+
+    positions, atom_types, charges, node_batch_idx, B, _, _ = _make_synthetic_batch()
+    head = EnergyHead(n_atom_types=83, hidden_dim=64, n_layers=2)
+
+    def _ef(r):
+        return energy_and_force(head, r, atom_types, charges, node_batch_idx, B, create_graph=True)
+
+    torch.manual_seed(7)
+    J = _sample_J(3, device=positions.device)
+    r_refined = unrolled_corrector(
+        _ef, positions, J=max(J, 1), eta=1e-3, beta=1.0 / 0.025,
+        node_batch_idx=node_batch_idx, n_graphs=B, recenter=True,
+    )
+    assert r_refined.shape == positions.shape
+    assert torch.isfinite(r_refined).all()
+    L_stab, diag = corrector_stability_loss(
+        _ef, positions, r_refined, delta_max=0.5,
+    )
+    assert torch.isfinite(L_stab)
+    # Loss is non-negative because both clamp_min(0) terms are non-negative.
+    assert L_stab.item() >= 0.0
+    print(f"[smoke] corrector-aware training: OK, J={J}, "
+          f"L_stab={L_stab.item():.4f}, disp_mean={diag['corrector_displacement_mean']:.4f}")
+
+
 if __name__ == "__main__":
     torch.manual_seed(0)
     test_energy_head_forward_and_force()
@@ -151,4 +222,6 @@ if __name__ == "__main__":
     test_langevin_corrector_accounting()
     test_joint_density_combiner()
     test_density_loss_with_joint_density()
+    test_energy_residual_drift()
+    test_corrector_aware_training_step()
     print("\n[smoke] ALL TESTS PASSED")

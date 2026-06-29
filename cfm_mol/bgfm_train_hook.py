@@ -502,6 +502,94 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
                 if bool(bgfm_config.get('raise_head_errors', False)):
                     raise
 
+        # Energy-residual drift loss (lambda_5 * L_drift).
+        # Encourages the energy-calibrated vector field
+        #     v_BGFM = v_theta + alpha(t) * P_SE3[-grad_r Delta E_psi]
+        # to remain finite and SE(3)-equivariant. We do NOT replace the
+        # standard FM target velocity with v_BGFM at training time; we
+        # only regularise the drift magnitude. At inference, the
+        # sampler can opt in to using v_BGFM via the drift configuration.
+        lambda_5_full = float(bgfm_config.get('lambda_5', 0.0)) if head is not None else 0.0
+        l5 = _bgfm_schedule(epoch_frac, lambda_5_full, warmup_frac, ramp_frac)
+        if head is not None and l5 > 0.0 and 'force_1_true' in g.ndata:
+            try:
+                from cfm_mol.energy_residual_drift import (
+                    drift_stability_loss, alpha_schedule, project_translation_free,
+                )
+                # Reuse the (E_pred, F_pred) computed above by L_head; if
+                # L_head failed earlier, this block is skipped.
+                alpha_max = float(bgfm_config.get('drift_alpha_max', 0.1))
+                t_on = float(bgfm_config.get('drift_t_on', 0.5))
+                drift_power = float(bgfm_config.get('drift_power', 2.0))
+                # Build a per-atom drift = alpha(t=1.0) * P[F_pred] for
+                # the regulariser; the data endpoint corresponds to t=1.
+                t_data = torch.ones(1, device=g.device, dtype=r_data.dtype)
+                a_endpoint = alpha_schedule(
+                    t_data, alpha_max=alpha_max, t_on=t_on, power=drift_power)
+                F_proj = project_translation_free(F_pred, nbi_h, n_graphs)
+                v_drift_endpoint = a_endpoint.item() * F_proj
+                L_drift = drift_stability_loss(v_drift_endpoint)
+                if torch.isfinite(L_drift):
+                    total = total + l5 * L_drift
+                    self.log('train_L_drift', L_drift.detach(), on_step=True)
+                    self.log('train_lambda_5', l5, on_step=True)
+                    self.log('train_drift_alpha_endpoint', a_endpoint.item(),
+                             on_step=True)
+                else:
+                    self.log('train_L_drift_nan_skip', 1.0, on_step=True)
+            except (NameError, RuntimeError):
+                # F_pred not in scope (L_head was skipped) or autograd failed.
+                self.log('train_L_drift_runtime_skip', 1.0, on_step=True)
+                if bool(bgfm_config.get('raise_head_errors', False)):
+                    raise
+
+        # Corrector-aware training (lambda_6 * L_stab).
+        # Random J in {0, .., J_max} short Langevin steps from the data
+        # endpoint; penalise displacement > delta_max and any energy
+        # increase. Moves the corrector from a post-hoc procedure to an
+        # in-the-loop training signal.
+        lambda_6_full = float(bgfm_config.get('lambda_6', 0.0)) if head is not None else 0.0
+        l6 = _bgfm_schedule(epoch_frac, lambda_6_full, warmup_frac, ramp_frac)
+        if head is not None and l6 > 0.0 and 'force_1_true' in g.ndata:
+            try:
+                from cfm_mol.corrector_aware import (
+                    _sample_J, unrolled_corrector, corrector_stability_loss,
+                )
+                J_max = int(bgfm_config.get('corrector_aware_J_max', 3))
+                eta_train = float(bgfm_config.get('corrector_aware_eta', 1.0e-3))
+                beta_train = 1.0 / float(bgfm_config.get('kT', 0.025))
+                delta_max = float(bgfm_config.get('corrector_aware_delta_max', 0.5))
+                J = _sample_J(J_max, device=g.device)
+                if J > 0:
+                    def _ef(r_in):
+                        from cfm_mol.energy_head import energy_and_force
+                        return energy_and_force(
+                            head, r_in, a_data, c_data, nbi_h, n_graphs,
+                            create_graph=True,
+                        )
+                    r_refined = unrolled_corrector(
+                        _ef, r_data, J=J, eta=eta_train, beta=beta_train,
+                        node_batch_idx=nbi_h, n_graphs=n_graphs, recenter=True,
+                    )
+                    L_stab, stab_diag = corrector_stability_loss(
+                        _ef, r_data.detach(), r_refined, delta_max=delta_max,
+                    )
+                    if torch.isfinite(L_stab):
+                        total = total + l6 * L_stab
+                        self.log('train_L_corrector_stab', L_stab.detach(), on_step=True)
+                        self.log('train_lambda_6', l6, on_step=True)
+                        self.log('train_corrector_aware_J', float(J), on_step=True)
+                        self.log('train_corrector_disp_mean',
+                                 stab_diag['corrector_displacement_mean'], on_step=True)
+                        self.log('train_corrector_dE_mean',
+                                 stab_diag['corrector_energy_delta_mean'], on_step=True)
+                    else:
+                        self.log('train_L_corrector_stab_nan_skip', 1.0, on_step=True)
+            except (NameError, RuntimeError):
+                self.log('train_L_corrector_stab_runtime_skip', 1.0, on_step=True)
+                if bool(bgfm_config.get('raise_head_errors', False)):
+                    raise
+
         self.log('train_total_bgfm', total.detach(), on_step=True, prog_bar=True)
         return total
 

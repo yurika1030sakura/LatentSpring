@@ -108,12 +108,16 @@ relaxation oracles.
     density with OMol25-induced Boltzmann relative probabilities, while
     avoiding the ill-defined claim of a global Boltzmann distribution
     over arbitrary molecular identities.
-    \item \textbf{Calibrated energy corrector that improves independent
-    physical quality.} BGFM learns a composition-conditioned strain
-    scorer from OMol25 energies and gradients and applies it as a short
-    coordinate-only Langevin corrector. We measure its effect on the
-    quality--diversity--compute frontier against EBMol-style energy-based
-    sampling using independent GFN2-xTB / MMFF / DFT oracles.
+    \item \textbf{Energy-calibrated vector field with corrector-aware
+    training.} BGFM learns a composition-conditioned strain scorer
+    from OMol25 energies and gradients, injects its gradient as a
+    late-time SE(3)-equivariant drift inside the velocity field
+    $v_{\rm BGFM} = v_\theta + \alpha(t)\,P[-\nabla_r \Delta E_\psi]$, and
+    trains with a random short corrector unroll. At inference, an
+    optional learned-energy Langevin refinement extends the same
+    head; quality, diversity, and compute are measured against
+    EBMol-style energy-based sampling under independent GFN2-xTB / MMFF
+    / DFT oracles.
 \end{enumerate}
 
 \section{Related Work}
@@ -299,19 +303,70 @@ the all-samples protocol; we never silently drop them. Unless a
 Metropolis correction is explicitly enabled and reported, this
 corrector is an unadjusted short refinement, not an exact MCMC sampler.
 
+\subsection{Energy-calibrated vector field}
+\label{sec:method:drift}
+
+Modules 1--4 above use the energy head only at sampling time. To turn
+BGFM into a genuine \emph{energy-calibrated} flow rather than a flow
+with a post-hoc relax step, we additionally inject the head's
+coordinate gradient into the velocity field itself:
+\begin{equation}
+    v_{\rm BGFM}(x_t, t) \,=\, v_\theta(x_t, t)
+    \,+\, \alpha(t)\,P_{\rm SE(3)}\!\bigl[-\nabla_r\,\Delta E_\psi(r_t, c)\bigr],
+    \label{eq:bgfm-velocity}
+\end{equation}
+where $\alpha(t)$ is a smooth late-time onset schedule (zero on
+$[0, t_{\rm on}]$, growing on $[t_{\rm on}, 1]$ with a quadratic power)
+and $P_{\rm SE(3)}$ removes the per-graph centroid drift so the
+correction respects translation equivariance; SO(3) equivariance is
+inherited from the strain term being a rotation-invariant scalar of
+pairwise distances. We add a stability regularizer
+\begin{equation}
+    \mathcal L_{\rm drift} \,=\, \mathbb E \bigl\|\alpha(t)\,P_{\rm SE(3)}\!\bigl[-\nabla_r\,\Delta E_\psi(r_t, c)\bigr]\bigr\|^2,
+    \label{eq:drift-loss}
+\end{equation}
+so the drift contribution remains the same order of magnitude as the
+base velocity. At inference, the sampler can opt in to either the
+plain flow $v_\theta$ or the calibrated field $v_{\rm BGFM}$; we report
+both in the experimental ablations.
+
+\subsection{Corrector-aware training}
+\label{sec:method:corrector-aware}
+
+The post-hoc Langevin corrector (\S\ref{sec:method:corrector}) can be
+criticized as a generic post-processing step accessible to any
+amortized baseline. To close that gap, we train the energy head and
+the flow jointly with a random short unroll of the corrector:
+sample $J \sim {\rm Uniform}\{0, 1, \ldots, J_{\rm max}\}$ with
+$J_{\rm max} = 3$, run $J$ Langevin steps from the data endpoint
+under $\hat E_\psi$, and add a stability penalty
+\begin{equation}
+    \mathcal L_{\rm stab} \,=\, \mathbb E_{\rm atom}\bigl[\max\!\bigl(0,\,\|r' - r_1\|^2 - \delta_{\max}^2\bigr)\bigr]
+    \,+\, \mathbb E_{\rm graph}\bigl[\max\!\bigl(0,\, \hat E_\psi(r', c) - \hat E_\psi(r_1, c)\bigr)\bigr],
+    \label{eq:corrector-aware-loss}
+\end{equation}
+where $r'$ is the unrolled geometry and $\delta_{\max}$ caps the
+per-atom displacement. This makes the corrector an in-the-loop
+training signal rather than a sampling-only procedure, at a cost of
+roughly $J_{\rm max}$ additional energy-head forward and backward
+passes per batch.
+
 \subsection{Training objective}
 
 The full training loss is
 \begin{equation}
-    \mathcal L = \mathcal L_{\rm FM}
-    +\lambda_1\mathcal L_{\rm force}
-    +\lambda_2\mathcal L_{\rm dens}
-    +\lambda_3\mathcal L_{\rm anchor}
-    +\lambda_4\mathcal L_{\rm head}.
+    \mathcal L \,=\, \mathcal L_{\rm FM}
+    \,+\, \lambda_1 \mathcal L_{\rm force}
+    \,+\, \lambda_2 \mathcal L_{\rm dens}
+    \,+\, \lambda_3 \mathcal L_{\rm anchor}
+    \,+\, \lambda_4 \mathcal L_{\rm head}
+    \,+\, \lambda_5 \mathcal L_{\rm drift}
+    \,+\, \lambda_6 \mathcal L_{\rm stab}.
+    \label{eq:total-loss}
 \end{equation}
-All auxiliary weights use warmup/ramp schedules. OMol25 is not called in
-the main training loop: endpoint forces are stored in the dataset and
-perturbation energies are precomputed offline.
+All auxiliary weights use warmup/ramp schedules. OMol25 is not called
+in the main training loop: endpoint forces are stored in the dataset
+and perturbation energies are precomputed offline.
 
 \paragraph{Optional joint-density extension.}
 BGFM can also add discrete log-probability terms for atom counts, atom
