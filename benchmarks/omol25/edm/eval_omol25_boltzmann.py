@@ -21,6 +21,8 @@ def main():
     ap.add_argument("--n_perturb", type=int, default=5)
     ap.add_argument("--sigma", type=float, default=0.15)
     ap.add_argument("--n_t_avg", type=int, default=8, help="average NLL over this many random t (reduce variance)")
+    ap.add_argument("--max_atoms", type=int, default=50, help="only eval molecules with <= this many atoms (memory + parity with FlowMol eval)")
+    ap.add_argument("--ref_json", default=None, help="reuse the exact molecules+perturbations+charge/spin from a FlowMol stage1 JSON; only recompute log_p_theta with this model (apples-to-apples across models)")
     ap.add_argument("--out", required=True)
     ap.add_argument("--device", default="cuda")
     a = ap.parse_args()
@@ -50,20 +52,51 @@ def main():
     model.load_state_dict(torch.load(Path(a.model_path) / fn, map_location=device))
     model = model.to(device).eval()
 
-    ds = OMol25EDMDataset(a.datadir, a.split, n_species=n_species)
-    rng = np.random.default_rng(0)
+    # Build the list of groups to evaluate. Each group = one held-out molecule with
+    # K perturbations. Two sources:
+    #   --ref_json : reuse the EXACT molecules/perturbations/charge/spin from a FlowMol
+    #                stage1 JSON (apples-to-apples cross-model comparison); recompute logp.
+    #   else       : draw n_molecules (<= max_atoms) from the dataset, perturb in-script.
+    groups = []   # each: {"gid", "Z"(list), "charge", "spin", "xs"(K,N,3), "pert_ids"(list)}
+    if a.ref_json:
+        ref = json.load(open(a.ref_json))
+        from collections import OrderedDict
+        by_g = OrderedDict()
+        for rec in ref:
+            by_g.setdefault(rec["group_id"], []).append(rec)
+        for gid, recs in by_g.items():
+            recs = sorted(recs, key=lambda r: r["pert_id"])
+            xs = np.stack([np.asarray(r["positions"], dtype=np.float32) for r in recs])
+            groups.append({"gid": gid, "Z": recs[0]["atomic_numbers"],
+                           "charge": recs[0].get("charge", 0), "spin": recs[0].get("spin", 1),
+                           "xs": xs, "pert_ids": [r["pert_id"] for r in recs]})
+        print(f"[eval] reusing {len(groups)} groups from {a.ref_json}", flush=True)
+    else:
+        ds = OMol25EDMDataset(a.datadir, a.split, n_species=n_species)
+        rng = np.random.default_rng(0)
+        picked = 0
+        for g in range(len(ds)):
+            if picked >= a.n_molecules: break
+            it = ds[g]
+            pos0 = it["positions"].numpy()
+            if pos0.shape[0] > a.max_atoms: continue
+            Z = (it["one_hot"].argmax(1).numpy() + 1).tolist()
+            xs = np.stack([pos0] + [pos0 + rng.normal(0, a.sigma, pos0.shape) for _ in range(a.n_perturb - 1)])
+            groups.append({"gid": g, "Z": Z, "charge": 0, "spin": 1,
+                           "xs": xs.astype(np.float32), "pert_ids": list(range(a.n_perturb))})
+            picked += 1
+        print(f"[eval] picked {len(groups)} molecules (<= {a.max_atoms} atoms) from {a.split}", flush=True)
+
     records = []
-    for g in range(min(a.n_molecules, len(ds))):
-        it = ds[g]
-        pos0 = it["positions"].numpy()
-        N = pos0.shape[0]
-        Z = (it["one_hot"].argmax(1).numpy() + 1).tolist()
-        xs = [pos0] + [pos0 + rng.normal(0, a.sigma, pos0.shape) for _ in range(a.n_perturb - 1)]
-        xs = np.stack(xs)                                    # (K,N,3)
-        M = a.n_perturb
+    for grp in groups:
+        gid, Z = grp["gid"], grp["Z"]
+        xs = grp["xs"]                                       # (K,N,3)
+        M, N = xs.shape[0], xs.shape[1]
+        oh1 = torch.zeros(N, n_species)
+        oh1[torch.arange(N), torch.tensor([z - 1 for z in Z])] = 1.0
         x = torch.tensor(xs, dtype=torch.float32, device=device)
-        oh = it["one_hot"].unsqueeze(0).repeat(M, 1, 1).to(device).float()
-        ch = it["charges"].unsqueeze(0).repeat(M, 1).unsqueeze(2).to(device).float()
+        oh = oh1.unsqueeze(0).repeat(M, 1, 1).to(device).float()
+        ch = torch.tensor(Z, dtype=torch.float32).view(1, N, 1).repeat(M, 1, 1).to(device)
         node_mask = torch.ones(M, N, 1, device=device)
         x = remove_mean_with_mask(x, node_mask)
         em = node_mask.squeeze(2).unsqueeze(1) * node_mask.squeeze(2).unsqueeze(2)
@@ -75,13 +108,13 @@ def main():
             for _ in range(a.n_t_avg):
                 acc += -model(x, h, node_mask, em, context=None)
         logp = (acc / a.n_t_avg).cpu().numpy()
-        for p in range(M):
-            records.append({"group_id": g, "pert_id": p, "atomic_numbers": Z,
-                            "positions": xs[p].tolist(), "charge": 0, "spin": 1,
-                            "log_p_theta": float(logp[p])})
-        print(f"  group {g}: N={N}  logp range [{logp.min():.1f},{logp.max():.1f}]", flush=True)
+        for j, p in enumerate(grp["pert_ids"]):
+            records.append({"group_id": gid, "pert_id": p, "atomic_numbers": Z,
+                            "positions": xs[j].tolist(), "charge": grp["charge"], "spin": grp["spin"],
+                            "log_p_theta": float(logp[j])})
+        print(f"  group {gid}: N={N}  logp range [{logp.min():.1f},{logp.max():.1f}]", flush=True)
     json.dump(records, open(a.out, "w"))
-    print(f"wrote {a.out}: {len(records)} records, {min(a.n_molecules,len(ds))} groups")
+    print(f"wrote {a.out}: {len(records)} records, {len(groups)} groups")
 
 
 if __name__ == "__main__":
