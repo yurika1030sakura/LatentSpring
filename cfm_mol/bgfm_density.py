@@ -352,6 +352,11 @@ def energy_consistency_loss_per_mol(
     if discrete_log_p is not None:
         diag["logp_joint_mean"] = float(log_p_joint.detach().mean().item())
         diag["logp_discrete_mean"] = float(discrete_log_p.detach().mean().item())
+    # Expose the per-virtual-mol joint log-density for downstream consumers
+    # (the Boltzmann bridge loss reuses it without a second FFJORD pass).
+    # Stored under a leading-underscore key so it is filtered out of
+    # scalar metric logs.
+    diag["_log_p_for_bridge"] = log_p_joint
     return loss, diag
 
 
@@ -471,4 +476,8 @@ def energy_consistency_loss_per_mol_with_anchor(
     # Prefix anchor diagnostics so logger keys don't collide
     for k, v in anchor_diag.items():
         diag[f"anchor_{k}"] = v
+    # Expose the per-virtual-mol coordinate log-density for the Boltzmann
+    # bridge loss (reuses this FFJORD pass). Leading-underscore key signals
+    # that downstream scalar logging should ignore it.
+    diag["_log_p_for_bridge"] = log_p
     return L_var, L_anchor, diag

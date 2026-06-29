@@ -215,6 +215,90 @@ def test_corrector_aware_training_step():
           f"L_stab={L_stab.item():.4f}, disp_mean={diag['corrector_displacement_mean']:.4f}")
 
 
+def test_boltzmann_bridge_loss():
+    """KL(w || q) over a parent's perturbation cloud is finite,
+    non-negative, invariant to per-parent shifts of log p and E, and
+    zero when log p exactly matches -beta * E up to a per-parent
+    constant."""
+    from cfm_mol.boltzmann_bridge import boltzmann_bridge_loss, per_parent_softmax
+
+    B, K = 3, 5
+    parent_id = torch.arange(B).repeat_interleave(K)
+    energies = torch.randn(B * K) * 0.5  # eV-scale
+    log_p = torch.randn(B * K) * 0.3
+    beta = 1.0 / 0.025
+
+    loss, diag = boltzmann_bridge_loss(
+        log_p, energies, parent_id, n_parents=B, beta=beta,
+    )
+    assert torch.isfinite(loss)
+    assert loss.item() >= 0.0, f"KL should be non-negative, got {loss.item()}"
+    assert diag["bridge_cloud_size_mean"] == K
+
+    # Per-parent additive shifts in either log_p or energy must leave
+    # the bridge KL unchanged (softmax invariance).
+    parent_shift_logp = torch.tensor([10.0, -5.0, 2.0]).repeat_interleave(K)
+    parent_shift_E = torch.tensor([-3.0, 7.0, 1.0]).repeat_interleave(K)
+    loss_shift, _ = boltzmann_bridge_loss(
+        log_p + parent_shift_logp,
+        energies + parent_shift_E,
+        parent_id, n_parents=B, beta=beta,
+    )
+    assert torch.isclose(loss, loss_shift, atol=1e-5), (
+        f"bridge KL not parent-shift-invariant: {loss.item()} vs {loss_shift.item()}"
+    )
+
+    # Ideal calibration: set log_p = -beta * E (up to per-parent
+    # constant). KL should be ~0.
+    log_p_ideal = -beta * energies
+    loss_ideal, _ = boltzmann_bridge_loss(
+        log_p_ideal, energies, parent_id, n_parents=B, beta=beta,
+    )
+    assert loss_ideal.item() < 1e-5, (
+        f"ideal calibration should give zero KL, got {loss_ideal.item()}"
+    )
+
+    # Gradient flows back into log_p when not in eval mode.
+    log_p_grad = log_p.clone().requires_grad_(True)
+    loss_grad, _ = boltzmann_bridge_loss(
+        log_p_grad, energies, parent_id, n_parents=B, beta=beta,
+    )
+    loss_grad.backward()
+    assert log_p_grad.grad is not None and torch.isfinite(log_p_grad.grad).all()
+    print(f"[smoke] Boltzmann bridge: OK, KL={loss.item():.4f}, "
+          f"ideal-KL={loss_ideal.item():.2e}")
+
+
+def test_drift_monotonicity_loss():
+    """A small step along v_BGFM should not push the learned strain
+    uphill on average — hinge loss is non-negative and finite."""
+    from cfm_mol.energy_head import EnergyHead, energy_and_force
+    from cfm_mol.energy_residual_drift import (
+        bgfm_velocity, drift_monotonicity_loss,
+    )
+
+    positions, atom_types, charges, node_batch_idx, B, _, _ = _make_synthetic_batch()
+    head = EnergyHead(n_atom_types=83, hidden_dim=64, n_layers=2)
+
+    def _ef(r):
+        return energy_and_force(head, r, atom_types, charges, node_batch_idx, B, create_graph=False)
+
+    v_theta = torch.randn_like(positions) * 0.1
+    t = torch.full((B,), 0.9)
+    v_bgfm, _ = bgfm_velocity(
+        v_theta, _ef, positions, t, node_batch_idx, B,
+        alpha_max=0.5, t_on=0.5, power=2.0, project_se3=True,
+    )
+    loss, diag = drift_monotonicity_loss(
+        _ef, positions, v_bgfm, step_size=1e-3, margin=0.0,
+    )
+    assert torch.isfinite(loss) and loss.item() >= 0.0
+    assert "mono_dE_mean" in diag and "mono_violation_rate" in diag
+    print(f"[smoke] drift monotonicity: OK, L_mono={loss.item():.4f}, "
+          f"violation_rate={diag['mono_violation_rate']:.2f}, "
+          f"dE_mean={diag['mono_dE_mean']:.4f}")
+
+
 if __name__ == "__main__":
     torch.manual_seed(0)
     test_energy_head_forward_and_force()
@@ -224,4 +308,6 @@ if __name__ == "__main__":
     test_density_loss_with_joint_density()
     test_energy_residual_drift()
     test_corrector_aware_training_step()
+    test_boltzmann_bridge_loss()
+    test_drift_monotonicity_loss()
     print("\n[smoke] ALL TESTS PASSED")

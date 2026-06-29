@@ -431,6 +431,43 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
             self.log('train_energy_n_groups',
                      energy_diag['n_groups_used'], on_step=True)
 
+            # Module 7: Local Boltzmann bridge (lambda_7 * L_bridge).
+            # KL match between the model's per-parent cloud distribution
+            # q_theta and the OMol25-induced Boltzmann distribution w_m.
+            # Reuses the FFJORD log-density tensor produced just above
+            # (no second FFJORD pass).
+            lambda_7_full = float(bgfm_config.get('lambda_7', 0.0))
+            l7 = _bgfm_schedule(epoch_frac, lambda_7_full, warmup_frac, ramp_frac)
+            log_p_for_bridge = energy_diag.get("_log_p_for_bridge", None)
+            if l7 > 0.0 and log_p_for_bridge is not None:
+                from cfm_mol.boltzmann_bridge import boltzmann_bridge_loss
+                bridge_kT = float(bgfm_config.get('bridge_kT', kT_step))
+                bridge_kT = max(1e-6, bridge_kT)
+                beta = 1.0 / bridge_kT
+                n_parents = int(parent_id_pert.max().item()) + 1
+                L_BRIDGE_CAP = float(bgfm_config.get('l_bridge_outlier_cap', 1.0e5))
+                try:
+                    L_bridge, bridge_diag = boltzmann_bridge_loss(
+                        log_p_for_bridge, energies_pert, parent_id_pert,
+                        n_parents=n_parents, beta=beta,
+                        symmetric=bool(bgfm_config.get('bridge_symmetric', False)),
+                        return_diagnostics=True,
+                    )
+                except Exception as ex:
+                    self.log('train_L_bridge_runtime_skip', 1.0, on_step=True)
+                    L_bridge = torch.zeros((), device=log_p_for_bridge.device,
+                                           dtype=log_p_for_bridge.dtype)
+                    bridge_diag = {}
+                if (not torch.isfinite(L_bridge)) or (L_bridge.detach().abs() > L_BRIDGE_CAP):
+                    self.log('train_L_bridge_nan_skip', 1.0, on_step=True)
+                    L_bridge = torch.zeros_like(L_bridge).detach()
+                    l7 = 0.0
+                total = total + l7 * L_bridge
+                self.log('train_L_bridge', L_bridge.detach(), on_step=True, prog_bar=True)
+                self.log('train_lambda_7', l7, on_step=True)
+                for dk, dv in bridge_diag.items():
+                    self.log(f'train_{dk}', dv, on_step=True)
+
         # Module 3: calibrated scalar energy head.
         # Compute L_head only when an energy head has been attached
         # (see patch_flowmol_bgfm). The head consumes the data
@@ -708,6 +745,7 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
 
 
     print(f"[bgfm] BGFM hook installed: lambda_1={lambda_1}, lambda_2={lambda_2}, "
+          f"lambda_7={bgfm_config.get('lambda_7', 0.0)}, "
           f"kT={kT} eV, force_loss_type={force_loss_type}, "
           f"force_target_mode={force_target_mode}, probe_mode={probe_mode}, "
           f"t_eval_values={t_eval_values}, warmup={warmup_frac}, ramp={ramp_frac}")

@@ -98,26 +98,37 @@ relaxation oracles.
 
 \paragraph{Contributions.}
 \begin{enumerate}
-    \item \textbf{External-neural-potential calibrated amortized 3D
-    molecular flow generation.} We propose a single de novo generator
-    that retains a FlowMol3-style amortized proposal and trains it
-    against OMol25 forces and energies as an external physical teacher.
-    \item \textbf{Conditional-coordinate Boltzmann regularization.} We
-    combine late-time force-score consistency with within-parent
-    density-energy variance to align the model's conditional coordinate
-    density with OMol25-induced Boltzmann relative probabilities, while
-    avoiding the ill-defined claim of a global Boltzmann distribution
-    over arbitrary molecular identities.
-    \item \textbf{Energy-calibrated vector field with corrector-aware
-    training.} BGFM learns a composition-conditioned strain scorer
-    from OMol25 energies and gradients, injects its gradient as a
-    late-time SE(3)-equivariant drift inside the velocity field
-    $v_{\rm BGFM} = v_\theta + \alpha(t)\,P[-\nabla_r \Delta E_\psi]$, and
-    trains with a random short corrector unroll. At inference, an
-    optional learned-energy Langevin refinement extends the same
-    head; quality, diversity, and compute are measured against
-    EBMol-style energy-based sampling under independent GFN2-xTB / MMFF
-    / DFT oracles.
+    \item \textbf{Energy-coupled equivariant molecular vector field.}
+    We design an SE(3)-equivariant generative velocity field that
+    decomposes into an amortized transport component and a
+    conservative late-time Boltzmann drift distilled from a universal
+    neural potential,
+    $v_{\rm BGFM} = v_\theta + \alpha(t)\,P_{\rm SE(3)}[-\nabla_r \Delta E_\psi]$.
+    The energy gradient enters the generator's dynamics, not a
+    post-processing step.
+    \item \textbf{Local Boltzmann bridge with density-energy
+    calibration.} We train the position log-density to match a finite-
+    cloud Boltzmann target induced by OMol25 perturbation energies via
+    an explicit per-parent KL bridge,
+    $\mathrm{KL}(w_m\,\|\,q^{(m)}_\theta)$ with
+    $w_m^{(k)}\propto e^{-\beta E_m^{(k)}}$ and
+    $q^{(m,k)}_\theta\propto e^{\log p_\theta(r_m^{(k)}|c_m)}$, in
+    parallel with the within-parent density-energy variance form. Both
+    objectives are invariant to the unknown per-composition partition
+    function and reuse the same FFJORD log-density evaluation.
+    \item \textbf{Corrector-in-the-loop amortized physical sampler.}
+    A composition-conditioned residual strain scorer
+    $\hat E_\psi(r,c) = b_\phi(c) + \Delta E_\psi(r,c)$ is calibrated to
+    OMol25 force/energy. We unroll a random short Langevin corrector
+    on this learned energy at training time with a stability penalty,
+    so the sampler obtains EBM-like physical refinement without long
+    Langevin or parallel-tempering chains and without a separate
+    post-processing stage.
+    \item \textbf{Quality--diversity--compute evaluation.}
+    Headline metrics use independent oracles (GFN2-xTB and MMFF
+    relaxation, DFT subset) rather than OMol25 self-scores; we report
+    a Pareto frontier across model variants alongside ablations and
+    negative controls that isolate the contribution of each module.
 \end{enumerate}
 
 \section{Related Work}
@@ -351,6 +362,48 @@ training signal rather than a sampling-only procedure, at a cost of
 roughly $J_{\rm max}$ additional energy-head forward and backward
 passes per batch.
 
+\subsection{Local Boltzmann bridge}
+\label{sec:method:bridge}
+
+The density-energy variance objective in Eq.~\eqref{eq:density-energy}
+controls only the second moment of the residual across each parent's
+perturbation cloud. To turn that into a direct distribution-matching
+objective with a well-defined target, we add a Local Boltzmann bridge
+loss. For each parent molecule $m$ with $K$ perturbations, define the
+neural-potential-induced cloud-restricted Boltzmann target
+\begin{equation}
+    w_m^{(k)} \,=\, \frac{\exp\!\bigl[-\beta E_{\rm NP}(r_m^{(k)}, c_m)\bigr]}
+                         {\sum_{j=1}^{K}\exp\!\bigl[-\beta E_{\rm NP}(r_m^{(j)}, c_m)\bigr]},
+    \label{eq:bridge-target}
+\end{equation}
+and the model's cloud-restricted distribution
+\begin{equation}
+    q^{(m,k)}_\theta \,=\, \frac{\exp\!\bigl[\log p_\theta^{\rm pos}(r_m^{(k)}\mid c_m)\bigr]}
+                                {\sum_{j=1}^{K}\exp\!\bigl[\log p_\theta^{\rm pos}(r_m^{(j)}\mid c_m)\bigr]}.
+    \label{eq:bridge-model}
+\end{equation}
+The unknown partition function $-\log Z_{c_m}(T)$ enters both numerator
+and denominator equally inside each softmax and cancels exactly; the
+bridge loss is therefore well-defined despite $\log p_\theta^{\rm pos}$
+being only known up to a per-parent constant in practice. We optimize
+the per-parent forward KL,
+\begin{equation}
+    \mathcal L_{\rm bridge}
+    \,=\, \mathbb E_m\,\mathrm{KL}\!\bigl(w_m \,\big\|\, q^{(m)}_\theta\bigr)
+    \,=\, \mathbb E_m\,\sum_{k=1}^{K} w_m^{(k)}\!\left(\log w_m^{(k)} - \log q^{(m,k)}_\theta\right).
+    \label{eq:bridge-loss}
+\end{equation}
+In the small-fluctuation limit where the cloud residual
+$\log p_\theta^{\rm pos} + \beta E_{\rm NP}$ is approximately constant
+across $k$, this reduces to half the within-parent variance in
+Eq.~\eqref{eq:density-energy} plus higher-order terms, so the two
+objectives are theoretically consistent. In practice the bridge form is
+more numerically stable when the cloud is large or when the residual is
+not yet calibrated, and it is the form reviewers more readily recognize
+as an explicit distribution-matching algorithm. The bridge reuses the
+single FFJORD log-density evaluation already consumed by
+$\mathcal L_{\rm dens}$ and thus carries no additional integration cost.
+
 \subsection{Training objective}
 
 The full training loss is
@@ -361,7 +414,8 @@ The full training loss is
     \,+\, \lambda_3 \mathcal L_{\rm anchor}
     \,+\, \lambda_4 \mathcal L_{\rm head}
     \,+\, \lambda_5 \mathcal L_{\rm drift}
-    \,+\, \lambda_6 \mathcal L_{\rm stab}.
+    \,+\, \lambda_6 \mathcal L_{\rm stab}
+    \,+\, \lambda_7 \mathcal L_{\rm bridge}.
     \label{eq:total-loss}
 \end{equation}
 All auxiliary weights use warmup/ramp schedules. OMol25 is not called

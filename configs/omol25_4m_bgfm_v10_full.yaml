@@ -239,6 +239,18 @@ mol_fm:
     corrector_aware_J_max: 3
     corrector_aware_eta: 1.0e-3
     corrector_aware_delta_max: 0.5
+
+    # Module 7: Local Boltzmann bridge (BGFM-Native).
+    # KL(w_m || q_theta) per parent, where
+    #   w_m^(k)        = softmax_k(-beta * E_m^(k))           (OMol25)
+    #   q_theta^(m,k)  = softmax_k(log p_theta^pos(r_m^(k)))  (FFJORD)
+    # Reuses the FFJORD log-density tensor produced by L_energy; no
+    # second integral pass. See cfm_mol/boltzmann_bridge.py.
+    # Conservative initial weight; gate decides whether to scale up.
+    lambda_7: 0.05
+    bridge_kT: 0.025            # eV; matches room-T thermal scale
+    bridge_symmetric: false     # forward KL (mode-covering, trust OMol25)
+    l_bridge_outlier_cap: 1.0e+4
     
     # Joint discrete-continuous density estimator (Method 3.5).
     # When enabled, density-energy and anchor losses use

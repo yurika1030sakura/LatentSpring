@@ -141,3 +141,64 @@ def drift_stability_loss(
     velocity.
     """
     return v_drift.pow(2).mean() + eps
+
+
+def drift_monotonicity_loss(
+    energy_force_fn: Callable[[torch.Tensor], Tuple[torch.Tensor, torch.Tensor]],
+    positions: torch.Tensor,
+    v_bgfm: torch.Tensor,
+    step_size: float = 1.0e-3,
+    margin: float = 0.0,
+    use_force_alignment: bool = False,
+) -> Tuple[torch.Tensor, dict]:
+    """Hinge loss: a small step along v_BGFM should not increase learned strain.
+
+    .. math::
+        L_{\\rm mono} = \\max\\bigl(0,\\;
+            \\Delta E_\\psi(r + h v_{\\rm BGFM}) - \\Delta E_\\psi(r) + m\\bigr)
+
+    This is the audit's "residual drift monotonicity loss" — it certifies
+    that injecting -grad Delta E into the velocity field actually walks
+    *downhill* on the learned strain energy. Without this term the
+    backbone is free to learn a v_theta that cancels the drift and gain
+    nothing.
+
+    Args:
+        energy_force_fn: callable returning (E, F) where E is (B,) per-
+            graph energy.
+        positions: (N_total, 3) current coordinates.
+        v_bgfm: (N_total, 3) energy-coupled velocity from `bgfm_velocity`.
+        step_size: h, the perturbation magnitude.
+        margin: optional positive margin pushing E_after to be strictly
+            less than E_before by this much. Default 0 (just non-increase).
+        use_force_alignment: if True, also encourage v_BGFM to be aligned
+            with -grad E. Default False — the energy-change hinge is the
+            sharper signal.
+
+    Returns:
+        loss: scalar.
+        diag: {"mono_violation_rate": fraction of graphs where E went up,
+               "mono_dE_mean": mean (E_after - E_before)}.
+    """
+    if positions.numel() == 0:
+        return torch.tensor(0.0, device=positions.device, dtype=positions.dtype), {}
+    E_before, _ = energy_force_fn(positions)
+    r_step = positions.detach() + step_size * v_bgfm.detach()
+    E_after, _ = energy_force_fn(r_step)
+    delta = E_after - E_before  # (B,)
+    hinge = (delta + margin).clamp_min(0.0)
+    loss = hinge.mean()
+    if use_force_alignment:
+        # Optional cosine penalty: encourages v_BGFM dotted with -grad E
+        # to be positive (i.e., downhill alignment).
+        _, F_now = energy_force_fn(positions)
+        dot = (v_bgfm * F_now).sum(dim=-1)
+        v_norm = v_bgfm.norm(dim=-1).clamp_min(1e-8)
+        f_norm = F_now.norm(dim=-1).clamp_min(1e-8)
+        cos = dot / (v_norm * f_norm)
+        loss = loss + (1.0 - cos).mean()
+    diag = {
+        "mono_dE_mean": float(delta.mean().item()),
+        "mono_violation_rate": float((delta > 0).float().mean().item()),
+    }
+    return loss, diag
