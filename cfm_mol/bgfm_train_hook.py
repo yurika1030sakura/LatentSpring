@@ -396,18 +396,27 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
                     n_ode_steps=energy_n_ode_steps,
                     n_hutchinson=energy_n_hutchinson, prior_std=1.0)
                 L_anchor = None
-            # NaN guard on energy term
-            if not torch.isfinite(L_energy):
+            # NaN guard on energy term (v9: also skip on magnitude outliers
+            # so that a finite-but-huge L_energy doesn't blow up backward
+            # through the FFJORD divergence integral under bf16 mixed
+            # precision).
+            L_ENERGY_OUTLIER_CAP = float(bgfm_config.get(
+                'l_energy_outlier_cap', 1.0e5))
+            if (not torch.isfinite(L_energy)) or (L_energy.detach().abs() > L_ENERGY_OUTLIER_CAP):
                 self.log('train_L_energy_nan_skip', 1.0, on_step=True)
+                self.log('train_L_energy_raw', L_energy.detach() if torch.isfinite(L_energy) else 0.0, on_step=True)
                 L_energy = torch.zeros_like(L_energy).detach()
                 l2 = 0.0
             else:
                 l2 = _bgfm_schedule(epoch_frac, lambda_2, warmup_frac, ramp_frac)
             total = total + l2 * L_energy
             if anchor_enabled and L_anchor is not None:
-                # NaN guard on anchor
-                if not torch.isfinite(L_anchor):
+                # NaN guard on anchor (v9: same outlier check)
+                L_ANCHOR_OUTLIER_CAP = float(bgfm_config.get(
+                    'l_anchor_outlier_cap', 1.0e12))
+                if (not torch.isfinite(L_anchor)) or (L_anchor.detach().abs() > L_ANCHOR_OUTLIER_CAP):
                     self.log('train_L_anchor_nan_skip', 1.0, on_step=True)
+                    self.log('train_L_anchor_raw', L_anchor.detach() if torch.isfinite(L_anchor) else 0.0, on_step=True)
                     L_anchor = torch.zeros_like(L_anchor).detach()
                     l3 = 0.0
                 else:
@@ -434,6 +443,37 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
 
     import types
     model.training_step = types.MethodType(bgfm_training_step, model)
+
+    # v9: gradient-level NaN/inf guard. The forward-side L_energy /
+    # L_anchor NaN-skip catches non-finite *loss values*, but at low kT
+    # the loss can be finite while its gradient through the FFJORD
+    # divergence integral overflows under bf16 mixed precision and
+    # produces NaN parameters at the next optimizer step. We hook
+    # on_before_optimizer_step to scan parameter gradients and zero
+    # them out if any non-finite value is found; the step then becomes
+    # a no-op for the BGFM-affected branches and the model survives.
+    grad_nan_skip_enabled = bool(bgfm_config.get('grad_nan_skip', True))
+    if grad_nan_skip_enabled:
+        original_obos = getattr(model, 'on_before_optimizer_step', None)
+
+        def on_before_optimizer_step(self, optimizer):  # noqa: D401
+            n_bad = 0
+            for p in self.parameters():
+                if p.grad is None:
+                    continue
+                if not torch.isfinite(p.grad).all():
+                    p.grad.zero_()
+                    n_bad += 1
+            if n_bad > 0:
+                self.log('train_grad_nan_skip', float(n_bad), on_step=True)
+            if original_obos is not None and callable(original_obos):
+                return original_obos(optimizer)
+            return None
+
+        model.on_before_optimizer_step = types.MethodType(
+            on_before_optimizer_step, model)
+        print("[bgfm] v9 grad NaN-skip enabled (zero non-finite grads "
+              "before optimizer step)")
 
     # Lazily initialize the perturbation loader on first energy step (avoids
     # I/O if the run only does FM+force). Held as a model attribute so the

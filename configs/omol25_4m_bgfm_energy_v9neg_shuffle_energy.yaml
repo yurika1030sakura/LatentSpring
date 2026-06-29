@@ -1,0 +1,272 @@
+# Boltzmann-Guided Flow Matching (BGFM) on OMol25 4M.
+# Paper 1 Level-2 upgrade config. Derived from omol25_4m_cfm.yaml with:
+#   - bgfm: {enabled: true, lambda_1, lambda_2, warmup, ramp, kT}
+#   - comments updated
+#
+# Training consumes the BGFM-preprocessed data (has forces + energies
+# fields). See notes/bgfm_method.md for the formal method derivation.
+
+training:
+  output_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/runs/omol25_4m_bgfm_energy_v9neg_shuffle_energy
+  batch_size: 16               # bumped from 8; A100 80GB has headroom at max_atoms=200
+  num_workers: 12
+  ema_decay: 0
+  max_num_edges: 40000         # bumped to match larger batch
+  trainer_args:
+    max_epochs: 20             # was 100; with 4M data 5-15 epochs is plenty
+    accelerator: gpu
+    devices: 1
+    num_nodes: 1
+    accumulate_grad_batches: 2
+    limit_val_batches: 50
+    gradient_clip_val: 0.5
+    precision: bf16-mixed
+
+  evaluation:
+    mols_to_sample: 20
+    sample_interval: 1.0
+    val_loss_interval: 0.25
+
+wandb:
+  project: cfm_mol
+  entity:
+  name: omol25_4m_bgfm
+  mode: disabled
+
+lr_scheduler:
+  base_lr: 2.0e-4
+  warmup_length: 0.02
+  restart_interval: 0
+  restart_type: 'linear'
+  weight_decay: 1.0e-12
+
+dataset:
+  dataset_name: omol25
+  raw_data_dir: /n/netscratch/ryl_lab/Lab/omol25/train_4M
+  processed_data_dir: /n/netscratch/ryl_lab/Lab/yulili_cfm_mol/omol25_4m_processed
+  max_atoms: 200
+  bond_tolerance: 1.2
+  atom_map:
+    - H
+    - He
+    - Li
+    - Be
+    - B
+    - C
+    - N
+    - O
+    - F
+    - Ne
+    - Na
+    - Mg
+    - Al
+    - Si
+    - P
+    - S
+    - Cl
+    - Ar
+    - K
+    - Ca
+    - Sc
+    - Ti
+    - V
+    - Cr
+    - Mn
+    - Fe
+    - Co
+    - Ni
+    - Cu
+    - Zn
+    - Ga
+    - Ge
+    - As
+    - Se
+    - Br
+    - Kr
+    - Rb
+    - Sr
+    - Y
+    - Zr
+    - Nb
+    - Mo
+    - Tc
+    - Ru
+    - Rh
+    - Pd
+    - Ag
+    - Cd
+    - In
+    - Sn
+    - Sb
+    - Te
+    - I
+    - Xe
+    - Cs
+    - Ba
+    - La
+    - Ce
+    - Pr
+    - Nd
+    - Pm
+    - Sm
+    - Eu
+    - Gd
+    - Tb
+    - Dy
+    - Ho
+    - Er
+    - Tm
+    - Yb
+    - Lu
+    - Hf
+    - Ta
+    - W
+    - Re
+    - Os
+    - Ir
+    - Pt
+    - Au
+    - Hg
+    - Tl
+    - Pb
+    - Bi
+  dataset_size:
+  confs_per_mol:
+
+checkpointing:
+  save_last: True
+  save_top_k: 3
+  monitor: 'val_total_loss'
+  every_n_epochs: 1
+  every_n_train_steps: 5000
+
+mol_fm:
+  explicit_aromaticity: false
+  distort_p: 0.2
+  fake_atom_p: 0.0
+  parameterization: ctmc
+  time_scaled_loss: True
+  total_loss_weights:
+    x: 3.0
+    a: 0.4
+    c: 1.0
+    e: 0.0                    # bond-free
+  prior_config:
+    x:
+      align: True
+      type: 'centered-normal'
+      kwargs: {std: 1.0}
+    a:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+    c:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+    e:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+
+  # BGFM (Boltzmann-Guided Flow Matching) block. Read by
+  # cfm_mol.bgfm_train_hook.patch_flowmol_bgfm. First-pass defaults
+  # chosen for stability; grid-search in Week 3 will refine.
+  #
+  # kT = 1 eV (NOT 0.025 = room-T): gives F/kT ~ 0.5 mean, 50 max on
+  #   OMol25 forces. Room-T kT would give F/kT ~ 2000 max, destabilizing
+  #   MSE. Physical Boltzmann interpretation recovered via lambda_2
+  #   (energy term) which uses variance form that is kT-scale-invariant.
+  # lambda_1 = 0.1: conservative; scales up if training stable.
+  # lambda_2 disabled in v1 (energy loss needs divergence integral,
+  #   deferred to Week 3/4 after force-only stability confirmed).
+  bgfm:
+    enabled: true
+    lambda_1: 0.05
+    force_loss_type: cosine
+    lambda_2: 0.0001            # v8: /40 vs v7 because kT=0.025 makes E/kT 40x
+    lambda_3: 0.000000000001            # v8: anchor ON (Plan C activated)
+    # v9 stability: anchor magnitude was 1e10-1e12 in v8; outlier caps
+    # skip steps whose forward loss is finite but extreme (likely to NaN
+    # on the backward pass under bf16). grad_nan_skip also catches
+    # residual non-finite grads before the optimizer step.
+    l_energy_outlier_cap: 1.0e+5
+    l_anchor_outlier_cap: 1.0e+12
+    grad_nan_skip: true
+                                # /100 vs v7 baseline due to 1600x larger log_p magnitudes
+    log_z_hidden_dim: 32
+                                # mini smoke showed L_energy ~ 559 at init;
+                                # 0.003 * 559 ~ 1.7 puts it at ~FM-loss scale
+                                # (informs without dominating).
+    kT: 0.025
+    kT_conditioning: false      # Path B: sample kT per training step
+    kT_min: 0.025              # eV (=room T = 300K)
+    kT_max: 1.0                # eV (=11600K, high-T regime)
+    t_eval_values: [0.70, 0.80, 0.90]
+    warmup_frac: 0.005
+    ramp_frac: 0.02
+    divergence_method: hutchinson
+    divergence_samples: 1
+    # Energy-term cost controls (FFJORD log-density is expensive).
+    energy_n_ode_steps: 4      # v6: shallower for stability
+                                # (was 8; reduced for memory headroom)
+    energy_n_hutchinson: 4      # v5: max noise reduction
+    energy_every_k_steps: 4     # amortize: energy loss every 4th step
+    # Per-molecule perturbation source for L_energy. Each shard stores K
+    # OMol25-energy-annotated perturbations of each parent molecule; the
+    # loss takes the within-parent variance of (log p + E/kT), which is
+    # what the Boltzmann condition actually constrains (the cross-batch
+    # form is dominated by the per-molecule log-Z spread).
+    # Produced by scripts/precompute_energy_perturbations.py.
+    # v8 uses new precomputed shards with sigmas {0.03,0.06,0.10,0.20,0.40}
+    # narrower lower bound matches room-T thermal fluctuations
+    energy_perturbation_shards:
+      # val shard excluded from training to avoid leakage (audit 2026-06-29)
+      #       - /n/netscratch/ryl_lab/Lab/yulili_cfm_mol/omol25_4m_processed/perturbation_val_n10000_s0.pt
+      - /n/netscratch/ryl_lab/Lab/yulili_cfm_mol/omol25_4m_processed/perturbation_train_n30000_s0_SHUFFLE_energy_within_parent.pt
+    energy_b_parents: 1         # v5: drop to 1 to fit h=4
+                                # (was 4; reduced for memory headroom — OOMs at 4 even on A100-80GB)
+    energy_max_atoms_per_parent: 60   # v5: tightened for memory
+                                # backward graph. <=80 atoms covers 70%+ of
+                                # the OMol25 4M-mol shard.
+    # OMol25 atom_map has 83 elements; ctmc parameterization adds a mask
+    # class (+1). fake_atom_p = 0.0 so no fake class. Total width = 84;
+    # perturbations are real atoms so only the first 83 columns light up.
+    n_atom_types: 83
+    n_extra_atom_classes: 1   # ctmc mask
+    n_bond_types: 4
+
+vector_field:
+  self_conditioning: True
+  stochasticity: 30.0
+  high_confidence_threshold: 0.9
+  n_vec_channels: 32
+  update_edge_w_distance: True
+  n_hidden_scalars: 256
+  n_hidden_edge_feats: 128
+  s_message_dim:
+  v_message_dim:
+  n_expansion_gvps: 3
+  attention: False
+  n_heads: 32
+  n_recycles: 1
+  separate_mol_updaters: True
+  n_molecule_updates: 6
+  convs_per_update: 1
+  n_cp_feats: 4
+  n_message_gvps: 3
+  n_update_gvps: 3
+  message_norm: sum
+  rbf_dmax: 10
+  rbf_dim: 32
+  time_embedding_dim: 64
+  a_token_dim: 64
+  c_token_dim: 64
+  e_token_dim: 64
+
+interpolant_scheduler:
+  schedule_type:
+    x: 'linear'
+    a: 'linear'
+    c: 'linear'
+    e: 'linear'
