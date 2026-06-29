@@ -77,6 +77,7 @@ def langevin_corrector(
     eta_final: float = 1.0e-4,
     metropolis: bool = False,
     accounting: Optional[Accounting] = None,
+    recenter: bool = True,
 ) -> Tuple[torch.Tensor, Accounting]:
     """Run J Langevin steps targeting exp(-beta * E_psi).
 
@@ -96,6 +97,11 @@ def langevin_corrector(
             additional energy evaluation per step.
         accounting: an Accounting object to update in place; created
             fresh if not provided.
+        recenter: if True, subtract the centroid after every proposal.
+            This keeps single-molecule samples in the same translation
+            gauge as the FlowMol training data. For multi-molecule batched
+            refinement, call this routine one molecule at a time or extend
+            it with node_batch_idx-aware recentering.
 
     Returns:
         positions: (N_total, 3) refined coordinates.
@@ -116,7 +122,10 @@ def langevin_corrector(
         eta = _step_schedule(j, n_steps, eta_init, eta_final)
         sigma = (2.0 * eta / beta) ** 0.5
         noise = torch.randn_like(r) * sigma
-        r_prop = (r.detach() + eta * F_prev.detach() + noise).requires_grad_(True)
+        r_prop = r.detach() + eta * F_prev.detach() + noise
+        if recenter:
+            r_prop = r_prop - r_prop.mean(dim=0, keepdim=True)
+        r_prop = r_prop.requires_grad_(True)
 
         if metropolis:
             E_prop, F_prop = energy_force_fn(r_prop)
@@ -135,10 +144,11 @@ def langevin_corrector(
                     E_prop, F_prop = E_prev, F_prev
                     accounting.rejected += 1
             else:
-                # Fully per-graph version is implemented in callers
-                # that have node_batch_idx available; for the bulk
-                # path we keep this branch simple.
-                pass
+                raise NotImplementedError(
+                    "Metropolis correction for batched multi-graph refinement "
+                    "requires node_batch_idx-aware accept/reject. Call "
+                    "langevin_corrector one molecule at a time or disable "
+                    "metropolis.")
             r = r_prop
             E_prev, F_prev = E_prop, F_prop
         else:

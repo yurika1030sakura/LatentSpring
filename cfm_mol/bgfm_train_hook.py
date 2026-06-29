@@ -194,20 +194,13 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
     warmup_frac = float(bgfm_config.get('warmup_frac', 0.1))
     ramp_frac = float(bgfm_config.get('ramp_frac', 0.2))
 
-    # NEW METHOD: Force-Corrected FM target (Approach B).
-    # Shift the per-graph FM endpoint x_1 by alpha * F(x_1), i.e. one
-    # implicit gradient-descent step on the OMol25 potential. The flow then
-    # learns to map prior samples to force-corrected (lower-energy) targets
-    # rather than raw data. The induced density at t=1 is provably closer
-    # to a lower-energy local target. Treat this as a heuristic augmentation
-    # / ablation rather than a formal Boltzmann guarantee. Set
+    # Optional force-corrected FM target (off by default).
+    # This is a heuristic data-augmentation ablation: shift the endpoint
+    # x_1 by alpha * F(x_1), i.e. one deterministic low-energy step under
+    # the OMol25 force. It should **not** be described as a proof that the
+    # induced density is Boltzmann, especially when noise is disabled or the
+    # force is evaluated only at the original endpoint. Set
     # `force_correction_alpha = 0` to disable (default).
-    #
-    # Mathematical view: targeting (x_1 + alpha*F) is exactly one Euler
-    # step of overdamped Langevin dynamics on E (with zero noise). Adding
-    # noise via `force_correction_noise_std > 0` gives the full Langevin
-    # step and pushes the target distribution toward the Boltzmann ensemble
-    # at temperature kT = alpha / (noise_std^2 / 2).
     force_correction_alpha = float(bgfm_config.get('force_correction_alpha', 0.0))
     force_correction_noise_std = float(bgfm_config.get('force_correction_noise_std', 0.0))
 
@@ -447,9 +440,10 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
         # which requires create_graph=True so the head can be
         # back-propagated.
         head = getattr(self, '_bgfm_energy_head', None)
-        lambda_4 = float(bgfm_config.get('lambda_4', 0.0)) if head is not None else 0.0
+        lambda_4_full = float(bgfm_config.get('lambda_4', 0.0)) if head is not None else 0.0
         lambda_F = float(bgfm_config.get('lambda_F', 0.1)) if head is not None else 0.0
-        if head is not None and lambda_4 > 0.0 and 'force_1_true' in g.ndata:
+        l4 = _bgfm_schedule(epoch_frac, lambda_4_full, warmup_frac, ramp_frac)
+        if head is not None and l4 > 0.0 and 'force_1_true' in g.ndata:
             from cfm_mol.energy_head import energy_and_force
             from cfm_mol.bgfm_loss import energy_head_calibration_loss
             n_graphs = int(g.batch_size)
@@ -459,16 +453,29 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
             r_data = g.ndata['x_1_true']
             a_data = g.ndata['a_1_true'].argmax(dim=-1)
             c_data = g.ndata['c_1_true'].argmax(dim=-1)
-            E_target = (g.ndata['energies'][nbi_h]
-                        .scatter_reduce(0, nbi_h, torch.zeros_like(nbi_h, dtype=g.ndata['energies'].dtype),
-                                        reduce='mean')) if False else g.ndata.get('energy_1_true')
-            # In OMol25 preprocess, the per-graph energy is stored as a
-            # scalar; here we look it up from a per-graph buffer if
-            # available, otherwise fall back to zero-target (the L1 on
-            # the residual is still meaningful relative to E_pred=0
-            # init).
-            if E_target is None:
+
+            # OMol25 energy is sometimes stored as a per-node copy and
+            # sometimes as a per-graph tensor. Convert robustly to one
+            # scalar target per graph; otherwise the head loss silently
+            # shape-mismatches and gets skipped.
+            E_node = g.ndata.get('energy_1_true', None)
+            if E_node is None:
                 E_target = torch.zeros(n_graphs, device=g.device, dtype=r_data.dtype)
+            else:
+                E_node = E_node.to(device=g.device, dtype=r_data.dtype).view(-1)
+                if E_node.numel() == n_graphs:
+                    E_target = E_node
+                elif E_node.numel() == r_data.shape[0]:
+                    E_target = torch.zeros(n_graphs, device=g.device, dtype=r_data.dtype)
+                    counts = torch.zeros(n_graphs, device=g.device, dtype=r_data.dtype)
+                    E_target.scatter_add_(0, nbi_h, E_node)
+                    counts.scatter_add_(0, nbi_h, torch.ones_like(E_node))
+                    E_target = E_target / counts.clamp_min(1.0)
+                else:
+                    raise RuntimeError(
+                        f"energy_1_true has unsupported length {E_node.numel()} "
+                        f"for {n_graphs} graphs and {r_data.shape[0]} atoms")
+
             F_target = g.ndata['force_1_true']
             try:
                 E_pred, F_pred = energy_and_force(
@@ -478,8 +485,9 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
                 L_head, head_diag = energy_head_calibration_loss(
                     E_pred, F_pred, E_target, F_target, lambda_F=lambda_F)
                 if torch.isfinite(L_head):
-                    total = total + lambda_4 * L_head
+                    total = total + l4 * L_head
                     self.log('train_L_head', L_head.detach(), on_step=True, prog_bar=True)
+                    self.log('train_lambda_4', l4, on_step=True)
                     self.log('train_head_energy_mae',
                              head_diag['head_energy_mae'], on_step=True)
                     self.log('train_head_force_mse',
@@ -487,9 +495,12 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
                 else:
                     self.log('train_L_head_nan_skip', 1.0, on_step=True)
             except RuntimeError as e:
-                # autograd through the head can fail if the upstream
-                # graph already detached; log + skip.
+                # Autograd through the head can fail on rare malformed
+                # batches. Log the skip, but do not let the main FM/BGFM
+                # step die. In debugging runs, set bgfm.raise_head_errors=True.
                 self.log('train_L_head_runtime_skip', 1.0, on_step=True)
+                if bool(bgfm_config.get('raise_head_errors', False)):
+                    raise
 
         self.log('train_total_bgfm', total.detach(), on_step=True, prog_bar=True)
         return total
@@ -548,7 +559,7 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
             n_charge_classes=6,
             n_bond_types=n_bond_types,
             b_parents=energy_b_parents,
-            device="cuda",
+            device=next(model.parameters()).device,
             max_atoms_per_parent=(int(energy_max_atoms_per_parent)
                                   if energy_max_atoms_per_parent is not None else None),
         )

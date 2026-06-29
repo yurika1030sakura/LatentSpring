@@ -3,22 +3,28 @@
 Formal derivations in notes/bgfm_method.md (Sections 3-7).
 Theorem statements in notes/appendix_A_v4.tex.
 
-BGFM trains a flow-matching model whose induced density satisfies
-p_theta(x) proportional to exp(-E_OMol25(x) / kT) on the data support,
-by combining three training signals:
+BGFM does **not** by itself prove exact sampling from the global
+Boltzmann distribution over all molecular identities. The implemented
+training signal is a local, conditional-coordinate regularizer: for a
+fixed molecular identity/composition ``c``, it encourages the model's
+position density to satisfy local Boltzmann relative probabilities under
+an external neural-potential energy ``E_NP(r, c)``.
+
+The main loss is
 
     L_total = L_FM + lambda_1 * L_force + lambda_2 * L_energy
+              + lambda_3 * L_anchor + lambda_4 * L_head
 
-    L_FM     : standard flow-matching velocity MSE (see Lipman 2023)
-    L_force  : model's implied score matches the DFT force field
-    L_energy : model's implied log-density matches -E / kT up to const
+    L_FM     : standard flow-matching velocity loss
+    L_force  : late-time FM-implied coordinate score matches F_NP/kT
+    L_energy : within-parent Var(log p_pos(r|c) + E_NP(r,c)/kT)
+    L_anchor : optional composition-conditioned offset stabilizer
+    L_head   : optional calibrated scalar energy-head loss
 
-The three terms are redundant in the infinite-data infinite-capacity
-limit (by the chain rule: force = grad log p, energy = -log p + const),
-but in practice each gives different learning signals:
-  - L_FM fits the observed density
-  - L_force shapes local gradients (fast signal, every-sample)
-  - L_energy anchors global shape (slow signal, needs trajectory integration)
+These terms are complementary approximations. They should be described
+as Boltzmann *regularization* or local conditional Boltzmann alignment,
+not as an exact guarantee that generated molecules follow a natural
+Boltzmann distribution.
 
 This module exposes three core functions:
 
@@ -478,12 +484,16 @@ def compute_bgfm_step(
         (loss, log_dict) where log_dict contains each loss component
         for wandb / tensorboard.
 
-    TODO: implement. For now, this is the integration contract for
-    flow_model.py -- the training_step method will call this.
+    This legacy convenience wrapper is intentionally not the active
+    training entry point. The production integration is the monkey-patched
+    Lightning training step installed by ``cfm_mol.bgfm_train_hook``.
+    Keeping this function as a hard failure prevents reviewers and scripts
+    from accidentally assuming an unimplemented path is used.
     """
     raise NotImplementedError(
-        "compute_bgfm_step: integration point for flow_model.py's "
-        "training_step. See notes/bgfm_method.md Section 10 for full spec."
+        "compute_bgfm_step is a deprecated contract only. Use "
+        "cfm_mol.bgfm_train_hook.patch_flowmol_bgfm, which installs the "
+        "actual BGFM Lightning training_step."
     )
 
 

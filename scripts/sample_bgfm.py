@@ -1,21 +1,10 @@
 """BGFM sampler: flow proposal + learned-energy Langevin corrector.
 
-Produces N molecules from a trained BGFM checkpoint and writes them
-to a JSON file in the same format as the standard generation
-benchmarks consume. Every sampling configuration reports an
-accounting record with:
-
-  flow_nfe          number of flow ODE steps
-  energy_head_nfe   number of E_psi forward passes
-  oracle_nfe        number of external OMol25 or xTB calls (default 0)
-  wall_clock_s      sampling wall-clock seconds
-  rejected          Metropolis rejection count (if enabled)
-  n_samples         number of accepted samples produced
-
-This is the entry point used by Experiments 1 (standard generation),
-2 (independent physical quality), and 3 (quality-diversity-compute
-Pareto). For Pareto sweeps, run with varying --corrector_steps and
---flow_nfe.
+This script is intentionally conservative: the external OMol25 oracle is
+not called during sampling by default. The flow produces de novo samples;
+if the checkpoint contains the BGFM calibrated energy head, a short
+learned-energy Langevin corrector refines coordinates while keeping atom
+types/charges fixed. All compute is accounted explicitly.
 """
 from __future__ import annotations
 
@@ -24,8 +13,62 @@ import json
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 import torch
+
+
+def _state_dict_from_checkpoint(path: Path) -> dict[str, torch.Tensor]:
+    state = torch.load(str(path), map_location="cpu")
+    return state.get("state_dict", state)
+
+
+def _as_list(x: Any) -> list:
+    if x is None:
+        return []
+    if isinstance(x, torch.Tensor):
+        return x.detach().cpu().tolist()
+    if isinstance(x, (list, tuple)):
+        return list(x)
+    return [x]
+
+
+def _symbols_to_atomic_numbers(symbols: list[str]) -> list[int]:
+    try:
+        from rdkit import Chem
+        pt = Chem.GetPeriodicTable()
+        return [int(pt.GetAtomicNumber(str(s))) for s in symbols]
+    except Exception:
+        # Small fallback for smoke tests without RDKit.
+        fallback = {"H": 1, "B": 5, "C": 6, "N": 7, "O": 8, "F": 9,
+                    "P": 15, "S": 16, "Cl": 17, "Br": 35, "I": 53}
+        return [fallback.get(str(s), 0) for s in symbols]
+
+
+def _attach_energy_head(model, bgfm_cfg: dict, device: str) -> None:
+    """Instantiate the energy head before loading checkpoint keys."""
+    if not bool(bgfm_cfg.get("energy_head_enabled", False)):
+        return
+    from cfm_mol.energy_head import EnergyHead
+    head = EnergyHead(
+        n_atom_types=int(bgfm_cfg.get("n_atom_types", getattr(model, "n_atom_types", 83))),
+        n_charge_classes=int(bgfm_cfg.get("n_charge_classes", 6)),
+        hidden_dim=int(bgfm_cfg.get("energy_head_hidden_dim", 128)),
+        n_layers=int(bgfm_cfg.get("energy_head_layers", 4)),
+        cutoff=float(bgfm_cfg.get("energy_head_cutoff", 6.0)),
+    ).to(device)
+    model._bgfm_energy_head = head
+
+
+def _iter_samples(model, batch_size: int, flow_nfe: int, device: str):
+    """Use FlowMol3's actual public sampling API."""
+    if hasattr(model, "sample_random_sizes"):
+        return model.sample_random_sizes(
+            n_molecules=batch_size, device=device, n_timesteps=flow_nfe)
+    raise AttributeError(
+        "Expected FlowMol-style model.sample_random_sizes(...). The previous "
+        "sample(n_samples=..., n_steps=...) call path was not compatible with "
+        "the vendored FlowMol3 backbone.")
 
 
 def main() -> int:
@@ -33,16 +76,17 @@ def main() -> int:
     ap.add_argument("--checkpoint", type=Path, required=True)
     ap.add_argument("--config", type=Path, required=True)
     ap.add_argument("--n_samples", type=int, default=10000)
+    ap.add_argument("--batch_size", type=int, default=64)
     ap.add_argument("--flow_nfe", type=int, default=100,
                     help="Number of flow ODE steps (K_flow).")
     ap.add_argument("--corrector_steps", type=int, default=50,
-                    help="Number of Langevin refinement steps (J). "
-                         "Set to 0 to disable the corrector.")
+                    help="Number of learned-energy Langevin steps. Set 0 to disable.")
     ap.add_argument("--corrector_eta_init", type=float, default=1.0e-3)
     ap.add_argument("--corrector_eta_final", type=float, default=1.0e-4)
-    ap.add_argument("--metropolis", action="store_true")
+    ap.add_argument("--metropolis", action="store_true",
+                    help="Single-molecule Metropolis correction; disabled in main experiments unless reported.")
     ap.add_argument("--kT", type=float, default=0.025,
-                    help="Temperature in eV; used by the corrector.")
+                    help="Temperature in eV; used by the learned-energy corrector.")
     ap.add_argument("--device", default=None)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", type=Path, required=True)
@@ -56,70 +100,91 @@ def main() -> int:
     from cfm_mol.energy_head import energy_and_force
 
     cfg = read_config_file(args.config)
+    mol_fm_cfg = cfg.get("mol_fm", {})
+    bgfm_cfg = dict(mol_fm_cfg.pop("bgfm", {}) or {})
+    atom_map = list(mol_fm_cfg.get("atom_map", []))
+
     model = model_from_config(cfg).to(device).eval()
-    state = torch.load(str(args.checkpoint), map_location="cpu")
-    sd = state.get("state_dict", state)
-    model.load_state_dict(sd, strict=False)
+    _attach_energy_head(model, bgfm_cfg, device)
+    sd = _state_dict_from_checkpoint(args.checkpoint)
+    missing, unexpected = model.load_state_dict(sd, strict=False)
+    if missing:
+        print(f"[bgfm-sample] missing checkpoint keys: {len(missing)}", flush=True)
+    if unexpected:
+        print(f"[bgfm-sample] unexpected checkpoint keys: {len(unexpected)}", flush=True)
+    model.eval()
+
+    head = getattr(model, "_bgfm_energy_head", None)
+    if head is not None:
+        head.eval()
+    if args.corrector_steps > 0 and head is None:
+        print("[bgfm-sample] WARNING: corrector requested but checkpoint/config "
+              "has no _bgfm_energy_head; sampling flow-only.", flush=True)
 
     out_records: list[dict] = []
     accounting = Accounting()
     beta = 1.0 / float(args.kT)
-
     t_start = time.time()
+
     n_done = 0
     while n_done < args.n_samples:
-        batch_size = min(64, args.n_samples - n_done)
-
-        # ---- Flow proposal ----
+        batch_size = min(args.batch_size, args.n_samples - n_done)
         with torch.no_grad():
-            samples = model.sample(
-                n_samples=batch_size,
-                n_steps=args.flow_nfe,
-            )
+            samples = _iter_samples(model, batch_size, args.flow_nfe, device)
         accounting.flow_nfe += args.flow_nfe * batch_size
 
-        # ---- Optional Langevin corrector under E_psi ----
-        if args.corrector_steps > 0 and hasattr(model, "energy_head"):
-            head = model.energy_head
-            for sample in samples:
-                positions = sample["positions"].to(device).clone()
-                node_batch_idx = torch.zeros(
-                    positions.shape[0], dtype=torch.long, device=device,
-                )
-                n_graphs = 1
+        for mol in samples:
+            symbols = [str(s) for s in _as_list(getattr(mol, "atom_types", None))]
+            positions = getattr(mol, "positions", None)
+            if positions is None:
+                continue
+            positions_t = torch.as_tensor(positions, dtype=torch.float32, device=device)
+            charges_raw = getattr(mol, "atom_charges", None)
+            if charges_raw is None:
+                charges_t = torch.zeros(positions_t.shape[0], dtype=torch.long, device=device)
+            else:
+                charges_t = torch.as_tensor(charges_raw, dtype=torch.long, device=device).view(-1)
+                if charges_t.numel() != positions_t.shape[0]:
+                    charges_t = torch.zeros(positions_t.shape[0], dtype=torch.long, device=device)
+
+            if args.corrector_steps > 0 and head is not None and positions_t.numel() > 0:
+                atom_idx = torch.tensor(
+                    [atom_map.index(sym) if sym in atom_map else 0 for sym in symbols],
+                    dtype=torch.long, device=device)
+                # FlowMol charge one-hot in training uses classes roughly shifted by +2.
+                charge_idx = (charges_t + 2).clamp(min=0, max=int(bgfm_cfg.get("n_charge_classes", 6)) - 1)
+                node_batch_idx = torch.zeros(positions_t.shape[0], dtype=torch.long, device=device)
 
                 def _energy_force(r: torch.Tensor):
-                    feats = model.scalar_features_at(sample, r)
                     return energy_and_force(
-                        head, lambda r_: feats, r, node_batch_idx, n_graphs,
-                        create_graph=False,
-                    )
+                        head, r, atom_idx, charge_idx, node_batch_idx, 1,
+                        create_graph=False)
 
-                positions, accounting = langevin_corrector(
+                positions_t, accounting = langevin_corrector(
                     _energy_force,
-                    positions,
+                    positions_t,
                     n_steps=args.corrector_steps,
                     beta=beta,
                     eta_init=args.corrector_eta_init,
                     eta_final=args.corrector_eta_final,
                     metropolis=args.metropolis,
                     accounting=accounting,
+                    recenter=True,
                 )
-                sample["positions"] = positions.detach().cpu()
 
-        # ---- Serialize ----
-        for sample in samples:
             out_records.append({
-                "atomic_numbers": sample["atomic_numbers"].tolist(),
-                "positions": sample["positions"].tolist(),
-                "charge": int(sample.get("charge", 0)),
-                "spin": int(sample.get("spin", 1)),
+                "atomic_numbers": _symbols_to_atomic_numbers(symbols),
+                "atom_types": symbols,
+                "positions": positions_t.detach().cpu().tolist(),
+                "charge": int(charges_t.detach().cpu().sum().item()),
+                "spin": 1,
             })
             n_done += 1
+            if n_done >= args.n_samples:
+                break
 
     accounting.wall_clock_s = time.time() - t_start
     accounting.n_samples = n_done
-
     args.out.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "samples": out_records,
@@ -135,8 +200,7 @@ def main() -> int:
     }
     with open(args.out, "w") as f:
         json.dump(payload, f)
-    print(f"[bgfm-sample] wrote {len(out_records)} samples to {args.out}",
-          flush=True)
+    print(f"[bgfm-sample] wrote {len(out_records)} samples to {args.out}", flush=True)
     print(f"[bgfm-sample] accounting: {accounting.to_dict()}", flush=True)
     return 0
 

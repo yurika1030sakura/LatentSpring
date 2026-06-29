@@ -7,690 +7,462 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{booktabs}
+\usepackage{xcolor}
 
-\title{BGFM: Boltzmann-Calibrated Flow Matching with \\
+
+
+% -----------------------------------------------------------------------------
+% Internal result placeholders. Replace every \Run{...} before submission.
+% Do not submit an ICLR paper with these unresolved.
+% -----------------------------------------------------------------------------
+\newcommand{\Run}[1]{\textcolor{red}{\textbf{[RUN: #1]}}}
+
+\title{BGFM: Boltzmann-Calibrated Flow Matching with\\
 Universal Neural Potentials for 3D Molecular Generation}
 
 \author{Anonymous Authors\\
-Under double-blind review\\
-\texttt{anonymous@anonymous.org}
-}
+Under double-blind review}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Most de novo 3D molecular generators are trained to imitate molecular
-data. Their samples are often chemically valid but high in
-strain energy, requiring substantial downstream relaxation before use
-in simulation. Energy-based models target the equilibrium distribution
-directly but learn the energy from geometry alone and pay a heavy
-inference-time sampling cost. We propose \textbf{BGFM}, a Boltzmann-
-calibrated flow-matching framework for de novo 3D molecular
-generation. BGFM consists of four modules trained jointly:
-(i) an amortized flow proposal over coordinates, atom types, and
-charges; (ii) Boltzmann regularization that aligns the flow's implied
-score and conditional density with an external universal neural
-potential through force-score and density-energy consistency losses;
-(iii) a calibrated scalar energy head distilled from the same neural
-potential; and (iv) a short learned-energy Langevin corrector that
-refines the flow proposal toward the energy landscape using
-$20$--$100$ steps. We further introduce a joint density estimator that
-combines a coordinate-conditional FFJORD integral with the
-log-probability of the discrete categorical path, so that BGFM's
-training objective is well-defined over the full molecular
-configuration $(\text{atom counts}, \text{types}, \text{charges}, \text{coordinates})$
-rather than coordinates alone. On QM9 and GEOM-Drugs, BGFM matches
-the standard validity/stability of recent flow-matching baselines
-while preserving higher uniqueness and diversity. Under independent
-GFN2-xTB and MMFF relaxation oracles that are not used in training,
-BGFM produces lower-strain geometries than energy-based and flow
-baselines at matched compute, and improves the Pareto frontier of
-physical quality vs.\ diversity vs.\ sampling cost.
+Fast 3D molecular flow and diffusion models generate diverse de novo
+molecules, but their probability geometry is learned from empirical
+molecular datasets rather than from a physical energy landscape.
+Energy-based molecular generators recover an explicit scalar energy,
+but sample with expensive Langevin or parallel-tempering chains and can
+trade diversity for physical quality. We propose \textbf{BGFM}, an
+external-neural-potential calibrated flow generator for de novo 3D
+molecular generation. BGFM keeps a FlowMol3-style amortized proposal,
+but trains it with OMol25-derived forces and energies~\citep{omol25} through two
+Boltzmann regularizers: late-time force-score consistency and
+within-parent density-energy variance. BGFM also learns a calibrated
+scalar energy head from the same external neural-potential teacher and
+uses it for a short coordinate-only learned-energy corrector after the
+flow proposal. The resulting model is designed to combine the speed and
+diversity of flow matching with the low-strain sampling behavior of
+energy-based models. Because OMol25 labels enter training, we separate
+mechanistic OMol25 alignment from external validation: the headline
+experiments use standard QM9/GEOM-Drugs generation metrics, independent
+GFN2-xTB/MMFF/DFT relaxation oracles, quality-diversity-compute Pareto
+curves, and shuffled-label negative controls. This paper should be
+submitted only after replacing all marked result placeholders with
+completed runs.
 \end{abstract}
 
-
 \section{Introduction}
-\label{sec:intro}
 
-Three-dimensional molecular generation is increasingly used as the
-front end of computational pipelines that assume physically
-realistic geometries: ligand discovery, electrolyte screening,
-catalyst design, and conformer-based property prediction. Two
-families of generators currently dominate. Flow-matching and
-diffusion models \citep{hoogeboom2022edm,xu2023geoldm,vignac2023midi,
-stark2024flowmol3,song2024geobfn} are trained to imitate molecular
-data and amortize sampling over a small number of ODE steps; they
-produce diverse, chemically valid molecules but their geometries are
-not aligned with any explicit energy landscape and can require tens
-to hundreds of optimization steps under a quantum-chemistry oracle
-before they become useful. Energy-based models such as EBMol
-\citep{anonymous2025ebmol} learn a persistent scalar energy from
-geometry alone and sample with Mirror-Langevin dynamics and parallel
-tempering; this yields physically aligned samples but at substantially
-higher inference cost and with a measurable diversity collapse at
-high sampling compute.
+Three-dimensional molecular generators are increasingly used as the
+front end of simulation and discovery pipelines. A useful generated
+structure must not only be chemically valid; it should already be close
+to a physically plausible region of an energy landscape, otherwise
+substantial relaxation or molecular dynamics is required before the
+sample can be used. Current models expose a tradeoff. Flow-matching and
+diffusion models amortize sampling and produce diverse molecules, but
+standard training matches empirical data distributions and does not, by
+construction, enforce Boltzmann relative probabilities under a
+quantum-level energy model. Energy-based molecular generators learn an
+explicit scalar potential and can rank, filter, and steer samples, but
+sampling from a learned energy generally requires many inference-time
+steps.
 
-We propose BGFM, a framework that takes the favorable properties of
-each family by construction. BGFM keeps an amortized flow proposal as
-the primary generator, but couples it during training to an external
-universal neural potential (OMol25 \citep{levine2025omol25}, covering
-$83$ elements and approximately $10^8$ DFT-quality configurations)
-through two losses that align the flow's implied score and conditional
-density with the potential's force and energy landscape. To recover
-the inference-time benefits of an explicit energy landscape without
-its sampling cost, BGFM additionally trains a calibrated scalar energy
-head distilled from the same potential, and uses it for a short
-learned-energy Langevin corrector that runs only $20$--$100$ steps
-after the flow proposal. The result is a single trained model that
-inherits the diversity and amortized sampling speed of flow matching
-while matching or improving on the physical quality of energy-based
-samplers, at a small fraction of their inference compute.
+BGFM addresses this gap by treating a universal neural potential as an
+external physical teacher for an amortized molecular flow generator. The
+model keeps a FlowMol3-style de novo proposal~\citep{flowmol3} over atom types, charges,
+and coordinates, but adds training-time physical calibration from OMol25.
+The first calibration term aligns the flow-implied coordinate score with
+neural-potential forces near the data endpoint. The second estimates a
+coordinate log-density with a FFJORD integral and enforces that, within a
+cloud of perturbations of the same parent molecule,
+\begin{equation}
+    \log p_\theta^{\rm pos}(r \mid c) + \beta E_{\rm NP}(r,c)
+\end{equation}
+varies as little as possible. This is a local conditional Boltzmann
+condition: lower-energy perturbations of the same molecular identity
+should receive higher probability. BGFM further trains a small scalar
+energy head to approximate the external neural-potential energy and
+force, then uses this head for a short learned-energy Langevin corrector
+that refines coordinates while holding the sampled molecular identity
+fixed.
 
-A second methodological contribution is a joint density estimator
-that closes a gap in earlier flow-matching density-energy formulations
-\citep{klein2023equivariantfm,grathwohl2019ffjord,chen2018node}.
-Coordinate-only continuous-flow log-density is well-defined but does
-not account for the discrete structure (atom counts, types, charges)
-that a de novo generator also samples. BGFM combines a
-coordinate-conditional FFJORD integral with the log-probability of
-the discrete categorical path so that the training objective is a
-function of the full molecular configuration, not its continuous
-slice alone. This makes the Boltzmann regularization well-defined
-across compositions and provides a principled basis for the
-energy-head calibration on heterogeneous chemistry.
+The central comparison is with EBMol-style energy-based generation~\citep{ebmol}.
+EBMol learns a persistent scalar energy and samples with Mirror-Langevin
+dynamics and parallel tempering. BGFM takes the complementary route:
+keep the fast flow proposal, calibrate it with external physical labels,
+and use a short learned-energy corrector rather than a long MCMC chain.
+Therefore, our primary evaluation is not just validity or an OMol25
+self-correlation. We evaluate whether BGFM improves the
+physical-quality--diversity--compute frontier under independent
+relaxation oracles.
 
 \paragraph{Contributions.}
 \begin{enumerate}
-    \item \textbf{Framework.} A single trained 3D molecular generator
-    combining an amortized flow proposal, external neural-potential
-    Boltzmann regularization, a calibrated scalar energy head, and a
-    short learned-energy corrector. To our knowledge BGFM is the
-    first de novo 3D flow generator that calibrates an amortized
-    molecular generator against an external universal neural
-    potential through both force-score consistency and density-energy
-    Boltzmann regularization, with a learned energy corrector
-    providing fast inference-time refinement.
-    \item \textbf{Joint density estimator.} A hybrid
-    discrete-continuous log-density of the form
-    $\log p_\theta(x) = \log p_\theta(r\mid c) + \log p_\theta(c)$
-    that combines a coordinate FFJORD integral with the CTMC path
-    probability of the discrete components. This lifts BGFM's
-    density-energy loss from a coordinate-conditional alignment to a
-    full molecular alignment.
-    \item \textbf{Calibrated energy head.} A scalar head $\hat E_\psi$
-    trained jointly with the flow against neural-potential energy
-    and forces, supplying an explicit, calibrated energy landscape
-    that BGFM uses for ranking and refinement.
-    \item \textbf{Evaluation framework.} A six-experiment protocol
-    that separates standard generative quality, transferable physical
-    quality under independent oracles, the quality-diversity-compute
-    Pareto frontier, mechanistic Boltzmann alignment, ablations, and
-    negative controls; with honest accounting of flow NFEs, energy-head
-    NFEs, oracle calls, wall-clock time, and failure rates.
+    \item \textbf{External-oracle calibrated flow generation.} We propose
+    a single de novo 3D generator that combines a FlowMol3-style proposal,
+    OMol25 force/density Boltzmann regularization, a calibrated energy
+    head, and a short learned-energy corrector.
+    \item \textbf{Conditional Boltzmann regularization.} BGFM targets the
+    coordinate Boltzmann distribution conditional on molecular identity,
+    avoiding the ill-defined claim of a global Boltzmann distribution over
+    arbitrary atom counts, compositions, and charges.
+    \item \textbf{Amortized proposal plus calibrated correction.} Rather
+    than replacing the generator with an EBM, BGFM learns a calibrated
+    scalar energy head and applies only a small number of refinement steps
+    after fast flow sampling.
+    \item \textbf{Evaluation protocol against self-confirming metrics.}
+    We evaluate standard generative quality, independent physical quality,
+    quality-diversity-compute Pareto behavior, mechanism-level Boltzmann
+    alignment, ablations, and negative controls.
 \end{enumerate}
 
-
 \section{Related Work}
-\label{sec:related}
 
-\paragraph{3D molecular generation with flows and diffusion.}
-EDM \citep{hoogeboom2022edm}, GeoLDM \citep{xu2023geoldm}, MiDi
-\citep{vignac2023midi}, GeoBFN \citep{song2024geobfn}, JoMo
-\citep{le2024jomo}, SemlaFlow \citep{irwin2024semlaflow}, and
-FlowMol/FlowMol3 \citep{stark2024flowmol3} train sample-set quality
-objectives (validity, FCD, distance distributions). Concurrent work,
-FlexiFlow \citep{flexiflow2025}, extends flow matching to joint
-sampling of molecular graphs and conformer ensembles and is the
-current standard-generation state of the art on QM9 and GEOM-Drugs.
-None of these methods incorporates an explicit energy landscape or an
-external neural-potential supervision signal.
+\paragraph{3D molecular flow and diffusion.}
+EDM, GeoLDM, MiDi, GeoBFN, SemlaFlow, FlowMol, and FlowMol3 learn
+transport or denoising maps for molecular atom types and coordinates.
+FlowMol3~\citep{flowmol3} is the closest backbone baseline: it is an open-source
+multi-modal flow-matching model for de novo all-atom small-molecule
+generation and improves FlowMol using self-conditioning, fake atoms,
+and train-time geometry distortion without changing the underlying GNN
+or flow formulation. BGFM is not a replacement backbone; it is an
+external-neural-potential calibration layer on top of this family of
+amortized generators.
 
 \paragraph{Energy-based molecular generation.}
-EBMol \citep{anonymous2025ebmol} trains a time-unconditional EBM on
-3D molecular data and samples with Mirror-Langevin dynamics and
-parallel tempering. EBMol's central claim is that an explicit scalar
-energy enables physically meaningful sample ranking, filtering, and
-steering. BGFM addresses the same problem through a complementary
-route: it keeps the amortized flow generator and calibrates a scalar
-energy head from an external universal neural potential, recovering
-the explicit-energy capability without the inference-time sampling
-cost of an EBM.
+EBMol~\citep{ebmol} learns a time-unconditional atom-additive scalar potential and
+samples it with Mirror-Langevin dynamics plus parallel tempering. It is
+therefore the direct competitor for physically motivated 3D generation.
+BGFM differs in two ways. First, BGFM uses an external universal neural
+potential as the physical teacher, whereas EBMol learns an energy from
+geometry data without direct energy supervision. Second, BGFM retains an
+amortized flow proposal and uses a short corrector, whereas EBMol relies
+on inference-time energy sampling.
+
+\paragraph{Flexible conformer ensemble generation.}
+FlexiFlow~\citep{flexiflow} extends flow matching to jointly sample molecular graphs and
+multiple conformations and reports strong QM9/GEOM-Drugs performance.
+FlexiFlow is a required standard-generation baseline, especially for
+conformer-ensemble metrics. Its goal is complementary to BGFM: FlexiFlow
+focuses on molecular/conformer ensemble coverage, while BGFM focuses on
+external-neural-potential calibrated low-strain de novo generation.
 
 \paragraph{Boltzmann generators and energy-based flow matching.}
-Boltzmann Generators \citep{noe2019boltzmann}, Equivariant Flow
-Matching \citep{klein2023equivariantfm}, Implicit Transfer Operator
-Learning \citep{schreiner2023ito}, Scalable Boltzmann Generators
-\citep{wang2025scalable}, and the Adjoint Schr\"odinger Bridge Sampler
-\citep{liu2025asbs} target Boltzmann densities for fixed classical
-potentials on single systems or for fixed-topology conformer
-generation. Iterated energy-based flow matching
-\citep{iefm2025} trains continuous normalizing flows from
-unnormalized energy densities using a simulation-free objective; it
-addresses fixed continuous Boltzmann sampling on low-dimensional
-benchmarks (Gaussian mixtures, double-well systems) and is
-theoretically related to BGFM but targets a different problem
-(known-energy continuous sampling, not de novo molecule generation
-under an external universal neural-potential teacher).
+Boltzmann Generators, equivariant flow matching for Boltzmann sampling,
+and iEFM~\citep{iefm} study sampling from known or learned unnormalized densities,
+often for fixed systems or continuous toy/physical potentials. iEFM is
+especially relevant theoretically because it trains CNFs from energy
+function evaluations, but its evaluation setting is fixed continuous
+Boltzmann sampling rather than mixed discrete-continuous de novo molecule
+generation.
 
 \paragraph{Universal neural potentials.}
-SchNet \citep{schutt2018schnet}, NequIP \citep{batzner2022nequip},
-MACE-MP-0 \citep{batatia2023macemp}, and OMol25/eSEN
-\citep{levine2025omol25} act as DFT replacements for molecular
-dynamics and relaxation. BGFM uses OMol25 not as a downstream
-relaxer but as a training-time teacher that supplies energies and
-forces for the Boltzmann regularization and the energy-head
-calibration.
-
+OMol25~\citep{omol25} provides large-scale DFT data and neural-potential models over a
+broad chemistry space. BGFM uses such a neural potential not as a
+post-hoc relaxer but as a training-time teacher for forces, energies,
+and energy-head calibration.
 
 \section{Method}
-\label{sec:method}
 
-We denote by $x = (c, r)$ a molecular configuration with discrete part
-$c$ (atom counts $N$, per-atom types, per-atom formal charges) and
-continuous part $r \in \mathbb{R}^{3N}$ (coordinates). An external
-universal neural potential supplies an energy $E_{\rm NP}(r, c)$ and
-its gradient $F_{\rm NP}(r, c) = -\nabla_r E_{\rm NP}(r, c)$ for any
-admissible $x$. Temperature is parameterized by $\beta = 1/(kT)$.
-
-The Boltzmann distribution we target is the conditional Boltzmann at
-the level of coordinates:
+Let a molecular configuration be $x=(c,r)$, where $c$ denotes molecular
+identity variables (atom count, atom types, and charges) and
+$r\in\mathbb R^{3N}$ denotes coordinates. The external neural potential
+returns an energy $E_{\rm NP}(r,c)$ and forces
+$F_{\rm NP}(r,c)=-\nabla_r E_{\rm NP}(r,c)$. BGFM does not define a
+global canonical ensemble over arbitrary molecular identities. Instead,
+for a fixed identity $c$, it targets the conditional coordinate
+Boltzmann law
 \begin{equation}
-    p_B(r \mid c, T) = \frac{1}{Z_c(T)} \exp\!\left[-\beta E_{\rm NP}(r, c)\right].
-    \label{eq:boltzmann}
+    p_B(r\mid c,T)=\frac{1}{Z_c(T)}\exp[-\beta E_{\rm NP}(r,c)],
+    \qquad \beta=1/(kT).
+    \label{eq:conditional-boltzmann}
 \end{equation}
-BGFM combines four modules: a flow proposal
-(\S\ref{sec:method:flow}), a Boltzmann regularization
-(\S\ref{sec:method:reg}), a calibrated energy head
-(\S\ref{sec:method:head}), and a learned-energy corrector
-(\S\ref{sec:method:corrector}). A joint density estimator
-(\S\ref{sec:method:joint}) provides a hybrid discrete-continuous
-log-probability used by the Boltzmann regularization.
+This target is well-defined because $c$ is fixed; cross-composition
+probabilities are left to the empirical proposal distribution and are
+not interpreted as thermodynamic weights.
 
-\subsection{Module 1 --- Flow proposal}
-\label{sec:method:flow}
+\subsection{Flow proposal}
 
-We instantiate the flow proposal on a FlowMol3-style backbone
-\citep{stark2024flowmol3}: positions follow a Gaussian-prior linear
-interpolant, atom types and charges follow a CTMC simplex prior, and
-a GVP-Transformer parameterizes the time-dependent velocity field
-$v_\theta(x_t, t)$. Given prior samples $x_0 \sim p_0$, the flow
-maps $x_0$ to a candidate molecule $x = (c, r)$ in
-$K_{\rm flow} \in [100, 500]$ ODE steps:
+BGFM starts from a FlowMol3-style flow proposal. Continuous coordinates
+use a Gaussian prior and a time-dependent velocity field
+$v_\theta(x_t,t)$; atom types and charges use the categorical flow/CTMC
+component of the backbone. The base training loss is the standard
+flow-matching objective
 \begin{equation}
-    x_0 \sim p_0, \qquad x \,=\, \Phi_\theta(x_0).
-    \label{eq:flow}
+    \mathcal L_{\rm FM}=\mathbb E\left[\|v_\theta(x_t,t)-u_t\|^2 +
+    \mathcal L_{\rm disc}\right].
 \end{equation}
-The standard flow-matching reconstruction loss
-$\mathcal{L}_{\rm FM} = \mathbb{E}_{x_0, x_1, t}\|v_\theta(x_t, t) - (x_1 - x_0)\|^2$
-is retained alongside CTMC reconstruction terms for the discrete
-channels. The flow proposal preserves diversity and amortized
-sampling.
+The proposal is responsible for chemical diversity and fast amortized
+sampling. The physical modules below calibrate this proposal rather than
+replace it.
 
-\subsection{Module 2 --- Boltzmann regularization}
-\label{sec:method:reg}
+\subsection{Late-time force-score consistency}
 
-The Boltzmann regularization couples $\Phi_\theta$ to the neural
-potential through two consistency losses.
-
-\paragraph{Force-score consistency.}
-The Boltzmann density satisfies
-$\nabla_r \log p_B = F_{\rm NP}/kT$. From the velocity field we
-recover the implied score in closed form for the linear interpolant:
+For the conditional Boltzmann law in Eq.~\eqref{eq:conditional-boltzmann},
 \begin{equation}
-    s_\theta(r_t, t) = \frac{t\, v_\theta(r_t, t) - r_t}{(1 - t)\,\sigma^2}.
-    \label{eq:score-from-velocity}
+    \nabla_r \log p_B(r\mid c,T)=\beta F_{\rm NP}(r,c).
 \end{equation}
-At late path times $t_{\rm eval} \in \{0.70, 0.80, 0.90\}$, where
-$r_t$ is close to the data manifold, BGFM enforces
+Under the linear Gaussian interpolant, the coordinate score at time $t$
+can be estimated from the flow velocity by
 \begin{equation}
-    \mathcal{L}_{\rm force}
-    = \mathbb{E}_{m,\, t_{\rm eval}}\!\left[1 - \cos\!\bigl(s_\theta(r_t^m, t_{\rm eval}),\, F_{\rm NP}(r_1^m, c_m)/kT\bigr)\right].
-    \label{eq:lforce}
+    s_\theta(x_t,t)=\frac{t\,v_\theta(x_t,t)-x_t}{(1-t)\sigma_0^2}.
 \end{equation}
-
-\paragraph{Density-energy consistency.}
-For each parent molecule $m$ we precompute $K=5$ perturbations at
-displacement scales $\sigma_p \in \{0.03, 0.06, 0.10, 0.20, 0.40\}\,\text{\AA}$
-and obtain their neural-potential energies. The Boltzmann constancy
-condition $\log p_\theta + \beta E_{\rm NP} = -\log Z_{c_m}$ implies
-that for fixed $c_m$ the quantity
-$y_m^{(k)} = \log p_\theta(r_m^{(k)} \mid c_m) + \beta E_{\rm NP}(r_m^{(k)}, c_m)$
-is constant in $k$. The variance form removes the unknown additive
-constant $\log Z_{c_m}$:
+BGFM evaluates this score at late but finite times
+$t\in\mathcal T$ and aligns it with the endpoint neural-potential force:
 \begin{equation}
-    \mathcal{L}_{\rm dens}
-    = \mathbb{E}_m\,\mathrm{Var}_k\!\left[ y_m^{(k)} \right].
-    \label{eq:ldens}
+    \mathcal L_{\rm force}=\mathbb E_{t\in\mathcal T}
+    \left[1-\cos\left(s_\theta(x_t,t),\,\beta F_{\rm NP}(r_1,c)\right)\right].
+    \label{eq:force-loss}
 \end{equation}
-A composition-conditioned offset stabilizer
-$a_\phi(c)$, with input only the atom-type histogram and total
-charge, anchors the absolute scale:
+This is a late-time regularizer, not an exact identity at arbitrary
+intermediate $x_t$. It avoids online neural-potential calls during every
+training step by using precomputed endpoint forces.
+
+\subsection{Density-energy variance}
+
+The most direct probability calibration is that
+$\log p_B(r\mid c,T)+\beta E_{\rm NP}(r,c)$ equals a constant depending
+only on $c$ and $T$. BGFM estimates the coordinate log-density
+$\log p_\theta^{\rm pos}(r\mid c)$ with a FFJORD-style divergence
+integral through the coordinate velocity field. For each parent molecule
+$m$, we precompute a cloud of perturbations
+$\{r_m^{(k)}\}_{k=1}^K$ and neural-potential energies. The loss is
 \begin{equation}
-    \mathcal{L}_{\rm anchor}
-    = \mathbb{E}_{m, k}\!\left( \log p_\theta(r_m^{(k)} \mid c_m) + \beta E_{\rm NP}(r_m^{(k)}, c_m) + a_\phi(c_m) \right)^2.
-    \label{eq:lanchor}
+    \mathcal L_{\rm dens}=\mathbb E_m\operatorname{Var}_{k}
+    \left[
+        \log p_\theta^{\rm pos}(r_m^{(k)}\mid c_m)
+        +\beta E_{\rm NP}(r_m^{(k)},c_m)
+    \right].
+    \label{eq:density-energy}
 \end{equation}
+Because the variance is taken within the same parent molecule, the
+unknown offset $-\log Z_{c_m}(T)$ cancels. We optionally add a
+composition-conditioned scalar offset $b_\phi(c)$ as an anchor, but do
+not interpret it as a supervised thermodynamic partition-function
+estimator.
 
-\subsection{Module 3 --- Calibrated energy head}
-\label{sec:method:head}
+\subsection{Calibrated energy head}
 
-A scalar energy head $\hat E_\psi(r, c)$ is attached to the flow
-backbone and trained jointly against the same neural-potential
-teacher:
+To obtain an explicit inference-time energy without running OMol25 at
+sampling time, BGFM trains a scalar energy head $\hat E_\psi(r,c)$ on the
+same external labels:
 \begin{equation}
-    \mathcal{L}_{\rm head}
-    = \mathbb{E}\,\bigl|\hat E_\psi(r, c) - E_{\rm NP}(r, c)\bigr|
-    + \lambda_F\, \mathbb{E}\,\bigl\| -\nabla_r \hat E_\psi(r, c) - F_{\rm NP}(r, c) \bigr\|^2.
-    \label{eq:lhead}
+    \mathcal L_{\rm head}=\|\hat E_\psi(r,c)-E_{\rm NP}(r,c)\|_1
+    +\lambda_F\| -\nabla_r\hat E_\psi(r,c)-F_{\rm NP}(r,c)\|_2^2.
+    \label{eq:head-loss}
 \end{equation}
-$\hat E_\psi$ is an explicit, calibrated energy landscape that BGFM
-uses (i) for inference-time refinement (\S\ref{sec:method:corrector}),
-(ii) as a cross-model scorer for ranking generated samples
-(\S\ref{sec:exp:ranking}), and (iii) as the primary external
-counterweight to EBMol's learned-but-uncalibrated energy.
+The head is a calibrated strain scorer used for ranking and refinement.
+It is not claimed to be a free energy.
 
-\subsection{Module 4 --- Learned-energy corrector}
-\label{sec:method:corrector}
+\subsection{Short learned-energy corrector}
 
-After the flow proposal returns a candidate $(c, r)$, BGFM applies a
-short Langevin corrector under $\hat E_\psi$:
+After the flow proposal samples $(c,r^0)$, BGFM optionally refines only
+coordinates using the calibrated head:
 \begin{equation}
-    r^{j+1} = r^j \,-\, \eta_j\, \nabla_r \hat E_\psi(r^j, c) \,+\, \sigma_j\, \xi^j,
-    \qquad \xi^j \sim \mathcal{N}(0, I),\ j = 0, \dots, J - 1,
+    r^{j+1}=\Pi\left[r^j+\eta_j\left(-\nabla_r\hat E_\psi(r^j,c)\right)
+    +\sqrt{2\eta_j/\beta}\,\epsilon_j\right],\qquad j=0,\ldots,J-1.
     \label{eq:corrector}
 \end{equation}
-with $J \in [20, 100]$, step size $\eta_j$ following a small inverse
-schedule, and noise scale $\sigma_j = \sqrt{2 \eta_j / \beta}$ so the
-chain targets $\exp(-\beta \hat E_\psi)$. Optional Metropolis
-correction can be enabled. The discrete components $c$ are not
-modified; the corrector refines coordinates only. All applications of
-$\hat E_\psi$ are reported as energy-head NFEs, distinct from the
-flow ODE NFEs, in the experimental tables.
+Here $J\in\{0,20,50,100\}$ in our compute sweep, $\Pi$ removes the
+center-of-mass drift, and discrete identity $c$ is fixed. We report
+flow NFEs, energy-head NFEs, external oracle calls, wall-clock time, and
+failure rate. Unless a Metropolis correction is explicitly enabled and
+reported, this corrector is an unadjusted short refinement, not an exact
+MCMC sampler.
 
-\subsection{Joint density estimator}
-\label{sec:method:joint}
+\subsection{Training objective}
 
-The Boltzmann regularization in
-Eqs.\,(\ref{eq:ldens})--(\ref{eq:lanchor}) requires
-$\log p_\theta$ on each perturbation. We estimate it as the sum of a
-coordinate-conditional log-density and a discrete log-probability:
+The full training loss is
 \begin{equation}
-    \log p_\theta(x) \,=\, \log p_\theta(r \mid c) \,+\, \log p_\theta(c).
-    \label{eq:joint}
+    \mathcal L = \mathcal L_{\rm FM}
+    +\lambda_1\mathcal L_{\rm force}
+    +\lambda_2\mathcal L_{\rm dens}
+    +\lambda_3\mathcal L_{\rm anchor}
+    +\lambda_4\mathcal L_{\rm head}.
 \end{equation}
-The coordinate term uses the FFJORD instantaneous change-of-variables
-\citep{chen2018node, grathwohl2019ffjord}:
-\begin{equation}
-    \log p_\theta(r \mid c) = \log p_0(r_0) - \int_0^1 \nabla_r \cdot v_\theta(r_t, c, t)\, dt,
-    \label{eq:ffjord}
-\end{equation}
-with the divergence estimated by Hutchinson's trick
-\citep{hutchinson1990trace}. The discrete term decomposes into
-contributions from atom counts $N$, per-atom types, and per-atom
-charges, evaluated on the CTMC bridge that generated $c$:
-\begin{equation}
-    \log p_\theta(c) = \log p_\theta(N) + \sum_{i=1}^N \log p_\theta(a_i) + \sum_{i=1}^N \log p_\theta(q_i),
-    \label{eq:discrete-logp}
-\end{equation}
-where each per-atom term is the bridge path probability under the CTMC
-parameterization \citep{stark2024flowmol3}. Using the full joint
-density makes
-$\mathcal{L}_{\rm dens}$ and $\mathcal{L}_{\rm anchor}$ well-defined
-across heterogeneous compositions, not just within fixed-composition
-clouds.
+All auxiliary weights use warmup/ramp schedules. OMol25 is not called in
+the main training loop: endpoint forces are stored in the dataset and
+perturbation energies are precomputed offline.
 
-\subsection{Total objective}
-\label{sec:method:total}
-
-The training objective combines the flow-matching reconstruction,
-the Boltzmann regularization, and the energy-head calibration:
-\begin{equation}
-    \mathcal{L}
-    = \mathcal{L}_{\rm FM}
-    + \lambda_1\,\mathcal{L}_{\rm force}
-    + \lambda_2\,\mathcal{L}_{\rm dens}
-    + \lambda_3\,\mathcal{L}_{\rm anchor}
-    + \lambda_4\,\mathcal{L}_{\rm head}.
-    \label{eq:total}
-\end{equation}
-The Langevin corrector (\S\ref{sec:method:corrector}) is an
-inference-time procedure and does not contribute to training. We
-ramp $\lambda_1$ through $\lambda_4$ linearly from zero over the
-first two percent of training to protect the flow reconstruction
-during the early phase. Default values, derived from a dimensional
-analysis at room temperature ($kT = 0.025$\,eV), are
-$\lambda_1 = 0.05$, $\lambda_2 = 10^{-4}$, $\lambda_3 = 10^{-12}$,
-and $\lambda_4 = 1.0$ for the energy-magnitude term with
-$\lambda_F = 0.1$ for the force-gradient term.
-
+\paragraph{Optional joint-density extension.}
+BGFM can also add discrete log-probability terms for atom counts, atom
+types, and charges to form
+$\log p_\theta(x)=\log p_\theta^{\rm pos}(r\mid c)+\log p_\theta(c)$.
+This extension is useful for diagnostics and future full-joint density
+calibration. Unless explicitly enabled and verified in an ablation, the
+main objective in this paper should be interpreted as conditional
+coordinate Boltzmann calibration.
 
 \section{Experiments}
-\label{sec:exp}
 
 \paragraph{Experimental questions.}
-Our experiments are designed to answer five questions.
-\emph{Q1.} Does BGFM preserve the standard chemical validity and
-diversity expected from de novo 3D molecular generators?
-\emph{Q2.} Does BGFM improve physical quality under \emph{independent}
-evaluators that are not used in training?
-\emph{Q3.} How does BGFM compare with energy-based and flow baselines
-on the joint quality--diversity--compute frontier?
-\emph{Q4.} Are the gains caused by correct neural-potential signal,
-rather than by additional regularization or evaluation overlap?
-\emph{Q5.} Does each module of BGFM contribute, and what does each
-module add?
+We design experiments to answer six questions. First, does BGFM preserve
+standard de novo 3D generation quality? Second, does it improve physical
+quality under independent evaluators rather than only under the OMol25
+labels used for training? Third, does it achieve a better
+quality-diversity-compute frontier than EBMol-style energy sampling?
+Fourth, does the proposed objective actually produce local conditional
+Boltzmann alignment? Fifth, do the gains require correct physical
+labels rather than arbitrary regularization? Sixth, does the calibrated
+energy head rank and filter molecular strain better than existing energy
+scorers?
 
-\paragraph{Evaluation philosophy.}
-Because BGFM is trained with neural-potential energies and forces,
-neural-potential-based correlation is reported as a mechanism
-diagnostic rather than as a primary external benchmark. The headline
-physical-quality results use independent evaluators (GFN2-xTB,
-MMFF94, and a DFT subset) that do not appear in any training loss.
-For every sampling-cost number we report flow NFEs, energy-head NFEs,
-neural-potential oracle calls during sampling (zero by construction
-for BGFM), wall-clock time, and failure rate.
+\paragraph{Datasets and baselines.}
+We evaluate on QM9, GEOM-Drugs, and held-out OMol25 chemistry slices.
+Standard generation baselines include EDM, GeoLDM/GeoBFN/SemlaFlow,
+FlowMol3 or the same-backbone FM baseline, FlexiFlow, and EBMol. We
+include BGFM ablations: flow-only, force-only, density-only, head-only,
+without corrector, and full BGFM.
 
-\paragraph{Benchmarks.} We evaluate on three regimes: the standard
-QM9 benchmark, the GEOM-Drugs benchmark \citep{axelrod2022geom} under
-the revised OpenBabel/RDKit protocol, and held-out OMol25
-broad-chemistry slices stressing charge, atom count, element
-composition, and metal-containing systems.
+\subsection{Standard generation quality}
 
-\paragraph{Baselines.} Standard generation baselines: EDM
-\citep{hoogeboom2022edm}, GeoLDM \citep{xu2023geoldm}, GeoBFN
-\citep{song2024geobfn}, SemlaFlow \citep{irwin2024semlaflow},
-FlowMol3 \citep{stark2024flowmol3}, FlexiFlow
-\citep{flexiflow2025}, and EBMol \citep{anonymous2025ebmol}. We
-additionally include controlled BGFM ablations on the same backbone:
-the flow-matching baseline (no Boltzmann regularization, no head, no
-corrector); BGFM without the energy head and corrector; BGFM without
-the density-energy loss; BGFM without the force-score loss; BGFM
-without the corrector; and full BGFM.
+We generate 10k samples per model under matched or reported NFE budgets
+and report atom stability, molecule stability, validity, uniqueness,
+novelty, Vendi diversity, NFE, and wall-clock time.
 
-\subsection{Standard unconditional generation}
-\label{sec:exp:standard}
-
-We generate $10{,}000$ molecules per model, following the standard
-EDM-style protocol for QM9 and the revised OpenBabel/RDKit protocol
-for GEOM-Drugs. Table~\ref{tab:standard_generation} summarizes the
-metrics; the headline observation is the joint behavior of validity
-and diversity rather than peak validity alone.
-
-\begin{table}[t]
+\begin{table}[h]
 \centering
-\small
-\caption{Standard unconditional generation metrics on QM9 and
-GEOM-Drugs (revised OpenBabel/RDKit protocol). NFE refers to flow
-ODE steps; for BGFM the corrector contribution is reported
-separately. Diversity is the Vendi score \citep{friedman2023vendi}.}
-\label{tab:standard_generation}
-\begin{tabular}{lrrrrrrrr}
+\caption{Standard de novo 3D generation quality. Replace all placeholders before submission.}
+\begin{tabular}{lrrrrrrr}
 \toprule
-Model & Bench. & NFE & Atom $\uparrow$ & Mol $\uparrow$ & Valid $\uparrow$ & Unique $\uparrow$ & Novel $\uparrow$ & Div $\uparrow$ \\
+Model & NFE & Atom stab. & Mol. stab. & Valid & Unique & Novel & Vendi \\
 \midrule
-EDM           & QM9 & 1000 & -- & -- & -- & -- & -- & -- \\
-SemlaFlow     & QM9 & 100  & -- & -- & -- & -- & -- & -- \\
-FlowMol3      & QM9 & 100  & -- & -- & -- & -- & -- & -- \\
-FlexiFlow     & QM9 & 100  & -- & -- & -- & -- & -- & -- \\
-EBMol         & QM9 & 1810 & -- & -- & -- & -- & -- & -- \\
-BGFM (ours)   & QM9 & 100  & -- & -- & -- & -- & -- & -- \\
-\midrule
-EDM           & GEOM & 1000 & -- & -- & -- & -- & -- & -- \\
-SemlaFlow     & GEOM & 100  & -- & -- & -- & -- & -- & -- \\
-FlowMol3      & GEOM & 100  & -- & -- & -- & -- & -- & -- \\
-FlexiFlow     & GEOM & 100  & -- & -- & -- & -- & -- & -- \\
-EBMol         & GEOM & 7240 & -- & -- & -- & -- & -- & -- \\
-BGFM (ours)   & GEOM & 100  & -- & -- & -- & -- & -- & -- \\
+FlowMol3/FM & \Run{NFE} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+FlexiFlow & reported & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+EBMol & matched & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+BGFM w/o corrector & matched & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+BGFM full & matched & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \subsection{Independent physical quality}
-\label{sec:exp:oracle}
 
-For each generated molecule we run GFN2-xTB relaxation
-\citep{bannwarth2019gfn2} and record the energy decrease
-$\Delta E_{\rm relax}$, the initial force norm, the number of
-optimization steps, the convergence failure rate, and the RMSD after
-relaxation. On organic subsets we additionally report MMFF94
-\citep{halgren1996mmff} statistics. For $200$--$500$ randomly chosen
-valid molecules per model, we perform DFT single-point calculations or
-short DFT relaxations. None of these evaluators participates in the
-BGFM training loss. We report both a valid-and-connected protocol
-matching prior structural-energy tables and an all-samples protocol
-that counts invalid, disconnected, and failed molecules.
+Because BGFM uses OMol25 labels during training, OMol25 correlation is
+not the headline metric. Our main physical-quality table uses independent
+GFN2-xTB relaxation, MMFF relaxation on organic subsets, and a DFT
+validation subset. We report both valid-connected-only and all-samples
+protocols.
 
-\begin{table}[t]
+\begin{table}[h]
 \centering
-\small
-\caption{Independent physical quality on GEOM-Drugs valid-and-connected
-samples. xTB and MMFF are not used in training. Lower is better for
-$\Delta E$, force norm, steps, and failure rate.}
-\label{tab:independent_physics}
-\begin{tabular}{lrrrrrrrr}
+\caption{Independent physical quality under evaluators not used as BGFM's density-energy target.}
+\begin{tabular}{lrrrrrr}
 \toprule
-Model & V-c $\uparrow$ & med $\Delta E_{\rm xTB} \downarrow$ & mean $\Delta E_{\rm xTB} \downarrow$ & p90 $\downarrow$ & $\|F\|\downarrow$ & Steps $\downarrow$ & Fail $\downarrow$ & Div $\uparrow$ \\
+Model & Valid conn. & xTB med. $\Delta E$ & xTB mean $\Delta E$ & p90 $\Delta E$ & Relax steps & Failure \\
 \midrule
-FlowMol3                    & -- & -- & -- & -- & -- & -- & -- & -- \\
-SemlaFlow                   & -- & -- & -- & -- & -- & -- & -- & -- \\
-FlexiFlow                   & -- & -- & -- & -- & -- & -- & -- & -- \\
-EBMol-low                   & -- & -- & -- & -- & -- & -- & -- & -- \\
-EBMol-high                  & -- & -- & -- & -- & -- & -- & -- & -- \\
-BGFM w/o corrector          & -- & -- & -- & -- & -- & -- & -- & -- \\
-BGFM w/o density-energy     & -- & -- & -- & -- & -- & -- & -- & -- \\
-BGFM w/o force-score        & -- & -- & -- & -- & -- & -- & -- & -- \\
-BGFM (full)                 & -- & -- & -- & -- & -- & -- & -- & -- \\
+EBMol-low & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+EBMol-high & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+FlowMol3/FM & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+BGFM w/o head & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+BGFM w/o corrector & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+BGFM full & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Quality--diversity--compute frontier}
-\label{sec:exp:pareto}
+\subsection{Quality-diversity-compute Pareto}
 
-Energy-based samplers can improve sample quality by increasing
-Langevin or parallel-tempering compute, but at a cost in diversity.
-We compare methods at multiple compute budgets. For EBMol we
-evaluate the low-, medium-, and high-NFE configurations. For BGFM we
-report several settings of the corrector horizon $J$ and step size
-schedule alongside the unrefined flow proposal. We plot xTB median
-$\Delta E_{\rm relax}$ against wall-clock time, with Vendi diversity
-indicated by color and the valid-low-strain count
-indicated by point size.
-
-We additionally summarize the frontier with a single throughput
-metric:
+We sweep flow NFEs and corrector steps $J\in\{0,20,50,100\}$ and compare
+to EBMol's compute-scaled samplers. The key metric is the number of
+valid, unique, low-strain samples per GPU-hour:
 \begin{equation}
-    \mathrm{VULS}_{\tau}
-    \,=\, \frac{\#\{\,\text{valid, unique, low-strain samples with } \Delta E_{\rm xTB} < \tau\,\}}{\text{GPU-hour}},
-    \label{eq:vuls}
+    \mathrm{VULS}_\tau=\frac{\#\{\text{valid, unique samples with }\Delta E_{\rm xTB}<\tau\}}{\text{GPU-hour}}.
 \end{equation}
-for $\tau \in \{2, 5, 10\}$ kcal/mol. $\mathrm{VULS}_{\tau}$ measures
-how many chemically valid, physically low-strain, non-duplicate
-molecules a method delivers per unit compute.
+This evaluation targets the main BGFM hypothesis: a fast amortized flow
+proposal plus a short calibrated corrector should dominate long
+energy-sampling chains on physical quality, diversity, and cost.
 
-\subsection{Mechanism diagnostic: Boltzmann alignment}
-\label{sec:exp:mech}
+\subsection{Mechanistic Boltzmann alignment}
 
-For held-out parent molecules, we construct perturbation clouds using
-families not identical to the training shards: unseen Gaussian noise
-levels, torsion rotations, bond stretches, angle bends, RDKit
-conformer perturbations, and short xTB or neural-potential Langevin
-perturbations. For each perturbation we evaluate the joint density
-$\log p_\theta(x)$ from \eqref{eq:joint} and compare to
-$-E_{\rm NP}/kT$. We report within-parent centered Pearson
-correlation, Spearman correlation, slope, and slope calibration error.
-This experiment verifies the mechanism that BGFM trains for; it is
-not the headline benchmark, because it shares its evaluator with the
-training loss. Cross-oracle transfer to xTB and a DFT subset is
-also reported.
+For held-out parent molecules and perturbation families, we measure the
+within-parent correlation and calibration slope between
+$\log p_\theta^{\rm pos}(r\mid c)$ and $-\beta E(r,c)$. We report this
+with OMol25 as a mechanism diagnostic, and repeat it with xTB and a DFT
+subset to test transfer.
 
-\subsection{Ablations}
-\label{sec:exp:ablation}
+\subsection{Ablations and negative controls}
 
-Table~\ref{tab:ablation_controls} reports the contribution of each
-module of BGFM at matched optimizer budget.
+A valid physical improvement should disappear or weaken under corrupted
+labels. We therefore train or evaluate controls with shuffled forces,
+shuffled energies, wrong parent grouping, wrong temperature, force norm
+only, and random scalar regularization.
 
-\begin{table}[t]
+\begin{table}[h]
 \centering
-\small
-\caption{Module-level ablations. Each row removes one component of
-BGFM and reports the standard validity, the independent xTB
-$\Delta E$, the OMol25 mechanism correlation, the Vendi diversity,
-and the total sampling wall-clock relative to the full method.}
-\label{tab:ablation_controls}
+\caption{Negative controls separating correct physical supervision from arbitrary regularization.}
 \begin{tabular}{lrrrrr}
 \toprule
-Configuration              & Validity $\uparrow$ & xTB $\Delta E \downarrow$ & Mech.\ corr.\ $\uparrow$ & Div $\uparrow$ & Time \\
+Model/control & OMol25 align. & xTB med. $\Delta E$ & DFT subset & Valid & Vendi \\
 \midrule
-FM backbone                & -- & -- & -- & -- & -- \\
-+ force-score              & -- & -- & -- & -- & -- \\
-+ density-energy           & -- & -- & -- & -- & -- \\
-+ energy head              & -- & -- & -- & -- & -- \\
-+ corrector (full BGFM)    & -- & -- & -- & -- & -- \\
+FM baseline & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+BGFM true labels & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+Shuffled force & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+Shuffled energy & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+Wrong parent grouping & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+Wrong $kT$ & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Negative controls}
-\label{sec:exp:controls}
+\subsection{Cross-model ranking and filtering}
 
-To rule out training-evaluation overlap as the source of the gains,
-we re-train BGFM on shards in which the per-perturbation energies
-have been permuted within each parent molecule (the multiset of
-energies a parent receives is unchanged but the assignment to
-geometries is randomized). We additionally train on shards in which
-the per-atom forces have been permuted across atoms, in which the
-temperature is mislabeled, and in which $\mathcal{L}_{\rm dens}$ is
-replaced by a random scalar regularizer with the same weight
-schedule. The headline causal claim is that the lift on the
-independent xTB physical-quality metric appears only for real-label
-training, even though the shuffled-label runs may still optimize the
-neural-potential-aligned correlation metric.
+We collect samples from EDM/FlowMol3/EBMol/BGFM and deliberately strained
+perturbations. We compare EBMol energy, OMol25 energy, BGFM's calibrated
+energy head, and the BGFM combined score as predictors of independent
+xTB/DFT relaxation energy and high-strain failure. Metrics are Pearson,
+Spearman, AUROC for high-strain detection, and top-decile filtering
+quality.
 
-\subsection{Energy-based ranking and filtering}
-\label{sec:exp:ranking}
+\section{Limitations}
 
-A pooled set of samples is constructed from EDM, GeoLDM, FlowMol3,
-EBMol, the FM baseline, BGFM, deliberately strained perturbations,
-and relaxed reference structures. We score each molecule with the
-EBMol learned energy, the neural-potential energy, the BGFM density
-score
-\begin{equation}
-    S_{\rm BGFM}^{\rm dens}(x) = \log p_\theta(r \mid c) - \beta E_{\rm NP}(r, c) - a_\phi(c),
-    \label{eq:bgfm-density-score}
-\end{equation}
-and the calibrated BGFM energy head $\hat E_\psi(r, c)$.
-Ground-truth strain is GFN2-xTB relaxation $\Delta E$, xTB force
-norms, and DFT subset energy decrease. We report Pearson, Spearman,
-AUROC for the top decile of high-strain molecules, and the median
-relaxation energy after retaining the top-scored $10\%$, $20\%$, and
-$50\%$ of samples.
-
+BGFM inherits OMol25's coverage and accuracy limitations. The main
+density loss is conditional-coordinate unless the optional discrete
+joint-density extension is explicitly enabled. The short corrector is a
+learned-energy refinement, not an exact MCMC sampler. The energy head is
+a calibrated scorer distilled from neural-potential energies and forces,
+not a free-energy estimator. These limitations are evaluated with
+independent oracles and shuffled-label controls rather than hidden.
 
 \section{Conclusion}
-\label{sec:conclusion}
 
-BGFM uses an external universal neural potential as a training-time
-teacher for a de novo 3D molecular flow generator, combining an
-amortized flow proposal, a Boltzmann regularization that aligns the
-flow's implied score and joint density with the potential, a
-calibrated scalar energy head distilled from the same potential, and
-a short learned-energy corrector that refines the flow proposal at
-inference time. The method preserves the diversity and amortized
-sampling speed of flow matching while recovering the explicit
-energy landscape that motivates energy-based generators, without
-inheriting their inference-time sampling cost. A hybrid
-discrete-continuous joint density estimator makes the regularization
-well-defined across heterogeneous chemistry.
+BGFM is designed to bridge two strengths: amortized de novo flow
+sampling and physically meaningful energy landscapes. By calibrating a
+fast molecular flow proposal with an external universal neural potential
+and using a short learned-energy corrector, BGFM targets low-strain,
+diverse, computationally efficient 3D molecule generation. The decisive
+empirical question is not whether BGFM improves an OMol25 self-metric,
+but whether it improves independent physical quality and the
+quality-diversity-compute frontier against strong flow and energy-based
+baselines.
 
+\begin{thebibliography}{9}
 
-\bibliography{iclr2026_conference}
-\bibliographystyle{iclr2026_conference}
+\bibitem[Griesbacher et~al.(2026)]{ebmol}
+Christoph Griesbacher, Lea Bogensperger, Andreas Habring, and Thomas Pock.
+\newblock Generating physically consistent molecules with energy-based models.
+\newblock \emph{arXiv:2605.18381}, 2026.
 
+\bibitem[Tedoldi et~al.(2025)]{flexiflow}
+Riccardo Tedoldi, Ola Engkvist, Patrick Bryant, Hossein Azizpour, Jon Paul Janet, and Alessandro Tibo.
+\newblock FlexiFlow: decomposable flow matching for generation of flexible molecular ensemble.
+\newblock \emph{arXiv:2511.17249}, 2025.
 
-\appendix
+\bibitem[Woo and Ahn(2024)]{iefm}
+Dongyeop Woo and Sungsoo Ahn.
+\newblock Iterated energy-based flow matching for sampling from Boltzmann densities.
+\newblock \emph{arXiv:2408.16249}, 2024.
 
-\section{Derivations}
-\label{app:derivations}
+\bibitem[Dunn and Koes(2025)]{flowmol3}
+Ian Dunn and David R. Koes.
+\newblock FlowMol3: Flow matching for 3D de novo small-molecule generation.
+\newblock \emph{arXiv:2508.12629}, 2025.
 
-\subsection{Score from flow-matching velocity}
-\label{app:score-from-velocity}
+\bibitem[Levine et~al.(2025)]{omol25}
+Daniel S. Levine, Muhammed Shuaibi, Evan Walter Clark Spotte-Smith, Michael G. Taylor, Muhammad R. Hasyim, Kyle Michel, Ilyes Batatia, G\'abor Cs\'anyi, Misko Dzamba, Peter Eastman, and others.
+\newblock The Open Molecules 2025 (OMol25) dataset, evaluations, and models.
+\newblock \emph{arXiv:2505.08762}, 2025.
 
-For the linear interpolant $r_t = (1-t) r_0 + t r_1$ with
-$r_0 \sim \mathcal{N}(0, \sigma^2 I)$ and $r_1 \sim p_{\rm data}$, the
-conditional distribution of $r_0$ given $r_t$ is Gaussian with mean
-$r_t - t v^\star$ and variance $(1 - t)^2 \sigma^2$. Marginalization
-and the identity
-$v^\star(r_t, t) = \mathbb{E}[r_1 - r_0 \mid r_t]$ yield
-$s(r_t, t) = (t v^\star - r_t)/[(1 - t)\sigma^2]$. Substituting
-$v_\theta$ for $v^\star$ gives \eqref{eq:score-from-velocity}.
-
-\subsection{Variance loss and the partition function}
-\label{app:variance}
-
-For any $r$-independent shift $c_m$,
-$\mathrm{Var}_k(y_m^{(k)} + c_m) = \mathrm{Var}_k(y_m^{(k)})$ by
-translation invariance. Setting $c_m = -\log Z_{c_m}$ shows that
-the Boltzmann constancy condition is exactly the minimizer of
-\eqref{eq:ldens}, with the unknown partition function absorbed.
-
-\subsection{Joint discrete-continuous log-density}
-\label{app:joint-density}
-
-The flow on $(r, c)$ factors as a continuous coordinate flow
-conditioned on the CTMC discrete state plus a categorical bridge for
-the discrete state itself. By the chain rule for densities,
-$\log p_\theta(x) = \log p_\theta(r \mid c) + \log p_\theta(c)$.
-The first term is the FFJORD integral \eqref{eq:ffjord} along the
-coordinate flow with $c$ frozen at the endpoint label. The second
-term is the per-token CTMC path probability under the discrete
-schedule of \citet{stark2024flowmol3}, summed over $N$, the per-atom
-type tokens, and the per-atom charge tokens, as in
-\eqref{eq:discrete-logp}.
-
-
-\section{Hyperparameters}
-\label{app:hparams}
-
-\paragraph{Architecture.} GVP-Transformer from FlowMol3:
-$n_{\rm hidden\_scalars} = 256$, $n_{\rm hidden\_edge} = 128$,
-$n_{\rm vec\_channels} = 32$, $n_{\rm molecule\_updates} = 6$,
-$n_{\rm recycles} = 1$. The scalar energy head is a small invariant
-MLP on the final scalar features ($\sim 100$k parameters).
-
-\paragraph{Optimization.} AdamW with $\mathrm{lr} = 2\times 10^{-4}$,
-weight decay $10^{-12}$, warm-up over $2\%$ of training, bf16-mixed
-precision. Batch size $16$ with gradient accumulation $2$.
-
-\paragraph{BGFM hyperparameters.}
-$\lambda_1 = 0.05$, $\lambda_2 = 10^{-4}$, $\lambda_3 = 10^{-12}$,
-$\lambda_4 = 1.0$, $\lambda_F = 0.1$. Temperature
-$kT = 0.025$\,eV. Probe times
-$t_{\rm eval} = \{0.7, 0.8, 0.9\}$. FFJORD: $K_{\rm ODE} = 4$,
-$H = 4$ Hutchinson samples. Energy-loss frequency: every fourth step.
-Perturbation $\sigma_p \in \{0.03, 0.06, 0.10, 0.20, 0.40\}$\,\AA,
-$K = 5$. Corrector: $J \in \{20, 50, 100\}$ at inference; step size
-$\eta_j$ scaled by an inverse schedule from $10^{-3}$ to $10^{-4}$;
-$\sigma_j = \sqrt{2 \eta_j / \beta}$.
-
-
-\section{Compute accounting}
-\label{app:compute}
-
-For every BGFM sampling configuration we report (i) the number of
-flow ODE steps $K_{\rm flow}$, (ii) the number of corrector steps
-$J$, (iii) the total number of energy-head forward passes
-$K_{\rm flow} + J$ if $\hat E_\psi$ is also used to guide the flow
-(zero otherwise plus $J$ for the corrector), (iv) the number of
-external neural-potential or xTB oracle calls during sampling
-(zero for BGFM by construction; reported as positive only for ablations
-that explicitly query the oracle online), (v) wall-clock time per
-sample on the reference hardware, and (vi) the number of failed
-samples that are dropped or replaced. EBMol's reported NFE budgets
-$\{930, 1370, 1810\}$ on QM9 and
-$\{1080, 1960, 3720, 7240\}$ on GEOM-Drugs are reproduced with the
-same accounting conventions.
-
+\end{thebibliography}
 
 \end{document}
