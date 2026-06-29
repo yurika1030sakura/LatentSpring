@@ -485,3 +485,52 @@ def compute_bgfm_step(
         "compute_bgfm_step: integration point for flow_model.py's "
         "training_step. See notes/bgfm_method.md Section 10 for full spec."
     )
+
+
+def energy_head_calibration_loss(
+    E_pred: torch.Tensor,
+    F_pred: torch.Tensor,
+    E_target: torch.Tensor,
+    F_target: torch.Tensor,
+    lambda_F: float = 0.1,
+    energy_reduction: str = "mean",
+) -> tuple[torch.Tensor, dict]:
+    r"""Calibration loss for the BGFM scalar energy head.
+
+    .. math::
+        \mathcal{L}_{\rm head}
+        = \mathbb{E}\bigl|\hat E_\psi(r,c) - E_{\rm NP}(r,c)\bigr|
+        + \lambda_F\,\mathbb{E}\bigl\|-\nabla_r \hat E_\psi(r,c) - F_{\rm NP}(r,c)\bigr\|^2.
+
+    The energy term uses L1 (absolute) regression to stay robust under
+    OMol25's heavy-tailed energy distribution. The force term uses
+    MSE so that gradient information is matched in expectation.
+
+    Args:
+        E_pred: (B,) predicted energy per graph from the head.
+        F_pred: (N_total, 3) predicted forces from autograd through
+            the head.
+        E_target: (B,) target neural-potential energy per graph.
+        F_target: (N_total, 3) target neural-potential forces.
+        lambda_F: weight on the force-matching term.
+        energy_reduction: 'mean' or 'sum'.
+
+    Returns:
+        (loss, diag) where diag carries per-term magnitudes for
+        logging.
+    """
+    e_diff = (E_pred - E_target).abs()
+    if energy_reduction == "mean":
+        e_loss = e_diff.mean()
+    elif energy_reduction == "sum":
+        e_loss = e_diff.sum()
+    else:
+        raise ValueError(energy_reduction)
+    f_diff = (F_pred - F_target).pow(2).sum(dim=-1)
+    f_loss = f_diff.mean()
+    total = e_loss + lambda_F * f_loss
+    diag = {
+        "head_energy_mae": float(e_loss.detach().item()),
+        "head_force_mse": float(f_loss.detach().item()),
+    }
+    return total, diag

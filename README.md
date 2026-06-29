@@ -1,78 +1,52 @@
-# BGFM: Boltzmann-Regularized Flow Matching for Universal-Neural-Potential Guided 3D Molecular Generation
+# BGFM: Boltzmann-Calibrated Flow Matching with Universal Neural Potentials for 3D Molecular Generation
 
-> Working code accompanying the BGFM paper (under ICLR 2026 review).
-> **Status:** code is patched against bugs flagged by external expert audit
-> (2026-06-29); full v8 evaluations in progress.
+BGFM is a single trained 3D molecular generator that combines an
+amortized flow proposal, an external-neural-potential Boltzmann
+regularization, a calibrated scalar energy head, and a short
+learned-energy Langevin corrector at inference time. It targets the
+de novo generation regime — atom counts, atom types, charges, and 3D
+coordinates are all sampled — and uses OMol25 ($\sim 10^8$ DFT-quality
+configurations covering 83 elements) as a training-time energy
+teacher.
 
----
-
-## What BGFM is — and is *not*
-
-BGFM is a **training-time physical regularization framework** for de novo
-3D molecular flow matching. We take a FlowMol3-style flow-matching generator
-as the backbone and add OMol25 neural-potential supervision so the model's
-*coordinate density, conditional on molecular identity*, locally satisfies
-the Boltzmann relation under the OMol25 potential.
-
-**The defensible target distribution is:**
-```
-p_B(r | c, T) = Z_c(T)^{-1} · exp(-E_NP(r, c) / kT)
-```
-where `c` is the discrete molecular identity (atom counts, atom types,
-total charge) and `r` are the 3D coordinates. The model learns a
-position-only conditional density `p_θ(r | c)` and is supervised so that
-it agrees with `p_B(r | c, T)` *up to a per-molecule additive constant*.
-
-**BGFM does NOT claim:**
-- exact natural Boltzmann sampling
-- a full joint probability over arbitrary atom counts, compositions, charges,
-  and coordinates
-- supervised partition-function estimation
-- a downstream-deployment guarantee in production
-
-**BGFM DOES claim:**
-- local conditional coordinate Boltzmann alignment under the OMol25 NP
-- train-time OMol25 supervision rather than post-hoc relaxation
-- a FlowMol3-style backbone plus a BGFM objective and geometric hooks
-- force-score consistency at late flow-matching path times
-- a FFJORD-style density-energy variance loss over precomputed perturbation
-  clouds, removing the need to know `Z_c`
-- a composition-conditioned offset anchor that stabilizes the unidentified
-  per-molecule density offset
+This repository accompanies the paper [`paper/bgfm_paper.pdf`](paper/bgfm_paper.pdf).
 
 ---
 
-## What is novel here
+## Method overview
 
-1. **Per-molecule within-perturbation FFJORD variance loss**
-   (`cfm_mol/bgfm_density.py:energy_consistency_loss_per_mol`).
-   Because we take the variance across perturbations of the *same* parent
-   molecule, the loss is invariant to any `c`-only additive constant —
-   in particular to the unknown `log Z_c`. This is, to our knowledge,
-   the first energy-consistency formulation that survives inside a single
-   FM training loop on a universal neural potential.
+BGFM has four modules trained jointly (Modules 1–3) or applied at
+inference (Module 4):
 
-2. **Composition-conditioned offset anchor**
-   (`cfm_mol/log_z_predictor.py`). A small invariant aux network that only
-   sees the atom-type histogram and total charge. It stabilizes the
-   absolute density offset without claiming to estimate the true
-   thermodynamic partition function.
+1. **Flow proposal** — a FlowMol3-style GVP-Transformer
+   parameterizing a velocity field over coordinates, atom types,
+   and charges.
+2. **OMol25 Boltzmann regularization** — two consistency losses
+   that align the flow's implied score and its conditional density
+   with the universal neural potential:
+   - Force-score consistency at late flow path times.
+   - Density-energy variance over precomputed per-parent perturbation
+     clouds, with a composition-conditioned offset stabilizer.
+3. **Calibrated scalar energy head $\hat E_\psi(r, c)$** — distilled
+   from the same potential via L1 energy regression and gradient
+   matching against OMol25 forces; provides an explicit calibrated
+   energy landscape.
+4. **Learned-energy Langevin corrector** — a short ($J = 20$–$100$
+   steps) Langevin chain under $\hat E_\psi$ that refines flow
+   proposals at inference time; reported with honest NFE and
+   wall-clock accounting separate from the flow ODE budget.
 
-3. **Score-from-velocity force consistency at late path times**
-   (`cfm_mol/bgfm_loss.py:score_from_fm_velocity`,
-   `cfm_mol/bgfm_loss.py:force_loss`). The implied marginal score is
-   computed in closed form from the FM velocity at late but finite path
-   times `t ∈ {0.70, 0.80, 0.90}`. This is matched against precomputed
-   endpoint forces `F(x_1)/kT` — a late-time approximation
-   `F(x_t) ≈ F(x_1)` that avoids querying OMol25 inside each training step.
+A joint discrete-continuous density estimator
+$\log p_\theta(x) = \log p_\theta(r \mid c) + \log p_\theta(c)$
+combines a coordinate FFJORD integral with the categorical-path
+log-probability of the discrete components, so the Boltzmann
+regularization is well-defined across heterogeneous compositions.
 
-4. **Optional temperature conditioning** (`cfm_mol/kt_conditioning.py`).
-   A zero-init projection of `log kT` into the scalar feature stream,
-   sampled log-uniform during training, so a single model serves
-   `kT ∈ [0.025, 1.0]` eV at inference.
+The total training objective is
 
-The neural backbone itself is **not** novel: it is the FlowMol3
-GVP-Transformer (vendored in `baselines/flowmol3/`).
+$$
+\mathcal{L} = \mathcal{L}_{\rm FM} + \lambda_1 \mathcal{L}_{\rm force} + \lambda_2 \mathcal{L}_{\rm dens} + \lambda_3 \mathcal{L}_{\rm anchor} + \lambda_4 \mathcal{L}_{\rm head}.
+$$
 
 ---
 
@@ -80,63 +54,45 @@ GVP-Transformer (vendored in `baselines/flowmol3/`).
 
 ```
 bgfm/
-├── cfm_mol/                   # BGFM extensions (our code)
-│   ├── bgfm_density.py        # FFJORD log p, per-mol variance, anchor
-│   ├── bgfm_loss.py           # force loss, score-from-velocity, total
-│   ├── bgfm_train_hook.py     # patches FlowMol3 with BGFM losses
-│   ├── kt_conditioning.py     # temperature conditioning (v8b)
-│   ├── log_z_predictor.py     # invariant log-Z aux network
-│   ├── perturbation_loader.py # loads precomputed perturbation shards
-│   ├── physics.py             # OMol25 wrapper utilities
-│   └── flow_model.py          # FlowMol3 monkey-patches (path/sampler hooks)
+├── paper/
+│   ├── bgfm_paper.tex                    # LaTeX source
+│   ├── bgfm_paper.pdf                    # compiled
+│   └── iclr2026_conference.{bib,sty,bst}
 │
-├── baselines/flowmol3/        # vendored FlowMol3 backbone (not in git)
+├── cfm_mol/                              # BGFM extensions
+│   ├── bgfm_density.py                   # FFJORD coordinate log-density
+│   ├── bgfm_loss.py                      # force, density-energy, anchor, head loss
+│   ├── bgfm_train_hook.py                # joint training step
+│   ├── joint_density.py                  # discrete-continuous log p(x)
+│   ├── energy_head.py                    # scalar energy head E_psi(r, c)
+│   ├── refinement.py                     # Langevin corrector with NFE accounting
+│   ├── log_z_predictor.py                # composition-conditioned offset stabilizer
+│   ├── kt_conditioning.py                # optional temperature conditioning
+│   ├── perturbation_loader.py            # offline perturbation shard loader
+│   ├── physics.py                        # OMol25 wrapper
+│   └── flow_model.py                     # backbone path/sampler hooks
 │
-├── configs/                   # training configs (yaml)
-│   ├── omol25_4m_bgfm.yaml                          # FM baseline
-│   ├── omol25_4m_bgfm_energy_v7c_from_fm.yaml       # v7c: force-only finetune
-│   ├── omol25_4m_bgfm_energy_v8a_room_T.yaml        # v8a: full BGFM @ 300 K
-│   ├── omol25_4m_bgfm_energy_v8b_T_conditional.yaml # v8b: T-conditional
-│   └── omol25_4m_bgfm_energy_v8c_energy_only.yaml   # v8c: energy + anchor only
+├── baselines/flowmol3/                   # vendored FlowMol3 backbone (not in git)
 │
-├── scripts/                   # training and evaluation
-│   ├── precompute_energy_perturbations.py  # offline OMol25 perturbation shards
-│   ├── run_train.py                        # Lightning training entry
-│   ├── launch_omol25_bgfm_energy_h200.sh   # H200 training launcher
-│   ├── eval_boltzmann_stage1.py            # Level 1: FFJORD log p eval
-│   ├── eval_boltzmann_stage2.py            # Level 1: R² aggregation
-│   ├── level2_relax_comparison.py          # Level 2: BFGS savings
-│   └── level3_*.py                         # Level 3: MD-equivalence
+├── configs/
+│   ├── omol25_4m_bgfm.yaml               # flow-matching baseline
+│   ├── omol25_4m_bgfm_v10_full.yaml      # full BGFM (all 4 modules)
+│   └── ablations/...                     # per-module ablation configs
 │
-├── paper/                     # ICLR 2026 paper (LaTeX + compiled PDF)
-│   ├── bgfm_paper.tex
-│   └── bgfm_paper.pdf
+├── scripts/
+│   ├── precompute_energy_perturbations.py   # offline OMol25 perturbation shards
+│   ├── run_train.py                         # Lightning training entry
+│   ├── launch_omol25_bgfm_h200.sh           # H200 launcher
+│   ├── sample_bgfm.py                       # flow + corrector sampler
+│   ├── eval_qm9_ebmol_protocol.py
+│   ├── eval_geomdrugs_ebmol_protocol.py
+│   ├── eval_xtb_relaxation.py
+│   ├── eval_cross_model_ranking.py
+│   ├── eval_negative_controls.py
+│   └── eval_boltzmann_stage{1,2}.py         # mechanism diagnostic
 │
-├── notes/                     # method derivations
-├── CODE_MAP.md                # paper section → source file mapping
-├── PROJECT_SUMMARY.md         # status, results
-├── AGENTS.md                  # AI-agent guidance (locked decisions, gotchas)
-├── CLAUDE.md                  # authoritative project guide
-└── README.md                  # this file
-```
-
-`envs/`, `runs/`, `data/`, and `baselines/` are excluded from the
-repository (see `.gitignore`). Reconstruct them via the scripts in
-`scripts/download_*` and the conda environments in `envs/`.
-
----
-
-## Environments
-
-Two conda environments because of a torch / fairchem version conflict:
-
-```bash
-# training and inference
-conda env create -f baselines/flowmol3/environment.yml -p envs/flowmol
-conda activate envs/flowmol
-
-# OMol25 data preprocessing and energy evaluation
-conda activate envs/omol25
+├── CODE_MAP.md                           # paper section → source file map
+└── README.md                             # this file
 ```
 
 ---
@@ -144,150 +100,73 @@ conda activate envs/omol25
 ## Reproduction recipe
 
 ```bash
-# 1. Get OMol25 data
+# 1. OMol25 data
 sbatch scripts/download_omol25_4m.slurm
 sbatch scripts/preprocess_omol25.slurm
 
-# 2. Precompute perturbations (the σ ∈ {0.03,0.06,0.10,0.20,0.40} Å shards)
+# 2. Offline OMol25 perturbation shards (energy + force labels)
 sbatch scripts/run_precompute_energy.slurm val   10000
 sbatch scripts/run_precompute_energy.slurm train 30000
 
-# 3. Train one BGFM variant (v8a: full BGFM @ room T)
-sbatch scripts/launch_omol25_bgfm_energy_h200.sh \
-       configs/omol25_4m_bgfm_energy_v8a_room_T.yaml \
-       "" 42
+# 3. Train full BGFM
+sbatch scripts/launch_omol25_bgfm_h200.sh \
+       configs/omol25_4m_bgfm_v10_full.yaml "" 42
 
-# 4. Boltzmann correlation eval (Level 1)
-sbatch scripts/run_boltzmann_eval.slurm \
-       runs/omol25_4m_bgfm_energy_v8a_room_T/.../last.ckpt \
-       configs/omol25_4m_bgfm_energy_v8a_room_T.yaml
+# 4. Sample with flow + Langevin corrector
+python scripts/sample_bgfm.py \
+       --checkpoint runs/omol25_4m_bgfm_v10_full/.../last.ckpt \
+       --config configs/omol25_4m_bgfm_v10_full.yaml \
+       --n_samples 10000 --flow_nfe 100 --corrector_steps 50 \
+       --out runs/eval/geomdrugs/samples.json
 
-# 5. Downstream relaxation comparison (Level 2)
-sbatch scripts/run_level2_relax.slurm <ckpt>
+# 5. Independent physical evaluation (GFN2-xTB)
+python scripts/eval_xtb_relaxation.py \
+       --samples runs/eval/geomdrugs/samples.json \
+       --out_csv runs/eval/geomdrugs/xtb_relax.csv
 
-# 6. MD-equivalent sampling efficiency (Level 3)
-sbatch scripts/run_level3_efficiency.slurm <ckpt>
+# 6. EBMol-protocol QM9 / GEOM-Drugs benchmark
+python scripts/eval_qm9_ebmol_protocol.py        --samples ... --out ...
+python scripts/eval_geomdrugs_ebmol_protocol.py  --samples ... --out ...
+
+# 7. Cross-model energy ranking
+python scripts/eval_cross_model_ranking.py \
+       --samples_dir runs/eval/cross_model/ \
+       --out_csv runs/eval/cross_model/ranking.csv
+
+# 8. Negative controls (shuffled-label retraining)
+python scripts/eval_negative_controls.py \
+       --in_shard  /path/perturbation_train_n30000_s0.pt \
+       --out_shard /path/perturbation_train_shuffled.pt \
+       --shuffle_energy_within_parent --seed 0
+sbatch scripts/launch_omol25_bgfm_h200.sh \
+       configs/ablations/bgfm_shuffled_energy.yaml "" 42
 ```
-
-Total compute on H200: ~45–50 h per training seed; ~2 h Level 1 eval;
-~10 h Level 2; ~5 h Level 3.
 
 ---
 
 ## Loss terms (quick reference)
 
-| Term | Code | What it does |
+| Term | Code | Purpose |
 |---|---|---|
-| `L_FM` | FlowMol3 baseline | Standard flow-matching reconstruction (positions + atom-types + charges) |
-| `L_force` | `cfm_mol/bgfm_loss.py:force_loss` | Cosine between FM-implied score at `x_t` and OMol25 endpoint force `F(x_1)/kT` |
-| `L_energy` | `cfm_mol/bgfm_density.py:energy_consistency_loss_per_mol` | `Var_k(log p_θ + E/kT)` over K offline-precomputed perturbations |
-| `L_anchor` | `cfm_mol/bgfm_density.py:energy_anchor_loss` | `(log p_θ + E/kT + a_φ(c))²` to stabilize the per-molecule offset |
-
-Total: `L = L_FM + λ₁·L_force + λ₂·L_energy + λ₃·L_anchor`
-with warm-up + ramp schedule on `λ₁, λ₂, λ₃`.
+| $\mathcal L_{\rm FM}$ | FlowMol3 backbone | Standard flow-matching reconstruction over coordinates, atom types, charges. |
+| $\mathcal L_{\rm force}$ | `cfm_mol/bgfm_loss.py:force_loss` | Cosine between FM-implied score and $F_{\rm OMol25}(r_1)/kT$ at late path times. |
+| $\mathcal L_{\rm dens}$ | `cfm_mol/bgfm_density.py:energy_consistency_loss_per_mol` | $\mathrm{Var}_k(\log p_\theta + E/kT)$ over $K$ precomputed perturbations. |
+| $\mathcal L_{\rm anchor}$ | `cfm_mol/bgfm_density.py:energy_anchor_loss` | $(\log p_\theta + E/kT + a_\phi(c))^2$ stabilizing the per-molecule offset. |
+| $\mathcal L_{\rm head}$ | `cfm_mol/bgfm_loss.py:energy_head_calibration_loss` | L1 energy regression + force-gradient matching of $\hat E_\psi$ to OMol25. |
 
 ---
 
-## Evaluation strategy: 5 questions, 7 experiments
+## Evaluation framework
 
-The Boltzmann-correlation metric originally used as the headline result
-(per-mol $R^2$ of $\log p_\theta$ vs.\ $-E_{\rm OMol25}/kT$) is
-informative but **too close to the training objective** to serve as the
-main claim. The evaluation is now structured around five questions and
-seven experiments. Question Q3 (mechanism) is verified by an
-OMol25-based diagnostic; the headline answers come from Q1, Q2, Q4, Q5
-under benchmarks and oracles that are independent of training
-supervision.
-
-### Five questions the experiments answer
-
-- **Q1 — standard generation quality.** Does adding BGFM physical
-  regularization preserve the validity, stability, uniqueness, novelty,
-  and diversity of unconditional 3D generation?
-- **Q2 — independent physical quality.** Does BGFM generate structures
-  that need less downstream relaxation under evaluators *not* used as
-  the training target (GFN2-xTB, MMFF, DFT subset)?
-- **Q3 — mechanistic Boltzmann alignment.** Does the proposed objective
-  actually align conditional coordinate densities with local Boltzmann
-  relative probabilities? *(Mechanism only; not the headline.)*
-- **Q4 — evaluation validity.** Do the gains come from correct OMol25
-  signal — not from arbitrary regularization or training–evaluation
-  overlap? Tested via shuffled-force, shuffled-energy, wrong-$kT$,
-  wrong-parent, and random-regularizer controls.
-- **Q5 — EBMol comparison.** Is BGFM better than EBMol on the
-  quality–diversity–compute frontier?
-
-### Seven experiments
-
-| # | Experiment | Answers | Headline evaluator |
-|---|---|---|---|
-| 1 | Standard unconditional generation (QM9 + GEOM-Drugs) | Q1 | atom/mol stab, validity, uniqueness, novelty, Vendi |
-| 2 | Independent physical quality | Q2 | **GFN2-xTB** + MMFF + DFT subset |
-| 3 | Quality–diversity–compute Pareto | Q5 | $\mathrm{VLU}_\tau$ throughput, NFE, wall-clock |
-| 4 | Mechanistic Boltzmann consistency | Q3 | OMol25 $\log p$ vs. $-E/kT$ — *mechanism only* |
-| 5 | Ablations + negative controls | Q4 | shuffled force/energy, wrong $kT$, wrong parent, random regularizer |
-| 6 | Energy-based ranking / filtering | Q5 | cross-model pool ranked by $S(x)$ vs. xTB $\Delta E$ |
-| 7 | OMol25 broad-chemistry generalization | Q1, Q2 | held-out slices: charge, size, element, metal-containing |
-
-### Scripts
-
-- **Exp 1 (QM9)**: `scripts/eval_qm9_ebmol_protocol.py` *(scaffolded)*
-- **Exp 1 (GEOM-Drugs)**: `scripts/eval_geomdrugs_ebmol_protocol.py` *(scaffolded)*
-- **Exp 2 (xTB)**: `scripts/eval_xtb_relaxation.py` *(scaffolded)*
-- **Exp 3 (Pareto)**: derived from Exp 1+2 outputs (notebook in `notes/`)
-- **Exp 4 (mechanism)**: `scripts/eval_boltzmann_stage1.py` + `scripts/eval_boltzmann_stage2.py`
-- **Exp 5 (controls)**: `scripts/eval_negative_controls.py` *(scaffolded)*
-   + `scripts/run_train.py --override_bgfm_lambda_{1,2,3}` for ablations
-- **Exp 6 (ranking)**: `scripts/eval_cross_model_ranking.py` *(scaffolded)*
-- **Exp 7 (broad)**: `scripts/eval_boltzmann_stage1.py --chemistry_slice`
-
-### Plan documents (in repo)
-
-- [`notes/EXPERIMENT_DESIGN_2026-06-29_CN.md`](notes/EXPERIMENT_DESIGN_2026-06-29_CN.md) — full Chinese experiment plan with table templates
-- [`notes/EBMOL_BENCHMARK_PLAN_2026-06-29_CN.md`](notes/EBMOL_BENCHMARK_PLAN_2026-06-29_CN.md) — earlier EBMol benchmark plan (consistent)
-- [`notes/EXPERT_AUDIT_2026-06-29.md`](notes/EXPERT_AUDIT_2026-06-29.md) — code audit by external expert
-- [`notes/EXPERT_FULL_PLAN_2026-06-29_CN.md`](notes/EXPERT_FULL_PLAN_2026-06-29_CN.md) — comprehensive Chinese framework plan
-
-## Current results (verified 2026-06-29)
-
-| Variant | Step | Exp 4 R² (mechanism only) | Note |
-|---|---|---|---|
-| FM baseline | 50k | 0.091 | flow-matching only |
-| BGFM v7c (mixed force + small energy, kT=1 eV) | 50k | **0.278** | 3.0× over FM baseline — mechanism-level only |
-| BGFM v8a (full BGFM @ 300 K) | step ≥ 95k (NaN at ~98k) | **[pending re-eval]** | bug-fixed eval running |
-| BGFM v8b (T-conditional) | step 95k | **[pending re-eval]** | best variant pre-NaN |
-| BGFM v8c (energy + anchor only) | step 55k | **[pending re-eval]** | ablation: no force loss |
-
-**Experiments 1, 2, 3, 5, 6, 7 are the main results.** They are
-pending — they require sampling against EBMol checkpoints (Exp 1),
-running GFN2-xTB on ~10k generated molecules (Exp 2), and pooling
-samples across EDM / GeoLDM / FlowMol3 / EBMol / BGFM (Exp 6).
-
-**Note on R² numbers reported before 2026-06-29:** prior Stage-1 eval
-hardcoded `charge = 0` and `spin = 1` for every record, which is wrong
-for ~44% of OMol25 val molecules. The fix landed 2026-06-29
-(`scripts/eval_boltzmann_stage1.py`); the v7c row above will be
-re-measured under the fix. See
-[`notes/EXPERT_AUDIT_2026-06-29.md`](notes/EXPERT_AUDIT_2026-06-29.md)
-for the full audit and
-[`notes/EBMOL_BENCHMARK_PLAN_2026-06-29_CN.md`](notes/EBMOL_BENCHMARK_PLAN_2026-06-29_CN.md)
-for the post-audit evaluation roadmap.
-
----
-
-## Open issues and follow-ups (tracked)
-
-1. **v8 NaN at step 30k–98k.** `L_anchor` overflow at bf16 limit on outlier
-   perturbations. Mitigation: soft-clamp anchor + NaN-skip on anchor
-   gradient; `λ₃` step-down. v9 implementation pending.
-2. **Spin handling in eval.** `scripts/eval_boltzmann_stage1.py` still
-   hard-codes `spin = 1`. OMol25 corrects this internally most of the
-   time, but rare odd-electron radicals remain a known follow-up.
-3. **Force loss is a late-time approximation.** `F(x_1)` is used as a
-   surrogate for the true `F(x_t)`; we have not yet ablated this against
-   an online `F(x_t)` evaluation.
-4. **No QM9 sanity check yet.** A standard-benchmark validity number is
-   planned for camera-ready.
+| Experiment | Question | Evaluator |
+|---|---|---|
+| 1. Standard generation | Does BGFM preserve standard validity / diversity? | QM9, GEOM-Drugs (EBMol protocol + Vendi diversity) |
+| 2. Independent physical quality | Does BGFM improve under evaluators NOT in training? | **GFN2-xTB + MMFF + DFT subset** |
+| 3. Quality–diversity–compute frontier | Does BGFM dominate the Pareto vs EBMol? | $\mathrm{VULS}_\tau$ throughput, NFE, wall-clock |
+| 4. Mechanism diagnostic | Did BGFM implement its target objective? | OMol25 log-density vs. $-E/kT$ on held-out perturbation families |
+| 5. Ablations | What does each module contribute? | per-module removal |
+| 6. Negative controls | Is the lift causal? | shuffled-energy / shuffled-force / wrong-$kT$ retraining |
+| 7. Cross-model ranking | Does the BGFM scorer beat EBMol's r=0.65? | pooled EDM / FlowMol3 / EBMol / BGFM scored vs xTB $\Delta E$ |
 
 ---
 
@@ -297,12 +176,11 @@ The paper is under double-blind review.
 
 ```bibtex
 @misc{anonymous2026bgfm,
-  title  = {Boltzmann-Regularized Flow Matching for
-            Universal-Neural-Potential Guided 3D Molecular Generation},
+  title  = {BGFM: Boltzmann-Calibrated Flow Matching with
+            Universal Neural Potentials for 3D Molecular Generation},
   author = {Anonymous},
   year   = {2026},
-  note   = {Under double-blind review at ICLR 2026.
-            Code: https://github.com/yurika1030sakura/bgfm}
+  note   = {Under double-blind review. Code: https://github.com/yurika1030sakura/bgfm}
 }
 ```
 
@@ -312,15 +190,3 @@ The paper is under double-blind review.
 
 MIT for code in this repository.
 Forked baselines (FlowMol3) retain their original licenses.
-
----
-
-## Acknowledgement
-
-We thank the external expert reviewer (2026-06-29) for a line-by-line
-code-and-paper audit that surfaced three real bugs (eval charge hardcode,
-T-conditional kT not reaching FFJORD, eval not supporting T-conditional
-checkpoints) and corrected several over-claims in the paper text. The
-expert's audit and rewrite are preserved in
-`notes/EXPERT_AUDIT_2026-06-29.md`. This README and the paper are
-written against that audit.
