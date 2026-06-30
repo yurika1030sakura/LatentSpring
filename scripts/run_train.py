@@ -28,6 +28,7 @@ import torch
 from cfm_mol.domain import default_d_min_table
 from cfm_mol.flow_model import patch_flowmol
 from cfm_mol.bgfm_train_hook import patch_flowmol_bgfm
+from cfm_mol.native import patch_bgfm_native
 
 
 
@@ -353,6 +354,13 @@ def main():
         # cfg['mol_fm'] above so it doesn't reach FlowMol.__init__.
         if bgfm_cfg is not None and bgfm_cfg.get('enabled', False):
             patch_flowmol_bgfm(model, bgfm_cfg)
+            # BGFM-Native (energy-coupled vector field) layered on top of
+            # the standard BGFM losses. Activated when
+            # mol_fm.bgfm.native.enabled is true. See cfm_mol/native/.
+            native_cfg = bgfm_cfg.get('native', None)
+            if native_cfg is not None and native_cfg.get('enabled', False):
+                patch_bgfm_native(model, native_cfg)
+                print("[cfm_mol] BGFM-Native hook patched into model.")
     # ---------------------------------------------------------------------
 
     # --- guard against early-training posebusters crash ------------------

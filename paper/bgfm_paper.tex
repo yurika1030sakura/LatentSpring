@@ -38,7 +38,7 @@ trade diversity for physical quality. We propose \textbf{BGFM}, an energy-couple
 de novo 3D molecular generation.  Its coordinate velocity is decomposed
 into an amortized transport field and a conservative Boltzmann residual
 drift distilled from OMol25-derived energies and forces~\citep{omol25}:
-$ v_{\rm BGFM}=v_\theta+\alpha(t)P_{\rm SE(3)}[-\nabla_r\Delta E_\psi] $.
+$ v_{\rm BGFM}=v_\theta+\alpha(t,T_{\rm drift})\,P_{\rm SE(3)}[-\beta_{\rm drift}\nabla_r\Delta E_\psi] $.
 Training couples this vector field to the external energy landscape
 through late-time force-score consistency, within-parent density-energy
 variance, and a finite-cloud Local Boltzmann bridge.  BGFM also learns a
@@ -82,11 +82,13 @@ neural-potential forces near the data endpoint. The second estimates a
 coordinate log-density with a FFJORD integral and enforces that, within a
 cloud of perturbations of the same parent molecule,
 \begin{equation}
-    \log p_\theta^{\rm pos}(r \mid c) + \beta E_{\rm NP}(r,c)
+    \log p_\theta^{\rm pos}(r \mid c) + \beta_{\rm phys} E_{\rm NP}(r,c)
 \end{equation}
-varies as little as possible. This is a local conditional Boltzmann
-condition: lower-energy perturbations of the same molecular identity
-should receive higher probability. BGFM further trains a small scalar
+varies as little as possible, where $\beta_{\rm phys} = 1/(k_B T_0)$ is the
+physical inverse temperature (see ``Temperature conventions'' in
+\S\ref{eq:conditional-boltzmann}'s preamble). This is a local
+conditional Boltzmann condition: lower-energy perturbations of the same
+molecular identity should receive higher probability. BGFM further trains a small scalar
 energy head to approximate the external neural-potential energy and
 force, then uses this head for a short learned-energy Langevin corrector
 that refines coordinates while holding the sampled molecular identity
@@ -109,7 +111,7 @@ relaxation oracles.
     decomposes into an amortized transport component and a
     conservative late-time Boltzmann drift distilled from a universal
     neural potential,
-    $v_{\rm BGFM} = v_\theta + \alpha(t)\,P_{\rm SE(3)}[-\nabla_r \Delta E_\psi]$.
+    $v_{\rm BGFM} = v_\theta + \alpha(t,T_{\rm drift})\,P_{\rm SE(3)}[-\beta_{\rm drift}\nabla_r \Delta E_\psi]$.
     The energy gradient enters the generator's dynamics, not a
     post-processing step.
     \item \textbf{Local Boltzmann bridge with density-energy
@@ -117,9 +119,12 @@ relaxation oracles.
     cloud Boltzmann target induced by OMol25 perturbation energies via
     an explicit per-parent KL bridge,
     $\mathrm{KL}(w_m\,\|\,q^{(m)}_\theta)$ with
-    $w_m^{(k)}\propto e^{-\beta E_m^{(k)}}$ and
+    $w_m^{(k)}\propto e^{-\beta_{\rm bridge}(s)\, E_m^{(k)}}$ and
     $q^{(m,k)}_\theta\propto e^{\log p_\theta(r_m^{(k)}|c_m)}$, in
-    parallel with the within-parent density-energy variance form. Both
+    parallel with the within-parent density-energy variance form. Here
+    $\beta_{\rm bridge}(s) = 1/(k_B T_{\rm bridge}(s))$ is the
+    \emph{tempered} training inverse temperature, annealed to the
+    physical anchor $\beta_{\rm phys}$ by end of training. Both
     objectives are invariant to the unknown per-composition partition
     function and reuse the same FFJORD log-density evaluation.
     \item \textbf{Corrector-in-the-loop amortized physical sampler.}
@@ -152,11 +157,16 @@ density~\citep{neuralode, ffjord}, and flow matching~\citep{flowmatching}
 closest same-family baseline: an open-source multi-modal flow-matching model
 for de novo all-atom small-molecule generation that improves FlowMol via
 self-conditioning, fake atoms, and train-time geometry distortion without
-changing the underlying GNN or flow formulation.  BGFM does not merely
-scale this backbone; it modifies the coordinate vector-field
-parameterization by adding a calibrated conservative residual drift and
-then trains the resulting density with external-neural-potential
-Boltzmann calibration.
+changing the underlying GNN or flow formulation.  BGFM does not replace
+the discrete molecular identity generator and does not enlarge the GNN
+backbone; instead, it changes the \emph{coordinate dynamics} into an
+energy-coupled flow field. Concretely, the continuous coordinate vector
+field is modified into an energy-coupled vector field whose conservative
+component is distilled from a universal neural potential, while the
+amortized molecular identity proposal over atom types and charges is
+inherited from FlowMol3. The change is to the generative dynamics
+themselves, not to a post-hoc calibration layer applied to the
+backbone's outputs.
 
 \paragraph{Energy-based molecular generation.}
 EBMol~\citep{ebmol} learns a time-unconditional atom-additive scalar potential and
@@ -172,9 +182,11 @@ on inference-time energy sampling.
 FlexiFlow~\citep{flexiflow} extends flow matching to jointly sample molecular graphs and
 multiple conformations and reports strong QM9/GEOM-Drugs performance.
 FlexiFlow is a required standard-generation baseline, especially for
-conformer-ensemble metrics. Its goal is complementary to BGFM: FlexiFlow
-focuses on molecular/conformer ensemble coverage, while BGFM focuses on
-external-neural-potential calibrated low-strain de novo generation.
+conformer-ensemble metrics. Its goal is complementary to BGFM:
+FlexiFlow focuses on molecular/conformer ensemble coverage, while
+BGFM focuses on energy-coupled coordinate dynamics that produce
+low-strain de novo geometries without long inference-time energy
+chains.
 
 \paragraph{Boltzmann generators and energy-based flow matching.}
 Boltzmann Generators~\citep{boltzmanngen},
@@ -194,6 +206,29 @@ and energy-head calibration.
 
 \section{Method}
 
+\paragraph{Temperature conventions.}
+Throughout this paper we use a strict two-temperature convention.
+The \emph{physical} temperature is $T_0 = 298.15\,\mathrm{K}$ and the
+corresponding physical Boltzmann constant times temperature is
+$k_B T_0 = 0.02569\,\mathrm{eV} = 0.593\,\mathrm{kcal/mol}$,
+so $\beta_{\rm phys} = 1/(k_B T_0) \approx 38.93\,\mathrm{eV}^{-1}$.
+This is the unique definition of ``room temperature'' used to define the
+target Boltzmann law and the reported physical-quality numbers (the
+xTB/MMFF/DFT $\Delta E$ tables and BGFM-Native-det).
+During training, the Boltzmann-bridge loss uses an \emph{effective}
+$k_B T_{\rm bridge}(s)$ that may be tempered or annealed for numerical
+stability of the variance / KL objective; whenever
+$k_B T_{\rm bridge} > k_B T_0$ we call this configuration the
+\emph{tempered Boltzmann bridge} and never ``room temperature''. We
+recommend a log-linear anneal $0.25 \to 0.10 \to 0.05 \to 0.02569\,\mathrm{eV}$.
+The corrector is reported in two variants (\S\ref{sec:method:corrector}):
+a \emph{deterministic} descent at $T_0$ and a \emph{physical-$300\,\mathrm{K}$
+noisy Langevin} diagnostic that uses $\beta_{\rm phys}$ for its noise scale.
+All ``$kT$'', ``$T_0$'', ``$298$'', and ``tempered'' usage in the paper is
+labelled in one of these three categories. Any $kT$ used in training that
+differs from $k_B T_0$ is the \emph{effective / tempered training
+temperature}, not physical.
+
 Let a molecular configuration be $x=(c,r)$, where $c$ denotes molecular
 identity variables (atom count, atom types, and charges) and
 $r\in\mathbb R^{3N}$ denotes coordinates. The external neural potential
@@ -203,8 +238,8 @@ global canonical ensemble over arbitrary molecular identities. Instead,
 for a fixed identity $c$, it targets the conditional coordinate
 Boltzmann law
 \begin{equation}
-    p_B(r\mid c,T)=\frac{1}{Z_c(T)}\exp[-\beta E_{\rm NP}(r,c)],
-    \qquad \beta=1/(kT).
+    p_B(r\mid c,T_0)=\frac{1}{Z_c(T_0)}\exp[-\beta_{\rm phys} E_{\rm NP}(r,c)],
+    \qquad \beta_{\rm phys}=1/(k_B T_0)\;[\text{physical}].
     \label{eq:conditional-boltzmann}
 \end{equation}
 This target is well-defined because $c$ is fixed; cross-composition
@@ -220,11 +255,14 @@ let $\Delta E_\psi(r,c)$ be a composition-conditioned residual strain energy
 head.  The coordinate velocity used by BGFM is
 \begin{equation}
     v_{\rm BGFM}(x_t,t)
-    = v_\theta(x_t,t) + \alpha(t)P_{\rm SE(3)}[-\nabla_r\Delta E_\psi(r_t,c)],
+    = v_\theta(x_t,t) + \alpha(t, T_{\rm drift})\,P_{\rm SE(3)}\bigl[-\,\beta_{\rm drift}\,\nabla_r\Delta E_\psi(r_t,c)\bigr],
+    \qquad \beta_{\rm drift}=1/(k_B T_{\rm drift}),
     \label{eq:energy-coupled-vf}
 \end{equation}
 where $P_{\rm SE(3)}$ removes per-graph center-of-mass drift and
-$\alpha(t)$ is a late-time onset schedule.  Atom types and charges still use
+$\alpha(t, T_{\rm drift})$ is a late-time onset schedule. The explicit
+$\beta_{\rm drift}$ makes the role of temperature in the drift unambiguous
+and matches Eq.~\eqref{eq:bgfm-velocity}. Atom types and charges still use
 the categorical flow/CTMC component of the proposal.  The base flow-matching
 loss is applied to the total velocity,
 \begin{equation}
@@ -239,7 +277,8 @@ we also report the plain-flow proposal $v_\theta$ and a post-hoc-only variant.
 
 For the conditional Boltzmann law in Eq.~\eqref{eq:conditional-boltzmann},
 \begin{equation}
-    \nabla_r \log p_B(r\mid c,T)=\beta F_{\rm NP}(r,c).
+    \nabla_r \log p_B(r\mid c,T_0)=\beta_{\rm phys} F_{\rm NP}(r,c)
+    \qquad [\text{physical}].
 \end{equation}
 Under the linear Gaussian interpolant, the coordinate score at time $t$
 can be estimated from the flow velocity by
@@ -250,7 +289,8 @@ BGFM evaluates this score at late but finite times
 $t\in\mathcal T$ and aligns it with the endpoint neural-potential force:
 \begin{equation}
     \mathcal L_{\rm force}=\mathbb E_{t\in\mathcal T}
-    \left[1-\cos\left(s_\theta(x_t,t),\,\beta F_{\rm NP}(r_1,c)\right)\right].
+    \left[1-\cos\left(s_\theta(x_t,t),\,\beta_{\rm phys} F_{\rm NP}(r_1,c)\right)\right]
+    \qquad [\text{physical}; \cos \text{ is } \beta\text{-invariant}].
     \label{eq:force-loss}
 \end{equation}
 This is a late-time regularizer, not an exact identity at arbitrary
@@ -260,20 +300,23 @@ training step by using precomputed endpoint forces.
 \subsection{Density-energy variance}
 
 The most direct probability calibration is that
-$\log p_B(r\mid c,T)+\beta E_{\rm NP}(r,c)$ equals a constant depending
-only on $c$ and $T$. BGFM estimates the coordinate log-density
-$\log p_\theta^{\rm pos}(r\mid c)$ with a FFJORD-style divergence
-integral through the coordinate velocity field. For each parent molecule
-$m$, we precompute a cloud of perturbations
+$\log p_B(r\mid c,T)+\beta_{\rm bridge}(s) E_{\rm NP}(r,c)$ equals a
+constant depending only on $c$ and $T$. BGFM estimates the coordinate
+log-density $\log p_\theta^{\rm pos}(r\mid c)$ with a FFJORD-style
+divergence integral through the coordinate velocity field. For each
+parent molecule $m$, we precompute a cloud of perturbations
 $\{r_m^{(k)}\}_{k=1}^K$ and neural-potential energies. The loss is
 \begin{equation}
     \mathcal L_{\rm dens}=\mathbb E_m\operatorname{Var}_{k}
     \left[
         \log p_\theta^{\rm pos}(r_m^{(k)}\mid c_m)
-        +\beta E_{\rm NP}(r_m^{(k)},c_m)
-    \right].
+        +\beta_{\rm bridge}(s)\, E_{\rm NP}(r_m^{(k)},c_m)
+    \right],
     \label{eq:density-energy}
 \end{equation}
+where $\beta_{\rm bridge}(s)$ is the (possibly tempered) training
+inverse temperature that anneals to $\beta_{\rm phys}$ by end of
+training (see ``Temperature conventions'').
 Because the variance is taken within the same parent molecule, the
 unknown offset $-\log Z_{c_m}(T)$ cancels. We optionally add a
 composition-conditioned scalar offset $b_\phi(c)$ as an anchor, but do
@@ -312,13 +355,31 @@ not a free energy and is not a thermodynamic absolute formation energy.
 \label{sec:method:corrector}
 
 After the flow proposal samples $(c, r^0)$, BGFM optionally refines only
-coordinates using the calibrated head:
+coordinates using the calibrated head. We report two variants:
+
+\paragraph{Deterministic descent corrector (BGFM-Native-det).}
+\begin{equation}
+    r^{j+1} \,=\, \Pi\bigl[\,r^j + \eta_j\bigl(-\nabla_r \Delta E_\psi(r^j, c)\bigr)\bigr],
+    \qquad j = 0, \ldots, J-1.
+    \label{eq:corrector-det}
+\end{equation}
+This is the noise-free ($\epsilon_j = 0$) descent that produces our
+\emph{main physical-quality numbers} (xTB/MMFF $\Delta E$). It is not
+intended as a Boltzmann sampler; it is a short, learned, deterministic
+relaxation, comparable to a few steps of MMFF or xTB local optimization
+but using only the in-model strain head.
+
+\paragraph{Room-temperature noisy Langevin corrector (BGFM-Native-300K).}
 \begin{equation}
     r^{j+1} \,=\, \Pi\bigl[\,r^j + \eta_j\bigl(-\nabla_r \Delta E_\psi(r^j, c)\bigr)
-    + \sqrt{2 \eta_j / \beta}\,\epsilon_j\,\bigr],
-    \qquad j = 0, \ldots, J-1.
-    \label{eq:corrector}
+    + \sqrt{2 \eta_j / \beta_{\rm phys}}\,\epsilon_j\,\bigr],
+    \qquad \epsilon_j \sim \mathcal{N}(0, I),
+    \label{eq:corrector-langevin}
 \end{equation}
+with $\beta_{\rm phys} = 1/(k_B T_0)$ at $T_0 = 298.15\,\mathrm{K}$ [physical].
+This is the mechanistic Boltzmann-ensemble diagnostic and is what we use
+when we wish to test conditional-Boltzmann calibration empirically;
+it is \emph{not} the default reported number.
 Here $J \in \{0, 20, 50, 100\}$ in our compute sweep, $\Pi$ removes
 center-of-mass drift, and the discrete identity $c$ --- atom counts,
 types, and charges --- is held fixed throughout refinement. Per sampled
@@ -328,8 +389,8 @@ post-corrector geometry produces invalid OpenBabel/RDKit bond inference,
 steric clash above a threshold, or downstream relaxation failure are
 counted as \emph{failures} and remain in the population averages of
 the all-samples protocol; we never silently drop them. Unless a
-Metropolis correction is explicitly enabled and reported, this
-corrector is an unadjusted short refinement, not an exact MCMC sampler.
+Metropolis correction is explicitly enabled and reported, neither
+corrector variant is an exact MCMC sampler.
 
 \subsection{Energy-calibrated vector field}
 \label{sec:method:drift}
@@ -337,26 +398,51 @@ corrector is an unadjusted short refinement, not an exact MCMC sampler.
 Modules 1--4 above use the energy head only at sampling time. To turn
 BGFM into a genuine \emph{energy-calibrated} flow rather than a flow
 with a post-hoc relax step, we additionally inject the head's
-coordinate gradient into the velocity field itself:
+coordinate gradient into the velocity field itself, with an explicit
+inverse-temperature factor $\beta_{\rm drift} = 1/(k_B T_{\rm drift})$
+[physical at default]:
 \begin{equation}
     v_{\rm BGFM}(x_t, t) \,=\, v_\theta(x_t, t)
-    \,+\, \alpha(t)\,P_{\rm SE(3)}\!\bigl[-\nabla_r\,\Delta E_\psi(r_t, c)\bigr],
+    \,+\, \alpha(t, T_{\rm drift})\,P_{\rm SE(3)}\!\bigl[\,-\,\beta_{\rm drift}\,\nabla_r\,\Delta E_\psi(r_t, c)\bigr],
     \label{eq:bgfm-velocity}
 \end{equation}
-where $\alpha(t)$ is a smooth late-time onset schedule (zero on
-$[0, t_{\rm on}]$, growing on $[t_{\rm on}, 1]$ with a quadratic power)
-and $P_{\rm SE(3)}$ removes the per-graph centroid drift so the
+where $\alpha(t, T_{\rm drift})$ is a smooth late-time onset schedule
+(zero on $[0, t_{\rm on}]$, growing on $[t_{\rm on}, 1]$ with a quadratic
+power) and $P_{\rm SE(3)}$ removes the per-graph centroid drift so the
 correction respects translation equivariance; SO(3) equivariance is
 inherited from the strain term being a rotation-invariant scalar of
-pairwise distances. We add a stability regularizer
+pairwise distances. The drift inverse temperature $\beta_{\rm drift}$
+appears \emph{explicitly} in the velocity so the role of temperature in
+the generative dynamics is unambiguous; in the main configuration
+$k_B T_{\rm drift} = k_B T_0 = 0.02569\,\mathrm{eV}$ [physical], and
+the temperature ablation in \S\ref{sec:exp:temperature} sweeps it.
+We add a stability regularizer
 \begin{equation}
-    \mathcal L_{\rm drift} \,=\, \mathbb E \bigl\|\alpha(t)\,P_{\rm SE(3)}\!\bigl[-\nabla_r\,\Delta E_\psi(r_t, c)\bigr]\bigr\|^2,
+    \mathcal L_{\rm drift} \,=\, \mathbb E \bigl\|\alpha(t, T_{\rm drift})\,P_{\rm SE(3)}\!\bigl[-\beta_{\rm drift}\,\nabla_r\,\Delta E_\psi(r_t, c)\bigr]\bigr\|^2,
     \label{eq:drift-loss}
 \end{equation}
 so the drift contribution remains the same order of magnitude as the
-base velocity. At inference, the sampler can opt in to either the
-plain flow $v_\theta$ or the calibrated field $v_{\rm BGFM}$; we report
-both in the experimental ablations.
+base velocity. The norm penalty alone, however, does not certify the
+\emph{direction} of the drift: a backbone that learned to cancel the
+drift contribution would still satisfy Eq.~\eqref{eq:drift-loss} at the
+optimum. To make the drift a genuinely physical \emph{descent} direction
+on the learned strain, we add a hinge \emph{monotonicity} loss. Writing
+$d_t = P_{\rm SE(3)}[-\beta_{\rm drift}\,\nabla_r\,\Delta E_\psi(r_t, c)]$
+for the conservative drift component, the loss is
+\begin{equation}
+    \mathcal L_{\rm mono} \,=\, \mathbb E\,\max\!\bigl(0,\;
+        \Delta E_\psi(r_t + \epsilon\,d_t,\,c)
+        \,-\, \Delta E_\psi(r_t, c)
+        \,+\, m\bigr),
+    \label{eq:drift-monotonicity}
+\end{equation}
+with step size $\epsilon$ matched to the late-time velocity scale and
+optional margin $m \ge 0$. This certifies that the conservative
+component, when actually applied, does not raise the learned strain on
+average and thus distinguishes a physical Boltzmann drift from a generic
+norm-controlled perturbation. At inference, the sampler can opt in to
+either the plain flow $v_\theta$ or the calibrated field $v_{\rm BGFM}$;
+we report both in the experimental ablations.
 
 \subsection{Corrector-aware training}
 \label{sec:method:corrector-aware}
@@ -389,8 +475,9 @@ objective with a well-defined target, we add a Local Boltzmann bridge
 loss. For each parent molecule $m$ with $K$ perturbations, define the
 neural-potential-induced cloud-restricted Boltzmann target
 \begin{equation}
-    w_m^{(k)} \,=\, \frac{\exp\!\bigl[-\beta E_{\rm NP}(r_m^{(k)}, c_m)\bigr]}
-                         {\sum_{j=1}^{K}\exp\!\bigl[-\beta E_{\rm NP}(r_m^{(j)}, c_m)\bigr]},
+    w_m^{(k)} \,=\, \frac{\exp\!\bigl[-\beta_{\rm bridge}(s)\, E_{\rm NP}(r_m^{(k)}, c_m)\bigr]}
+                         {\sum_{j=1}^{K}\exp\!\bigl[-\beta_{\rm bridge}(s)\, E_{\rm NP}(r_m^{(j)}, c_m)\bigr]},
+    \qquad \beta_{\rm bridge}(s)=1/(k_B T_{\rm bridge}(s))\;[\text{tempered, anneals to } \beta_{\rm phys}],
     \label{eq:bridge-target}
 \end{equation}
 and the model's cloud-restricted distribution
@@ -411,8 +498,9 @@ the per-parent forward KL,
     \label{eq:bridge-loss}
 \end{equation}
 In the small-fluctuation limit where the cloud residual
-$\log p_\theta^{\rm pos} + \beta E_{\rm NP}$ is approximately constant
-across $k$, this reduces to half the within-parent variance in
+$\log p_\theta^{\rm pos} + \beta_{\rm bridge}(s)\, E_{\rm NP}$ is
+approximately constant across $k$, this reduces to half the within-parent
+variance in
 Eq.~\eqref{eq:density-energy} plus higher-order terms, so the two
 objectives are theoretically consistent. In practice the bridge form is
 more numerically stable when the cloud is large or when the residual is
@@ -432,7 +520,8 @@ The full training loss is
     \,+\, \lambda_4 \mathcal L_{\rm head}
     \,+\, \lambda_5 \mathcal L_{\rm drift}
     \,+\, \lambda_6 \mathcal L_{\rm stab}
-    \,+\, \lambda_7 \mathcal L_{\rm bridge}.
+    \,+\, \lambda_7 \mathcal L_{\rm bridge}
+    \,+\, \lambda_8 \mathcal L_{\rm mono}.
     \label{eq:total-loss}
 \end{equation}
 All auxiliary weights use warmup/ramp schedules. OMol25 is not called
@@ -463,24 +552,26 @@ call is used in default sampling.
 
 \begin{proposition}[Finite-cloud Boltzmann ratios]
 For a fixed molecular identity $c$, if
-$\log p_\theta^{\rm pos}(r_m^{(k)}\mid c)+\beta E_{\rm NP}(r_m^{(k)},c)$ is
-constant over the perturbation cloud, then for any perturbations $i,j$,
+$\log p_\theta^{\rm pos}(r_m^{(k)}\mid c)+\beta_{\rm phys} E_{\rm NP}(r_m^{(k)},c)$ is
+constant over the perturbation cloud (in the limit $T_{\rm bridge} \to T_0$),
+then for any perturbations $i,j$,
 \begin{equation}
     \log\frac{p_\theta^{\rm pos}(r_m^{(i)}\mid c)}
     {p_\theta^{\rm pos}(r_m^{(j)}\mid c)}
-    =-\beta\left(E_{\rm NP}(r_m^{(i)},c)-E_{\rm NP}(r_m^{(j)},c)\right).
+    =-\beta_{\rm phys}\left(E_{\rm NP}(r_m^{(i)},c)-E_{\rm NP}(r_m^{(j)},c)\right).
 \end{equation}
-Thus the variance and bridge objectives enforce local conditional
-Boltzmann relative probabilities without requiring $Z_c(T)$.
+Thus, in the limit $T_{\rm bridge} \to T_0$, the variance and bridge
+objectives enforce local conditional physical Boltzmann relative
+probabilities without requiring $Z_c(T_0)$.
 \end{proposition}
 
 \begin{proposition}[Endpoint force-score condition]
 Under the conditional coordinate Boltzmann target in
 Eq.~\eqref{eq:conditional-boltzmann}, the coordinate score satisfies
-$\nabla_r\log p_B(r\mid c,T)=\beta F_{\rm NP}(r,c)$.  Aligning the
-flow-implied late-time score of the total energy-coupled field with
-$\beta F_{\rm NP}$ is therefore a local necessary condition for Boltzmann
-calibration near the data endpoint.
+$\nabla_r\log p_B(r\mid c,T_0)=\beta_{\rm phys} F_{\rm NP}(r,c)$.
+Aligning the flow-implied late-time score of the total energy-coupled
+field with $\beta_{\rm phys} F_{\rm NP}$ is therefore a local necessary
+condition for physical Boltzmann calibration near the data endpoint.
 \end{proposition}
 
 \section{Experiments}
@@ -583,9 +674,40 @@ energy-sampling chains on physical quality, diversity, and cost.
 
 For held-out parent molecules and perturbation families, we measure the
 within-parent correlation and calibration slope between
-$\log p_\theta^{\rm pos}(r\mid c)$ and $-\beta E(r,c)$. We report this
-with OMol25 as a mechanism diagnostic, and repeat it with xTB and a DFT
-subset to test transfer.
+$\log p_\theta^{\rm pos}(r\mid c)$ and $-\beta_{\rm phys} E(r,c)$. We
+report this with OMol25 as a mechanism diagnostic, and repeat it with xTB
+and a DFT subset to test transfer.
+
+\subsection{Temperature ablation}
+\label{sec:exp:temperature}
+
+We sweep the joint drift / bridge-final temperature
+$k_B T \in \{0.02569, 0.05, 0.10, 0.25\}\,\mathrm{eV}$ to quantify the
+cost of training at a \emph{tempered} Boltzmann bridge instead of at the
+physical anchor. Each row holds every other hyperparameter fixed at the
+v1 base config and only overrides
+\texttt{temperature.bridge\_kT\_final\_eV} and \texttt{temperature.drift\_kT\_eV}
+to the row's value (the $0.25\,\mathrm{eV}$ row additionally sets
+\texttt{bridge\_kT\_mode = fixed\_tempered}, making the anneal a no-op).
+Physical-quality numbers use BGFM-Native-det at sampling time;
+Boltzmann-alignment numbers use BGFM-Native-300K.
+
+\begin{table}[h]
+\centering
+\caption{Temperature ablation. Higher Boltzmann slope (within-parent
+Pearson against $-\beta_{\rm phys} E_{\rm NP}$) is better; lower xTB
+$\Delta E$ is better.}
+\begin{tabular}{lrrrrr}
+\toprule
+$k_B T$ [eV] & Boltz. slope & xTB med. $\Delta E$ & Valid & Vendi & VULS \\
+\midrule
+$0.02569$ (physical)             & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+$0.05$ (tempered, mild)          & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+$0.10$ (tempered, moderate)      & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+$0.25$ (tempered, warm; fixed)   & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \subsection{Ablations and negative controls}
 
@@ -606,7 +728,7 @@ BGFM true labels & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 Shuffled force & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 Shuffled energy & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 Wrong parent grouping & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
-Wrong $kT$ & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
+Wrong $kT$ ($10\times k_B T_0$) & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 \bottomrule
 \end{tabular}
 \end{table}
