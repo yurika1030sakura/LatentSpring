@@ -158,24 +158,37 @@ class ResidualStrainEnergyHead(nn.Module):
         n_graphs: int,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """Return (E_total, DeltaU, baseline), each shaped (n_graphs,)."""
-        at = atom_types.long().clamp(0, self.n_atom_types - 1)
-        ch = _safe_charge_class(charges, self.n_charge_classes)
-        h = self.atom_emb(at) + self.charge_emb(ch)
-        src, dst = _pair_indices(node_batch_idx)
-        if src.numel() > 0:
-            d = (positions[dst] - positions[src]).norm(dim=-1)
-            keep = d < self.cutoff
-            src, dst, d = src[keep], dst[keep], d[keep]
+        # Force fp32 throughout: autocast (bf16-mixed in our trainer config)
+        # routes nn.Linear ops to bf16, which then mismatches the fp32
+        # accumulators allocated by torch.zeros_like(...) on embedding
+        # outputs. The strain head is ~500k params so fp32 is trivial,
+        # and autograd through it for force computation is more accurate
+        # in fp32 anyway. Re-cast back to positions.dtype on return.
+        # NOTE: autocast is harmless on CPU runs (no-op).
+        from contextlib import nullcontext
+        if torch.cuda.is_available() and positions.is_cuda:
+            ctx = torch.cuda.amp.autocast(enabled=False)
+        else:
+            ctx = nullcontext()
+        with ctx:
+            at = atom_types.long().clamp(0, self.n_atom_types - 1)
+            ch = _safe_charge_class(charges, self.n_charge_classes)
+            h = (self.atom_emb(at) + self.charge_emb(ch)).float()
+            src, dst = _pair_indices(node_batch_idx)
             if src.numel() > 0:
-                pair = torch.cat([self._rbf(d), h[src], h[dst]], dim=-1)
-                msg = self.pair_mlp(pair)
-                acc = torch.zeros_like(h)
-                acc.index_add_(0, dst, msg)
-                h = self.update_mlp(h + acc)
-        per_atom = self.strain_readout(h).squeeze(-1)
-        strain = torch.zeros(n_graphs, dtype=positions.dtype, device=positions.device)
-        strain.index_add_(0, node_batch_idx, per_atom)
-        base = self.baseline(at, charges, node_batch_idx, n_graphs).to(dtype=positions.dtype)
+                d = (positions.float()[dst] - positions.float()[src]).norm(dim=-1)
+                keep = d < self.cutoff
+                src, dst, d = src[keep], dst[keep], d[keep]
+                if src.numel() > 0:
+                    pair = torch.cat([self._rbf(d), h[src], h[dst]], dim=-1)
+                    msg = self.pair_mlp(pair).to(h.dtype)
+                    acc = torch.zeros_like(h)
+                    acc.index_add_(0, dst, msg)
+                    h = self.update_mlp(h + acc)
+            per_atom = self.strain_readout(h).squeeze(-1).to(positions.dtype)
+            strain = torch.zeros(n_graphs, dtype=positions.dtype, device=positions.device)
+            strain.index_add_(0, node_batch_idx, per_atom)
+            base = self.baseline(at, charges, node_batch_idx, n_graphs).to(dtype=positions.dtype)
         return base + strain, strain, base
 
     def forward(
