@@ -8,6 +8,8 @@
 \usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{xcolor}
+\usepackage{amsthm}
+\newtheorem{proposition}{Proposition}
 
 
 
@@ -17,7 +19,7 @@
 % -----------------------------------------------------------------------------
 \newcommand{\Run}[1]{\textcolor{red}{\textbf{[RUN: #1]}}}
 
-\title{BGFM: Boltzmann-Calibrated Flow Matching with\\
+\title{BGFM-Native: Energy-Coupled Boltzmann Flow Matching with\\
 Universal Neural Potentials for 3D Molecular Generation}
 
 \author{Anonymous Authors\\
@@ -32,15 +34,17 @@ molecules, but their probability geometry is learned from empirical
 molecular datasets rather than from a physical energy landscape.
 Energy-based molecular generators recover an explicit scalar energy,
 but sample with expensive Langevin or parallel-tempering chains and can
-trade diversity for physical quality. We propose \textbf{BGFM}, an
-external-neural-potential calibrated flow generator for de novo 3D
-molecular generation. BGFM keeps a FlowMol3-style amortized proposal,
-but trains it with OMol25-derived forces and energies~\citep{omol25} through two
-Boltzmann regularizers: late-time force-score consistency and
-within-parent density-energy variance. BGFM also learns a calibrated
-scalar energy head from the same external neural-potential teacher and
-uses it for a short coordinate-only learned-energy corrector after the
-flow proposal. The resulting model is designed to combine the speed and
+trade diversity for physical quality. We propose \textbf{BGFM}, an energy-coupled flow-matching generator for
+de novo 3D molecular generation.  Its coordinate velocity is decomposed
+into an amortized transport field and a conservative Boltzmann residual
+drift distilled from OMol25-derived energies and forces~\citep{omol25}:
+$ v_{\rm BGFM}=v_\theta+\alpha(t)P_{\rm SE(3)}[-\nabla_r\Delta E_\psi] $.
+Training couples this vector field to the external energy landscape
+through late-time force-score consistency, within-parent density-energy
+variance, and a finite-cloud Local Boltzmann bridge.  BGFM also learns a
+composition-conditioned residual strain head from the same teacher and
+uses it inside a short coordinate-only corrector that is unrolled during
+training. The resulting model is designed to combine the speed and
 diversity of flow matching with the low-strain sampling behavior of
 energy-based models. Because OMol25 labels enter training, we separate
 mechanistic OMol25 alignment from external validation: the headline
@@ -68,9 +72,11 @@ sampling from a learned energy generally requires many inference-time
 steps.
 
 BGFM addresses this gap by treating a universal neural potential as an
-external physical teacher for an amortized molecular flow generator. The
-model keeps a FlowMol3-style de novo proposal~\citep{flowmol3} over atom types, charges,
-and coordinates, but adds training-time physical calibration from OMol25.
+external physical teacher for the generative vector field itself.  We
+instantiate the amortized transport component with a FlowMol3-style
+de novo proposal~\citep{flowmol3} over atom types, charges, and coordinates,
+but the coordinate velocity used for training and sampling is energy-coupled:
+it adds a learned conservative residual drift calibrated from OMol25.
 The first calibration term aligns the flow-implied coordinate score with
 neural-potential forces near the data endpoint. The second estimates a
 coordinate log-density with a FFJORD integral and enforces that, within a
@@ -90,7 +96,7 @@ The central comparison is with EBMol-style energy-based generation~\citep{ebmol}
 EBMol learns a persistent scalar energy and samples with Mirror-Langevin
 dynamics and parallel tempering. BGFM takes the complementary route:
 keep the fast flow proposal, calibrate it with external physical labels,
-and use a short learned-energy corrector rather than a long MCMC chain.
+and use an energy-coupled flow field plus a short learned-energy corrector rather than a long MCMC chain.
 Therefore, our primary evaluation is not just validity or an OMol25
 self-correlation. We evaluate whether BGFM improves the
 physical-quality--diversity--compute frontier under independent
@@ -143,12 +149,14 @@ underlying generative families --- denoising diffusion~\citep{ddpm},
 score SDE~\citep{scoresde}, neural ODEs and FFJORD-style flow
 density~\citep{neuralode, ffjord}, and flow matching~\citep{flowmatching}
 --- supply the velocity / score primitives we reuse. FlowMol3 is the
-closest backbone baseline: an open-source multi-modal flow-matching model
+closest same-family baseline: an open-source multi-modal flow-matching model
 for de novo all-atom small-molecule generation that improves FlowMol via
 self-conditioning, fake atoms, and train-time geometry distortion without
-changing the underlying GNN or flow formulation. BGFM is not a
-replacement backbone; it is an external-neural-potential calibration
-layer on top of this family of amortized generators.
+changing the underlying GNN or flow formulation.  BGFM does not merely
+scale this backbone; it modifies the coordinate vector-field
+parameterization by adding a calibrated conservative residual drift and
+then trains the resulting density with external-neural-potential
+Boltzmann calibration.
 
 \paragraph{Energy-based molecular generation.}
 EBMol~\citep{ebmol} learns a time-unconditional atom-additive scalar potential and
@@ -203,20 +211,29 @@ This target is well-defined because $c$ is fixed; cross-composition
 probabilities are left to the empirical proposal distribution and are
 not interpreted as thermodynamic weights.
 
-\subsection{Flow proposal}
+\subsection{Energy-coupled flow proposal}
 
-BGFM starts from a FlowMol3-style flow proposal. Continuous coordinates
-use a Gaussian prior and a time-dependent velocity field
-$v_\theta(x_t,t)$; atom types and charges use the categorical flow/CTMC
-component of the backbone. The base training loss is the standard
-flow-matching objective
+BGFM uses a FlowMol3-style proposal for molecular identity variables, but
+the coordinate velocity is an explicitly energy-coupled vector field.  Let
+$v_\theta(x_t,t)$ be the amortized transport field from the flow proposal and
+let $\Delta E_\psi(r,c)$ be a composition-conditioned residual strain energy
+head.  The coordinate velocity used by BGFM is
 \begin{equation}
-    \mathcal L_{\rm FM}=\mathbb E\left[\|v_\theta(x_t,t)-u_t\|^2 +
+    v_{\rm BGFM}(x_t,t)
+    = v_\theta(x_t,t) + \alpha(t)P_{\rm SE(3)}[-\nabla_r\Delta E_\psi(r_t,c)],
+    \label{eq:energy-coupled-vf}
+\end{equation}
+where $P_{\rm SE(3)}$ removes per-graph center-of-mass drift and
+$\alpha(t)$ is a late-time onset schedule.  Atom types and charges still use
+the categorical flow/CTMC component of the proposal.  The base flow-matching
+loss is applied to the total velocity,
+\begin{equation}
+    \mathcal L_{\rm FM}=\mathbb E\left[\|v_{\rm BGFM}(x_t,t)-u_t\|^2 +
     \mathcal L_{\rm disc}\right].
 \end{equation}
-The proposal is responsible for chemical diversity and fast amortized
-sampling. The physical modules below calibrate this proposal rather than
-replace it.
+This turns the external energy from a post-hoc correction signal into part of
+the generative dynamics while retaining amortized flow sampling.  In ablations
+we also report the plain-flow proposal $v_\theta$ and a post-hoc-only variant.
 
 \subsection{Late-time force-score consistency}
 
@@ -430,6 +447,41 @@ This extension is useful for diagnostics and future full-joint density
 calibration. Unless explicitly enabled and verified in an ablation, the
 main objective in this paper should be interpreted as conditional
 coordinate Boltzmann calibration.
+
+
+\paragraph{Algorithmic form.}
+\textbf{Training.} For each minibatch, sample a flow time $t$ and construct
+$x_t$ on the conditional path.  Evaluate $v_{\rm BGFM}$ in
+Eq.~\eqref{eq:energy-coupled-vf}, compute the base flow-matching loss, the
+late-time force-score loss, FFJORD log-densities on perturbation clouds, the
+variance and bridge losses, residual strain-head calibration, and a random
+$0$--$J_{\max}$ corrector unroll.  Update all parameters with
+Eq.~\eqref{eq:total-loss}.  \textbf{Sampling.} Integrate the learned
+energy-coupled vector field from the prior.  Optionally run the same learned
+coordinate-only corrector for $J\in\{0,20,50,100\}$ steps; no external OMol25
+call is used in default sampling.
+
+\begin{proposition}[Finite-cloud Boltzmann ratios]
+For a fixed molecular identity $c$, if
+$\log p_\theta^{\rm pos}(r_m^{(k)}\mid c)+\beta E_{\rm NP}(r_m^{(k)},c)$ is
+constant over the perturbation cloud, then for any perturbations $i,j$,
+\begin{equation}
+    \log\frac{p_\theta^{\rm pos}(r_m^{(i)}\mid c)}
+    {p_\theta^{\rm pos}(r_m^{(j)}\mid c)}
+    =-\beta\left(E_{\rm NP}(r_m^{(i)},c)-E_{\rm NP}(r_m^{(j)},c)\right).
+\end{equation}
+Thus the variance and bridge objectives enforce local conditional
+Boltzmann relative probabilities without requiring $Z_c(T)$.
+\end{proposition}
+
+\begin{proposition}[Endpoint force-score condition]
+Under the conditional coordinate Boltzmann target in
+Eq.~\eqref{eq:conditional-boltzmann}, the coordinate score satisfies
+$\nabla_r\log p_B(r\mid c,T)=\beta F_{\rm NP}(r,c)$.  Aligning the
+flow-implied late-time score of the total energy-coupled field with
+$\beta F_{\rm NP}$ is therefore a local necessary condition for Boltzmann
+calibration near the data endpoint.
+\end{proposition}
 
 \section{Experiments}
 

@@ -91,6 +91,29 @@ bgfm/
 | Training entry | `scripts/run_train.py` | top-level |
 | H200 launcher | `scripts/launch_omol25_bgfm_h200.sh` | top-level |
 
+### §3.7 BGFM-Native: energy-coupled vector field
+
+The BGFM-Native upgrade replaces "FlowMol3 + auxiliary losses" with an
+explicitly energy-coupled coordinate velocity
+$v_{\rm BGFM} = v_\theta + \alpha(t) P_{\rm SE(3)}[-\nabla_r \Delta E_\psi(r,c)]$.
+The package layers on top of the existing BGFM hook and is enabled from
+the `mol_fm.bgfm.native:` config sub-block.
+
+| Paper element | Code | Line |
+|---|---|---|
+| Composition-conditioned residual strain head $\hat E_\psi = b_\phi(c) + \Delta E_\psi(r,c)$ | `cfm_mol/native/strain_head.py` | `ResidualStrainEnergyHead`, `CompositionBaseline` |
+| Strain-only force $F_\psi = -\nabla_r \Delta E_\psi$ via autograd | `cfm_mol/native/strain_head.py` | `residual_energy_and_force` |
+| Residual head calibration loss $\mathcal{L}_{\rm head}$ (Eq.\,7) | `cfm_mol/native/strain_head.py` | `residual_head_loss` |
+| Energy-coupled vector field $v_{\rm BGFM}$ (Eq.\,2) | `cfm_mol/native/energy_drift.py` | `compute_energy_drift`, `patch_energy_coupled_vector_field` |
+| Late-time onset schedule $\alpha(t)$ | `cfm_mol/native/energy_drift.py` | `alpha_schedule` |
+| SE(3) projection (per-graph centroid removal) | `cfm_mol/native/energy_drift.py` | `center_graph_vectors` |
+| Local Boltzmann bridge $\mathcal{L}_{\rm bridge}$ (Eq.\,14) | `cfm_mol/native/boltzmann_bridge.py` | `local_boltzmann_bridge_loss` |
+| Corrector-in-the-loop training (Eq.\,15) | `cfm_mol/native/corrector_in_loop.py` | `corrector_in_loop_loss` |
+| Native training hook (head + drift patch + bridge + corrector) | `cfm_mol/native/train_hook.py` | `patch_bgfm_native` |
+| BGFM-Native sampler with honest accounting | `scripts/native/sample_bgfm_native.py` | top-level |
+| BGFM-Native v1 config | `configs/native/omol25_4m_bgfm_native_v1.yaml` | `mol_fm.bgfm.native:` |
+| Smoke tests (head, force, bridge, drift, corrector) | `tests/test_native_smoke.py` | top-level |
+
 ---
 
 ## 3. Experiments → code mapping
