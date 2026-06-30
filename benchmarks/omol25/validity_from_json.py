@@ -4,10 +4,18 @@ all 83 elements / transition metals, unlike each repo's QM9/GEOM valence tables.
 Reports the standard de-novo-3D-gen original metrics: validity + connectivity.
 Run in any env with rdkit (e.g. envs/edm or envs/flowmol)."""
 import argparse, json
+import multiprocessing as mp
 from rdkit import Chem
 from rdkit.Chem import rdDetermineBonds
 from rdkit import RDLogger
 RDLogger.DisableLog("rdApp.*")
+
+# rdDetermineBonds bond perception is combinatorial and can hang for minutes on
+# large (~150+ atom) unphysical generated geometries. It is a C++ call, so a
+# Python signal.alarm cannot interrupt it -- we run each molecule in a worker
+# process and HARD-KILL it past TIMEOUT_S (a geometry whose bonds cannot be
+# perceived in time is treated as invalid).
+TIMEOUT_S = 15
 
 
 def check(Z, pos, charge=0):
@@ -27,6 +35,25 @@ def check(Z, pos, charge=0):
         return False, False
 
 
+def _worker(Z, pos, charge, q):
+    q.put(check(Z, pos, charge))
+
+
+def check_timeout(Z, pos, charge=0, timeout=TIMEOUT_S):
+    ctx = mp.get_context("fork")
+    q = ctx.Queue()
+    p = ctx.Process(target=_worker, args=(Z, pos, charge, q))
+    p.start()
+    p.join(timeout)
+    if p.is_alive():            # C++ hang -> hard kill, count as invalid
+        p.terminate(); p.join()
+        return False, False
+    try:
+        return q.get_nowait()
+    except Exception:
+        return False, False
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--samples_json", required=True)
@@ -34,9 +61,9 @@ def main():
     a = ap.parse_args()
     recs = json.load(open(a.samples_json))
     n = len(recs)
-    nv = nc = 0
-    for r in recs:
-        ok, conn = check(r["atomic_numbers"], r["positions"], r.get("charge", 0))
+    nv = nc = n_timeout = 0
+    for i, r in enumerate(recs):
+        ok, conn = check_timeout(r["atomic_numbers"], r["positions"], r.get("charge", 0))
         nv += ok
         nc += conn
     res = {"n": n, "frac_valid": nv / max(1, n), "frac_connected": nc / max(1, n)}
