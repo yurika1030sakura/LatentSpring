@@ -355,8 +355,24 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
         # Expensive (FFJORD); applied every energy_every_k_steps.
         if energy_enabled and (batch_idx % energy_every_k_steps == 0):
             pert_loader = self._bgfm_perturbation_loader  # lazily initialized below
+            # PerturbationLoader.device is captured at patch_flowmol_bgfm
+            # time, when the Lightning module is still on CPU. By the time
+            # we get here Lightning has moved the model to GPU; sync the
+            # loader's device to the live model device so subsequent batches
+            # are produced on the same device as the model weights.
+            live_device = self.device
+            if str(pert_loader.device) != str(live_device):
+                pert_loader.device = live_device
             (g_pert, energies_pert, parent_id_pert,
              nbi_pert, uem_pert) = pert_loader.next_batch()
+            # Belt-and-suspenders: force every returned tensor onto the
+            # live device. DGL batched-graph .to() is a no-op if already
+            # on device, and the small tensors are cheap.
+            g_pert = g_pert.to(live_device)
+            energies_pert = energies_pert.to(live_device)
+            parent_id_pert = parent_id_pert.to(live_device)
+            nbi_pert = nbi_pert.to(live_device)
+            uem_pert = uem_pert.to(live_device)
             kT_pert = None
             if getattr(self, '_bgfm_kT_conditioning', False):
                 kT_pert = torch.full((g_pert.batch_size,), float(kT_step),
