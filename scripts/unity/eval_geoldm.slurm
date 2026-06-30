@@ -27,11 +27,16 @@ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 echo "host $(hostname); $(nvidia-smi -L)"; date
 cd "$REPO/baselines/geoldm"
 
-echo "######## GeoLDM : VALIDITY (sample 100 -> xyz2mol) ########"
+echo "######## GeoLDM : VALIDITY (sample 100 -> xyz2mol, unified path) ########"
 $EDM -u sample_omol25_to_json.py --model_path "$MODEL" --datadir "$PROC" \
     --n_samples 100 --device cuda --out "$OUT/geoldm_samples.json"
 $EDM -u "$REPO/benchmarks/omol25/validity_from_json.py" \
-    --samples_json "$OUT/geoldm_samples.json" --out "$OUT/geoldm_validity.json"
+    --samples_json "$OUT/geoldm_samples.json" --out "$OUT/geoldm_validity_unified.json"
+
+echo "######## GeoLDM : independent GFN2-xTB relaxation (fair cross-model metric) ########"
+PATH="$SCR/envs/flowmol/bin:$PATH" $EDM -u "$REPO/scripts/eval_xtb_relaxation.py" \
+    --samples "$OUT/geoldm_samples.json" --out_csv "$OUT/geoldm_xtb.csv" \
+    --workers 8 --max_steps 200 || echo "[warn] xtb step failed"
 
 echo "######## GeoLDM : BOLTZMANN stage1 (log p = -NLL, shared molecules) ########"
 $EDM -u eval_omol25_boltzmann.py --model_path "$MODEL" --datadir "$PROC" \
