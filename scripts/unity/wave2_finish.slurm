@@ -55,4 +55,11 @@ for m in bgfm fm_only; do
   $OMOL scripts/eval_boltzmann_stage2.py --samples_json "$OUT/${m}_boltz1_ln/boltzmann_samples.json" \
      --out_csv "$OUT/${m}_boltz2_ln.csv" --ckpt "$ORACLE" --device cuda 2>&1 | grep -iE "Pearson|Spearman|POOLED|groups" | tail -5
 done
+echo "#### finalize: assemble fair table + publish to norman ####"
+cd "$REPO"
+EVAL_OUT="$OUT" RESULTS_MD="$REPO/benchmarks/omol25/RESULTS.md" \
+   python3 scripts/assemble_eval_table.py 2>&1 | tail -25
+git add benchmarks/omol25/RESULTS.md 2>/dev/null && \
+  git commit -m "benchmark(omol25): auto-publish fair-eval table (4-model, job ${SLURM_JOB_ID:-?})" 2>&1 | tail -2 || echo "(nothing to commit)"
+git push origin norman 2>&1 | tail -2 || echo "[warn] push failed from compute node; RESULTS.md is written+committed locally, push later"
 echo "#### WAVE2_FINISH DONE ####"; date

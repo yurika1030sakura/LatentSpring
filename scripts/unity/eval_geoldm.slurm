@@ -46,4 +46,11 @@ echo "######## GeoLDM : BOLTZMANN stage2 (oracle + R2) ########"
 $OMOL "$REPO/scripts/eval_boltzmann_stage2.py" \
     --samples_json "$OUT/geoldm_boltz1/boltzmann_samples.json" \
     --out_csv "$OUT/geoldm_boltz2.csv" --ckpt "$ORACLE" --device cuda
+echo "######## finalize: assemble COMPLETE 5-model fair table + publish ########"
+cd "$REPO"
+EVAL_OUT="$OUT" RESULTS_MD="$REPO/benchmarks/omol25/RESULTS.md" \
+   python3 scripts/assemble_eval_table.py 2>&1 | tail -25
+git add benchmarks/omol25/RESULTS.md 2>/dev/null && \
+  git commit -m "benchmark(omol25): auto-publish fair-eval table (5-model complete, job ${SLURM_JOB_ID:-?})" 2>&1 | tail -2 || echo "(nothing to commit)"
+git push origin norman 2>&1 | tail -2 || echo "[warn] push failed from compute node; committed locally, push later"
 echo "######## GeoLDM EVAL DONE ########"; date
