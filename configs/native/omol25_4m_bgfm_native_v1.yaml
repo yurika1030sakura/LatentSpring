@@ -138,7 +138,7 @@ checkpointing:
   save_top_k: 3
   monitor: 'val_total_loss'
   every_n_epochs: 1
-  every_n_train_steps: 5000
+  every_n_train_steps: 1000
 
 mol_fm:
   explicit_aromaticity: false
@@ -190,8 +190,8 @@ mol_fm:
     # skip steps whose forward loss is finite but extreme (likely to NaN
     # on the backward pass under bf16). grad_nan_skip also catches
     # residual non-finite grads before the optimizer step.
-    l_energy_outlier_cap: 1.0e+5
-    l_anchor_outlier_cap: 1.0e+12
+    l_energy_outlier_cap: 1.0e+8
+    l_anchor_outlier_cap: 1.0e+15
     grad_nan_skip: true
                                 # /100 vs v7 baseline due to 1600x larger log_p magnitudes
     log_z_hidden_dim: 32
@@ -225,8 +225,8 @@ mol_fm:
     # log p(r|c) + log p(c) instead of log p(r|c) alone.
     joint_density_enabled: true
     t_eval_values: [0.70, 0.80, 0.90]
-    warmup_frac: 0.005
-    ramp_frac: 0.02
+    warmup_frac: 0.00005
+    ramp_frac: 0.00045
     divergence_method: hutchinson
     divergence_samples: 1
     # Energy-term cost controls (FFJORD log-density is expensive).
@@ -339,8 +339,8 @@ mol_fm:
       bridge_n_ode_steps: 4
       bridge_n_hutchinson: 1
       bridge_energy_clip: 200.0
-      warmup_frac: 0.005
-      ramp_frac: 0.02
+      warmup_frac: 0.00005
+      ramp_frac: 0.00045
 
 vector_field:
   self_conditioning: True
