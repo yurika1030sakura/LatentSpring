@@ -31,8 +31,18 @@ def local_boltzmann_bridge_loss(
     kT: float | torch.Tensor = 1.0,
     min_group_size: int = 2,
     energy_clip: float | None = None,
+    *,
+    kT_schedule: dict | None = None,
+    step_frac: float | None = None,
 ) -> tuple[torch.Tensor, dict[str, float]]:
-    """Compute mean parent-wise KL(softmax(-E/kT) || softmax(logp))."""
+    """Compute mean parent-wise KL(softmax(-E/kT) || softmax(logp)).
+
+    kT_schedule (optional, SPEC item A): dict with keys
+        {mode, start_eV, final_eV}. If provided AND step_frac is given,
+        the effective kT is annealed log-linearly from start_eV to final_eV
+        and OVERRIDES the static `kT` argument. The static path
+        (kT_schedule=None) preserves legacy behavior exactly.
+    """
     if logp.shape != energies.shape or logp.shape != parent_id.shape:
         raise ValueError(
             f"expected logp, energies, parent_id to have same shape; got "
@@ -41,6 +51,20 @@ def local_boltzmann_bridge_loss(
     valid = torch.isfinite(logp) & torch.isfinite(energies)
     if int(valid.sum().item()) < min_group_size:
         return logp.sum() * 0.0, {"bridge_groups_used": 0.0, "bridge_kl": 0.0}
+
+    # SPEC item A: optional bridge-kT anneal. When in effect, this is the
+    # "tempered Boltzmann bridge" -- DO NOT call this "room temperature"
+    # unless kT_eff == 0.02569 eV. The schedule overrides the static kT arg.
+    if kT_schedule is not None and step_frac is not None:
+        mode = str(kT_schedule.get("mode", "annealed"))
+        start = float(kT_schedule.get("start_eV", 0.25))
+        final = float(kT_schedule.get("final_eV", 0.02569))
+        if mode == "fixed_tempered":
+            kT = start
+        else:
+            f = max(min(float(step_frac), 1.0), 0.0)
+            import math
+            kT = math.exp(math.log(start) + f * (math.log(final) - math.log(start)))
 
     losses = []
     entropies = []
@@ -73,4 +97,8 @@ def local_boltzmann_bridge_loss(
         "bridge_groups_used": float(len(losses)),
         "bridge_kl": float(loss.detach().item()),
         "bridge_target_entropy": float(ent.detach().item()),
+        "bridge_kT_eV_effective": (
+            float(kT) if not isinstance(kT, torch.Tensor)
+            else float(kT.mean().item())
+        ),
     }

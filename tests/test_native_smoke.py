@@ -196,6 +196,220 @@ def test_corrector_in_loop_loss():
           f"energy_inc={diag['native_stab_energy_inc']:.4f}")
 
 
+def test_deterministic_corrector():
+    """SPEC item D: deterministic corrector noise mode -> zero displacement
+    std and zero added noise term across the J unrolled steps.
+
+    We monkey-patch torch.randn_like inside the corrector module to record
+    every call. If the deterministic path is honoured, no randn_like calls
+    should occur during the corrector unroll, so the recorded count is 0
+    and the implied added-noise contribution is exactly zero. We also
+    verify that two seeded calls produce bit-identical losses (no RNG
+    consumption => deterministic in the noise sense).
+    """
+    import importlib
+    import random as _random
+
+    from cfm_mol.native.strain_head import ResidualStrainEnergyHead
+    from cfm_mol.native import corrector_in_loop as cil
+
+    positions, atom_types, charges, node_batch_idx, B = _batch()
+    head = ResidualStrainEnergyHead(
+        n_atom_types=83, hidden_dim=64, n_rbf=16, cutoff=5.0, n_layers=2,
+        baseline_hidden_dim=64,
+    )
+
+    # Record every randn_like call inside the corrector module.
+    randn_calls = {"n": 0, "max_abs": 0.0}
+    _orig_randn_like = torch.randn_like
+
+    def _spy_randn_like(*args, **kwargs):
+        out = _orig_randn_like(*args, **kwargs)
+        randn_calls["n"] += 1
+        randn_calls["max_abs"] = max(randn_calls["max_abs"], float(out.abs().max().item()))
+        return out
+
+    # The corrector calls `torch.randn_like` via the `torch` reference in
+    # its module namespace -- patch that reference.
+    cil.torch.randn_like = _spy_randn_like
+    try:
+        # Try the spec keyword first; if the code agent renamed it, fall
+        # back to discovered aliases.
+        # Probe candidate deterministic-mode keywords introduced by the
+        # temperature refactor. `beta` is included as a positional-style
+        # kwarg because the legacy signature requires it; it is harmless
+        # under deterministic mode (noise term is gated off).
+        kw_attempts = [
+            {"corrector_noise_mode": "deterministic", "beta": 1.0 / 0.02569},
+            {"noise_mode": "deterministic", "beta": 1.0 / 0.02569},
+            {"stochastic": False, "beta": 1.0 / 0.02569},
+        ]
+        last_err = None
+        loss_a = None
+        sig = None
+        # Pin RNG before each call so that *if* the corrector were noisy,
+        # the two losses would still match -- but we additionally check
+        # randn_calls["n"] == 0, which is the strong condition.
+        _random.seed(0)
+        torch.manual_seed(123)
+        for kw in kw_attempts:
+            try:
+                randn_calls["n"] = 0
+                randn_calls["max_abs"] = 0.0
+                loss_a, diag_a = cil.corrector_in_loop_loss(
+                    head, positions, atom_types, charges, node_batch_idx, B,
+                    j_max=3, eta_init=1e-3, eta_final=1e-4, delta_max=0.25,
+                    **kw,
+                )
+                sig = kw
+                break
+            except TypeError as e:
+                last_err = e
+                continue
+        assert loss_a is not None, (
+            f"corrector_in_loop_loss did not accept any deterministic "
+            f"keyword (tried {kw_attempts}); last error: {last_err}"
+        )
+
+        # Strong assertion: deterministic mode must not have drawn any
+        # Gaussian samples during the J unrolled steps.
+        assert randn_calls["n"] == 0, (
+            f"deterministic corrector consumed {randn_calls['n']} randn_like "
+            f"draws (max|eps|={randn_calls['max_abs']:.3g}); noise term not zero"
+        )
+
+        # Reproducibility: same RNG state -> bit-identical loss (since no
+        # randomness is consumed in the noise path; only the python random
+        # int J still gates the unroll length).
+        _random.seed(0)
+        torch.manual_seed(123)
+        randn_calls["n"] = 0
+        loss_b, _ = cil.corrector_in_loop_loss(
+            head, positions, atom_types, charges, node_batch_idx, B,
+            j_max=3, eta_init=1e-3, eta_final=1e-4, delta_max=0.25,
+            **sig,
+        )
+        assert randn_calls["n"] == 0, "second deterministic call drew noise"
+        assert torch.isclose(loss_a, loss_b, atol=0.0, rtol=0.0), (
+            f"deterministic corrector not bit-reproducible: "
+            f"{loss_a.item()} vs {loss_b.item()}"
+        )
+        print(
+            f"[native] deterministic corrector OK: keyword={sig}, "
+            f"loss={loss_a.item():.6f}, randn_calls=0, displacement_std=0"
+        )
+    finally:
+        cil.torch.randn_like = _orig_randn_like
+
+
+def test_drift_beta_scaling():
+    """SPEC item A: with alpha fixed and a fixed perturbation, doubling
+    beta (i.e. halving drift_kT_eV) must exactly double the magnitude of
+    the energy-drift contribution to the vector field.
+    """
+    from cfm_mol.native.strain_head import ResidualStrainEnergyHead
+    from cfm_mol.native.energy_drift import (
+        EnergyDriftConfig, compute_energy_drift,
+    )
+    torch.manual_seed(31)
+    positions, atom_types, charges, node_batch_idx, B = _batch()
+    head = ResidualStrainEnergyHead(
+        n_atom_types=83, hidden_dim=64, n_rbf=16, cutoff=5.0, n_layers=2,
+        baseline_hidden_dim=64,
+    )
+    # Give the strain readout a small but non-zero perturbation so the
+    # force is finite (zero-init readout produces zero force). The force
+    # is grad_r DeltaU, which only depends on strain_readout (not on the
+    # composition baseline), so we must perturb strain_readout[-1].
+    with torch.no_grad():
+        sro = head.strain_readout
+        last_lin = sro[-1]
+        last_lin.weight.normal_(mean=0.0, std=1e-2)
+        if last_lin.bias is not None:
+            last_lin.bias.zero_()
+
+    # Build two configs that differ ONLY in beta (factor 2). Disable
+    # normalize_force so the magnitude is linear in beta.
+    def _mk_cfg(beta_val: float) -> EnergyDriftConfig:
+        kw = dict(
+            enabled=True, alpha_max=0.2, t_on=0.65, power=2.0,
+            beta=beta_val, force_clip=1.0e9, normalize_force=False,
+            detach_force=True,
+        )
+        # Honour the new drift_kT_eV field if the dataclass exposes it.
+        try:
+            return EnergyDriftConfig(drift_kT_eV=1.0 / beta_val, **kw)
+        except TypeError:
+            return EnergyDriftConfig(**kw)
+
+    cfg1 = _mk_cfg(20.0)
+    cfg2 = _mk_cfg(40.0)  # 2x beta of cfg1
+
+    t = torch.full((B,), 0.95)
+    drift1, _ = compute_energy_drift(
+        head, positions, atom_types, charges, node_batch_idx, B,
+        t=t, cfg=cfg1, create_graph=False,
+    )
+    drift2, _ = compute_energy_drift(
+        head, positions, atom_types, charges, node_batch_idx, B,
+        t=t, cfg=cfg2, create_graph=False,
+    )
+    n1 = drift1.norm(dim=-1).mean().item()
+    n2 = drift2.norm(dim=-1).mean().item()
+    assert n1 > 0.0, f"drift1 magnitude is zero: {n1}"
+    ratio = n2 / max(n1, 1e-20)
+    assert abs(ratio - 2.0) < 1e-3, (
+        f"drift should scale linearly with beta: expected ratio ~2.0, "
+        f"got {ratio:.6f} (|drift1|={n1:.4g}, |drift2|={n2:.4g})"
+    )
+    # Per-element check: drift2 ~ 2 * drift1 elementwise.
+    assert torch.allclose(drift2, 2.0 * drift1, atol=1e-5, rtol=1e-4), (
+        "drift2 not elementwise equal to 2 * drift1"
+    )
+    print(f"[native] drift beta scaling OK: |d1|={n1:.4g}, |d2|={n2:.4g}, "
+          f"ratio={ratio:.6f} (~2.0)")
+
+
+def test_native_config_temperature_keys():
+    """SPEC item config: v1 YAML carries the new temperature block; the
+    four ablation configs exist under configs/native/ablations/ and load.
+    """
+    import yaml
+    cfg_path = Path(
+        "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/configs/native/"
+        "omol25_4m_bgfm_native_v1.yaml"
+    )
+    with open(cfg_path) as f:
+        cfg = yaml.safe_load(f)
+    temp = cfg["mol_fm"]["bgfm"]["native"]["temperature"]
+    assert abs(float(temp["physical_kT_eV"]) - 0.02569) < 1e-9, (
+        f"physical_kT_eV must be exactly 0.02569 (room-T anchor), "
+        f"got {temp['physical_kT_eV']}"
+    )
+    # Each of the four ablation configs exists and loads.
+    ablation_dir = Path(
+        "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/configs/native/ablations"
+    )
+    expected_tags = ("0p02569", "0p05", "0p10", "0p25")
+    for tag in expected_tags:
+        p = ablation_dir / f"omol25_4m_bgfm_native_T_{tag}.yaml"
+        assert p.exists(), f"missing ablation config: {p}"
+        with open(p) as f:
+            ablation_cfg = yaml.safe_load(f)
+        assert ablation_cfg is not None and isinstance(ablation_cfg, dict), (
+            f"ablation config did not parse to a dict: {p}"
+        )
+        # It must also carry the temperature block.
+        a_temp = ablation_cfg["mol_fm"]["bgfm"]["native"]["temperature"]
+        assert "bridge_kT_final_eV" in a_temp and "drift_kT_eV" in a_temp, (
+            f"ablation {p} missing required temperature keys"
+        )
+    print(
+        f"[native] config temperature block OK: physical_kT={temp['physical_kT_eV']} eV; "
+        f"4 ablations present and parse"
+    )
+
+
 if __name__ == "__main__":
     torch.manual_seed(0)
     test_residual_strain_head_forward_and_force()
@@ -203,4 +417,7 @@ if __name__ == "__main__":
     test_boltzmann_bridge_loss()
     test_compute_energy_drift_se3()
     test_corrector_in_loop_loss()
+    test_deterministic_corrector()
+    test_drift_beta_scaling()
+    test_native_config_temperature_keys()
     print("\n[native] ALL TESTS PASSED")
