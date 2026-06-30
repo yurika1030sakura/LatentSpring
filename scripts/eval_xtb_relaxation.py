@@ -219,6 +219,10 @@ def evaluate_sample(idx: int, sample: dict, max_steps: int) -> dict:
             "E_before_hartree": E_before,
             "E_after_hartree": E_after,
             "delta_E_kcalmol": delta_E_kcal,
+            # per-atom strain: ΔE scales ~linearly with atom count, so the per-atom
+            # form is the size-fair cross-model quantity (models generate different
+            # size distributions).
+            "delta_E_kcal_per_atom": delta_E_kcal / max(1, len(atomic_numbers)),
             "max_force_evA": max_force,
             "rmsd_A": rmsd_A,
             "steps": relax.get("steps"),
@@ -244,6 +248,7 @@ def summarize(records: list[dict]) -> dict:
     n = len(records)
     n_ok = len(ok)
     dE = [r["delta_E_kcalmol"] for r in ok if r.get("delta_E_kcalmol") is not None]
+    dE_pa = [r["delta_E_kcal_per_atom"] for r in ok if r.get("delta_E_kcal_per_atom") is not None]
     forces = [r["max_force_evA"] for r in ok if r.get("max_force_evA") is not None]
     rmsds = [r["rmsd_A"] for r in ok if r.get("rmsd_A") == r.get("rmsd_A")]
     steps = [r["steps"] for r in ok if r.get("steps") is not None]
@@ -251,10 +256,18 @@ def summarize(records: list[dict]) -> dict:
         "index": "__summary__",
         "n_total": n,
         "n_ok": n_ok,
+        # NOTE: ΔE stats below are over the n_dE successfully-relaxed molecules only;
+        # read them WITH failure_rate (a model with many xtb failures has a small,
+        # self-selected ΔE population). n_dE is reported so the denominator is explicit.
+        "n_dE": len(dE),
         "failure_rate": 1.0 - n_ok / n if n else float("nan"),
         "delta_E_kcal_median": _percentile(dE, 50.0),
         "delta_E_kcal_mean": (sum(dE) / len(dE)) if dE else float("nan"),
         "delta_E_kcal_p90": _percentile(dE, 90.0),
+        # size-fair per-atom strain (primary cross-model number)
+        "delta_E_per_atom_median": _percentile(dE_pa, 50.0),
+        "delta_E_per_atom_mean": (sum(dE_pa) / len(dE_pa)) if dE_pa else float("nan"),
+        "delta_E_per_atom_p90": _percentile(dE_pa, 90.0),
         "max_force_evA_median": _percentile(forces, 50.0),
         "rmsd_A_median": _percentile(rmsds, 50.0),
         "steps_median": _percentile([float(s) for s in steps], 50.0),

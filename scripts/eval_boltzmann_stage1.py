@@ -212,6 +212,12 @@ def main() -> int:
         atom_idx = g0.ndata['a_1_true'].argmax(dim=-1).cpu().numpy()
         # Map atom indices to Z (atom_map may have fewer than periodic length)
         z = np.array([SYMBOL_TO_Z[atom_map[i]] for i in atom_idx], dtype=np.int64)
+        # True total charge from the c_1_true channel (one-hot of charge+2, see
+        # cfm_mol/data/omol25.py). Was hardcoded 0; for the <=50-atom subset all
+        # molecules are neutral so this is a no-op there, but it is correct for
+        # charged molecules too. Spin multiplicity is not stored in preprocessing
+        # (OMol25 total spin dropped) -> left at 1; documented limitation.
+        total_charge = int((g0.ndata['c_1_true'].argmax(dim=-1) - 2).sum().item())
 
         # Build batched graph of (1 + n_perturb) copies of this molecule.
         graphs = []
@@ -250,7 +256,7 @@ def main() -> int:
                 "pert_id": p,
                 "atomic_numbers": z.tolist(),
                 "positions": pert_positions[p].astype(float).tolist(),
-                "charge": 0,
+                "charge": total_charge,
                 "spin": 1,
                 "log_p_theta": float(logp[p]),
             })

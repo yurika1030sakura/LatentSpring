@@ -40,6 +40,8 @@ def _worker(Z, pos, charge, q):
 
 
 def check_timeout(Z, pos, charge=0, timeout=TIMEOUT_S):
+    """Returns (valid, connected, timed_out). timed_out molecules count as invalid
+    but are reported separately so the timeout rate is auditable."""
     ctx = mp.get_context("fork")
     q = ctx.Queue()
     p = ctx.Process(target=_worker, args=(Z, pos, charge, q))
@@ -47,11 +49,12 @@ def check_timeout(Z, pos, charge=0, timeout=TIMEOUT_S):
     p.join(timeout)
     if p.is_alive():            # C++ hang -> hard kill, count as invalid
         p.terminate(); p.join()
-        return False, False
+        return False, False, True
     try:
-        return q.get_nowait()
+        ok, conn = q.get_nowait()
+        return ok, conn, False
     except Exception:
-        return False, False
+        return False, False, False
 
 
 def main():
@@ -63,10 +66,12 @@ def main():
     n = len(recs)
     nv = nc = n_timeout = 0
     for i, r in enumerate(recs):
-        ok, conn = check_timeout(r["atomic_numbers"], r["positions"], r.get("charge", 0))
+        ok, conn, to = check_timeout(r["atomic_numbers"], r["positions"], r.get("charge", 0))
         nv += ok
         nc += conn
-    res = {"n": n, "frac_valid": nv / max(1, n), "frac_connected": nc / max(1, n)}
+        n_timeout += to
+    res = {"n": n, "frac_valid": nv / max(1, n), "frac_connected": nc / max(1, n),
+           "n_timeout": n_timeout}
     json.dump(res, open(a.out, "w"))
     print(f"[validity] {res}")
 
