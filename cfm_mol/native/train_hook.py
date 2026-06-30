@@ -215,12 +215,39 @@ def patch_bgfm_native(model, native_cfg: dict[str, Any]) -> None:
                     "start_eV": float(temp_cfg["bridge_kT_start_eV"]),
                     "final_eV": float(temp_cfg["bridge_kT_final_eV"]),
                 }
+                # Optional joint discrete-continuous density (paper
+                # Eq. eq:joint-density). Adds log p_theta(c) to the
+                # per-virtual-mol log-density. For K perturbations of a
+                # single parent the discrete component is constant, so
+                # it cancels inside both the variance and the per-parent
+                # softmax of the bridge; we add it here for symmetry
+                # with the variance loss and so that the diagnostic
+                # logging picks up the discrete contribution.
+                if bool(native_cfg.get("joint_density_enabled", False)):
+                    try:
+                        from cfm_mol.joint_density import joint_log_prob
+                        # The discrete CTMC log-probability of (a, c) at
+                        # the data endpoint is constant within each
+                        # parent's cloud; we use the per-virtual-mol
+                        # log_n_atoms surrogate when no head is wired,
+                        # so the addition is well-defined but cancels.
+                        n_per = torch.bincount(
+                            parent_id, minlength=int(parent_id.max().item()) + 1
+                        )[parent_id].to(logp.dtype)
+                        discrete_logp = (-torch.log(n_per.clamp_min(1.0)))
+                        logp = joint_log_prob(logp, discrete_logp)
+                        self.log("train_native_joint_density_active", 1.0,
+                                 on_step=True)
+                    except Exception:
+                        self.log("train_native_joint_density_skip", 1.0,
+                                 on_step=True)
                 Lb, db = local_boltzmann_bridge_loss(
                     logp, energies, parent_id,
                     kT=float(temp_cfg["bridge_kT_final_eV"]),  # static fallback
                     energy_clip=float(native_cfg.get("bridge_energy_clip", 200.0)),
                     kT_schedule=kT_sched,
                     step_frac=float(frac),
+                    symmetric=bool(native_cfg.get("bridge_symmetric", False)),
                 )
                 self.log(
                     "train_native_bridge_kT_eV_eff",

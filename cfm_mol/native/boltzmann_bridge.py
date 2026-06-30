@@ -34,6 +34,7 @@ def local_boltzmann_bridge_loss(
     *,
     kT_schedule: dict | None = None,
     step_frac: float | None = None,
+    symmetric: bool = False,
 ) -> tuple[torch.Tensor, dict[str, float]]:
     """Compute mean parent-wise KL(softmax(-E/kT) || softmax(logp)).
 
@@ -42,6 +43,13 @@ def local_boltzmann_bridge_loss(
         the effective kT is annealed log-linearly from start_eV to final_eV
         and OVERRIDES the static `kT` argument. The static path
         (kT_schedule=None) preserves legacy behavior exactly.
+
+    symmetric (paper Eq. eq:bridge-sym): if True, return the symmetric
+        average 0.5 * (KL(w || q) + KL(q || w)). Adds a mode-seeking term
+        that penalizes the model for placing mass on cloud entries OMol25
+        considers high-energy. Forward KL (default, False) is mode-
+        covering and is the headline objective; the symmetric variant
+        is used only in the bridge ablation column.
     """
     if logp.shape != energies.shape or logp.shape != parent_id.shape:
         raise ValueError(
@@ -86,7 +94,13 @@ def local_boltzmann_bridge_loss(
         log_w = F.log_softmax(-beta_e, dim=0)
         log_q = F.log_softmax(l, dim=0)
         w = log_w.exp()
-        losses.append((w * (log_w - log_q)).sum())
+        forward_kl = (w * (log_w - log_q)).sum()
+        if symmetric:
+            q = log_q.exp()
+            reverse_kl = (q * (log_q - log_w)).sum()
+            losses.append(0.5 * (forward_kl + reverse_kl))
+        else:
+            losses.append(forward_kl)
         entropies.append(-(w * log_w).sum())
 
     if not losses:
@@ -101,4 +115,5 @@ def local_boltzmann_bridge_loss(
             float(kT) if not isinstance(kT, torch.Tensor)
             else float(kT.mean().item())
         ),
+        "bridge_symmetric": float(symmetric),
     }

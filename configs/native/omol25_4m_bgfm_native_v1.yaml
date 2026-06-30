@@ -303,16 +303,34 @@ mol_fm:
       lambda_head: 0.5
       lambda_head_force: 0.05
       lambda_bridge: 0.00005
+      # Boltzmann bridge KL form (paper Eq. eq:bridge-loss and
+      # eq:bridge-sym). Forward KL (false, default) is mode-covering and
+      # the natural choice when OMol25 is the trusted teacher; symmetric
+      # (true) adds a mode-seeking JS-like term. Headline runs use false.
+      bridge_symmetric: false
       lambda_corrector: 0.02
       # Drift-monotonicity hinge (paper Eq. eq:drift-monotonicity, audit
       # item 4). Certifies that a step along the conservative drift
       # component does not raise the learned strain. Without this, the
       # norm penalty L_drift could be satisfied by a backbone that
-      # cancels the drift contribution entirely.
+      # cancels the drift contribution entirely. Margin m interpolates:
+      # m=0 prevents uphill drift but admits flat optima (d_t = 0);
+      # m>0 forces strict descent at the cost of early-training noise
+      # amplification. Headline runs use m=0; ablate {0, 0.05, 0.10} eV.
       lambda_mono: 0.05
       mono_t_eval: 0.9
       mono_step_size: 1.0e-3
       mono_margin: 0.0
+      # Joint discrete-continuous density (paper section sec:method:joint,
+      # Eq. eq:joint-density). When true, the per-virtual-mol model log-
+      # density used inside L_dens and L_bridge becomes
+      #   log p_theta(x) = log p_theta(r|c) + log p_theta(c).
+      # The discrete term is constant across K perturbations of a parent
+      # (same atom counts/types/charges) and therefore drops out of both
+      # the within-parent variance and the per-parent softmax, so this
+      # mode is invariant for our calibration objectives. Headline runs
+      # leave it false; ablation column enables it for diagnostics.
+      joint_density_enabled: false
       corrector_train_jmax: 3
       corrector_eta_init: 0.001
       corrector_eta_final: 0.0001

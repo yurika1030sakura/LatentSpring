@@ -437,12 +437,22 @@ for the conservative drift component, the loss is
     \label{eq:drift-monotonicity}
 \end{equation}
 with step size $\epsilon$ matched to the late-time velocity scale and
-optional margin $m \ge 0$. This certifies that the conservative
-component, when actually applied, does not raise the learned strain on
-average and thus distinguishes a physical Boltzmann drift from a generic
-norm-controlled perturbation. At inference, the sampler can opt in to
-either the plain flow $v_\theta$ or the calibrated field $v_{\rm BGFM}$;
-we report both in the experimental ablations.
+margin $m \ge 0$. The role of $m$ is to interpolate between two
+regimes: $m = 0$ asks only that a step along $d_t$ not \emph{raise} the
+learned strain (so a flat optimum where $d_t \approx 0$ satisfies the
+hinge); $m > 0$ asks that the strain strictly decrease by at least $m$
+along $d_t$, which forbids the flat optimum and forces $d_t$ to be a
+non-trivial descent direction whenever $\Delta E_\psi$ has a non-zero
+gradient at $r_t$. We default to $m = 0$ in the main configuration
+because the early-training strain head is noisy and a strict-descent
+margin amplifies that noise into instability; we sweep $m \in
+\{0, 0.05, 0.1\}\,\mathrm{eV}$ in the ablation table. With either
+margin, this hinge certifies that the conservative component, when
+actually applied, does not raise the learned strain on average and thus
+distinguishes a physical Boltzmann drift from a generic norm-controlled
+perturbation. At inference, the sampler can opt in to either the plain
+flow $v_\theta$ or the calibrated field $v_{\rm BGFM}$; we report both
+in the experimental ablations.
 
 \subsection{Corrector-aware training}
 \label{sec:method:corrector-aware}
@@ -509,6 +519,26 @@ as an explicit distribution-matching algorithm. The bridge reuses the
 single FFJORD log-density evaluation already consumed by
 $\mathcal L_{\rm dens}$ and thus carries no additional integration cost.
 
+\paragraph{Symmetric variant.}
+By default, $\mathcal L_{\rm bridge}$ uses the forward
+$\mathrm{KL}(w_m\,\|\,q^{(m)}_\theta)$, which is mode-covering: the model
+is encouraged to place mass on every low-energy perturbation that
+OMol25 marks as probable. An alternative, made available as a config
+knob, is the symmetric Jensen-Shannon-style form
+\begin{equation}
+    \mathcal L_{\rm bridge}^{\rm sym}
+    \,=\, \tfrac{1}{2}\,\mathbb E_m\bigl[
+        \mathrm{KL}(w_m\,\|\,q^{(m)}_\theta) +
+        \mathrm{KL}(q^{(m)}_\theta\,\|\,w_m)\bigr],
+    \label{eq:bridge-sym}
+\end{equation}
+which adds a mode-seeking term that penalizes the model for placing
+mass on cloud entries that OMol25 considers high-energy. We default to
+forward KL because the natural failure mode of an undertrained model is
+to assign uniform mass over the cloud (which forward KL strongly
+penalizes for low-energy targets); the symmetric variant is reported in
+the bridge ablation column of Table~\ref{tab:ablation}.
+
 \subsection{Training objective}
 
 The full training loss is
@@ -528,14 +558,36 @@ All auxiliary weights use warmup/ramp schedules. OMol25 is not called
 in the main training loop: endpoint forces are stored in the dataset
 and perturbation energies are precomputed offline.
 
-\paragraph{Optional joint-density extension.}
-BGFM can also add discrete log-probability terms for atom counts, atom
-types, and charges to form
-$\log p_\theta(x)=\log p_\theta^{\rm pos}(r\mid c)+\log p_\theta(c)$.
-This extension is useful for diagnostics and future full-joint density
-calibration. Unless explicitly enabled and verified in an ablation, the
-main objective in this paper should be interpreted as conditional
-coordinate Boltzmann calibration.
+\subsection{Joint discrete-continuous density}
+\label{sec:method:joint}
+
+BGFM exposes an optional \emph{joint density} mode that augments the
+coordinate FFJORD with the model's discrete log-probability over atom
+counts $N$, atom types $a$, and per-atom formal charges $c$:
+\begin{equation}
+    \log p_\theta(x \mid T)
+    \,=\,
+    \underbrace{\log p_\theta^{\rm pos}(r \mid c, T)}_{\text{FFJORD on coords}}
+    \,+\,
+    \underbrace{\log p_\theta^N(N) + \sum_{i=1}^{N}\!\bigl[\log p_\theta^a(a_i) + \log p_\theta^c(c_i)\bigr]}_{=\,\log p_\theta(c) \text{ (discrete CTMC)}}.
+    \label{eq:joint-density}
+\end{equation}
+When enabled, $\log p_\theta(x \mid T)$ replaces $\log p_\theta^{\rm pos}$
+inside both the density-energy variance loss
+(Eq.~\eqref{eq:density-energy}) and the Local Boltzmann bridge target
+(Eq.~\eqref{eq:bridge-model}). Because all $K$ perturbations of a parent
+molecule $m$ share atom counts, types, and charges, the discrete term
+contributes the same per-parent constant to every cloud entry and
+therefore drops out of both the within-parent variance and the
+per-parent softmax. The joint-density mode is consequently
+\emph{invariant} for the parent-restricted objectives that we use as
+calibration signals, by construction. Its value is diagnostic: tracking
+the discrete component lets us audit whether the discrete generator is
+also implicitly Boltzmann-calibrated across compositions (a stricter
+condition than this paper claims) and is enabled in the
+$\lambda_{\rm joint}$ ablation column of Table~\ref{tab:ablation}. The
+headline experimental numbers in this paper use the conditional-
+coordinate variant ($\log p_\theta^{\rm pos}$ only).
 
 
 \paragraph{Algorithmic form.}
