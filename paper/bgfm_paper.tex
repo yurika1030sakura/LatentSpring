@@ -537,7 +537,7 @@ mass on cloud entries that OMol25 considers high-energy. We default to
 forward KL because the natural failure mode of an undertrained model is
 to assign uniform mass over the cloud (which forward KL strongly
 penalizes for low-energy targets); the symmetric variant is reported in
-the bridge ablation column of Table~\ref{tab:ablation}.
+the bridge ablation column of \S\ref{sec:exp:ablation}.
 
 \subsection{Training objective}
 
@@ -585,7 +585,7 @@ calibration signals, by construction. Its value is diagnostic: tracking
 the discrete component lets us audit whether the discrete generator is
 also implicitly Boltzmann-calibrated across compositions (a stricter
 condition than this paper claims) and is enabled in the
-$\lambda_{\rm joint}$ ablation column of Table~\ref{tab:ablation}. The
+$\lambda_{\rm joint}$ ablation column of \S\ref{sec:exp:ablation}. The
 headline experimental numbers in this paper use the conditional-
 coordinate variant ($\log p_\theta^{\rm pos}$ only).
 
@@ -762,6 +762,7 @@ $0.25$ (tempered, warm; fixed)   & \Run{} & \Run{} & \Run{} & \Run{} & \Run{} \\
 \end{table}
 
 \subsection{Ablations and negative controls}
+\label{sec:exp:ablation}
 
 A valid physical improvement should disappear or weaken under corrupted
 labels. We therefore train or evaluate controls with shuffled forces,
