@@ -220,15 +220,23 @@ def residual_energy_and_force(
     arithmetic, but using DeltaU documents the intended strain-based
     correction.
     """
-    r = positions.detach().requires_grad_(True) if detach_positions else positions.requires_grad_(True)
-    total, strain, base = head.forward_parts(r, atom_types, charges, node_batch_idx, n_graphs)
-    (grad,) = torch.autograd.grad(
-        outputs=strain.sum(),
-        inputs=r,
-        create_graph=create_graph,
-        retain_graph=create_graph,
-        allow_unused=False,
-    )
+    # Force computation needs autograd through positions even when the
+    # outer caller is inside torch.no_grad() (validation / inference). A
+    # bare .requires_grad_(True) inside no_grad mode does NOT enable
+    # tracking; we have to also enter torch.enable_grad(). The drift in
+    # forward_with_energy_drift adds this term to the velocity output at
+    # both train and val time, so we always need the force value
+    # regardless of the outer grad state.
+    with torch.enable_grad():
+        r = positions.detach().requires_grad_(True) if detach_positions else positions.requires_grad_(True)
+        total, strain, base = head.forward_parts(r, atom_types, charges, node_batch_idx, n_graphs)
+        (grad,) = torch.autograd.grad(
+            outputs=strain.sum(),
+            inputs=r,
+            create_graph=create_graph,
+            retain_graph=create_graph,
+            allow_unused=False,
+        )
     force = -grad
     return total, strain, base, force
 
