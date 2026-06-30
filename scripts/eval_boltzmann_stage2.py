@@ -98,10 +98,16 @@ def main() -> int:
         if logp.std() < 1e-9 or negE_kT.std() < 1e-9:
             continue
         r_pearson = float(np.corrcoef(logp, negE_kT)[0, 1])
+        # Spearman (rank) correlation: invariant to each model's per-molecule
+        # log-p scale/curvature, so it is the fairer cross-model number when the
+        # models compute log p in different (non-affine-comparable) ways.
+        def _ranks(a):
+            o = np.argsort(np.argsort(a)); return o.astype(float)
+        r_spearman = float(np.corrcoef(_ranks(logp), _ranks(negE_kT))[0, 1])
         slope = float(np.polyfit(negE_kT, logp, 1)[0])
         per_group_rows.append({
             "group_id": gid, "n_pert": len(recs),
-            "pearson_r": r_pearson, "slope": slope,
+            "pearson_r": r_pearson, "spearman_r": r_spearman, "slope": slope,
             "logp_std": float(logp.std()),
             "negE_kT_std": float(negE_kT.std()),
         })
@@ -112,12 +118,14 @@ def main() -> int:
     args.out_csv.parent.mkdir(parents=True, exist_ok=True)
     with open(args.out_csv, "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=["group_id", "n_pert", "pearson_r",
-                                          "slope", "logp_std", "negE_kT_std"])
+                                          "spearman_r", "slope", "logp_std",
+                                          "negE_kT_std"])
         w.writeheader()
         w.writerows(per_group_rows)
 
     # Aggregate
     rs = np.array([row["pearson_r"] for row in per_group_rows])
+    rsp = np.array([row["spearman_r"] for row in per_group_rows])
     slopes = np.array([row["slope"] for row in per_group_rows])
     px, py = np.array(pooled_x), np.array(pooled_y)
     pooled_r2 = float(np.corrcoef(px, py)[0, 1] ** 2) if px.size > 2 else float("nan")
@@ -125,6 +133,7 @@ def main() -> int:
     print(f"\n[boltz2 SUMMARY]  (Boltzmann consistency test)")
     print(f"  groups analyzed        : {len(per_group_rows)}")
     print(f"  mean per-group Pearson r: {rs.mean():.3f}  (median {np.median(rs):.3f})")
+    print(f"  mean per-group Spearman r: {rsp.mean():.3f}  (median {np.median(rsp):.3f})")
     print(f"  frac groups r>0.5      : {(rs > 0.5).mean():.3f}")
     print(f"  frac groups r>0.8      : {(rs > 0.8).mean():.3f}")
     print(f"  mean slope (ideal=1)   : {slopes.mean():.3f}")

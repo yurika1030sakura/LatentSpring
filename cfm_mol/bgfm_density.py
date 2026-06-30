@@ -29,7 +29,7 @@ from typing import Callable
 
 import torch
 
-from cfm_mol.bgfm_loss import divergence_hutchinson
+from cfm_mol.bgfm_loss import divergence_hutchinson, divergence_exact_atomwise
 
 
 def gaussian_prior_log_density(
@@ -152,10 +152,16 @@ def log_density_via_flow(
         # Divergence at current point (per graph). create_graph only when
         # this density feeds a training loss; for eval we keep it False so
         # no second-order graph is built (avoids OOM over the trajectory).
-        div = divergence_hutchinson(
-            v_fn, x_req, n_apg,
-            n_samples=n_hutchinson, rademacher=True,
-            create_graph=for_training)
+        if n_hutchinson <= 0:
+            # Exact divergence (3N backward passes). Noise-free estimate for
+            # eval-time log-density; too slow for training. Only valid when
+            # not building a second-order graph.
+            div = divergence_exact_atomwise(v_fn, x_req, n_apg)
+        else:
+            div = divergence_hutchinson(
+                v_fn, x_req, n_apg,
+                n_samples=n_hutchinson, rademacher=True,
+                create_graph=for_training)
         # Velocity for the reverse Euler step (no grad needed for the step)
         with torch.no_grad():
             g_aux.ndata['x_t'] = x
