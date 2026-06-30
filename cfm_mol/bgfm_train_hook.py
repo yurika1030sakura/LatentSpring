@@ -318,11 +318,28 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
         L_force = torch.stack(force_terms).mean()
         score_force_cos = torch.stack(cosine_terms).mean()
 
-        # 5. Schedule (always computed -- energy block needs it too)
-        batches_per_epoch = getattr(self, 'batches_per_epoch',
-                                    len(self.trainer.train_dataloader))
-        max_epochs = self.trainer.max_epochs or 1
-        epoch_frac = (self.current_epoch + batch_idx / batches_per_epoch) / max_epochs
+        # 5. Schedule (always computed -- energy block needs it too).
+        # Step-based, matching cfm_mol.native.train_hook._schedule. The
+        # earlier version divided (current_epoch + batch_idx/batches_per_epoch)
+        # by max_epochs, which made warmup/ramp scale with the FULL training
+        # horizon (e.g. max_epochs=20 -> warmup_frac=0.005 meant lambdas only
+        # reached full strength near optimizer step ~150k). On 3-day SLURM
+        # allocations that landed well past the wall-clock, so every lambda
+        # stayed at zero and the runs trained pure FlowMol3 with a random
+        # drift from an uncalibrated head. Use Lightning's
+        # estimated_stepping_batches (total optimizer steps for the configured
+        # horizon) and global_step (optimizer steps elapsed) so warmup_frac
+        # and ramp_frac are fractions of the total optimizer-step budget --
+        # the same semantics the native hook uses.
+        max_steps = getattr(getattr(self, 'trainer', None),
+                            'estimated_stepping_batches', None)
+        if max_steps is None or max_steps <= 0:
+            epoch_frac = 1.0
+        else:
+            epoch_frac = min(
+                float(getattr(self, 'global_step', 0)) / float(max_steps),
+                1.0,
+            )
         l1 = _bgfm_schedule(epoch_frac, lambda_1, warmup_frac, ramp_frac)
 
         # NaN guard: if force loss went non-finite (numerical instability
