@@ -54,3 +54,16 @@ index cb0f59d..8512233 100644
      else:
          raise ValueError(f'Unknown dataset {cfg.dataset}')
  
+diff --git a/train_test.py b/train_test.py
+index a4f03de..ab9b48b 100644
+--- a/train_test.py
++++ b/train_test.py
+@@ -73,7 +73,7 @@ def train_epoch(args, loader, epoch, model, model_dp, model_ema, ema, device, dt
+                   f"RegTerm: {reg_term.item():.1f}, "
+                   f"GradNorm: {grad_norm:.1f}")
+         nll_epoch.append(nll.item())
+-        if (epoch % args.test_epochs == 0) and (i % args.visualize_every_batch == 0) and not (epoch == 0 and i == 0) and args.train_diffusion:
++        if (epoch % args.test_epochs == 0) and (i % args.visualize_every_batch == 0) and not (epoch == 0 and i == 0) and args.train_diffusion and 'omol25' not in args.dataset:
+             start = time.time()
+             if len(args.conditioning) > 0:
+                 save_and_sample_conditional(args, device, model_ema, prop_dist, dataset_info, epoch=epoch)
