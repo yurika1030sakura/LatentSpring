@@ -269,6 +269,24 @@ mol_fm:
       enabled: true
       patch_vector_field: true
       energy_drift_enabled: true
+      # Authoritative temperature block (SPEC item 1.1). The two-temperature
+      # convention: physical_kT_eV is the immutable room-T anchor (reviewers
+      # see "298 K = 0.02569 eV"); bridge_kT may be tempered/annealed and
+      # MUST be labelled "tempered" in the paper. Legacy kT/beta below are
+      # retained ONLY for backward compatibility while other code paths
+      # still read mol_fm.bgfm.kT; the temperature: block wins when present.
+      temperature:
+        physical_T_K: 298.15
+        physical_kT_eV: 0.02569
+        bridge_kT_mode: annealed             # or fixed_tempered
+        bridge_kT_start_eV: 0.25
+        bridge_kT_final_eV: 0.02569
+        force_kT_eV: 0.02569
+        drift_kT_eV: 0.02569
+        corrector_kT_eV: 0.02569
+        corrector_noise_mode: deterministic  # or physical_300K
+      # DEPRECATED legacy keys (still read by some non-native code paths):
+      # temperature: block above is now authoritative for native temperatures.
       kT: 0.025
       beta: 40.0
       drift_alpha_max: 0.15
@@ -286,6 +304,15 @@ mol_fm:
       lambda_head_force: 0.05
       lambda_bridge: 0.00005
       lambda_corrector: 0.02
+      # Drift-monotonicity hinge (paper Eq. eq:drift-monotonicity, audit
+      # item 4). Certifies that a step along the conservative drift
+      # component does not raise the learned strain. Without this, the
+      # norm penalty L_drift could be satisfied by a backbone that
+      # cancels the drift contribution entirely.
+      lambda_mono: 0.05
+      mono_t_eval: 0.9
+      mono_step_size: 1.0e-3
+      mono_margin: 0.0
       corrector_train_jmax: 3
       corrector_eta_init: 0.001
       corrector_eta_final: 0.0001

@@ -17,9 +17,58 @@ from typing import Any
 import torch
 
 from .strain_head import ResidualStrainEnergyHead, residual_head_loss
-from .energy_drift import EnergyDriftConfig, patch_energy_coupled_vector_field
+from .energy_drift import (
+    EnergyDriftConfig,
+    compute_energy_drift,
+    drift_monotonicity_loss,
+    patch_energy_coupled_vector_field,
+)
 from .corrector_in_loop import corrector_in_loop_loss
 from .boltzmann_bridge import local_boltzmann_bridge_loss
+
+
+PHYSICAL_KT_EV = 0.02569  # k_B * 298.15 K; reviewers' anchor; do not change
+PHYSICAL_T_K = 298.15
+
+
+def _resolve_temperature(native_cfg: dict) -> dict:
+    """Return a normalized temperature sub-config.
+
+    The `temperature:` YAML block under mol_fm.bgfm.native is AUTHORITATIVE.
+    Legacy keys (kT, beta) at native_cfg root are still honored when
+    `temperature:` is absent, for backward compatibility, but they are
+    deprecated and will be removed once all configs migrate.
+    """
+    t = dict(native_cfg.get("temperature", {}) or {})
+    legacy_kT = native_cfg.get("kT", None)
+    if "drift_kT_eV" not in t:
+        t["drift_kT_eV"] = float(legacy_kT) if legacy_kT is not None else PHYSICAL_KT_EV
+    if "bridge_kT_final_eV" not in t:
+        t["bridge_kT_final_eV"] = float(legacy_kT) if legacy_kT is not None else PHYSICAL_KT_EV
+    t.setdefault("physical_kT_eV", PHYSICAL_KT_EV)
+    t.setdefault("physical_T_K", PHYSICAL_T_K)
+    t.setdefault("bridge_kT_mode", "annealed")
+    t.setdefault("bridge_kT_start_eV", 0.25)
+    t.setdefault("force_kT_eV", PHYSICAL_KT_EV)
+    t.setdefault("corrector_kT_eV", PHYSICAL_KT_EV)
+    t.setdefault("corrector_noise_mode", "deterministic")
+    if abs(float(t["physical_kT_eV"]) - PHYSICAL_KT_EV) > 1e-6:
+        raise ValueError(
+            f"physical_kT_eV must be exactly {PHYSICAL_KT_EV} (room temperature anchor); "
+            f"got {t['physical_kT_eV']}"
+        )
+    return t
+
+
+def _compute_bridge_kT(step_frac: float, temp_cfg: dict) -> float:
+    """Log-linear anneal of bridge kT from start_eV to final_eV across training."""
+    import math
+    start = float(temp_cfg["bridge_kT_start_eV"])
+    final = float(temp_cfg["bridge_kT_final_eV"])
+    if str(temp_cfg.get("bridge_kT_mode", "annealed")) == "fixed_tempered":
+        return start
+    f = max(min(float(step_frac), 1.0), 0.0)
+    return math.exp(math.log(start) + f * (math.log(final) - math.log(start)))
 
 
 def _schedule(step_frac: float, value: float, warmup: float, ramp: float) -> float:
@@ -80,16 +129,20 @@ def patch_bgfm_native(model, native_cfg: dict[str, Any]) -> None:
     ).to(device)
     model._bgfm_native_strain_head = head
 
+    temp_cfg = _resolve_temperature(native_cfg)
+    drift_kT_eV = float(temp_cfg["drift_kT_eV"])
     drift_cfg = EnergyDriftConfig(
         enabled=bool(native_cfg.get("energy_drift_enabled", True)),
         alpha_max=float(native_cfg.get("drift_alpha_max", 0.2)),
         t_on=float(native_cfg.get("drift_t_on", 0.65)),
         power=float(native_cfg.get("drift_power", 2.0)),
-        beta=float(native_cfg.get("beta", 1.0 / float(native_cfg.get("kT", 0.025)))),
+        drift_kT_eV=drift_kT_eV,
+        beta=1.0 / drift_kT_eV,
         force_clip=float(native_cfg.get("drift_force_clip", 10.0)),
         normalize_force=bool(native_cfg.get("drift_normalize_force", True)),
         detach_force=bool(native_cfg.get("drift_detach_force", False)),
     )
+    model._bgfm_native_temperature_cfg = temp_cfg
     if bool(native_cfg.get("patch_vector_field", True)):
         patch_energy_coupled_vector_field(model, drift_cfg)
 
@@ -131,12 +184,12 @@ def patch_bgfm_native(model, native_cfg: dict[str, Any]) -> None:
             Lc, dc = corrector_in_loop_loss(
                 self._bgfm_native_strain_head, r, atom_types, charges,
                 node_batch_idx, n_graphs,
-                beta=float(native_cfg.get("beta", 1.0 / float(native_cfg.get("kT", 0.025)))),
+                corrector_kT_eV=float(temp_cfg["corrector_kT_eV"]),
+                noise_mode=str(temp_cfg["corrector_noise_mode"]),
                 j_max=int(native_cfg.get("corrector_train_jmax", 3)),
                 eta_init=float(native_cfg.get("corrector_eta_init", 1.0e-3)),
                 eta_final=float(native_cfg.get("corrector_eta_final", 1.0e-4)),
                 delta_max=float(native_cfg.get("corrector_delta_max", 0.25)),
-                stochastic=bool(native_cfg.get("corrector_train_noise", True)),
             )
             if torch.isfinite(Lc):
                 total = total + l_corr_w * Lc
@@ -157,10 +210,22 @@ def patch_bgfm_native(model, native_cfg: dict[str, Any]) -> None:
                     prior_std=float(native_cfg.get("prior_std", 1.0)),
                     for_training=True,
                 )
+                kT_sched = {
+                    "mode": str(temp_cfg["bridge_kT_mode"]),
+                    "start_eV": float(temp_cfg["bridge_kT_start_eV"]),
+                    "final_eV": float(temp_cfg["bridge_kT_final_eV"]),
+                }
                 Lb, db = local_boltzmann_bridge_loss(
                     logp, energies, parent_id,
-                    kT=float(native_cfg.get("kT", 0.025)),
+                    kT=float(temp_cfg["bridge_kT_final_eV"]),  # static fallback
                     energy_clip=float(native_cfg.get("bridge_energy_clip", 200.0)),
+                    kT_schedule=kT_sched,
+                    step_frac=float(frac),
+                )
+                self.log(
+                    "train_native_bridge_kT_eV_eff",
+                    _compute_bridge_kT(frac, temp_cfg),
+                    on_step=True,
                 )
                 if torch.isfinite(Lb):
                     total = total + l_bridge_w * Lb
@@ -175,6 +240,45 @@ def patch_bgfm_native(model, native_cfg: dict[str, Any]) -> None:
             for k, v in diag.items():
                 if torch.is_tensor(v):
                     self.log("train_" + k, v.detach(), on_step=True)
+
+        # Drift-monotonicity hinge (lambda_mono * L_mono).
+        # Certifies that the conservative drift component is a descent
+        # direction on the learned strain (paper Eq. eq:drift-monotonicity).
+        # Sampled at t in [t_on, 1] where alpha(t) is nonzero. Cheap: two
+        # extra strain-head evaluations per batch.
+        l_mono_w = _schedule(
+            frac, float(native_cfg.get("lambda_mono", 0.0)), warmup, ramp
+        )
+        if l_mono_w > 0 and drift_cfg.enabled:
+            try:
+                t_lo = float(native_cfg.get("drift_t_on", 0.65))
+                t_mono = float(native_cfg.get("mono_t_eval", min(0.95, max(t_lo, 0.85))))
+                drift_t, _ = compute_energy_drift(
+                    self._bgfm_native_strain_head,
+                    r, atom_types, charges, node_batch_idx, n_graphs,
+                    t=torch.full(
+                        (n_graphs,), t_mono, device=r.device, dtype=r.dtype
+                    ),
+                    cfg=drift_cfg,
+                    create_graph=False,
+                )
+                Lm, dm = drift_monotonicity_loss(
+                    self._bgfm_native_strain_head,
+                    r, atom_types, charges, node_batch_idx, n_graphs,
+                    drift=drift_t,
+                    step_size=float(native_cfg.get("mono_step_size", 1.0e-3)),
+                    margin=float(native_cfg.get("mono_margin", 0.0)),
+                )
+                if torch.isfinite(Lm):
+                    total = total + l_mono_w * Lm
+                    self.log("train_native_L_mono", Lm.detach(),
+                             on_step=True, prog_bar=True)
+                    self.log("train_lambda_mono", l_mono_w, on_step=True)
+                    for k, v in dm.items():
+                        self.log("train_" + k, v, on_step=True)
+            except RuntimeError:
+                self.log("train_native_mono_runtime_skip", 1.0, on_step=True)
+
         self.log("train_total_bgfm_native", total.detach(), on_step=True, prog_bar=True)
         return total
 
@@ -184,3 +288,14 @@ def patch_bgfm_native(model, native_cfg: dict[str, Any]) -> None:
         float(native_cfg.get("lambda_head", 1.0)),
         float(native_cfg.get("lambda_bridge", 0.0)),
     ))
+    print(
+        "[bgfm-native] temperature: physical_kT=%g eV (T=%.2f K), drift_kT=%g eV, "
+        "bridge_kT %s [%g -> %g] eV, corrector_kT=%g eV mode=%s"
+        % (
+            temp_cfg["physical_kT_eV"], temp_cfg["physical_T_K"],
+            temp_cfg["drift_kT_eV"],
+            temp_cfg["bridge_kT_mode"],
+            temp_cfg["bridge_kT_start_eV"], temp_cfg["bridge_kT_final_eV"],
+            temp_cfg["corrector_kT_eV"], temp_cfg["corrector_noise_mode"],
+        )
+    )
