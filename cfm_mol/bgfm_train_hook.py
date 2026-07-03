@@ -103,6 +103,88 @@ def _build_path_aux_graph(
     return g_aux
 
 
+def _mol_total_charge(g: dgl.DGLGraph, node_batch_idx: torch.Tensor) -> torch.Tensor:
+    """Per-molecule total charge decoded from the (frozen) charge channel.
+
+    ``c_1_true`` is a per-atom one-hot over 6 classes = clip(charge, -2, 3) + 2,
+    so per-atom charge = argmax - 2. Summed within each molecule this recovers
+    the total molecular charge to hand to the teacher (see physics_drift).
+    """
+    key = 'c_1_true' if 'c_1_true' in g.ndata else (
+        'c_t' if 'c_t' in g.ndata else None)
+    B = (int(node_batch_idx.max().item()) + 1) if node_batch_idx.numel() else 0
+    if key is None:
+        return torch.zeros(B, device=node_batch_idx.device)
+    per_atom_q = g.ndata[key].argmax(dim=-1).float() - 2.0
+    q = torch.zeros(B, device=per_atom_q.device)
+    q.scatter_add_(0, node_batch_idx, per_atom_q)
+    return q
+
+
+def _onpolicy_rollout(vector_field, g_op, node_batch_idx, upper_edge_mask,
+                      K_steps: int = 10, prior_std: float = 1.0, kT=None):
+    """No-grad forward-Euler rollout of the position channel only, discrete
+    channels held fixed. Mirrors level3_bgfm_sample.sample_positions_via_flow.
+    Returns the generated geometry ``x_gen`` (detached)."""
+    device = g_op.device
+    n_nodes = g_op.num_nodes()
+    B = (int(node_batch_idx.max().item()) + 1) if node_batch_idx.numel() else 0
+    counts = torch.zeros(B, device=device)
+    counts.scatter_add_(0, node_batch_idx, torch.ones(n_nodes, device=device))
+
+    def _decom(x):
+        com = torch.zeros(B, 3, device=device)
+        com.scatter_add_(0, node_batch_idx.unsqueeze(-1).expand(-1, 3), x)
+        com = com / counts.unsqueeze(-1).clamp(min=1)
+        return x - com[node_batch_idx]
+
+    x = _decom(torch.randn(n_nodes, 3, device=device) * prior_std)
+    dt = 1.0 / max(1, K_steps)
+    vf_kwargs = dict(node_batch_idx=node_batch_idx, upper_edge_mask=upper_edge_mask)
+    if kT is not None:
+        vf_kwargs['kT'] = kT
+    with torch.no_grad():
+        for k in range(K_steps):
+            t_scalar = torch.full((B,), (k + 0.5) * dt, device=device,
+                                  dtype=torch.float32)
+            g_op.ndata['x_t'] = x
+            v = vector_field(g_op, t_scalar, **vf_kwargs)['x']
+            x = _decom(x + dt * v)
+    return x.detach()
+
+
+def _get_teacher_client(model, onpolicy_cfg: dict):
+    """Lazily build and cache the OMol25 teacher client on ``model``.
+
+    Returns None (once, with a warning) if the worker is unreachable so that
+    training degrades to off-policy-only instead of crashing.
+    """
+    cached = getattr(model, '_bgfm_teacher_client', 'uninit')
+    if cached != 'uninit':
+        return cached
+    client = None
+    try:
+        from cfm_mol.physics_drift import (
+            OMol25DriftClient, DriftConfig, _PERIODIC_SYMBOLS,
+        )
+        atom_map = onpolicy_cfg.get('atom_map')
+        if atom_map is None:
+            atom_map = list(_PERIODIC_SYMBOLS[1:84])  # H..Bi (83 elements)
+            atom_map = atom_map + ['X'] * int(onpolicy_cfg.get('n_extra', 0))
+        client = OMol25DriftClient(
+            DriftConfig(rpc_url=onpolicy_cfg['rpc_url'],
+                        clip_force=onpolicy_cfg['clip_force']),
+            atom_map,
+        )
+    except Exception as e:  # worker down / import error -> skip on-policy
+        import warnings
+        warnings.warn(
+            f"BGFM on-policy: teacher unavailable ({e}); skipping on-policy loss.")
+        client = None
+    model._bgfm_teacher_client = client
+    return client
+
+
 def _force_targets(forces: torch.Tensor, mode: str) -> torch.Tensor:
     """Return the force target used by the BGFM auxiliary loss."""
     if mode == 'true':
@@ -211,6 +293,22 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
     force_correction_alpha = float(bgfm_config.get('force_correction_alpha', 0.0))
     force_correction_noise_std = float(bgfm_config.get('force_correction_noise_std', 0.0))
 
+    # On-policy force distillation (Phase 1: conditional-Boltzmann p(r|c)).
+    # Generate a conformer from the CURRENT model with the discrete identity
+    # frozen, query the OMol25 teacher for forces at that geometry, and match
+    # the FM-implied score to F/kT there. lambda_onpolicy=0 disables it
+    # (default), so existing off-policy runs are unaffected.
+    lambda_onpolicy = float(bgfm_config.get('lambda_onpolicy', 0.0))
+    onpolicy_K_steps = int(bgfm_config.get('onpolicy_K_steps', 10))
+    onpolicy_every_k_steps = int(bgfm_config.get('onpolicy_every_k_steps', 1))
+    onpolicy_t = float(bgfm_config.get('onpolicy_t', 0.9))
+    onpolicy_cfg = dict(
+        rpc_url=str(bgfm_config.get('onpolicy_rpc_url', 'http://127.0.0.1:5900')),
+        clip_force=float(bgfm_config.get('onpolicy_clip_force', 50.0)),
+        atom_map=bgfm_config.get('onpolicy_atom_map', None),
+        n_extra=int(bgfm_config.get('n_extra_atom_classes', 0)),
+    )
+
     from flowmol.data_processing.utils import get_batch_idxs, get_upper_edge_mask
     original_training_step = model.training_step
 
@@ -242,8 +340,18 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
         # 1. Original FM step (now learning to flow to the shifted target)
         fm_total = original_training_step(g, batch_idx)
 
-        # Skip if BGFM labels not present (e.g., QM9/GEOM pretraining)
+        # Skip if BGFM labels not present (e.g., QM9/GEOM pretraining).
+        # LOUD guard: a missing force_1_true silently disables ALL physics losses
+        # (force + on-policy + energy) -> plain FM. This must never pass unnoticed.
         if 'force_1_true' not in g.ndata:
+            if not getattr(self, '_bgfm_warned_no_forces', False):
+                import warnings
+                warnings.warn(
+                    "BGFM: 'force_1_true' absent from graph ndata -> ALL physics "
+                    "losses SKIPPED, training is plain FM. The dataset must populate "
+                    "g.ndata['force_1_true'] (needs 'forces' in the processed .pt).")
+                self._bgfm_warned_no_forces = True
+            self.log('train_bgfm_no_force_skip', 1.0, on_step=True, prog_bar=True)
             return fm_total
 
         # 2. Auxiliary forward(s) near the data endpoint. Multiple late times make
@@ -341,8 +449,64 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
             L_force = torch.zeros_like(L_force).detach()
             l1 = 0.0
 
+        # --- On-policy force distillation (Phase 1: conditional Boltzmann) ---
+        # Discretes frozen to the true identity; generate a conformer, score it
+        # with the teacher, match FM-implied score to F/kT on the path toward
+        # the generated endpoint. See notes/appendix_hbc.tex (Thm 2: forces
+        # identify the conditional Boltzmann).
+        L_onpolicy = torch.zeros((), device=device)
+        l_op = 0.0
+        if lambda_onpolicy > 0.0 and (batch_idx % max(1, onpolicy_every_k_steps) == 0):
+            client = _get_teacher_client(self, onpolicy_cfg)
+            if client is not None:
+                g_op = g.clone()
+                _condition_discrete_on_endpoint(g_op)
+                op_kT = (torch.full((g.batch_size,), kT_step, device=device,
+                                    dtype=torch.float32)
+                         if getattr(self, '_bgfm_kT_conditioning', False) else None)
+                x_gen = _onpolicy_rollout(
+                    self.vector_field, g_op, node_batch_idx, upper_edge_mask,
+                    K_steps=onpolicy_K_steps, prior_std=1.0, kT=op_kT)
+                mol_charge = _mol_total_charge(g_op, node_batch_idx)
+                F_teacher, teacher_valid = client.compute_forces_dgl(
+                    x_gen, g_op.ndata['a_t'], node_batch_idx, mol_charge=mol_charge,
+                    return_valid=True)
+                g_op.ndata['x_1_true'] = x_gen.detach()
+                g_op.ndata['force_1_true'] = F_teacher.detach()
+                t_op = torch.full((g.batch_size,), onpolicy_t, device=device,
+                                  dtype=torch.float32)
+                g_aux = _build_path_aux_graph(
+                    g_op, self.vector_field, t_op,
+                    node_batch_idx=node_batch_idx, edge_batch_idx=edge_batch_idx,
+                    upper_edge_mask=upper_edge_mask)
+                x_t_op = g_aux.ndata['x_t']
+                vf_kwargs_op = dict(node_batch_idx=node_batch_idx,
+                                    upper_edge_mask=upper_edge_mask)
+                if op_kT is not None:
+                    vf_kwargs_op['kT'] = op_kT
+                v_op = self.vector_field(g_aux, t_op, **vf_kwargs_op)['x']
+                s_op = score_from_fm_velocity(
+                    v_op, x_t_op, t_op[node_batch_idx], prior_std=1.0)
+                # Mask atoms whose teacher force failed (zeros): do NOT train
+                # toward a spurious F/kT = 0 target on those.
+                if teacher_valid.any():
+                    L_onpolicy = force_loss(s_op[teacher_valid],
+                                            g_aux.ndata['force_1_true'][teacher_valid],
+                                            kT=kT_step)
+                else:
+                    L_onpolicy = torch.zeros((), device=device)
+                l_op = _bgfm_schedule(epoch_frac, lambda_onpolicy,
+                                      warmup_frac, ramp_frac)
+                if not torch.isfinite(L_onpolicy):
+                    self.log('train_L_onpolicy_nan_skip', 1.0, on_step=True)
+                    L_onpolicy = torch.zeros_like(L_onpolicy).detach()
+                    l_op = 0.0
+                self.log('train_L_onpolicy', L_onpolicy.detach(),
+                         on_step=True, prog_bar=True)
+                self.log('train_lambda_onpolicy', l_op, on_step=True)
+
         # 6. Combine force term (l1=0 if NaN-skipped)
-        total = fm_total + l1 * L_force
+        total = fm_total + l1 * L_force + l_op * L_onpolicy
         self.log('train_L_force', L_force.detach(), on_step=True, prog_bar=False)
         self.log('train_score_force_cos', score_force_cos.detach(), on_step=True, prog_bar=True)
         self.log('train_lambda_1', l1, on_step=True)

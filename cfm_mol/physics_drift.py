@@ -19,18 +19,30 @@ import torch
 import xmlrpc.client
 
 
-# Atom-index symbol tables: FlowMol3 QM9 uses indices into atom_map.
-# We convert to atomic numbers for OMol25.
-_ATOM_MAP_TO_Z: dict[str, int] = {
-    "C": 6, "H": 1, "N": 7, "O": 8, "F": 9,
-    "P": 15, "S": 16, "Cl": 17, "Br": 35, "I": 53,
-    "B": 5, "Si": 14,
-    # 3d TMs
-    "Sc": 21, "Ti": 22, "V": 23, "Cr": 24, "Mn": 25,
-    "Fe": 26, "Co": 27, "Ni": 28, "Cu": 29, "Zn": 30,
-    # 4d/5d
-    "Mo": 42, "Ru": 44, "Rh": 45, "Pd": 46, "Pt": 78, "Ir": 77,
-}
+# Symbol -> atomic number over the full periodic table. OMol25 covers 83
+# elements (H..Bi). The previous table listed only ~30 symbols and silently
+# mapped every unknown element to carbon (``.get(s, 6)``), which corrupts the
+# teacher's energy/force for any element outside that set -- see
+# notes/appendix_hbc.tex, Assumption 3 (well-posed conditional energy).
+import logging as _logging
+
+_LOG = _logging.getLogger(__name__)
+
+# Index == atomic number. Entry 0 is a placeholder / fake-atom token.
+_PERIODIC_SYMBOLS: list[str] = [
+    "X",
+    "H", "He",
+    "Li", "Be", "B", "C", "N", "O", "F", "Ne",
+    "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar",
+    "K", "Ca", "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn",
+    "Ga", "Ge", "As", "Se", "Br", "Kr",
+    "Rb", "Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd",
+    "In", "Sn", "Sb", "Te", "I", "Xe",
+    "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy",
+    "Ho", "Er", "Tm", "Yb", "Lu", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt",
+    "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn",
+]
+_ATOM_MAP_TO_Z: dict[str, int] = {s: z for z, s in enumerate(_PERIODIC_SYMBOLS)}
 
 
 @dataclass
@@ -64,9 +76,16 @@ class OMol25DriftClient:
         self.cfg = cfg
         self.srv = xmlrpc.client.ServerProxy(cfg.rpc_url, allow_none=True)
         self.atom_map = list(atom_map)
-        self._atomic_z: list[int] = [
-            _ATOM_MAP_TO_Z.get(s, 6) for s in self.atom_map
-        ]
+        self._atomic_z = []
+        for s in self.atom_map:
+            z = _ATOM_MAP_TO_Z.get(s)
+            if z is None:
+                _LOG.warning(
+                    "physics_drift: unknown element symbol %r in atom_map; "
+                    "falling back to carbon (Z=6)", s,
+                )
+                z = 6
+            self._atomic_z.append(z)
         # Connectivity check (fails fast if worker not up).
         try:
             h = self.srv.health()
@@ -81,7 +100,10 @@ class OMol25DriftClient:
         x_t: torch.Tensor,
         atom_type_logits: torch.Tensor,
         node_batch_idx: torch.Tensor,
-    ) -> torch.Tensor:
+        mol_charge: torch.Tensor | None = None,
+        mol_spin: torch.Tensor | None = None,
+        return_valid: bool = False,
+    ):
         """Compute OMol25 force per atom for a DGL-batched graph.
 
         Args
@@ -89,6 +111,8 @@ class OMol25DriftClient:
         x_t : (total_atoms, 3) coordinates on device
         atom_type_logits : (total_atoms, A) one-hot/simplex; we argmax
         node_batch_idx : (total_atoms,) molecule index per atom
+        mol_charge : (n_mols,) optional total charge per molecule (default 0)
+        mol_spin : (n_mols,) optional spin multiplicity per molecule (default 1)
 
         Returns
         -------
@@ -99,6 +123,8 @@ class OMol25DriftClient:
         x_cpu = x_t.detach().cpu().numpy()
         a_hard = atom_type_logits.argmax(dim=-1).cpu().numpy()
         nbi = node_batch_idx.cpu().numpy()
+        q_cpu = None if mol_charge is None else mol_charge.detach().cpu().tolist()
+        sp_cpu = None if mol_spin is None else mol_spin.detach().cpu().tolist()
 
         # Build per-molecule sample dicts.
         n_mols = int(nbi.max()) + 1
@@ -112,11 +138,13 @@ class OMol25DriftClient:
                 continue
             z = [int(self._atomic_z[int(a_hard[i])]) for i in atom_idxs]
             pos = [x_cpu[i].tolist() for i in atom_idxs]
+            q = 0 if (q_cpu is None or b >= len(q_cpu)) else int(round(q_cpu[b]))
+            sp = 1 if (sp_cpu is None or b >= len(sp_cpu)) else int(round(sp_cpu[b]))
             samples.append({
                 "atomic_numbers": z,
                 "positions": pos,
-                "charge": 0,
-                "spin": 1,
+                "charge": q,
+                "spin": sp,
             })
             index_map.append(atom_idxs)
 
@@ -126,10 +154,17 @@ class OMol25DriftClient:
             results = self.srv.compute_batch(samples_valid)
         except Exception as e:
             # On failure, return zero drift (graceful degradation).
+            if return_valid:
+                return (torch.zeros_like(x_t),
+                        torch.zeros(x_t.shape[0], dtype=torch.bool, device=device))
             return torch.zeros_like(x_t)
 
-        # Re-scatter forces to (total_atoms, 3).
+        # Re-scatter forces to (total_atoms, 3). Track which atoms carry a VALID
+        # teacher force (molecule RPC returned ok); atoms of failed molecules keep
+        # zero force AND valid=False, so the caller can mask them out rather than
+        # training toward a spurious F/kT = 0 target.
         forces = torch.zeros_like(x_t.cpu())
+        valid = torch.zeros(x_t.shape[0], dtype=torch.bool)
         r_iter = iter(results)
         for b, idxs in enumerate(index_map):
             if not idxs:
@@ -140,6 +175,9 @@ class OMol25DriftClient:
             f_arr = r["forces"]
             for j, atom_i in enumerate(idxs):
                 forces[atom_i] = torch.tensor(f_arr[j])
+                valid[atom_i] = True
         # Clip to prevent large-force blowups.
         forces = forces.clamp(-self.cfg.clip_force, self.cfg.clip_force)
+        if return_valid:
+            return forces.to(device), valid.to(device)
         return forces.to(device)

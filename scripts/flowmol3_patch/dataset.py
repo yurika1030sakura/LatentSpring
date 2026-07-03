@@ -1,0 +1,215 @@
+import torch
+from pathlib import Path
+import dgl
+from torch.nn.functional import one_hot
+import math
+from flowmol.data_processing.priors import coupled_node_prior, edge_prior
+import functools
+
+# this might not be necessary. I think we can pass the argument collate_fn=dgl.batch to the DataLoader
+def collate(graphs):
+    return dgl.batch(graphs)
+
+class MoleculeDataset(torch.utils.data.Dataset):
+
+    def __init__(self, split: str, dataset_config: dict, prior_config: dict):
+        super(MoleculeDataset, self).__init__()
+
+        # unpack some configs regarding the prior
+        self.prior_config = prior_config
+        self.dataset_config = dataset_config
+        self.fake_atom_p = dataset_config['fake_atom_p']
+        self.fake_atom_std = dataset_config['fake_atom_std']
+        self.use_fake_atoms = self.fake_atom_p > 0
+        self.explicit_aromaticity = dataset_config['explicit_aromaticity']
+        self.n_bond_types = 5 if self.explicit_aromaticity else 4
+
+        # get the processed data directory
+        processed_data_dir: Path = Path(dataset_config['processed_data_dir'])
+
+        # if the processed data directory does not exist, check it relative to the root of flowmol repository
+        if not processed_data_dir.exists():
+            processed_data_dir = Path(__file__).parent.parent.parent / processed_data_dir
+            if processed_data_dir.exists():
+                dataset_config['processed_data_dir'] = str(processed_data_dir)
+            else:
+                raise FileNotFoundError(f"processed data directory {dataset_config['processed_data_dir']} not found.")
+            
+        self.processed_data_dir = processed_data_dir
+
+        # load the marginal distributions of atom types and the conditional distribution of charges given atom type
+        marginal_dists_file = processed_data_dir / 'train_data_marginal_dists.pt'
+        p_a, p_c, p_e, p_c_given_a = torch.load(marginal_dists_file)
+
+        # BGFM: number of atom-type classes (= len(atom_map), e.g. 83 for OMol25).
+        # Our preprocess stores atom_types as int8 class indices (disk savings);
+        # __getitem__ one-hot-decodes them to this width below.
+        self.n_atom_types = int(p_a.shape[0])
+
+        # add the marginal distributions as arguments to the prior sampling functions
+        if self.prior_config['a']['type'] == 'marginal':
+            self.prior_config['a']['kwargs']['p'] = p_a
+
+        if self.prior_config['e']['type'] == 'marginal':
+            self.prior_config['e']['kwargs']['p'] = p_e
+
+        if self.prior_config['c']['type'] == 'marginal':
+            self.prior_config['c']['kwargs']['p'] = p_c
+        
+        if self.prior_config['c']['type'] == 'c-given-a':
+            self.prior_config['c']['kwargs']['p_c_given_a'] = p_c_given_a
+
+        # BGFM: OMol25 (+ OOD eval sets) write the same {split}_data_processed.pt
+        # format as geom/qm9, so they share this path. Stock FlowMol3 v3.1.0 only
+        # whitelists geom/qm9/geom_5conf; the BGFM training pipeline needs omol25.
+        if dataset_config['dataset_name'] in ['geom', 'qm9', 'geom_5conf',
+                                              'omol25', 'tmqm', 'kraken',
+                                              'radicals', 'hypervalent']:
+            data_file = processed_data_dir / f'{split}_data_processed.pt'
+        else:
+            raise NotImplementedError('unsupported dataset_name')
+
+        # load data from processed data directory
+        data_dict = torch.load(data_file)
+
+        self.positions = data_dict['positions']
+        self.atom_types = data_dict['atom_types']
+        self.atom_charges = data_dict['atom_charges']
+        self.bond_types = data_dict['bond_types']
+        self.bond_idxs = data_dict['bond_idxs']
+        self.node_idx_array = data_dict['node_idx_array']
+        self.edge_idx_array = data_dict['edge_idx_array']
+        # BGFM: per-atom DFT forces (eV/A, F = -grad E), aligned row-for-row with
+        # positions. Present only on BGFM-preprocessed data. REQUIRED by the physics
+        # loss: without force_1_true in the graph, the BGFM hook silently skips ALL
+        # physics terms (force + on-policy + energy) and trains plain FM.
+        self.forces = data_dict.get('forces', None)
+
+    @functools.cached_property
+    def n_atoms_per_graph(self):
+        n_atoms = self.node_idx_array[:, 1] - self.node_idx_array[:, 0]
+        if self.use_fake_atoms:
+            n_atoms = n_atoms*(1+ self.fake_atom_p/2)
+            n_atoms = n_atoms.round().long()
+        return n_atoms
+    
+    @functools.cached_property
+    def n_edges_per_graph(self):
+        return self.n_atoms_per_graph.square()
+
+    def __len__(self):
+        return self.node_idx_array.shape[0]
+    
+    def __getitem__(self, idx):
+        node_start_idx = self.node_idx_array[idx, 0]
+        node_end_idx = self.node_idx_array[idx, 1]
+        edge_start_idx = self.edge_idx_array[idx, 0]
+        edge_end_idx = self.edge_idx_array[idx, 1]
+        
+        # get data pertaining to nodes for this molecule
+        positions = self.positions[node_start_idx:node_end_idx]
+        # BGFM: slice DFT forces with the SAME node range as positions (forces are
+        # NOT COM-removed -- they are translation-invariant already).
+        forces = None
+        if self.forces is not None:
+            forces = self.forces[node_start_idx:node_end_idx].float()
+        # BGFM: atom_types stored as int8 class indices -> one-hot (n, n_atom_types)
+        # to match the one-hot format FlowMol3 expects (stock geom/qm9 store one-hot).
+        atom_types = self.atom_types[node_start_idx:node_end_idx].long()
+        if atom_types.dim() == 1:
+            atom_types = one_hot(atom_types, num_classes=self.n_atom_types)
+        atom_types = atom_types.float()
+        atom_charges = self.atom_charges[node_start_idx:node_end_idx].long()
+
+        # add fake atoms if necessary
+        if self.use_fake_atoms:
+            n_real_atoms, _ = positions.shape
+            max_num_fake_atoms = math.ceil(n_real_atoms*self.fake_atom_p)
+            num_fake_atoms = torch.randint(low=0, high=max_num_fake_atoms, size=(1,))
+    
+            anchor_atom_idxs = torch.randint(low=0, high=n_real_atoms, size=(num_fake_atoms,))
+            fake_atom_positions = positions[anchor_atom_idxs]
+            # TODO: think about how to decide fake atom positions
+            # currently: gaussians around anchor atom 
+            # possibilities: collapse on nearest atom, random placement in molecule interior,
+            # fixed distance from acnhor atom
+            fake_atom_positions = fake_atom_positions + torch.randn_like(fake_atom_positions)*self.fake_atom_std
+            fake_atom_charges = torch.zeros_like(atom_charges[anchor_atom_idxs])
+            fake_atom_types = torch.zeros_like(atom_types[anchor_atom_idxs])
+
+            # combine fake atoms with real atoms
+            positions = torch.cat((positions, fake_atom_positions), dim=0)
+            atom_types = torch.cat((atom_types, fake_atom_types), dim=0)
+            atom_charges = torch.cat((atom_charges, fake_atom_charges), dim=0)
+            if forces is not None:  # fake atoms carry zero force
+                forces = torch.cat(
+                    (forces, torch.zeros((fake_atom_positions.shape[0], 3),
+                                         dtype=forces.dtype)), dim=0)
+
+            # add an extra column on to atom_types to account for fake atoms
+            atom_types = torch.cat((atom_types, torch.zeros_like(atom_types[:,0:1])), dim=1)
+            atom_types[-num_fake_atoms:, -1] = 1
+
+        # remove COM from positions
+        positions = positions - positions.mean(dim=0, keepdim=True)
+
+        # get data pertaining to edges for this molecule
+        bond_types = self.bond_types[edge_start_idx:edge_end_idx].int()
+        bond_idxs = self.bond_idxs[edge_start_idx:edge_end_idx].long()
+
+        # reconstruct adjacency matrix
+        n_atoms = positions.shape[0]
+        adj = torch.zeros((n_atoms, n_atoms), dtype=torch.int32)
+
+        # fill in the values of the adjacency matrix specified by bond_idxs
+        adj[bond_idxs[:,0], bond_idxs[:,1]] = bond_types
+
+        # get upper triangle of adjacency matrix
+        upper_edge_idxs = torch.triu_indices(n_atoms, n_atoms, offset=1) # has shape (2, n_upper_edges)
+        upper_edge_labels = adj[upper_edge_idxs[0], upper_edge_idxs[1]]
+
+        # get lower triangle edges by swapping source and destination of upper_edge_idxs
+        lower_edge_idxs = torch.stack((upper_edge_idxs[1], upper_edge_idxs[0]))
+
+        edges = torch.cat((upper_edge_idxs, lower_edge_idxs), dim=1)
+        edge_labels = torch.cat((upper_edge_labels, upper_edge_labels))
+
+        # one-hot encode edge labels and atom charges
+        edge_labels = one_hot(edge_labels.to(torch.int64), num_classes=self.n_bond_types).float() # hard-coded assumption of 4 bond types
+        try:
+            atom_charges = one_hot(atom_charges + 2, num_classes=6).float() # hard-coded assumption that charges are in range [-2, 3]
+        except Exception as e:
+            print('an atom charge outside of the expected range was encountered')
+            print(f'max atom charge: {atom_charges.max()}, min atom charge: {atom_charges.min()}')
+            raise e
+
+        # create a dgl graph
+        g = dgl.graph((edges[0], edges[1]), num_nodes=n_atoms)
+
+        # add edge features
+        g.edata['e_1_true'] = edge_labels
+
+        # add node features
+        g.ndata['x_1_true'] = positions
+        g.ndata['a_1_true'] = atom_types
+        g.ndata['c_1_true'] = atom_charges
+        if forces is not None:
+            g.ndata['force_1_true'] = forces
+
+        # sample prior for node features, coupled to the destination features
+        dst_dict = {
+            'x': positions,
+            'a': atom_types,
+            'c': atom_charges
+        }
+        prior_node_feats = coupled_node_prior(dst_dict=dst_dict, prior_config=self.prior_config)
+        for feat in prior_node_feats:
+            g.ndata[f'{feat}_0'] = prior_node_feats[feat]
+
+        # sample the prior for the edge features    
+        upper_edge_mask = torch.zeros(g.num_edges(), dtype=torch.bool)
+        n_upper_edges = upper_edge_idxs.shape[1]
+        upper_edge_mask[:n_upper_edges] = True
+        g.edata['e_0'] = edge_prior(upper_edge_mask, self.prior_config['e'], explicit_aromaticity=self.explicit_aromaticity)
+
+        return g

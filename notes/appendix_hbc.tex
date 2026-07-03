@@ -1,0 +1,306 @@
+% notes/appendix_hbc.tex
+% DRAFT theoretical appendix for Hierarchical Boltzmann Flow Matching (HBFM).
+% Phase-0 deliverable of ~/.claude/plans/recap-me-with-thi-merry-lagoon.md.
+% Self-contained fragment; requires amsmath, amsthm, amssymb. Needs author review
+% before integration into the main paper. Subtleties flagged in Sec. "Assumptions".
+%
+% Status: rigorous first draft. The factorization identity (Thm 1) is elementary;
+% the *content* is Corollaries 1-2, which show F(c) is a free by-product of a
+% Boltzmann-consistent conformation model and identify exactly what flat BGFM
+% leaves undetermined.
+
+\section{Hierarchical Boltzmann Consistency}
+\label{app:hbc}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{assumption}{Assumption}
+\newtheorem{remark}{Remark}
+
+\paragraph{Setup and notation.}
+A molecular state is a pair $(c, r)$. The \emph{composition} $c \in \mathcal{C}$
+is the discrete chemical identity: element multiset (atom types), atom count
+$N(c)$, total charge $q$, and spin multiplicity $s$; $\mathcal{C}$ is countable.
+The \emph{conformation} $r \in \mathbb{R}^{3N(c)}$ is the nuclear coordinate vector.
+We are given a universal neural potential $E : (c, r) \mapsto \mathbb{R}$ (OMol25),
+smooth in $r$, with conservative forces $\mathbf{F}(c,r) = -\nabla_r E(c,r)$, and a
+fixed temperature scale $kT > 0$. We work in the centre-of-mass–removed subspace
+of effective dimension $3(N-1)$ (as in \texttt{cfm\_mol/bgfm\_density.py}); rigid
+rotations are treated in Assumption~\ref{ass:rigid}.
+
+\paragraph{Target.}
+The joint Boltzmann distribution over molecular states is
+\begin{equation}
+\pi(c, r) \;=\; \frac{1}{\mathcal{Z}}\, e^{-E(c,r)/kT},
+\qquad
+\mathcal{Z} \;=\; \sum_{c \in \mathcal{C}} \int e^{-E(c,r)/kT}\, dr .
+\label{eq:joint-boltz}
+\end{equation}
+Define the \emph{conditional partition function} (configurational integral) and the
+\emph{conditional free energy} of a composition,
+\begin{equation}
+Z(c) \;=\; \int e^{-E(c,r)/kT}\, dr,
+\qquad
+F(c) \;=\; -kT \log Z(c),
+\qquad\text{so}\qquad
+\mathcal{Z} = \sum_{c} Z(c) = \sum_{c} e^{-F(c)/kT}.
+\label{eq:Zc}
+\end{equation}
+Marginalising and conditioning \eqref{eq:joint-boltz} gives the two target factors
+\begin{equation}
+\pi(c) \;=\; \frac{Z(c)}{\mathcal{Z}} \;=\; \frac{e^{-F(c)/kT}}{\mathcal{Z}},
+\qquad
+\pi(r \mid c) \;=\; \frac{e^{-E(c,r)/kT}}{Z(c)} .
+\label{eq:target-factors}
+\end{equation}
+The composition marginal is itself a Boltzmann law, but over \emph{free energies}
+$F(c)$ rather than potential energies: it up-weights identities whose conformational
+ensemble is collectively low in free energy (enthalpy \emph{and} conformational
+entropy), not merely those with a single deep minimum.
+
+\paragraph{Model.}
+HBFM parameterises the joint by a two-level factorisation
+\begin{equation}
+p_{\theta,\varphi}(c, r) \;=\; p_{\varphi}(c)\; p_{\theta}(r \mid c),
+\end{equation}
+with $p_\theta(r\mid c)$ a conditional flow-matching model over coordinates (frozen
+discrete channel; cf.\ \texttt{scripts/level3\_bgfm\_sample.py}) and $p_\varphi(c)$ a
+composition-level generator (autoregressive or discrete flow matching).
+
+\begin{theorem}[Hierarchical Boltzmann Consistency]
+\label{thm:hbc}
+$p_{\theta,\varphi} = \pi$ (as densities on $\bigcup_c \{c\}\times\mathbb{R}^{3N(c)}$)
+if and only if
+\begin{enumerate}
+  \item[(i)] $p_\theta(r\mid c) = \pi(r\mid c) = e^{-E(c,r)/kT}/Z(c)$ for every $c$ with $\pi(c)>0$; and
+  \item[(ii)] $p_\varphi(c) = \pi(c) = e^{-F(c)/kT}/\mathcal{Z}$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+($\Leftarrow$) Immediate: $p_\varphi(c)\,p_\theta(r\mid c) = \pi(c)\,\pi(r\mid c) = \pi(c,r)$.
+($\Rightarrow$) Marginalising $p_{\theta,\varphi}=\pi$ over $r$ gives $p_\varphi(c)=\pi(c)$,
+which is (ii); dividing the joint equality by this common marginal gives (i) wherever
+$\pi(c)>0$. Uniqueness of the marginal/conditional decomposition of a joint density
+makes both directions exact.
+\end{proof}
+
+The factorisation identity is elementary; its force is that the two conditions are
+\emph{separately trainable} and that condition~(ii) is governed by the otherwise
+intractable free energy $F(c)$. The next two corollaries show why (i) is achievable
+by on-policy teacher distillation and why, once (i) holds, $F(c)$ — hence the reward
+that enforces (ii) — is available at no extra model cost.
+
+\begin{corollary}[Free-energy readout / zero-variance identity]
+\label{cor:readout}
+If (i) holds, then for \emph{every} conformer $r$ with $p_\theta(r\mid c)>0$,
+\begin{equation}
+F(c) \;=\; E(c,r) \,+\, kT \log p_\theta(r\mid c),
+\label{eq:readout}
+\end{equation}
+a quantity \emph{independent of $r$}. Consequently, for any sampling distribution
+$\rho(r)$ supported where $p_\theta(\cdot\mid c)>0$,
+\begin{equation}
+F(c) \;=\; \mathbb{E}_{r\sim\rho}\!\big[\,E(c,r) + kT\log p_\theta(r\mid c)\,\big],
+\qquad
+\mathrm{Var}_{r\sim\rho}\!\big[\,E(c,r) + kT\log p_\theta(r\mid c)\,\big] = 0.
+\label{eq:zero-var}
+\end{equation}
+\end{corollary}
+
+\begin{proof}
+Take $-kT\log$ of both sides of $p_\theta(r\mid c)=e^{-E(c,r)/kT}/Z(c)$:
+$-kT\log p_\theta(r\mid c) = E(c,r) + kT\log Z(c) = E(c,r) - F(c)$. Rearranging gives
+\eqref{eq:readout}; the mean/variance statements follow because the right-hand side of
+\eqref{eq:readout} is a constant in $r$.
+\end{proof}
+
+\begin{remark}[This reinterprets the existing loss]
+The within-parent energy-consistency loss already implemented in
+\texttt{cfm\_mol/bgfm\_density.py::energy\_consistency\_loss\_per\_mol} minimises exactly
+the variance in \eqref{eq:zero-var} across $K$ perturbations of a fixed $c$. HBFM adds
+the observation that (a) this residual variance is a proper surrogate for the deviation
+from condition~(i) (it is zero iff the conditional Boltzmann holds on the support), and
+(b) the \emph{mean} the variance form discards is $-F(c)$ up to sign — precisely the
+free-energy bridge. Thus the quantity flat BGFM throws away is the quantity HBFM needs.
+The per-molecule predictor \texttt{cfm\_mol/log\_z\_predictor.py::LogZPredictor} is the
+natural amortiser of $\log Z(c) = -F(c)/kT$.
+\end{remark}
+
+\begin{corollary}[The composition reward closes the loop]
+\label{cor:reward}
+Condition~(ii) holds iff $p_\varphi$ is the Gibbs distribution with energy $F(c)$, i.e.\
+iff $p_\varphi \propto e^{-F(c)/kT}$. Training $p_\varphi$ with per-composition reward
+$R(c) = -F(c)/kT = \log Z(c)$ (via reward-weighted likelihood, or a GFlowNet
+trajectory-balance objective with $\log$-reward $R$) targets (ii) without ever forming
+$\mathcal{Z}$: the global constant $-\log\mathcal{Z}$ is the reward baseline that such
+objectives absorb. By Corollary~\ref{cor:readout}, $R(c)$ is estimable from the
+conformation model and teacher alone, so the composition and conformation levels form a
+self-consistent loop.
+\end{corollary}
+
+\begin{remark}[What flat BGFM leaves undetermined]
+The score/force identity $\mathbf{F}(c,r)/kT = \nabla_r \log p_\theta(r\mid c)$ used by
+force-matching (\texttt{cfm\_mol/bgfm\_loss.py::score\_from\_fm\_velocity}) constrains only
+the $r$-gradient of $\log p_\theta(r\mid c)$. It therefore pins condition~(i) \emph{only up
+to the $r$-independent additive constant} $-F(c)$, and says nothing about condition~(ii).
+The undetermined constant, aggregated over $\mathcal{C}$, is exactly the cross-composition
+free-energy landscape $\{F(c)\}$ and the composition marginal $\pi(c)$. This is a precise
+statement of why a force-matching-only model is ``Boltzmann up to a per-molecule
+constant,'' and why Corollary~\ref{cor:readout} (which fixes that constant) is what
+upgrades it to jointly Boltzmann.
+\end{remark}
+
+\subsection{Why a hierarchy: gauge-identifiability and a modular guarantee}
+\label{app:why-hierarchy}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+
+This subsection answers three questions: is the hierarchy a theoretical
+\emph{necessity} rather than a convenience; how does the physics enter; and what
+guarantee does it buy.
+
+\paragraph{(1) The hierarchy is the statistical-mechanical factorisation, not a modelling choice.}
+\begin{proposition}[Physics fit]
+\label{prop:physics}
+Equations \eqref{eq:Zc}--\eqref{eq:target-factors} are exactly the decomposition of the
+molecular partition function into an \emph{intramolecular} configurational integral
+$Z(c)$ and an \emph{inter-species} chemical sum $\mathcal{Z}=\sum_c Z(c)$. The model
+factors are in one-to-one correspondence with the physical factors: $p_\varphi(c)$
+targets the equilibrium population law over chemical species $\pi(c)\propto e^{-F(c)/kT}$,
+and $p_\theta(r\mid c)$ targets the configurational ensemble $\pi(r\mid c)$. The bridge
+$F(c)=-kT\log Z(c)$ is a genuine thermodynamic free energy (relative populations,
+tautomer ratios, $\mathrm{p}K_a$), so the two levels are not arbitrary sub-models but the
+two halves of how equilibrium chemistry is actually computed. No flat generator exposes
+$F(c)$ as a named, supervisable quantity.
+\end{proposition}
+
+\paragraph{(2) A force-only model \emph{cannot} be globally Boltzmann; the hierarchy is the minimal repair.}
+\begin{lemma}[Force gauge]
+\label{lem:gauge}
+Two potentials $E,E'$ satisfy $\nabla_r E(c,r)\equiv\nabla_r E'(c,r)$ for all $(c,r)$ if and
+only if $E'(c,r)=E(c,r)+g(c)$ for some function $g$ of composition alone.
+\end{lemma}
+\begin{theorem}[Gauge-identifiability]
+\label{thm:gauge}
+From force information $\{\nabla_r E(c,r)\}$ alone, the conditional Boltzmann
+$\pi(r\mid c)$ is uniquely identified for every $c$, whereas the joint $\pi(c,r)$ is
+identified \emph{only up to a composition-wise free-energy gauge}: the transformation
+$E\mapsto E+g(c)$ of Lemma~\ref{lem:gauge} leaves every force and every conditional
+$\pi(r\mid c)$ invariant, yet reweights the joint by $e^{-g(c)/kT}$ and shifts
+$F(c)\mapsto F(c)+g(c)$. Hence no estimator consuming only forces/scores --- flat
+force-matching, denoising energy matching (iDEM/iEFM), or the gradient signal of
+adjoint/SOC samplers --- can determine $\pi(c,r)$; the unidentifiable degrees of freedom
+are exactly the per-composition free energies $\{F(c)\}$.
+\end{theorem}
+\begin{proof}
+$\pi(r\mid c)\propto e^{-E(c,r)/kT}$ is invariant to adding any $c$-only constant to $E$
+(it cancels against $Z(c)$), and $E(c,\cdot)$ is determined up to such a constant by
+$\int\nabla_r E$; so forces fix $\pi(r\mid c)$ exactly. The joint carries the absolute
+offset: $\pi(c,r)\propto e^{-E(c,r)/kT}$ changes by $e^{-g(c)/kT}$ under $E\mapsto E+g(c)$,
+which forces cannot see (Lemma~\ref{lem:gauge}).
+\end{proof}
+\begin{corollary}[Division of labour]
+\label{cor:labor}
+The two-level factorisation is the minimal parameterisation that isolates the entire
+unidentifiable gauge into a single object: $p_\theta(r\mid c)$ is fixed by forces
+($L_{\mathrm{force}}$), and the gauge $\{F(c)\}$ is fixed by absolute energies through the
+readout \eqref{eq:readout} ($L_{\mathrm{energy}}$ / the $F(c)$ bridge). \emph{Forces train
+the conformation level; energies train the composition level; neither term is redundant.}
+This retro-justifies BGFM's two supervision terms and pinpoints why a force-only model
+is stuck at ``Boltzmann up to a per-molecule constant.''
+\end{corollary}
+
+\paragraph{(3) The guarantee: modular, additive, self-consistent.}
+\begin{theorem}[Additive Boltzmann error]
+\label{thm:additive}
+For any factorised generator $p(c,r)=p_\varphi(c)\,p_\theta(r\mid c)$,
+\begin{equation}
+\mathrm{KL}\!\big(\pi\,\|\,p\big)
+=\underbrace{\mathrm{KL}\!\big(\pi(c)\,\|\,p_\varphi(c)\big)}_{\text{composition}}
++\underbrace{\mathbb{E}_{c\sim\pi}\!\big[\mathrm{KL}\!\big(\pi(r\mid c)\,\|\,p_\theta(r\mid c)\big)\big]}_{\text{conformation}} .
+\label{eq:kl-chain}
+\end{equation}
+Thus if the conformation level attains
+$\mathbb{E}_{c\sim\pi}[\mathrm{KL}(\pi(r\mid c)\|p_\theta(r\mid c))]\le\varepsilon_r$ and the
+composition level attains $\mathrm{KL}(\pi(c)\|p_\varphi(c))\le\varepsilon_c$, the joint
+generator is $(\varepsilon_c+\varepsilon_r)$-Boltzmann in KL, with \emph{no cross-term}.
+\end{theorem}
+\begin{proof}
+The KL chain rule applied to the two factorisations $\pi=\pi(c)\pi(r|c)$ and
+$p=p_\varphi(c)p_\theta(r|c)$; the identity \eqref{eq:kl-chain} is exact.
+\end{proof}
+\begin{proposition}[Self-consistent free-energy target]
+\label{prop:selfconsistent}
+If the conditional model has log-density error $|\log p_\theta(r\mid c)-\log\pi(r\mid c)|\le\delta(c)$
+uniformly on the support, then the plug-in estimator $\widehat F(c)$ from
+\eqref{eq:readout} obeys $|\widehat F(c)-F(c)|\le kT\,\delta(c)+\Delta_E$, where $\Delta_E$
+is the teacher-energy error. Hence the composition target inherits a bias controlled by
+the conformation-level accuracy; $\varepsilon_c$ is achievable using only the
+already-trained conditional model and teacher energies, never the intractable
+$\mathcal{Z}$, and the $F(c)$ bridge introduces no uncontrolled third error.
+\end{proposition}
+Together, Theorem~\ref{thm:additive} and Proposition~\ref{prop:selfconsistent} turn
+``provably Boltzmann'' from an idealised-limit slogan into a finite, decomposable bound
+tied to two \emph{independently certifiable} training losses.
+
+\paragraph{(4) Efficiency: scalar vs.\ high-dimensional reweighting.}
+\begin{proposition}[Variance collapse]
+\label{prop:variance}
+Correcting a proposal $q$ to the joint Boltzmann by importance sampling uses weights
+$w(c,r)=e^{-E(c,r)/kT}/(\mathcal{Z}\,q(c,r))$ whose variance grows exponentially in the
+coordinate dimension $3N$ and in proposal mismatch (reported all-atom Boltzmann generators
+show effective sample sizes $0.04$--$0.5$). Under the hierarchy the conditional level is
+natively Boltzmann (no reweighting), and the only correction is the composition tilt by the
+\emph{scalar} $F(c)$: a one-dimensional reweighting per molecule with variance controlled by
+$\mathrm{Var}_c[\widehat F(c)]$, independent of $3N$. The hierarchy converts a
+$3N$-dimensional exponential-variance reweighting into a scalar bounded-variance one.
+\end{proposition}
+
+\paragraph{Why this is oral-level.}
+The four results are mutually reinforcing and each is specific to \emph{molecular}
+Boltzmann generation: (\ref{prop:physics}) the factorisation is dictated by statistical
+mechanics, not chosen; (\ref{thm:gauge}) a force-only flat model is provably incapable of
+global Boltzmann matching, so the hierarchy is \emph{necessary} and the gauge is precisely
+the chemical free energy; (\ref{thm:additive}, \ref{prop:selfconsistent}) it yields a
+modular, additive, self-consistent Boltzmann guarantee with two independently certifiable
+errors; (\ref{prop:variance}) it collapses an exponential-variance sampling problem to a
+scalar one, explaining the absence of ESS collapse. No prior flat, guidance, or
+single-level method has access to any of these statements.
+
+\paragraph{Assumptions and subtleties (flagged for review).}
+\begin{assumption}[Rigid-motion and symmetry factors]
+\label{ass:rigid}
+$Z(c)$ in \eqref{eq:Zc} is over all of $\mathbb{R}^{3N}$ and so carries divergent
+translational and (for the physical molecular free energy) rotational volume factors,
+plus a symmetry-number $\sigma(c)$ correction. We take $Z(c)$ to be the
+\emph{configurational} integral in the COM-removed, rotation-quotiented space that the
+FFJORD density actually models; the full molecular free energy adds standard analytic
+ideal-gas translational/rotational/symmetry terms. For \emph{relative} free energies
+$F(c_1)-F(c_2)$ used to weight the composition prior these terms are either analytic or
+cancel when $N(c_1)=N(c_2)$; the general case must be handled explicitly.
+\end{assumption}
+\begin{assumption}[Regularity of the estimator]
+Corollary~\ref{cor:readout} assumes $p_\theta(r\mid c)>0$ on the support and that the
+FFJORD $\log p_\theta$ is unbiased. In practice the estimator in \eqref{eq:zero-var} is
+high variance where the model is imperfect; control-variate or thermodynamic-integration
+estimators of $F(c)$ may be required (see plan, Risks).
+\end{assumption}
+\begin{assumption}[Well-posed conditional energy]
+$E(c,\cdot)$ is the potential at fixed $(N,q,s)$; the teacher must be queried with the
+correct charge and spin (the current client hardcodes $q{=}0,s{=}1$ — to be fixed in
+Phase~0).
+\end{assumption}
+
+\paragraph{Relation to prior work.}
+Theorem~\ref{thm:hbc} is, to our knowledge, the first statement coupling a
+\emph{discrete-composition} level and a \emph{3D-conformation} level of a molecular
+generator through a conditional partition function. On-policy MLIP distillation of a
+conditional conformer sampler (Adjoint Sampling, ICML~2025) realises condition~(i) but
+provides neither $F(c)$ nor condition~(ii); hierarchical de novo generators (NExT-Mol,
+ICLR~2025) realise the factorisation but with a data-likelihood $p_\varphi(c)$ of no
+thermodynamic meaning; partition-function-aware bijections (arXiv:2504.20940) act between
+coarse-grained and atomistic \emph{coordinates} of a single molecule, not between
+composition and conformation. Corollaries~\ref{cor:readout}--\ref{cor:reward} are the
+molecular-specific content that makes the combination trainable.

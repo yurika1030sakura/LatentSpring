@@ -71,19 +71,18 @@ def score_from_fm_velocity(
         v*(x_t, t) = E[x_1 - x_0 | x_t = x]
         => E[x_1 | x_t = x] = x_t + (1 - t) * v*(x_t, t)       (holds on support)
 
-    so
+    so, with x_1_pred = x_t + (1 - t) * v_theta (holds on support),
 
-        s*(x_t, t) = - v_theta(x_t, t) / prior_std^2 * (1 / (1 - t)) * (1 - t)
-                   = - v_theta(x_t, t) / prior_std^2           ???  <-- DOUBLE-CHECK
+        s*(x_t, t) = -(x_t - t * x_1_pred) / [(1 - t)^2 * prior_std^2]
+                   = [t * v_theta - x_t] / [(1 - t) * prior_std^2]
 
-    WARNING [yuli to verify]:
-    The cleanest derivation (see bgfm_method.md Section 3) gives
-        s_theta(x, t) = -(x - t * x_1_pred) / [(1-t)^2 * prior_std^2]
-    where x_1_pred = x_t + (1-t) * v_theta. Expanding:
-        s_theta(x, t) = [t * (1-t) * v_theta - (1-t)*x_t] / [(1-t)^2 * prior_std^2]
-                      = [t * v_theta - x_t] / [(1-t) * prior_std^2]
-    AT t = 1 this diverges. In practice we evaluate at t_eval < 1
-    (e.g., 0.95). We also need the SIMPLEX channel formula (different!).
+    VERIFIED (adversarial re-derivation, 2026-07): sign AND factors are correct.
+    Conditional path x_t | x_1 ~ N(t x_1, (1-t)^2 sigma^2 I); fixed-covariance
+    mixture score gives grad log p_t = (t E[x_1|x] - x_t)/((1-t)^2 sigma^2), and
+    E[x_1|x] = x_t + (1-t) v collapses this to the line above. Matching s_theta to
+    +F/kT (F = -grad E) is Boltzmann-ATTRACTING. Do NOT "simplify" the sign.
+    At t = 1 this diverges, so evaluate at t_eval < 1 (e.g. 0.95): s_theta is then
+    the score of the smoothed marginal p_t, exact against F/kT only as t -> 1.
 
     Args:
         v_theta: model velocity, shape (B, *), matches x_t
@@ -273,14 +272,20 @@ def force_loss(
         scalar loss
     """
     target = forces_data / kT
-    err = (s_theta - target).pow(2).sum(dim=-1)  # (N_total,)
-    # Per-atom L2 error cap. OMol25 forces have rare outliers (transition
-    # states, large radicals) where |F|/kT can reach 100-1000; squared MSE
-    # on those single atoms can overwhelm the batch gradient. Cap per atom
-    # at a generous bound; equivalent to switching from MSE to L1 above
-    # this threshold.
+    err = (s_theta - target).pow(2).sum(dim=-1)  # (N_total,) squared L2 per atom
+    # Per-atom cap for rare force outliers (TS / large radicals, |F|/kT up to
+    # ~1000). A plain clamp(max=CAP) has ZERO gradient above the cap, silently
+    # killing the signal for high-error atoms -- common EARLY in training, when the
+    # norm-capped score is large. Use a true Huber transition instead: quadratic
+    # below CAP, linear in ||s-target|| above it, so the gradient stays nonzero
+    # (constant) and continuous (C^1) at the boundary.
     PER_ATOM_ERR_CAP = 1e4
-    err = err.clamp(max=PER_ATOM_ERR_CAP)
+    over = err > PER_ATOM_ERR_CAP
+    if over.any():
+        sqrt_cap = float(PER_ATOM_ERR_CAP) ** 0.5
+        err_over = PER_ATOM_ERR_CAP + 2.0 * sqrt_cap * (
+            torch.sqrt(err.clamp(min=PER_ATOM_ERR_CAP)) - sqrt_cap)
+        err = torch.where(over, err_over, err)
     if reduction == "mean":
         return err.mean()
     elif reduction == "sum":

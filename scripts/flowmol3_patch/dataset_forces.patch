@@ -1,0 +1,81 @@
+diff --git a/flowmol/data_processing/dataset.py b/flowmol/data_processing/dataset.py
+index 8d80524..fdc345a 100644
+--- a/flowmol/data_processing/dataset.py
++++ b/flowmol/data_processing/dataset.py
+@@ -41,6 +41,11 @@ class MoleculeDataset(torch.utils.data.Dataset):
+         marginal_dists_file = processed_data_dir / 'train_data_marginal_dists.pt'
+         p_a, p_c, p_e, p_c_given_a = torch.load(marginal_dists_file)
+ 
++        # BGFM: number of atom-type classes (= len(atom_map), e.g. 83 for OMol25).
++        # Our preprocess stores atom_types as int8 class indices (disk savings);
++        # __getitem__ one-hot-decodes them to this width below.
++        self.n_atom_types = int(p_a.shape[0])
++
+         # add the marginal distributions as arguments to the prior sampling functions
+         if self.prior_config['a']['type'] == 'marginal':
+             self.prior_config['a']['kwargs']['p'] = p_a
+@@ -54,7 +59,12 @@ class MoleculeDataset(torch.utils.data.Dataset):
+         if self.prior_config['c']['type'] == 'c-given-a':
+             self.prior_config['c']['kwargs']['p_c_given_a'] = p_c_given_a
+ 
+-        if dataset_config['dataset_name'] in ['geom', 'qm9', 'geom_5conf']:
++        # BGFM: OMol25 (+ OOD eval sets) write the same {split}_data_processed.pt
++        # format as geom/qm9, so they share this path. Stock FlowMol3 v3.1.0 only
++        # whitelists geom/qm9/geom_5conf; the BGFM training pipeline needs omol25.
++        if dataset_config['dataset_name'] in ['geom', 'qm9', 'geom_5conf',
++                                              'omol25', 'tmqm', 'kraken',
++                                              'radicals', 'hypervalent']:
+             data_file = processed_data_dir / f'{split}_data_processed.pt'
+         else:
+             raise NotImplementedError('unsupported dataset_name')
+@@ -69,6 +79,11 @@ class MoleculeDataset(torch.utils.data.Dataset):
+         self.bond_idxs = data_dict['bond_idxs']
+         self.node_idx_array = data_dict['node_idx_array']
+         self.edge_idx_array = data_dict['edge_idx_array']
++        # BGFM: per-atom DFT forces (eV/A, F = -grad E), aligned row-for-row with
++        # positions. Present only on BGFM-preprocessed data. REQUIRED by the physics
++        # loss: without force_1_true in the graph, the BGFM hook silently skips ALL
++        # physics terms (force + on-policy + energy) and trains plain FM.
++        self.forces = data_dict.get('forces', None)
+ 
+     @functools.cached_property
+     def n_atoms_per_graph(self):
+@@ -93,7 +108,17 @@ class MoleculeDataset(torch.utils.data.Dataset):
+         
+         # get data pertaining to nodes for this molecule
+         positions = self.positions[node_start_idx:node_end_idx]
+-        atom_types = self.atom_types[node_start_idx:node_end_idx].float()
++        # BGFM: slice DFT forces with the SAME node range as positions (forces are
++        # NOT COM-removed -- they are translation-invariant already).
++        forces = None
++        if self.forces is not None:
++            forces = self.forces[node_start_idx:node_end_idx].float()
++        # BGFM: atom_types stored as int8 class indices -> one-hot (n, n_atom_types)
++        # to match the one-hot format FlowMol3 expects (stock geom/qm9 store one-hot).
++        atom_types = self.atom_types[node_start_idx:node_end_idx].long()
++        if atom_types.dim() == 1:
++            atom_types = one_hot(atom_types, num_classes=self.n_atom_types)
++        atom_types = atom_types.float()
+         atom_charges = self.atom_charges[node_start_idx:node_end_idx].long()
+ 
+         # add fake atoms if necessary
+@@ -116,6 +141,10 @@ class MoleculeDataset(torch.utils.data.Dataset):
+             positions = torch.cat((positions, fake_atom_positions), dim=0)
+             atom_types = torch.cat((atom_types, fake_atom_types), dim=0)
+             atom_charges = torch.cat((atom_charges, fake_atom_charges), dim=0)
++            if forces is not None:  # fake atoms carry zero force
++                forces = torch.cat(
++                    (forces, torch.zeros((fake_atom_positions.shape[0], 3),
++                                         dtype=forces.dtype)), dim=0)
+ 
+             # add an extra column on to atom_types to account for fake atoms
+             atom_types = torch.cat((atom_types, torch.zeros_like(atom_types[:,0:1])), dim=1)
+@@ -164,6 +193,8 @@ class MoleculeDataset(torch.utils.data.Dataset):
+         g.ndata['x_1_true'] = positions
+         g.ndata['a_1_true'] = atom_types
+         g.ndata['c_1_true'] = atom_charges
++        if forces is not None:
++            g.ndata['force_1_true'] = forces
+ 
+         # sample prior for node features, coupled to the destination features
+         dst_dict = {

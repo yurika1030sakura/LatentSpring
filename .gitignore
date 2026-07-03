@@ -8,7 +8,9 @@ processed_data/       # preprocessed tensors (symlink -> scratch)
 checkpoints/          # model weights (symlink -> scratch)
 logs/                 # SLURM / training logs (symlink -> scratch)
 baselines/            # forked external repos (own licenses)
-notes/                # internal strategy / drafts (excluded from this push)
+# notes/ is now TRACKED (project doc, theory, eval tables live here). The
+# FlowMol3 fork patch that baselines/ would otherwise carry is captured under
+# scripts/flowmol3_patch/ so it travels with the repo.
 
 # The same names as bare symlinks (a symlink is not matched by a trailing-slash
 # dir pattern, so anchor them explicitly to keep scratch links out of git).
