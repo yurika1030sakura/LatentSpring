@@ -1,0 +1,119 @@
+{
+ "notation": "Every drawn label reads log q_theta, the clamped positional-flow density (endpoint discrete labels held fixed, positional ODE reversed). The record files keep the column name log_p_theta; that name is never drawn.",
+ "population_abc": "93 held-out parents disjoint from the energy term's shard pool; data geometry dropped; scored by GFN2-xTB, independent of the eSEN teacher",
+ "sources": {
+  "panel_a": "/n/home04/yulili/bgfm/paper/figures/out/scale_primary.json  (cross-checked against /n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/wide_*/boltz_records.csv)",
+  "panel_b": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/wide_*/boltz_records.csv",
+  "panel_c": "/n/home04/yulili/bgfm/paper/figures/out/retrieval_utility.json",
+  "panel_d_gaussian": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/wide_*/boltz_records.csv",
+  "panel_d_fixed_rmsd": "verified protected-number register (fixed-RMSD shells, within-group displacement magnitude constant to numerical precision, 4 seeds per arm); no on-disk artefact reproduces this aggregation",
+  "ids": "/n/home04/yulili/bgfm/paper/figures/out/primary_endpoint.json"
+ },
+ "per_seed_r_cached": {
+  "fm": [
+   0.222273224338329,
+   0.1940109034733747,
+   0.24938512809854826,
+   0.14218976097134886,
+   0.1923246491956649
+  ],
+  "value": [
+   0.3156832790676134,
+   0.37763719107110794,
+   0.4263584424043309,
+   0.35757211886325585
+  ]
+ },
+ "per_seed_r_recomputed": {
+  "fm": [
+   0.222273224338329,
+   0.1940109034733747,
+   0.24938512809854832,
+   0.1421897609713489,
+   0.19232464919566497
+  ],
+  "value": [
+   0.31568327906761334,
+   0.3776371910711079,
+   0.4263584424043309,
+   0.3575721188632559
+  ]
+ },
+ "arm_mean_r": {
+  "fm": 0.20003673321545318,
+  "value": 0.369312757851577
+ },
+ "arm_sem_r": {
+  "fm": 0.017849068150487,
+  "value": 0.022980915837952056
+ },
+ "n_parents_value_gt_fm": 67,
+ "median_per_parent_r": {
+  "fm": 0.2474814611207357,
+  "value": 0.4007925662380486
+ },
+ "primary_contrast": {
+  "delta": 0.16927602463612385,
+  "t": 5.817383087394361,
+  "perm_p": 0.007936507936507936
+ },
+ "retrieval": {
+  "fm": {
+   "top1": [
+    0.23655913978494625,
+    0.1935483870967742,
+    0.20430107526881722,
+    0.15053763440860216,
+    0.22580645161290322
+   ],
+   "top3": [
+    0.4946236559139785,
+    0.4946236559139785,
+    0.5053763440860215,
+    0.4731182795698925,
+    0.5053763440860215
+   ],
+   "top1_mean": 0.2021505376344086,
+   "top3_mean": 0.4946236559139785,
+   "top1_sem": 0.014976761588370021,
+   "top3_sem": 0.005889489865646942
+  },
+  "value": {
+   "top1": [
+    0.26881720430107525,
+    0.3333333333333333,
+    0.27956989247311825,
+    0.3010752688172043
+   ],
+   "top3": [
+    0.6451612903225806,
+    0.6559139784946236,
+    0.6236559139784946,
+    0.5698924731182796
+   ],
+   "top1_mean": 0.29569892473118276,
+   "top3_mean": 0.6236559139784946,
+   "top1_sem": 0.014224469414325758,
+   "top3_sem": 0.019134548838765773
+  },
+  "teacher_ref": {
+   "top1": 0.8709677419354839,
+   "top3": 0.989247311827957
+  },
+  "chance": {
+   "top1": 0.125,
+   "top3": 0.375
+  }
+ },
+ "retrieval_reference_note": "'teacher_ref' is the ['oracle'] block of retrieval_utility.json: the independent GFN2-xTB evaluator scoring the eSEN training teacher itself on the same 93 parents. It is drawn as a small ensemble-specific reference marker and labelled as such; the words 'oracle', 'ceiling' and 'bound' describing it appear nowhere in the figure.",
+ "fixed_rmsd_panel": {
+  "fm": 0.182,
+  "value": 0.305,
+  "delta": 0.124,
+  "t": 4.94,
+  "n_seeds": 4,
+  "source": "verified protected-number register (fixed-RMSD shells, within-group displacement magnitude constant to numerical precision, 4 seeds per arm); no on-disk artefact reproduces this aggregation"
+ },
+ "fixed_rmsd_note": "Panel (d) draws the verified fixed-RMSD arm means only. No artefact under runs/eval_p3 reproduces this aggregation: the __cpu round (40 parents, 4 seeds/arm) gives 0.3028/0.1885 and the __gpu60 round (120 parents, 4 seeds/arm) 0.3505/0.2482, so no per-seed cloud is drawn on that side and the panel states that the two families are separate rounds on different parent sets.",
+ "panels_removed_this_revision": "The standardised geometry-level scatter is gone: its fitted coefficient was algebraically the panel-(a) arm mean, so it restated a number panels (a) and (b) already carried. The scrambled-energy arm is gone from panel (a): only one of its two shards was scrambled, and cell C of the matched grid supersedes it."
+}

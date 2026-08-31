@@ -1,0 +1,78 @@
+% figures/tabA1_cells.tex --- Table A1 (SPINE Sec. 11 register), appendix.
+% Full ablation-cell table with the confound flags required by SPINE RULING R2.
+% Numbers: SPINE Sec. 7.1 (n=120 arms), Sec. 7.3 (n=30 round), Sec. 7.5 (tmQM).
+% RULING R2 is enforced by the "compare with" column: +0.109 may be compared
+% ONLY with +0.223, never with the n=120 baseline +0.075.
+\begin{table}[t]
+\caption{All ablation cells behind the reported contrasts. Metric is the mean
+per-parent Pearson correlation between $\log q_\theta$ and $-E/kT$ from GFN2-xTB.
+The ``$M$/cap'' column gives the energy-estimator configuration actually used by
+each cell, since these are not uniform across the arms. \textbf{Per-seed values
+for the main round are given on the primary endpoint} --- the 93 evaluation
+parents outside the energy term's shard pool, scored on the 8 displaced
+geometries with the unperturbed reference excluded --- with the fully permissive
+value (all 120 parents, reference included) in brackets; both come from the same
+re-scored per-record source (\Cref{app:eval}). The two evaluation rounds differ in
+the number of parents and of seeds and are never compared with each other; the
+``compare with'' column records the only legitimate comparator for each cell. The
+confound flags below record the differences that prevent several cells from being
+read as clean contrasts.
+% REVISION 2026-08-03: main-round per-seed values re-sourced from
+% recompute_disjoint_noreference.py so that this table and Table 1 agree cell for
+% cell; the tmQM block is retained but is now supporting material for
+% \Cref{app:tmqm}, which labels it preliminary.
+}
+\label{tab:cells}
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{llrrllll}
+\toprule
+Cell & Physics & parents & seeds & $M$/cap & per-seed $r$ (primary) & mean (permissive) & cf. \\
+\midrule
+\multicolumn{8}{l}{\emph{Main round --- primary endpoint: 93 disjoint parents, reference excluded}}\\
+a1 & none (FM only) & 93 & 5 & n/a & .222, .194, .249, .142, .192 & $+0.200$ ($+0.088$) & --- \\
+a3 & energy, true labels & 93 & 4 & 4/3000 & .316, .378, .426, .358 & $+0.369$ ($+0.434$) & a1 \\
+a6 & energy, Y-scrambled & 93 & 2 & 4/3000 & .226, .192 & $+0.209$ ($+0.303$) & a3 \\
+a6$^\dagger$ & energy, Y-scrambled & 93 & 1 & 8/1500 & .260 & $+0.260$ ($+0.418$) & --- \\
+\midrule
+\multicolumn{8}{l}{\emph{Earlier, smaller round --- not comparable with the rows above, and reference-included throughout}}\\
+a1 & none (FM only) & 30 & 2 & n/a & .223, .126 & $+0.175$ & --- \\
+a2 & force only & 30 & 1 & n/a & .109 & $+0.109$ & a1 (round) \\
+a3 & energy only & 30 & 2 & 4/3000 & .420, .424 & $+0.422$ & a1 (round) \\
+a4 & force $+$ energy & 30 & 1 & 1/none & .294 & $+0.294$ & a3 (round) \\
+\midrule
+\multicolumn{8}{l}{\emph{Preliminary tmQM observation (\Cref{app:tmqm}); spin is not passed to the teacher, so every}}\\
+\multicolumn{8}{l}{\emph{open-shell complex is scored as a singlet. Not used by any claim in the main text.}}\\
+   & force only          & 30 & 1 & n/a & --- & $-0.158$ & the rows below \\
+   & force $+$ energy, ckpt.\ 1 & 30 & 1 & 1/none & median $+0.429$ & $+0.365$ & the row above \\
+   & force $+$ energy, ckpt.\ 2 & 30 & 1 & 1/none & median $+0.362$ & $+0.329$ & the row above \\
+   & force $+$ energy, ckpt.\ 3 & 30 & 1 & 4/3000 & median $+0.115$ & $+0.091$ & the row above \\
+\bottomrule
+\end{tabular}
+
+\vspace{0.6em}
+\footnotesize
+\begin{tabular}{ll}
+\toprule
+\multicolumn{2}{l}{\emph{Confound flags}}\\
+\midrule
+a2, a4 & carry an on-policy distillation term (weight $0.1$) in addition to the \\
+       & off-policy force term, so ``force'' there is force matching \emph{plus} distillation. \\
+a4     & uses a single parent per energy step and no energy-loss cap --- exactly the \\
+       & pathological configuration diagnosed in \Cref{app:stability}. \\
+a3, a6 & train on a perturbation shard built from the validation split the evaluation \\
+       & parents are drawn from; a1 reads no shard. Hence the primary endpoint's \\
+       & restriction to the 93 disjoint parents. \\
+a6, a6$^\dagger$ & scramble only the training-split shard; the validation-split shard in the \\
+       & same configuration retains its true geometry--energy pairing. \\
+a6$^\dagger$ & runs the stabilised estimator configuration and batch 4; it is the only \\
+       & reported cell that is not configuration-matched to a3. \\
+tmQM   & all three energy-carrying checkpoints come from a separate full-corpus run \\
+       & family with $\lambda_1 = 0.1$ and on-policy distillation, so the tmQM rows \\
+       & compare force-only against force-plus-energy, not against energy alone; and \\
+       & spin multiplicity is not passed to the teacher (\Cref{ass:charge}). \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}

@@ -1,0 +1,56 @@
+% figures/tabA2_constants.tex --- Table A2 (SPINE Sec. 11 register), appendix.
+% Numerical constants that are part of the definition of the losses (SPINE C30).
+% Values read from configs/sweep/a*.yaml, cfm_mol/bgfm_loss.py,
+% cfm_mol/bgfm_density.py and scripts/fasrc/*.slurm. See the EDITOR-QUERY block
+% at the top of sections/A2_details.tex for the items not listed in SPINE Sec.7.7.
+% Column widths are tuned to the 5.5in ICLR measure; do not widen.
+\begin{table}[t]
+\caption{Constants that are part of the definition of the implemented objectives
+and of the evaluation protocol. The clipping thresholds are inactive for a
+converged model but are part of the objective as trained, so they are stated here
+rather than left to the code. Where two settings are listed, ``earlier round'' names the
+checkpoint family of \Cref{app:cells} and ``matched grid'' the family of
+\Cref{app:p0cells}; the names are family labels and carry no claim that either
+configuration achieved numerical stability, which \Cref{app:stability} reports it did
+not.}
+\label{tab:constants}
+\begin{center}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}p{1.15in}p{1.35in}p{0.95in}p{1.60in}@{}}
+\toprule
+Symbol / name & Value & Where it acts & Role \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Objective}}\\
+$\lambda_1$          & $0.1$ (gradient cells), $0$ otherwise & $\Ls_{\mathrm{force}}$ & weight of the gradient-matching term \\
+$\lambda_E$ \newline (code field: \texttt{lambda\_2}) & $3\times10^{-5}$ (value cells), $0$ otherwise & $\Ls_{\mathrm{value}}$ & weight of the within-parent Boltzmann-residual variance \\
+$\lambda_3$          & $0$ in every reported run & $\Ls_{\mathrm{anchor}}$ & gauge-fixing anchor, inactive \\
+$kT$                 & $1.0$ eV ($\approx 11\,600$ K) & both physics terms & temperature scale, not physical \\
+$\sigma$             & $1.0$ & prior, read-out & prior standard deviation \\
+probe times $t$      & $0.85$, $0.92$, $0.97$ & $\Ls_{\mathrm{force}}$ & amplification $5.7/11.5/32.3\times$ \\
+warm-up / ramp       & $1\%$ / $5\%$ of training & schedule & FM only, then a linear ramp \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Clipping: the objectives as implemented}}\\
+score norm cap       & $1000$ per atom & $s_\theta$ & caps the read-out \\
+per-atom error cap   & $10^{4}$ & $\Ls_{\mathrm{force}}$ & Huber transition \\
+$\log q_\theta$ clamp & $10^{6}$ & $\Ls_{\mathrm{anchor}}$ & inactive ($\lambda_3 = 0$) \\
+value loss cap       & $3000$ (earlier round), $1500$ (matched grid) & $\Ls_{\mathrm{value}}$ & rejects finite outliers \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Density estimator}}\\
+ODE steps            & 4 train / 12 eval & FFJORD & explicit Euler in state, midpoint-rule divergence quadrature \\
+Hutchinson probes    & 2 train / 2 eval & divergence & Rademacher \\
+parents per step $M$ & $4$ (earlier round), $8$ (matched grid); $1$ diagnosed only & $\Ls_{\mathrm{value}}$ & estimator variance $\propto 1/M$ \\
+step interval        & every 4th step & $\Ls_{\mathrm{value}}$ & amortises the FFJORD cost \\
+atoms per parent     & $\leq 50$ & $\Ls_{\mathrm{value}}$ & memory bound \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Data and evaluation}}\\
+max atoms            & $200$ & preprocessing & molecule size cut \\
+elements             & $83$ & preprocessing & bond-free, no bond labels \\
+group size $K$       & $5$ train (ref.\ $+\,4$) / $9$ eval (ref.\ $+\,8$) & shards, eval & within-parent groups \\
+shard $\sigma$       & $0.03$--$0.40$ \AA{} (5 values) & shards & displacement scales \\
+eval $\sigma$        & $0.15$ \AA & eval & perturbation scale \\
+parents per arm      & $120$ ($30$ early round) & eval & evaluation groups \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}

@@ -1,0 +1,689 @@
+[
+ {
+  "label": null,
+  "result": {
+   "summary": "READ-ONLY audit of /n/home04/yulili/bgfm/paper (main.tex + sections/{01_intro,02_method,03_theory,04_experiments,05_conclusion,A1_proofs,A2_details}.tex + the six live figure/table files; fig1_method.tex, fig2_boltzmann.tex, fig3_ablation.tex and tabA1_cells.tex are NOT input by main.tex and were checked but need no edit). No files were modified.\n\nN1 DENSITY NOTATION. 131 occurrences of p_\\theta across the live sources. Every one that denotes the supervised/evaluated object is the clamped positional-flow density and must become q_\\theta. Only three sites genuinely mean the joint generator's conditional density and must keep p: sections/A1_proofs.tex:91 (Assumption A2's contrast clause), sections/02_method.tex:88 (disclosure iii), sections/A2_details.tex:1394 (limitation vi-d). The definition must be planted once, in Sec. 3 immediately after eq:ffjord, and mirrored in Assumption A2. Figure 1 needs both its caption (figures/fig1_objective_float.tex:39-40) and its in-figure TikZ text (figures/fig1_objective.tex:219-220) rewritten to the required wording, plus the two added statements (this is the object supervised and evaluated; it need not equal the joint generator's conditional density).\n\nN2 ESTIMATOR PROSE. The eps = 1/(2n) smoothing-scale reading is load-bearing in 5 of the 7 .tex sources and must come out everywhere per FINDING 1. Hard deletions: eq:epsgrid itself (02_method.tex:77-80) and all six \\eqref{eq:epsgrid} call sites; the \"smoothed marginal log p_{1-eps}\" sentence (02_method.tex:81-86); Appendix A.2 Step 3 (A1_proofs.tex:249-276); rem:epscert (A1_proofs.tex:484-492); the tab:epsgrid caption and the whole framing of app:estimator (A2_details.tex:304-472); limitation (vi-a) (A2_details.tex:1356-1366). Under the corrected reading the resolution rows say something less comfortable, and that must be written: the gap is largest where the estimator is least accurate (+0.382 at n=4) and shrinks as it becomes more accurate (+0.177 at n=12), the headline is computed at n=12, and the design cannot separate a genuine scale dependence from Euler bias. Naming must be unified to \"explicit Euler in the state with midpoint-rule quadrature for the divergence integral\": tabA2_constants.tex:36 says \"reverse-time Euler\", A1_proofs.tex:249 says \"first-order midpoint scheme\", and each is half right. The \"principled repair\" paragraph (A2_details.tex:463-472) is now describing a repair of a defect that does not exist and must be replaced by the real open item (validate the estimator; the Euler state error, not the quadrature, dominates). NO RETRAINING is triggered and none should be proposed.\n\nSeparately, FINDING 2 requires a main-text disclosure that the L_value gradient is a truncated-adjoint surrogate; it currently lives only in A2_details.tex:62-75 and limitation (viii). Recommended insertion point: 02_method.tex disclosure (iv).\n\nN3 OVERCLAIM SWEEP. The paper is in good shape here — the forbidden phrases are largely absent. \"learns a Boltzmann distribution\": no occurrence, but A2_details.tex:133 (\"the object trained is the Boltzmann distribution at that kT\") is the nearest thing and should be NARROWed. \"thermodynamically correct\": no occurrence. \"basin occupancy\": six occurrences (03_theory.tex:68, 05_conclusion.tex:66, 01_intro.tex:72, A1_proofs.tex:641-642/716, A2_details.tex:1334), all identifiability statements or explicit non-claims — KEEP. \"improves global molecular physicality\": no occurrence. \"the generator's exact conditional density\": no occurrence; the three \"generator's own conditional density\" sites are correctly conditional (\"only if\") — KEEP. \"force supervision fails\": no occurrence; the scoped statement at 04_experiments.tex:218-227 carries all four qualifiers — KEEP; but the abstract (01_intro.tex:21-22) and the intro finding (01_intro.tex:84-85) drop qualifiers and should be NARROWed. \"generation quality is preserved\": no occurrence, but the Sec. 5.5 title asserts it — see N4. \"numerically robust\": only as an explicit disclaimer (04_experiments.tex:315) — KEEP. \"exact likelihood training\": only as an explicit disclaimer (A2_details.tex:74) — KEEP, and promote to main text. Four hits for \"Boltzmann generator\" in the rendered PDF are all bibliography titles of cited prior work, not descriptions of our model.\n\nN4 GENERATION QUALITY. Evidence is one value seed against two control seeds at n=100 samples, binomial SE ~5 points against differences of a few points, and the control's own seeds are 41.0 and 30.0. Section 5.5's title \"What is preserved, and what remains unresolved?\" asserts preservation and must be retitled to a question; the body's \"at or above our flow-matching control's\" is a comparative claim the design cannot support; and 05_conclusion.tex:46 (\"reported only to show it is not degraded\") asserts a demonstration. The appendix (A2_details.tex:1133-1145) is already correctly hedged and is the model the main text should follow.\n\nN5 RELATED WORK GAP. VERIFIED. \"Energy-Based Flow Matching for Generating 3D Molecular Structure\", Wenyin Zhou, Christopher Iliffe Sprague, Vsevolod Viliuga, Matteo Tadiello, Arne Elofsson, Hossein Azizpour; ICML 2025; arXiv:2508.18949. I confirmed from the arXiv PDF text that the method IS named IDFlow (the ICML virtual page's claim to the contrary is wrong) and that its energy is the reconstruction error ||x - x_hat||, driving an idempotent predictor-refiner. No idflow key exists in refs.bib (41 entries). Proposed entry and contrast sentence given below; placement in the \"Energy-targeted samplers\" paragraph (01_intro.tex:159-174). Not needed as an experimental baseline.\n\nPRIORITY ORDER: (1) plant the q_\\theta definition and fix Figure 1, since every other N1 edit depends on it; (2) excise eq:epsgrid and rewrite app:estimator, since limitation (vi) and Sec. 5.5 both inherit from it; (3) the four N3/N4 narrowings; (4) the IDFlow citation.",
+   "sites": [
+    {
+     "item": "N1: plant the definition of q_theta (clamped positional-flow density)",
+     "file": "sections/02_method.tex",
+     "line": 29,
+     "classification": "N1 ADD-DEFINITION (the anchor every other N1 edit depends on)",
+     "context": "Immediately after eq:ffjord. Currently the paper writes log p_theta(x_1|c) in the displayed equation with no statement that the discrete channels are clamped; disclosure (iii) at line 86 says it, 60 lines later and after the objective has already been displayed.",
+     "replacement": "Insert after eq:ffjord: \"Throughout, $q_\\theta(x \\mid c)$ denotes the \\emph{clamped positional-flow density}: the density obtained by integrating \\eqref{eq:ffjord} with the discrete channels --- atom types, formal charges and the empty bond tensor --- held at their endpoint labels for the whole reverse trajectory, while only the positions evolve. It is normalised on the centre-of-mass-free subspace by construction, and it is the object this paper supervises and evaluates. It need not equal the joint generator's conditional density $p_\\theta(x \\mid c)$, which the generator's continuous-time Markov chain over types and charges also carries; we have not quantified the difference (\\Cref{ass:A2}).\" Then change eq:ffjord's left-hand side to \\log q_\\theta(x_1 \\mid c)."
+    },
+    {
+     "item": "N1: Figure 1 caption panel (a) — the exact wording the brief specifies",
+     "file": "figures/fig1_objective_float.tex",
+     "line": 38,
+     "classification": "N1 RENAME + REQUIRED REWORDING",
+     "context": "Lines 38-40 read: \"A bond-free de novo flow samples a composition $c$ and a geometry $x$ jointly, and reversing the same ODE returns the model's own log-density $\\log p_\\theta(x \\mid c)$.\"",
+     "replacement": "\"\\textbf{(a)}~A bond-free de novo flow samples a composition $c$ and a geometry $x$ jointly. With the endpoint discrete labels clamped, reversing the positional ODE defines a normalized clamped positional-flow density $\\log q_\\theta(x \\mid c)$. This is the object the paper supervises and evaluates, and it need not equal the joint generator's conditional density $p_\\theta(x \\mid c)$.\""
+    },
+    {
+     "item": "N1: Figure 1 in-figure TikZ text",
+     "file": "figures/fig1_objective.tex",
+     "line": 219,
+     "classification": "N1 RENAME + REQUIRED REWORDING",
+     "context": "Lines 219-220, the body text of panel (a): \"No bond labels anywhere. Reversing the same ODE gives $\\log p_\\theta(x\\mid c)$.\" The caption fix alone is not enough; the drawn text asserts it too.",
+     "replacement": "\"No bond labels anywhere. With the discrete labels clamped, reversing the positional ODE gives $\\log q_\\theta(x\\mid c)$.\" Widen the node text width if it reflows."
+    },
+    {
+     "item": "N1: Figure 1 remaining p_theta in panels (c) and (d)",
+     "file": "figures/fig1_objective.tex",
+     "line": 226,
+     "classification": "N1 RENAME (bulk)",
+     "context": "Lines 226 (L_value = Var_k[log p_theta(x_k|c) + E_k/kT]), 275 (axis label), 300 (log p_theta = -E_k/kT + b), 313 (\"one density $p_\\theta(\\cdot\\mid c)$\").",
+     "replacement": "p_\\theta -> q_\\theta at 226, 275, 300, 313. Line 313's box label becomes \"one density $q_\\theta(\\cdot\\mid c)$\"; the panel is about one composition's clamped density, not the joint."
+    },
+    {
+     "item": "N1: Figure 1 caption panels (c) and (d)",
+     "file": "figures/fig1_objective_float.tex",
+     "line": 48,
+     "classification": "N1 RENAME (bulk)",
+     "context": "Lines 48, 49, 54: \"$\\log p_\\theta(x_k \\mid c) + E_k/kT$\", \"$\\log p_\\theta$ is affine\", \"the \\emph{same} conditional density $p_\\theta(\\cdot \\mid c)$\".",
+     "replacement": "p_\\theta -> q_\\theta at 48, 49, 54. At line 54 read \"the \\emph{same} clamped positional-flow density $q_\\theta(\\cdot \\mid c)$\"."
+    },
+    {
+     "item": "N1: Assumption A2 — mirror the definition and keep the one genuine p",
+     "file": "sections/A1_proofs.tex",
+     "line": 88,
+     "classification": "N1 SPLIT: define q here, KEEP p in the contrast clause",
+     "context": "Lines 88-102. \"The quantity every theorem below is stated for, and every experiment reports as $\\log p_\\theta(\\cdot \\mid c)$, is the log-density of the position-only flow ... It coincides with the generator's own conditional density only if the discrete trajectory is determined by its endpoint.\"",
+     "replacement": "Retitle to \"[Which density is reported: the clamped positional-flow density]\". First clause: \"...and every experiment reports as $\\log q_\\theta(\\cdot \\mid c)$, is the log-density of the \\emph{clamped positional-flow} obtained by holding the discrete channels at their endpoint labels...\". KEEP the final clause but make the symbol explicit: \"It coincides with the generator's own joint conditional density $p_\\theta(\\cdot \\mid c)$ only if the discrete trajectory is determined by its endpoint.\" This is one of only three sites where p is genuinely meant."
+    },
+    {
+     "item": "N1: bulk rename in the abstract, introduction and contribution bullets",
+     "file": "sections/01_intro.tex",
+     "line": 14,
+     "classification": "N1 RENAME (bulk)",
+     "context": "Lines 14, 58, 59, 79, 81, 105, 165. All denote the supervised/evaluated object. Line 165 states the log-variance divergence in our conditional notation, so it is the clamped object too.",
+     "replacement": "p_\\theta -> q_\\theta at all seven lines. At line 14 (abstract) the first use should carry the definition inline: \"penalising the variance of $\\log q_\\theta(x \\mid c) + E(c,x)/kT$, where $q_\\theta$ is the clamped positional-flow density obtained by reversing the positional ODE with the discrete labels held fixed\". At line 59 append \"(a clamped positional-flow density; \\Cref{sec:method})\"."
+    },
+    {
+     "item": "N1: bulk rename in Sec. 3",
+     "file": "sections/02_method.tex",
+     "line": 27,
+     "classification": "N1 RENAME (bulk)",
+     "context": "Lines 27 (eq:ffjord LHS), 31 (w(x) definition), 32 (proportionality statement), 40 (eq:lvalue w_{m,k}), 55, 68.",
+     "replacement": "p_\\theta -> q_\\theta at 27, 31, 32, 40, 55, 68."
+    },
+    {
+     "item": "N1: disclosure (iii) — the one main-text site that genuinely means the joint conditional",
+     "file": "sections/02_method.tex",
+     "line": 86,
+     "classification": "N1 KEEP-P (genuine joint), but reframe now that q is defined earlier",
+     "context": "Lines 86-89: \"\\emph{(iii)} What \\eqref{eq:ffjord} returns is the log-density of a position-only flow in which the discrete channels are held at their data labels for the whole reverse trajectory; it coincides with the generator's own conditional density only if the discrete trajectory is determined by its endpoint (\\Cref{ass:A2}).\"",
+     "replacement": "With the definition planted at line 29 this becomes a pointer rather than a late reveal: \"\\emph{(iii)} Everything above is stated for the clamped positional-flow density $q_\\theta$; it coincides with the generator's own joint conditional density $p_\\theta(x \\mid c)$ only if the discrete trajectory is determined by its endpoint (\\Cref{ass:A2}), and we have not quantified the difference.\" The p in this sentence must survive."
+    },
+    {
+     "item": "N1: bulk rename in Sec. 4 (theory), including the theorem statement",
+     "file": "sections/03_theory.tex",
+     "line": 23,
+     "classification": "N1 RENAME (bulk)",
+     "context": "Lines 23, 28, 30, 33, 58, 59, 63, 68, 89, 105. Includes thm:l2g parts (ii) and (iii) and eq:l2g. The theorems are stated for the object the objective actually constrains, which is the clamped one.",
+     "replacement": "p_\\theta -> q_\\theta throughout, including eq:l2g (line 63) and the occupancy vector at line 68. Add one clause to the paragraph at line 23: \"Throughout this section $q_\\theta$ is the clamped positional-flow density of \\Cref{sec:method}; nothing here is a statement about the joint generator's conditional density.\""
+    },
+    {
+     "item": "N1: bulk rename in Sec. 5 (experiments), including Table 1 caption and eq:rm",
+     "file": "sections/04_experiments.tex",
+     "line": 55,
+     "classification": "N1 RENAME (bulk)",
+     "context": "Lines 55, 67, 69, 76, 86, 118, 134, 144, 148, 158, 204. eq:rm at 67-69 defines both endpoints on this density.",
+     "replacement": "p_\\theta -> q_\\theta at all listed lines. Table 1's caption (line 158) should read \"$r$ is the per-parent correlation between $\\log q_\\theta$, the clamped positional-flow density, and $-E/kT$\"."
+    },
+    {
+     "item": "N1: \"no global p_theta(x|c)\" in the scope paragraph",
+     "file": "sections/04_experiments.tex",
+     "line": 36,
+     "classification": "N1 RENAME + NARROW",
+     "context": "Line 35-36: \"it measures no mode occupancy and no global $p_\\theta(x \\mid c)$\". Reads as though a global joint conditional were the thing not measured; what is not measured is the clamped density away from the local cloud.",
+     "replacement": "\"it measures no mode occupancy and nothing about $q_\\theta(x \\mid c)$ outside the local displacement cloud\"."
+    },
+    {
+     "item": "N1: rename in the non-claims paragraph",
+     "file": "sections/05_conclusion.tex",
+     "line": 40,
+     "classification": "N1 RENAME",
+     "context": "Line 40: \"We do not claim a calibrated $p_\\theta(x \\mid c)$\".",
+     "replacement": "\"We do not claim a calibrated $q_\\theta(x \\mid c)$; the raw normalised residual variance moves in the wrong direction.\""
+    },
+    {
+     "item": "N1: bulk rename in Appendix A",
+     "file": "sections/A1_proofs.tex",
+     "line": 77,
+     "classification": "N1 RENAME (bulk)",
+     "context": "Lines 77, 116, 192, 234, 238, 453, 455, 457, 458, 461, 462, 469, 475, 486, 499, 503, 506, 511, 516, 517, 520, 526, 542, 548, 613, 614, 615, 633, 640, 689, 692, 694, 700, 702, 703, 706, 707, 745, 754, 857, 867, 875, 988, 1011, 1021. Every one is the object the certificate, the identifiability theorem and the surrogate identity are stated for.",
+     "replacement": "p_\\theta -> q_\\theta at all listed lines, including the definition at line 77 (\"transporting $p_0$ ... to $q_\\theta := q_1^\\theta$ at $t=1$, with the discrete channels clamped\"). The ONLY exception in this file is line 91, handled separately above."
+    },
+    {
+     "item": "N1: bulk rename in Appendix B",
+     "file": "sections/A2_details.tex",
+     "line": 55,
+     "classification": "N1 RENAME (bulk)",
+     "context": "Lines 55, 96, 240, 247, 260, 341, 346, 484, 485, 486, 489, 490, 634, 637, 644, 645, 671, 709, 757, 818, 856, 898, 925, 932, 949, 1019, 1078, 1273, 1477.",
+     "replacement": "p_\\theta -> q_\\theta at all listed lines. Line 1394 is the exception and keeps p (see next entry)."
+    },
+    {
+     "item": "N1: limitation (vi-d) — the third genuine-joint site",
+     "file": "sections/A2_details.tex",
+     "line": 1389,
+     "classification": "N1 KEEP-P (genuine joint) + rename the surrounding object",
+     "context": "Lines 1389-1396: \"That object is normalised and is what every theorem and every number in this paper refers to, but it coincides with the generator's own conditional density $p_\\theta(x \\mid c)$ only if the discrete trajectory is determined by its endpoint.\"",
+     "replacement": "Retitle the item \"(vi-d) The reported density is a clamped positional-flow density.\" Name the object q_\\theta in the first clause and KEEP $p_\\theta(x \\mid c)$ in the contrast clause. This item is now the canonical cross-reference target for the definition at 02_method.tex:29."
+    },
+    {
+     "item": "N1: rename in the live figure/table captions",
+     "file": "figures/fig2_ordering.tex",
+     "line": 56,
+     "classification": "N1 RENAME (bulk)",
+     "context": "fig2_ordering.tex:56, fig4_calibration.tex:62 and :63, tabA2_constants.tex:32 (\"$\\log p_\\theta$ clamp\" row). All four files are input by main.tex.",
+     "replacement": "p_\\theta -> q_\\theta in all four. Note figures/fig1_method.tex, fig2_boltzmann.tex, fig3_ablation.tex and tabA1_cells.tex also contain p_\\theta but are NOT input by main.tex — leave them or delete the dead files; they cannot affect the PDF."
+    },
+    {
+     "item": "N2: eq:epsgrid and the smoothed-marginal disclosure (ii)",
+     "file": "sections/02_method.tex",
+     "line": 75,
+     "classification": "N2 DELETE + REWRITE (the root of the whole eps thread)",
+     "context": "Lines 75-86. Displays $\\epsilon = 1/(2n)$ as eq:epsgrid and concludes \"what \\eqref{eq:lvalue} and every density here refer to is the \\emph{smoothed} marginal $\\log p_{1-\\epsilon}$, not $\\log p_1$: refining the grid estimates a different, less smoothed quantity rather than the same one more accurately, and no convergence in $n$ is expected or observed.\" FINDING 1 says this is false: all step counts target log q_theta at t=1.",
+     "replacement": "Delete eq:epsgrid entirely (the label eq:epsgrid must then disappear from all six call sites). Replace disclosure (ii) with: \"\\emph{(ii)} \\eqref{eq:ffjord} is integrated by explicit Euler in the state over the whole of $[0,1]$, with the divergence integral taken by the midpoint rule on the same interval; all quadrature nodes are interior but the interval is not truncated, so every step count targets the same quantity, $\\log q_\\theta$ at $t = 1$. The step count therefore controls discretisation error --- dominated by the $O(\\Delta t)$ Euler state integration, the quadrature being $O(\\Delta t^2)$ --- and not which density is meant. Training uses $n = 4$ and every reported evaluation $n = 12$, the more accurate of the two; we disclose the mismatch and measure its effect (\\Cref{sec:openquestions},~\\Cref{app:estimator}).\""
+    },
+    {
+     "item": "N2: Appendix A.2 Step 3 — the derivation the whole reading rests on",
+     "file": "sections/A1_proofs.tex",
+     "line": 249,
+     "classification": "N2 REWRITE (delete the smoothing-scale conclusion; fix the scheme name)",
+     "context": "Lines 249-276. Titled \"Step 3: the grid, and why the smoothing scale is not a free parameter\", opens \"The reverse-time solve of \\eqref{eq:app-ffjord} is a first-order midpoint scheme\", and concludes in italics that \"the effective smoothing scale of the reported log-density is bound to the number of integration steps\", that \"$\\log p_1$ is never evaluated\", and that refining n \"estimates a different, less smoothed quantity\". Lines 269-276 then separate \"three uses of the symbol\".",
+     "replacement": "Retitle \"Step 3: the integration scheme, and what the step count does and does not control\". Correct the naming to the unified form: \"The reverse-time solve of \\eqref{eq:app-ffjord} uses \\emph{explicit Euler in the state with midpoint-rule quadrature for the divergence integral}.\" Keep eq:app-grid as the node placement, then state: \"All $n$ nodes are interior to $[0,1]$ and the interval is not truncated, so the scheme targets $\\log q_\\theta$ at $t = 1$ for every $n$; the half-step offset avoids evaluating the field at $t = 1$ without changing the target. Step-count dependence is therefore numerical discretisation error, dominated by the $O(\\Delta t)$ Euler state integration --- the midpoint quadrature is $O(\\Delta t^2)$ and exact for integrands linear in $t$ --- together with whatever endpoint stiffness the learned field carries.\" Cut lines 269-276 down to two uses of the symbol: the eq:app-eps Gaussian width of prop:trap (which is legitimate and unaffected) and the mass-relaxation varepsilon of rem:epsilon."
+    },
+    {
+     "item": "N2: Assumption A-disc",
+     "file": "sections/A1_proofs.tex",
+     "line": 116,
+     "classification": "N2 NARROW",
+     "context": "Lines 116-121: \"...so it is a biased and noisy estimate of the exact model log-density, and by \\eqref{eq:epsgrid} the step count also fixes \\emph{which} density it estimates.\"",
+     "replacement": "Keep the first clause; delete the second. \"The reported $\\log q_\\theta$ is a discretised continuous-flow likelihood --- explicit Euler in the state, midpoint-rule quadrature for the divergence, with a stochastic trace estimator --- so it is a biased and noisy estimate of the exact clamped positional-flow log-density. The step count controls that bias; it does not change which density is estimated.\""
+    },
+    {
+     "item": "N2: rem:epscert",
+     "file": "sections/A1_proofs.tex",
+     "line": 484,
+     "classification": "N2 DELETE and replace",
+     "context": "Lines 484-492, remark titled \"The certificate is about the smoothed marginal\": \"...the quantity the objective and the metric both form is the smoothed marginal $\\log p_{1-\\epsilon}$ ... The $\\epsilon$-dependence of that statement is a property of the method as implemented, not an accuracy limit of the estimator, since refining $n$ changes the target quantity rather than approximating a fixed one.\" This is exactly inverted under FINDING 1.",
+     "replacement": "Retitle \"[The certificate is about the exact clamped density; what is formed is its discretisation]\" and replace the body: \"\\Cref{thm:certificate} is stated for the exact normalised $q_\\theta$, whereas what the objective and the metric both form is its Euler/midpoint estimate at a finite step count (\\Cref{app:density}). The residual the objective can enforce therefore carries discretisation bias, which does not vanish at the step counts we can afford (\\Cref{app:estimator}); the target quantity is the same at every step count, and the accuracy is not.\""
+    },
+    {
+     "item": "N2: rem:nrvtau's \"different smoothing scales\"",
+     "file": "sections/A1_proofs.tex",
+     "line": 794,
+     "classification": "N2 NARROW",
+     "context": "Line 793-794: the loss and the metric \"are evaluated with different potentials (eSEN against GFN2-xTB), different populations (training shards against held-out parents) and different smoothing scales ($n = 4$ against $n = 12$)\".",
+     "replacement": "\"...and at different discretisation accuracies ($n = 4$ against $n = 12$; the same target quantity, different Euler bias).\""
+    },
+    {
+     "item": "N2: rem:attenuation's non-convergence clause",
+     "file": "sections/A1_proofs.tex",
+     "line": 874,
+     "classification": "N2 REWRITE",
+     "context": "Lines 874-878: \"Convergence of $\\log p_\\theta$ in the number of ODE steps is not available for this estimator at all: by \\eqref{eq:epsgrid} the smoothing scale is $\\epsilon = 1/(2n)$, so refining the grid changes the target quantity rather than the accuracy.\" Also the following sentence, which asserts \"attenuation is not what makes the gap shrink at finer $\\epsilon$\".",
+     "replacement": "\"Convergence of $\\log q_\\theta$ in the number of ODE steps is not \\emph{demonstrated} for this estimator: all step counts target the same quantity, but the step counts we can afford show no plateau on real molecules (\\Cref{app:estimator}), so we cannot claim the reported value is converged.\" Recheck the following sentence: with the target fixed, the honest statement is that the gap shrinks as the estimator becomes more accurate, which is the opposite of reassuring and must not be presented as ruling out artefact."
+    },
+    {
+     "item": "N2: theory section's \"different smoothing scales\"",
+     "file": "sections/03_theory.tex",
+     "line": 103,
+     "classification": "N2 NARROW",
+     "context": "Lines 102-103: the objective and the metric average over \"different clouds (different potentials, different parents, different displacement scales, different smoothing scales; \\Cref{sec:setup})\".",
+     "replacement": "\"...different displacement scales, and different estimator step counts\"."
+    },
+    {
+     "item": "N2: setup paragraph's eq:epsgrid call",
+     "file": "sections/04_experiments.tex",
+     "line": 45,
+     "classification": "N2 NARROW",
+     "context": "Lines 45-46: \"Densities come from the FFJORD construction at $12$ ODE steps and $2$ probes, which by \\eqref{eq:epsgrid} also fixes \\emph{which} density is reported.\"",
+     "replacement": "\"Densities come from the clamped positional-flow construction \\citep{ffjord,hutchinson} at $12$ ODE steps and $2$ probes, which fixes the accuracy of the reported $\\log q_\\theta$ but not which quantity it estimates.\""
+    },
+    {
+     "item": "N2: Sec. 5.5's resolution-conditional paragraph",
+     "file": "sections/04_experiments.tex",
+     "line": 297,
+     "classification": "N2 REWRITE (this is the honest-consequence paragraph)",
+     "context": "Lines 297-308: \"The effect size is \\emph{resolution-conditional}: the estimator's smoothing scale is tied to its step count by \\eqref{eq:epsgrid} ... puts the gap at $+0.382$ at $\\epsilon = 0.125$, where the objective trains, and $+0.177$ at $\\epsilon = 0.042$ ... this design cannot separate a genuine scale-dependence from a resolution-matching artefact ... its size is a property of the smoothing scale as well as of the model.\"",
+     "replacement": "\"The effect size depends on the estimator's step count. A strictly paired re-scoring of existing checkpoints, with identical parents and displacements at each resolution, puts the gap at $+0.382$ at $n = 4$, where the objective trains, and $+0.177$ at $n = 12$, where every number here is computed. Both rows estimate the same quantity, so the gap is largest where the estimator is least accurate and shrinks as it becomes more accurate --- an ordering consistent with part of the coarse-resolution effect being solver artefact. The headline is computed at $n = 12$. This design cannot separate a genuine scale dependence of the learned density from Euler bias, because the training step count and the coarsest evaluation step count coincide by construction. A finer $n = 48$ cell rests on one value-arm evaluation, is not powered, and we report no value for it.\""
+    },
+    {
+     "item": "N2: limitations item (v)",
+     "file": "sections/05_conclusion.tex",
+     "line": 29,
+     "classification": "N2 REWRITE",
+     "context": "Lines 29-33: \"...the effect size is a property of the estimator's resolution as well as of the model, since its smoothing scale is tied to its step count \\eqref{eq:epsgrid} and training and evaluation run at different scales, the gap falling from $+0.382$ at the training scale to $+0.177$ at the reporting scale.\"",
+     "replacement": "\"...and the effect size depends on the estimator's step count as well as on the model: the gap falls from $+0.382$ at the training step count to $+0.177$ at the reporting one, i.e. it is largest where the estimator is least accurate, and the design cannot separate a genuine scale dependence from solver bias.\""
+    },
+    {
+     "item": "N2: app:estimator opening and subsection title",
+     "file": "sections/A2_details.tex",
+     "line": 304,
+     "classification": "N2 REWRITE (whole framing)",
+     "context": "Lines 304-312. Title \"Estimator resolution: the smoothing scale and what depends on it\"; opens \"the integration grid ties the effective smoothing scale to the step count, $\\epsilon = 1/(2n)$, so the reported object is the smoothed marginal $\\log p_{1-\\epsilon}$ and different $n$ measure different quantities\".",
+     "replacement": "Retitle \"Estimator accuracy: the step count and what depends on it\". Open: \"\\Cref{app:density} derives what this subsection measures: the scheme is explicit Euler in the state with midpoint-rule quadrature for the divergence integral over the whole of $[0,1]$, so every step count targets the same $\\log q_\\theta$ at $t = 1$ and the step count sets accuracy, not target. Three consequences follow, in increasing order of how much they cost us --- and the third is the most uncomfortable, because the reported effect is largest where the estimator is least accurate.\""
+    },
+    {
+     "item": "N2: tab:epsgrid caption",
+     "file": "sections/A2_details.tex",
+     "line": 314,
+     "classification": "N2 REWRITE (caption asserts the deleted reading)",
+     "context": "Lines 314-320: \"$\\epsilon = 1/(2n)$ is not a tolerance: it is the distance from $t = 1$ at which the reported density is evaluated, so the three columns describe three \\emph{different} target quantities rather than three accuracies of one.\" Exactly inverted. The $\\epsilon$ and $\\epsilon\\sigma/(1-\\epsilon)$ columns of the table should go with it.",
+     "replacement": "\"The integration grid at the three step counts used or examined in this paper. All nodes are interior to $[0,1]$ and the interval is not truncated, so the three columns describe three \\emph{accuracies} of one target quantity, $\\log q_\\theta$ at $t = 1$, and not three different targets.\" Drop the $\\epsilon = 1/(2n)$ and equivalent-Gaussian-width columns; keep $n$, $\\Delta t$, $t_0$ and \"used for\"."
+    },
+    {
+     "item": "N2: the \"no plateau\" paragraph",
+     "file": "sections/A2_details.tex",
+     "line": 335,
+     "classification": "N2 REWRITE (the measurement stands; its interpretation inverts)",
+     "context": "Lines 335-348. \"The flow-matching marginal is singular as $t \\to 1$ ... so $\\log p_{1-\\epsilon}$ has no finite $\\epsilon \\to 0$ limit on a fixed molecule. The behaviour is exactly that. Re-scoring the same ten held-out molecules ... gives mean $\\log p_\\theta$ of $-65.5$, $-114.3$, $-199.9$ ... a step-count sweep of this estimator cannot be read as a convergence check on one quantity.\" Under FINDING 1 it IS a convergence check on one quantity, and it fails.",
+     "replacement": "Retitle \"No plateau is reached, and the measurement that shows it\". Body: \"All three step counts estimate the same $\\log q_\\theta$, so a step-count sweep \\emph{is} a convergence check --- and it does not pass. Re-scoring the same ten held-out molecules at the three step counts of \\Cref{tab:epsgrid} gives mean $\\log q_\\theta$ of $-65.5$ ($n = 4$), $-114.3$ ($n = 12$) and $-199.9$ ($n = 48$): each refinement removes a further $49$ and then $86$ nats, with no sign of a plateau. On an analytic linear problem the same integrator converges cleanly to the exact endpoint value, so the drift here is a property of the learned field's endpoint stiffness and of the $O(\\Delta t)$ Euler state error at these step counts, not of the scheme's target. We report this as a disclosure and not as a convergence study --- ten molecules is a small sample --- and no statement of the form \\emph{$\\log q_\\theta$ is converged at $n$ steps} is available for this implementation.\""
+    },
+    {
+     "item": "N2: \"Training and evaluation run at different smoothing scales\"",
+     "file": "sections/A2_details.tex",
+     "line": 349,
+     "classification": "N2 REWRITE",
+     "context": "Lines 349-355. \"Training and evaluation therefore constrain and measure log-densities at different smoothing scales. This is a defect of the implementation rather than of the objective.\"",
+     "replacement": "Retitle \"Training and evaluation run at different accuracies\". \"The value term is evaluated at $n = 4$ because a continuous-flow objective inside the training loop is otherwise unaffordable, while every reported evaluation runs at $n = 12$. Both target the same $\\log q_\\theta$; the training term therefore constrains a more coarsely discretised estimate of the same quantity the metric measures more accurately. We cannot say whether that attenuates the reported effect, inflates it, or is immaterial (\\Cref{app:limitations} item (vi)).\""
+    },
+    {
+     "item": "N2: tab:respowered caption and the (b) reading",
+     "file": "sections/A2_details.tex",
+     "line": 438,
+     "classification": "N2 REWRITE (the honest consequence, stated once and properly)",
+     "context": "Lines 438-462, reading (b): \"The effect size depends on the smoothing scale, and that is a measurement. The gap falls from $+0.382$ at $\\epsilon = 0.125$ to $+0.177$ at $\\epsilon = 0.042$ ... this design cannot separate it from a genuine scale-dependence ... the improvement we report is an improvement in the ordering of a \\emph{smoothed} density, at smoothing scales $\\epsilon \\gtrsim 0.04$.\"",
+     "replacement": "Retitle (b) \"The effect size depends on the estimator's accuracy, and that is a measurement.\" Body: \"The gap falls from $+0.382$ at $n = 4$ to $+0.177$ at $n = 12$ on identical molecules and identical checkpoints: it more than halves. Both rows estimate the same quantity, so the larger gap occurs where the estimator is \\emph{least} accurate and shrinks as it becomes more accurate. That ordering is consistent with part of the coarse-resolution effect being solver artefact, and it is also consistent with a genuine dependence of the learned density on the integration path; this design cannot separate the two, because the training step count and the coarsest evaluation step count coincide by construction. The headline is computed at $n = 12$, the more accurate of the two.\" The closing sentence must drop \"smoothed density at smoothing scales $\\epsilon \\gtrsim 0.04$\" and become \"an improvement in the ordering of $\\log q_\\theta$ as estimated at $n = 12$\"."
+    },
+    {
+     "item": "N2: \"The principled repair\" paragraph",
+     "file": "sections/A2_details.tex",
+     "line": 463,
+     "classification": "N2 DELETE and replace (it repairs a defect that does not exist)",
+     "context": "Lines 463-472: \"The defect is the coupling in \\eqref{eq:epsgrid}, not the discretisation. Fixing the upper integration limit at a prescribed $t = 1-\\epsilon$ ... would turn a step-count sweep into an actual convergence check ... retraining every arm under the repaired estimator is the first item on our revision list.\" There is no coupling and no retraining is required.",
+     "replacement": "Retitle \"What would actually settle it\". \"There is no coupling to repair: the scheme already targets $\\log q_\\theta$ at $t = 1$ and a step-count sweep already is a convergence check. What it is not is a \\emph{passed} one. The open items are therefore accuracy items, not semantic ones: reduce the $O(\\Delta t)$ Euler state error with a higher-order state integrator at fixed cost, validate the divergence accumulation against an exact atomwise trace on small molecules, and extend the sweep far enough to exhibit a plateau. None is implemented and no result in this paper reflects any of them. \\textbf{No retraining is required by this correction}: training at $n = 4$ and evaluating at $n = 12$ always targeted the same quantity, differing only in Euler bias.\""
+    },
+    {
+     "item": "N2: capability-matrix paragraph",
+     "file": "sections/A2_details.tex",
+     "line": 1181,
+     "classification": "N2 NARROW",
+     "context": "Line 1180-1182: \"what we compute and report is a 12-step discretisation of a continuous-flow likelihood with a stochastic trace, at a smoothing scale fixed by that step count (\\Cref{app:density})\".",
+     "replacement": "\"...a 12-step discretisation of a clamped positional-flow likelihood with a stochastic trace, whose discretisation error is set by that step count (\\Cref{app:density})\"."
+    },
+    {
+     "item": "N2: stability discussion's \"coarse smoothing scale\"",
+     "file": "sections/A2_details.tex",
+     "line": 1279,
+     "classification": "N2 NARROW",
+     "context": "Lines 1279-1281: \"the coarse smoothing scale at which the training estimator runs ($\\epsilon = 0.125$, \\Cref{app:estimator}) is a suspect in the stability problem as well as in the measurement one\".",
+     "replacement": "\"the coarse step count at which the training estimator runs ($n = 4$, \\Cref{app:estimator}) is a suspect in the stability problem as well as in the measurement one\"."
+    },
+    {
+     "item": "N2: limitation (vi), heading and part (vi-a)",
+     "file": "sections/A2_details.tex",
+     "line": 1356,
+     "classification": "N2 REWRITE (the brief names this item explicitly)",
+     "context": "Lines 1356-1382. Heading \"(vi) The likelihood estimator has not been validated, and its smoothing scale is bound to its step count\"; (vi-a) \"What is reported is not $\\log p_1$ ... the effective smoothing scale is $\\epsilon = 1/(2n)$ and cannot be chosen independently of $n$ ... this quantity has no $\\epsilon \\to 0$ limit and does not converge in $n$ ... A step-count sweep of this estimator is therefore not a convergence check\". (vi-b) and (vi-c) inherit the same reading, and the item closes on \"Integrating to a fixed $t = 1-\\epsilon$ ... and retraining under it, is the first item on our revision list.\"",
+     "replacement": "Heading: \"\\emph{(vi) The likelihood estimator has not been validated, and it is not demonstrably converged.}\" (vi-a): \"What is reported is $\\log q_\\theta$ at $t = 1$, estimated by explicit Euler in the state with midpoint-rule quadrature for the divergence over the whole of $[0,1]$. Every step count targets that same quantity, so the step count sets accuracy rather than target --- and the accuracy is not established: on ten molecules the estimate drifts $-65.5 \\to -114.3 \\to -199.9$ nats at $n = 4, 12, 48$ with no plateau. This is a convergence check that does not pass, and no number here should be read as converged.\" (vi-b): keep, reworded to \"training and evaluation run at different accuracies of the same quantity\". (vi-c): keep the measurement, restate as \"the gap is largest where the estimator is least accurate ($+0.382$ at $n = 4$) and shrinks as it becomes more accurate ($+0.177$ at $n = 12$); part of the coarse-resolution effect may be solver artefact and this design cannot separate that from a genuine scale dependence.\" Close on the accuracy items, NOT on retraining."
+    },
+    {
+     "item": "N2/FINDING-1: unify the scheme naming in Table A2",
+     "file": "figures/tabA2_constants.tex",
+     "line": 36,
+     "classification": "N2 NAMING (half right)",
+     "context": "Line 36: \"ODE steps | 4 train / 12 eval | FFJORD | reverse-time Euler\". Appendix A.2 calls the same thing a \"first-order midpoint scheme\". Each is half right.",
+     "replacement": "Role cell: \"explicit Euler in state, midpoint-rule divergence quadrature\". Use the identical phrase at A1_proofs.tex:249 and A2_details.tex:308 so all three agree."
+    },
+    {
+     "item": "FINDING 2: the truncated-adjoint surrogate is not disclosed in the main text",
+     "file": "sections/02_method.tex",
+     "line": 89,
+     "classification": "N3-adjacent ADD (required disclosure)",
+     "context": "The frozen-trajectory/truncated-adjoint gradient is stated only in A2_details.tex:62-75 and inside limitation (viii) at A2_details.tex:1439-1441. The main text's disclosure list (i)-(iv) does not mention it, so a main-text reader is left believing eq:total is optimised by differentiating the likelihood.",
+     "replacement": "Add as a disclosure in \\Cref{sec:method:impl}: \"\\emph{(v)} The gradient actually back-propagated through $\\Ls_{\\mathrm{value}}$ is a \\emph{truncated-adjoint surrogate}: the reverse trajectory is advanced without gradient tracking and each state is detached from the previous one, so the prior term is constant in the parameters and gradient flows only through the divergence evaluations. We do not differentiate through the ODE solve and we do not claim exact likelihood training (\\Cref{app:asimplemented}).\" Correspondingly, scope the theory: A1_proofs.tex app:scope should state that the theorems concern the zero set and identifiability of the ideal residual condition, not the convergence of the implemented update."
+    },
+    {
+     "item": "N3: \"the object trained is the Boltzmann distribution at that kT\"",
+     "file": "sections/A2_details.tex",
+     "line": 131,
+     "classification": "NARROW (nearest thing in the paper to \"learns a Boltzmann distribution\")",
+     "context": "Lines 130-134: \"since the variance-form objective is scale-covariant rather than scale-invariant, the object trained is the Boltzmann distribution \\emph{at that} $kT$\". States what the model is trained to be as though it were what it becomes; the paper's own calibration result contradicts it.",
+     "replacement": "\"...since the variance-form objective is scale-covariant rather than scale-invariant, the residual the objective penalises is defined at that $kT$ and not at any other; $kT = 1.0$~eV is a specified numerical target, not a physical temperature, and \\Cref{sec:scale} reports that the trained density does not attain raw Boltzmann calibration at it.\""
+    },
+    {
+     "item": "N3: abstract's force-baseline sentence drops three of the four qualifiers",
+     "file": "sections/01_intro.tex",
+     "line": 21,
+     "classification": "NARROW",
+     "context": "Lines 21-22: \"naive off-policy force matching performs below flow matching alone\". Carries \"naive\" and \"off-policy\" but not \"endpoint\", not \"this score readout\", not \"this non-equilibrium corpus\".",
+     "replacement": "\"naive off-policy endpoint force matching, read through the flow-matching score identity on this non-equilibrium corpus, performs below flow matching alone\"."
+    },
+    {
+     "item": "N3: intro finding paragraph's force sentence",
+     "file": "sections/01_intro.tex",
+     "line": 84,
+     "classification": "NARROW",
+     "context": "Lines 84-85: \"and gradient supervision through the flow-matching score identity falls below no physics at all\". Has the score-readout qualifier only.",
+     "replacement": "\"and naive off-policy endpoint gradient supervision, read through the flow-matching score identity on this non-equilibrium corpus, falls below no physics at all\". The scoped version at 04_experiments.tex:223-225 and 05_conclusion.tex:43-45 already carries all four qualifiers and is correct as written --- KEEP those."
+    },
+    {
+     "item": "N3: \"basin occupancy\" family — all occurrences",
+     "file": "sections/03_theory.tex",
+     "line": 68,
+     "classification": "KEEP (identifiability statements and explicit non-claims, never empirical findings)",
+     "context": "03_theory.tex:68 (open simplex of occupancies, inside thm:l2g), 01_intro.tex:72 (\"does not identify cross-basin occupancy\"), 05_conclusion.tex:66 (\"we do not establish cross-basin occupancy\"), A1_proofs.tex:641-642 and :716 (proof and rem:l2g-design), A2_details.tex:1334 (limitation iii, \"compared on mode occupancies ... is not in this paper\"), 04_experiments.tex:35 (\"measures no mode occupancy\").",
+     "replacement": "No change. Every one is either a statement about what the objective's null space leaves unidentified or an explicit non-claim. Verify after the q-rename that 03_theory.tex:68's occupancy vector reads $q_\\theta(U^{(i)})$, so no reader takes it for a measured joint-generator occupancy."
+    },
+    {
+     "item": "N3: \"numerically robust\" and \"exact likelihood\"",
+     "file": "sections/04_experiments.tex",
+     "line": 315,
+     "classification": "KEEP (both appear only as disclaimers)",
+     "context": "04_experiments.tex:315 \"We do not claim the configuration is numerically robust\"; A2_details.tex:74 \"we do not claim to back-propagate through an exact likelihood\"; A2_details.tex:1440 \"the $\\Ls_{\\mathrm{value}}$ gradient is a truncated-adjoint surrogate rather than a derivative of the exact likelihood\".",
+     "replacement": "No change to any of the three. The A2:74 disclaimer should additionally be mirrored into the main text — see the FINDING 2 entry above."
+    },
+    {
+     "item": "N3: forbidden phrases confirmed ABSENT",
+     "file": "main.tex",
+     "line": 1,
+     "classification": "KEEP (no action; recorded so the next pass does not re-search)",
+     "context": "Full-source and rendered-PDF grep found no occurrence of: \"learns a Boltzmann distribution\", \"thermodynamically correct\", \"improves global molecular physicality\", \"the generator's exact conditional density\", \"force supervision fails\", \"generation quality is preserved\", \"in progress\", \"placeholder\", \"TODO\", \"TBD\", \"retract\", \"withdraw\", \"zero-shot\", \"outperform all\", \"global Boltzmann density\", \"calibrated density\" applied to our result. The four PDF hits for \"Boltzmann generator\" are all bibliography titles of cited prior work (Klein and Noe; Noe et al.; Rehman et al.; Tan et al.), none describing our model.",
+     "replacement": "No action. Re-run the scan after the N1/N2 rewrites, since new prose is where such phrases enter."
+    },
+    {
+     "item": "N4: Section 5.5 title asserts preservation",
+     "file": "sections/04_experiments.tex",
+     "line": 284,
+     "classification": "N4 RETITLE (the brief asks for this explicitly)",
+     "context": "\"\\subsection{What is preserved, and what remains unresolved?}\" — \"preserved\" is a conclusion the design (one value seed, two control seeds, n = 100) cannot support.",
+     "replacement": "\"\\subsection{Does the ordering gain visibly degrade generation quality?}\" Keep all four \\label lines (sec:openquestions, sec:generation, sec:resolution, sec:stability) unchanged so no cross-reference breaks."
+    },
+    {
+     "item": "N4: the generation-quality sentence in the main text",
+     "file": "sections/04_experiments.tex",
+     "line": 290,
+     "classification": "N4 NARROW",
+     "context": "Lines 290-295: \"Validity, single-component fraction, PoseBusters pass rate and uniqueness for the value-supervised arm are at or above our flow-matching control's, but at the sample size evaluated the binomial standard error is of the same order as the differences and smaller than the control's own seed-to-seed spread: this is absence of evidence that value supervision degrades generation, and nothing more.\" The \"at or above\" clause is a comparative claim from one value seed against two control seeds.",
+     "replacement": "\"Validity, single-component fraction, PoseBusters pass rate \\citep{posebusters} and uniqueness were measured for one value-supervised run and two flow-matching control runs at $100$ samples each. The binomial standard error is about $5$ points per cell, the same order as the observed differences and smaller than the control's own seed-to-seed spread ($41.0$ against $30.0$ on validity), and the comparison is not seed-controlled. \\emph{We do not detect a degradation in generation quality at the evaluated sample size}, and we claim nothing beyond that (\\Cref{app:generation}).\""
+    },
+    {
+     "item": "N4: conclusion's non-claim overstates what the table shows",
+     "file": "sections/05_conclusion.tex",
+     "line": 45,
+     "classification": "N4 NARROW",
+     "context": "Line 45-46: \"And we do not claim superiority over the broad de novo generation literature; generation quality is reported only to show it is not degraded.\" \"to show it is not degraded\" asserts a demonstration the sample size does not support.",
+     "replacement": "\"And we do not claim superiority over the broad de novo generation literature; generation quality is reported only to record that we do not detect a degradation at the evaluated sample size.\""
+    },
+    {
+     "item": "N4: appendix generation subsection is already correctly hedged",
+     "file": "sections/A2_details.tex",
+     "line": 1133,
+     "classification": "KEEP (use as the model for the main-text wording)",
+     "context": "Lines 1133-1145 already state the three caveats (binomial SE ~5 points, value row is a single run against a two-seed mean, not the axis on which the arms differ) and close on \"the absence of evidence that value supervision degrades generation quality, and nothing more\". tab:generation bolds nothing.",
+     "replacement": "No change. Optionally retitle the subsection to match the new Sec. 5.5 question."
+    },
+    {
+     "item": "N5: cite and contrast IDFlow / Energy-Based Flow Matching",
+     "file": "sections/01_intro.tex",
+     "line": 163,
+     "classification": "N5 ADD-CITATION (record VERIFIED; not needed as an experimental baseline)",
+     "context": "The \"Energy-targeted samplers, and where our objective comes from\" paragraph (lines 159-174) surveys samplers targeting e^{-E/kT} and cites psm for gradient supervision, but nothing in the paper cites a method whose energy is internal and learned rather than external and physical. That is the closest live gap: a reader will ask why an energy-based flow matching method for 3D molecular structure is absent.",
+     "replacement": "Insert after the psm clause at line 164: \"A different sense of `energy-based flow matching' also exists: \\citet{idflow} treat the reconstruction error of an idempotent flow map as an internal learned energy, driving an iterative predictor--refiner for conditional protein docking and backbone generation. Unlike IDFlow, which treats reconstruction error as a learned energy and iteratively refines conditional protein structures, we use values from an external universal potential to supervise and diagnose the likelihood of a bond-free de novo molecular flow.\" Add the bibtex entry (see idflow_bibtex) to refs.bib; there is no existing idflow key among its 41 entries. Also add \\citep{idflow} alongside \\citep{ebmol} in the de novo paragraph (line 145) if space allows."
+    }
+   ],
+   "idflow_verified": "VERIFIED — the record exists and the brief's characterisation is accurate. Title: \"Energy-Based Flow Matching for Generating 3D Molecular Structure\". Authors, in order: Wenyin Zhou, Christopher Iliffe Sprague, Vsevolod Viliuga, Matteo Tadiello, Arne Elofsson, Hossein Azizpour. arXiv:2508.18949, submitted 26 August 2025; the arXiv comments field records acceptance to ICML 2025, and an ICML 2025 poster page (icml.cc/virtual/2025/poster/44407) and an OpenReview forum (id=hcJWWC82KW) both exist for it.\n\nOne correction worth recording, because the sources disagree. The ICML virtual page's rendering states the method is NOT named IDFlow. That is wrong. I pulled the arXiv PDF and grepped its text directly: \"IDFlow\" appears throughout — Figure 1's caption reads \"Training paradigm of standard flow matching and IDFlow\", and the introduction reads \"our trained idempotent function (IDFlow) simultaneously serves as both a neural sampler and a refiner\". The brief's description of the core is also confirmed from the same text: \"we take the reconstruction error ||x - x_hat|| as the [energy]\", with low energy assigned to good predictions, and an idempotent objective that lets the map iteratively refine its own sample. So the proposed contrast sentence is factually correct as written and needs no softening.\n\nThe contrast is genuine and worth stating: their energy is internal to the model (a reconstruction residual, learned), ours is external and physical (values from a universal neural potential trained on DFT); their setting is conditional protein docking and backbone generation with the target identity supplied, ours is bond-free de novo molecular generation where composition is generated; and their energy shapes the sampling trajectory, whereas ours supervises and diagnoses a tractable density. Not needed as an experimental baseline.\n\nCaveat for the citation-check pass: the venue/date pairing (ICML 2025, but arXiv submission dated August 2025, after the conference) is the normal post-acceptance-posting pattern and is consistent across the arXiv abstract page, the ICML virtual page and the survey that cites it; no discrepancy needs resolving, but the entry carries a note field recording it.",
+   "idflow_bibtex": "% VERIFIED 2026-08-18 against arxiv.org/abs/2508.18949 (title, full author list,\n% submission date 26 Aug 2025) and icml.cc/virtual/2025/poster/44407 (venue).\n% The method is named IDFlow in the paper itself (Fig. 1 caption; Sec. 1), even\n% though the ICML virtual page does not print the name.  Its \"energy\" is the\n% reconstruction error ||x - x_hat|| of an idempotent flow map -- an INTERNAL\n% learned energy -- not an external physical potential.  Cited for contrast only;\n% it is not an experimental baseline for this paper.\n@inproceedings{idflow,\n  title        = {Energy-Based Flow Matching for Generating {3D} Molecular Structure},\n  author       = {Zhou, Wenyin and Sprague, Christopher Iliffe and\n                  Viliuga, Vsevolod and Tadiello, Matteo and\n                  Elofsson, Arne and Azizpour, Hossein},\n  booktitle    = {International Conference on Machine Learning (ICML)},\n  year         = {2025},\n  note         = {arXiv:2508.18949}\n}"
+  }
+ },
+ {
+  "label": null,
+  "result": {
+   "summary": "READ-ONLY audit of /n/home04/yulili/bgfm/paper. Nothing was edited. 32 repair sites located across sections/03_theory.tex, sections/A1_proofs.tex, sections/01_intro.tex, sections/02_method.tex, sections/04_experiments.tex.\n\nNumbering map (independent counters, document order, confirmed against main.tex:79-88 and the input order at main.tex:108-199): Lemma 1 = lem:score; Definition 1 = def:overlap; Theorem 1 = thm:l2g; Corollary 1 = cor:basins; Proposition 1 = prop:trap; Proposition 2 = prop:conflict; Theorem 2 = thm:certificate; Corollary 2 = cor:gauge; Corollary 3 = cor:empirical; Proposition 3 = prop:surrogate; Lemma 2 = lem:forcegauge; Theorem 3 = thm:gauge; Remark 8 = rem:epsilon. The brief's references all resolve.\n\nR1 (overlap graph, 10 sites). The edge condition at 03_theory.tex:47-49 is the weak \"some measurable set S with rho_j(S)>0 and rho_j'(S)>0\" form. It is inconsistent with its own proof: A1_proofs.tex:604 silently uses S = U_j ∩ U_j' instead, which is a different (and also insufficient) condition. Replaced everywhere by non-mutual-singularity, edge iff ∫min(f_j,f_j')dmu > 0, with the proof running through dnu = min(f_j,f_j')dmu. The empirical corollary (share a sampled geometry) survives and in fact becomes cleaner under counting measure. Topological support and measure overlap are conflated in five further prose sites (01_intro.tex:68, A1_proofs.tex:577, 669, 717, and the cor:basins proof at 651-653); all are repaired to the measure-theoretic phrasing.\n\nR2 (exponent sign, 7 sites). Confirmed error. w = log q + E/kT and w = b_i give q = e^{+b_i} e^{-E/kT}. The paper writes e^{-b_i} at 03_theory.tex:40 (mass ratio), 03_theory.tex:63-64 (eq:l2g, twice), A1_proofs.tex:613, 633, 639, 640, and e^{-b} in Remark 8 at A1_proofs.tex:693, 700, 702, 706. Note that this is also internally inconsistent with Figure 1, whose caption (figures/fig1_objective_float.tex:49-50) already has the correct convention: \"log p_theta is affine in -E_k/kT with unit slope and an arbitrary offset b\", i.e. p = e^{+b} e^{-E/kT}. The e^{kappa} in Theorem 2's proof (A1_proofs.tex:503, 518-519) is sign-CORRECT as written; it is repaired only for notational consistency with the recommended positive-multiplier form q(x|c) = a_i e^{-E(c,x)/kT}, a_i > 0, sum_i a_i Z_i = 1, occupancy a_i Z_i.\n\nR3 (region vs global normalisation, folded into the R2 sites plus 1 dedicated site). The silent substitution is at A1_proofs.tex:518-519: \"integrating e^{kappa}e^{-E/kT} over U gives e^{kappa}Z(c) = 1\", where the integral over U is Z_U(c), not the global Z(c). It propagates to the Theorem 2(ii) statement (A1_proofs.tex:460-462), the Theorem 1(ii) statement (03_theory.tex:56-59), the Theorem 1(ii) proof (A1_proofs.tex:611-615) and the scope inventory (A1_proofs.tex:985-988). Remark 8 (rem:epsilon) already gets this right with Z_{U_c}, so the repair makes the main statements agree with a remark that already contradicts them.\n\nR4 (force propositions, 7 sites). Confirmed: 02_method.tex:104-114 feeds x_t to the network while the target is F(c,x_1)/kT read at the endpoint, so for the ideal squared loss the population minimiser is E[F(c,x_1)/kT | x_t, t, c], not the pointwise grad log pi(x_1). Proposition 2's proof asserts the pointwise limit directly (A1_proofs.tex:405-406). The implemented loss is Huberised and per-atom norm-capped (02_method.tex:113-114), so it is not the conditional expectation either. Repairs restate both propositions as diagnostic hypotheses about the construction, add the conditional-expectation statement, and fix the one main-text site that reads them as explanations (04_experiments.tex:227). They are already appendix-resident (App. A.4), so the \"demote to appendix\" half of the recommendation is structural only.\n\nR5 (rho sign inference, 3 sites). Confirmed invalid: A1_proofs.tex:799-806 infers rho < 0 by comparing a mean-over-parents r against a median-over-parents NRV; the same inference is repeated in the tab:tau caption (830-832) and used as a directional caveat in rem:tau (817-818). Repairs delete the directional claim and replace it with the identifiability statement the brief specifies. See rho_feasible: option (a) is fully computable from saved files, and a scratch recomputation shows the arm contrast runs OPPOSITE to the way the current text implies the failure is located.\n\nR6 (Theorem 3, 4 sites). thm:gauge is already absent from the main text and from all three contribution bullets (01_intro.tex:95-116), so that half of the recommendation is already satisfied and needs no edit. What remains: demote the theorem environment at A1_proofs.tex:906-917 to a remark hanging off Lemma 2 (label kept so \\Cref resolves), retitle App. A.8, and adjust the roadmap (A1_proofs.tex:40-42) and the two scope paragraphs (985-995, 1000-1007). The existing scope paragraph at 1000-1007 is already the \"scope paragraph\" the brief asks for and only needs the demotion wording.\n\nTwo housekeeping sites omitted from the 32 because they are LaTeX comments invisible in the PDF: A1_proofs.tex:13 (\"A.8 what forces cannot identify (lem:forcegauge, thm:gauge)\") and main.tex:76-77 (lists thm:gauge among theorem environments). Both should track the R6 demotion.\n\nOut of scope but adjacent, flagged not repaired: the settled Finding 1 naming unification touches A1_proofs.tex:250 (\"first-order midpoint scheme\"), A1_proofs.tex:260-267 and 484-495 and 875-877 (the eps = 1/(2n) smoothing-scale reading), 02_method.tex:75-86, and figures/tabA2_constants.tex:36 (\"reverse-time Euler\"). None of these are R1-R6 sites.",
+   "rho_feasible": "FEASIBLE — option (a) of R5 is fully computable from saved per-record files; no rescoring, no retraining, no new energy evaluations.\n\nFiles (all already on disk):\n1. Per-record evaluation CSVs, one per (arm, seed), at /n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/wide_*/boltz_records.csv — 12 files matching the reported arms:\n   flow-matching control (5): wide_a1_fm_only, wide_a1_fm_only_s2, wide_a1_fm_only_s3, wide_a1_fm_only_s4, wide_a1_fm_only_s5\n   value (4): wide_a3_energy_only_s1, wide_a3_energy_only_s2, wide_a3_energy_only_s3, wide_a3_energy_only_s5\n   scrambled (3): wide_a6_energy_only_shuffled_s2, wide_a6_energy_only_shuffled_s3, wide_a6_energy_only_shuffled_stab_s5\n   Columns: group_id, pert_id, n_atoms, charge, log_p_theta, E_hartree, E_eV, negE_kT.\n2. The 93-parent primary population: /n/home04/yulili/bgfm/paper/figures/out/primary_endpoint.json, key \"disjoint_group_ids\".\n3. The loader that already reads exactly these two: /n/home04/yulili/bgfm/paper/figures/recompute_disjoint_noreference.py (RUNS constant at line 40, glob at line 153, per-group assembly in arm_cells() at lines 121-124). rho_m needs three added lines in that function.\n\nConstruction, per (seed, parent m): restrict to group_id in disjoint_group_ids and pert_id != 0 (drops the high-leverage data geometry, matching the primary endpoint); set u_k = negE_kT, L_k = log_p_theta, w_k = L_k - u_k = log p_theta + E/kT; rho_m = Pearson(w, u) over the K = 8 displaced geometries. This is exactly the rho of Proposition 3, and tau_m = sd(w)/sd(u) comes from the same two columns, so NRV_m = tau_m^2 can be cross-checked against tab:scaleseeds from the identical source.\n\nScratch recomputation (auditor-side, 93 parents x 8 geometries per seed; NOT to be quoted in the PDF until regenerated through the authors' own analysis script and cross-checked against tab:scaleseeds):\n  flow matching (5 seeds): per-seed median rho_m -0.724 to -0.770, mean of seed medians -0.759; fraction of parents with rho_m < 0 per seed 0.860 to 0.935\n  value (4 seeds): per-seed median rho_m -0.320 to -0.577, mean of seed medians -0.416; fraction negative 0.688 to 0.860\n  scrambled (3 seeds): per-seed median rho_m -0.584 to -0.663; fraction negative 0.839 to 0.882\n\nTwo consequences the authors must absorb before choosing option (a) over the deletion form:\n(1) rho < 0 holds in BOTH arms, so it is not a property of value supervision and cannot be offered as the explanation of the value arm's NRV. The current text at A1_proofs.tex:801-804 reads as if the anti-correlation is what value supervision introduces.\n(2) The arm contrast runs the opposite way to the implication: the value arm is markedly LESS anti-correlated (-0.42 vs -0.76 in seed-median terms), so the rho = 0 inversion over-states tau more badly for the CONTROL than for the treatment. The tab:tau caption at A1_proofs.tex:829-832 currently reads the discrepancy the other way round.\n(3) K = 8 per parent means each rho_m is an 8-point correlation with large sampling error; report the distribution (median over parents, IQR, fraction negative) and never a per-parent point claim.\n\nGiven (1) and (2), the safe default is the deletion form, which is what the replacement text in repair sites R5-1, R5-2 and R5-3 implements; option (a) would additionally require rewriting the surrounding narrative, since the measured arm contrast contradicts the direction the present text implies.",
+   "sites": [
+    {
+     "repair_id": "R1-1",
+     "file": "/n/home04/yulili/bgfm/paper/sections/03_theory.tex",
+     "line": 43,
+     "current_text": "\\begin{definition}[Overlap graph]\n\\label{def:overlap}\nFix a composition $c$ with groups $j = 1,\\dots,J$ and reference measures $\\rho_j$ with supports\n$U_j$, all dominated by a common $\\sigma$-finite measure $\\mu$. The \\emph{overlap graph}\n$\\mathcal{G}_c$ has vertices $\\{1,\\dots,J\\}$ and an edge $\\{j,j'\\}$ whenever some measurable set\n$S$ satisfies $\\rho_j(S) > 0$ and $\\rho_{j'}(S) > 0$, so that the two constancy statements must\nagree on $S$.\n\\end{definition}",
+     "problem": "The edge condition is too weak. Taken literally $S$ may be the whole space, in which case every pair of nonzero measures is joined. More importantly the condition does not force two almost-sure constancy statements to agree anywhere: two mutually singular measures can each charge a common set while their exceptional sets cover each other's mass, so no single point need carry both identities. The definition is also inconsistent with its own proof, which uses $S = U_j \\cap U_{j'}$ (A1_proofs.tex:604) rather than the stated condition.",
+     "replacement": "\\begin{definition}[Overlap graph]\n\\label{def:overlap}\nFix a composition $c$ with groups $j = 1,\\dots,J$ and reference measures $\\rho_j$ with supports\n$U_j$, all dominated by a common $\\sigma$-finite measure $\\mu$, and write\n$f_j = \\mathrm{d}\\rho_j/\\mathrm{d}\\mu$. The \\emph{overlap graph} $\\mathcal{G}_c$ has vertices\n$\\{1,\\dots,J\\}$ and an edge $\\{j,j'\\}$ if and only if\n\\begin{equation}\n  \\int \\min\\bigl(f_j, f_{j'}\\bigr)\\,\\mathrm{d}\\mu \\;>\\; 0 ,\n  \\label{eq:overlap}\n\\end{equation}\nequivalently if and only if $\\rho_j$ and $\\rho_{j'}$ are \\emph{not mutually singular}. The\ncriterion does not depend on the choice of $\\mu$. An edge supplies the measure\n$\\mathrm{d}\\nu = \\min(f_j,f_{j'})\\,\\mathrm{d}\\mu$, which is nonzero and absolutely continuous\nwith respect to both $\\rho_j$ and $\\rho_{j'}$; that is what forces the two constancy statements\nto agree, and it is what a set merely charged by both measures does not supply. Overlap here is a\nproperty of the measures and not of the topological supports: $U_j \\cap U_{j'} \\neq \\emptyset$ is\nnecessary for an edge but far from sufficient.\n\\end{definition}"
+    },
+    {
+     "repair_id": "R1-2",
+     "file": "/n/home04/yulili/bgfm/paper/sections/03_theory.tex",
+     "line": 72,
+     "current_text": "Part (i) is two lines of measure theory and needs no density assumption: along an edge the two\nconstancy statements hold on a set non-null for both measures, so their exceptional sets cannot\ncover it, they agree at a point, and equality propagates along paths.",
+     "problem": "The prose gloss reproduces the discarded weak criterion (\"a set non-null for both measures\") and the step \"their exceptional sets cannot cover it\" is exactly the step that fails for mutually singular measures. It must be restated through the common dominating measure $\\nu$.",
+     "replacement": "Part (i) is two lines of measure theory and needs no density assumption: an edge supplies a\nnonzero measure $\\nu$, $\\mathrm{d}\\nu = \\min(f_j,f_{j'})\\,\\mathrm{d}\\mu$, absolutely continuous\nwith respect to both $\\rho_j$ and $\\rho_{j'}$, so $w = b_j$ and $w = b_{j'}$ both hold\n$\\nu$-almost surely; the union of two $\\nu$-null sets is $\\nu$-null and $\\nu \\neq 0$, so the two\nidentities hold together somewhere and $b_j = b_{j'}$, and equality propagates along paths."
+    },
+    {
+     "repair_id": "R1-3",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 603,
+     "current_text": "(i) Let $\\{j,j'\\}$ be an edge of $\\mathcal{G}_c$ (\\Cref{def:overlap}), so\n$S = U_j \\cap U_{j'}$ has positive measure under both reference measures. On $S$,\n$w = b_j$ holds $\\rho_j$-a.s.\\ and $w = b_{j'}$ holds $\\rho_{j'}$-a.s.; since $S$\nis not null for either measure, the two exceptional sets cannot cover $S$, so\nthere is a point of $S$ at which both identities hold and $b_j = b_{j'}$.\nConstancy along edges propagates along paths, so $j \\mapsto b_j$ is constant on\neach connected component.",
+     "problem": "The proof of Theorem 1(i) does not use the stated edge condition (it substitutes $S = U_j \\cap U_{j'}$), and its central inference -- that two exceptional sets cannot cover a set non-null for both measures -- is false in general. Two measures can each charge $S$ while being mutually singular on it, and then $\\rho_j$-null and $\\rho_{j'}$-null sets do cover $S$ between them.",
+     "replacement": "(i) Let $\\{j,j'\\}$ be an edge of $\\mathcal{G}_c$ (\\Cref{def:overlap}), so with\n$f_j = \\mathrm{d}\\rho_j/\\mathrm{d}\\mu$ the measure\n$\\mathrm{d}\\nu = \\min(f_j,f_{j'})\\,\\mathrm{d}\\mu$ is nonzero. By construction\n$\\nu \\le \\rho_j$ and $\\nu \\le \\rho_{j'}$ as measures, hence $\\nu \\ll \\rho_j$ and\n$\\nu \\ll \\rho_{j'}$, so $w = b_j$ holds $\\nu$-a.s.\\ and $w = b_{j'}$ holds\n$\\nu$-a.s. The union of the two $\\nu$-null exceptional sets is $\\nu$-null and\n$\\nu \\neq 0$, so there is a point at which both identities hold and\n$b_j = b_{j'}$. This is precisely the step that the weaker ``some set charged by\nboth measures'' criterion does not license: two measures can each charge a common\nset while being mutually singular, and then no single point need carry both\nstatements. Equality along edges propagates along paths, so $j \\mapsto b_j$ is\nconstant on each connected component."
+    },
+    {
+     "repair_id": "R1-4",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 588,
+     "current_text": "scalar equations and constrains no unsampled point; \\emph{(b)} an edge of\n$\\mathcal{G}_c$ requires two groups to share a set of positive measure under both\nempirical measures, i.e.\\ to share a sampled geometry, which for independently\ndrawn continuous displacements has probability zero, so $\\mathcal{G}_c$ is\nedgeless; and",
+     "problem": "Corollary 3(b) is stated through the discarded weak criterion. The conclusion is correct but the derivation must run through non-mutual-singularity, where for atomic measures it is immediate and exact rather than an implication.",
+     "replacement": "scalar equations and constrains no unsampled point; \\emph{(b)} taking $\\mu$ to be\ncounting measure on the union of the sampled points, $f_j$ is group $j$'s atomic\nweight function and $\\int \\min(f_j,f_{j'})\\,\\mathrm{d}\\mu > 0$ holds exactly when\nthe two groups share at least one sampled geometry; for independently drawn\ncontinuous displacements that has probability zero, so distinct groups are almost\nsurely mutually singular and $\\mathcal{G}_c$ is edgeless; and"
+    },
+    {
+     "repair_id": "R1-5",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 650,
+     "current_text": "The conclusion follows from disjointness rather than from any count of groups per\ncomposition. Two groups are joined in $\\mathcal{G}_c$ only if some measurable set\ncarries positive measure under both empirical measures, i.e.\\ only if the two\nclouds share a sampled geometry; distinct parents draw their displacements\nindependently from continuous distributions, so that event has probability zero.",
+     "problem": "The proof of Corollary 1 restates the discarded weak edge criterion, and states the implication in one direction only (\"only if\"), where under non-mutual-singularity the atomic case is an exact equivalence.",
+     "replacement": "The conclusion follows from mutual singularity rather than from any count of groups\nper composition. Two groups are joined in $\\mathcal{G}_c$ exactly when their\nempirical measures are not mutually singular, which for atomic measures means\nexactly when the two clouds share a sampled geometry (\\Cref{cor:empirical}(b));\ndistinct parents draw their displacements independently from continuous\ndistributions, so that event has probability zero and the two empirical measures\nare almost surely mutually singular."
+    },
+    {
+     "repair_id": "R1-6",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 621,
+     "current_text": "components have Lebesgue-null intersection: if $U^{(i)} \\cap U^{(i')}$ had positive\nLebesgue measure, then since each $\\rho_j$ has a positive Lebesgue density\non $U_j$ some pair $j \\in \\mathcal{S}_i$,\n$j' \\in \\mathcal{S}_{i'}$ would assign positive measure to that common set and\n\\Cref{def:overlap} would place an edge between them,\ncontradicting that they lie in different components.",
+     "problem": "The Theorem 1(iii) proof invokes the old edge criterion (\"would assign positive measure to that common set\"). Under the corrected definition the argument still holds and is in fact cleaner, but it must be rewritten through $\\int\\min(f_j,f_{j'})\\,\\mathrm{d}\\lambda > 0$ or the proof no longer matches Definition 1.",
+     "replacement": "components have Lebesgue-null intersection: take $\\mu = \\lambda$ Lebesgue measure in\nthis reading, and suppose $U^{(i)} \\cap U^{(i')}$ had positive Lebesgue measure.\nThen some pair $j \\in \\mathcal{S}_i$, $j' \\in \\mathcal{S}_{i'}$ has\n$\\lambda(U_j \\cap U_{j'}) > 0$, and on that common set $f_j$ and $f_{j'}$ are both\nstrictly positive by hypothesis, so $\\min(f_j,f_{j'}) > 0$ there and\n$\\int \\min(f_j,f_{j'})\\,\\mathrm{d}\\lambda > 0$; \\Cref{def:overlap} would then place\nan edge between them, contradicting that they lie in different components."
+    },
+    {
+     "repair_id": "R1-7",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 576,
+     "current_text": "almost surely disjoint supports. Read instead as the full-support Gaussian those\npoints are drawn from, every pair of groups of a composition would overlap and\npart (ii) of \\Cref{thm:l2g} would apply --- but no run here approaches that\npopulation objective, and reading our experiments through it would credit us with\na certificate we do not have.",
+     "problem": "\"every pair of groups would overlap\" is the conflated topological-plus-measure reading. Under the corrected definition the operative fact is that two full-support Gaussians are never mutually singular.",
+     "replacement": "almost surely mutually singular reference measures. Read instead as the full-support\nGaussian those points are drawn from, no two groups of a composition would be\nmutually singular, every pair would therefore carry an edge, and part (ii) of\n\\Cref{thm:l2g} would apply --- but no run here approaches that population objective,\nand reading our experiments through it would credit us with a certificate we do not\nhave."
+    },
+    {
+     "repair_id": "R1-8",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 667,
+     "current_text": "conclusion concerns the supervision design and not the geometry of Gaussian tails:\nwere the $\\rho_j$ read as full-support Gaussians, every pair of groups of a common\ncomposition would overlap and $\\mathcal{G}_c$ would be complete, but then the",
+     "problem": "Same conflation of topological support intersection with an edge of the overlap graph, inside the proof of Corollary 1.",
+     "replacement": "conclusion concerns the supervision design and not the geometry of Gaussian tails:\nwere the $\\rho_j$ read as full-support Gaussians, no two groups of a common\ncomposition would be mutually singular, so $\\mathcal{G}_c$ would be complete, but then the"
+    },
+    {
+     "repair_id": "R1-9",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 717,
+     "current_text": "correlation of $1$. Testing it requires groups whose supports overlap --- for\ninstance perturbation clouds tiled along a transition path, or groups drawn from a\nreference ensemble obtained by enhanced sampling --- together with a measurement of\nrelative basin populations rather than within-basin ordering.",
+     "problem": "\"groups whose supports overlap\" is the topological reading and is not the design requirement. Intersecting supports do not create an edge; under the empirical reference measures the runs actually use, clouds tiled along a path would still be edgeless unless they re-use geometries.",
+     "replacement": "correlation of $1$. Testing it requires groups that are not mutually singular ---\nwhich, under the empirical reference measures of \\Cref{rem:refmeasure}, means groups\nthat share sampled geometries: perturbation clouds tiled along a transition path so\nthat consecutive clouds re-use the same geometries, or groups drawn from one\nreference ensemble obtained by enhanced sampling. Merely intersecting supports would\nnot suffice. That must be combined with a measurement of relative basin populations\nrather than within-basin ordering."
+    },
+    {
+     "repair_id": "R1-10",
+     "file": "/n/home04/yulili/bgfm/paper/sections/01_intro.tex",
+     "line": 66,
+     "current_text": "identifiability analysis that bounds our own claim. \\Cref{thm:l2g} shows that group-wise\nsupervision constrains the density only up to one additive constant per group, and that those\nconstants agree across groups whose supports overlap; connectivity of the overlap graph is\nsufficient, and necessary in the identifiability sense that a disconnected graph leaves zero-loss\nsolutions with differing offsets.",
+     "problem": "The one main-text sentence that states the edge condition to a reader uses the topological phrasing \"groups whose supports overlap\", which is exactly the conflation R1 asks to remove and is not what forces the constants to agree.",
+     "replacement": "identifiability analysis that bounds our own claim. \\Cref{thm:l2g} shows that group-wise\nsupervision constrains the density only up to one additive constant per group, and that those\nconstants agree across any two groups whose reference measures are not mutually singular;\nconnectivity of the resulting overlap graph is sufficient, and necessary in the identifiability\nsense that a disconnected graph leaves zero-loss solutions with differing offsets."
+    },
+    {
+     "repair_id": "R2-1",
+     "file": "/n/home04/yulili/bgfm/paper/sections/03_theory.tex",
+     "line": 36,
+     "current_text": "\\paragraph{Per-parent centring is not per-composition consistency.} A free constant per group is\nharmless only if the groups are tied together. Suppose a composition has two well-separated basins\n$A$ and $B$, each supplying one group. Then $w \\equiv b_A$ on $A$ and $w \\equiv b_B$ on $B$ with\n$b_A \\neq b_B$ leaves every within-group variance at zero while the mass ratio\n$e^{-b_A}Z_A / e^{-b_B}Z_B$ takes any value we please: zero training loss and a per-group\ncorrelation of one are compatible with arbitrarily wrong relative basin populations.",
+     "problem": "Sign error. With $w = \\log p_\\theta + E/kT$ and $w \\equiv b_A$ on $A$, the density is $p_\\theta = e^{+b_A}e^{-E/kT}$, so the mass ratio is $e^{+b_A}Z_A / e^{+b_B}Z_B$. The stated ratio inverts the free parameter. It is also inconsistent with Figure 1's caption (figures/fig1_objective_float.tex:49-50), which already uses the correct positive-offset convention.",
+     "replacement": "\\paragraph{Per-parent centring is not per-composition consistency.} A free constant per group is\nharmless only if the groups are tied together. Suppose a composition has two well-separated basins\n$A$ and $B$, each supplying one group. Then $w \\equiv b_A$ on $A$ and $w \\equiv b_B$ on $B$ means\n$p_\\theta = a_A e^{-E(c,\\cdot)/kT}$ on $A$ and $p_\\theta = a_B e^{-E(c,\\cdot)/kT}$ on $B$, with\npositive multipliers $a_A = e^{b_A}$ and $a_B = e^{b_B}$. Any $a_A \\neq a_B$ leaves every\nwithin-group variance at zero while the mass ratio $a_A Z_A / a_B Z_B$ takes any value we please:\nzero training loss and a per-group correlation of one are compatible with arbitrarily wrong\nrelative basin populations."
+    },
+    {
+     "repair_id": "R2-2",
+     "file": "/n/home04/yulili/bgfm/paper/sections/03_theory.tex",
+     "line": 52,
+     "current_text": "\\begin{theorem}[Local-to-global identifiability]\n\\label{thm:l2g}\nLet the population objective $\\sum_j \\pi_j \\Var_{\\rho_j}[w]$ vanish, so $w \\equiv b_j$\n$\\rho_j$-a.s.\\ on $U_j$ for each $j$, and let $U_c = \\bigcup_j U_j$. Then \\emph{(i)}\n$b_j = b_{j'}$ for every edge of $\\mathcal{G}_c$, so the constants agree within each connected\ncomponent. Suppose in addition that each $\\rho_j$ has a positive Lebesgue density on $U_j$ and that\n$p_\\theta(U_c \\mid c) = 1$. Then \\emph{(ii)} if $\\mathcal{G}_c$ is connected, $w$ is a single\nconstant on $U_c$ and $p_\\theta(\\cdot \\mid c) = \\pi(\\cdot \\mid c)$; \\emph{(iii)} if $\\mathcal{G}_c$\nhas $C \\ge 2$ components with regions $U^{(1)},\\dots,U^{(C)}$, the zero-loss densities supported on\n$U_c$ form the $(C-1)$-parameter family\n\\begin{equation}\n  p_\\theta(x \\mid c) = e^{-b_i}e^{-E(c,x)/kT} \\ \\ (x \\in U^{(i)}),\n  \\qquad \\textstyle\\sum_{i=1}^{C} e^{-b_i} Z^{(i)} = 1, \\quad\n  Z^{(i)} = \\int_{U^{(i)}} e^{-E(c,x)/kT}\\,\\mathrm{d}x ,\n  \\label{eq:l2g}\n\\end{equation}\nin which every vector of occupancies $\\bigl(p_\\theta(U^{(1)}),\\dots,p_\\theta(U^{(C)})\\bigr)$ in the\nopen simplex is attained: the \\emph{relative} mass of separated basins is not identified.\n\\end{theorem}",
+     "problem": "Two defects. (R2) $e^{-b_i}$ has the wrong sign: $w \\equiv b_i$ gives $p_\\theta = e^{+b_i}e^{-E/kT}$, and the normalisation $\\sum_i e^{-b_i}Z^{(i)} = 1$ inherits it. (R3) Part (ii) claims global equality $p_\\theta(\\cdot\\mid c) = \\pi(\\cdot\\mid c)$ from $p_\\theta(U_c\\mid c) = 1$ alone. Constancy of $w$ on $U_c$ plus model normalisation on $U_c$ yields only the conditional statement $p_\\theta(x\\mid c,U_c) = e^{-E/kT}/Z_{U_c}(c)$; global equality additionally requires the target to put all its mass on $U_c$, i.e. $Z_{U_c}(c) = Z(c)$. Remark 8 (rem:epsilon) already says this and currently contradicts the theorem it qualifies.",
+     "replacement": "\\begin{theorem}[Local-to-global identifiability]\n\\label{thm:l2g}\nLet the population objective $\\sum_j \\pi_j \\Var_{\\rho_j}[w]$ vanish, so $w \\equiv b_j$\n$\\rho_j$-a.s.\\ on $U_j$ for each $j$, and let $U_c = \\bigcup_j U_j$. Then \\emph{(i)}\n$b_j = b_{j'}$ for every edge of $\\mathcal{G}_c$, so the constants agree within each connected\ncomponent. Suppose in addition that each $\\rho_j$ has a positive Lebesgue density on $U_j$. Then\n\\emph{(ii)} if $\\mathcal{G}_c$ is connected, $w$ is a single constant on $U_c$ and the model law\n\\emph{conditioned on} $U_c$ is the Gibbs law conditioned on $U_c$,\n$p_\\theta(x \\mid c, U_c) = e^{-E(c,x)/kT}/Z_{U_c}(c)$ with\n$Z_{U_c}(c) = \\int_{U_c} e^{-E(c,x)/kT}\\,\\mathrm{d}x$; the global statement\n$p_\\theta(\\cdot \\mid c) = \\pi(\\cdot \\mid c)$ follows only in the further case that $U_c$ carries\nall of the mass of \\emph{both} laws, $p_\\theta(U_c \\mid c) = 1$ and $Z_{U_c}(c) = Z(c)$;\n\\emph{(iii)} if $\\mathcal{G}_c$ has $C \\ge 2$ components with regions $U^{(1)},\\dots,U^{(C)}$ and\n$p_\\theta(U_c \\mid c) = 1$, the zero-loss densities supported on $U_c$ form the\n$(C-1)$-parameter family\n\\begin{equation}\n  p_\\theta(x \\mid c) = a_i\\,e^{-E(c,x)/kT} \\ \\ (x \\in U^{(i)}),\\ \\ a_i > 0,\n  \\qquad \\textstyle\\sum_{i=1}^{C} a_i Z^{(i)} = 1, \\quad\n  Z^{(i)} = \\int_{U^{(i)}} e^{-E(c,x)/kT}\\,\\mathrm{d}x ,\n  \\label{eq:l2g}\n\\end{equation}\nin which every vector of occupancies\n$\\bigl(p_\\theta(U^{(1)} \\mid c),\\dots,p_\\theta(U^{(C)} \\mid c)\\bigr) = (a_1 Z^{(1)},\\dots,a_C Z^{(C)})$\nin the open simplex is attained: the \\emph{relative} mass of separated basins is not identified.\n\\end{theorem}"
+    },
+    {
+     "repair_id": "R2-3",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 611,
+     "current_text": "(ii) If $\\mathcal{G}_c$ is connected, all $b_j$ equal a common $b(c)$, hence\n$w \\equiv b(c)$ on $U_c = \\bigcup_j U_j$ and\n$p_\\theta(\\vx\\mid c) = e^{-b(c)}e^{-E(c,\\vx)/kT}$ there. With\n$p_\\theta(U_c\\mid c) = 1$, \\Cref{thm:certificate}(ii) applies with $U = U_c$ and\nforces $b(c) = -\\log Z(c)$, i.e.\\ $p_\\theta(\\cdot\\mid c) = \\pi(\\cdot\\mid c)$.",
+     "problem": "Sign error ($e^{-b(c)}$ should be $e^{+b(c)}$) compounded with the region/global substitution: $b(c)$ is forced to $-\\log Z_{U_c}(c)$, not $-\\log Z(c)$, and what follows is the conditional Gibbs law on $U_c$, not global equality with $\\pi(\\cdot\\mid c)$.",
+     "replacement": "(ii) If $\\mathcal{G}_c$ is connected, all $b_j$ equal a common $b(c)$, hence\n$w \\equiv b(c)$ on $U_c = \\bigcup_j U_j$ and\n$p_\\theta(\\vx\\mid c) = a(c)\\,e^{-E(c,\\vx)/kT}$ there, with $a(c) = e^{b(c)} > 0$.\n\\Cref{thm:certificate}(ii) applies with $U = U_c$ and fixes the multiplier only\nrelative to $U_c$: $a(c) = p_\\theta(U_c\\mid c)/Z_{U_c}(c)$, so the conditional law\n$p_\\theta(\\cdot \\mid c, U_c)$ is exactly the Gibbs law conditioned on $U_c$. If in\naddition $U_c$ carries all the model's mass, $p_\\theta(U_c\\mid c) = 1$, then\n$a(c) = 1/Z_{U_c}(c)$; and only if $U_c$ also carries all the target's mass, so that\n$Z_{U_c}(c) = Z(c)$, does this become $p_\\theta(\\cdot\\mid c) = \\pi(\\cdot\\mid c)$\nglobally. Neither hypothesis holds in any run reported here\n(\\Cref{rem:epsilon,cor:empirical})."
+    },
+    {
+     "repair_id": "R2-4",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 632,
+     "current_text": "residual is constant on each $U^{(i)}$, say $w \\equiv b_i$, so\n$p_\\theta(\\vx\\mid c) = e^{-b_i}e^{-E(c,\\vx)/kT}$ on $U^{(i)}$; conversely every\nsuch density lies in the zero-loss set of the objective, because each\n$\\Var_{\\rho_j}[w]$ is then a variance of a constant. (This is a statement about\nthe objective's null set, not an existence claim about the model class: we do not\nassert that a flow of the architecture used here realises every member of the\nfamily.) Normalisation over $U_c$ is the single scalar constraint\n$\\sum_i e^{-b_i}Z^{(i)} = 1$, leaving $C-1$ free parameters, which is\n\\eqref{eq:l2g}. Finally $p_\\theta(U^{(i)}\\mid c) = e^{-b_i}Z^{(i)}$, and as\n$(b_1,\\dots,b_C)$ ranges over the constraint set these occupancies range over the\nwhole open simplex; the correct occupancies $Z^{(i)}/\\sum_{i'}Z^{(i')}$ are one\npoint of it and are singled out by nothing in the objective.",
+     "problem": "Three occurrences of the wrong-sign exponent $e^{-b_i}$ in the Theorem 1(iii) proof. Additionally, the \"correct occupancies $Z^{(i)}/\\sum_{i'}Z^{(i')}$\" are the Gibbs occupancies conditioned on $U_c$, not the unconditional ones, and should be labelled as such (R3).",
+     "replacement": "residual is constant on each $U^{(i)}$, say $w \\equiv b_i$, so\n$p_\\theta(\\vx\\mid c) = a_i\\,e^{-E(c,\\vx)/kT}$ on $U^{(i)}$ with $a_i = e^{b_i} > 0$;\nconversely every such density lies in the zero-loss set of the objective, because\neach $\\Var_{\\rho_j}[w]$ is then a variance of a constant. (This is a statement about\nthe objective's null set, not an existence claim about the model class: we do not\nassert that a flow of the architecture used here realises every member of the\nfamily.) Normalisation over $U_c$ is the single scalar constraint\n$\\sum_i a_i Z^{(i)} = 1$ on the positive multipliers, leaving $C-1$ free parameters,\nwhich is \\eqref{eq:l2g}. Finally $p_\\theta(U^{(i)}\\mid c) = a_i Z^{(i)}$, and as\n$(a_1,\\dots,a_C)$ ranges over the constraint set these occupancies range over the\nwhole open simplex; the Gibbs occupancies \\emph{conditioned on $U_c$},\n$Z^{(i)}/\\sum_{i'}Z^{(i')}$, are one point of it and are singled out by nothing in\nthe objective. Note that these are conditional on $U_c$: the objective says nothing\nabout $\\pi$'s mass outside $U_c$ either."
+    },
+    {
+     "repair_id": "R2-5",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 690,
+     "current_text": "actually survives: if $w \\equiv b$ on $U_c$ and $p_\\theta(U_c \\mid c) = 1 - \\varepsilon$,\nthen $e^{-b}Z_{U_c}(c) = 1-\\varepsilon$, so $b = -\\log Z_{U_c}(c) + O(\\varepsilon)$, and\nthe law of $p_\\theta$ \\emph{conditioned} on $U_c$ is exactly the Gibbs law conditioned on\n$U_c$.",
+     "problem": "Remark 8 (rem:epsilon) carries the same wrong-sign exponent $e^{-b}$. With $w \\equiv b$ the multiplier is $e^{+b}$, so the relation is $e^{+b}Z_{U_c}(c) = 1-\\varepsilon$ and $b = -\\log Z_{U_c}(c) + \\log(1-\\varepsilon)$. (The remark's region-versus-global logic is otherwise correct and is the model the R3 repairs adopt.)",
+     "replacement": "actually survives: if $w \\equiv b$ on $U_c$ and $p_\\theta(U_c \\mid c) = 1 - \\varepsilon$,\nthen with the positive multiplier $a = e^{b}$ we have $a\\,Z_{U_c}(c) = 1-\\varepsilon$, so\n$a = (1-\\varepsilon)/Z_{U_c}(c)$ and $b = -\\log Z_{U_c}(c) + O(\\varepsilon)$, and\nthe law of $p_\\theta$ \\emph{conditioned} on $U_c$ is exactly the Gibbs law conditioned on\n$U_c$."
+    },
+    {
+     "repair_id": "R2-6",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 699,
+     "current_text": "\\begin{proof}[Proof of \\Cref{rem:epsilon}]\nLet $w \\equiv b$ on $U_c$, so $p_\\theta(\\vx \\mid c) = e^{-b}e^{-E(c,\\vx)/kT}$ for\n$\\vx \\in U_c$. Integrating over $U_c$ gives\n$p_\\theta(U_c \\mid c) = e^{-b}Z_{U_c}(c)$ with\n$Z_{U_c}(c) = \\int_{U_c}e^{-E/kT}$. If $p_\\theta(U_c\\mid c) = 1-\\varepsilon$ then\n$b = -\\log Z_{U_c}(c) + \\log\\frac{1}{1-\\varepsilon}\n   = -\\log Z_{U_c}(c) + \\varepsilon + O(\\varepsilon^2)$,\nand dividing both sides of $p_\\theta = e^{-b}e^{-E/kT}$ by $1-\\varepsilon$ shows",
+     "problem": "The proof of Remark 8 repeats the wrong-sign exponent three times, and the algebra inherits it: with $p_\\theta = e^{+b}e^{-E/kT}$ the correction is $b = -\\log Z_{U_c}(c) + \\log(1-\\varepsilon) = -\\log Z_{U_c}(c) - \\varepsilon + O(\\varepsilon^2)$, i.e. the first-order term also flips sign.",
+     "replacement": "\\begin{proof}[Proof of \\Cref{rem:epsilon}]\nLet $w \\equiv b$ on $U_c$, so $p_\\theta(\\vx \\mid c) = a\\,e^{-E(c,\\vx)/kT}$ for\n$\\vx \\in U_c$, with $a = e^{b} > 0$. Integrating over $U_c$ gives\n$p_\\theta(U_c \\mid c) = a\\,Z_{U_c}(c)$ with\n$Z_{U_c}(c) = \\int_{U_c}e^{-E/kT}$. If $p_\\theta(U_c\\mid c) = 1-\\varepsilon$ then\n$a = (1-\\varepsilon)/Z_{U_c}(c)$, i.e.\n$b = -\\log Z_{U_c}(c) + \\log(1-\\varepsilon)\n   = -\\log Z_{U_c}(c) - \\varepsilon + O(\\varepsilon^2)$,\nand dividing both sides of $p_\\theta = a\\,e^{-E/kT}$ by $1-\\varepsilon$ shows"
+    },
+    {
+     "repair_id": "R2-7",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 501,
+     "current_text": "(i) A random variable has zero variance if and only if it is a.s.\\ constant, so\n$\\Var_{\\vx\\sim\\rho}[w] = 0$ iff $w \\equiv \\kappa$ $\\rho$-a.s.\\ on $U$, and then\n$p_\\theta(\\vx\\mid c) = e^{\\kappa}e^{-E(c,\\vx)/kT}$ for $\\rho$-almost every\n$\\vx \\in U$.",
+     "problem": "The $e^{\\kappa}$ here is SIGN-CORRECT and is the internal witness that the $e^{-b_i}$ elsewhere is wrong: the same derivation, applied per component, must give $e^{+b_i}$. Change only for notational consistency with the recommended positive-multiplier form, so that one symbol carries the same meaning across Theorem 1, Theorem 2 and Remark 8.",
+     "replacement": "(i) A random variable has zero variance if and only if it is a.s.\\ constant, so\n$\\Var_{\\vx\\sim\\rho}[w] = 0$ iff $w \\equiv \\kappa$ $\\rho$-a.s.\\ on $U$, and then\n$p_\\theta(\\vx\\mid c) = a\\,e^{-E(c,\\vx)/kT}$ with the positive multiplier\n$a = e^{\\kappa}$, for $\\rho$-almost every $\\vx \\in U$. (Note the sign: the residual\nconstant enters the density through $e^{+\\kappa}$, and the same holds component by\ncomponent in \\Cref{thm:l2g}.)"
+    },
+    {
+     "repair_id": "R3-1",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 460,
+     "current_text": "the sample; \\emph{(ii)} if $\\rho$ has a positive Lebesgue density on $U$ and in addition\n$p_\\theta(U \\mid c) = 1$ then that constant is forced to $-\\log Z(c)$ and\n$p_\\theta(\\cdot \\mid c) = \\pi(\\cdot \\mid c)$ exactly; \\emph{(iii)} $\\Var_{x\\sim\\rho}[w]$ is",
+     "problem": "Theorem 2(ii) states that constancy of $w$ on $U$ plus $p_\\theta(U\\mid c) = 1$ forces the constant to $-\\log Z(c)$ and gives global equality with $\\pi(\\cdot\\mid c)$. It does not. Integrating over $U$ produces $Z_U(c)$, so the constant is $-\\log Z_U(c)$ and what is pinned is the law conditioned on $U$. Global equality requires in addition that $U$ carry all of the target's mass.",
+     "replacement": "the sample; \\emph{(ii)} if $\\rho$ has a positive Lebesgue density on $U$ then the multiplier is\nfixed \\emph{relative to $U$}, $a = p_\\theta(U \\mid c)/Z_U(c)$ with\n$Z_U(c) = \\int_U e^{-E(c,\\vx)/kT}\\,\\mathrm{d}\\vx$ the integral over $U$ and not the global\n$Z(c)$, so that $p_\\theta(\\cdot \\mid c, U) = \\pi(\\cdot \\mid c, U)$ exactly; if in addition\n$p_\\theta(U \\mid c) = 1$ then $a = 1/Z_U(c)$, and $p_\\theta(\\cdot \\mid c) = \\pi(\\cdot \\mid c)$\nglobally only when $U$ also carries all of the target's mass, $Z_U(c) = Z(c)$;\n\\emph{(iii)} $\\Var_{x\\sim\\rho}[w]$ is"
+    },
+    {
+     "repair_id": "R3-2",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 515,
+     "current_text": "(ii) Let $\\rho$ have a positive Lebesgue density on $U$, so that (i) gives the\nidentity Lebesgue-a.e., and suppose in addition $p_\\theta(U\\mid c) = 1$. Since\n$p_\\theta(\\cdot\\mid c)$ is\na normalised density (\\Cref{ass:A2}), integrating $e^{\\kappa}e^{-E/kT}$ over $U$\ngives $e^{\\kappa}Z(c) = 1$, so $\\kappa = -\\log Z(c)$ is not free and\n$p_\\theta(\\cdot\\mid c) = \\pi(\\cdot\\mid c)$ exactly.",
+     "problem": "This is the site where $Z_U$ is silently replaced by $Z$: \"integrating $e^{\\kappa}e^{-E/kT}$ over $U$ gives $e^{\\kappa}Z(c) = 1$\" is false unless $\\int_U e^{-E/kT} = \\int e^{-E/kT}$. The error propagates into Theorem 1(ii) via the \\Cref{thm:certificate}(ii) citation at A1_proofs.tex:614.",
+     "replacement": "(ii) Let $\\rho$ have a positive Lebesgue density on $U$, so that (i) gives the\nidentity Lebesgue-a.e.\\ on $U$ with a positive multiplier $a = e^{\\kappa}$.\nIntegrating $a\\,e^{-E/kT}$ over $U$ gives $p_\\theta(U \\mid c) = a\\,Z_U(c)$, where\n$Z_U(c) = \\int_U e^{-E(c,\\vx)/kT}\\,\\mathrm{d}\\vx$ is the integral over $U$ and\n\\emph{not} the global $Z(c)$. Hence $a = p_\\theta(U\\mid c)/Z_U(c)$, and dividing,\nthe conditional law is pinned exactly:\n$p_\\theta(\\vx \\mid c, U) = e^{-E(c,\\vx)/kT}/Z_U(c) = \\pi(\\vx \\mid c, U)$. Suppose in\naddition $p_\\theta(U\\mid c) = 1$, so that $a = 1/Z_U(c)$: this determines the\nmultiplier but identifies $p_\\theta(\\cdot\\mid c)$ with $\\pi(\\cdot\\mid c)$\n\\emph{globally} only when the target also puts all of its mass on $U$, that is when\n$Z_U(c) = Z(c)$. Otherwise the model is the Gibbs law truncated to $U$ and\nrenormalised, differing from $\\pi(\\cdot\\mid c)$ by the factor $Z(c)/Z_U(c)$ on $U$\nand by all of $\\pi(U^{\\mathrm{c}}\\mid c)$ outside it."
+    },
+    {
+     "repair_id": "R3-3",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 985,
+     "current_text": "\\paragraph{Stated and \\emph{not} tested here.} \\Cref{thm:certificate}(ii) and\n\\Cref{thm:l2g}(ii): no reported run has a connected overlap graph, so we never\nreach the regime in which the certificate becomes a statement about\n$p_\\theta(\\cdot\\mid c)$ as a whole.",
+     "problem": "The scope inventory restates the over-strong reading it is meant to bound: even with a connected overlap graph the certificate is not a statement about $p_\\theta(\\cdot\\mid c)$ \"as a whole\", only about the law conditioned on the supervised region.",
+     "replacement": "\\paragraph{Stated and \\emph{not} tested here.} \\Cref{thm:certificate}(ii) and\n\\Cref{thm:l2g}(ii): no reported run has a connected overlap graph, so we never\nreach the regime in which the certificate becomes a statement about\n$p_\\theta(\\cdot\\mid c)$ restricted to a region --- and even there it would pin only\nthe law \\emph{conditioned} on that region, a global statement requiring in addition\nthat the region carry all the mass of both the model and the target\n(\\Cref{rem:epsilon})."
+    },
+    {
+     "repair_id": "R4-1",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 357,
+     "current_text": "\\begin{proposition}[Objective conflict]\n\\label{prop:conflict}\nThe population minimiser of $\\Ls_{\\mathrm{FM}}$ has implied score\n$\\nabla \\log p^{\\mathrm{data}}_t$, whereas $\\Ls_{\\mathrm{force}}$ drives\n$s_\\theta \\to \\nabla \\log \\pi$. If $p_{\\mathrm{data}} \\neq \\pi$ these targets differ\nand the joint minimiser is neither; moreover a fixed $\\lambda_1$ weights the\nconflicting target by $(1-t)^{-2}$.\n\\end{proposition}",
+     "problem": "The network input is $\\vx_t$ but the target is the endpoint force at $\\vx_1$, so for the ideal squared loss the population minimiser is the conditional expectation $\\E[\\nabla\\log\\pi(\\vx_1) \\mid \\vx_t,t,c] = \\E[F(c,\\vx_1)/kT \\mid \\vx_t,t,c]$, a smoothed and shrunk field, not the pointwise $\\nabla\\log\\pi(\\vx_1)$. The implemented Huberised, norm-capped loss (02_method.tex:113-114) is not even that. As written the proposition asserts a limit the estimator cannot have.",
+     "replacement": "\\begin{proposition}[Objective conflict: a diagnostic hypothesis]\n\\label{prop:conflict}\nThe population minimiser of $\\Ls_{\\mathrm{FM}}$ has implied score\n$\\nabla \\log p^{\\mathrm{data}}_t(\\vx_t)$. The network input is $\\vx_t$ while the\nforce target is the endpoint quantity $F(c,\\vx_1)/kT = \\nabla\\log\\pi(\\vx_1)$, so the\npopulation minimiser of the idealised \\emph{squared} off-policy force loss is not\n$\\nabla\\log\\pi(\\vx_1)$ but the conditional expectation\n\\begin{equation}\n  s_\\theta(\\vx_t,t) \\;\\longrightarrow\\;\n  \\E\\bigl[\\nabla\\log\\pi(\\vx_1) \\bigm| \\vx_t, t, c\\bigr]\n  \\;=\\; \\E\\bigl[F(c,\\vx_1)/kT \\bigm| \\vx_t, t, c\\bigr],\n  \\label{eq:app-condexp}\n\\end{equation}\na smoothed and shrunk field. Flow matching therefore targets the score of the data\ninterpolation marginal, whereas the endpoint-force surrogate targets the conditional\nexpectation of endpoint Boltzmann scores given the noisy interpolation state; the two\ndiffer whenever the corpus is not drawn from the target law, $p_{\\mathrm{data}} \\neq \\pi$,\nand the joint minimiser is neither. A fixed $\\lambda_1$ moreover weights the\nconflicting target by $(1-t)^{-2}$. The loss we implement is Huberised and per-atom\nnorm-capped \\eqref{eq:score}, so it is not a squared loss and its population minimiser\nis not \\eqref{eq:app-condexp} either. This proposition is a diagnostic hypothesis\nabout the construction, not a derivation of the measured outcome.\n\\end{proposition}"
+    },
+    {
+     "repair_id": "R4-2",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 401,
+     "current_text": "\\begin{proof}[Proof of \\Cref{prop:conflict}]\nLet $p_{\\mathrm{data}}$ be the marginal of the training coordinates. The\npopulation minimiser of $\\Ls_{\\mathrm{FM}}$ is $v_\\theta = v^\\ast$, whose implied\nscore at time $t$ is, by \\Cref{lem:score}, $\\nabla \\log p_t^{\\mathrm{data}}$. The\npopulation minimiser of the off-policy $\\Ls_{\\mathrm{force}}$, whose targets are\nevaluated at data points, drives $s_\\theta(\\vx_t,t) \\to \\nabla\\log\\pi(\\vx_1)$.\nIf $p_{\\mathrm{data}} \\neq \\pi$ then $\\nabla\\log p_t^{\\mathrm{data}}(\\vx_t)$ does\nnot converge to $\\nabla\\log\\pi(\\vx_1)$ as $t \\to 1$, so the two population targets\nare distinct and the joint minimiser is a compromise which is neither the data\nvelocity nor Boltzmann-consistent.",
+     "problem": "The sentence \"drives $s_\\theta(\\vx_t,t) \\to \\nabla\\log\\pi(\\vx_1)$\" is the error R4 names. A regression whose input is $\\vx_t$ cannot converge to a function of $\\vx_1$; the minimiser is the conditional expectation of that function given $\\vx_t$. The proof must derive it rather than assert the pointwise limit.",
+     "replacement": "\\begin{proof}[Proof of \\Cref{prop:conflict}]\nLet $p_{\\mathrm{data}}$ be the marginal of the training coordinates. The\npopulation minimiser of $\\Ls_{\\mathrm{FM}}$ is $v_\\theta = v^\\ast$, whose implied\nscore at time $t$ is, by \\Cref{lem:score}, $\\nabla \\log p_t^{\\mathrm{data}}$. For\nthe force term, the predictor is a function of $(\\vx_t,t,c)$ while the regression\ntarget $\\nabla\\log\\pi(\\vx_1)$ is a function of the endpoint, and $(\\vx_t,\\vx_1)$ are\ndependent but not mutually determined. For a squared loss the population minimiser\nover measurable functions of the input is therefore the conditional expectation\n\\eqref{eq:app-condexp}, by the standard orthogonality property of $L^2$ projection;\nit equals $\\nabla\\log\\pi(\\vx_1)$ only in the degenerate case where $\\vx_1$ is\n$\\sigma(\\vx_t)$-measurable, which the interpolation makes false for every $t < 1$.\nThe two population targets --- the score of the data interpolation marginal, and the\nconditional expectation of endpoint Boltzmann scores --- are then distinct whenever\n$p_{\\mathrm{data}} \\neq \\pi$, and the joint minimiser is a compromise which is\nneither the data velocity nor Boltzmann-consistent. Two caveats bound this. The\nsquared-loss projection is an idealisation: the implemented $\\ell$ is Huberised and\nper-atom norm-capped, so its population minimiser is a robustified location\nfunctional of the same conditional law and not \\eqref{eq:app-condexp}. And the whole\nargument is about population objectives at their exact optima, so it names a\nmechanism the construction admits rather than one we have isolated."
+    },
+    {
+     "repair_id": "R4-3",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 341,
+     "current_text": "Two mechanisms, both specific to matching \\eqref{eq:app-score} \\emph{off-policy at\ndata endpoints}, predict that the gradient baseline need not help. They are\ncandidate explanations of the measurement in \\Cref{sec:ablation}, not\ndemonstrations of it, and neither bears on force supervision in general\n\\citep{psm,driftingboltzmann}.",
+     "problem": "The subsection preamble says the two propositions \"predict\" the outcome, which is stronger than the propositions support, and it does not disclose the target-mismatch fact (the network sees $\\vx_t$, the target is read at $\\vx_1$) that governs both. The word \"predict\" should go and the demotion to diagnostic hypotheses should be explicit at the head of the subsection.",
+     "replacement": "Two mechanisms, both specific to matching \\eqref{eq:app-score} \\emph{off-policy at\ndata endpoints}, are compatible with the gradient baseline failing to help. Both\nturn on one structural fact: the network is a function of the interpolation state\n$\\vx_t$ while the target is the force read at the data endpoint $\\vx_1$, so even the\nidealised squared objective regresses on a conditional expectation of endpoint\nBoltzmann scores rather than on those scores themselves. \\Cref{prop:trap} and\n\\Cref{prop:conflict} are stated here as \\emph{diagnostic hypotheses}, not as\nexplanations of the measurement in \\Cref{sec:ablation} and not as demonstrations of\nit; neither is isolated experimentally, and neither bears on force supervision in\ngeneral \\citep{psm,driftingboltzmann}."
+    },
+    {
+     "repair_id": "R4-4",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 347,
+     "current_text": "\\begin{proposition}[Bias--variance trap]\n\\label{prop:trap}\nWith $\\varepsilon = (1-t)\\sigma/t$, the read-out is, up to a factor $1/t$, the score of\n$p_{\\mathrm{data}} * \\mathcal{N}(0,\\varepsilon^2 I)$ evaluated at\n$\\vx_1 + \\varepsilon z$, $z \\sim \\mathcal{N}(0,I)$. Relative to the target\n$F(\\vx_1)/kT$ this incurs a scale, a smoothing and an evaluation-point error, each\n$O(1-t)$ or smaller, while by \\Cref{rem:app-amplification} the gradient noise injected\ninto the parameters grows as $(1-t)^{-2}$. No choice of $t$ makes both small.\n\\end{proposition}",
+     "problem": "The proposition compares a read-out evaluated at $\\vx_t$ against a pointwise target at $\\vx_1$ and books the difference as an $O(1-t)$ \"evaluation-point error\". That accounting presumes the pointwise target is the thing being regressed on, which R4 shows it is not; the same displacement is what turns the minimiser into a conditional expectation. It also lacks the scope clause that the identification holds at the population optimum of $\\Ls_{\\mathrm{FM}}$.",
+     "replacement": "\\begin{proposition}[Bias--variance trap: a diagnostic hypothesis]\n\\label{prop:trap}\nAt the population optimum of $\\Ls_{\\mathrm{FM}}$, and with $\\varepsilon = (1-t)\\sigma/t$,\nthe read-out is, up to a factor $1/t$, the score of\n$p_{\\mathrm{data}} * \\mathcal{N}(0,\\varepsilon^2 I)$ evaluated at\n$\\vx_1 + \\varepsilon z$, $z \\sim \\mathcal{N}(0,I)$. Compared with the endpoint target\n$F(\\vx_1)/kT$ this incurs a scale error and a smoothing error, each $O(1-t)$ or\nsmaller, together with an evaluation-point displacement of size $\\varepsilon$ ---\nwhich is not a residual error term to be driven to zero but the reason the ideal\nsquared objective regresses on $\\E[F(\\vx_1)/kT \\mid \\vx_t,t,c]$ rather than on\n$F(\\vx_1)/kT$ (\\Cref{prop:conflict}). Meanwhile, by \\Cref{rem:app-amplification},\nthe gradient noise injected into the parameters grows as $(1-t)^{-2}$. No choice of\n$t$ makes the deterministic terms and the noise term small together.\n\\end{proposition}"
+    },
+    {
+     "repair_id": "R4-5",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 386,
+     "current_text": "(iii)~\\emph{Evaluation point}: the score is read at $\\vx_1 + \\epsilon z$ rather\nthan at $\\vx_1$; a zero-mean displacement of size $\\epsilon$ contributes\n$\\epsilon\\,\\nabla^2\\log\\pi\\,z$, an $O(1-t)$ \\emph{stochastic} target error that\nsurvives even for a perfect model.",
+     "problem": "Item (iii) of the Proposition 1 proof books the input/target displacement as a zero-mean $O(1-t)$ noise term. That understates it: because the loss is minimised over functions of $\\vx_t$, the displacement is not averaged away as noise but changes the identity of the population minimiser to a conditional expectation, which is a shrinkage bias and does not vanish with a perfect model.",
+     "replacement": "(iii)~\\emph{Evaluation point, and what it does to the minimiser}: the score is read\nat $\\vx_1 + \\epsilon z$ rather than at $\\vx_1$. To first order the displacement\ncontributes $\\epsilon\\,\\nabla^2\\log\\pi\\,z$, an $O(1-t)$ stochastic discrepancy that\nsurvives even for a perfect model. It is not, however, merely noise that averages\naway: since the loss is minimised over functions of $\\vx_t$, the same displacement\nreplaces the pointwise target by its conditional expectation given $\\vx_t$\n(\\Cref{prop:conflict}), which is a shrinkage \\emph{bias} in the learned score and\nnot a variance term."
+    },
+    {
+     "repair_id": "R4-6",
+     "file": "/n/home04/yulili/bgfm/paper/sections/02_method.tex",
+     "line": 112,
+     "current_text": "which at the Boltzmann optimum equals $F/kT$ and can be matched to the teacher force directly. The\nread-out has a pole at $t = 1$, so we probe only at $t^{*} \\in \\{0.85, 0.92, 0.97\\}$ and average a\nper-atom Huberised and norm-capped error $\\ell$ (\\Cref{app:constants}).",
+     "problem": "The only main-text description of the gradient baseline says the score \"can be matched to the teacher force directly\", which is exactly the reading R4 corrects: the regression input is $x_{t^{*}}$ and the target is read at $x_1$, so the objective does not match $F(c,x_1)/kT$ pointwise. The Huberised, norm-capped $\\ell$ is mentioned in the next sentence but its consequence for the minimiser is not.",
+     "replacement": "which at a Boltzmann optimum equals $F/kT$ pointwise. Matching it is not, however, a pointwise\nregression on the teacher force: the network sees $x_{t^{*}}$ while the target is read at the\nendpoint $x_1$, so even an idealised squared version of \\eqref{eq:score} regresses on\n$\\E[F(c,x_1)/kT \\mid x_{t^{*}}, t^{*}, c]$ rather than on $F(c,x_1)/kT$ itself\n(\\Cref{prop:conflict}). The read-out also has a pole at $t = 1$, so we probe only at\n$t^{*} \\in \\{0.85, 0.92, 0.97\\}$ and average a per-atom Huberised and norm-capped error $\\ell$\n(\\Cref{app:constants}), which is not a squared loss and so does not target that conditional\nexpectation either. We implement the direct match nonetheless, because it is the construction a\nreader would reach for and it is the one we set out to measure."
+    },
+    {
+     "repair_id": "R4-7",
+     "file": "/n/home04/yulili/bgfm/paper/sections/04_experiments.tex",
+     "line": 227,
+     "current_text": "\\Cref{prop:trap,prop:conflict} name two mechanisms specific to our construction.",
+     "problem": "This is the only main-text sentence that invokes the two propositions, and \"name two mechanisms\" reads as an explanation of the measured negative force result. Under R4 they are candidate diagnostic hypotheses about a construction whose ideal minimiser is a conditional expectation, and neither is experimentally isolated.",
+     "replacement": "\\Cref{prop:trap,prop:conflict} record two \\emph{diagnostic hypotheses} specific to our\nconstruction: an estimator trade-off at finite $t$, and a target mismatch in which the\nendpoint-force surrogate regresses on the conditional expectation of endpoint Boltzmann scores\ngiven the interpolation state rather than on the score of the data interpolation marginal. Neither\nis isolated experimentally here, and neither is offered as the explanation of the measurement."
+    },
+    {
+     "repair_id": "R5-1",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 799,
+     "current_text": "The measurement is the opposite: value supervision has both the\nlarger $r$ ($0.369$ against $0.200$) and the larger $\\mathrm{NRV}$ ($2.144$ against\n$1.402$). The idealisation therefore fails for at least one arm, and it fails in the\ndirection of $\\rho < 0$ --- a Boltzmann residual \\emph{anti}-correlated with energy\ninside a group, which is the signature of a density that responds to energy in the\nright direction but with the wrong magnitude. We state this as an inference from\ntwo differently aggregated numbers (a mean $r$ against a median $\\mathrm{NRV}$;\n\\Cref{app:scalediag}) and put no number on $\\rho$.",
+     "problem": "Invalid inference. The reported $r$ is a mean over parents and the reported NRV is a median over parents (A2_details.tex:504-511). A sign for the per-parent residual correlation $\\rho_m$ cannot be recovered by comparing two differently aggregated endpoints, and the text concedes the aggregations differ while still drawing the directional conclusion. (A scratch recomputation from the saved per-record files shows $\\rho_m < 0$ in BOTH arms, with the value arm markedly LESS negative than the control -- so the direction of the arm contrast is not what this passage implies.)",
+     "replacement": "The measurement is the opposite: value supervision has both the larger $r$ ($0.369$\nagainst $0.200$) and the larger $\\mathrm{NRV}$ ($2.144$ against $1.402$). These two\nendpoints are aggregated differently --- $r$ is a mean over parents and\n$\\mathrm{NRV}$ a median over parents (\\Cref{app:scalediag}) --- so no per-parent\n$\\rho_m$ can be recovered by combining them, and we draw no conclusion about the\nsign of $\\rho$ from the comparison. What the disagreement does establish is that\nthe zero-correlation simplification is not an adequate explanation of the arm-level\nbehaviour: under it the arm with the larger $r$ must have the smaller\n$\\mathrm{NRV}$, and no aggregation convention makes both reported endpoints\nconsistent with that. The sign and the distribution of the residual correlation are\n\\emph{not identified} by these aggregates. They are computable per (seed, parent)\nfrom the saved per-record evaluation files as\n$\\rho_m = \\mathrm{corr}_k(w_{m,k}, u_{m,k})$ with $u_{m,k} = -E_{m,k}/kT$ and\n$w_{m,k} = \\log p_\\theta(\\vx_{m,k}) - u_{m,k}$; that distribution is not reported\nhere."
+    },
+    {
+     "repair_id": "R5-2",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 829,
+     "current_text": "opposite directions for the two arms: the implied ratio falls with better ordering\nwhile the measured one rises. That discrepancy is not a defect of the table but the\nevidence for $\\rho < 0$ of \\Cref{rem:nrvtau} --- a Boltzmann residual\nanti-correlated with energy inside a group. \\textbf{No claim about the residual\nhaving been reduced may be read off the implied column}; the measured column is the\none \\Cref{sec:scale} reports.",
+     "problem": "The table caption repeats the invalid inference and elevates it to \"the evidence for $\\rho < 0$\". The implied column is derived from a mean-over-parents $r$ while the measured column is a median-over-parents $\\sqrt{\\mathrm{NRV}}$, so their disagreement cannot be read as evidence for any sign of a per-parent residual correlation.",
+     "replacement": "opposite directions for the two arms: the implied ratio falls with better ordering\nwhile the measured one rises. That discrepancy is not a defect of the table: it\nshows the $\\rho = 0$ inversion is inconsistent with the measured residual, so the\nimplied column may not be read as a residual at all. It is \\emph{not} evidence for\nany particular sign of $\\rho$ --- the two columns are aggregated differently, a mean\nover parents against a median over parents, and their comparison does not identify a\nper-parent residual correlation. \\textbf{No claim about the residual having been\nreduced may be read off the implied column}; the measured column is the one\n\\Cref{sec:scale} reports."
+    },
+    {
+     "repair_id": "R5-3",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 817,
+     "current_text": "$\\rho = 0$ is an idealisation which \\Cref{rem:nrvtau} shows is violated here, in\nthe direction that makes these $\\tau$ over-estimates; and the conversion does not\napply to a negative correlation, which by construction requires $\\rho \\neq 0$.",
+     "problem": "Third instance of the same unsupported directional claim: \"in the direction that makes these $\\tau$ over-estimates\" is a sign statement about $\\rho$, derived from the same incommensurable aggregates. The bias direction of the converted $\\tau$ is not determined by what is reported.",
+     "replacement": "$\\rho = 0$ is an idealisation which \\Cref{rem:nrvtau} shows is inconsistent with the\nmeasured endpoints, and the direction of the resulting bias in these $\\tau$ is not\ndetermined by the aggregates reported here; and the conversion does not apply to a\nnegative correlation, which by construction requires $\\rho \\neq 0$."
+    },
+    {
+     "repair_id": "R6-1",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 900,
+     "current_text": "\\begin{theorem}[Gauge-identifiability]\n\\label{thm:gauge}\nAssume (B1) for each $c$ the coordinate domain is connected and $E(c,\\cdot)$ is\n$C^1$ (\\Cref{ass:A1}); (B2) the estimator accesses only\n$\\{\\nabla_{\\vx} E(c,\\vx)\\}$, not absolute energies (\\Cref{ass:B}); (B3)\ncompositions are compared through the joint density. Then force information\nidentifies the conditional $\\pi(\\cdot \\mid c)$ exactly for every $c$, but the joint\n$\\pi(c,\\vx)$ only up to $E \\mapsto E + g(c)$, which leaves every force and every\nconditional invariant while reweighting the joint by $e^{-g(c)/kT}$. The\nunidentifiable degrees of freedom are exactly the per-composition free energies\n$\\{A(c)\\}$.\n\\end{theorem}",
+     "problem": "Theorem 3 carries theorem status while being unrelated to the within-parent metric the paper measures, unable to explain the force failure (the paper says so itself at rem:guard), and dependent on assumption (B3), a cross-composition joint law that requires a chemical-potential convention the paper neither adopts nor tests. It is a two-line corollary of Lemma 2 and should not be a numbered theorem. Keep the label so every \\Cref resolves; fold the proof (A1_proofs.tex:927-937) into the remark body and delete that proof environment.",
+     "replacement": "\\begin{remark}[Gauge-identifiability: a formal corollary of \\Cref{lem:forcegauge}]\n\\label{thm:gauge}\nThe following is a two-line consequence of \\Cref{lem:forcegauge} and is recorded for\ncompleteness only. It is not exercised anywhere in this paper, it does not appear in\nthe main text or in the contribution list, and it is not the explanation of any\nmeasured result (\\Cref{rem:guard}). Assume (B1) for each $c$ the coordinate domain is\nconnected and $E(c,\\cdot)$ is $C^1$ (\\Cref{ass:A1}); (B2) the estimator accesses only\n$\\{\\nabla_{\\vx} E(c,\\vx)\\}$, not absolute energies (\\Cref{ass:B}); (B3) compositions\nare compared through the joint density --- a formal device requiring a\nchemical-potential or grand-canonical convention we neither adopt nor test\n(\\Cref{rem:gaugescope}). Then force information identifies the conditional\n$\\pi(\\cdot \\mid c)$ exactly for every $c$: by \\Cref{lem:forcegauge}, $E(c,\\cdot)$ is\ndetermined by its gradient field up to an additive constant, and\n$\\pi(\\vx \\mid c) \\propto e^{-E(c,\\vx)/kT}$ is invariant to that constant because it\ncancels against $Z(c)$. The joint $\\pi(c,\\vx)$, by contrast, is identified only up to\n$E \\mapsto E + g(c)$, which leaves every force and every conditional invariant while\nreweighting the joint by $e^{-g(c)/kT}$ and shifting $A(c) \\mapsto A(c) + g(c)$;\nunder (B2) no estimator can distinguish the two. The unidentifiable degrees of\nfreedom are exactly the per-composition free energies $\\{A(c)\\}$.\n\\end{remark}"
+    },
+    {
+     "repair_id": "R6-2",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 893,
+     "current_text": "\\subsection{What forces cannot identify}\n\\label{app:gauge}\n\nThis subsection is a purely mathematical statement about what gradient information\ndetermines. It is \\emph{not} an explanation of the gradient baseline's empirical\nresult, and no chemical conclusion is drawn from it.",
+     "problem": "The subsection title claims a result about forces in general and reads as a contribution heading. Under R6 the content shrinks to one lemma plus a scope remark, and the heading should say so.",
+     "replacement": "\\subsection{A formal aside: what gradient information cannot separate across compositions}\n\\label{app:gauge}\n\nThis subsection is one lemma and a scope remark, recorded for completeness. It is a\npurely mathematical statement about what gradient information determines; it is\n\\emph{not} a contribution of this paper, it appears nowhere in the main text, it is\n\\emph{not} an explanation of the gradient baseline's empirical result\n(\\Cref{rem:guard}), our shift-invariant per-group metric cannot probe the gauge it\ndescribes, and no chemical conclusion is drawn from it."
+    },
+    {
+     "repair_id": "R6-3",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 40,
+     "current_text": "the training objective to the reported metric (\\Cref{app:surrogate}); a purely\nformal statement about what gradient information cannot see (\\Cref{app:gauge});\nand a closing inventory of which statements this paper exercises and which it only\nstates (\\Cref{app:scope}).",
+     "problem": "The appendix roadmap advertises App. A.8 as one of the appendix's substantive results. After the demotion it is an aside that the paper does not exercise, and the roadmap should say so rather than list it as a peer of the certificate and the identifiability analysis.",
+     "replacement": "the training objective to the reported metric (\\Cref{app:surrogate}); a formal aside,\nexercised nowhere and not among this paper's contributions, on what gradient\ninformation cannot separate across compositions (\\Cref{app:gauge}); and a closing\ninventory of which statements this paper exercises and which it only states\n(\\Cref{app:scope})."
+    },
+    {
+     "repair_id": "R6-4",
+     "file": "/n/home04/yulili/bgfm/paper/sections/A1_proofs.tex",
+     "line": 1000,
+     "current_text": "One asymmetry belongs here and nowhere else, as mathematics only. Forces see an\nenergy solely through its gradient, so $E$ and $E + g(c)$ are indistinguishable to\nthem: gradient information identifies $\\pi(\\cdot \\mid c)$ for every composition\nseparately but not how compositions are weighted against one another\n(\\Cref{lem:forcegauge,thm:gauge}). We draw no chemical conclusion from this,\nbecause comparing absolute energies \\emph{across} compositions with different\nelements or atom counts is not well posed without a convention we neither adopt nor\ntest, and our shift-invariant per-group metric cannot probe that gauge at all.",
+     "problem": "This is already the scope paragraph R6 asks for, but it still refers to $\\Cref{thm:gauge}$ as a theorem and does not state that the result is excluded from the contribution list. It should carry the demotion explicitly so a reader does not reconstruct the removed theorem-level claim.",
+     "replacement": "One asymmetry belongs here and nowhere else, as mathematics only, and it is not among\nthis paper's contributions. Forces see an energy solely through its gradient, so $E$\nand $E + g(c)$ are indistinguishable to them: gradient information identifies\n$\\pi(\\cdot \\mid c)$ for every composition separately but not how compositions are\nweighted against one another (\\Cref{lem:forcegauge} and the remark following it,\n\\Cref{thm:gauge}). We draw no chemical conclusion from this, because comparing\nabsolute energies \\emph{across} compositions with different elements or atom counts\nis not well posed without a convention we neither adopt nor test; our shift-invariant\nper-group metric cannot probe that gauge at all; and no experiment reported here\ndepends on it in either direction."
+    }
+   ]
+  }
+ },
+ {
+  "label": null,
+  "result": "FINDING: the shipped update is a genuine surrogate, not the ODE-likelihood gradient — but it is a positively-correlated descent direction in every one of the 152 gradient pairs measured. No training was run; parameters were never updated (the finite-difference probe displaces and restores them).\n\nCODE (all new, untracked)\n- `/n/home04/yulili/bgfm/scripts/validate_surrogate_gradient.py` — the measurement. `log_density_full_gradient()` mirrors `log_density_via_flow` arithmetic exactly but builds the trajectory WITH gradient (no `.detach()`, no `torch.no_grad()`, `create_graph=True`); `detach_prior` / `detach_trajectory` switch off one path at a time, giving the exact additive split `g_full = g_surr + g_traj + g_prior`. Modes: `--arm synthetic`, `--arm real`, `--selfcheck`, `--memprobe`.\n- `/n/home04/yulili/bgfm/tests/test_surrogate_gradient.py` — 4 tests, all pass (with `tests/test_estimator_endpoint_semantics.py`: 7 passed).\n- SLURM: `scripts/fasrc/validate_surrogate_gradient.slurm`, `..._trainmatched.slurm`, `..._cost.slurm`.\n- Records: `/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/p1_surrogate_gradient/*.json`; logs `logs/p1_surrgrad*-{39956590,39958627,39959842,39960005}.{out,err}`.\n\nAPPARATUS VALIDATED FIRST (`--selfcheck`)\n- A. reference-with-both-paths-detached reproduces the shipped gradient bit-exactly: cos = 1.000000000000, norm ratio 1.000000000000, max abs diff 0.000e+00.\n- B. the full-gradient reference IS the gradient of the estimator: `<g_full,d>` = +0.0552637035 vs central FD +0.0552637035/+0.0552637034 at h = 1e-5/1e-4, rel err 6.8e-11 / 2.2e-9.\n- Values are identical across the three graph variants (max deviation 0.000e+00 in float64 synthetic; ≤1.5e-5 on the real GPU model vs |log p| ≈ 35–115, i.e. float32 kernel non-determinism). Repeat runs agree to 5.6e-16. So every difference below is purely a gradient-pathway difference.\n\nREAL MODEL, TRAINING-MATCHED CONFIG (30k-step checkpoints, real perturbation shard, real OMol25 energies, n_ode=4, hutchinson=2, kT=1, b_parents=8 = 40 virtual molecules, 560–820 atoms; 3 batches each). cos(g_full,g_surr) | ‖g_surr‖/‖g_full‖ | ‖g_prior‖/‖g_full‖ | ‖g_traj‖/‖g_full‖:\n- `p0_D_energy_s2`, L_energy (the actual training loss): **+0.580 ± 0.090** (min +0.514) | 0.589 | 0.037 | 0.816\n- `p0_D_energy_s2`, L_rank (ordering): **+0.757 ± 0.135** | 0.747 | 0.018 | 0.635\n- `p0_A_fmonly_s1`, L_energy: +0.858 ± 0.028 | 0.877 | 0.041 | 0.511; L_rank +0.833 ± 0.083 | 0.825 | 0.019 | 0.540\n- Batch-size ladder for `p0_D_energy_s2` (L_energy): M=1 +0.747±0.146, M=2 +0.651±0.294, M=4 +0.368±0.218, M=8 +0.580±0.090. Smaller molecules (≤12 atoms, `p0_D_energy_s8`): n_ode=1 +0.995±0.005, n_ode=2 +0.791±0.288, n_ode=4 +0.507±0.414 (single-batch min +0.037).\n- Random-direction reference for this parameter space: 3.3e-4. Even the worst cell is three orders of magnitude above chance.\n\nWHAT IS MISSING, AND FROM WHERE. The dropped prior endpoint is nearly irrelevant on the real model (1.8–4.1% of ‖g_full‖); essentially all the missing signal is the frozen trajectory (51–92%). Per-parameter-tensor: at M=8 D-arm, 43 of 415 tensors have negative cosine; disagreement concentrates in the late conv layers (`conv_layers.5.edge_message.0.to_feats_out.0.weight`: 29% of ‖g_full‖ but cos +0.323, ratio 0.28), while the heaviest early-layer tensor is nearly unaffected (`conv_layers.0.edge_message.2...`: 39% share, cos +0.950, ratio 0.99). So the surrogate is close to correct in early layers and badly attenuated/rotated in the layers whose effect accumulates along the trajectory.\n\nSYNTHETIC ARM (small parametric equivariant field, float64, exact and Hutchinson divergence, 24–72 atoms). L_energy / L_rank cosines: exact-divergence n_ode=1/2/4/12 → 0.819±0.180 / 0.726±0.118 / 0.750±0.076 / 0.720±0.083 (energy). Hutchinson n=12 dips to 0.622±0.343 (min 0.226). 10-batch consistency at the training resolution: energy 0.753±0.196 (min 0.397), rank 0.787±0.164 (min 0.561). Here the prior path is not negligible (29–62% of ‖g_full‖) because the toy field is at random init.\n\nDESCENT DIRECTION — the operational question\n- First-order test: 152 gradient pairs total (86 synthetic + 66 real), **0 with cos ≤ 0**, global min +0.0374. So `-g_surr` had a strictly negative directional derivative on the true likelihood objective at every point tested.\n- Finite-difference confirmation, synthetic, 10 independent batches × 3 step sizes: the surrogate direction decreased the true objective **10/10 at every step size** for both objectives, delivering ~78–82% of the decrease the full gradient gives at the smallest step (energy −0.00091 vs −0.00116 relative; rank −0.00328 vs −0.00402) — the ratio the cosine predicts.\n- Finite-difference on the real model is only informative at the smallest step: at eps_rel = 1e-4 both directions decrease the loss in all 12 real cells, but at 1e-3 and 1e-2 the loss explodes for the full gradient too (e.g. M=8 energy: L0 = 45.9 → +272 at 1e-3, +1.5e5 at 1e-2 for the surrogate; +70.6 and +2.4e4 for the full gradient). That is loss-landscape stiffness, not a surrogate defect. At 1e-4, M=8 energy: surrogate ΔL = −1.55 against full ΔL = −15.9, i.e. the surrogate captures about a tenth of the available decrease at that step on that batch.\n\nWHERE THE FULLY DIFFERENTIABLE VERSION BREAKS\n- It does not break for cost reasons at the sizes that matter. One-variant-per-process cost table (`p1_surrgrad_cost-39959842.out`, 32 cells): peak RSS differs by <1% between full and surrogate at every synthetic setting (e.g. 72 atoms, n_ode=12, exact divergence: 46 392 MB surrogate vs 46 443 MB full); backward-pass time is 5–26% slower for full (9.75 s vs 7.72 s at that cell). The dominant memory is the `create_graph=True` divergence graph, which both variants build.\n- The real model at the exact training batch (40 virtual molecules, 780 atoms, n_ode=4) DID OOM on a 139.8 GiB H200 in the first attempt — but that was my harness holding all three graph variants alive at once, not the method. After I freed each graph after reading its value, the same cell ran to completion (job 39960005, all M=1/2/4/8 cells for both checkpoints). Honest boundary: with the naive harness the break is at ~780 atoms / n_ode=4 on 140 GB; with one graph at a time it is above that, and I did not find its ceiling.\n- A separate genuine break: 72 atoms × n_ode=12 × exact divergence needs ~46 GB per variant, so the first synthetic SLURM job (three concurrent graphs, 96 GB) was OOM-killed at 79.6 GB MaxRSS. That cell is absent from the synthetic exact sweep; the exact sweep reported above uses 24 atoms.\n\nCONSEQUENCE FOR THE MANUSCRIPT (as you already intended): the method must be described as optimising a truncated-adjoint surrogate of the clamped positional-flow log-density, not the likelihood itself. The measurement supports the weaker, defensible claim — the surrogate is a consistently positively-correlated descent direction (cos ≈ 0.58 for the training loss and ≈ 0.76 for the ordering objective at the training-matched setting, never negative in 152 pairs) — and does not support calling it likelihood-gradient descent. The attenuation is not uniform across the network (43/415 tensors anti-aligned, late layers worst), so the surrogate also changes which parameters move, not just how far.\n\nREPRODUCING COMMANDS\n```\nsource /n/sw/Mambaforge-23.3.1-1/etc/profile.d/conda.sh\nconda activate /n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol\ncd /n/home04/yulili/bgfm\n\npython -m pytest tests/test_surrogate_gradient.py -v            # 4 passed\npython -u scripts/validate_surrogate_gradient.py --selfcheck\n\n# synthetic (CPU, float64); exact divergence needs the small cell\npython -u scripts/validate_surrogate_gradient.py --arm synthetic --n_reps 3 \\\n    --M 2 --K 3 --n_atoms 4 --n_ode_steps 1 2 4 12 --n_hutchinson 0\npython -u scripts/validate_surrogate_gradient.py --arm synthetic --n_reps 10 \\\n    --M 3 --K 4 --n_atoms 6 --n_ode_steps 4 --n_hutchinson 2 --fd_all_reps\n\n# real model, training-matched (GPU)\nsbatch scripts/fasrc/validate_surrogate_gradient_trainmatched.slurm\nsbatch scripts/fasrc/validate_surrogate_gradient_cost.slurm      # cost/feasibility table\n```"
+ }
+]

@@ -1,0 +1,256 @@
+{
+  "figure": "fig3_grid",
+  "endpoint": "120 held-out parents; pert_id==0 (unperturbed reference) dropped; xtb_ok only; per-parent Pearson r(log q_theta, -E/kT); mean over parents; evaluation n_ode = 12",
+  "source_pattern": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_<CELL>_s<N>/boltz_independent_records.csv",
+  "census_pattern": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/p0/p0_<CELL>_s<N>/lightning_logs/version_*/checkpoints/midstep-step=30000.ckpt",
+  "excluded": [
+    "clean_p0_E2_force_s1..s5 (different force variant)",
+    "clean_p0_D_energy_s6/s7/s9 (post-hoc relaunch)",
+    "p0_F_both_s6..s10 (post-hoc relaunch)",
+    "boltz_independent.json mean_pearson_r (reference-included)"
+  ],
+  "cells": {
+    "A": {
+      "run": "A_fmonly",
+      "seeds": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "per_seed_r": [
+        0.234044,
+        0.199538,
+        0.231725,
+        0.220675,
+        0.197308
+      ],
+      "mean": 0.216658,
+      "sem": 0.007788,
+      "n_parents": [
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "launched": 5,
+      "completed": 5,
+      "diverged": 0,
+      "sources": [
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_A_fmonly_s1/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_A_fmonly_s2/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_A_fmonly_s3/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_A_fmonly_s4/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_A_fmonly_s5/boltz_independent_records.csv"
+      ]
+    },
+    "B": {
+      "run": "B_flat",
+      "seeds": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "per_seed_r": [
+        0.23288,
+        0.125034,
+        0.1473,
+        0.243088
+      ],
+      "mean": 0.187076,
+      "sem": 0.029814,
+      "n_parents": [
+        120,
+        120,
+        120,
+        120
+      ],
+      "launched": 5,
+      "completed": 4,
+      "diverged": 1,
+      "sources": [
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_B_flat_s2/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_B_flat_s3/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_B_flat_s4/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_B_flat_s5/boltz_independent_records.csv"
+      ]
+    },
+    "C": {
+      "run": "C_scram",
+      "seeds": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "per_seed_r": [
+        0.2319,
+        0.224263,
+        0.168337,
+        0.125215,
+        0.173891
+      ],
+      "mean": 0.184721,
+      "sem": 0.019642,
+      "n_parents": [
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "launched": 5,
+      "completed": 5,
+      "diverged": 0,
+      "sources": [
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_C_scram_s1/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_C_scram_s2/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_C_scram_s3/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_C_scram_s4/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_C_scram_s5/boltz_independent_records.csv"
+      ]
+    },
+    "D": {
+      "run": "D_energy",
+      "seeds": [
+        2,
+        3,
+        5
+      ],
+      "per_seed_r": [
+        0.452374,
+        0.398407,
+        0.412003
+      ],
+      "mean": 0.420928,
+      "sem": 0.016206,
+      "n_parents": [
+        120,
+        120,
+        120
+      ],
+      "launched": 5,
+      "completed": 3,
+      "diverged": 2,
+      "sources": [
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_D_energy_s2/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_D_energy_s3/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_D_energy_s5/boltz_independent_records.csv"
+      ]
+    },
+    "E": {
+      "run": "E_force",
+      "seeds": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "per_seed_r": [
+        0.105299,
+        0.129734,
+        0.043547,
+        0.085719,
+        0.058409
+      ],
+      "mean": 0.084542,
+      "sem": 0.015553,
+      "n_parents": [
+        120,
+        120,
+        120,
+        120,
+        120
+      ],
+      "launched": 5,
+      "completed": 5,
+      "diverged": 0,
+      "sources": [
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_E_force_s1/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_E_force_s2/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_E_force_s3/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_E_force_s4/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_E_force_s5/boltz_independent_records.csv"
+      ]
+    },
+    "F": {
+      "run": "F_both",
+      "seeds": [
+        3,
+        5
+      ],
+      "per_seed_r": [
+        0.178623,
+        0.210011
+      ],
+      "mean": 0.194317,
+      "sem": 0.015694,
+      "n_parents": [
+        120,
+        120
+      ],
+      "launched": 5,
+      "completed": 2,
+      "diverged": 3,
+      "sources": [
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_F_both_s3/boltz_independent_records.csv",
+        "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/clean_p0_F_both_s5/boltz_independent_records.csv"
+      ]
+    }
+  },
+  "contrasts": {
+    "D-A": {
+      "description": "true pairing vs FM only",
+      "delta": 0.20427,
+      "welch_se": 0.01798,
+      "welch_t": 11.3611,
+      "n_seeds_a": 3,
+      "n_seeds_b": 5
+    },
+    "D-B": {
+      "description": "true pairing vs zero energies",
+      "delta": 0.233852,
+      "welch_se": 0.033934,
+      "welch_t": 6.8914,
+      "n_seeds_a": 3,
+      "n_seeds_b": 4
+    },
+    "D-C": {
+      "description": "true pairing vs scrambled",
+      "delta": 0.236207,
+      "welch_se": 0.025464,
+      "welch_t": 9.276,
+      "n_seeds_a": 3,
+      "n_seeds_b": 5
+    },
+    "B-A": {
+      "description": "zero energies vs FM only",
+      "delta": -0.029582,
+      "welch_se": 0.030815,
+      "welch_t": -0.96,
+      "n_seeds_a": 4,
+      "n_seeds_b": 5
+    },
+    "E-A": {
+      "description": "force only vs FM only",
+      "delta": -0.132116,
+      "welch_se": 0.017394,
+      "welch_t": -7.5955,
+      "n_seeds_a": 5,
+      "n_seeds_b": 5
+    },
+    "F-D": {
+      "description": "force $+$ energy vs energy",
+      "delta": -0.226611,
+      "welch_se": 0.022559,
+      "welch_t": -10.0451,
+      "n_seeds_a": 2,
+      "n_seeds_b": 3
+    }
+  }
+}

@@ -1,0 +1,83 @@
+% =====================================================================
+%  fig1_objective_float.tex --- the float wrapper for Figure 1.
+%
+%  Figure 1 is pure TikZ, so this wrapper \input's the picture directly
+%  rather than \includegraphics-ing a PDF (the same mechanism the old
+%  fig1_method.tex used).  main.tex already loads tikz and amsmath.
+%
+%  Include from sections/01_intro.tex with:
+%      \input{figures/fig1_objective_float}
+%
+%  The picture is drawn at 13.90cm = 5.47in, i.e. full ICLR single-column
+%  width at scale 1.0.  Do NOT wrap it in \resizebox and do NOT scale it:
+%  the in-figure type is \small / \footnotesize / \scriptsize of the 10pt
+%  body font and scaling would desynchronise it from the caption.
+%
+%  PROVENANCE.  Conceptual figure, no data.  Built per the Figure 1 brief:
+%  four panels (generator / teacher values / the value term / scope), and
+%  the gradient-supervision branch of the superseded fig1_method.tex is
+%  removed entirely rather than demoted.  No panel asserts a result.
+%
+%  REVISION C13 (figure-editor pass).  The framing moves to the method: panel
+%  (c) is titled "Proposed energy-value supervision" and states inside the box
+%  that the partition function cancels; panel (d)'s heading is "Local
+%  supervision and the path to global control" and its closing line names the
+%  extension (connecting groups so they share one offset) alongside the
+%  unchanged qualification that b_B - b_A and the relative mass are not
+%  identified.  No mathematical content was removed.
+%
+%  REVISION C8.  The caption is rewritten only where panels (c) and (d)
+%  changed.  (c) now names the complete objective, so the caption states
+%  it.  (d) now shows two disconnected groups of ONE composition, so the
+%  caption no longer says the offset is free "between compositions"; the
+%  freedom is already there inside a single conditional density.  The
+%  verb "pins" is gone: the term CONSTRAINS THE LOCAL RELATION between
+%  log-density and energy within a group.  The disconnection claim is
+%  empirical and audited -- distinct parents sharing a composition supply
+%  distinct perturbation clouds that share no sampled geometry (31% of
+%  training parents sit on a repeated composition and are still
+%  disconnected), so the overlap graph is a set of isolated vertices.
+% =====================================================================
+\begin{figure}[t]
+  \centering
+  \providecommand{\figOneScale}{1.0}\renewcommand{\figOneScale}{1.000}%
+% SCALE = 1.000, THE FIGURE's NATURAL SIZE.  Do not lower it to buy page space.
+% TikZ's `scale' multiplies COORDINATES but not type: every label in this
+% picture is set at an absolute size (\small / \footnotesize / \scriptsize of
+% the 10pt body), so any scale < 1 shrinks the panel frames out from under
+% text that keeps its size, and the text runs out of the panels.
+% MEASURED 2026-08-30 (600 dpi render of the standalone picture; panel frames
+% located from the rendered strokes, so the calibration is self-checking at
+% 236.22 px/cm on both axes):
+%     scale 0.86 -> 4085 ink pixels outside the four panel frames, in 6
+%                   regions.  Panel (b)'s body line runs to x = 14.59 cm,
+%                   i.e. 0.71 cm past its own frame and 0.69 cm past the
+%                   picture's 13.90 cm bounding box; panel (a)'s last two lines
+%                   cross into panel (b)'s frame; panel (c)'s closing identity
+%                   line crosses the left frame at x = -0.17 cm.
+%     scale 1.000 -> 0 ink pixels outside the panels, at every ink threshold
+%                   tested (lum < 128 and lum < 200, with 5 px of stroke
+%                   tolerance).  All four panels are clean.
+% PAGE COST: none that changes the budget.  With 1.000 the main text ends on
+% page 9 and a probe \vspace inserted before \label{endofmaintext} shows a
+% further +108pt fits before it spills to page 10 (+114pt spills); at 0.86 the
+% same probe breaks between +108pt and +120pt.  The fix costs at most about
+% one body line of final-page headroom.
+  \input{figures/fig1_objective}
+  \caption{\textbf{Energy-value supervision without a partition function.}
+    Schematic; no measured quantity appears here.
+    \textbf{(a)}~With the endpoint discrete labels clamped, reversing the
+    positional ODE defines the \emph{clamped positional-flow density}
+    $\log q_\theta(x \mid c)$, which need not equal the joint generator's
+    conditional density. \textbf{(b)}~A universal neural potential values each
+    of $K$ displaced geometries of one parent. \textbf{(c)}~The proposed
+    objective is flow matching plus the within-group variance of
+    $\log q_\theta(x_k \mid c) + E_k/kT$, which vanishes exactly when
+    $\log q_\theta = -E_k/kT + b$ inside the group: the partition function
+    cancels and the offset $b$ is free. \textbf{(d)}~Two disconnected groups of
+    the \emph{same} density keep independent offsets, so the term constrains
+    the local density--energy relation inside each group and leaves their
+    relative mass unidentified; connecting groups so they share one offset is
+    the extension toward global control. Panel detail in \Cref{app:figdetail}.}
+  \label{fig:objective}
+\end{figure}

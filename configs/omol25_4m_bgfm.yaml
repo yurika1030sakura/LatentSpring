@@ -7,7 +7,7 @@
 # fields). See notes/bgfm_method.md for the formal method derivation.
 
 training:
-  output_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/runs/omol25_4m_bgfm
+  output_dir: /n/holylabs/woo_lab/Lab/yulili/bgfm/runs/omol25_4m_bgfm
   batch_size: 16               # bumped from 8; A100 80GB has headroom at max_atoms=200
   num_workers: 12
   ema_decay: 0
@@ -42,8 +42,8 @@ lr_scheduler:
 
 dataset:
   dataset_name: omol25
-  raw_data_dir: /n/netscratch/ryl_lab/Lab/omol25/train_4M
-  processed_data_dir: /n/netscratch/ryl_lab/Lab/yulili_cfm_mol/omol25_4m_processed
+  raw_data_dir: /n/netscratch/ryl_lab/Lab/omol25/train_4M   # raw LMDB reused (only read by preprocess, not training)
+  processed_data_dir: /n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed
   max_atoms: 200
   bond_tolerance: 1.2
   atom_map:

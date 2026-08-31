@@ -1,0 +1,148 @@
+% ============================================================================
+% skeleton_min.tex -- minimal COMPILE-VERIFIED ICLR 2026 skeleton.
+% Template files are the genuine ICLR 2026 ones from
+%   https://github.com/ICLR/Master-Template  (iclr2026.zip)
+% Build:  pdflatex skeleton_min && bibtex skeleton_min && pdflatex skeleton_min && pdflatex skeleton_min
+% Copy this file to main.tex and write the paper into it.
+% ============================================================================
+\documentclass{article} % ICLR uses plain article + the conference .sty
+
+% --- REQUIRED: the conference style + Times. Do NOT add options, do NOT edit the .sty.
+\usepackage{iclr2026_conference,times}
+% NOTE: iclr2026_conference.sty already does \RequirePackage{natbib} and
+% \setcitestyle{authoryear,round,...}.  Never write \usepackage[...]{natbib}
+% yourself -> LaTeX "Option clash for package natbib".
+
+% --- Math. amsmath must be loaded before math_commands.tex is \input.
+\usepackage{amsmath,amssymb,amsthm}
+\let\amseqref\eqref            % save amsmath's \eqref -> "(3)"
+\input{math_commands.tex}      % optional dlbook notation (\va \mA \E \R \KL \Var ...)
+\let\eqref\amseqref            % math_commands \def\eqref{equation~\ref{}} clobbers it; undo.
+
+% --- Everything below is in TeX Live base; safe.
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}          % installed into ~/texmf (not TL2018 base on this host)
+\usepackage{xcolor}
+\usepackage{subcaption}
+\usepackage{algorithm}
+\usepackage{algpseudocode}     % installed into ~/texmf (algorithmicx)
+\usepackage{microtype}         % small, legal, buys ~2% length back
+
+% --- hyperref late. Plain \usepackage{hyperref} (what ICLR's own shell does) draws
+%     colored BOXES around every link; colorlinks is what real ICLR papers use.
+\usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=green!45!black,
+            urlcolor=blue!70!black]{hyperref}
+\usepackage{url}
+\usepackage{cleveref}          % OPTIONAL, must come after hyperref. Installed into ~/texmf.
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\title{Boltzmann-Guided Flow Matching for \\ Bond-Free 3D Molecular Generation}
+
+% ANONYMITY: leave \author untouched for submission. With \iclrfinalcopy
+% commented out, the .sty prints "Anonymous authors / Paper under double-blind
+% review" and ignores whatever is in \author. Non-anonymous submissions are
+% rejected without review.
+\author{Anonymous}
+
+%\iclrfinalcopy   % UNCOMMENT ONLY for the camera-ready version.
+
+\begin{document}
+\maketitle   % REQUIRED: also installs the "Under review as a conference paper
+             % at ICLR 2026" running head via \lhead.
+
+\begin{abstract}
+One paragraph only, indented 1/2 inch on both margins by the style file.
+Placeholder abstract for the compile test.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+Parenthetical citation \citep{Bengio+chapter2007}; in-sentence citation
+\citet{Hinton06} shows the \texttt{natbib} author-year style configured by the
+style file. Two keys at once: \citep{Hinton06,goodfellow2016deep}.
+
+\section{Method}
+\label{sec:method}
+An equation, referenced as \eqref{eq:score} and via \Cref{eq:score}:
+\begin{equation}
+  s_\theta(\vx_t, t) \;=\; \frac{t\, v_\theta(\vx_t,t) - \vx_t}{(1-t)\sigma^2},
+  \qquad \vx_t \in \R^{3N}.
+  \label{eq:score}
+\end{equation}
+
+\begin{theorem}[Boltzmann consistency]
+\label{thm:bc}
+Placeholder statement.
+\end{theorem}
+\begin{proof}
+Placeholder. \end{proof}
+
+\Cref{thm:bc} and \Cref{sec:method} exercise \texttt{cleveref}.
+
+\begin{algorithm}[t]
+\caption{BGFM training step}
+\label{alg:train}
+\begin{algorithmic}[1]
+\State sample $t \sim \mathcal{U}(0,1)$, $\vx_0 \sim \mathcal{N}(0,\mI)$
+\State $\mathcal{L} \gets \mathcal{L}_{\mathrm{FM}} + \lambda_1 \mathcal{L}_{\mathrm{force}}$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{table}[t]
+\caption{Table caption goes \emph{above} the table, lower case except proper nouns.}
+\label{tab:main}
+\begin{center}
+\begin{tabular}{llrr}
+\toprule
+Model & Data & Validity & $R^2$ \\
+\midrule
+\multirow{2}{*}{BGFM} & OMol25 & 0.91 & 0.62 \\
+                      & GEOM   & 0.88 & 0.55 \\
+FM only               & OMol25 & 0.84 & 0.11 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{table}
+
+\begin{figure}[h]
+\begin{center}
+\fbox{\rule[-.5cm]{0cm}{2cm} \rule{4cm}{0cm}}
+\end{center}
+\caption{Figure caption goes \emph{below} the figure.}
+\label{fig:main}
+\end{figure}
+
+\section{Conclusion}
+Done.
+
+\subsubsection*{Author Contributions}
+Optional; unnumbered third-level heading.
+
+\subsubsection*{Acknowledgments}
+All funding acknowledgements go here, at the end -- never in a title footnote.
+
+% --- main text ends here. Everything after this point is off the page budget.
+% Page-budget check after compiling (prints the last main-text page number):
+%   sed -n 's/.*newlabel{endofmaintext}{{[^}]*}{\([0-9]*\)}.*/main text pages: \1/p' skeleton_min.aux
+\label{endofmaintext}
+
+\bibliography{iclr2026_conference}
+\bibliographystyle{iclr2026_conference}
+
+\appendix
+\section{Appendix}
+\label{app:extra}
+Appendix goes \emph{after} the references and is not counted in the page limit.
+
+\end{document}

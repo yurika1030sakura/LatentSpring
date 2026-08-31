@@ -1,0 +1,86 @@
+% ============================================================================
+%  A3_related.tex --- Appendix C, extended setting and related work.
+%
+%  2026-08-30 RELATED-WORK PASS.  The compact positioning now lives in the
+%  MAIN TEXT, as Sec. 2.1 (\label{sec:related}): the three groups (de novo
+%  generation / conditional conformer models / energy-targeted samplers) and
+%  the intersection sentence were PROMOTED there, together with the single
+%  attribution of the log-variance divergence.  This appendix was trimmed so
+%  it COMPLEMENTS rather than repeats: what survives here is (a) the formal
+%  practitioner's setting, which the main text has no room for, and (b) the
+%  discussion the main text could not carry -- the conditioning contrast with
+%  fixed-target samplers, and the universal-potential value-versus-gradient
+%  paragraph that motivates the comparator of Sec. 2.5.
+%
+%  DO NOT re-expand the three group paragraphs here.  If something needs
+%  saying about a group, say it in Sec. 2.1 or add it below as an extension,
+%  not as a second copy.
+% ============================================================================
+
+\section{Extended Setting and Related Work}
+\label{app:related}
+
+\Cref{sec:related} carries the compact positioning: the three groups of prior work, what each
+supplies, and the intersection this paper studies. This appendix adds what did not fit --- the
+formal setting in practitioner's terms, and three points of discussion that the main text states
+only in passing.
+
+\paragraph{Setting.} The formal version of what follows, with the standing
+assumptions, is \Cref{app:setup}; this paragraph gives the practitioner's reading. A
+molecular state is the pair $(c,x)$: a composition $c$ --- operationally the element
+multiset with the total charge, which is what the pipeline threads to the teacher ---
+and a centre-of-mass-free conformation $x \in \R^{3N}$. Spin multiplicity is a standing
+restriction rather than a component of $c$: our teacher queries pass charge only and
+default to a singlet (\Cref{ass:charge}), every evaluation reported here is on
+main-group organic parents at that default, and no radical, open-shell or
+transition-metal result is claimed. A teacher potential supplies
+$E(c,x)$ in eV and $F = -\nabla_x E$, hence $\pi(x \mid c) = e^{-E(c,x)/kT}/Z(c)$;
+neither $Z(c)$ nor $\sum_c Z(c)$ is ever formed. The teacher is the universal neural
+potential trained on OMol25 \citep{omol25,esen}: 83 elements, DFT energies and forces,
+\emph{no bond labels}. That is why the generator is bond-free rather than by
+preference --- supervising bond orders would mean synthesising labels by rules least
+reliable exactly where broad element coverage is most valuable --- and why bonds, where
+evaluation needs them, come post hoc \citep{xyz2mol}. The backbone is FlowMol3
+\citep{flowmol3}, an SE(3)-equivariant conditional flow-matching model
+\citep{lipman2023flowmatching,liu2023rectifiedflow,albergo2023interpolants}:
+$x_t = (1-t)x_0 + t x_1$ with $x_0 \sim \mathcal{N}(0,\sigma^2 I)$ on the COM-free
+subspace, $\sigma = 1$, and
+$\Ls_{\mathrm{FM}} = \E\lVert v_\theta(x_t,t) - (x_1 - x_0)\rVert^2$; types and charges
+ride its continuous-time Markov chain and are held at data values whenever an energy is
+queried.
+
+\paragraph{What each group is judged on.} The de novo generators of \Cref{sec:related}
+\citep{edm,geoldm,midi,symphony,semlaflow,flowmol3,zatom1} report validity, stability, novelty and
+distributional agreement with a reference corpus, and EBMol \citep{ebmol} additionally learns a
+scalar energy, but that energy is fitted to data rather than supplied by a physical potential, so it
+is not an external target the density can be tested against. The conditional models
+\citep{torsionaldiff,geom,decaf} are judged by geometric agreement with a reference conformer
+ensemble for a \emph{given} molecule. Neither family reports a density--energy check, which is the
+correct outcome for the questions they pose and not a defect; the metric of \eqref{eq:rm} is
+meaningful only once a tractable density and an external, transferable energy are both in hand.
+
+\paragraph{The conditioning contrast, in full.} \Cref{sec:related} credits the log-variance
+divergence \citep{vargrad,nusken2021pathspace,berner2024optimalcontrol,richter2024improvedsampling}
+and its off-policy estimation \citep{sendera2024offpolicy} to the sampler literature. What differs
+here is the conditioning, not the divergence. Those methods train a sampler for one fixed target on
+one fixed state space; here the state space is itself generated, the target changes with every
+composition, and the divergence is summed over tens of thousands of parent groups whose normalisers
+are all distinct and all unknown. That summation is exactly what \Cref{thm:l2g} analyses, and the
+price it charges --- one free constant per connected component of the overlap graph --- is the
+subject of \Cref{sec:theory}. Mass-covering correction by annealed importance sampling \citep{fab}
+is the closest existing remedy for the cross-group failure \Cref{cor:basins} formalises, on a state
+space where the components are known in advance. A different sense of ``energy-based flow matching''
+also exists: \citet{idflow} treat the reconstruction error of an idempotent flow map as an
+\emph{internal, learned} energy, driving a predictor--refiner that iteratively improves conditional
+protein structures. Unlike IDFlow, we use values from an external universal potential to supervise
+and diagnose the likelihood of a bond-free de novo molecular flow.
+
+\paragraph{Universal neural potentials, values and gradients.} Potentials trained on large DFT
+corpora \citep{omol25,esen} are used in generative pipelines mostly downstream, to relax, rank or
+filter samples. The closest use of one as a training signal is Adjoint Sampling
+\citep{adjointsampling}, which trains against an eSEN energy but samples conformers of a
+\emph{given} molecular graph, whereas our generator receives nothing and never sees a bond label.
+Where a potential does supervise training the natural choice is its gradient, and force supervision
+works elsewhere \citep{psm,driftingboltzmann}; we therefore measure a gradient-supervision baseline
+alongside the value objective under a matched backbone and budget (\Cref{sec:ablation}), scoping
+its negative result to the construction we tested.

@@ -1,0 +1,338 @@
+% =====================================================================
+%  SUPERSEDED 2026-08-19 -- NOT PART OF THE BUILD.
+%  Figure 1 is now figures/fig1_objective.tex, wrapped by
+%  figures/fig1_objective_float.tex, which sections/01_intro.tex \input's.
+%  Nothing \input's THIS file, so nothing in it renders.
+%
+%  Its notation is deliberately left as \log p_\theta rather than being
+%  migrated to \log q_\theta: the file also asserts the retired equality
+%  p_\theta(.|c) = pi(.|c) (line ~309), a claim the paper no longer makes.
+%  Migrating the symbol alone would leave a retired claim wearing current
+%  notation.  If this figure is ever revived, rewrite the claim first.
+% =====================================================================
+% =====================================================================
+%  fig1_method.tex --- BGFM / HBFM Figure 1 (method overview)
+%
+%  Pure TikZ.  No external images, no pgfplots, no \includegraphics,
+%  no arrows.meta (TeX Live 2018 compatible).
+%  Okabe--Ito colour-blind-safe palette (deuteranopia/protanopia safe).
+%
+%  USAGE
+%   (a) standalone (verification / slides):   pdflatex fig1_method.tex
+%   (b) inside the paper -- main.tex must \usepackage{tikz} and
+%       \usepackage{amsmath} in its preamble:
+%         \begin{figure}[t]
+%           \centering
+%           \input{figures/fig1_method}
+%           \caption{...}\label{fig:method}
+%         \end{figure}
+%
+%  SIZE.  Natural size 13.95cm x 8.70cm == 5.49in x 3.43in.
+%  ICLR is a SINGLE 5.5in-wide text column (10pt Times, 11pt leading), so
+%  this is a full-text-width figure at scale 1.0.  DO NOT rescale it: every
+%  glyph inside is \footnotesize / \scriptsize / \tiny of the 10pt body
+%  font, and scaling desynchronises in-figure text from the caption.
+%  If a shorter figure is needed, delete band (e) (the total-loss box and
+%  legend, y < 1.7) and state the loss in the caption instead -- that saves
+%  1.5cm without touching any other coordinate.
+%
+%  LAYOUT (five bands, top to bottom).  Wire routing is deliberately
+%  crossing-free:
+%    (a) generative spine   prior noise -> flow matching -> x_1
+%    (b) global-shape term  FFJORD log p  vs  E/kT     -> L_energy  [LEFT]
+%    (c) local-gradient term closed-form score vs F/kT -> L_force   [RIGHT]
+%    (d) physics bus        universal neural potential (OMol25 / eSEN)
+%    (e) total loss + legend
+%  (b) is on the left because the reverse-time (FFJORD) arrow terminates at
+%  t=0 on the left; (c) is on the right because the score is read out at
+%  t*=0.95 on the right; (d) is a full-width bus underneath so both terms
+%  are fed by short vertical arrows and no wire ever crosses another.
+% =====================================================================
+
+% ---- standalone bootstrap (skipped when \input into a tikz-enabled doc) ----
+\ifx\tikzpicture\undefined
+  \documentclass[10pt]{article}
+  \usepackage[paperwidth=14.30cm,paperheight=9.15cm,margin=0.15cm,noheadfoot]{geometry}
+  \usepackage{amsmath,amssymb,bm}
+  \usepackage{tikz}
+  \setlength{\topskip}{0pt}
+  \setlength{\parindent}{0pt}
+  \pagestyle{empty}
+  \begin{document}%
+  \def\bgfmFinish{\end{document}}
+\fi
+\providecommand{\bgfmFinish}{\relax}
+% \pending{...}: red placeholder marker, shared with the main text so that a
+% single grep finds every not-yet-real number in the manuscript.
+\providecommand{\pending}[1]{\textcolor{red}{#1}}
+\providecommand{\bgfmFigScale}{1.0}
+
+% 6pt/6.6pt: one step above \tiny (5pt at 10pt base), which is below the
+% conventional 6pt floor for in-figure text.
+\providecommand{\bgfmtiny}{\fontsize{6}{6.6}\selectfont}
+\usetikzlibrary{positioning,calc,fit,backgrounds,decorations.pathmorphing,%
+                arrows,shapes.geometric}
+
+% ---------------------------------------------------------------- palette
+% Okabe & Ito (2008): the de-facto standard CVD-safe qualitative set.
+\definecolor{oiOrange}{HTML}{E69F00}
+\definecolor{oiSky}   {HTML}{56B4E9}
+\definecolor{oiGreen} {HTML}{009E73}
+\definecolor{oiYellow}{HTML}{F0E442}
+\definecolor{oiBlue}  {HTML}{0072B2}
+\definecolor{oiVerm}  {HTML}{D55E00}
+\definecolor{oiPurple}{HTML}{CC79A7}
+\definecolor{oiGrey}  {HTML}{7F7F7F}
+\definecolor{oiGreyL} {HTML}{BFBFBF}
+\definecolor{oiGreyD} {HTML}{555555}
+%
+% SEMANTIC assignment -- identical in this figure and in the matplotlib
+% figures (make_experiment_figures.py::PALETTE), so the paper reads as one
+% visual system:
+%   oiBlue    model / flow matching / learned quantities
+%   oiGreen   L_energy  (global shape, FFJORD, Boltzmann)
+%   oiVerm    L_force   (local gradient, score--force matching)
+%   oiOrange  physics oracle (universal neural potential, DFT labels)
+%   oiPurple  negative control (Y-scrambled)
+%   oiGrey    no-physics baseline / neutral structure
+
+% ---------------------------------------------------------------- styles
+\tikzset{
+  bgfmpanel/.style={rounded corners=2.2pt, draw=#1, line width=0.65pt,
+                    fill=#1!5},
+  ttl/.style={anchor=west, font=\footnotesize\bfseries, inner sep=0pt},
+  bdy/.style={anchor=west, font=\scriptsize, inner sep=0pt, align=left},
+  tny/.style={anchor=west, font=\bgfmtiny, inner sep=0pt, align=left,
+              text=oiGreyD},
+  flowarr/.style={-stealth', line width=0.9pt, draw=oiBlue},
+  revarr/.style={-stealth', line width=0.75pt, draw=oiGreen,
+                 dash pattern=on 2.2pt off 1.6pt},
+  physarr/.style={-stealth', line width=0.8pt, draw=oiOrange!85!black},
+  tapearr/.style={-stealth', line width=0.8pt, draw=oiBlue},
+  lossbadge/.style={rounded corners=2pt, draw=#1, line width=0.6pt,
+                    fill=#1!12, inner sep=2.6pt, align=left,
+                    font=\scriptsize},
+}
+
+% ------------------------------------------------------- molecule glyphs
+% Deterministic coordinates (no \pgfmathrandom) so the figure is
+% byte-reproducible across compiles and across TeX distributions.
+\newcommand{\bgfmAtom}[3]{\fill[#3] (#1,#2) circle (1.45pt);%
+  \draw[oiGrey!60, line width=0.15pt] (#1,#2) circle (1.45pt);}
+\newcommand{\bgfmAtomS}[3]{\fill[#3] (#1,#2) circle (0.95pt);%
+  \draw[oiGrey!60, line width=0.15pt] (#1,#2) circle (0.95pt);}
+\newcommand{\bgfmBond}[4]{\draw[oiGrey!85, line width=0.55pt] (#1,#2) -- (#3,#4);}
+
+% t ~ 0 : unstructured point cloud, no bonds
+\newcommand{\bgfmMolNoise}{%
+  \bgfmAtomS{-0.34}{ 0.30}{oiGreyL}\bgfmAtomS{ 0.10}{ 0.36}{oiGreyL}%
+  \bgfmAtomS{ 0.36}{ 0.06}{oiGreyL}\bgfmAtomS{-0.10}{-0.02}{oiGreyL}%
+  \bgfmAtomS{-0.40}{-0.26}{oiGreyL}\bgfmAtomS{ 0.06}{-0.34}{oiGreyL}%
+  \bgfmAtomS{ 0.40}{-0.32}{oiGreyL}\bgfmAtomS{ 0.24}{ 0.22}{oiGreyL}%
+  \bgfmAtomS{-0.18}{ 0.12}{oiGreyL}}
+
+% intermediate t : partially condensed, proto-structure
+\newcommand{\bgfmMolMid}{%
+  \bgfmBond{-0.20}{0.14}{0.04}{0.22}\bgfmBond{0.04}{0.22}{0.24}{0.02}%
+  \bgfmBond{-0.20}{0.14}{-0.14}{-0.16}%
+  \bgfmAtomS{-0.20}{ 0.14}{oiGrey!70}\bgfmAtomS{ 0.04}{ 0.22}{oiGrey!70}%
+  \bgfmAtomS{ 0.24}{ 0.02}{oiGrey!70}\bgfmAtomS{-0.14}{-0.16}{oiGrey!70}%
+  \bgfmAtomS{ 0.30}{ 0.30}{oiGreyL}\bgfmAtomS{-0.36}{-0.24}{oiGreyL}%
+  \bgfmAtomS{ 0.20}{-0.30}{oiGreyL}}
+
+% t = 1 : a clean structure -- 5-ring + N + O + a transition metal (green),
+% so the "83 elements / transition metals" claim is visible in the glyph.
+\newcommand{\bgfmMolFinal}{%
+  \bgfmBond{0.000}{0.280}{-0.266}{0.087}\bgfmBond{-0.266}{0.087}{-0.165}{-0.227}%
+  \bgfmBond{-0.165}{-0.227}{0.165}{-0.227}\bgfmBond{0.165}{-0.227}{0.266}{0.087}%
+  \bgfmBond{0.266}{0.087}{0.000}{0.280}%
+  \bgfmBond{0.266}{0.087}{0.560}{0.250}%
+  \bgfmBond{-0.266}{0.087}{-0.520}{0.300}%
+  \bgfmBond{-0.165}{-0.227}{-0.360}{-0.440}%
+  \bgfmAtom{ 0.000}{ 0.280}{oiGrey!85}\bgfmAtom{-0.266}{ 0.087}{oiGrey!85}%
+  \bgfmAtom{-0.165}{-0.227}{oiGrey!85}\bgfmAtom{ 0.165}{-0.227}{oiGrey!85}%
+  \bgfmAtom{ 0.266}{ 0.087}{oiBlue}%
+  \fill[oiGreen] (0.560,0.250) circle (2.4pt);%
+  \draw[oiGrey!70, line width=0.2pt] (0.560,0.250) circle (2.4pt);%
+  \bgfmAtomS{-0.520}{ 0.300}{oiVerm}%
+  \bgfmAtomS{-0.360}{-0.440}{white}}
+
+% =====================================================================
+\begin{tikzpicture}[x=1cm, y=1cm, scale=\bgfmFigScale, >=stealth']
+% guarantee a stable bounding box
+\path (0,0.06) rectangle (13.95,8.66);
+
+% ---- shared geometry -------------------------------------------------
+\def\Ay{6.42}\def\AY{8.52}          % band (a) vertical extent
+\def\bandL{2.30}\def\bandR{10.34}   % flow band horizontal extent
+\def\tz{2.55}\def\to{10.09}         % x of t=0 and t=1 on the time axis
+\def\tstar{9.71}                    % x of t* = 0.95
+\def\By{3.36}\def\BY{5.96}          % bands (b)/(c) vertical extent
+
+% ==================== BAND (a): generative spine =====================
+% -- prior --------------------------------------------------------------
+\draw[bgfmpanel=oiBlue] (0.04,\Ay) rectangle (2.02,\AY);
+\node[anchor=north west, font=\scriptsize\bfseries] at (0.12,8.48) {(a)};
+\begin{scope}[shift={(1.06,7.88)}]\bgfmMolNoise\end{scope}
+\node[anchor=north, font=\scriptsize] at (1.03,7.44)
+     {$x_0\!\sim\!\mathcal{N}(0,\sigma^2 I)$};
+\node[anchor=north, font=\bgfmtiny, align=center, text=oiGreyD]
+      at (1.03,7.02) {CTMC prior for\\types, charges};
+
+% -- flow band ----------------------------------------------------------
+\shade[left color=oiBlue!7, right color=oiGreen!9, rounded corners=2.2pt]
+      (\bandL,\Ay) rectangle (\bandR,\AY);
+\draw[rounded corners=2.2pt, draw=oiBlue, line width=0.65pt]
+      (\bandL,\Ay) rectangle (\bandR,\AY);
+
+% forward (generative) ODE
+\draw[flowarr] (\tz,8.02) -- (\to,8.02);
+\node[anchor=south, font=\scriptsize, text=oiBlue!75!black] at (6.32,8.08)
+     {$\dfrac{d x_t}{dt}=v_\theta(x_t,t)$\;\; SE(3)-equivariant flow matching};
+
+% the three glyphs along the path
+\begin{scope}[shift={(3.40,7.40)}]\bgfmMolNoise\end{scope}
+\begin{scope}[shift={(6.32,7.40)}]\bgfmMolMid\end{scope}
+\begin{scope}[shift={(9.10,7.40)}]\bgfmMolFinal\end{scope}
+
+% reverse-time (FFJORD) ODE: right -> left, terminates at t = 0
+\draw[revarr] (\to,6.98) -- (\tz,6.98);
+\node[anchor=north, font=\bgfmtiny, text=oiGreen!50!black] at (6.32,6.94)
+     {FFJORD reverse-time ODE $+$ Hutchinson divergence};
+
+% time axis
+\draw[oiGrey, line width=0.5pt] (\tz,6.66) -- (\to,6.66);
+\foreach \xx in {\tz,\tstar,\to}%
+  {\draw[oiGrey, line width=0.5pt] (\xx,6.66) -- (\xx,6.58);}
+\node[anchor=north, font=\bgfmtiny] at (\tz,6.57) {$t\!=\!0$};
+\node[anchor=north east, font=\bgfmtiny] at (9.60,6.57) {$t^{\star}\!<\!1$};
+\node[anchor=north west, font=\bgfmtiny] at (10.13,6.57) {$1$};
+
+% -- x_1 ----------------------------------------------------------------
+\draw[bgfmpanel=oiBlue] (10.62,\Ay) rectangle (13.91,\AY);
+\node[anchor=north, font=\scriptsize] at (12.26,8.46) {$x_1$};
+\node[anchor=north, font=\bgfmtiny, align=center] at (12.26,8.04)
+     {positions $+$ atomic numbers\\\textbf{83 elements, bond-free}};
+\node[anchor=north, font=\bgfmtiny, align=center, text=oiGreyD]
+     at (12.26,7.10) {bonds recovered \emph{post hoc}\\(xyz2mol), never supervised};
+
+% ==================== taps into the two branches =====================
+\draw[revarr]  (\tz,\Ay)    -- (\tz,\BY-0.02);
+\node[anchor=west, font=\bgfmtiny, text=oiGreen!50!black] at (\tz+0.09,6.20)
+     {$\log p_\theta(x_1)$};
+\draw[tapearr] (\tstar,\Ay) -- (\tstar,\BY-0.02);
+\node[anchor=west, font=\bgfmtiny, text=oiBlue!75!black] at (\tstar+0.09,6.20)
+     {$v_\theta(x_{t^\star},t^\star)$};
+
+% ==================== BAND (b): global shape =========================
+\draw[bgfmpanel=oiGreen] (0.04,\By) rectangle (6.58,\BY);
+\node[ttl, text=oiGreen!45!black] at (0.18,5.76)
+     {(b) Global shape: energy consistency};
+\node[bdy, anchor=north west] at (0.18,5.58)
+     {$\log p_\theta(x_1)=\log p_0(x_0)-\displaystyle\int_{0}^{1}\!\!
+       \nabla\!\cdot\!v_\theta\,dt$};
+
+% full-panel-width loss badge: the formula stays on one line
+\node[lossbadge=oiGreen, text width=6.06cm, anchor=north west] at (0.18,5.02)
+  {$\mathcal{L}_{\mathrm{energy}}=
+    \operatorname{Var}_{k}\!\big[\log p_\theta(x_1^{(k)})+E(x_1^{(k)})/kT\big]$\\[1pt]
+   {\bgfmtiny the partition function $Z$ cancels exactly}};
+
+% mini potential-energy surface + the K within-parent perturbations
+\begin{scope}[shift={(0.30,3.46)}]
+  \draw[oiGrey, line width=0.45pt] (0,0) -- (2.26,0);
+  \draw[oiGrey, line width=0.45pt] (0,0) -- (0,0.90);
+  \node[font=\bgfmtiny, rotate=90, inner sep=1pt] at (-0.14,0.45) {$E$};
+  % Boltzmann weight e^{-E/kT} shaded under the curve
+  \fill[oiGreen!16]
+    plot[smooth] coordinates {(0.12,0.09)(0.44,0.53)(0.76,0.17)(1.08,0.64)
+                              (1.42,0.26)(1.76,0.12)(2.10,0.06)}
+    -- (2.10,0) -- (0.12,0) -- cycle;
+  % E(x): a double well
+  \draw[oiBlue, line width=0.8pt]
+    plot[smooth] coordinates {(0.12,0.84)(0.44,0.32)(0.76,0.66)(1.08,0.19)
+                              (1.42,0.54)(1.76,0.74)(2.10,0.89)};
+  \foreach \px/\py in {0.30/0.50, 0.44/0.32, 0.58/0.42, 0.92/0.37,
+                       1.08/0.19, 1.24/0.32, 1.54/0.61}
+     {\fill[oiGreen!75!black] (\px,\py) circle (1.15pt);}
+  \node[anchor=west, font=\bgfmtiny, text=oiGreen!45!black] at (1.14,0.10)
+       {$e^{-E/kT}$};
+\end{scope}
+
+\node[tny, text width=3.46cm, anchor=north west] at (2.94,4.20)
+  {$K$ perturbations of \emph{one} parent molecule\\
+   (within-parent variance only)};
+
+% ==================== BAND (c): local gradient =======================
+\draw[bgfmpanel=oiVerm] (6.86,\By) rectangle (13.91,\BY);
+\node[ttl, text=oiVerm!60!black] at (7.00,5.76) {(c) Local gradient};
+\node[bdy, anchor=north west, text width=5.20cm] at (7.00,5.58)
+     {closed-form score of the FM marginal\\[3pt]
+      $s_\theta(x_t,t)=\dfrac{t\,v_\theta(x_t,t)-x_t}{(1-t)\,\sigma^{2}}$};
+
+% mini inset: the two vectors that L_force aligns
+\begin{scope}[shift={(12.30,5.30)}]
+  \draw[oiGreyL, line width=0.4pt] (0,0) circle (0.44);
+  \fill[oiGrey!85] (0,0) circle (1.7pt);
+  \draw[-stealth', line width=0.9pt, draw=oiBlue] (0,0) -- (0.44,0.21);
+  \draw[-stealth', line width=0.9pt, draw=oiVerm,
+        dash pattern=on 2pt off 1.4pt] (0,0) -- (0.40,0.37);
+  \draw[oiGrey, line width=0.35pt] (0.22,0.105) arc (25.6:42.4:0.245);
+  \node[anchor=west, font=\bgfmtiny, text=oiBlue!75!black] at (0.46,0.14) {$s_\theta$};
+  \node[anchor=west, font=\bgfmtiny, text=oiVerm!70!black] at (0.42,0.44) {$F/kT$};
+\end{scope}
+
+\node[lossbadge=oiVerm, text width=6.62cm, anchor=north west] at (7.00,4.60)
+  {$\mathcal{L}_{\mathrm{force}}=\big\|\,s_\theta(x_{t^\star}\!,t^\star)
+     -F(x_1)/kT\,\big\|_{2}^{2}$\\[1pt]
+   {\bgfmtiny at the Boltzmann optimum
+    $\nabla\!\log p=-\nabla E/kT=F/kT$;
+    \textbf{measured harmful, \Cref{sec:negative}; $\lambda_1\!=\!0$ in every reported model}}};
+\node[tny, text width=6.62cm, anchor=north west] at (7.00,3.80)
+  {Read out at $t^{\star}\in\{0.85,0.92,0.97\}$ and averaged: the score has a
+   $(1-t)^{-1}$ pole at $t\!=\!1$, so the per-atom norm is capped.};
+
+% ==================== BAND (d): the physics bus ======================
+\draw[physarr] (3.30,2.96) -- (3.30,3.34);
+\node[anchor=west, font=\bgfmtiny, text=oiOrange!45!black] at (3.38,3.16)
+     {$E(x_1^{(k)})/kT$};
+\draw[physarr] (10.20,2.96) -- (10.20,3.34);
+\node[anchor=west, font=\bgfmtiny, text=oiOrange!45!black] at (10.28,3.16)
+     {$F(x_1)/kT=-\nabla E/kT$};
+
+\draw[rounded corners=2.2pt, draw=oiOrange!85!black, line width=0.75pt,
+      fill=oiOrange!12] (0.04,2.10) rectangle (13.91,2.92);
+\node[anchor=west, font=\scriptsize\bfseries, text=oiOrange!35!black]
+     at (0.18,2.66)
+     {(d) Universal neural potential $E(x)$ --- OMol25 / eSEN};
+\node[anchor=west, font=\bgfmtiny, text=oiGreyD] at (0.18,2.31)
+     {3.9M molecules, 205M atoms, 83 elements; DFT forces \emph{and}
+      energies; \textbf{no bond labels} --- one oracle, both terms};
+
+% ==================== BAND (e): total loss + legend ==================
+\draw[rounded corners=2pt, draw=oiGrey, line width=0.55pt, fill=white]
+      (2.30,1.06) rectangle (11.66,1.82);
+\node[anchor=center, font=\small] at (6.98,1.44)
+  {$\mathcal{L}_{\mathrm{BGFM}}=\mathcal{L}_{\mathrm{FM}}
+    +\lambda_1\,\textcolor{oiVerm}{\mathcal{L}_{\mathrm{force}}}
+    +\lambda_2\,\textcolor{oiGreen}{\mathcal{L}_{\mathrm{energy}}}
+    \qquad
+    \textcolor{oiGreen}{\mathcal{L}_{\mathrm{energy}}}\!=\!0
+    \iff p_\theta(\cdot\mid c)=\pi(\cdot\mid c)$};
+
+\begin{scope}[shift={(0.30,0.28)}]
+  \def\lw{0.26}
+  \foreach \i/\c/\lbl in {%
+      0/oiBlue/{model, flow matching},%
+      1/oiGreen/{$\mathcal{L}_{\mathrm{energy}}$: global shape},%
+      2/oiVerm/{$\mathcal{L}_{\mathrm{force}}$: local gradient},%
+      3/oiOrange/{physics oracle (DFT labels)}}%
+  {\pgfmathsetmacro{\xo}{\i*3.30}%
+   \fill[\c!22] (\xo,0) rectangle (\xo+\lw,0.24);%
+   \draw[\c, line width=0.6pt] (\xo,0) rectangle (\xo+\lw,0.24);%
+   \node[anchor=west, font=\bgfmtiny] at (\xo+\lw+0.10,0.12) {\lbl};}
+\end{scope}
+
+\end{tikzpicture}
+
+\bgfmFinish

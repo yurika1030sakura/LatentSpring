@@ -1,0 +1,521 @@
+% =====================================================================
+%  refs.bib --- shared bibliography for the BGFM/HBFM ICLR 2026 submission.
+%
+%  KEY POLICY.  SPINE Sec. 13 fixes the canonical citation keys for this
+%  manuscript (flowmol3, omol25, esen, ffjord, ...).  Those keys are NOT of the
+%  firstauthorYEARkeyword form, but SPINE is binding and every section writer is
+%  required to use them, so they are reproduced verbatim here.  The three keys
+%  that SPINE already gives in firstauthorYEARkeyword form
+%  (lipman2023flowmatching, liu2023rectifiedflow, albergo2023interpolants) keep
+%  that form.
+%
+%  Entries below are the ones cited by sections/02_method.tex and
+%  sections/03_theory.tex only.  Other section writers: append, do not rewrite.
+%
+%  NOTE: SPINE Sec. 14 / TEMPLATE_NOTES specify \bibliography{references}.  If the
+%  editor keeps that filename, symlink or rename this file; do not maintain two.
+%
+%  Lines marked "% TODO-verify" contain a field I could not confirm from primary
+%  source at drafting time.
+% =====================================================================
+
+% TODO-verify volume/pages
+@article{flowmol3,
+  title        = {{FlowMol3}: Flow Matching for {3D} De Novo Small-Molecule Generation},
+  author       = {Dunn, Ian and Koes, David Ryan},
+  journal      = {arXiv preprint arXiv:2508.12629},
+  year         = {2025},
+  note         = {Also published in Digital Discovery}
+}
+
+% TODO-verify full author list
+@article{omol25,
+  title        = {The {Open Molecules 2025 (OMol25)} Dataset, Evaluations, and Models},
+  author       = {Levine, Daniel S. and others},
+  journal      = {arXiv preprint arXiv:2505.08762},
+  year         = {2025}
+}
+
+% TODO-verify full author list
+@article{esen,
+  title        = {Learning Smooth and Expressive Interatomic Potentials for Physical Property Prediction},
+  author       = {Fu, Xiang and others},
+  journal      = {arXiv preprint arXiv:2502.12147},
+  year         = {2025}
+}
+
+@inproceedings{lipman2023flowmatching,
+  title        = {Flow Matching for Generative Modeling},
+  author       = {Lipman, Yaron and Chen, Ricky T. Q. and Ben-Hamu, Heli and Nickel, Maximilian and Le, Matthew},
+  booktitle    = {International Conference on Learning Representations (ICLR)},
+  year         = {2023}
+}
+
+@inproceedings{liu2023rectifiedflow,
+  title        = {Flow Straight and Fast: Learning to Generate and Transfer Data with Rectified Flow},
+  author       = {Liu, Xingchao and Gong, Chengyue and Liu, Qiang},
+  booktitle    = {International Conference on Learning Representations (ICLR)},
+  year         = {2023}
+}
+
+@article{albergo2023interpolants,
+  title        = {Stochastic Interpolants: A Unifying Framework for Flows and Diffusions},
+  author       = {Albergo, Michael S. and Boffi, Nicholas M. and Vanden-Eijnden, Eric},
+  journal      = {arXiv preprint arXiv:2303.08797},
+  year         = {2023}
+}
+
+@inproceedings{ffjord,
+  title        = {{FFJORD}: Free-Form Continuous Dynamics for Scalable Reversible Generative Models},
+  author       = {Grathwohl, Will and Chen, Ricky T. Q. and Bettencourt, Jesse and Sutskever, Ilya and Duvenaud, David},
+  booktitle    = {International Conference on Learning Representations (ICLR)},
+  year         = {2019}
+}
+
+@article{hutchinson,
+  title        = {A Stochastic Estimator of the Trace of the Influence Matrix for {Laplacian} Smoothing Splines},
+  author       = {Hutchinson, Michael F.},
+  journal      = {Communications in Statistics -- Simulation and Computation},
+  volume       = {18},
+  number       = {3},
+  pages        = {1059--1076},
+  year         = {1989}
+}
+
+@article{xyz2mol,
+  title        = {Universal Structure Conversion Method for Organic Molecules: From Atomic Connectivity to Three-Dimensional Geometry and Vice Versa},
+  author       = {Kim, Yeonjoon and Kim, Woo Youn},
+  journal      = {Bulletin of the Korean Chemical Society},
+  volume       = {36},
+  number       = {6},
+  pages        = {1769--1777},
+  year         = {2015}
+}
+
+% TODO-verify full author list
+@inproceedings{adjointsampling,
+  title        = {Adjoint Sampling: Highly Scalable Diffusion Samplers via Adjoint Matching},
+  author       = {Havens, Aaron and others},
+  booktitle    = {International Conference on Machine Learning (ICML)},
+  year         = {2025},
+  note         = {arXiv:2504.11713}
+}
+
+% TODO-verify venue
+@inproceedings{tbg,
+  title        = {Transferable Boltzmann Generators},
+  author       = {Klein, Leon and No{\'e}, Frank},
+  booktitle    = {International Conference on Machine Learning (ICML)},
+  year         = {2025},
+  note         = {arXiv:2406.14426}
+}
+
+% ---------------------------------------------------------------------
+% Appended by the Experiments/Conclusion writer (sections/04, sections/05).
+% Keys are SPINE Sec. 13 canonical keys. Append below, do not rewrite above.
+% ---------------------------------------------------------------------
+
+% V1 status 2026-08-03: authors, exact title, arXiv id and version VERIFIED against
+% arxiv.org/abs/2602.22251 (v1 24 Feb 2026, v4 13 May 2026). STILL OPEN: the OMol25
+% generation numbers 30.4 / 17.0 / 15.1 / 93.5 are attributed in the paper to Appendix F
+% (Table 13), which we could not render; and no epoch count or non-convergence statement
+% was locatable in either the arXiv or the ICLR 2026 FM4Science workshop version. Ban B-11
+% therefore still applies: do NOT write "non-converged".
+@article{zatom1,
+  title        = {{Zatom-1}: Towards a Multimodal Foundation Model for {3D} Molecules and Materials},
+  author       = {Morehead, Alex and Cretu, Miruna and Panescu, Antonia and Anand, Rishabh and
+                  Weiler, Maurice and Perez, Tynan and Blau, Samuel and Farrell, Steven and
+                  Bhimji, Wahid and Jain, Anubhav and Sahasrabuddhe, Hrushikesh and Lio, Pietro and
+                  Jaakkola, Tommi and G{\'o}mez-Bombarelli, Rafael and Ying, Rex and
+                  Erichson, N. Benjamin and Mahoney, Michael W.},
+  journal      = {arXiv preprint arXiv:2602.22251},
+  year         = {2026},
+  note         = {v4}
+}
+
+@article{gfn2xtb,
+  title        = {{GFN2-xTB} --- An Accurate and Broadly Parametrized Self-Consistent Tight-Binding
+                  Quantum Chemical Method with Multipole Electrostatics and Density-Dependent
+                  Dispersion Contributions},
+  author       = {Bannwarth, Christoph and Ehlert, Sebastian and Grimme, Stefan},
+  journal      = {Journal of Chemical Theory and Computation},
+  volume       = {15},
+  number       = {3},
+  pages        = {1652--1671},
+  year         = {2019}
+}
+
+@article{posebusters,
+  title        = {{PoseBusters}: {AI}-Based Docking Methods Fail to Generate Physically Valid Poses
+                  or Generalise to Novel Sequences},
+  author       = {Buttenschoen, Martin and Morris, Garrett M. and Deane, Charlotte M.},
+  journal      = {Chemical Science},
+  volume       = {15},
+  number       = {9},
+  pages        = {3130--3139},
+  year         = {2024}
+}
+
+@article{tmqm,
+  title        = {{tmQM} Dataset --- Quantum Geometries and Properties of 86{k} Transition Metal Complexes},
+  author       = {Balcells, David and Skjelstad, Bastian Bjerkem},
+  journal      = {Journal of Chemical Information and Modeling},
+  volume       = {60},
+  number       = {12},
+  pages        = {6135--6146},
+  year         = {2020}
+}
+
+@inproceedings{edm,
+  title        = {Equivariant Diffusion for Molecule Generation in {3D}},
+  author       = {Hoogeboom, Emiel and Satorras, V{\'i}ctor Garcia and Vignac, Cl{\'e}ment and Welling, Max},
+  booktitle    = {International Conference on Machine Learning (ICML)},
+  year         = {2022}
+}
+
+@inproceedings{geoldm,
+  title        = {Geometric Latent Diffusion Models for {3D} Molecule Generation},
+  author       = {Xu, Minkai and Powers, Alexander S. and Dror, Ron O. and Ermon, Stefano and Leskovec, Jure},
+  booktitle    = {International Conference on Machine Learning (ICML)},
+  year         = {2023}
+}
+
+% TODO-verify full author list
+@inproceedings{symphony,
+  title        = {{Symphony}: Symmetry-Equivariant Point-Centered Spherical Harmonics for {3D} Molecule Generation},
+  author       = {Daigavane, Ameya and Kim, Song and Geiger, Mario and Smidt, Tess},
+  booktitle    = {International Conference on Learning Representations (ICLR)},
+  year         = {2024}
+}
+
+@inproceedings{torsionaldiff,
+  title        = {Torsional Diffusion for Molecular Conformer Generation},
+  author       = {Jing, Bowen and Corso, Gabriele and Chang, Jeffrey and Barzilay, Regina and Jaakkola, Tommi},
+  booktitle    = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year         = {2022}
+}
+
+% TODO-verify authors, arXiv id, venue
+@article{sbg,
+  title        = {Sequential {Boltzmann} Generators},
+  author       = {Tan, Charlie B. and others},
+  journal      = {arXiv preprint},
+  year         = {2025}
+}
+
+% V2 status 2026-08-03: VERIFIED against arxiv.org/abs/2606.27361 (ICML 2026 Spotlight).
+@inproceedings{arbg,
+  title        = {Autoregressive {Boltzmann} Generators},
+  author       = {Rehman, Danyal and Tan, Charlie B. and Bengio, Yoshua and
+                  Bose, Avishek Joey and Tong, Alexander},
+  booktitle    = {International Conference on Machine Learning (ICML)},
+  year         = {2026},
+  note         = {Spotlight; arXiv:2606.27361}
+}
+
+@article{ruecker2007yrandom,
+  title        = {y-Randomization and Its Variants in {QSPR}/{QSAR}},
+  author       = {R{\"u}cker, Christoph and R{\"u}cker, Gerta and Meringer, Markus},
+  journal      = {Journal of Chemical Information and Modeling},
+  volume       = {47},
+  number       = {6},
+  pages        = {2345--2357},
+  year         = {2007}
+}
+
+@article{geom,
+  title        = {{GEOM}, Energy-Annotated Molecular Conformations for Property Prediction and Molecular Generation},
+  author       = {Axelrod, Simon and G{\'o}mez-Bombarelli, Rafael},
+  journal      = {Scientific Data},
+  volume       = {9},
+  number       = {1},
+  pages        = {185},
+  year         = {2022}
+}
+
+% V4 status 2026-08-03: RESOLVED against arxiv.org/abs/2505.00518.
+@inproceedings{eval3dgen,
+  title        = {An Evaluation of Unconditional {3D} Molecular Generation Methods},
+  author       = {Buttenschoen, Martin and Ziv, Yael and Morris, Garrett M. and Deane, Charlotte M.},
+  booktitle    = {ICLR 2025 Workshop on Generative and Experimental Perspectives for
+                  Biomolecular Design (GEM)},
+  year         = {2025},
+  note         = {arXiv:2505.00518}
+}
+
+% ---------------------------------------------------------------------
+% Appended by the Abstract/Introduction/Related-Work writer
+% (sections/01_intro.tex). Keys are SPINE Sec. 13 canonical keys.
+% Append below, do not rewrite above.
+% ---------------------------------------------------------------------
+
+@article{noe2019boltzmann,
+  title        = {Boltzmann Generators: Sampling Equilibrium States of Many-Body Systems
+                  with Deep Learning},
+  author       = {No{\'e}, Frank and Olsson, Simon and K{\"o}hler, Jonas and Wu, Hao},
+  journal      = {Science},
+  volume       = {365},
+  number       = {6457},
+  pages        = {eaaw1147},
+  year         = {2019}
+}
+
+@inproceedings{midi,
+  title        = {{MiDi}: Mixed Graph and {3D} Denoising Diffusion for Molecule Generation},
+  author       = {Vignac, Cl{\'e}ment and Osman, Nagham and Toni, Laura and Frossard, Pascal},
+  booktitle    = {European Conference on Machine Learning and Knowledge Discovery in
+                  Databases (ECML PKDD)},
+  year         = {2023}
+}
+
+% TODO-verify venue
+@inproceedings{semlaflow,
+  title        = {{SemlaFlow}: Efficient {3D} Molecular Generation with Latent Attention
+                  and Equivariant Flow Matching},
+  author       = {Irwin, Ross and Tibo, Alessandro and Janet, Jon Paul and Olsson, Simon},
+  booktitle    = {International Conference on Machine Learning (ICML)},
+  year         = {2025},
+  note         = {arXiv:2406.07266}
+}
+
+% RESOLVED 2026-08-03 against arxiv.org/abs/2509.03726.
+@article{ewfm,
+  title        = {Energy-Weighted Flow Matching: Unlocking Continuous Normalizing Flows for
+                  Efficient and Scalable {Boltzmann} Sampling},
+  author       = {Dern, Niclas and Redl, Lennart and Pfister, Sebastian and
+                  Kollovieh, Marcel and L{\"u}dke, David and G{\"u}nnemann, Stephan},
+  journal      = {arXiv preprint arXiv:2509.03726},
+  year         = {2025}
+}
+
+% =====================================================================
+%  Appended by the skeleton/appendix writer: entries requested for the
+%  related-work bucket on conditional conformer generation. NOT cited by
+%  any section as of this build; BibTeX emits only cited entries, so they
+%  are inert until someone uses them.
+% =====================================================================
+
+% TODO-verify venue and author list
+@inproceedings{etflow,
+  title        = {{ET-Flow}: Equivariant Flow-Matching for Molecular Conformer
+                  Generation},
+  author       = {Hassan, Majdi and Shenoy, Nikhil and Lee, Jungyoon and
+                  Stark, Hannes and Thaler, Stephan and Beaini, Dominique},
+  booktitle    = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year         = {2024},
+  note         = {arXiv:2410.22388}
+}
+
+% TODO-verify author list and page numbers
+@inproceedings{mcf,
+  title        = {Swallowing the Bitter Pill: Simplified Scalable Conformer
+                  Generation},
+  author       = {Wang, Yuyang and Elhag, Ahmed A. and Jaitly, Navdeep and
+                  Susskind, Joshua M. and Bautista, Miguel Angel},
+  booktitle    = {International Conference on Machine Learning (ICML)},
+  year         = {2024},
+  note         = {Molecular Conformer Fields; arXiv:2311.17932}
+}
+
+% PROSE: requested by the drafting brief, but I could not identify the paper
+% with enough confidence to write author/year/venue without guessing. Left as a
+% stub ON PURPOSE -- fill it from the primary source before citing.
+%
+% NOTE (assembly pass, 2026-08-03): the stub was previously written out as a
+% percent-prefixed at-sign entry. BibTeX does NOT treat percent as a comment
+% character: it scans for the at-sign and starts parsing an entry wherever it
+% finds one, so that block raised "You're missing a field name---line 313 of
+% file refs.bib" on every build. The stub is therefore kept as plain prose,
+% with no at-sign anywhere, until a real citation is available. Do NOT
+% reintroduce a commented-out entry; delete it or write it out like this.
+%
+%   key      : prose
+%   title    : TODO-verify
+%   author   : TODO-verify
+%   journal  : TODO-verify
+%   year     : TODO-verify
+
+% ---------------------------------------------------------------------
+% Appended by the 2026-08-03 REVIEWER-RESPONSE REVISION (novelty-attribution
+% pass).  These are the prior-work citations for the LOG-VARIANCE DIVERGENCE,
+% which is what our L_energy is: with \tilde p = e^{-E/kT} (unnormalised) and
+% q = p_theta, Var[log p_theta + E/kT] = Var[log q - log \tilde p], i.e. the
+% log-variance divergence between q and the Gibbs target.  The cancellation of
+% the normalising constant is a KNOWN structural property of that divergence
+% (it is why the estimator needs no partition function), NOT a contribution of
+% this paper.  All four entries verified 2026-08-03 against arXiv / proceedings.
+% ---------------------------------------------------------------------
+
+% VERIFIED 2026-08-03: arxiv.org/abs/2010.10436 ; NeurIPS 33 (2020), paper hash
+% 9c22c0b51b3202246463e986c7e205df.  This is the paper that NAMES the
+% log-variance loss Var[log(p/q)] and shows its gradient equals the ELBO
+% gradient with leave-one-out control variates ("VarGrad").
+@inproceedings{vargrad,
+  title        = {{VarGrad}: A Low-Variance Gradient Estimator for Variational Inference},
+  author       = {Richter, Lorenz and Boustati, Ayman and N{\"u}sken, Nikolas and
+                  Ruiz, Francisco J. R. and Akyildiz, {\"O}mer Deniz},
+  booktitle    = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume       = {33},
+  year         = {2020},
+  note         = {arXiv:2010.10436}
+}
+
+% VERIFIED 2026-08-03: arxiv.org/abs/2005.05409 ; Partial Differential Equations
+% and Applications 2(4), 2021, doi 10.1007/s42985-021-00102-x.  Introduces the
+% path-space divergence family (including the log-variance / second-moment
+% divergences) and the off-policy freedom in the reference measure.
+@article{nusken2021pathspace,
+  title        = {Solving high-dimensional {Hamilton--Jacobi--Bellman} {PDEs} using neural
+                  networks: perspectives from the theory of controlled diffusions and
+                  measures on path space},
+  author       = {N{\"u}sken, Nikolas and Richter, Lorenz},
+  journal      = {Partial Differential Equations and Applications},
+  volume       = {2},
+  number       = {4},
+  year         = {2021},
+  note         = {arXiv:2005.05409}
+}
+
+% VERIFIED 2026-08-03: arxiv.org/abs/2307.01198 ; ICLR 2024.  Shows the
+% log-variance loss avoids the mode collapse of the reverse KL and is the
+% best-performing objective across the diffusion-sampler family.
+@inproceedings{richter2024improvedsampling,
+  title        = {Improved sampling via learned diffusions},
+  author       = {Richter, Lorenz and Berner, Julius},
+  booktitle    = {International Conference on Learning Representations (ICLR)},
+  year         = {2024},
+  note         = {arXiv:2307.01198}
+}
+
+% VERIFIED 2026-08-03: arxiv.org/abs/2402.05098 ; NeurIPS 2024.  The
+% off-policy-training reference: divergence-based sampler losses are trained on
+% trajectories drawn from a reference measure that need not be the model's own.
+@inproceedings{sendera2024offpolicy,
+  title        = {Improved off-policy training of diffusion samplers},
+  author       = {Sendera, Marcin and Kim, Minsu and Mittal, Sarthak and Lemos, Pablo and
+                  Scimeca, Luca and Rector-Brooks, Jarrid and Adam, Alexandre and
+                  Bengio, Yoshua and Malkin, Nikolay},
+  booktitle    = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year         = {2024},
+  note         = {arXiv:2402.05098}
+}
+
+% ---------------------------------------------------------------------
+% Force-supervision works that SUCCEED, cited so that the force result of this
+% paper is scoped to our setting rather than read as a general claim.
+% Added by the same revision pass; both verified 2026-08-03 on arXiv.
+% ---------------------------------------------------------------------
+
+% VERIFIED 2026-08-03 against arxiv.org/abs/2503.14569 (v2, 5 Aug 2025).
+@article{psm,
+  title        = {Potential Score Matching: Debiasing Molecular Structure Sampling with
+                  Potential Energy Guidance},
+  author       = {Guo, Liya and Wang, Zun and Liu, Chang and Li, Junzhe and Hu, Pipi and
+                  Zhu, Yi},
+  journal      = {arXiv preprint arXiv:2503.14569},
+  year         = {2025}
+}
+
+% VERIFIED 2026-08-04 against arxiv.org/abs/2603.05527 (submitted 26 Feb 2026).
+% The author list is a SINGLE author, Pipi Hu (BIMSA) -- the earlier "and others"
+% was a drafting artefact, not a truncation of a longer list.  Open item V1 in
+% main.tex is closed for this entry.
+@article{driftingboltzmann,
+  title        = {Drifting to {Boltzmann}: Million-Fold Acceleration in {Boltzmann} Sampling
+                  with Force-Guided Drifting},
+  author       = {Hu, Pipi},
+  journal      = {arXiv preprint arXiv:2603.05527},
+  year         = {2026}
+}
+
+% ---------------------------------------------------------------------
+% Added 2026-08-04 (INTEGRITY_AUDIT_v2 issue "related-work gaps"): the two
+% neighbours a reviewer in the diffusion-sampler area will name.  FAB is the
+% standard remedy for exactly the wrong-relative-mode-mass failure that
+% \Cref{cor:basins} formalises, so its absence next to that corollary was
+% conspicuous.  Both VERIFIED 2026-08-04 (arXiv abstract pages).
+% ---------------------------------------------------------------------
+
+@inproceedings{fab,
+  title        = {Flow Annealed Importance Sampling Bootstrap},
+  author       = {Midgley, Laurence Illing and Stimper, Vincent and
+                  Simm, Gregor N. C. and Sch{\"o}lkopf, Bernhard and
+                  Hern{\'a}ndez-Lobato, Jos{\'e} Miguel},
+  booktitle    = {International Conference on Learning Representations (ICLR)},
+  year         = {2023},
+  note         = {arXiv:2208.01893}
+}
+
+@inproceedings{idem,
+  title        = {Iterated Denoising Energy Matching for Sampling from {Boltzmann} Densities},
+  author       = {Akhound-Sadegh, Tara and Rector-Brooks, Jarrid and
+                  Bose, Avishek Joey and Mittal, Sarthak and Lemos, Pablo and
+                  Liu, Cheng-Hao and Sendera, Marcin and Ravanbakhsh, Siamak and
+                  Gidel, Gauthier and Bengio, Yoshua and Malkin, Nikolay and
+                  Tong, Alexander},
+  booktitle    = {International Conference on Machine Learning (ICML)},
+  year         = {2024},
+  note         = {arXiv:2402.06121}
+}
+
+% ---------------------------------------------------------------------
+% Added 2026-08-04 (SPINE_v2 / RULING R1 pass).  Three groups:
+%   (i)   the optimal-control origin of the log-variance loss, completing the
+%         attribution cluster {vargrad, nusken2021pathspace,
+%         richter2024improvedsampling, sendera2024offpolicy};
+%   (ii)  energy-based de-novo 3D generation (EBMol), the closest existing
+%         attempt to give a de-novo 3D generator a persistent scalar energy;
+%   (iii) ensemble-aware molecular design (DECAF), which makes the same
+%         ensemble-versus-single-structure argument on the design side.
+% ---------------------------------------------------------------------
+
+% VERIFIED 2026-08-04: arxiv.org/abs/2211.01364 ; Transactions on Machine
+% Learning Research, 2024.  Derives the HJB/optimal-control view of
+% diffusion-based generative modelling in which the log-variance loss sits, and
+% is the standard companion citation to richter2024improvedsampling.
+@article{berner2024optimalcontrol,
+  title        = {An optimal control perspective on diffusion-based generative modeling},
+  author       = {Berner, Julius and Richter, Lorenz and Ullrich, Karen},
+  journal      = {Transactions on Machine Learning Research},
+  year         = {2024},
+  note         = {arXiv:2211.01364}
+}
+
+% VERIFIED 2026-08-04: arxiv.org/abs/2605.18381 (submitted 18 May 2026); title
+% and full author list read from the arXiv abstract page.
+% TODO-verify: venue at camera-ready time (arXiv preprint as of 2026-08-04).
+@article{ebmol,
+  title        = {Generating Physically Consistent Molecules with Energy-Based Models},
+  author       = {Griesbacher, Christoph and Bogensperger, Lea and Habring, Andreas and
+                  Pock, Thomas},
+  journal      = {arXiv preprint arXiv:2605.18381},
+  year         = {2026}
+}
+
+% VERIFIED 2026-08-04: arxiv.org/abs/2607.19519 (submitted 21 July 2026); title
+% and full author list read from the arXiv abstract page.
+% TODO-verify: venue at camera-ready time (arXiv preprint as of 2026-08-04).
+@article{decaf,
+  title        = {Boltzmann-Expected Molecular Design with Decoupled Annealing Flows},
+  author       = {Moqvist, Selma and Beckmann, Richard and Irwin, Ross and
+                  Mercado, Roc{\'i}o and Olsson, Simon},
+  journal      = {arXiv preprint arXiv:2607.19519},
+  year         = {2026}
+}
+
+% VERIFIED 2026-08-18 against arxiv.org/abs/2508.18949 (title, full author list,
+% submission date 26 Aug 2025) and icml.cc/virtual/2025/poster/44407 (venue).
+% The method is named IDFlow in the paper itself (Fig. 1 caption; Sec. 1), even
+% though the ICML virtual page does not print the name.  Its "energy" is the
+% reconstruction error ||x - x_hat|| of an idempotent flow map -- an INTERNAL
+% learned energy -- not an external physical potential.  Cited for contrast only;
+% it is not an experimental baseline for this paper.
+@inproceedings{idflow,
+  title        = {Energy-Based Flow Matching for Generating {3D} Molecular Structure},
+  author       = {Zhou, Wenyin and Sprague, Christopher Iliffe and
+                  Viliuga, Vsevolod and Tadiello, Matteo and
+                  Elofsson, Arne and Azizpour, Hossein},
+  booktitle    = {International Conference on Machine Learning (ICML)},
+  year         = {2025},
+  note         = {arXiv:2508.18949}
+}

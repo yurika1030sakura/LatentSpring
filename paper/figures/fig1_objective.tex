@@ -1,0 +1,362 @@
+% =====================================================================
+%  fig1_objective.tex --- Figure 1: the objective and its scope
+%
+%  CONCEPTUAL FIGURE.  NO DATA.  No number in this figure is measured;
+%  every glyph is a schematic.  Nothing here asserts a result.
+%
+%  Replaces the old five-band figures/fig1_method.tex, which was too
+%  dense for a first-page explanatory figure and whose bands (b)/(c)
+%  gave the gradient-supervision path equal visual status.  Per the
+%  build brief the force branch is REMOVED from this figure entirely;
+%  gradient supervision appears only later, as an experimental
+%  comparator, and is not drawn here.
+%
+%  Pure TikZ.  No external images, no pgfplots, no \includegraphics,
+%  no arrows.meta, no pgfmathrandom (byte-reproducible across compiles).
+%  Okabe--Ito colour-blind-safe palette, semantics shared with
+%  make_experiment_figures.py::PALETTE:
+%     blue    model / flow / learned quantities
+%     green   the value term (energy values, L_value)
+%     orange  the teacher (universal neural potential)
+%     grey    neutral structure
+%  Vermilion (= gradient supervision) and purple (= scrambled control)
+%  are deliberately ABSENT: neither concept appears in this figure.
+%
+%  USAGE
+%   (a) standalone (verification / slides):   pdflatex fig1_objective.tex
+%   (b) inside the paper -- main.tex already \usepackage{tikz} and
+%       \usepackage{amsmath}:
+%         \input{figures/fig1_objective_float}
+%       or, if the writer prefers to own the float:
+%         \begin{figure}[t]\centering
+%           \input{figures/fig1_objective}
+%           \caption{...}\label{fig:objective}
+%         \end{figure}
+%
+%  SIZE.  Natural size 13.90cm x 8.80cm == 5.47in x 3.46in.
+%  ICLR is a SINGLE 5.5in text column, so this is a full-text-width
+%  figure at scale 1.0.  DO NOT rescale it and DO NOT wrap it in
+%  \resizebox: every glyph inside is \small / \footnotesize /
+%  \scriptsize of the 10pt body font, and scaling desynchronises
+%  in-figure text from the caption.
+%
+%  LAYOUT.  A 2x2 grid, read left-to-right, top-to-bottom:
+%    (a) the generator      composition AND geometry from one flow
+%    (b) the teacher        energy values for K displacements of one parent
+%    (c) the objective      L_ours = L_FM + lambda_E L_value, and nothing else
+%    (d) the scope          two basins of ONE composition; offset free
+%  Panel widths 6.80 / 6.78 cm; no wire crosses a panel boundary, so
+%  there is no routing to collide with text.
+%
+%  REVISION C8 (this pass).  Two changes, both confined to panels (c)/(d):
+%   * (c) now displays the complete objective, L_ours = L_FM + lambda_E
+%     L_value, so the reader cannot infer a hidden force or anchor branch.
+%     Neither branch was ever drawn here and neither is added.
+%   * (d) previously drew two groups of two DIFFERENT compositions
+%     (c_A, c_B).  That was wrong twice over.  It misstated the failure
+%     mode -- the unidentified offset is already present WITHIN a single
+%     conditional density -- and it flirted with the claim that one
+%     composition contributes exactly one group, which the composition
+%     audit refutes: in the training perturbation shard
+%     (processed_data/omol25_4m_processed/perturbation_train_n30000_s0.pt)
+%     30,000 parent groups carry only
+%     22,822 distinct (element multiset, total charge) keys, 2,204 keys
+%     are shared by more than one parent (9,382 parents, 31%; max
+%     multiplicity 80).  Panel (d) therefore now shows two groups A and B
+%     of the SAME composition c: two disconnected supervised regions of
+%     one density p_theta(.|c), each with its own free offset b_A, b_B.
+%     "ordering fixed" / "pinned" wording is replaced throughout by
+%     "the local relation between log-density and energy is constrained".
+%  In the EVALUATION population (val_data_processed.pt; the 120 grid
+%  parents and the 93 primary parents) every parent has a distinct
+%  composition, multiplicity 1 -- that is an audited property of the
+%  evaluation set, not of the supervision design, and this figure does
+%  not assert it.
+% =====================================================================
+
+% ---- standalone bootstrap (skipped when \input into a tikz-enabled doc) ----
+\ifx\tikzpicture\undefined
+  \documentclass[10pt]{article}
+  % 0.05cm of slack past the 13.90cm bounding box so that the panel border
+  % stroke width does not report a spurious overfull \hbox in standalone mode.
+  \usepackage[paperwidth=14.40cm,paperheight=9.20cm,margin=0.20cm,noheadfoot]{geometry}
+  \usepackage{amsmath,amssymb,bm}
+  \usepackage{times}
+  \usepackage{tikz}
+  \setlength{\topskip}{0pt}
+  \setlength{\parindent}{0pt}
+  \pagestyle{empty}
+  \begin{document}%
+  \def\figOneFinish{\end{document}}
+\fi
+\providecommand{\figOneFinish}{\relax}
+\providecommand{\figOneScale}{1.0}
+
+\usetikzlibrary{positioning,calc,fit,backgrounds,arrows,shapes.geometric}
+
+% ---------------------------------------------------------------- palette
+% Okabe & Ito (2008), CVD-safe qualitative set.
+\providecommand{\oiOrangeDefined}{}
+\definecolor{oiOrange}{HTML}{E69F00}
+\definecolor{oiSky}   {HTML}{56B4E9}
+\definecolor{oiGreen} {HTML}{009E73}
+\definecolor{oiBlue}  {HTML}{0072B2}
+\definecolor{oiPurple}{HTML}{CC79A7}
+\definecolor{oiGrey}  {HTML}{7F7F7F}
+\definecolor{oiGreyL} {HTML}{C4C4C4}
+\definecolor{oiGreyD} {HTML}{4D4D4D}
+
+% ---------------------------------------------------------------- type
+% Body 10pt Times => \small 9pt, \footnotesize 8pt, \scriptsize 7pt.
+% Titles are 9pt bold; all explanatory text is 8pt; 7pt is used only for
+% short qualifiers.  Nothing in this figure is smaller than 7pt.
+\tikzset{
+  fpanel/.style   ={rounded corners=2.4pt, draw=#1!55!white, line width=0.7pt,
+                    fill=#1!4},
+  ftitle/.style   ={anchor=north west, font=\small\bfseries, inner sep=0pt,
+                    text=oiGreyD},
+  fsub/.style     ={anchor=north west, font=\footnotesize, inner sep=0pt,
+                    text=oiGrey, align=left},
+  fbody/.style    ={anchor=north west, font=\footnotesize, inner sep=0pt,
+                    align=left},
+  fnote/.style    ={anchor=north west, font=\scriptsize, inner sep=0pt,
+                    align=left, text=oiGreyD},
+  fctr/.style     ={anchor=north, font=\footnotesize, inner sep=0pt,
+                    align=center},
+  fctrn/.style    ={anchor=north, font=\scriptsize, inner sep=0pt,
+                    align=center, text=oiGreyD},
+  flow/.style     ={-stealth', line width=1.0pt, draw=oiBlue},
+  teach/.style    ={-stealth', line width=1.0pt, draw=oiOrange!88!black},
+  freearr/.style  ={stealth'-stealth', line width=0.8pt, draw=oiGrey,
+                    dash pattern=on 2.4pt off 1.8pt},
+  eqbox/.style    ={rounded corners=2.4pt, draw=oiGreen!65!white,
+                    line width=0.8pt, fill=oiGreen!8},
+}
+
+% ------------------------------------------------------- molecule glyphs
+% Deterministic coordinates: the figure is identical on every compile.
+\newcommand{\fAtom}[3]{\fill[#3] (#1,#2) circle (2.05pt);%
+  \draw[oiGreyD!55, line width=0.2pt] (#1,#2) circle (2.05pt);}
+\newcommand{\fAtomS}[3]{\fill[#3] (#1,#2) circle (1.35pt);%
+  \draw[oiGreyD!45, line width=0.15pt] (#1,#2) circle (1.35pt);}
+\newcommand{\fBond}[4]{\draw[oiGrey!80, line width=0.7pt] (#1,#2) -- (#3,#4);}
+
+% t = 0 : unstructured cloud, no bonds, no identities
+\newcommand{\fMolNoise}{%
+  \fAtomS{-0.36}{ 0.32}{oiGreyL}\fAtomS{ 0.12}{ 0.38}{oiGreyL}%
+  \fAtomS{ 0.38}{ 0.06}{oiGreyL}\fAtomS{-0.10}{-0.02}{oiGreyL}%
+  \fAtomS{-0.42}{-0.28}{oiGreyL}\fAtomS{ 0.06}{-0.36}{oiGreyL}%
+  \fAtomS{ 0.42}{-0.34}{oiGreyL}\fAtomS{ 0.26}{ 0.24}{oiGreyL}%
+  \fAtomS{-0.18}{ 0.12}{oiGreyL}}
+
+% t = 1 : a structure with distinguishable element identities.  Element
+% colours are neutral (grey / blue / sky / purple) so they cannot be read
+% as the semantic green (value) or orange (teacher).
+\newcommand{\fMolFinal}{%
+  \fBond{ 0.000}{ 0.30}{-0.285}{ 0.09}\fBond{-0.285}{ 0.09}{-0.176}{-0.25}%
+  \fBond{-0.176}{-0.25}{ 0.176}{-0.25}\fBond{ 0.176}{-0.25}{ 0.285}{ 0.09}%
+  \fBond{ 0.285}{ 0.09}{ 0.000}{ 0.30}%
+  \fBond{ 0.285}{ 0.09}{ 0.600}{ 0.27}%
+  \fBond{-0.285}{ 0.09}{-0.560}{ 0.32}%
+  \fBond{-0.176}{-0.25}{-0.385}{-0.47}%
+  \fAtom{ 0.000}{ 0.30}{oiGreyD!75}\fAtom{-0.285}{ 0.09}{oiGreyD!75}%
+  \fAtom{-0.176}{-0.25}{oiGreyD!75}\fAtom{ 0.176}{-0.25}{oiGreyD!75}%
+  \fAtom{ 0.285}{ 0.09}{oiBlue}%
+  \fAtom{ 0.600}{ 0.27}{oiPurple}%
+  \fAtomS{-0.560}{ 0.32}{oiSky}%
+  \fAtomS{-0.385}{-0.47}{white}}
+
+% the same structure, small, for the displacement cloud in panel (b)
+\newcommand{\fMolSmall}[1]{%
+  \draw[#1, line width=0.55pt]
+    ( 0.000, 0.24) -- (-0.228, 0.07) -- (-0.141,-0.20) --
+    ( 0.141,-0.20) -- ( 0.228, 0.07) -- cycle;
+  \draw[#1, line width=0.55pt] ( 0.228, 0.07) -- ( 0.470, 0.22);
+  \draw[#1, line width=0.55pt] (-0.228, 0.07) -- (-0.440, 0.25);
+  \foreach \px/\py in {0/0.24, -0.228/0.07, -0.141/-0.20, 0.141/-0.20,
+                       0.228/0.07, 0.470/0.22, -0.440/0.25}
+    {\fill[#1] (\px,\py) circle (1.15pt);}}
+
+% =====================================================================
+\begin{tikzpicture}[x=1cm, y=1cm, scale=\figOneScale, >=stealth']
+% stable bounding box
+\path (0,0) rectangle (13.90,8.80);
+
+% ---- panel frames ----------------------------------------------------
+\draw[fpanel=oiBlue]   (0.02,4.85) rectangle (6.82,8.75);
+\draw[fpanel=oiOrange] (7.10,4.85) rectangle (13.88,8.75);
+\draw[fpanel=oiGreen]  (0.02,0.05) rectangle (6.82,4.55);
+\draw[fpanel=oiGrey]   (7.10,0.05) rectangle (13.88,4.55);
+
+% =====================================================================
+% (a) THE GENERATOR
+% =====================================================================
+\node[ftitle] at (0.22,8.66) {(a) A de novo flow};
+\node[fsub, text width=6.30cm] at (0.22,8.30)
+     {composition \emph{and} geometry from one model};
+
+% prior
+\begin{scope}[shift={(1.15,7.34)}]\fMolNoise\end{scope}
+\node[fctr, text width=2.60cm] at (1.32,6.66)
+     {$x_0\sim\mathcal{N}(0,\sigma^{2}I)$};
+\node[fctrn, text width=2.40cm] at (1.32,6.28) {random types};
+
+% flow arrow
+\draw[flow] (2.20,7.34) -- (3.90,7.34);
+\node[anchor=south, font=\footnotesize, text=oiBlue!80!black] at (3.05,7.46)
+     {$v_\theta(x_t,t)$};
+\node[anchor=north, font=\scriptsize, text=oiGreyD] at (3.05,7.20)
+     {flow matching};
+
+% sample
+\begin{scope}[shift={(5.15,7.34)}]\fMolFinal\end{scope}
+\node[fctr, text width=2.60cm] at (5.15,6.66) {$(c,\,x)$};
+\node[fctrn, text width=3.10cm] at (5.15,6.30)
+     {atom types $c$, coordinates $x$};
+
+\node[fbody, text width=6.46cm] at (0.22,5.94)
+     {No bond labels anywhere. With the discrete labels
+      clamped, reversing the positional ODE gives
+      $\log q_\theta(x\mid c)$.};
+
+% =====================================================================
+% (b) THE TEACHER
+% =====================================================================
+\node[ftitle] at (7.30,8.66) {(b) Teacher energy values};
+\node[fsub, text width=6.30cm] at (7.30,8.30)
+     {$K$ displaced geometries of \emph{one} parent};
+
+% displacement cloud: two faint copies + one dark reference structure
+\draw[oiGrey!45, line width=0.5pt, dash pattern=on 1.8pt off 1.6pt]
+      (8.35,7.24) circle (0.72);
+\begin{scope}[shift={(8.19,7.40)}]\fMolSmall{oiGreyL}\end{scope}
+\begin{scope}[shift={(8.54,7.10)}]\fMolSmall{oiGreyL}\end{scope}
+\begin{scope}[shift={(8.33,7.22)}]\fMolSmall{oiGreyD!80}\end{scope}
+\node[fctr, text width=2.40cm] at (8.35,6.36) {$x_1,\dots,x_K$};
+\node[fctrn, text width=2.60cm] at (8.35,6.04) {same composition $c$};
+
+% teacher arrow
+\draw[teach] (9.28,7.24) -- (10.22,7.24);
+\node[anchor=south, font=\footnotesize, text=oiOrange!55!black] at (9.75,7.36)
+     {$E(c,\cdot)$};
+
+% energy ladder
+\draw[-stealth', line width=0.7pt, draw=oiGreyD] (10.72,6.42) -- (10.72,7.94);
+\node[anchor=east, font=\footnotesize, text=oiGreyD] at (10.62,7.84) {$E$};
+\foreach \yy in {6.58, 6.86, 7.12, 7.44, 7.74}
+  {\draw[oiGrey!70, line width=0.5pt] (10.72,\yy) -- (11.06,\yy);
+   \fill[oiOrange!85!black] (11.06,\yy) circle (1.6pt);}
+\node[anchor=west, font=\footnotesize] at (11.24,7.62)
+     {$E_k=E(c,x_k)$};
+\node[anchor=north west, font=\scriptsize, text width=2.50cm, text=oiGreyD]
+      at (11.24,7.30) {one value per geometry};
+
+\node[fbody, text width=6.34cm] at (7.30,5.62)
+     {A universal neural potential over $83$ elements supplies every
+      value. Only the values are used.};
+
+% =====================================================================
+% (c) THE OBJECTIVE
+% =====================================================================
+\node[ftitle] at (0.22,4.46) {(c) Proposed energy-value supervision};
+
+\draw[eqbox] (0.16,2.86) rectangle (6.68,4.06);
+\node[anchor=center, font=\small] at (3.42,3.86)
+     {$\mathcal{L}_{\mathrm{ours}}
+       =\mathcal{L}_{\mathrm{FM}}+\lambda_E\,\mathcal{L}_{\mathrm{value}}$};
+\node[anchor=center, font=\small] at (3.42,3.48)
+     {$\mathcal{L}_{\mathrm{value}}
+       =\mathrm{Var}_{k}\big[\,\log q_\theta(x_k\mid c)+E_k/kT\,\big]$};
+% The cancellation is the selling point of the objective, so it is drawn in
+% the value colour rather than in neutral grey.  It is a statement about the
+% objective, not a measured claim.
+\node[anchor=north, font=\scriptsize, inner sep=0pt, align=center,
+      text=oiGreen!45!black, text width=6.20cm] at (3.42,3.22)
+     {one added term; the partition function cancels};
+
+% schematic alignment plot
+\draw[oiGreyD, line width=0.7pt] (1.36,2.52) -- (1.36,1.02) -- (3.98,1.02);
+\node[rotate=90, anchor=south, font=\footnotesize, text=oiGreyD]
+      at (1.20,1.77) {$\log q_\theta$};
+\node[anchor=north, font=\footnotesize, text=oiGreyD] at (2.70,0.94)
+     {$-E_k/kT$};
+% the line the value term asks for: slope one, offset free
+\draw[oiGreen!70!black, line width=0.9pt, dash pattern=on 2.6pt off 1.8pt]
+      (1.52,1.16) -- (3.82,2.40);
+% unconstrained (grey) and aligned (green) geometries
+\foreach \px/\py in {1.68/2.12, 2.02/1.24, 2.36/2.32, 2.72/1.42,
+                     3.08/1.98, 3.46/1.30, 3.72/2.20}
+   {\fill[oiGrey!75] (\px,\py) circle (1.7pt);}
+\foreach \px/\py in {1.68/1.22, 2.02/1.42, 2.36/1.50, 2.72/1.76,
+                     3.08/1.92, 3.46/2.14, 3.72/2.36}
+   {\fill[oiGreen] (\px,\py) circle (1.7pt);}
+% legend
+\fill[oiGrey!75] (4.42,2.32) circle (1.7pt);
+\node[anchor=west, font=\footnotesize, text width=2.00cm] at (4.58,2.32)
+     {$\mathcal{L}_{\mathrm{value}}$ large};
+\fill[oiGreen] (4.42,1.86) circle (1.7pt);
+\node[anchor=west, font=\footnotesize, text width=2.00cm] at (4.58,1.86)
+     {$\mathcal{L}_{\mathrm{value}}=0$};
+\node[fnote, text width=2.30cm] at (4.30,1.50)
+     {one variance per group};
+
+\node[anchor=north, font=\scriptsize, text=oiGreyD] at (3.42,0.56)
+     {$\mathcal{L}_{\mathrm{value}}=0$ within a group
+      $\iff \log q_\theta=-E_k/kT+b$};
+
+% =====================================================================
+% (d) THE SCOPE
+% =====================================================================
+% Two lines of \small\bfseries; the composition fact that used to sit in a
+% separate subtitle is folded into the region label below, which is where the
+% single conditional density is named anyway.
+\node[ftitle, text width=6.50cm, align=left] at (7.30,4.46)
+     {(d) Local supervision and the\\path to global control};
+
+% the enclosing region: ONE conditional density, several supervised groups
+\draw[rounded corners=2.8pt, draw=oiGrey!50, line width=0.6pt,
+      dash pattern=on 2.2pt off 1.8pt] (7.42,1.02) rectangle (13.56,3.54);
+\node[anchor=center, font=\scriptsize, text=oiGreyD, inner sep=1.6pt,
+      fill=oiGrey!4] at (10.49,3.54)
+     {one density $q_\theta(\cdot\mid c)$ --- same composition $c$};
+
+\foreach \cx/\lbl in {8.86/A, 12.12/B}
+{%
+  \node[anchor=north, font=\footnotesize] at (\cx,3.36)
+       {group $\lbl$ (basin $\lbl$)};
+  \draw[oiGreen!60!white, line width=0.8pt, fill=oiGreen!7]
+        (\cx,2.38) ellipse (1.28 and 0.56);
+  \draw[oiGreen!45!black, line width=0.6pt]
+        (\cx-0.88,2.26) -- (\cx-0.44,2.52) -- (\cx,2.36)
+        -- (\cx+0.44,2.69) -- (\cx+0.84,2.50);
+  \foreach \dx/\yy in {-0.88/2.26, -0.44/2.52, 0.00/2.36,
+                        0.44/2.69, 0.84/2.50}
+    {\fill[oiGreen] (\cx+\dx,\yy) circle (1.7pt);}
+  \node[anchor=north, font=\scriptsize, text=oiGreyD] at (\cx,1.74)
+       {local relation constrained};
+  \node[anchor=north, font=\footnotesize] at (\cx,1.46)
+       {offset $b_{\lbl}$ free};
+}
+
+\draw[freearr] (10.16,2.38) -- (10.82,2.38);
+\node[anchor=south, font=\footnotesize, text=oiGrey] at (10.49,2.46) {?};
+
+% Same mathematical content as before -- b_B - b_A and the relative mass are
+% not identified -- with the constructive half of the statement added: what
+% would have to be built to identify them.  No claim is weakened.
+% WIDTH BUDGET.  The float sets \figOneScale = 1.000 and the picture is measured
+% at that scale (see the measurement note in fig1_objective_float.tex: at 1.000 a
+% 600 dpi render has zero ink outside the four panel frames; at 0.86 it has 4085
+% such pixels, because tikz's `scale' shrinks COORDINATES but not type).  Panel
+% (d) is 6.78cm wide at scale 1.000 and every font size here is absolute.  Two lines of at most ~42 \footnotesize characters is the whole
+% budget; anything longer runs out of the panel and into panel (c).  Both qualifications survive the compression: the offset
+% DIFFERENCE and the relative mass are the two unidentified quantities, and the
+% second line names the extension that would identify them.
+\node[anchor=north, font=\footnotesize, align=center]
+      at (10.49,0.92)
+     {$b_B-b_A$, relative mass: not identified.\\
+      Connecting groups would share one offset.};
+
+\end{tikzpicture}
+
+\figOneFinish

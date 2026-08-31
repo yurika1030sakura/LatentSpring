@@ -1,0 +1,218 @@
+% ============================================================================
+%  04_experiments.tex --- Sec. 4, the single Experiments section.
+%
+%  2026-08-30 MERGE PASS.  The former Sec. 4 "Experimental Design" and Sec. 5
+%  "Results" are ONE section now: a setting-and-protocol block (shared setting,
+%  the two tracks, metrics, reporting) runs straight into the three result
+%  subsections, whose titles are unchanged.  Do not re-split them.  The labels
+%  sec:setup / sec:protocol / sec:metrics / sec:experiments all now point at
+%  this one section.  VERIFIED 2026-08-30: only sec:setup is actually cited
+%  (A1_proofs.tex:704, 863); the other three are kept as spare anchors so an
+%  appendix cross-reference written against any of the four still resolves.
+%
+%  Floats: Figure 2 (fig:grid, matched grid, Sec. 4.1), Figure 3 (fig:ordering,
+%  ordering + retrieval + fixed-RMSD, Sec. 4.2), Figure 4 (fig:calibration).
+%
+%  2026-08-30 REFRAME + STATISTICAL REPORTING POLICY.
+%    * ZERO t values, ZERO p values, ZERO "significant"/"n.s." in this file.
+%      Descriptive standard only: arm mean +/- SEM over independently trained
+%      seeds, absolute effect size Delta r, seed counts, and
+%      launched/completed/diverged wherever completion differs by arm.
+%      Applied in BOTH directions: the favourable statistics went too.
+%    * The n = 4 / 12 / 48 resolution sensitivity analysis is NOT discussed
+%      here.  It appears in the main paper as ONE clause in Sec. 5.
+%    * The adverse seed imputations are NOT printed here; app:eval carries
+%      them and is the actual location of those numbers.
+%
+%  DESIGN IS ORGANISED BY EVIDENCE TRACK, NOT BY CHRONOLOGY.
+%    Track A  matched mechanism grid, 120 parents, six cells.
+%    Track B  the conservative held-out endpoint, 93 parents.
+%
+%  RELOCATED, NOT DELETED: Table 1 -> app:scalediag; the earlier checkpoint
+%  family's provenance and the defective scrambled shard -> app:cells,
+%  app:data; the adverse seed imputations -> app:eval; the launch timelines
+%  and the later cell-D block -> app:p0cells, app:stability; the resolution
+%  analysis -> app:estimator; the generation-quality table -> app:generation;
+%  the normal-mode family -> app:perturb.
+%
+%  Every number below is from the verified list.  Matched-grid means never
+%  absorb the later relaunch seeds.
+% ============================================================================
+
+\section{Experiments}
+\label{sec:setup}
+\label{sec:protocol}
+\label{sec:metrics}
+\label{sec:experiments}
+
+Evidence comes from two tracks. \textbf{Track A}, a matched mechanism grid, asks what inside the
+value term carries the gain; \textbf{Track B}, a conservative held-out endpoint, asks whether that
+gain survives a corrected evaluation and extends to retrieval. Track A is the cleaner design for
+causal comparison, its cells differing only in the physics block and the seed; the family behind
+Track B has known configuration provenance (\Cref{app:cells}) and is not presented as a matched
+trial.
+
+\paragraph{Shared setting.} Every arm trains the bond-free FlowMol3 backbone \citep{flowmol3} on
+OMol25 \citep{omol25} against the OMol25/eSEN teacher \citep{esen} under the settings of
+\Cref{sec:method}, for $30\,000$ optimiser steps at effective batch $16$, approximately $0.12$ data
+epochs. The read-out protocol is fixed and operational: unless otherwise stated, $\log q_\theta$ is
+evaluated with the paper's $n = 12$ ODE estimator and two Hutchinson probes
+\citep{ffjord,hutchinson}, and every evaluation energy is a GFN2-xTB single point \citep{gfn2xtb}
+from an evaluator that enters no training loss and shares no parameters or functional form with the
+teacher. Each held-out parent contributes one group of $K = 9$ geometries, its data geometry plus
+$8$ isotropic displacements at $\sigma = 0.15$~\AA{} per coordinate: a local stress test rather than
+a thermal conformer ensemble, measuring no mode occupancy.
+
+\paragraph{Track A: the matched mechanism grid.} Six cells at five seeds each, warm-started from a
+common checkpoint and matched in \emph{every} non-physics setting: optimiser, budget, batch,
+estimator, and shards drawn from the training split alone. The cells are \textbf{A},
+flow matching only; \textbf{B}, the same penalty on shards whose energies are \emph{identically
+zero}, so \eqref{eq:lvalue} degenerates to $\Var_k[\log q_\theta]$ and no energy label enters the
+loss; \textbf{C}, energies scrambled within each parent, a $y$-randomisation
+\citep{ruecker2007yrandom} carrying the treatment's own energy multiset and spread; \textbf{D}, true
+energies; \textbf{E}, the gradient baseline of \Cref{sec:forcebaseline} alone; \textbf{F}, both, all
+scored on 120 held-out parents with the data geometry dropped.
+
+\paragraph{Track B: the conservative held-out endpoint.} Two features of the earlier evaluation
+population inflate the contrast, and this endpoint removes both: the data geometry is systematically
+its group's lowest-energy member and hence high-leverage, and one perturbation shard read by every
+value-supervised arm in that family was built from the split the evaluation parents come from while
+the control reads none (\Cref{app:data}). Every geometry was therefore re-scored from one source,
+and each per-group
+statistic is computed on the \textbf{8 displaced geometries alone} over the \textbf{93 parents
+outside the shard pool}; both corrections apply uniformly and both \emph{reduce} the contrast. Five
+flow-matching seeds and four completed value seeds enter.
+
+\paragraph{Metrics.} Every statistic is computed inside a parent group and aggregated afterwards,
+for the reason the objective is grouped: the per-molecule constant $-\log Z(c)$ would otherwise
+dominate a pooled statistic (\Cref{app:eval}). For parent $m$,
+\begin{equation}
+  r_m = \mathrm{corr}_k\!\left(\log q_\theta(\vx_{m,k}),\, -\tfrac{E_{m,k}}{kT}\right),
+  \qquad
+  \mathrm{NRV}_m = \frac{\Var_k[\log q_\theta(\vx_{m,k}) + E_{m,k}/kT]}
+       {\Var_k[E_{m,k}/kT]} .
+  \label{eq:rm}
+\end{equation}\vspace{-6pt}%
+Pearson $r_m$ is invariant under positive affine maps of either variable (\Cref{rem:affine}), so it
+scores the \emph{shape} of $\log q_\theta$ against energy and is blind to calibration.
+$\mathrm{NRV}_m$ is invariant to the per-group constant \Cref{prop:ident} leaves free and is
+anchored at both ends: a within-group Boltzmann density scores $0$, a \emph{constant} log-density
+exactly $1$. The identity $\mathrm{NRV}_{\min} = 1 - r_m^2$ is the best any single rescaling could
+reach, and $kT_{\mathrm{eff}}$ is the implied temperature, ideally $1.0$~eV (\Cref{app:scalediag}).
+\emph{Retrieval} asks how often ranking a parent's geometries by $\log q_\theta$ puts the
+lowest-energy one first, or in the top three.
+
+\paragraph{Reporting.} We report effect sizes, means and standard errors over independently trained
+seeds, together with every seed-level result. Because several cells contain only two to five
+completed seeds and completion is objective-dependent, we use these descriptive quantities rather
+than treating asymptotic null-hypothesis tests as the primary evidence. A training run is the unit
+of replication, every figure draws every seed point, every value-cell mean carries its launched /
+completed / diverged counts, and per-seed records are in \Cref{app:p0cells,app:eval,app:stability}.
+
+Two quantities run through the results below: a correlation, which scores the \emph{direction} of the
+density's response to energy, and a normalised residual variance, which also scores its
+\emph{magnitude}. Value supervision moves the first and not the second. Relative basin mass, the
+third property of \Cref{sec:theory}, is measured nowhere.
+
+\subsection{Correct Energy Pairings Drive the Gain}
+\label{sec:ablation}
+\label{sec:negative}
+
+\Cref{fig:grid} answers three questions with one matched design. \emph{Does the value term improve
+ordering?} Cell D reaches $0.421 \pm 0.016$ against cell A's $0.217 \pm 0.008$, $\Delta r = +0.204$,
+and every completed D seed lies above the observed range of every control cell. \emph{Is the gain
+merely density regularisation?} Cell B, whose shard energies are identically zero so no energy label
+enters the loss, reaches $0.187 \pm 0.030$, $0.030$ \emph{below} A, and D exceeds it by $+0.234$.
+\emph{Does it require the correct correspondence?} Cell C, carrying real energies whose pairing to
+geometries is destroyed, sits at $0.185 \pm 0.020$, again below no physics, and D exceeds it by
+$+0.236$. The three controls lie within $0.032$ of one another, an order of magnitude below the
+treatment effect: the geometry-to-energy correspondence moves ordering, an auxiliary penalty on the
+log-density or the energy multiset alone does not.
+
+\input{figures/fig3_grid}
+
+\textbf{The gradient comparator.} Cell E carries the score-matched force term alone, completed $5/5$
+at $0.085 \pm 0.016$, below the physics-free baseline by $-0.132$; added to the value term it
+subtracts again, F scoring $0.194 \pm 0.016$ against D's $0.421$, a difference of $-0.227$. Cell E2,
+identical to E at $\lambda_1 = 0.01$, completed $5/5$ at $0.080 \pm 0.013$, so the result does not
+rest on one badly chosen weight (\Cref{app:p0cells}). The claim stays narrow: naive, off-policy,
+endpoint force matching, read through the flow-matching score identity \eqref{eq:score}, is harmful
+on this non-equilibrium corpus. It is not a claim that force supervision is unhelpful for
+energy-grounded generation, which can be made to work \citep{psm,driftingboltzmann}; \Cref{prop:trap,prop:conflict}
+name candidate mechanisms.
+
+\textbf{Completion by cell.} The launch record is A $5/5/0$, B $5/4/1$, C $5/5/0$, D $5/3/2$, E
+$5/5/0$, F $5/2/3$ launched / completed / diverged: none of the ten runs without the value term
+failed, against six of the twenty carrying it, cell B included, which implicates the reverse-time
+log-density objective and its gradient rather than the teacher's energies; D and F are means over
+survivors. Two records bound that risk. A later, byte-identically configured block of four cell-D
+seeds completed in full at $0.353$, $0.374$, $0.452$ and $0.471$, and across all seven scored D runs
+the mean is $0.416 \pm 0.017$; that block is reported separately and never merged into the grid
+means. The F campaign launched $10$, completed $3$ and diverged $7$, its three completed runs
+agreeing at $0.197 \pm 0.009$ (\Cref{app:p0cells,app:stability}).
+
+\subsection{The Gain Generalises to Held-out Molecules and Retrieval}
+\label{sec:mainresult}
+\label{sec:main}
+\label{sec:reference}
+
+\textbf{Ordering improves well beyond seed spread.} On the conservative held-out endpoint ---
+$93$ parents disjoint from the supervision pool, data geometry dropped, every geometry scored by the
+independent evaluator --- the value term raises the mean per-parent correlation between
+$\log q_\theta$ and $-E/kT$ from $0.200 \pm 0.018$ over five flow-matching seeds to
+$0.369 \pm 0.023$ over four completed value seeds, an effect size of $\Delta r = +0.169$
+(\Cref{fig:ordering}a). All four value seeds exceed all five control seeds, so the observed seed
+ranges of the two arms do not overlap. The launch record is $5/5/0$ for flow matching and $5/4/1$
+for the value arm, so the value mean is conditional on four of five completed launches, and
+\Cref{app:imputation} reports conservative imputations for that run. The shift is spread across
+the population rather than carried by a few parents, value supervision scoring higher on $67$ of the
+$93$ (\Cref{fig:ordering}b).
+
+\textbf{Retrieval improves, and the gain persists at fixed RMSD.} Ranking a parent's eight
+displaced geometries by $\log q_\theta$ identifies the lowest-energy one $29.6\%$ of
+the time under value supervision against $20.2\%$ for the control, with $12.5\%$ at chance, and
+top-3 rises from $49.5\%$ to $62.4\%$ against $37.5\%$ (\Cref{fig:ordering}c). Retrieval is
+invariant to the per-group constant and to calibration. The gain also persists at fixed RMSD: on a family
+holding the within-group displacement magnitude constant to numerical precision, value supervision
+reaches $0.305$ against $0.182$, a gap of $+0.124$ with four seeds per arm (\Cref{fig:ordering}d),
+which rules out radial-distance variation as the sole explanation. A normal-mode family also has a
+positive mean gap ($+0.185$ over five seeds per arm), but its observed seed ranges overlap, so we
+treat it as supporting context only (\Cref{app:perturb}).
+
+\input{figures/fig2_ordering}
+
+\textbf{Where the level sits.} Teacher and evaluator are different theories of chemistry, so a model
+reproducing its teacher exactly would not score $1$: pushing the \emph{teacher's own} energies
+through the identical pipeline gives $r = 0.927$ on the same 93 parents, an ensemble-specific
+reference, not a ceiling (\Cref{app:scalediag}). Budget and locality remain open explanations of the
+rest.
+
+\subsection{Value Supervision Improves Ordering Before Calibration}
+\label{sec:scale}
+
+\textbf{Direction improves; the raw scale does not.} Ordering and calibration are different requests
+of the same density, and the objective clearly answers the first. On the same models, seeds and
+parents, the normalised residual variance rises from $1.402$ to $2.144$, where a \emph{constant}
+log-density scores exactly $1$ (\Cref{fig:calibration}a): the arm that ranks geometries better sits
+further from the Boltzmann scale, which is why we report the two quantities separately rather than
+as one claim of physical grounding.
+
+\textbf{The usable signal nonetheless increases.} No rescaling can bring a parent's
+$\mathrm{NRV}_m$ below $1 - r_m^2$, and that optimally rescaled bound falls from $0.825$ to $0.747$
+(\Cref{fig:calibration}b), so the density carries more energy-aligned information than before. The implied temperature moves the same way, from
+$kT_{\mathrm{eff}} = 8.02$~eV to $2.34$~eV against the $1.0$~eV target (\Cref{fig:calibration}c),
+and so does the slope, from $0.130$ to $0.448$: a response that was far too flat moves to the right
+order of magnitude, overshooting rather than approaching. The same separation
+appears against the eSEN training teacher, where $r$ rises from $0.202$ to $0.399$ while raw NRV
+rises from $1.676$ to $2.821$ (\Cref{app:scalediag}).
+
+\textbf{What a further intervention has to control.} Raw NRV additionally charges for the part of
+the residual that is not energy-aligned, and that part grows enough to push NRV up even as the
+rescaled bound falls; the free constant per group is not the cause, since $\mathrm{NRV}$ is
+invariant to it. Repair requires an additional scale-sensitive objective controlling the magnitude
+and the energy-unaligned component of the response --- a different term from \eqref{eq:lvalue}, and
+one this paper does not run.\label{sec:generation}\ On generation itself we detect \emph{no
+degradation in validity, PoseBusters pass rate \citep{posebusters} or uniqueness} at the evaluated
+sample size (\Cref{app:generation}).
+
+\input{figures/fig4_calibration}

@@ -135,6 +135,42 @@ def _checkpoint_callbacks(cfg: dict, fast: bool) -> list[pl.Callback]:
     return callbacks
 
 
+class FiniteWeightGuard(pl.Callback):
+    """Halt training the moment the weights go non-finite.
+
+    Why this exists: the BGFM energy term's within-parent variance estimator is
+    high-variance at small energy_b_parents. A finite-but-huge outlier produces a
+    gradient that blows the weights to NaN. The in-loop `isfinite(L_energy)` guard
+    then fires forever and silently ZEROES the loss -- so training happily
+    continues for days, writing corrupted checkpoints, and the run *looks* healthy
+    (loss printed as nan, but nothing stops). We lost a run to exactly this.
+
+    Fail loudly and immediately instead: the last good checkpoint stays usable.
+    """
+
+    def __init__(self, every_n_steps: int = 200):
+        super().__init__()
+        self.every_n_steps = int(every_n_steps)
+
+    def on_train_batch_end(self, trainer, pl_module, *args, **kwargs):
+        step = int(trainer.global_step)
+        if step == 0 or step % self.every_n_steps != 0:
+            return
+        bad = []
+        for name, p in pl_module.named_parameters():
+            if p is not None and p.is_floating_point() and not torch.isfinite(p).all():
+                bad.append(name)
+                if len(bad) >= 5:
+                    break
+        if bad:
+            msg = (f"[FiniteWeightGuard] NON-FINITE WEIGHTS at global_step={step}. "
+                   f"First offenders: {bad}. Halting so the last good checkpoint "
+                   f"stays usable. Likely cause: an L_energy / L_force outlier "
+                   f"blew up the gradient (see bgfm.energy_loss_cap, "
+                   f"bgfm.energy_b_parents).")
+            print(msg, flush=True)
+            raise RuntimeError(msg)
+
 class BatchStatsCallback(pl.Callback):
     """Print first-batches shape/memory stats so smoke logs are self-auditing."""
 
@@ -370,6 +406,7 @@ def main():
         LearningRateMonitor(logging_interval='step'),
         TQDMProgressBar(refresh_rate=50),
         BatchStatsCallback(prefix="[smoke]" if args.fast else "[train]"),
+        FiniteWeightGuard(every_n_steps=200),
     ]
     callbacks.extend(_checkpoint_callbacks(cfg, fast=args.fast))
 

@@ -246,6 +246,10 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
     # within-mol Boltzmann deviation. See cfm_mol/bgfm_density.py.
     energy_perturb_paths = bgfm_config.get('energy_perturbation_shards', [])
     energy_b_parents = int(bgfm_config.get('energy_b_parents', 4))
+    # Reject finite-but-huge L_energy outliers (see the guard in the training step).
+    # 0 disables. Typical L_energy is O(1e2-1e3); a spike well above that is an
+    # outlier parent, not signal, and it will detonate the weights if backpropped.
+    energy_loss_cap = float(bgfm_config.get('energy_loss_cap', 0.0))
     if isinstance(energy_perturb_paths, str):
         energy_perturb_paths = [energy_perturb_paths]
     if energy_enabled and not energy_perturb_paths:
@@ -434,10 +438,26 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
         score_force_cos = torch.stack(cosine_terms).mean()
 
         # 5. Schedule (always computed -- energy block needs it too)
-        batches_per_epoch = getattr(self, 'batches_per_epoch',
-                                    len(self.trainer.train_dataloader))
-        max_epochs = self.trainer.max_epochs or 1
-        epoch_frac = (self.current_epoch + batch_idx / batches_per_epoch) / max_epochs
+        # Step-based schedule (ported from main, commit dd1f14f). The earlier
+        # version divided (current_epoch + batch_idx/batches_per_epoch) by
+        # max_epochs, which made warmup/ramp scale with the FULL training
+        # horizon: with max_epochs=20 and warmup_frac=0.05 the lambdas stayed
+        # at ZERO for all of epoch 0, and with max_epochs=100 (capped-step
+        # sweeps) they stayed at zero for the entire run -- so the model
+        # trained pure FlowMol3 with the physics losses computed but never
+        # applied. Use Lightning's estimated_stepping_batches (total optimizer
+        # steps for the configured horizon) and global_step (optimizer steps
+        # elapsed) so warmup_frac/ramp_frac are fractions of the optimizer-step
+        # budget, and the lambdas actually fire.
+        max_steps = getattr(getattr(self, 'trainer', None),
+                            'estimated_stepping_batches', None)
+        if max_steps is None or max_steps <= 0:
+            epoch_frac = 1.0
+        else:
+            epoch_frac = min(
+                float(getattr(self, 'global_step', 0)) / float(max_steps),
+                1.0,
+            )
         l1 = _bgfm_schedule(epoch_frac, lambda_1, warmup_frac, ramp_frac)
 
         # NaN guard: if force loss went non-finite (numerical instability
@@ -555,9 +575,23 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
                     n_ode_steps=energy_n_ode_steps,
                     n_hutchinson=energy_n_hutchinson, prior_std=1.0)
                 L_anchor = None
-            # NaN guard on energy term
+            # Guard on the energy term.
+            #
+            # NaN guard alone is NOT enough: with a small energy_b_parents the
+            # within-parent variance estimator is very high-variance (b_parents=1
+            # estimates L_energy from a SINGLE parent). A finite-but-huge outlier
+            # (we observed L_energy spiking 200 -> 974 -> ...) produces a huge
+            # gradient that blows the weights to NaN a few steps later, and only
+            # THEN does the isfinite check fire -- by which point the model is
+            # already corrupted. So we additionally reject finite outliers.
             if not torch.isfinite(L_energy):
                 self.log('train_L_energy_nan_skip', 1.0, on_step=True)
+                L_energy = torch.zeros_like(L_energy).detach()
+                l2 = 0.0
+            elif energy_loss_cap > 0 and float(L_energy) > energy_loss_cap:
+                # outlier parent this step -- skip rather than let it detonate
+                self.log('train_L_energy_outlier_skip', 1.0, on_step=True)
+                self.log('train_L_energy_outlier_val', float(L_energy), on_step=True)
                 L_energy = torch.zeros_like(L_energy).detach()
                 l2 = 0.0
             else:

@@ -125,6 +125,7 @@ def divergence_exact_atomwise(
     v_fn: Callable[[torch.Tensor], torch.Tensor],
     x: torch.Tensor,
     n_atoms_per_graph: torch.Tensor,
+    create_graph: bool | None = None,
 ) -> torch.Tensor:
     """Exact divergence via per-coordinate backward passes. Reference
     implementation for unit tests on small molecules. 3N backward passes;
@@ -138,6 +139,11 @@ def divergence_exact_atomwise(
         v_fn: maps positions (N_total, 3) -> velocity (N_total, 3).
         x: positions (N_total, 3). requires_grad=True.
         n_atoms_per_graph: (B,) atoms per graph; divergence summed per-graph.
+        create_graph: if True the returned divergence is itself differentiable
+            (needed only when it feeds a training loss). Default None keeps the
+            historical behaviour (differentiable whenever x requires grad).
+            Pass False for EVALUATION: with 3N backward passes a retained
+            second-order graph accumulates and OOMs even on small molecules.
 
     Returns:
         div_v: (B,) tensor.
@@ -151,11 +157,13 @@ def divergence_exact_atomwise(
     per_atom_div = torch.zeros(N, device=x.device, dtype=x.dtype)
     for i in range(N):
         for c in range(3):
+            cg = (x.requires_grad and (i < N - 1 or c < 2)) if create_graph is None \
+                else bool(create_graph)
             grad_ic = torch.autograd.grad(
                 outputs=v[i, c],
                 inputs=x,
                 retain_graph=True,
-                create_graph=x.requires_grad and (i < N - 1 or c < 2),
+                create_graph=cg,
             )[0]
             per_atom_div[i] = per_atom_div[i] + grad_ic[i, c]
 
@@ -175,6 +183,7 @@ def divergence_hutchinson(
     n_samples: int = 1,
     rademacher: bool = True,
     create_graph: bool | None = None,
+    xi_provider: Callable[[int, torch.Tensor], torch.Tensor] | None = None,
 ) -> torch.Tensor:
     """Hutchinson trace estimator for the divergence of v_fn at x.
 
@@ -191,6 +200,14 @@ def divergence_hutchinson(
         n_atoms_per_graph: (B,) for per-graph reduction
         n_samples: number of Hutchinson samples (averaged)
         rademacher: use {+/-1} vs N(0, 1)
+        xi_provider: optional callable (k, x) -> xi with xi.shape == x.shape,
+            replacing the internally drawn probe. Used for COMMON RANDOM
+            NUMBERS at eval time: when a batch holds many geometries of the
+            SAME molecule, tiling one probe across all of them makes the
+            estimator error nearly common-mode, so DIFFERENCES of log p
+            between those geometries become far more precise than each
+            absolute log p. Default None keeps the original i.i.d. behaviour
+            (training path is unchanged).
 
     Returns:
         div_v: (B,) per-graph divergence
@@ -215,7 +232,13 @@ def divergence_hutchinson(
     acc = torch.zeros(B, device=x.device, dtype=x.dtype)
 
     for k in range(n_samples):
-        if rademacher:
+        if xi_provider is not None:
+            xi = xi_provider(k, x)
+            if xi.shape != x.shape:
+                raise ValueError(f"xi_provider returned {tuple(xi.shape)}, "
+                                 f"expected {tuple(x.shape)}")
+            xi = xi.to(device=x.device, dtype=x.dtype)
+        elif rademacher:
             xi = (torch.randint(0, 2, x.shape, device=x.device, dtype=x.dtype) * 2 - 1)
         else:
             xi = torch.randn_like(x)

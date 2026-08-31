@@ -129,6 +129,36 @@ def main():
         for row in rows:
             w.writerow(row)
 
+    # Persist the PER-RECORD (log p, E) pairs next to the per-group summary.
+    #
+    # Why: the per-group CSV throws away the raw pairs, so any downstream
+    # robustness check -- e.g. recomputing r after dropping pert_id==0, which is
+    # the UNPERTURBED reference conformer and acts as a leverage point -- forces a
+    # full re-run of every xTB single point (~12k calls, hours). Dumping them here
+    # costs nothing and makes those checks a few seconds.
+    rec_path = str(a.out_csv).replace(".csv", "_records.csv")
+    if rec_path == str(a.out_csv):
+        rec_path = str(a.out_csv) + ".records.csv"
+    with open(rec_path, "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=["group_id", "pert_id", "n_atoms", "charge",
+                                          "log_p_theta", "E_eV", "negE_kT", "xtb_ok"])
+        w.writeheader()
+        for r in recs:
+            if "log_p_theta" not in r:
+                continue
+            e_ev = r.get("_E_eV")
+            w.writerow({
+                "group_id": r.get("group_id"),
+                "pert_id": r.get("pert_id"),
+                "n_atoms": len(r.get("atomic_numbers", []) or []),
+                "charge": r.get("charge", 0),
+                "log_p_theta": r["log_p_theta"],
+                "E_eV": e_ev,
+                "negE_kT": (-e_ev / a.kT_eV) if e_ev is not None else "",
+                "xtb_ok": bool(r.get("_xtb_ok", False)),
+            })
+    print(f"[boltz-indep] wrote per-record pairs -> {rec_path}")
+
     summary = {
         "potential": "gfn2-xtb (independent of eSEN training oracle)",
         "kT_eV": a.kT_eV,

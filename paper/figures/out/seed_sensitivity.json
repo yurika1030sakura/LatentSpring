@@ -1,0 +1,102 @@
+{
+ "endpoint": "disjoint|noref",
+ "prepared_seed_configurations": {
+  "fm_only": 5,
+  "energy": 5,
+  "scrambled": 7
+ },
+ "reported": {
+  "fm_only": 5,
+  "energy": 4,
+  "scrambled": 3
+ },
+ "blocks": [
+  {
+   "label": "as reported (4 vs 5)",
+   "energy_seeds": [
+    0.315683,
+    0.377637,
+    0.426358,
+    0.357572
+   ],
+   "control_seeds": [
+    0.192325,
+    0.222273,
+    0.194011,
+    0.249385,
+    0.14219
+   ],
+   "energy_mean": 0.369313,
+   "control_mean": 0.200037,
+   "delta": 0.169276,
+   "welch_t": 5.8174,
+   "welch_df": 6.058,
+   "perm_hits": 1,
+   "perm_total": 126,
+   "perm_p": 0.007937
+  },
+  {
+   "label": "value run imputed at control mean (5 vs 5)",
+   "energy_seeds": [
+    0.315683,
+    0.377637,
+    0.426358,
+    0.357572,
+    0.200037
+   ],
+   "control_seeds": [
+    0.192325,
+    0.222273,
+    0.194011,
+    0.249385,
+    0.14219
+   ],
+   "energy_mean": 0.335458,
+   "control_mean": 0.200037,
+   "delta": 0.135421,
+   "welch_t": 3.2083,
+   "welch_df": 5.663,
+   "perm_hits": 6,
+   "perm_total": 252,
+   "perm_p": 0.02381
+  },
+  {
+   "label": "value run imputed at worst observed (5 vs 5)",
+   "energy_seeds": [
+    0.315683,
+    0.377637,
+    0.426358,
+    0.357572,
+    0.14219
+   ],
+   "control_seeds": [
+    0.192325,
+    0.222273,
+    0.194011,
+    0.249385,
+    0.14219
+   ],
+   "energy_mean": 0.323888,
+   "control_mean": 0.200037,
+   "delta": 0.123851,
+   "welch_t": 2.384,
+   "welch_df": 5.052,
+   "perm_hits": 14,
+   "perm_total": 252,
+   "perm_p": 0.055556
+  }
+ ],
+ "scramble_worst_case": {
+  "note": "4 unreported scrambled seeds imputed at the true-label mean / maximum",
+  "at_energy_mean": {
+   "scrambled_mean": 0.307895,
+   "energy_minus_scrambled": 0.061417,
+   "welch_t": 1.6287
+  },
+  "at_energy_max": {
+   "scrambled_mean": 0.340493,
+   "energy_minus_scrambled": 0.02882,
+   "welch_t": 0.6114
+  }
+ }
+}

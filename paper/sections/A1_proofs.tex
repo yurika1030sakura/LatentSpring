@@ -1,0 +1,1029 @@
+% ============================================================================
+%  sections/A1_proofs.tex --- Appendix A: theory.
+%
+%  Organisation.  One subsection per object:
+%    A.1  setup, notation, standing assumptions
+%    A.2  the log-density estimator: change of variables, Hutchinson trace,
+%         and the integration scheme (explicit Euler in the state, midpoint
+%         quadrature for the divergence integral).  It targets log q at t=1
+%         at EVERY step count; the step count controls accuracy, not target.
+%    A.3  the flow-matching score read-out          (lem:score)
+%    A.4  why the gradient condition is a trapped surrogate (prop:trap/conflict)
+%    A.5  the value condition                       (thm:certificate, cor:gauge)
+%    A.6  local-to-global identifiability           (thm:l2g, cor:basins)
+%    A.7  the training objective as a surrogate for the metric (prop:surrogate)
+%    A.8  scope of the theory
+%
+%  The force-gauge aside (lem:forcegauge / thm:gauge) was DELETED in the
+%  2026-08-29 appendix-compression pass: no experiment exercised it, it was not
+%  the explanation of the force result, and it was not a contribution.  Do not
+%  re-add it.
+%
+%  Conventions that must not be reverted:
+%    (1) free energy is A(c) = -kT log Z(c); F is ALWAYS the force.
+%    (2) coordinates are x, never r.
+%    (3) no ESS claim: we never measured ESS.
+%    (4) the rigid-motion assumption is COM-removal only -- the code does NOT
+%        quotient rotations.
+%    (5) charge is threaded to the teacher, spin is not (singlet default).
+%    (6) the L_value gradient is a frozen-trajectory / truncated-adjoint one,
+%        so the theory is scoped to the zero set and identifiability of the
+%        ideal residual condition and NOT to convergence of that update.
+%    (7) the reported density is the CLAMPED POSITIONAL-FLOW density q_theta;
+%        p_theta is reserved for the joint generator's conditional density and
+%        appears only in ass:A2's contrast clause.
+%
+%  REPEATED CAVEATS ARE CONSOLIDATED.  Each of the following is stated once in
+%  the main text and once here, at the anchor named, and is cross-referenced
+%  rather than restated: q_theta is not the joint conditional (ass:A2); the
+%  divergence is prior work (rem:logvar); the implemented gradient is a
+%  truncated-adjoint surrogate (rem:idealresidual); the objective is local and
+%  does not identify basin mass (cor:basins); kT = 1 eV is numerical
+%  (app:hyper); the likelihood estimate is resolution-dependent (ass:A-disc,
+%  app:estimator); value-arm means are conditional on completion (app:p0cells).
+%
+%  Theorem environments are declared in main.tex and the counters continue from
+%  the main text, so appendix-only results start after Theorem 1 / Lemma 1 /
+%  Corollary 1.  Proofs of main-text results use
+%  \begin{proof}[Proof of \Cref{...}] and introduce no second numbering.
+% ============================================================================
+
+\section{Theory: Assumptions, Estimator, and Proofs}
+\label{app:proofs}
+
+This appendix collects everything the main text states without proof, in the order
+the argument uses it: the standing assumptions (\Cref{app:setup}); what the
+reported log-density actually is, derived from the flow (\Cref{app:density}); the
+score read-out the gradient baseline relies on and the two reasons it is a poor
+target (\Cref{app:score,app:trap}); the certificate behind the value objective and
+exactly what it identifies (\Cref{app:certificate,app:l2g}); the identity linking
+the training objective to the reported metric (\Cref{app:surrogate}); and a closing
+inventory of which statements this paper exercises and which it only states
+(\Cref{app:scope}).
+
+\subsection{Setup, notation and standing assumptions}
+\label{app:setup}
+
+A molecular state is a pair $(c,\vx)$. Operationally the composition $c \in \mathcal{C}$ is the
+element multiset with the atom count $N(c)$ it determines and the total charge
+$q$, which is what the pipeline threads to the teacher, and $\mathcal{C}$ is
+countable. Spin multiplicity $s$ is a standing restriction rather than a
+component of $c$: it is never passed and the teacher defaults to a singlet
+(\Cref{ass:charge}), so every statement below is at that default and the
+composition audit used for identifiability keys on (element multiset, charge)
+accordingly. The conformation
+$\vx \in \R^{3N(c)}$ is the nuclear coordinate vector with the centre of mass
+removed, so the effective dimension is $d = 3(N-1)$. The teacher is a universal
+neural potential $E : (c,\vx) \mapsto \R$ \citep{omol25,esen},
+smooth in $\vx$, with conservative forces $F(c,\vx) = -\nabla_{\vx} E(c,\vx)$,
+and $kT>0$ is a fixed temperature scale in eV. Throughout, $F$ denotes the
+\emph{force} and never a free energy.
+
+The target is the joint Boltzmann law and its two factors,
+\begin{equation}
+  \pi(c,\vx) = \frac{e^{-E(c,\vx)/kT}}{\mathcal{Z}},
+  \qquad
+  Z(c) = \int e^{-E(c,\vx)/kT}\,\mathrm{d}\vx,
+  \qquad
+  A(c) = -kT \log Z(c),
+  \label{eq:app-targets}
+\end{equation}
+so that $\mathcal{Z} = \sum_{c} Z(c) = \sum_c e^{-A(c)/kT}$,
+$\pi(c) = e^{-A(c)/kT}/\mathcal{Z}$ and
+$\pi(\vx \mid c) = e^{-E(c,\vx)/kT}/Z(c)$. Neither $Z(c)$ nor $\mathcal{Z}$ is
+ever formed. The generative model is a flow $\mathrm{d}\vx_t/\mathrm{d}t =
+v_\theta(\vx_t,t)$ transporting $p_0 = \mathcal{N}(0,\sigma^2 I)$ on the
+centre-of-mass-free subspace at $t=0$ to $q_\theta := q_1^\theta$ at $t=1$ with
+the discrete channels clamped at their endpoint labels (\Cref{ass:A2}),
+trained on the linear interpolant
+$\vx_t = (1-t)\vx_0 + t\vx_1$ \citep{lipman2023flowmatching,liu2023rectifiedflow,%
+albergo2023interpolants}.
+
+\begin{assumption}[Teacher regularity]
+\label{ass:A1}
+$E(c,\cdot)$ is the teacher potential at fixed $(N,q,s)$ and is $C^1$ in $\vx$ on
+a connected domain.
+\end{assumption}
+
+\begin{assumption}[Which density is reported: the clamped positional-flow density]
+\label{ass:A2}
+The quantity every theorem below is stated for, and every experiment reports as
+$\log q_\theta(\cdot \mid c)$, is the log-density of the \emph{clamped
+positional flow}: the flow obtained by holding the discrete channels --- atom
+types, formal charges and the empty bond tensor --- at their endpoint labels
+$(a_1, c_1, e_1)$ for the whole reverse trajectory, while only $\vx$ evolves.
+That object is positive on the sampled support and normalised on the
+centre-of-mass-free subspace by construction, being an exact change of variables
+applied to a normalised Gaussian prior \citep{ffjord}, up to the discretisation of
+\Cref{ass:A-disc}. It coincides with the generator's own joint conditional density
+$p_\theta(\cdot \mid c)$ only if the discrete trajectory is determined by its
+endpoint; the generator evolves types and charges through a continuous-time Markov
+chain, so in general the two differ, we have not quantified the difference, and
+this is recorded as a limitation (\Cref{app:limitations}). The symbol $q_\theta$ is
+used nowhere else in this appendix.
+\end{assumption}
+
+\begin{assumption}[Translation-invariant velocity field]
+\label{ass:A3}
+$v_\theta$ is invariant to global translation, so the ambient $3N$-dimensional
+trace of its Jacobian equals the intrinsic $3(N-1)$-dimensional one
+(\Cref{app:density}). The centre-of-mass-removed equivariant field of the backbone
+satisfies this. \textbf{Rotations are not quotiented}: the prior log-density uses
+effective dimension $3(N-1)$, i.e.\ centre-of-mass removal only. We do not claim a
+rotation-quotiented density.
+\end{assumption}
+
+\begin{assumption}[Discretised likelihood]
+\label{ass:A-disc}
+The reported $\log q_\theta$ is a discretised continuous-flow likelihood ---
+explicit Euler in the state, midpoint-rule quadrature for the divergence integral,
+with a stochastic trace estimator --- so it is a biased and noisy estimate of the
+exact clamped positional-flow log-density. The step count controls that bias; it
+does not change which density is estimated. Step counts and probe counts are in
+\Cref{app:hyper}; the consequences are worked through in
+\Cref{app:density,app:estimator}.
+\end{assumption}
+
+\begin{remark}[What the theory is scoped to, given the implemented gradient]
+\label{rem:idealresidual}
+The gradient actually back-propagated through $\Ls_{\mathrm{value}}$ is a
+truncated-adjoint surrogate: the reverse trajectory is advanced without gradient
+tracking, each state is detached before its divergence is taken, and the prior term
+is computed from a detached endpoint, so the parameter gradient flows only through
+the divergence evaluations (\Cref{app:asimplemented}). We do not differentiate
+through the ODE solve, and the implemented update is therefore not exact
+likelihood-gradient descent. Every statement in this appendix is accordingly scoped
+to the \emph{zero set and identifiability} of the ideal residual condition
+$w \equiv \mathrm{const}$ --- what a model that had driven the population objective
+to zero would have been shown, and what that leaves free --- and to nothing about
+whether, or to what, the implemented update converges.
+\end{remark}
+
+\begin{assumption}[Rigid-motion and symmetry factors]
+\label{ass:rigid}
+$Z(c)$ in \eqref{eq:app-targets} is an integral over $\R^{3N}$ and therefore
+carries translational and rotational volume factors and a symmetry-number
+correction. We take $Z(c)$ to be the configurational integral in the
+centre-of-mass-removed space that the density estimator actually models; as noted
+in \Cref{ass:A3}, rotations are \emph{not} quotiented by the implementation.
+Within a parent group this is benign: all $K$ perturbations are small
+displacements of one data geometry in one frame, so any rotational volume
+factor is approximately constant within the group and cancels from the per-group
+correlation, and is exactly annihilated by the within-parent variance loss. It is
+\emph{not} benign for any comparison across groups or across separated basins,
+which is one more reason we make none (\Cref{thm:l2g}).
+\end{assumption}
+
+\begin{assumption}[Well-posed conditional energy]
+\label{ass:charge}
+$E(c,\cdot)$ is the potential at fixed $(N,q,s)$, so the teacher must be queried
+with the correct charge and spin. Our implementation decodes the total charge from
+the frozen charge channel and passes it to the teacher; the spin multiplicity is
+\emph{not} passed and the teacher defaults to a singlet. For radicals and
+open-shell complexes this is the wrong electronic state. Every reported evaluation
+is on main-group organic parents drawn from the held-out split, where the singlet
+default is the standard assignment for closed-shell species; we have not verified
+the multiplicity of every evaluated parent. The restriction is recorded as a
+limitation (\Cref{app:limitations}) and is the reason no radical, open-shell or
+transition-metal result is reported.
+\end{assumption}
+
+\subsection{The reported log-density: change of variables, trace estimation, and the integration scheme}
+\label{app:density}
+
+Everything the value objective constrains, and everything the calibration
+diagnostics measure, is the number this subsection defines. It is derived in three
+steps --- an exact identity, an unbiased estimator of the one expensive term in it,
+and an integration scheme --- and the third step is the one that decides how
+\emph{accurately} the density is reported, not which density it is.
+
+\paragraph{Step 1: the instantaneous change of variables.} Let $\vx_t$ solve
+$\mathrm{d}\vx_t/\mathrm{d}t = v_\theta(\vx_t,t)$ and let $p_t$ be the law of
+$\vx_t$. Mass conservation is the continuity equation
+$\partial_t p_t + \nabla\!\cdot(p_t v_\theta) = 0$. Expanding the divergence,
+$\nabla\!\cdot(p_t v_\theta) = \nabla p_t \cdot v_\theta + p_t \nabla\!\cdot v_\theta$,
+and dividing by $p_t > 0$,
+\begin{equation}
+  \partial_t \log p_t + v_\theta \cdot \nabla \log p_t
+  \;=\; -\,\nabla\!\cdot v_\theta .
+\end{equation}
+The left-hand side is the material derivative of $\log p_t$ along a trajectory, so
+\begin{equation}
+  \frac{\mathrm{d}}{\mathrm{d}t}\,\log p_t(\vx_t)
+  \;=\; -\,\nabla\!\cdot v_\theta(\vx_t,t) ,
+  \label{eq:app-icv}
+\end{equation}
+the instantaneous change of variables underlying continuous normalising flows
+\citep{ffjord}. Integrating \eqref{eq:app-icv} from $t=0$ to $t=1$ along the
+trajectory that ends at $\vx_1$ and using $p_0 = \mathcal{N}(0,\sigma^2 I)$ gives
+\eqref{eq:ffjord} of the main text,
+\begin{equation}
+  \log q_\theta(\vx_1 \mid c)
+  \;=\; \log p_0(\vx_0) - \int_0^1 \nabla\!\cdot v_\theta(\vx_t,t)\,\mathrm{d}t ,
+  \qquad
+  \vx_0 = \vx_1 - \int_0^1 v_\theta(\vx_t,t)\,\mathrm{d}t .
+  \label{eq:app-ffjord}
+\end{equation}
+In practice the trajectory is generated \emph{backwards} from the data point
+$\vx_1$, so one reverse solve returns both $\vx_0$ and the accumulated divergence.
+\Cref{eq:app-ffjord} is exact in continuous time and requires no invertibility
+argument beyond uniqueness of the ODE solution; every approximation in the reported
+number enters in steps 2 and 3.
+
+\paragraph{Step 2: the trace, and why a stochastic estimator is used.} The
+divergence is the trace of the Jacobian, $\nabla\!\cdot v_\theta = \operatorname{tr} J$
+with $J_{ij} = \partial (v_\theta)_i/\partial x_j$. Computing $\operatorname{tr} J$ exactly
+costs $3N$ backward passes, one per coordinate, at every integration step. The
+Hutchinson estimator \citep{hutchinson} replaces it by
+\begin{equation}
+  \operatorname{tr} J \;=\; \E_{\epsilon}\bigl[\epsilon^{\!\top} J \epsilon\bigr],
+  \qquad \E[\epsilon] = 0,\quad \E[\epsilon\epsilon^{\!\top}] = I ,
+  \label{eq:app-hutch}
+\end{equation}
+which is exact in expectation for any such $\epsilon$, and each sample costs one
+vector--Jacobian product --- a single backward pass --- followed by an inner product
+with $\epsilon$. We use $n_{\mathrm{p}} = 2$ Rademacher probes per step, i.e.\ two
+backward passes in place of $3N$.
+
+Two properties of \eqref{eq:app-hutch} matter for how the resulting numbers may be
+read. First, with independent entries the estimator's variance is
+\begin{equation}
+  \Var\bigl[\epsilon^{\!\top} J \epsilon\bigr]
+  \;=\; \sum_{i<j} \bigl(J_{ij}+J_{ji}\bigr)^{2}
+  \;\;\xrightarrow{\;J = J^{\!\top}\;}\;\;
+  2\Bigl(\lVert J\rVert_F^{2} - \textstyle\sum_i J_{ii}^{2}\Bigr) ,
+  \label{eq:app-hutchvar}
+\end{equation}
+because $\epsilon^{\!\top} J\epsilon = \sum_i J_{ii} + \sum_{i<j}(J_{ij}+J_{ji})\epsilon_i\epsilon_j$
+and the products $\epsilon_i\epsilon_j$ over distinct pairs are uncorrelated with unit
+variance. Rademacher probes are the standard choice because the diagonal of $J$
+contributes no variance at all, whereas Gaussian probes pay $2\lVert J\rVert_F^2$;
+averaging $n_{\mathrm{p}}$ probes divides \eqref{eq:app-hutchvar} by
+$n_{\mathrm{p}}$. Second, the divergence enters \eqref{eq:app-ffjord}
+\emph{linearly}, so trace noise adds variance to the reported $\log q_\theta$ but
+no bias: an unbiased trace at every step gives an unbiased estimate of the
+discretised integral. The bias in the reported number comes from the quadrature,
+not from the probes. We have not measured the repeat-to-repeat spread of
+$\log q_\theta$ on the reported population, and say so as a limitation
+(\Cref{app:limitations}).
+
+Finally, \Cref{ass:A3} is what lets the probes be drawn in the ambient $3N$
+coordinates without correcting the dimension. If $v_\theta$ is invariant to a
+global translation then $J u = 0$ for each of the three uniform-translation
+directions $u$, so those directions contribute zero eigenvalues and the ambient
+trace equals the trace of $J$ restricted to the centre-of-mass-free subspace.
+Rotations enjoy no such identity and are not quotiented anywhere in the
+implementation.
+
+\paragraph{Step 3: the integration scheme, and what the step count does and does not
+control.} The reverse-time solve of \eqref{eq:app-ffjord} uses \emph{explicit Euler
+in the state with midpoint-rule quadrature for the divergence integral}. With $n$
+steps the implementation sets $\Delta t = 1/n$ and evaluates the field and its
+divergence at
+\begin{equation}
+  t_k \;=\; 1 - \Bigl(k + \tfrac{1}{2}\Bigr)\Delta t ,
+  \qquad k = 0,1,\dots,n-1 ,
+  \label{eq:app-grid}
+\end{equation}
+accumulating $-\Delta t\,\nabla\!\cdot v_\theta(\vx_{t_k},t_k)$, advancing the state
+by $\vx \leftarrow \vx - \Delta t\, v_\theta(\vx,t_k)$, and adding the prior
+log-density at the end.
+
+Two schemes are in play and they must not be conflated. The \emph{state} update is
+explicit Euler with $n$ steps of size $1/n$, which traverses the whole of $[0,1]$
+and carries $O(\Delta t)$ error. The \emph{divergence} integral is approximated by
+the midpoint rule on $[0,1]$: all $n$ nodes are interior to the interval, the
+interval itself is not truncated, and the rule carries $O(\Delta t^{2})$ error and
+is exact for integrands linear in $t$. The half-step offset therefore avoids
+evaluating the field at $t = 1$ without moving the endpoint the scheme targets. For
+every $n$, what the estimator targets is $\log q_\theta$ at $t = 1$; there is no
+family of smoothed marginals indexed by the step count, and refining $n$ estimates
+the \emph{same} quantity more accurately rather than a different one. Analytic
+checks on the implementation confirm this: on a field of constant divergence, and on
+a time-varying one, the accumulated integral equals the full-interval value at every
+$n$ rather than a truncated $1 - 1/(2n)$ value, and on a linear continuous
+normalising flow the estimate converges to the closed-form endpoint log-density as
+$n$ grows.
+
+Step-count dependence in the reported numbers is accordingly \emph{numerical
+discretisation error}, dominated by the $O(\Delta t)$ Euler state integration rather
+than by the $O(\Delta t^{2})$ quadrature, together with whatever endpoint stiffness
+the learned field carries. \Cref{app:estimator} tabulates the step counts, reports
+what the absence of a plateau looks like on real molecules, and measures how much of
+the reported effect size depends on the choice.
+
+Two uses of the symbol $\epsilon$ must be kept apart, and neither is a smoothing
+scale of the reported density: the $\epsilon$ of \eqref{eq:app-eps} below is the
+Gaussian width $(1-t)\sigma/t$ attached to the flow-matching score read-out at a
+probe time $t$ and not to the likelihood estimator, and it is unrelated to the
+mass-relaxation $\varepsilon$ of \Cref{rem:epsilon}, which is written with a
+different glyph throughout.
+
+\subsection{The flow-matching score read-out}
+\label{app:score}
+
+The gradient-supervision baseline of \Cref{sec:method} needs the score of the
+model's own time-$t$ marginal. Flow matching supplies it in closed form, which is
+convenient and, as \Cref{app:trap} shows, also the source of the baseline's
+trouble.
+
+\begin{lemma}[Flow-matching score read-out]
+\label{lem:score}
+Let $x_t = (1-t)x_0 + t x_1$ with $x_0 \sim \mathcal{N}(0,\sigma^2 I)$ independent of
+$x_1 \sim p_{\mathrm{data}}$ and $v^{*}(x,t) = \E[x_1 - x_0 \mid x_t = x]$. Then for every
+$t \in [0,1)$, $\nabla_x \log p_t(x) = \bigl(t\,v^{*}(x,t) - x\bigr)/\bigl((1-t)\sigma^2\bigr)$.
+\end{lemma}
+
+\begin{proof}[Proof of \Cref{lem:score}]
+Conditionally on the data endpoint, $\vx_t \mid \vx_1 \sim
+\mathcal{N}(t\vx_1, (1-t)^2\sigma^2 I)$, so the time-$t$ marginal
+$p_t(\vx) = \int \mathcal{N}(\vx; t\vx_1, (1-t)^2\sigma^2 I)\,p_{\mathrm{data}}(\vx_1)
+\,\mathrm{d}\vx_1$ is a Gaussian mixture with covariance independent of the
+mixing variable. Differentiating under the integral sign and using
+$\nabla_{\vx}\mathcal{N}(\vx;\mu,\Sigma) = -\Sigma^{-1}(\vx-\mu)\mathcal{N}$ gives
+the posterior-mean form
+\begin{equation}
+  \nabla_{\vx}\log p_t(\vx)
+  = \frac{t\,\E[\vx_1 \mid \vx_t = \vx] - \vx}{(1-t)^2\sigma^2}.
+  \label{eq:app-mixture-score}
+\end{equation}
+The flow-matching regression target is $\vx_1 - \vx_0$, and
+$\vx_0 = (\vx_t - t\vx_1)/(1-t)$ gives $\vx_1 - \vx_0 = (\vx_1 - \vx_t)/(1-t)$.
+Taking conditional expectations, the marginal velocity is
+$v^\ast(\vx,t) = (\E[\vx_1\mid \vx_t=\vx] - \vx)/(1-t)$, i.e.
+$\E[\vx_1 \mid \vx_t = \vx] = \vx + (1-t)v^\ast(\vx,t)$. Substituting into
+\eqref{eq:app-mixture-score}, one factor of $(1-t)$ cancels and
+\begin{equation}
+  s^\ast(\vx_t,t) \;=\; \frac{t\,v^\ast(\vx_t,t) - \vx_t}{(1-t)\sigma^2}.
+  \label{eq:app-score}
+\end{equation}
+Replacing $v^\ast$ by the learned $v_\theta$ defines $s_\theta$. Finally, the map
+$v \mapsto s$ in \eqref{eq:app-score} is affine with linear part
+$t/((1-t)\sigma^2)$, so a velocity perturbation $\delta v$ moves the implied
+score by $t\|\delta v\|/((1-t)\sigma^2)$.
+\end{proof}
+
+\begin{remark}[Sign]
+\label{rem:sign}
+Matching $s_\theta \to +F/kT$ is Boltzmann-attracting because
+$\nabla_{\vx}\log \pi = -\nabla_{\vx}E/kT = +F/kT$. The sign in
+\eqref{eq:app-score} is not a convention that may be flipped.
+\end{remark}
+
+\begin{remark}[Amplification at the probe times used]
+\label{rem:app-amplification}
+With $\sigma = 1$, the factor $t/((1-t)\sigma^2)$ equals $5.7$, $11.5$ and $32.3$
+at the three training probe times $t \in \{0.85, 0.92, 0.97\}$. The pole at
+$t = 1$ is not a removable artefact: $s_\theta$ is the score of the
+\emph{smoothed} marginal $p_t$, and the smoothing vanishes exactly as the
+read-off amplification diverges.
+\end{remark}
+
+\subsection{Why the gradient condition is a trapped surrogate}
+\label{app:trap}
+
+Two mechanisms, both specific to matching \eqref{eq:app-score} \emph{off-policy at
+data endpoints}, are compatible with the gradient baseline failing to help. Both
+turn on one structural fact: the network is a function of the interpolation state
+$\vx_t$ while the target is the force read at the data endpoint $\vx_1$. Both are
+stated as \emph{diagnostic hypotheses} rather than as explanations of the
+measurement in \Cref{sec:ablation}; neither is isolated experimentally, and neither
+bears on force supervision in general \citep{psm,driftingboltzmann}.
+
+\begin{proposition}[Bias--variance trap: a diagnostic hypothesis]
+\label{prop:trap}
+At the population optimum of $\Ls_{\mathrm{FM}}$, and with
+$\epsilon = (1-t)\sigma/t$, the read-out is, up to a factor $1/t$, the score of
+$p_{\mathrm{data}} * \mathcal{N}(0,\epsilon^2 I)$ evaluated at
+$\vx_1 + \epsilon z$, $z \sim \mathcal{N}(0,I)$. Compared with the endpoint target
+$F(\vx_1)/kT$ this incurs a scale error and a smoothing error, each $O(1-t)$ or
+smaller, together with an evaluation-point displacement of size $\epsilon$, while
+by \Cref{rem:app-amplification} the gradient noise injected into the parameters
+grows as $(1-t)^{-2}$. No choice of $t$ makes the deterministic terms and the noise
+term small together.
+\end{proposition}
+
+\begin{proposition}[Objective conflict: a diagnostic hypothesis]
+\label{prop:conflict}
+The population minimiser of $\Ls_{\mathrm{FM}}$ has implied score
+$\nabla \log p^{\mathrm{data}}_t(\vx_t)$. The network input is $\vx_t$ while the
+force target is the endpoint quantity $F(c,\vx_1)/kT = \nabla\log\pi(\vx_1)$, so the
+population minimiser of the idealised \emph{squared} off-policy force loss is not
+$\nabla\log\pi(\vx_1)$ but the conditional expectation
+\begin{equation}
+  s_\theta(\vx_t,t) \;\longrightarrow\;
+  \E\bigl[\nabla\log\pi(\vx_1) \bigm| \vx_t, t, c\bigr]
+  \;=\; \E\bigl[F(c,\vx_1)/kT \bigm| \vx_t, t, c\bigr],
+  \label{eq:app-condexp}
+\end{equation}
+a smoothed and shrunk field. The two population targets differ whenever the corpus
+is not drawn from the target law, $p_{\mathrm{data}} \neq \pi$, and the joint
+minimiser is neither; a fixed $\lambda_1$ moreover weights the conflicting target
+by $(1-t)^{-2}$.
+\end{proposition}
+
+\begin{proof}[Proof of \Cref{prop:trap} and \Cref{prop:conflict}]
+Reparameterise the smoothing. Write $\vx_t = t\,y$ with
+\begin{equation}
+  y = \vx_1 + \epsilon z, \qquad z \sim \mathcal{N}(0,I), \qquad
+  \epsilon = (1-t)\sigma/t ,
+  \label{eq:app-eps}
+\end{equation}
+so that $p_t(\vx) = t^{-d} \tilde p_\epsilon(\vx/t)$ with
+$\tilde p_\epsilon = p_{\mathrm{data}} \ast \mathcal{N}(0,\epsilon^2 I)$, and
+therefore $s_\theta(\vx_t,t) = t^{-1}\nabla\log\tilde p_\epsilon(\vx_1+\epsilon z)$
+at the population optimum. Against the target $\nabla\log\pi(\vx_1)$ this exposes
+four mismatches: a $1/t$ prefactor contributing relative error $(1-t)/t = O(1-t)$;
+a smoothing error $\nabla\log(p \ast \mathcal{N}_\epsilon) - \nabla\log p =
+O(\epsilon^2) = O((1-t)^2)$ by the heat-flow expansion; an evaluation-point
+displacement contributing $\epsilon\,\nabla^2\log\pi\,z$ to first order; and, since
+by \Cref{lem:score} any velocity error is multiplied by $t/((1-t)\sigma^2)$ and the
+loss is quadratic in the score, parameter-gradient noise scaling as $(1-t)^{-2}$.
+The first three shrink as $t \to 1$ while the fourth diverges, so the total error is
+bounded below by a trade-off of the form $O(1-t) + O((1-t)^{-2}\eta)$ with $\eta$
+the velocity-estimation noise level, which is \Cref{prop:trap}; averaging over
+probe times, as we do, reduces the constant but not the trade-off.
+
+For \Cref{prop:conflict}, the displacement is not merely noise that averages away.
+The loss is minimised over functions of $\vx_t$, and $(\vx_t,\vx_1)$ are dependent
+but not mutually determined, so for a squared loss the population minimiser over
+measurable functions of the input is the conditional expectation
+\eqref{eq:app-condexp}, by the orthogonality property of $L^2$ projection; it equals
+$\nabla\log\pi(\vx_1)$ only if $\vx_1$ is $\sigma(\vx_t)$-measurable, which the
+interpolation makes false for every $t < 1$. The result is a shrinkage \emph{bias}
+in the learned score rather than a variance term, and the two population targets ---
+the score of the data interpolation marginal, and the conditional expectation of
+endpoint Boltzmann scores --- are distinct whenever $p_{\mathrm{data}} \neq \pi$.
+
+Two caveats bound both propositions. The implemented $\ell$ is Huberised and
+per-atom norm-capped \eqref{eq:score}, so its population minimiser is a robustified
+location functional of the same conditional law and not \eqref{eq:app-condexp}. And
+both arguments concern population objectives at their exact optima, so they name
+mechanisms the construction admits rather than ones we have isolated.
+\end{proof}
+
+\begin{remark}[The antecedent holds for our data, and on-policy variants are outside what we measure]
+\label{rem:antecedent}
+The training corpus is a curated union of relaxation trajectories, molecular
+dynamics snapshots and conformer sets across many systems, charges and spins
+\citep{omol25}. It is not an equilibrium sample from a single-temperature Boltzmann
+distribution, and the training $kT = 1.0$~eV is not a physical temperature of the
+dataset, so the antecedent $p_{\mathrm{data}} \neq \pi$ of \Cref{prop:conflict}
+holds by construction. Querying forces at model samples rather than at data points
+would partially repair the evaluation-point displacement and the objective conflict,
+because the two targets would then refer to one distribution; it would not repair
+the $(1-t)^{-1}$ amplification. No such variant is measured here: the
+gradient-supervision cells of the matched grid (\Cref{app:p0cells}) carry the
+off-policy endpoint term alone, whereas the earlier round's force cells also carried
+an on-policy distillation term, which is why that round's \emph{force} comparisons
+are confounded and are superseded by cell E (\Cref{app:cells}).
+\end{remark}
+
+\subsection{The value condition: a partition-function-free certificate}
+\label{app:certificate}
+
+The certificate below is the standard zero-of-the-log-variance-divergence
+statement written in our conditional notation. Its structural property --- that an
+additive constant in $\log\tilde\pi$, hence the partition function, cancels --- is
+due to the authors cited in \Cref{rem:logvar} and is not claimed here. We reproduce
+the proof because \Cref{cor:gauge} and \Cref{thm:l2g} both refer to its internals.
+
+\begin{theorem}[Zero-variance certificate on a region]
+\label{thm:certificate}
+Under the regularity assumptions of \Cref{app:setup} (smooth $E$, positive normalised
+$q_\theta$ on the COM-removed subspace, translation-invariant velocity field), fix a composition
+$c$, a region $U$ and a reference measure $\rho$ with $\mathrm{supp}\,\rho = U$, and let
+$w(x) = \log q_\theta(x \mid c) + E(c,x)/kT$. Then \emph{(i)} $\Var_{x\sim\rho}[w] = 0$ if and
+only if $w$ is $\rho$-a.s.\ constant on $U$; if $\rho$ has a positive Lebesgue density on $U$ this
+says $q_\theta(\cdot \mid c)$ restricted to $U$ is proportional to $e^{-E(c,\cdot)/kT}$, and if
+$\rho$ is atomic on $K$ sampled points it says $\log q_\theta$ and $-E/kT$ differ by one common
+constant at those $K$ points, i.e.\ $K-1$ scalar equations, with no statement about points outside
+the sample; \emph{(ii)} if $\rho$ has a positive Lebesgue density on $U$ then the multiplier is
+fixed \emph{relative to $U$}, $a = q_\theta(U \mid c)/Z_U(c)$ with
+$Z_U(c) = \int_U e^{-E(c,x)/kT}\,\mathrm{d}x$ the integral over $U$ and not the global $Z(c)$, so
+that $q_\theta(\cdot \mid c, U) = \pi(\cdot \mid c, U)$ exactly; if in addition
+$q_\theta(U \mid c) = 1$ then $a = 1/Z_U(c)$, and $q_\theta(\cdot \mid c) = \pi(\cdot \mid c)$
+globally only when $U$ also carries all of the target's mass, $Z_U(c) = Z(c)$;
+\emph{(iii)} $\Var_{x\sim\rho}[w]$ is
+invariant to $E \mapsto E + g(c)$ and needs no evaluation of $Z(c)$ or $\mathcal{Z}$.
+\end{theorem}
+
+\begin{corollary}[What the empirical loss identifies]
+\label{cor:gauge}
+The empirical objective \eqref{eq:lvalue} has null space exactly the functions that are
+constant within each parent group. It therefore determines $\log q_\theta(\cdot \mid c)$ up to
+one free additive constant \emph{per group}, and no further.
+\end{corollary}
+
+\begin{remark}[Attribution]
+\label{rem:logvar}
+$\Var_\rho[w]$ with $w = \log q_\theta - \log\tilde\pi$ and
+$\tilde\pi = e^{-E/kT}$ is the log-variance divergence \citep{vargrad,
+nusken2021pathspace,richter2024improvedsampling}. Part (iii) --- invariance to
+an additive constant in $\log\tilde\pi$, hence no partition function --- is the
+defining structural property of that divergence and is due to those authors, not
+to this paper. Estimating it under a reference measure that is not the model's own
+(off-policy) is likewise standard \citep{nusken2021pathspace,sendera2024offpolicy}.
+\end{remark}
+
+\begin{remark}[The certificate is about the exact clamped density; what is formed is its discretisation]
+\label{rem:epscert}
+\Cref{thm:certificate} is stated for the exact normalised $q_\theta$, whereas what
+the objective and the metric both form is its Euler/midpoint estimate at a finite
+step count (\Cref{app:density}). The residual the objective can enforce therefore
+carries discretisation bias, which does not vanish at the step counts we can afford
+(\Cref{app:estimator}); the target quantity is the same at every step count, and the
+accuracy is not.
+\end{remark}
+
+\begin{proof}[Proof of \Cref{thm:certificate}]
+Fix $c$, a region $U$ and $\rho$ with $\mathrm{supp}\,\rho = U$; let
+$w(\vx) = \log q_\theta(\vx\mid c) + E(c,\vx)/kT$.
+
+(i) A random variable has zero variance if and only if it is a.s.\ constant, so
+$\Var_{\vx\sim\rho}[w] = 0$ iff $w \equiv \kappa$ $\rho$-a.s.\ on $U$, and then
+$q_\theta(\vx\mid c) = a\,e^{-E(c,\vx)/kT}$ with the positive multiplier
+$a = e^{\kappa}$, for $\rho$-almost every $\vx \in U$. Note the sign: the residual
+constant enters the density through $e^{+\kappa}$, and the same holds component by
+component in \Cref{thm:l2g}. The strength of that conclusion depends on $\rho$. If $\rho$ has a
+positive Lebesgue density on $U$, the identity holds Lebesgue-almost everywhere on
+$U$ and $q_\theta$ restricted to $U$ is proportional to the Gibbs weight. If
+$\rho$ is the empirical measure on $K$ sampled points, the identity holds at those
+$K$ points and nowhere else is constrained: the certificate is $K-1$ scalar
+equations, not a density statement, and asserting proportionality on a region from
+finitely many pointwise equations would be a strictly stronger claim than the
+variance supplies. Conversely if $q_\theta(\cdot\mid c) \propto e^{-E(c,\cdot)/kT}$
+$\rho$-a.e.\ on $U$ then $w$ is constant there. Note that (i) alone is a statement
+\emph{about $U$}: nothing outside $U$ is constrained.
+
+(ii) Let $\rho$ have a positive Lebesgue density on $U$, so that (i) gives the
+identity Lebesgue-a.e.\ on $U$ with a positive multiplier $a = e^{\kappa}$. Since
+$q_\theta(\cdot\mid c)$ is a normalised density (\Cref{ass:A2}), integrating
+$a\,e^{-E/kT}$ over $U$ gives $q_\theta(U \mid c) = a\,Z_U(c)$, where
+$Z_U(c) = \int_U e^{-E(c,\vx)/kT}\,\mathrm{d}\vx$ is the integral over $U$ and
+\emph{not} the global $Z(c)$. Hence $a = q_\theta(U\mid c)/Z_U(c)$, and dividing,
+the conditional law is pinned exactly:
+$q_\theta(\vx \mid c, U) = e^{-E(c,\vx)/kT}/Z_U(c) = \pi(\vx \mid c, U)$. Suppose in
+addition $q_\theta(U\mid c) = 1$, so that $a = 1/Z_U(c)$: this determines the
+multiplier but identifies $q_\theta(\cdot\mid c)$ with $\pi(\cdot\mid c)$
+\emph{globally} only when the target also puts all of its mass on $U$, that is when
+$Z_U(c) = Z(c)$. Otherwise the model is the Gibbs law truncated to $U$ and
+renormalised, differing from $\pi(\cdot\mid c)$ by the factor $Z(c)/Z_U(c)$ on $U$
+and by all of $\pi(U^{\mathrm{c}}\mid c)$ outside it. It is exactly the proviso
+$q_\theta(U\mid c) = 1$ that our per-parent perturbation groups violate, which is
+what \Cref{thm:l2g} quantifies, and even where it holds the step to a global
+statement needs the target's mass to sit on $U$ as well. For an atomic $\rho$ no
+hypothesis of this form is available at all: a finite point set is Lebesgue-null,
+so $q_\theta(U \mid c) = 0$ for any continuous model density and part (ii) is
+inapplicable rather than merely unattainable. The $\varepsilon$-relaxation of
+\Cref{rem:epsilon} repairs mass leaking outside a bounded region but not a
+Lebesgue-null reference measure, and we make no part-(ii) claim in the empirical
+reading at any $\varepsilon$.
+
+(iii) $\Var_{\vx\sim\rho}[w]$ is unchanged by $E \mapsto E + g(c)$ for any
+function $g$ of composition alone, because such a shift adds a constant to $w$
+within the group; and it involves neither $Z(c)$ nor $\mathcal{Z}$, because the
+within-group centring subtracts whatever constant those would contribute
+(\Cref{rem:logvar}).
+\end{proof}
+
+\begin{proof}[Proof of \Cref{cor:gauge}]
+The empirical objective is
+$\Ls_{\mathrm{value}} = M^{-1}\sum_{m}\Var_k(w_{m,k})$ with
+$w_{m,k} = \log q_\theta(\vx_{m,k}) + E_{m,k}/kT$, where $m$ indexes parent
+groups and $k$ indexes the $K$ perturbations of parent $m$. A within-group
+variance is annihilated exactly by functions that are constant within each group
+and by nothing else, so the null space of $\Ls_{\mathrm{value}}$ is the set of
+per-\emph{group} additive constants --- one scalar $b_m$ per group, not one per
+composition. The objective therefore determines the \emph{shape} of
+$\log q_\theta$ inside each group's support and no more. Fixing those constants
+requires absolute energies, which is the role of an anchor term; the anchor was
+inactive in every run reported in this paper (\Cref{app:asimplemented}). One
+granularity caveat belongs with that statement: the anchor as implemented predicts
+its constant from element counts, atom count and total charge, so it is keyed on
+the \emph{composition} and can fix at most one constant per composition, not the
+one constant per group this corollary identifies. Those coincide only when a
+composition supplies a single group, which our training pool does not satisfy for
+$31\%$ of its parents (\Cref{app:data}).
+\end{proof}
+
+\subsection{Local-to-global identifiability}
+\label{app:l2g}
+
+\Cref{thm:l2g} characterises the null space of the group-wise objective under
+stated support and normalisation assumptions; connectivity of the overlap graph is
+what removes the per-component offsets from that null space. It does not decide
+whether a trained model is Boltzmann, and no reported run has a connected overlap
+graph. Because the statement is sensitive to the choice of reference measure, we
+name ours first and then separate the continuous and the empirical readings.
+
+
+% ---------------------------------------------------------------------------
+%  RELOCATED FROM THE MAIN TEXT BY THE 2026-08-19 COMPRESSION PASS.
+%  Sec. 4 of the main text now carries a single short proposition
+%  (prop:ident); the full statements live here, immediately before their
+%  proofs.  Text is verbatim from the pre-compression main text.
+% ---------------------------------------------------------------------------
+
+\begin{definition}[Overlap graph]
+\label{def:overlap}
+Fix a composition $c$ with groups $j = 1,\dots,J$ and reference measures $\rho_j$ with supports
+$U_j$, all dominated by a common $\sigma$-finite measure $\mu$, and write
+$f_j = \mathrm{d}\rho_j/\mathrm{d}\mu$. The \emph{overlap graph} $\mathcal{G}_c$ has vertices
+$\{1,\dots,J\}$ and an edge $\{j,j'\}$ if and only if
+\begin{equation}
+  \int \min\bigl(f_j, f_{j'}\bigr)\,\mathrm{d}\mu \;>\; 0 ,
+  \label{eq:overlap}
+\end{equation}
+equivalently if and only if $\rho_j$ and $\rho_{j'}$ are \emph{not mutually singular}. The
+criterion does not depend on the choice of $\mu$. An edge supplies the measure
+$\mathrm{d}\nu = \min(f_j,f_{j'})\,\mathrm{d}\mu$, which is nonzero and absolutely continuous
+with respect to both $\rho_j$ and $\rho_{j'}$; that is what forces the two constancy statements to
+agree, and it is what a set merely charged by both measures does not supply. Overlap here is a
+property of the measures and not of the topological supports: $U_j \cap U_{j'} \neq \emptyset$ is
+necessary for an edge but far from sufficient.
+\end{definition}
+
+\begin{theorem}[Local-to-global identifiability]
+\label{thm:l2g}
+Let the population objective $\sum_j \pi_j \Var_{\rho_j}[w]$ vanish, so $w \equiv b_j$
+$\rho_j$-a.s.\ on $U_j$ for each $j$, and let $U_c = \bigcup_j U_j$. Then \emph{(i)}
+$b_j = b_{j'}$ for every edge of $\mathcal{G}_c$, so the constants agree within each connected
+component. Suppose in addition that each $\rho_j$ has a positive Lebesgue density on $U_j$. Then
+\emph{(ii)} if $\mathcal{G}_c$ is connected, $w$ is a single constant on $U_c$ and the model law
+\emph{conditioned on} $U_c$ is the Gibbs law conditioned on $U_c$,
+$q_\theta(x \mid c, U_c) = e^{-E(c,x)/kT}/Z_{U_c}(c)$ with
+$Z_{U_c}(c) = \int_{U_c} e^{-E(c,x)/kT}\,\mathrm{d}x$; the global statement
+$q_\theta(\cdot \mid c) = \pi(\cdot \mid c)$ follows only in the further case that $U_c$ carries
+all of the mass of \emph{both} laws, $q_\theta(U_c \mid c) = 1$ and $Z_{U_c}(c) = Z(c)$;
+\emph{(iii)} if $\mathcal{G}_c$ has $C \ge 2$ components with regions $U^{(1)},\dots,U^{(C)}$ and
+$q_\theta(U_c \mid c) = 1$, the zero-loss densities supported on $U_c$ form the
+$(C-1)$-parameter family carried by positive multipliers $a_i > 0$,
+\begin{equation}
+  q_\theta(x \mid c) = a_i\,e^{-E(c,x)/kT} \ \ (x \in U^{(i)}),
+  \qquad \textstyle\sum_{i=1}^{C} a_i Z^{(i)} = 1, \quad
+  Z^{(i)} = \int_{U^{(i)}} e^{-E(c,x)/kT}\,\mathrm{d}x ,
+  \label{eq:l2g}
+\end{equation}
+in which every vector of occupancies
+$\bigl(q_\theta(U^{(1)} \mid c),\dots,q_\theta(U^{(C)} \mid c)\bigr)
+ = (a_1 Z^{(1)},\dots,a_C Z^{(C)})$
+in the open simplex is attained: the \emph{relative} mass of separated basins is not identified.
+\end{theorem}
+
+Part (i) needs no density assumption and is proved below in two lines of measure
+theory. Parts (ii) and (iii) are the continuous corollary, where a density and a
+normalisation hypothesis are available; the empirical corollary
+(\Cref{cor:empirical}) is the one our runs are in, and there parts (ii) and (iii)
+have no counterpart, so what remains is an identifiability statement. Connectivity
+is sufficient and, in that sense, necessary: a disconnected graph can still admit a
+particular zero-loss solution whose constants happen to coincide, but only
+connectivity forces a single constant for \emph{every} zero-loss solution.
+
+\begin{corollary}[What our design identifies]
+\label{cor:basins}
+In every run reported here each parent contributes exactly one group, and $\rho_j$ is the empirical
+measure on that group's sampled geometries: one data geometry together with its $K-1$
+displacements. Distinct parents draw their geometries independently and continuously, so with
+probability one no two groups share a sampled point, no edge is formed, and $\mathcal{G}_c$ is a
+set of isolated vertices whatever $J$ is. Only part~(i) applies. The objective constrains the local
+relation between $\log q_\theta$ and energy inside each cloud, is blind to that cloud's additive
+offset, and constrains the density outside it, in particular the relative probability of
+distinct basins, not at all.
+\end{corollary}
+
+The corollary rests on mutual singularity of the group measures and not on a
+one-group-per-composition design, which our training pool does not have: $31\%$ of
+its parents sit on a composition shared with another parent (\Cref{app:data}), and
+those repeated clouds are still disconnected, which sharpens the point rather than
+weakening it. Connectivity is therefore a property of the supervision design;
+groups tiled along a path between basins would make $\mathcal{G}_c$ connected, which
+is an experiment this paper does not contain. One further gap belongs here: the
+objective and the evaluation metric average over \emph{different} clouds --- different
+potentials, parents, displacement scales and estimator step counts
+(\Cref{sec:setup}) --- so the corollary bounds what the objective can constrain and
+does not identify the two.
+
+\begin{remark}[Which reference measure is the operative one]
+\label{rem:refmeasure}
+What the objective \eqref{eq:lvalue} and the evaluation metric \eqref{eq:rm} both
+average over is the \emph{empirical} measure on the sampled geometries of a
+parent, so the empirical corollary below is the operative one throughout. Hence
+$U_j$ is a finite point set, the certificate of \Cref{thm:certificate} is $K-1$
+scalar equations rather than constancy on a region, and distinct parents have
+almost surely mutually singular reference measures. Read instead as the full-support
+Gaussian those points are drawn from, no two groups of a composition would be
+mutually singular, every pair would therefore carry an edge, and part (ii) of
+\Cref{thm:l2g} would apply --- but no run here approaches that population objective,
+and reading our experiments through it would credit us with a certificate we do not
+have. The empirical reading is the conservative one.
+\end{remark}
+
+\begin{corollary}[Empirical corollary: what zero loss certifies at sampled points]
+\label{cor:empirical}
+Let each $\rho_j$ be the empirical measure on the $K_j$ sampled geometries of group
+$j$, and let the objective vanish. Then \emph{(a)} for each $j$, $w$ takes one
+common value $b_j$ at the $K_j$ sampled points of group $j$, which is $K_j - 1$
+scalar equations and constrains no unsampled point; \emph{(b)} taking $\mu$ to be
+counting measure on the union of the sampled points, $f_j$ is group $j$'s atomic
+weight function and $\int \min(f_j,f_{j'})\,\mathrm{d}\mu > 0$ holds exactly when
+the two groups share at least one sampled geometry; for independently drawn
+continuous displacements that has probability zero, so distinct groups are almost
+surely mutually singular and $\mathcal{G}_c$ is edgeless; and \emph{(c)} consequently the objective places no constraint relating
+the offsets $b_j$ of distinct groups, and the relative mass those groups receive is
+unconstrained by the loss. Statement (c) is an identifiability statement and not a
+normalisation decomposition: the family \eqref{eq:l2g} is derived only in the
+continuous reading, where the $U^{(i)}$ carry positive Lebesgue measure.
+\end{corollary}
+
+\begin{proof}[Proof of \Cref{thm:l2g}]
+By \Cref{thm:certificate}(i) applied to each group, vanishing of every summand
+gives $w \equiv b_j$ $\rho_j$-a.s.\ on $U_j$.
+
+(i) Let $\{j,j'\}$ be an edge of $\mathcal{G}_c$ (\Cref{def:overlap}), so with
+$f_j = \mathrm{d}\rho_j/\mathrm{d}\mu$ the measure
+$\mathrm{d}\nu = \min(f_j,f_{j'})\,\mathrm{d}\mu$ is nonzero. By construction
+$\nu \le \rho_j$ and $\nu \le \rho_{j'}$ as measures, hence $\nu \ll \rho_j$ and
+$\nu \ll \rho_{j'}$, so $w = b_j$ holds $\nu$-a.s.\ and $w = b_{j'}$ holds
+$\nu$-a.s. The union of the two $\nu$-null exceptional sets is $\nu$-null and
+$\nu \neq 0$, so there is a point at which both identities hold and
+$b_j = b_{j'}$. This is precisely the step that the weaker ``some set charged by
+both measures'' criterion does not license: two measures can each charge a common
+set while being mutually singular, and then no single point need carry both
+statements. Equality along edges propagates along paths, so $j \mapsto b_j$ is
+constant on each connected component.
+
+(ii) If $\mathcal{G}_c$ is connected, all $b_j$ equal a common $b(c)$, hence
+$w \equiv b(c)$ on $U_c = \bigcup_j U_j$ and
+$q_\theta(\vx\mid c) = a(c)\,e^{-E(c,\vx)/kT}$ there, with $a(c) = e^{b(c)} > 0$.
+\Cref{thm:certificate}(ii) applies with $U = U_c$ and fixes the multiplier only
+relative to $U_c$: $a(c) = q_\theta(U_c\mid c)/Z_{U_c}(c)$, so the conditional law
+$q_\theta(\cdot \mid c, U_c)$ is exactly the Gibbs law conditioned on $U_c$. If in
+addition $U_c$ carries all the model's mass, $q_\theta(U_c\mid c) = 1$, then
+$a(c) = 1/Z_{U_c}(c)$; and only if $U_c$ also carries all the target's mass, so that
+$Z_{U_c}(c) = Z(c)$, does this become $q_\theta(\cdot\mid c) = \pi(\cdot\mid c)$
+globally. Neither hypothesis holds in any run reported here
+(\Cref{rem:epsilon,cor:empirical}).
+
+(iii) Work in the continuous reading, where by hypothesis each $\rho_j$ has a
+positive Lebesgue density on $U_j$. Suppose $\mathcal{G}_c$ has components
+$\mathcal{S}_1,\dots,\mathcal{S}_C$ with regions
+$U^{(i)} = \bigcup_{j \in \mathcal{S}_i} U_j$. Two distinct
+components have Lebesgue-null intersection: take $\mu = \lambda$ Lebesgue measure in
+this reading, and suppose $U^{(i)} \cap U^{(i')}$ had positive Lebesgue measure.
+Then some pair $j \in \mathcal{S}_i$, $j' \in \mathcal{S}_{i'}$ has
+$\lambda(U_j \cap U_{j'}) > 0$, and on that common set $f_j$ and $f_{j'}$ are both
+strictly positive by hypothesis, so $\min(f_j,f_{j'}) > 0$ there and
+$\int \min(f_j,f_{j'})\,\mathrm{d}\lambda > 0$, which is \eqref{eq:overlap};
+\Cref{def:overlap} would then place an edge between them, contradicting that they
+lie in different components. Lebesgue-nullity is what the
+normalisation decomposition below needs, which is why the positive-density
+hypothesis is carried explicitly into parts (ii) and (iii) rather than built into
+\Cref{def:overlap}: under the atomic reference measures our runs actually use,
+every $U_j$ is Lebesgue-null and this decomposition is unavailable, which is why
+\Cref{cor:empirical} states the weaker identifiability conclusion instead. By (i) the
+residual is constant on each $U^{(i)}$, say $w \equiv b_i$, so
+$q_\theta(\vx\mid c) = a_i\,e^{-E(c,\vx)/kT}$ on $U^{(i)}$ with $a_i = e^{b_i} > 0$;
+conversely every such density lies in the zero-loss set of the objective, because
+each $\Var_{\rho_j}[w]$ is then a variance of a constant. (This is a statement about
+the objective's null set, not an existence claim about the model class: we do not
+assert that a flow of the architecture used here realises every member of the
+family.) Normalisation over $U_c$ is the single scalar constraint
+$\sum_i a_i Z^{(i)} = 1$ on the positive multipliers, leaving $C-1$ free parameters,
+which is \eqref{eq:l2g}. Finally $q_\theta(U^{(i)}\mid c) = a_i Z^{(i)}$, and as
+$(a_1,\dots,a_C)$ ranges over the constraint set these occupancies range over the
+whole open simplex; the Gibbs occupancies \emph{conditioned on $U_c$},
+$Z^{(i)}/\sum_{i'}Z^{(i')}$, are one point of it and are singled out by nothing in
+the objective. Note that these are conditional on $U_c$: the objective says nothing
+about $\pi$'s mass outside $U_c$ either.
+\end{proof}
+
+\begin{proof}[Proof of \Cref{cor:basins}]
+Each parent contributes exactly one group, and the operative reference measure is
+the empirical measure on that group's sampled geometries (\Cref{rem:refmeasure}).
+The conclusion follows from mutual singularity rather than from any count of groups
+per composition. Two groups are joined in $\mathcal{G}_c$ exactly when their
+empirical measures are not mutually singular, which for atomic measures means
+exactly when the two clouds share a sampled geometry (\Cref{cor:empirical}(b));
+distinct parents draw their displacements independently from continuous
+distributions, so that event has probability zero and the two empirical measures
+are almost surely mutually singular.
+Every vertex is therefore isolated whatever $J$ is, each connected component is a
+single group, and \Cref{cor:empirical} applies with one free offset per cloud.
+\Cref{thm:certificate}(i) in its atomic form is the strongest part available.
+
+Two remarks keep this honest. First, the argument is deliberately independent of
+composition multiplicity, because the training pool does contain repeated
+compositions (\Cref{app:data}); those repeated clouds are still edgeless, so the
+conclusion is robust to multiplicity in a way that a $J = 1$ argument would not be.
+Second, the conclusion concerns the supervision design and not the geometry of
+Gaussian tails: were the $\rho_j$ read as full-support Gaussians, $\mathcal{G}_c$
+would be complete, but then the population objective would be a variance over all of
+$\R^{3N}$, which no run here approaches, and the \emph{measured} certificate would
+still be the $K-1$ empirical equations. Even for a connected $\mathcal{G}_c$ the
+normalisation hypothesis of \Cref{thm:l2g}(ii) is unattainable for a flow with
+full-support prior, so the reachable continuous statement is the
+$\varepsilon$-relaxed one of \Cref{rem:epsilon}.
+\end{proof}
+
+\begin{remark}[The normalisation hypothesis is an idealisation, and what survives without it]
+\label{rem:epsilon}
+No continuous normalising flow driven from a full-support Gaussian prior satisfies
+$q_\theta(U_c \mid c) = 1$ for a bounded $U_c$, so parts (ii) of
+\Cref{thm:certificate,thm:l2g} are limits rather than attainable states, and any upgrade
+path through them must be read as approximate. The $\varepsilon$-relaxation is what
+actually survives: if $w \equiv b$ on $U_c$ and $q_\theta(U_c \mid c) = 1 - \varepsilon$,
+then with the positive multiplier $a = e^{b}$ we have $a\,Z_{U_c}(c) = 1-\varepsilon$, so
+$a = (1-\varepsilon)/Z_{U_c}(c)$ and $b = -\log Z_{U_c}(c) + O(\varepsilon)$, and
+the law of $q_\theta$ \emph{conditioned} on $U_c$ is exactly the Gibbs law conditioned on
+$U_c$. Connectivity therefore buys a composition-level constant relative to the mass
+inside $U_c$, not a global normalisation.
+\end{remark}
+
+\begin{remark}[What would test the theorem]
+\label{rem:l2g-design}
+\Cref{thm:l2g} is falsifiable: a model trained with $C > 1$ can have arbitrarily
+wrong mode occupancies while achieving zero training loss and a per-group
+correlation of $1$. Testing it requires groups that are not mutually singular ---
+which, under the empirical reference measures of \Cref{rem:refmeasure}, means groups
+that share sampled geometries: perturbation clouds tiled along a transition path so
+that consecutive clouds re-use the same geometries, or groups drawn from one
+reference ensemble obtained by enhanced sampling. Merely intersecting supports would
+not suffice. That must be combined with a measurement of relative basin populations
+rather than within-basin ordering. No experiment in this
+paper does that (\Cref{sec:limitations}).
+\end{remark}
+
+\begin{remark}[Why cross-molecule pooling is broken]
+\label{rem:crossbatch}
+Across molecules the certificate holds with a \emph{molecule-dependent} constant
+$-\log Z(c)$ whose spread is dominated by size and composition. A cross-batch
+variance therefore measures $\log Z$ spread rather than Boltzmann deviation. This
+is the same Simpson-type trap that forces the evaluation correlation to be computed
+per parent molecule (\Cref{sec:setup}): one argument covers both the loss and the
+metric, and it is why the within-parent form is the only one used in either.
+\end{remark}
+
+\subsection{Algebraic relation between residual variance and ordering}
+\label{app:surrogate}
+
+The objective penalises a within-group variance while the endpoint reports a
+within-group correlation. They share one residual form, which is why optimising the
+first is expected to move the second --- under a stated condition that our own
+measurements show is not met.
+
+\begin{proposition}[Residual-variance / correlation identity]
+\label{prop:surrogate}
+Fix a parent with $K$ evaluation geometries; let $u_k = -E_k/kT$ be the independent
+evaluation energy, $L_k = \log q_\theta(x_k)$, $w_k = L_k - u_k$,
+$\tau = \mathrm{sd}_k(w)/\mathrm{sd}_k(u)$ and $\rho = \mathrm{corr}_k(w,u)$. Then the
+per-group Pearson correlation is $r = (1+\rho\tau)/\sqrt{1+2\rho\tau+\tau^2}$, reducing at
+$\rho = 0$ to $r = 1/\sqrt{1+\tau^2}$, and that parent's contribution to \eqref{eq:lvalue}
+is exactly $\tau^2\Var_k(u)$.
+\end{proposition}
+
+\begin{proof}[Proof of \Cref{prop:surrogate}]
+Fix a parent $m$ with $K$ evaluation perturbations. Write $u_k = -E_k/kT$ for the
+independent evaluation energy, $L_k = \log q_\theta(\vx_k)$, and
+$w_k = L_k - u_k$ for the Boltzmann residual, and set
+$\tau = \mathrm{sd}_k(w)/\mathrm{sd}_k(u)$ and $\rho = \mathrm{corr}_k(w,u)$.
+From $L = u + w$,
+\begin{equation}
+  \Cov(L,u) = \Var(u)\,(1+\rho\tau),
+  \qquad
+  \Var(L) = \Var(u)\,(1 + 2\rho\tau + \tau^2),
+\end{equation}
+so the per-group Pearson correlation is
+\begin{equation}
+  r_m = \frac{1+\rho\tau}{\sqrt{1+2\rho\tau+\tau^2}},
+  \qquad\text{and, if } \rho = 0, \qquad
+  r_m = \frac{1}{\sqrt{1+\tau^2}} .
+  \label{eq:app-surrogate}
+\end{equation}
+At $\rho = 0$ the right-hand side is strictly decreasing in $\tau$, and
+$\Ls_{\mathrm{value}}$ for parent $m$ is exactly $\tau^2\Var_k(u)$. Hence at
+$\rho = 0$ minimising the training loss minimises the residual that the reported
+metric penalises. Away from $\rho = 0$ the two can move in opposite directions,
+which is what \Cref{sec:scale} measures: the observed disagreement shows that the
+simplifying condition does not hold, without identifying the sign or the
+distribution of $\rho$ (\Cref{rem:nrvtau}). This proposition is a purely algebraic
+identity, not a guarantee that reducing the loss improves the correlation.
+\end{proof}
+
+\begin{remark}[$\tau^2$ \emph{is} the normalised residual variance]
+\label{rem:nrvtau}
+With $u_k = -E_k/kT$ we have $\Var_k(u) = \Var_k(E/kT)$, so the metric
+\eqref{eq:rm} satisfies
+\begin{equation}
+  \mathrm{NRV}_m \;=\; \frac{\Var_k[w]}{\Var_k[E/kT]} \;=\; \tau_m^{2},
+  \label{eq:app-nrvtau}
+\end{equation}
+and by \Cref{prop:surrogate} parent $m$'s contribution to \eqref{eq:lvalue} is
+$\mathrm{NRV}_m\,\Var_k(u)$. Within a single group under a single potential, then,
+$\mathrm{NRV}$ is exactly the $\tau^2$ of \Cref{prop:surrogate}, and the metric is
+the normalised evaluation analogue of the same Boltzmann-residual form the training
+objective uses. The two are not one quantity in different units: they share that
+residual structure but are evaluated with different potentials (eSEN against
+GFN2-xTB), different populations (training shards against held-out parents) and at
+different discretisation accuracies ($n = 4$ against $n = 12$; the same target
+quantity, different Euler bias). The identity is also the
+bridge between the ordering result and
+the calibration result, and it shows that the two cannot both be read through the
+$\rho = 0$ idealisation. At $\rho = 0$, $r = 1/\sqrt{1+\tau^2}$ is strictly
+decreasing in $\tau$, so the arm with the larger $r$ must have the smaller
+$\mathrm{NRV}$. The measurement is the opposite: value supervision has both the
+larger $r$ ($0.369$ against $0.200$) and the larger $\mathrm{NRV}$ ($2.144$ against
+$1.402$). These two endpoints are aggregated differently --- $r$ is a mean over
+parents and $\mathrm{NRV}$ a median over parents (\Cref{app:scalediag}) --- so no
+per-parent $\rho$ can be recovered by combining them. What the disagreement does
+establish is that the zero-correlation simplification is not an adequate explanation
+of the observed arm-level behaviour: under it the arm with the larger $r$ must have
+the smaller $\mathrm{NRV}$, and no aggregation convention makes both reported
+endpoints consistent with that. The sign and the distribution of the residual
+correlation are \emph{not identified} by these aggregates, and we report neither.
+\end{remark}
+
+\begin{remark}[The correlation certifies shape, not temperature or calibration]
+\label{rem:affine}
+Pearson $r$ is invariant under positive affine maps of either variable, so it
+cannot distinguish $p \propto e^{-E/kT}$ from $p \propto e^{-E/kT'}$ for any
+$T' > 0$, and it is equally blind to the \emph{magnitude} of the log-density's
+response. The per-group regression slope, the scale ratio
+$\mathrm{sd}_k[\log q_\theta]/\mathrm{sd}_k[E/kT]$, the implied effective
+temperature $kT/\mathrm{slope}$ and the normalised residual variance
+\eqref{eq:rm} are the read-outs that are \emph{not} affine-invariant, which is why
+they are reported alongside every correlation (\Cref{app:scalediag}). Their verdict
+differs from the correlation's, and that difference is the paper's main empirical
+statement.
+\end{remark}
+
+\begin{remark}[Attenuation, and why we do not lean on it]
+\label{rem:attenuation}
+By \Cref{ass:A-disc} the evaluated $\log q_\theta$ carries discretisation bias and
+stochastic trace noise. The classical attenuation model,
+$r_{\mathrm{meas}} \approx r_{\mathrm{true}}/\sqrt{1 + \Var(\text{noise})/\Var(\log p)}$,
+would make the reported correlation an under-estimate of the true one, and
+geometry-dependent discretisation bias would enter $\Var_k(w)$ as an estimator
+floor. This is an argument and not a measurement, and we do not lean on it --- the
+more so because what we \emph{can} measure points the other way: the step counts we
+can afford show no plateau, and the gap shrinks precisely as the estimator becomes
+more accurate, which is what a partly artefactual gap at coarse resolution would
+also do (\Cref{app:estimator}). What is measured instead is the teacher-evaluator agreement
+reference: pushing the teacher's own energies through the identical pipeline gives
+$r = 0.927$ on the primary population, so a model reproducing its teacher exactly
+would score about that rather than $1$, and our $0.369$ is about $40\%$ of it in
+absolute terms (\Cref{app:scalediag}). Whatever accounts for the residual, it is
+not teacher--evaluator disagreement.
+\end{remark}
+
+\subsection{Scope of the theory}
+\label{app:scope}
+
+Four inventories, so that no statement above is credited with more than it does.
+
+\paragraph{Not ours.} \Cref{thm:certificate} and its partition-function-free
+property are the log-variance divergence of
+\citet{vargrad,nusken2021pathspace,richter2024improvedsampling}, restated in our
+conditional notation; off-policy estimation of such a divergence is likewise
+established \citep{sendera2024offpolicy}. See \Cref{rem:logvar}.
+
+\paragraph{Exercised empirically.} \Cref{thm:certificate}(i) in its atomic form,
+applied to each disjoint sampled cloud --- that is the training objective; and
+\Cref{rem:crossbatch}, which dictates the per-group construction of both the loss
+and the metric.
+
+\paragraph{Stated as a diagnostic identity, with its hypothesis contradicted.}
+\Cref{prop:surrogate} is exact algebra, but its $\rho = 0$ specialisation --- under
+which reducing normalised residual variance must improve the correlation --- is
+contradicted by the measurement of \Cref{sec:scale}, where the value arm has both
+the larger $r$ and the larger $\mathrm{NRV}$ (\Cref{rem:nrvtau}). That failure is
+itself one of the paper's findings.
+
+\paragraph{Stated and \emph{not} tested here.} \Cref{thm:certificate}(ii) and
+\Cref{thm:l2g}(ii): no reported run has a connected overlap graph, so we never
+reach the regime in which the certificate becomes a statement about $q_\theta$ on a
+region --- and even there it would pin only the law \emph{conditioned} on that
+region (\Cref{rem:epsilon}). \Cref{thm:l2g}(iii) is the regime we \emph{are} in,
+and its failure mode --- arbitrary relative basin weights at zero loss --- is
+untested in both directions, because no cross-basin measurement exists in this
+paper (\Cref{rem:l2g-design}, \Cref{sec:limitations}).
+\Cref{prop:trap,prop:conflict} are candidate mechanisms for the negative result of
+\Cref{sec:ablation}, consistent with it but not isolated experimentally.
+
+\paragraph{Outside the theory altogether.} Nothing above predicts the
+\emph{magnitude} of the correlations we report, and nothing above speaks to the
+\emph{calibration} of $\log q_\theta$: \Cref{thm:certificate}(i) fixes the residual
+only up to a per-group constant, and by \Cref{rem:affine} the per-group correlation
+is invariant to positive affine maps of either variable. The scale-sensitive
+read-outs --- normalised residual variance, regression slope, scale ratio and
+effective temperature --- are therefore empirical additions with no counterpart
+here, and the finding that they fail to improve while the correlation does
+(\Cref{sec:scale}) is not something the theory anticipates; the only bridge between
+the two is the bookkeeping identity \eqref{eq:app-nrvtau}. Finally, every statement
+above concerns population objectives at their exact optimum, whereas
+\eqref{eq:lvalue} is estimated from $M$ parents with a discretised, stochastic
+$\log q_\theta$, and the update we run is the truncated-adjoint surrogate of
+\Cref{rem:idealresidual}. Everything above is therefore a statement about the zero
+set of the ideal residual condition and about what that zero set leaves
+unidentified; nothing above is a statement about whether, or to what, the
+implemented update converges.

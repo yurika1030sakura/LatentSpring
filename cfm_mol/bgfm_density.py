@@ -108,6 +108,7 @@ def log_density_via_flow(
     prior_std: float = 1.0,
     for_training: bool = False,
     kT: torch.Tensor | None = None,
+    xi_fn: Callable[[int, int, torch.Tensor], torch.Tensor] | None = None,
 ) -> torch.Tensor:
     """Estimate log p_theta(x_1) for the data points in g_aux.
 
@@ -129,6 +130,14 @@ def log_density_via_flow(
     (dt > 0 magnitude), giving log p_1 = log p_0(x_0) + logp_acc only if
     we define div with the reverse-time sign. We use the standard
     instantaneous change of variables; see unit test for sign validation.
+
+    Args (beyond the obvious):
+        xi_fn: optional (ode_step, hutch_sample, x) -> probe tensor, forwarded to
+            divergence_hutchinson as its ``xi_provider``. Enables COMMON RANDOM
+            NUMBERS across the graphs in the batch (see the global-ensemble eval,
+            scripts/eval_global_ensemble.py): absolute log p stays noisy, but log p
+            DIFFERENCES between geometries of the same molecule become precise.
+            Default None -> i.i.d. probes (unchanged training behaviour).
 
     Returns:
         (B,) estimated log-densities
@@ -156,12 +165,15 @@ def log_density_via_flow(
             # Exact divergence (3N backward passes). Noise-free estimate for
             # eval-time log-density; too slow for training. Only valid when
             # not building a second-order graph.
-            div = divergence_exact_atomwise(v_fn, x_req, n_apg)
+            div = divergence_exact_atomwise(v_fn, x_req, n_apg,
+                                            create_graph=for_training)
         else:
             div = divergence_hutchinson(
                 v_fn, x_req, n_apg,
                 n_samples=n_hutchinson, rademacher=True,
-                create_graph=for_training)
+                create_graph=for_training,
+                xi_provider=(None if xi_fn is None
+                             else (lambda k, xx, _s=step: xi_fn(_s, k, xx))))
         # Velocity for the reverse Euler step (no grad needed for the step)
         with torch.no_grad():
             g_aux.ndata['x_t'] = x

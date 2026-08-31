@@ -1,0 +1,110 @@
+{
+  "figure": "figA_resolution (appendix)",
+  "population": "the strictly paired resolution sweep: five flow-matching checkpoints (s1..s5) and four value checkpoints (s1, s2, s3, s5), each re-scored at n = 4, 12 and 48 ODE steps on identical parents, identical perturbations and pinned evaluation seed 12345",
+  "records_dir": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_res",
+  "transcribed_not_recomputed": true,
+  "per_checkpoint": {
+    "flow_matching": {
+      "s1": [
+        0.141,
+        0.199,
+        0.239
+      ],
+      "s2": [
+        0.226,
+        0.221,
+        0.315
+      ],
+      "s3": [
+        0.176,
+        0.191,
+        0.238
+      ],
+      "s4": [
+        0.205,
+        0.183,
+        0.298
+      ],
+      "s5": [
+        0.197,
+        0.224,
+        0.257
+      ]
+    },
+    "value": {
+      "s1": [
+        0.528,
+        0.328,
+        0.287
+      ],
+      "s2": [
+        0.614,
+        0.433,
+        0.289
+      ],
+      "s3": [
+        0.654,
+        0.485,
+        0.32
+      ],
+      "s5": [
+        0.489,
+        0.428,
+        0.33
+      ]
+    }
+  },
+  "n_steps": [
+    4,
+    12,
+    48
+  ],
+  "delta_t": [
+    0.25,
+    0.0833,
+    0.0208
+  ],
+  "aggregates": [
+    {
+      "n": 4,
+      "delta_t": 0.25,
+      "fm_mean": 0.189,
+      "fm_sem": 0.014426,
+      "value_mean": 0.57125,
+      "value_sem": 0.037981,
+      "gap": 0.38225,
+      "welch_t": 9.4085,
+      "n_seeds_fm": 5,
+      "n_seeds_value": 4
+    },
+    {
+      "n": 12,
+      "delta_t": 0.0833,
+      "fm_mean": 0.2036,
+      "fm_sem": 0.008134,
+      "value_mean": 0.4185,
+      "value_sem": 0.032804,
+      "gap": 0.2149,
+      "welch_t": 6.3585,
+      "n_seeds_fm": 5,
+      "n_seeds_value": 4
+    },
+    {
+      "n": 48,
+      "delta_t": 0.0208,
+      "fm_mean": 0.2694,
+      "fm_sem": 0.01575,
+      "value_mean": 0.3065,
+      "value_sem": 0.010882,
+      "gap": 0.0371,
+      "welch_t": 1.938,
+      "n_seeds_fm": 5,
+      "n_seeds_value": 4
+    }
+  ],
+  "directional_facts_checked": {
+    "value_checkpoints_falling_monotonically": 4,
+    "flow_matching_checkpoints_ending_higher": 5,
+    "note": "the authoritative summary phrase 'four of five flow-matching checkpoints rise' is not reproducible from these values: three of five rise monotonically and five of five end higher at n = 48 than at n = 4, so the figure annotates only the latter two"
+  }
+}

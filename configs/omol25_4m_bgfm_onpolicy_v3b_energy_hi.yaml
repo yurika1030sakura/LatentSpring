@@ -1,0 +1,250 @@
+# Boltzmann-Guided Flow Matching (BGFM) on OMol25 4M.
+# Paper 1 Level-2 upgrade config. Derived from omol25_4m_cfm.yaml with:
+#   - bgfm: {enabled: true, lambda_1, lambda_2, warmup, ramp, kT}
+#   - comments updated
+#
+# Training consumes the BGFM-preprocessed data (has forces + energies
+# fields). See notes/bgfm_method.md for the formal method derivation.
+
+training:
+  output_dir: /n/holylabs/woo_lab/Lab/yulili/bgfm/runs/omol25_4m_bgfm_onpolicy_v3b_energy_hi
+  batch_size: 8                # energy FFJORD adds memory on top of the FM batch
+  num_workers: 12
+  ema_decay: 0
+  max_num_edges: 40000         # bumped to match larger batch
+  trainer_args:
+    max_epochs: 3              # horizon for the step-based lambda schedule
+    accelerator: gpu
+    devices: 1
+    num_nodes: 1
+    accumulate_grad_batches: 2
+    limit_val_batches: 50
+    gradient_clip_val: 1.0
+    precision: bf16-mixed
+
+  evaluation:
+    mols_to_sample: 20
+    sample_interval: 1.0
+    val_loss_interval: 0.25
+
+wandb:
+  project: cfm_mol
+  entity:
+  name: omol25_4m_bgfm_onpolicy_v3b_energy_hi
+  mode: disabled
+
+lr_scheduler:
+  base_lr: 2.0e-4
+  warmup_length: 0.02
+  restart_interval: 0
+  restart_type: 'linear'
+  weight_decay: 1.0e-12
+
+dataset:
+  dataset_name: omol25
+  raw_data_dir: /n/netscratch/ryl_lab/Lab/omol25/train_4M   # raw LMDB reused (only read by preprocess, not training)
+  processed_data_dir: /n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed
+  max_atoms: 200
+  bond_tolerance: 1.2
+  atom_map:
+    - H
+    - He
+    - Li
+    - Be
+    - B
+    - C
+    - N
+    - O
+    - F
+    - Ne
+    - Na
+    - Mg
+    - Al
+    - Si
+    - P
+    - S
+    - Cl
+    - Ar
+    - K
+    - Ca
+    - Sc
+    - Ti
+    - V
+    - Cr
+    - Mn
+    - Fe
+    - Co
+    - Ni
+    - Cu
+    - Zn
+    - Ga
+    - Ge
+    - As
+    - Se
+    - Br
+    - Kr
+    - Rb
+    - Sr
+    - Y
+    - Zr
+    - Nb
+    - Mo
+    - Tc
+    - Ru
+    - Rh
+    - Pd
+    - Ag
+    - Cd
+    - In
+    - Sn
+    - Sb
+    - Te
+    - I
+    - Xe
+    - Cs
+    - Ba
+    - La
+    - Ce
+    - Pr
+    - Nd
+    - Pm
+    - Sm
+    - Eu
+    - Gd
+    - Tb
+    - Dy
+    - Ho
+    - Er
+    - Tm
+    - Yb
+    - Lu
+    - Hf
+    - Ta
+    - W
+    - Re
+    - Os
+    - Ir
+    - Pt
+    - Au
+    - Hg
+    - Tl
+    - Pb
+    - Bi
+  dataset_size:
+  confs_per_mol:
+
+checkpointing:
+  save_last: True
+  save_top_k: 3
+  monitor: 'val_total_loss'
+  every_n_epochs: 1
+  every_n_train_steps: 15000
+
+mol_fm:
+  explicit_aromaticity: false
+  distort_p: 0.2
+  fake_atom_p: 0.0
+  parameterization: ctmc
+  time_scaled_loss: True
+  total_loss_weights:
+    x: 3.0
+    a: 0.4
+    c: 1.0
+    e: 0.0                    # bond-free
+  prior_config:
+    x:
+      align: True
+      type: 'centered-normal'
+      kwargs: {std: 1.0}
+    a:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+    c:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+    e:
+      align: False
+      type: 'ctmc'
+      kwargs: {}
+
+  # BGFM (Boltzmann-Guided Flow Matching) block. Read by
+  # cfm_mol.bgfm_train_hook.patch_flowmol_bgfm. First-pass defaults
+  # chosen for stability; grid-search in Week 3 will refine.
+  #
+  # kT = 1 eV (NOT 0.025 = room-T): gives F/kT ~ 0.5 mean, 50 max on
+  #   OMol25 forces. Room-T kT would give F/kT ~ 2000 max, destabilizing
+  #   MSE. Physical Boltzmann interpretation recovered via lambda_2
+  #   (energy term) which uses variance form that is kT-scale-invariant.
+  # lambda_1 = 0.1: conservative; scales up if training stable.
+  # lambda_2 disabled in v1 (energy loss needs divergence integral,
+  #   deferred to Week 3/4 after force-only stability confirmed).
+  bgfm:
+    enabled: true
+    lambda_1: 0.1
+    lambda_2: 0.0001            # ENERGY TERM ON (AGGRESSIVE arm: 1e-4*6060=0.61, 2.4x FM). Smoke measured L_energy=6060 on the
+                                # warm-started model (NOT ~400 as on an untrained one), so 5e-4 would have
+                                # contributed 3.03 vs FM ~0.25 -- a 12x swamp that would wreck geometry.
+                                # 3e-5 * 6060 = 0.18 ~ FM 0.25: shapes the global density, preserves validity.
+    # Energy-term cost/memory controls (FFJORD divergence is a double-backward).
+    # These exact caps were smoke-validated: 16.5 GiB peak (vs 135 GB OOM uncapped).
+    energy_n_ode_steps: 4
+    energy_n_hutchinson: 2
+    energy_every_k_steps: 4
+    energy_b_parents: 1
+    energy_max_atoms_per_parent: 50
+    energy_perturbation_shards:
+      - /n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/perturbation_val_n10000_s0.pt
+      - /n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/perturbation_train_n30000_s0.pt
+    kT: 1.0                     # eV; F/kT stays numerically tame
+    t_eval_values: [0.85, 0.92, 0.97]   # multi-time score probe (oral-frame); [0.9] for ~2x faster
+    warmup_frac: 0.002          # warm-started from a GOOD epoch-0 model -> engage physics quickly
+    ramp_frac: 0.02             # full lambda by ~4.3h (avoids gradient shock on the warm model)
+    divergence_method: hutchinson
+    divergence_samples: 1
+    # --- ON-POLICY force distillation (HBFM) — needs a co-located eSEN teacher worker ---
+    # Requires the gated eSEN oracle ckpt (esen_sm_conserving_all.pt) served by
+    # scripts/omol25_worker.py on onpolicy_rpc_url. The FASRC launcher
+    # scripts/fasrc/train_bgfm_onpolicy_h200.slurm starts the worker + trainer together.
+    lambda_onpolicy: 0.1
+    onpolicy_K_steps: 10
+    onpolicy_every_k_steps: 8
+    onpolicy_t: 0.9
+    onpolicy_rpc_url: http://127.0.0.1:28905
+    onpolicy_clip_force: 50.0
+
+vector_field:
+  self_conditioning: True
+  stochasticity: 30.0
+  high_confidence_threshold: 0.9
+  n_vec_channels: 32
+  update_edge_w_distance: True
+  n_hidden_scalars: 256
+  n_hidden_edge_feats: 128
+  s_message_dim:
+  v_message_dim:
+  n_expansion_gvps: 3
+  attention: False
+  n_heads: 32
+  n_recycles: 1
+  separate_mol_updaters: True
+  n_molecule_updates: 6
+  convs_per_update: 1
+  n_cp_feats: 4
+  n_message_gvps: 3
+  n_update_gvps: 3
+  message_norm: sum
+  rbf_dmax: 10
+  rbf_dim: 32
+  time_embedding_dim: 64
+  a_token_dim: 64
+  c_token_dim: 64
+  e_token_dim: 64
+
+interpolant_scheduler:
+  schedule_type:
+    x: 'linear'
+    a: 'linear'
+    c: 'linear'
+    e: 'linear'
