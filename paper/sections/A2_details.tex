@@ -1692,11 +1692,10 @@ from an ODE integration of the clamped positional flow with Hutchinson divergenc
 estimation (\Cref{app:density}). That estimate is biased by the explicit-Euler state
 integration and noisy from the stochastic trace, and we do not assert that it is
 converged. \emph{(vi-b) The training objective and the evaluation metric are formed by
-the same estimator but not at the same cost.} The value term is evaluated inside the
-training loop, where an FFJORD objective is affordable only at reduced accuracy; the
-objective therefore works from a less accurate estimate than the metric measures, and we
-cannot say whether that mismatch attenuates the reported effect, inflates it, or is
-immaterial. \emph{(vi-c) Neither the estimator's noise nor its bias has been measured on
+the same estimator, but the value term is computed inside the training loop under a
+training-time budget.} We do not characterise the estimate the objective works from
+against the one the metric computes, and we cannot say whether any mismatch attenuates
+the reported effect, inflates it, or is immaterial. \emph{(vi-c) Neither the estimator's noise nor its bias has been measured on
 the reported population.} A repeat-to-repeat variance study on that population, and
 agreement with an exact divergence, are not reported here; under classical attenuation
 the reported $r$ would be a lower bound (\Cref{rem:attenuation}), but that is an
