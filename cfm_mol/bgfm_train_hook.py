@@ -219,6 +219,16 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
 
     lambda_1 = float(bgfm_config.get('lambda_1', 0.5))
     lambda_2 = float(bgfm_config.get('lambda_2', 0.0))
+    # Under parameterization: ctmc, vector_field(...)['x'] is the ENDPOINT
+    # prediction x_1_hat, not a velocity: EndpointVectorField.forward's own
+    # docstring says "Predict x_1 (trajectory destination) given x_t", and the
+    # velocity is formed elsewhere as (x_1 - x_t) * alpha'/(1-alpha).  Feeding
+    # x_1_hat straight into score_from_fm_velocity, which expects a velocity,
+    # therefore yields (1-t) times the intended score -- a factor 33 at
+    # t = 0.97.  Every force number reported in the paper was produced with
+    # that read-out, so the default stays False and reproduces it exactly.
+    # Set true to convert x_1_hat to a velocity first.
+    endpoint_to_velocity = bool(bgfm_config.get('force_endpoint_to_velocity', False))
     # Energy-consistency (Boltzmann) term controls. Active iff lambda_2 > 0.
     # The density estimate is expensive (FFJORD trajectory), so we expose
     # step count, Hutchinson samples, and a stride to amortize the cost.
@@ -409,6 +419,10 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
 
             # 3. Score from FM velocity
             t_per_atom = t[node_batch_idx]
+            if endpoint_to_velocity:
+                # x_1_hat -> velocity, so the score read-out receives what it
+                # documents itself as taking.  Clamped away from t = 1.
+                v_theta = (v_theta - x_t) / (1.0 - t_per_atom).clamp_min(1e-4).unsqueeze(-1)
             s_theta = score_from_fm_velocity(v_theta, x_t, t_per_atom, prior_std=1.0)
 
             # 4. Force consistency loss + diagnostic cosine
@@ -505,8 +519,11 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
                 if op_kT is not None:
                     vf_kwargs_op['kT'] = op_kT
                 v_op = self.vector_field(g_aux, t_op, **vf_kwargs_op)['x']
+                t_op_atom = t_op[node_batch_idx]
+                if endpoint_to_velocity:
+                    v_op = (v_op - x_t_op) / (1.0 - t_op_atom).clamp_min(1e-4).unsqueeze(-1)
                 s_op = score_from_fm_velocity(
-                    v_op, x_t_op, t_op[node_batch_idx], prior_std=1.0)
+                    v_op, x_t_op, t_op_atom, prior_std=1.0)
                 # Mask atoms whose teacher force failed (zeros): do NOT train
                 # toward a spurious F/kT = 0 target on those.
                 if teacher_valid.any():

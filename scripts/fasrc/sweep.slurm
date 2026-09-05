@@ -44,6 +44,18 @@ if [ -n "$WARM" ]; then
   fi
 fi
 echo "host: $(hostname)"; nvidia-smi -L; echo "config: $CONFIG"; date
+
+# --- GPU preflight -----------------------------------------------------------
+# A node with a stuck/busy GPU fails us in ~20s, which frees the node for the
+# next queued job -> one bad node can eat an entire submission batch. Detect it
+# and requeue (back to the queue, likely a different node) instead of FAILED.
+if ! "$FLOWMOL_PY" -c "import torch; torch.zeros(8, device='cuda'); torch.cuda.synchronize()" 2>&1; then
+  echo "GPU PREFLIGHT FAILED on $(hostname) -- requeueing job $SLURM_JOB_ID"
+  sleep 60   # let the scheduler hand this node to someone else first
+  scontrol requeue "$SLURM_JOB_ID"
+  exit 0
+fi
+echo "gpu preflight ok"
 cd "$REPO"
 
 # --- start the eSEN teacher only if this config is on-policy ---

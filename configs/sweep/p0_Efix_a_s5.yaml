@@ -1,0 +1,207 @@
+# Priority-0 matched ablation cell E_force, seed 1
+# 全臂匹配: batch=8, b_parents=8, cap=1500, 无蒸馏, 仅 TRAIN shard(无评测污染)
+training:
+  output_dir: /n/holylabs/woo_lab/Lab/yulili/bgfm/runs/p0/p0_Efix_a_s5
+  batch_size: 8
+  num_workers: 12
+  ema_decay: 0
+  max_num_edges: 40000
+  trainer_args:
+    max_epochs: 10
+    accelerator: gpu
+    devices: 1
+    num_nodes: 1
+    accumulate_grad_batches: 2
+    limit_val_batches: 50
+    gradient_clip_val: 1.0
+    precision: bf16-mixed
+    max_steps: 30000
+  evaluation:
+    mols_to_sample: 20
+    sample_interval: 1.0
+    val_loss_interval: 0.25
+wandb:
+  project: cfm_mol
+  entity: null
+  name: p0_Efix_a_s5
+  mode: disabled
+lr_scheduler:
+  base_lr: 0.0002
+  warmup_length: 0.02
+  restart_interval: 0
+  restart_type: linear
+  weight_decay: 1.0e-12
+dataset:
+  dataset_name: omol25
+  raw_data_dir: /n/netscratch/ryl_lab/Lab/omol25/train_4M
+  processed_data_dir: /n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed
+  max_atoms: 200
+  bond_tolerance: 1.2
+  atom_map:
+  - H
+  - He
+  - Li
+  - Be
+  - B
+  - C
+  - N
+  - O
+  - F
+  - Ne
+  - Na
+  - Mg
+  - Al
+  - Si
+  - P
+  - S
+  - Cl
+  - Ar
+  - K
+  - Ca
+  - Sc
+  - Ti
+  - V
+  - Cr
+  - Mn
+  - Fe
+  - Co
+  - Ni
+  - Cu
+  - Zn
+  - Ga
+  - Ge
+  - As
+  - Se
+  - Br
+  - Kr
+  - Rb
+  - Sr
+  - Y
+  - Zr
+  - Nb
+  - Mo
+  - Tc
+  - Ru
+  - Rh
+  - Pd
+  - Ag
+  - Cd
+  - In
+  - Sn
+  - Sb
+  - Te
+  - I
+  - Xe
+  - Cs
+  - Ba
+  - La
+  - Ce
+  - Pr
+  - Nd
+  - Pm
+  - Sm
+  - Eu
+  - Gd
+  - Tb
+  - Dy
+  - Ho
+  - Er
+  - Tm
+  - Yb
+  - Lu
+  - Hf
+  - Ta
+  - W
+  - Re
+  - Os
+  - Ir
+  - Pt
+  - Au
+  - Hg
+  - Tl
+  - Pb
+  - Bi
+  dataset_size: null
+  confs_per_mol: null
+checkpointing:
+  save_last: true
+  save_top_k: 3
+  monitor: val_total_loss
+  every_n_epochs: 1
+  every_n_train_steps: 15000
+mol_fm:
+  explicit_aromaticity: false
+  distort_p: 0.2
+  fake_atom_p: 0.0
+  parameterization: ctmc
+  time_scaled_loss: true
+  total_loss_weights:
+    x: 3.0
+    a: 0.4
+    c: 1.0
+    e: 0.0
+  prior_config:
+    x:
+      align: true
+      type: centered-normal
+      kwargs:
+        std: 1.0
+    a:
+      align: false
+      type: ctmc
+      kwargs: {}
+    c:
+      align: false
+      type: ctmc
+      kwargs: {}
+    e:
+      align: false
+      type: ctmc
+      kwargs: {}
+  bgfm:
+    enabled: true
+    lambda_1: 1.479e-4
+    force_endpoint_to_velocity: true
+    lambda_2: 0.0
+    kT: 1.0
+    t_eval_values:
+    - 0.85
+    - 0.92
+    - 0.97
+    warmup_frac: 0.01
+    ramp_frac: 0.05
+    divergence_method: hutchinson
+    divergence_samples: 1
+vector_field:
+  self_conditioning: true
+  stochasticity: 30.0
+  high_confidence_threshold: 0.9
+  n_vec_channels: 32
+  update_edge_w_distance: true
+  n_hidden_scalars: 256
+  n_hidden_edge_feats: 128
+  s_message_dim: null
+  v_message_dim: null
+  n_expansion_gvps: 3
+  attention: false
+  n_heads: 32
+  n_recycles: 1
+  separate_mol_updaters: true
+  n_molecule_updates: 6
+  convs_per_update: 1
+  n_cp_feats: 4
+  n_message_gvps: 3
+  n_update_gvps: 3
+  message_norm: sum
+  rbf_dmax: 10
+  rbf_dim: 32
+  time_embedding_dim: 64
+  a_token_dim: 64
+  c_token_dim: 64
+  e_token_dim: 64
+interpolant_scheduler:
+  schedule_type:
+    x: linear
+    a: linear
+    c: linear
+    e: linear

@@ -11,7 +11,8 @@
 %    B.3  training scale and hardware
 %    B.4  data, preprocessing, perturbation shards, and the shard audit
 %    B.5  evaluation protocol
-%    B.6  estimator resolution   <-- the highest-risk item; keep it prominent
+%    B.6  why the gradient baseline underperforms: two diagnostics, plus the
+%         disclosed defect in the score read-out
 %    B.7  calibration diagnostics, per-seed tables, teacher-evaluator agreement reference
 %    B.8  perturbation families
 %    B.9  the matched six-cell grid
@@ -38,7 +39,6 @@
 %    value-arm means are completion-conditional-> app:p0cells reporting rules
 %    the objective is local, not basin-mass    -> cor:basins, limitation (iii)
 %    kT = 1 eV is numerical, not physical      -> app:hyper, limitation (iv)
-%    the likelihood is resolution-dependent    -> app:estimator, limitation (vi)
 %  Do not re-add a paragraph restating one of these in a third place.
 %
 %  PROVENANCE OF NUMBERS.  Every value here is either in the verified list that
@@ -56,8 +56,9 @@
 This appendix is the reproducibility record. It states the objectives exactly as
 implemented rather than as displayed (\Cref{app:asimplemented,app:hyper}), the
 training and evaluation protocols (\Cref{app:hardware,app:data,app:eval}), the
-properties of the density estimator that bound how every number may be read
-(\Cref{app:estimator}), the full per-seed tables behind each reported mean
+two diagnostics that explain the gradient baseline's behaviour, together with the
+defect in the score read-out they exposed
+(\Cref{app:forcemech}), the full per-seed tables behind each reported mean
 (\Cref{app:scalediag,app:p0cells}), the two experimental rounds and the defects of
 the earlier one (\Cref{app:p0cells,app:cells}), the auxiliary measurements
 (\Cref{app:perturb,app:generation,app:capability}), the numerical-stability record
@@ -103,7 +104,7 @@ zero set of the displayed ideal residual objective --- what a model that had dri
 population objective to zero would have been shown, and what that leaves free --- and
 make no claim about whether the implemented update converges to that zero set
 (\Cref{rem:idealresidual}). \emph{Implementation}: what runs is the finite-step density
-estimate of \Cref{app:estimator} optimised by the truncated-adjoint gradient displayed
+estimate of \Cref{app:density} optimised by the truncated-adjoint gradient displayed
 above, together with the clipping, Huberisation and step rejection listed in this
 subsection. \emph{Experiment}: every empirical result in this paper is a measurement of
 the behaviour of that implemented procedure, and none of it is offered as evidence about
@@ -268,9 +269,9 @@ which that invariant fails without any error being raised.
 Local density--energy ordering is measured on held-out parent molecules. The
 Stage-1 pipeline emits $K = 9$ geometries per parent: its data geometry, plus 8
 copies displaced with per-coordinate standard deviation $\sigma = 0.15$~\AA{}
-(centre of mass removed). We compute $\log q_\theta$ for each by reverse-time
-integration of the learned flow with 12 first-order steps and a Hutchinson trace
-estimator with 2 Rademacher probes per step (\Cref{app:density}). The data geometry
+(centre of mass removed). We compute $\log q_\theta$ for each by an ODE
+integration of the clamped positional flow with Hutchinson divergence estimation
+(\Cref{app:density}), under the settings of \Cref{app:constants}. The data geometry
 is systematically its group's lowest-energy member and therefore high-leverage, so
 the primary endpoint discards it and scores the 8 displaced geometries alone.
 
@@ -340,312 +341,143 @@ imputations the imputed five-entry value-arm mean still lies above every one of 
 five control seeds, whose maximum is $0.249$. The two conservative imputations are
 reported here and referenced from \Cref{sec:mainresult}.
 
-\subsection{Estimator resolution: what the step count controls, and what it does not}
-\label{app:estimator}
+\subsection{Why the gradient baseline underperforms: two diagnostics}
+\label{app:forcemech}
 
-\Cref{app:density} settles the fact this subsection measures. The reverse solve is
-explicit Euler in the \emph{state} over the whole of $[0,1]$, with the divergence
-integral taken by the midpoint rule on the same interval: all $n$ quadrature nodes are
-interior to $[0,1]$, but the interval itself is not truncated. Every step count
-therefore targets one and the same quantity, $\log q_\theta$ at $t = 1$, and refining
-$n$ estimates that quantity \emph{more accurately} rather than measuring a different
-one. What the step count controls is accuracy, not identity. Any step-count dependence
-in the numbers below is accordingly a property of the finite-step readout rather than of
-the target. It is dominated by numerical discretisation error --- the $O(\Delta t)$ Euler
-state integration, the quadrature being $O(\Delta t^{2})$ and exact for integrands linear
-in $t$ --- together with whatever endpoint stiffness the learned field carries and any
-step-count-dependent contribution from the stochastic trace term. The certificate the objective can enforce is a statement about
-$\log q_\theta$ as formed at a finite step count, and so carries that bias
-(\Cref{rem:epscert}). Three consequences follow, in increasing order of how
-much they cost us.
+What \Cref{sec:ablation} measures to fail is naive off-policy endpoint force matching,
+read through the flow-matching score identity \eqref{eq:score}, on this non-equilibrium
+corpus. This subsection reports two diagnostics that supply a \emph{measured mechanism}
+for that failure. Both were run on the shared warm-start flow-matching checkpoint in
+forward and backward passes only: nothing was trained, no checkpoint was written, and no
+number reported anywhere else in this paper depends on them. They are offered as a
+mechanism and not as a proof, and they do not widen the claim, which remains scoped
+exactly as stated in \Cref{sec:forcebaseline}: naive, off-policy, endpoint, read through
+the flow-matching score identity, on this non-equilibrium corpus.
+
+\paragraph{Diagnostic 1: the endpoint force is the wrong target at the interpolant.} The
+gradient term regresses the read-out at the interpolation state $\vx_t$ onto the force
+read at the data endpoint $\vx_1$. \Cref{tab:forcemismatch} measures how far apart those
+two forces actually are. It sweeps the probe time over $192$ held-out molecules with the
+\emph{same} $\vx_0$ and $\vx_1$ at every probe time, so the sweep is paired and a
+difference between rows is a difference in probe time alone. For each row it reports the
+per-atom mismatch $\|F(\vx_t) - F(\vx_1)\|$, the per-atom cosine between the two forces,
+that mismatch relative to the magnitude of the endpoint force it is supposed to match,
+and the norm of the parameter gradient the force loss produces.
 
 \begin{table}[h]
-\caption{The integration grid at the three step counts used or examined in this paper.
-The three rows are three \emph{accuracies of one quantity}, not three quantities: the
-largest node sits at $t_0 = 1 - \Delta t/2$, but the interval integrated is the whole of
-$[0,1]$ in every row, so all three target $\log q_\theta$ at $t = 1$
-(\Cref{app:density}). The half-step offset keeps the field from being evaluated at
-$t = 1$ without moving the endpoint the scheme targets.}
-\label{tab:stepgrid}
+\caption{The endpoint force against the force at the interpolant, $192$ held-out
+molecules, paired across rows: the same $\vx_0$ and the same $\vx_1$ are used at every
+probe time, so the only configured variable down the table is $t$. Columns are the
+per-atom mismatch $\|F(\vx_t)-F(\vx_1)\|$, the per-atom cosine between the two forces,
+the mismatch divided by the endpoint force magnitude, and the norm of the parameter
+gradient of the force loss. The endpoint force itself averages $1.49$~eV/\AA{} over this
+population. Measured on the shared warm-start flow-matching checkpoint in forward and
+backward passes only; no training.}
+\label{tab:forcemismatch}
 \begin{center}
 \footnotesize
-\begin{tabular}{cccc l}
+\begin{tabular}{ccccc}
 \toprule
-$n$ & $\Delta t = 1/n$ & largest node $t_0$ & smallest node $t_{n-1}$ & used for \\
+probe time $t$ & mismatch (eV/\AA) & $\cos(F(\vx_t),F(\vx_1))$ & mismatch $/\,|F(\vx_1)|$ & $\|\nabla_\theta \Ls_{\mathrm{force}}\|$ \\
 \midrule
-$4$  & $0.2500$ & $0.8750$ & $0.1250$ & the training value term ($\Ls_{\mathrm{value}}$) \\
-$12$ & $0.0833$ & $0.9583$ & $0.0417$ & every reported evaluation in this paper \\
-$48$ & $0.0208$ & $0.9896$ & $0.0104$ & the no-plateau measurement below \\
+$0.80$ & $10.66$ & $0.12$ & $17.9$ & $21.5$ \\
+$0.85$ & $7.27$  & $0.16$ & $12.2$ & $25.1$ \\
+$0.90$ & $4.33$  & $0.24$ & $7.1$  & $48$ \\
+$0.92$ & $3.30$  & $0.29$ & $5.4$  & $57.9$ \\
+$0.95$ & $1.93$  & $0.40$ & $3.1$  & $94$ \\
+$0.97$ & $1.11$  & $0.52$ & $1.8$  & $150$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 \end{table}
 
-\paragraph{No plateau over the step counts we can afford, and the measurement that
-shows it.} A well-defined target is not the same thing as a converged estimate of it.
-Re-scoring the same ten held-out molecules at the three step counts of
-\Cref{tab:stepgrid} gives mean $\log q_\theta$ of $-65.5$ ($n = 4$), $-114.3$ ($n = 12$)
-and $-199.9$ ($n = 48$): each refinement moves the estimate by a further $49$ and then
-$86$ nats, with no sign of a plateau. Under the corrected reading of the scheme these
-three numbers are three estimates of the \emph{same} quantity, so their spread is error in
-the finite-step readout and not a change of target, and it is large and not visibly decaying
-at the resolutions we can pay for. That is consistent with an $O(\Delta t)$ Euler bias against
-a field that is stiff near $t = 1$ --- the conditional path has variance
-$(1-t)^2\sigma^2 \to 0$ there, so the state integration is least accurate exactly where
-the trajectory ends --- but we have not measured the error against an exact reference on
-these molecules and we quote no convergence rate for them. We report the sweep as a
-disclosure and not as a convergence study: ten molecules is a small sample, and the point
-it establishes is that no statement of the form ``$\log q_\theta$ is converged at $n$
-steps'' is available for this implementation. What the sweep does \emph{not} show is a
-change of target: the three columns differ in accuracy, not in what they estimate.
+The endpoint force averages $1.49$~eV/\AA{} on this population against a mismatch of
+$10.66$~eV/\AA{}, so on population averages the mismatch is about seven times the target it
+is supposed to match. Taken per molecule, each mismatch against that molecule's own endpoint
+force, the ratio averages $17.9$: molecules whose endpoint forces sit near zero contribute
+large ratios and the mean of ratios exceeds the ratio of means. On either reading the target
+is nearly orthogonal to what is being matched, at a per-atom cosine of $0.12$. The reason is visible in the same run:
+$\|F(\vx_t)\|$ averages $10.98$~eV/\AA{} there, because the interpolant sits off the data
+manifold, where atoms are close and forces are large. Moving the probe later reduces the
+mismatch but raises the gradient norm sevenfold. Both ends of the sweep are bad: early
+probes match a target that barely relates to the endpoint force, and late probes are
+dominated by gradient magnitude. This is the trade-off \Cref{prop:trap} names, now
+measured rather than argued.
 
-\paragraph{Training and evaluation run at different discretisation accuracies.} The
-value term is evaluated at $n = 4$ because an FFJORD objective inside the training loop
-is otherwise unaffordable, while every reported evaluation runs at $n = 12$. Both target
-the same quantity, $\log q_\theta$ at $t = 1$; what differs is how much Euler bias each
-carries, and the training-time estimate carries more. On the analytic linear-flow check
-of \Cref{app:density}, where the endpoint log-density is available in closed form, this
-integrator's error is $1.5\times10^{-1}$ at $n = 4$ against $4.7\times10^{-2}$ at
-$n = 12$; on real molecules, where the field is learned rather than linear, the sweep
-above shows the bias is far from exhausted at either count. The objective therefore
-constrains a less accurately estimated log-density than the metric measures. This is a
-defect of the implementation rather than of the objective, and it is recorded as a
-limitation (\Cref{app:limitations} item (vi)) rather than argued away.
+That the mismatch is a property of the \emph{location} and not of the teacher is checked
+in the same run. The teacher's force at $\vx_1$ agrees with the dataset's own labels to a
+per-atom cosine of $0.956$, with magnitudes $1.4878$ against $1.4901$~eV/\AA. The teacher
+is therefore reproducing the corpus's forces at the data geometries; what it does not
+reproduce is the endpoint force at a point that is not the endpoint.
 
-\paragraph{The preliminary check, and why it settles nothing.} A first look at the
-resolution dependence re-scored two arms --- the value arm and the flow-matching
-control --- at more than one step count on ten parents with one seed per arm. It is
-reported here in full, with its precision stated, because that precision is inadequate
-and because it is where the resolution sensitivity analysed in the rest of this
-subsection was first noticed.
+\paragraph{Diagnostic 2: the force update opposes the flow-matching update; the value
+update does not.} \Cref{tab:gradcos} reports, per minibatch, the cosine between the
+flow-matching parameter gradient and each of the two physics parameter gradients,
+computed at the same probe times.
 
 \begin{table}[h]
-\caption{Preliminary resolution check: mean per-parent correlation $r$, data
-geometry dropped, \textbf{10 parent molecules and one seed per arm}. The per-arm
-$\mathrm{SEM}(r) \approx 0.065$, so the standard error of a gap is $\approx 0.095$,
-of the same order as the $n = 12$ gap itself, and with a single seed per arm there are
-no seed ranges to compare.
-``Attenuation-corrected'' rescales each gap by the estimator noise measured from repeat
-scoring; the trend is unchanged by it and the signal-to-noise column rises with $n$.
-This table may not be compared with \Cref{tab:primary}, and it is superseded at every
-resolution by \Cref{tab:respaired}, which scores five flow-matching seeds and four
-value seeds on 120 parents at $n = 4$, $12$ and $48$.}
-\label{tab:resolution}
+\caption{Cosine between the flow-matching parameter gradient and each physics parameter
+gradient, per minibatch, on the shared warm-start flow-matching checkpoint. Forward and
+backward passes only; no training and no parameter update was applied.}
+\label{tab:gradcos}
 \begin{center}
 \footnotesize
-\begin{tabular}{lccccc}
+\begin{tabular}{ccc}
 \toprule
-$n$ & value arm & FM-only & gap & gap, atten.-corrected & signal-to-noise \\
+probe time $t$ & $\cos(g_{\mathrm{FM}},\,g_{\mathrm{force}})$ & $\cos(g_{\mathrm{FM}},\,g_{\mathrm{value}})$ \\
 \midrule
-$4$   & $0.628$ & $0.259$ & $+0.369$ & $+0.465$ & $1.447$ \\
-$12$  & $0.347$ & $0.163$ & $+0.183$ & $+0.193$ & $2.631$ \\
+$0.80$ & $-0.523$ & $+0.116$ \\
+$0.85$ & $-0.509$ & $+0.072$ \\
+$0.90$ & $-0.347$ & $+0.024$ \\
+$0.92$ & $-0.446$ & $-0.000$ \\
+$0.95$ & $-0.259$ & $-0.032$ \\
+$0.97$ & $+0.055$ & $-0.045$ \\
 \bottomrule
 \end{tabular}
 \end{center}
 \end{table}
 
-\paragraph{The expanded ablation: protocol.} The multi-seed version re-scores existing
-checkpoints --- four seeds of the value arm and five of the flow-matching arm --- at
-$n \in \{4, 12, 48\}$ on 120 parent molecules with 8 displacements each. Every one of
-those nine checkpoints is scored at every one of the three step counts, so the design
-is complete and strictly paired, and the seed counts are the same in every row. Three
-properties make it a paired design rather than a set of independent evaluations.
-\emph{(i)} The evaluation seed is pinned to a
-single value across step counts, so the parents drawn from the held-out split and
-the Gaussian displacements applied to them are \emph{byte-identical} at every
-resolution: a difference between rows of \Cref{tab:respaired} cannot be a
-difference in the molecules or in the noise realisation. \emph{(ii)} The checkpoints
-scored in one row are scored in the other two, so a difference between rows cannot be a
-difference in the models either. The step count is the only configured variable, so the
-comparison measures the sensitivity of the complete finite-step stochastic readout: that
-sensitivity is dominated by state-integration discretisation, but it also includes any
-step-count-dependent variation in the stochastic trace term, since the readout draws two
-Rademacher probes per step and the repeat-to-repeat probe spread has not been measured on
-this population (\Cref{app:density}). \emph{(iii)} The data geometry is dropped and the per-group
-correlation formed exactly as in \Cref{app:eval}, so the rows are commensurable with
-\Cref{tab:primary,tab:p0seeds}. The launcher refuses to score a checkpoint
-containing any non-finite parameter, a check added after an earlier round evaluated
-a corrupted checkpoint (\Cref{app:stability}). Nothing about the estimator was
-modified to produce any of this: it re-scores checkpoints that already exist.
+Measured instead against the flow-matching gradient at its own randomly drawn time, the
+force cosine runs $-0.174$ to $-0.084$ and the value cosine is $-0.009$.
 
-\begin{table}[h]
-\caption{The strictly paired resolution ablation: mean per-group $r$ by
-integrator step count, 120 parents, data geometry dropped, evaluation seed pinned so
-that every row scores \emph{identical} molecules and displacements with
-\emph{identical} checkpoints. Four value seeds and five flow-matching seeds are scored
-at each of the three step counts; the counts in the column heads are those arm sizes
-and they do not change down the table. Entries are arm means over independently trained
-seeds $\pm$ the standard error over those seeds, and $\Delta r$ is the difference of the
-two arm means at that resolution. All three rows
-estimate the same quantity and differ only in how accurately they estimate it, so a
-difference between them is a difference in finite-step estimation
-error, not in target (\Cref{app:density}). \Cref{tab:reschk} gives the per-checkpoint
-values behind these means, and \Cref{fig:resolution} draws them. This table supersedes
-\Cref{tab:resolution}.}
-\label{tab:respaired}%
-% alias: earlier drafts and the main text may cite this float as tab:respowered.
-\label{tab:respowered}
-\begin{center}
-\footnotesize
-\begin{tabular}{lcccc}
-\toprule
-$n$ & $\Delta t = 1/n$ & value arm (4 seeds) & FM-only (5 seeds) & $\Delta r$ \\
-\midrule
-$4$ \ (the training resolution) & $0.2500$ & $+0.571 \pm 0.038$ & $+0.189 \pm 0.014$ & $+0.382$ \\
-$12$ (every reported number)    & $0.0833$ & $+0.418 \pm 0.033$ & $+0.204 \pm 0.008$ & $+0.215$ \\
-$48$                            & $0.0208$ & $+0.306 \pm 0.011$ & $+0.269 \pm 0.016$ & $+0.037$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table}
+\paragraph{The reading.} Both terms inject physical information into the same parameters,
+and the two diagnostics say they do it differently. The force update points
+systematically \emph{against} flow matching over most of the probe range, while the value
+update is close to orthogonal to it everywhere and never opposes it by more than the
+force term does at its mildest. Read with \Cref{tab:forcemismatch}, the picture is that
+the force term is regressing the network towards a target that is nearly orthogonal to
+the quantity it is evaluated at, and is pulling the parameters away from the flow-matching
+solution while doing so. We offer this as a measured mechanism for the difference reported
+in \Cref{sec:ablation} and not as a proof of it: an anticorrelated gradient at a warm-start
+checkpoint constrains the first steps of an update, not the fixed point a full training run
+reaches, and neither diagnostic isolates a cause. Nothing here bears on force supervision
+in general \citep{psm,driftingboltzmann}, and nothing here licenses a broader claim than
+the one \Cref{sec:forcebaseline} makes.
 
-\begin{table}[h]
-\caption{Per-checkpoint values behind \Cref{tab:respaired}: mean per-group $r$ for
-each scored checkpoint at each step count, on the same 120 parents with the same pinned
-displacements. Seed labels are within-arm and do not pair across arms. The two arms
-respond to refinement in opposite directions: all four value checkpoints fall
-monotonically as $n$ increases, while three of the five flow-matching checkpoints rise
-monotonically and the other two dip at $n = 12$ before rising, so that all five end higher
-at $n = 48$ than at $n = 4$.}
-\label{tab:reschk}
-\begin{center}
-\footnotesize
-\setlength{\tabcolsep}{6pt}
-\begin{tabular}{llccc}
-\toprule
-Arm & seed & $n = 4$ & $n = 12$ & $n = 48$ \\
-\midrule
-\textbf{Value}
- & 1 & $0.528$ & $0.328$ & $0.287$ \\
- & 2 & $0.614$ & $0.433$ & $0.289$ \\
- & 3 & $0.654$ & $0.485$ & $0.320$ \\
- & 5 & $0.489$ & $0.428$ & $0.330$ \\
- & \emph{mean} & $0.571$ & $0.418$ & $0.306$ \\
-\midrule
-Flow matching only
- & 1 & $0.141$ & $0.199$ & $0.239$ \\
- & 2 & $0.226$ & $0.221$ & $0.315$ \\
- & 3 & $0.176$ & $0.191$ & $0.238$ \\
- & 4 & $0.205$ & $0.183$ & $0.298$ \\
- & 5 & $0.197$ & $0.224$ & $0.257$ \\
- & \emph{mean} & $0.189$ & $0.204$ & $0.269$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table}
+\paragraph{A defect in the score read-out, disclosed.}
+Building these diagnostics exposed a defect in the read-out every force number in this
+paper was produced with, and we state it plainly. Under the parameterisation this
+implementation uses, the network's position output is the \emph{endpoint prediction}
+$\hat{\vx}_1$, not a velocity; the force loss fed that output directly into a score
+read-out that documents itself as taking a velocity, namely \eqref{eq:score} /
+\Cref{lem:score}. Because \Cref{lem:score} maps a velocity to a score through a factor
+$t/((1-t)\sigma^2)$ while an endpoint prediction enters \eqref{eq:app-mixture-score}
+through $t/((1-t)^2\sigma^2)$, the score the gradient baseline actually matched is
+$(1-t)$ times the intended one. Every force number reported in this paper --- cells E and
+E2 of the matched grid, the force cells of the earlier round, and both diagnostics above
+--- was produced with that read-out.
 
-% The paired resolution trajectories, drawn from the same per-checkpoint values
-% tabulated immediately above.  Generator: figures/figA_resolution.py, which
-% recomputes every aggregate and refuses to draw unless it reproduces them.
-\input{figures/figA_resolution}
-
-\paragraph{What it settles, and what it does not.} Three observations, stated
-descriptively. \emph{(a) The gap is present at the resolution we report.} At $n = 12$
-the two arm means are $+0.418 \pm 0.033$ over four value seeds and $+0.204 \pm 0.008$
-over five control seeds, for $\Delta r = +0.215$; the four value checkpoints span
-$0.328$--$0.485$ and the five control checkpoints span $0.183$--$0.224$, so the two
-observed seed ranges do not overlap. The same checkpoints scored under the paper's own
-evaluation draw give $+0.182$ on the same 120-parent, geometry-dropped population
-(\Cref{tab:scaleperm}, block 2: $0.397$ against $0.215$). The two agree in sign and in
-size to within $0.033$, which is a consistency check and not an independent
-replication: the checkpoints are one family, and what differs is the pinned evaluation
-draw. \emph{(b) The magnitude of the observed gap decreases as the finite-step
-estimator is refined.} It is $+0.382$ at $n = 4$, $+0.215$ at $n = 12$ and $+0.037$ at
-$n = 48$. At $n = 48$ the two observed seed ranges do overlap: the value checkpoints
-span $0.287$--$0.330$ and the control checkpoints $0.238$--$0.315$. Every headline
-number in this paper is computed at $n = 12$. \emph{(c) The two arms move in opposite
-directions under refinement.} The value arm falls from $+0.571$ to $+0.306$ while the
-flow-matching arm rises from $+0.189$ to $+0.269$, and \Cref{tab:reschk} shows the split
-holds checkpoint by checkpoint: all four value checkpoints fall at every refinement,
-and all five control checkpoints end higher at $n = 48$ than at $n = 4$, three of them
-monotonically.
-
-One reading we offer --- as a reading, not as an established mechanism --- is that the
-value loss was itself computed at $n = 4$, and so shaped the object the $n = 4$
-estimator reports: the model would then have learned to order the density at the
-resolution its training objective could see, and that ordering would weaken as the
-estimate is refined. What this analysis establishes is estimator-resolution
-sensitivity: it does not distinguish model-dependent numerical error from an effect
-learned specifically under the four-step training estimator, and the observed
-arm-dependent trends are consistent with either. Whichever the source, the effect size
-is a property of the pair (model, step count) and not of the model alone, which is why
-every number in this paper is quoted with the step count it was computed at, and why
-the $n = 48$ row is reported here in full rather than summarised.
-
-\paragraph{The second resolution family, and why it is supporting rather than
-primary.} A second complete re-scoring at more than one step count exists in the run
-store, on the checkpoints of the matched grid rather than on the earlier arms: cells A
-and D of \Cref{app:p0cells} were re-scored at $n = 4$ and $n = 48$ under the same
-geometry-dropped, 120-parent convention. It is listed here with its values and its
-coverage rather than set aside without one, and \Cref{tab:resother} gives it in full.
-Two properties keep it out of the primary comparison and neither is a matter of
-preference. First it is \emph{incomplete in the step dimension}: it carries $n = 4$ and
-$n = 48$ but no $n = 12$ row, so it cannot be read at the resolution every reported
-number in this paper uses, and it supplies two points of a curve rather than three.
-Second its value arm is drawn from a \emph{different seed set} from the matched design:
-its six D checkpoints are the three matched-block seeds together with three of the
-later independently launched seeds, which the reporting rules of \Cref{app:p0cells}
-forbid merging into a matched-grid mean. It is also a different evaluation draw from
-the family of \Cref{tab:respaired}, being scored on the grid's own parents and
-displacements rather than on the earlier round's, so the two families' rows are not
-byte-paired with one another even though each is internally paired across step counts.
-We therefore classify it as \emph{supporting evidence for the numerical sensitivity of
-the estimator}, not as a second matched primary comparison, and no contrast in this
-paper is formed from it. What it adds is that the same two directions appear on an
-independent set of checkpoints: between $n = 4$ and $n = 48$ the value-carrying cell
-falls from $+0.614$ to $+0.314$ while the physics-free cell rises from $+0.161$ to
-$+0.261$, and the difference of arm means falls from $+0.453$ to $+0.053$.
-
-\begin{table}[h]
-\caption{The second, supporting resolution family: cells A and D of the matched grid
-(\Cref{app:p0cells}) re-scored at two step counts, 120 parents, data geometry dropped,
-GFN2-xTB, evaluation seed pinned across step counts within this family. Entries are arm
-means over checkpoints $\pm$ the standard error over checkpoints, with every
-per-checkpoint value printed beside them. This family is \textbf{not} a matched primary
-comparison and no contrast in this paper is formed from it: it carries no $n = 12$ row,
-so it cannot be read at the resolution the paper reports, and its D arm mixes the three
-matched-block seeds ($s2$, $s3$, $s5$) with three later independently launched seeds
-($s6$, $s7$, $s9$), which the reporting rules of \Cref{app:p0cells} keep separate. It is
-recorded as supporting evidence for the estimator's resolution sensitivity.
-Recomputed for this table from the family's own per-record evaluation outputs by the
-same per-group routine that produces \Cref{tab:reschk}.}
-\label{tab:resother}
-\begin{center}
-\footnotesize
-\setlength{\tabcolsep}{5pt}
-\begin{tabular}{llcc}
-\toprule
-Cell & per-checkpoint $r$ & mean $\pm$ SEM & \\
-\midrule
-\multicolumn{4}{@{}l}{\emph{$n = 4$ (the training resolution)}} \\
-D \texttt{energy} (6 ckpts) & $0.652$, $0.647$, $0.592$, $0.618$, $0.569$, $0.605$ & $+0.614 \pm 0.013$ & \\
-A \texttt{fmonly} (5 ckpts) & $0.174$, $0.137$, $0.165$, $0.188$, $0.142$ & $+0.161 \pm 0.010$ & \\
- & & $\Delta r = +0.453$ & \\
-\midrule
-\multicolumn{4}{@{}l}{\emph{$n = 12$}} \\
-\multicolumn{3}{@{}l}{\emph{not scored in this family}} & \\
-\midrule
-\multicolumn{4}{@{}l}{\emph{$n = 48$}} \\
-D \texttt{energy} (6 ckpts) & $0.358$, $0.308$, $0.347$, $0.271$, $0.297$, $0.301$ & $+0.314 \pm 0.013$ & \\
-A \texttt{fmonly} (5 ckpts) & $0.229$, $0.269$, $0.273$, $0.290$, $0.243$ & $+0.261 \pm 0.011$ & \\
- & & $\Delta r = +0.053$ & \\
-\bottomrule
-\end{tabular}
-\end{center}
-\end{table}
-
-\paragraph{What would actually settle it.} There is no coupling defect to repair here:
-the scheme integrates over the whole of $[0,1]$ and targets $\log q_\theta$ at $t = 1$
-at every step count. What there is instead is bias --- first order in $\Delta t$ from
-the Euler state integration against $O(\Delta t^2)$ from the quadrature --- and no step
-count reported in this paper demonstrates a plateau, so we claim convergence for none
-of these numbers. The missing measurements are the ordinary numerical ones: a
-higher-order or adaptive integrator for the state, and more steps at both training and
-evaluation time until the reported value stops moving. To those the opposite-direction
-result of \Cref{tab:reschk} adds one more: an arm whose value term is computed at the
-resolution the evaluation uses, which is the comparison that would separate the
-solver's contribution from what the coarse objective taught. We have not run them, and
-no result in this paper reflects them.
+What the diagnostics say about the defect is that it is real and that it is not what makes
+the two objectives conflict. Both diagnostics were run under both read-outs and agree.
+Correcting the read-out changes the force loss by more than two orders of magnitude --- at
+the latest probe time the loss rises from about $10$ to about $4400$ --- while leaving the
+gradient cosines essentially unchanged: at the earliest probe time the cosine against the
+flow-matching gradient is $-0.523$ under the read-out as shipped and $-0.509$ under the
+corrected one. A misscaled score is therefore a defect in the magnitude of the force term,
+not an explanation of its direction, and correcting it would not turn an anticorrelated
+update into an aligned one. We do not present this as invalidating the force cells: the
+scoped negative result of \Cref{sec:ablation} is a statement about the objective those
+cells actually ran, and this is a disclosure of what that objective was.
 
 \subsection{Calibration diagnostics, per-seed values, and the teacher-evaluator agreement reference}
 \label{app:scalediag}
@@ -718,8 +550,7 @@ magnitude, and by \eqref{eq:app-nrvtau} $\mathrm{NRV}$ is exactly the $\tau^2$ o
 \Cref{prop:surrogate}. That identity holds within a single group under a single
 potential; $\mathrm{NRV}$ is therefore the normalised evaluation analogue of the same
 Boltzmann-residual form the training objective uses, and the two share that residual
-structure while being evaluated with different potentials, populations and integrator
-step counts.
+structure while being evaluated with different potentials and populations.
 
 \paragraph{Aggregation, and why we quote medians.} $\mathrm{NRV}$ is heavy-tailed
 across parents: groups whose $\Var_k[E]$ is near zero divide by almost nothing, and
@@ -735,7 +566,7 @@ in each direction; the signed-rank statistics computed alongside them are collec
 \begin{table}[h]
 \caption{Every seed behind \Cref{tab:primary} and \Cref{fig:calibration}, on the
 primary endpoint (93 parents disjoint from the value term's shard pool, data geometry
-dropped, GFN2-xTB energies, $n = 12$). $r$ and the scale ratio are means over parents
+dropped, GFN2-xTB energies). $r$ and the scale ratio are means over parents
 within a seed; $\mathrm{NRV}$, $\mathrm{NRV}_{\min}$, the slope and
 $kT_{\mathrm{eff}}$ are medians over parents within a seed. Arm rows are the mean over
 seeds with the standard error over seeds. Recomputed for this table from the per-seed
@@ -934,7 +765,7 @@ column beside it. \textbf{No GFN2-xTB number in this paper changes.}
 \begin{table}[h]
 \caption{The calibration diagnostics of \Cref{tab:scaleseeds} recomputed with the
 training teacher in place of the independent evaluator. Same 93 primary parents, same
-displaced geometries, same model log-densities at $n = 12$, same $kT = 1.0$~eV, same
+displaced geometries, same model log-densities, same $kT = 1.0$~eV, same
 aggregation (median over parents within a seed, then mean over seeds $\pm$ the standard
 error over seeds; $r$ and $\mathrm{NRV}_{\min}$ are means over parents). Only the energy
 column differs. The GFN2-xTB block is the reported primary endpoint and is reproduced
@@ -1043,7 +874,7 @@ the pipeline.
 accumulation steps, $30\,000$ optimiser steps, $\lambda_E = 3\times10^{-5}$ where
 active, $\lambda_1 = 0.1$ where active, $\lambda_3 = 0$, parents per value step
 $M = 8$, value-loss cap $1500$, the value term every fourth step on parents of at most
-50 atoms, $n = 4$ integration steps and 2 Hutchinson probes, \emph{no} on-policy
+50 atoms, the integrator and Hutchinson settings of \Cref{tab:constants}, \emph{no} on-policy
 distillation in any cell, and perturbation shards built from the \emph{training} split
 only, so that no cell reads energies for a molecule the evaluation will see. All 30
 runs warm-start from one common checkpoint at the end of epoch 0, so seed variation is
@@ -1113,14 +944,15 @@ F \texttt{both}    & $0.1$ & $3\times10^{-5}$
 the grid. Each entry is one training run, scored by the protocol of \Cref{app:eval} ---
 120 held-out parents, one data geometry plus 8 Gaussian displacements at
 $\sigma = 0.15$~\AA{} per parent, the data geometry \emph{dropped} before the per-group
-Pearson correlation is formed, GFN2-xTB as the independent scorer, and $n = 12$
-integration steps with 2 Hutchinson probes --- and the cell entry is the unweighted
+Pearson correlation is formed, GFN2-xTB as the independent scorer, and $\log q_\theta$
+obtained by an ODE integration of the clamped positional flow with Hutchinson divergence
+estimation (\Cref{app:density}) --- and the cell entry is the unweighted
 mean over that cell's completed seeds with the standard error over seeds.
 
 \begin{table}[h]
 \caption{The matched grid, per seed and per cell. Mean per-group Pearson $r$ between
 $\log q_\theta$ and $-E_{\mathrm{GFN2\text{-}xTB}}/kT$, 120 parents, \textbf{data
-geometry excluded}, evaluated at $n = 12$. Every cell shares backbone, budget,
+geometry excluded}. Every cell shares backbone, budget,
 optimiser, warm start, evaluation protocol and training-split-only perturbation shards;
 only $\lambda_1$, $\lambda_E$ and the shard's energy column differ. The seed counts here
 are \emph{completions}: the launched/completed/diverged record is \Cref{tab:p0cells} and
@@ -1194,8 +1026,7 @@ real energies attached to the wrong geometries --- sit within $0.032$ of one ano
 The grid does \emph{not} say that the value term puts the density on the Boltzmann
 scale (it does not; \Cref{sec:scale}), that the ordering it buys is close to what the
 teacher itself would score (in absolute terms it is about $40\%$ of the
-teacher-evaluator agreement reference; \Cref{app:scalediag}), or that the gain is independent of
-the resolution at which $\log q_\theta$ is computed (it is not; \Cref{app:estimator}).
+teacher-evaluator agreement reference; \Cref{app:scalediag}).
 
 \paragraph{The selection risk the launch record creates.} Completion is not independent
 of the cell, and it is lowest exactly where the energy content is highest ($3/5$ for D,
@@ -1258,8 +1089,8 @@ divergences to the stability record.
 \subsection{Provenance and audit of the earlier checkpoint family}
 \label{app:cells}
 
-The checkpoints that produce \Cref{tab:primary}, \Cref{tab:scaleseeds} and
-\Cref{tab:respaired} come from an earlier round whose \emph{contrasts} carry four
+The checkpoints that produce \Cref{tab:primary} and \Cref{tab:scaleseeds}
+come from an earlier round whose \emph{contrasts} carry four
 defects: an on-policy distillation term present only in the gradient-supervision arms,
 a perturbation shard drawn from the split the evaluation parents come from (item (a) of
 \Cref{app:data}), a negative control whose validation shard was never scrambled
@@ -1267,7 +1098,7 @@ a perturbation shard drawn from the split the evaluation parents come from (item
 well as in the physics block. Which comparisons survive must be stated separately
 rather than in one verdict. The value-versus-flow-matching direction and approximate
 size survive as a \emph{corrected held-out evaluation of this checkpoint family}, which
-is what \Cref{tab:primary,tab:scaleseeds,tab:respaired} report: the shard overlap is
+is what \Cref{tab:primary,tab:scaleseeds} report: the shard overlap is
 removed by restricting to the 93 disjoint parents and the high-leverage geometry by
 dropping it, and both corrections reduce the contrast. The round's four-cell contrasts
 in \Cref{tab:cells} do not survive and are superseded by the matched grid; its force
@@ -1287,7 +1118,7 @@ admissible comparator for each cell is the same round's own control, named in th
 column. Per-seed values recomputed for this table from the round's own per-record
 evaluation outputs. The four-cell \emph{contrasts} of this table are superseded by
 \Cref{tab:p0seeds}; the round's checkpoints are not, and are re-evaluated on the primary
-endpoint in \Cref{tab:primary,tab:scaleseeds,tab:respaired}.}
+endpoint in \Cref{tab:primary,tab:scaleseeds}.}
 \label{tab:cells}
 \begin{center}
 \footnotesize
@@ -1358,8 +1189,8 @@ the fourth here with its provenance; either way the arm is the defective control
 \emph{A fifth flow-matching seed.} All five control-arm seeds reached the full
 $30\,000$-step budget with finite weights; only four had been submitted to the primary
 round's evaluation. The fifth has since been scored under the identical protocol --- the
-same 120 parents and displacements, the same evaluation seed, the same $n = 12$
-integrator with two Hutchinson probes --- so what changed is an evaluation of a
+same 120 parents and displacements, the same evaluation seed, the same density
+estimator --- so what changed is an evaluation of a
 checkpoint that already existed, not a new training run. The earlier absence was a
 defect rather than a wash: it was the control arm's only unreported run, whereas the
 value arm's shortfall was a divergence, and under the superseded 30-parent round of
@@ -1476,13 +1307,6 @@ Family & What it is & Evals & Par\-ents & Value ($r$) & Disposition \\
 \evfam{n240\_a1/a3/\allowbreak a6(\_stab)} & $240$-parent replication & 4/3/ 2/2 & 240
   & $+0.2220$ / $+0.4172$ / $+0.2284$ / $+0.2446$ & \Cref{app:n240}: supporting only,
     confounded \\
-\evfam{eval\_res/\allowbreak a1\_fm\_only},\ \evfam{eval\_res/\allowbreak a3\_energy\_only}
-  & resolution re-scoring of those same two arms at $n = 4/12/48$ & $15 + 12$ & 120
-  & per checkpoint in \Cref{tab:reschk} & reported, \Cref{tab:respaired,tab:reschk} \\
-\evfam{eval\_res/\allowbreak p0\_A\_fmonly},\ \evfam{eval\_res/\allowbreak p0\_D\_energy}
-  & resolution re-scoring of matched-grid cells A and D at $n = 4/48$ & $10 + 12$ & 120
-  & per checkpoint in \Cref{tab:resother} & reported, \Cref{tab:resother}: supporting
-    only --- no $n = 12$ row, and its D arm mixes matched-block with later seeds \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -1524,25 +1348,26 @@ Family & What it is & Evals & Par\-ents & Why it is not used \\
     to one another \\[2pt]
 \evfam{eval\_sweep/*} & the first capped-step sweep & 5 & 30
   & run before the step-based $\lambda$ schedule was fixed, so every arm was effectively flow
-    matching only --- which is why all five are negative \\
+    matching only --- which is why all five are negative \\[2pt]
+\evfam{eval\_res/*} & re-scorings, under alternative integrator settings, of checkpoints
+  already listed in \Cref{tab:allevals_used} & 49 & 120
+  & no training run and no checkpoint of its own; the analysis these supported is not part of
+    this paper and no claim here is formed from them \\
 \bottomrule
 \end{tabular}
 \end{center}
 \end{table}
 
-\paragraph{The set-aside families' numbers, recorded so that they are not absent.} All are on
-$30$ parents in the data-geometry-included convention ($\dagger$) and none may be compared with
-any other number in this paper. Transition metals: $+0.365$ and $+0.329$ for the value arm and
+\paragraph{The set-aside families' numbers, recorded so that they are not absent.} The three
+$30$-parent families below are in the data-geometry-included convention ($\dagger$) and none may
+be compared with any other number in this paper; the re-scorings under alternative integrator
+settings are values of checkpoints already reported in \Cref{tab:allevals_used}, and no value of
+theirs is quoted anywhere in this paper. Transition metals: $+0.365$ and $+0.329$ for the value arm and
 $-0.158$ for the force-only arm. Configuration generations preceding the matched grid, where a
 value is on record: $+0.413$ (v3), $+0.400$ and $+0.322$ (v3b), $+0.091$ (v4), $+0.172$
 (v4-stable) and $-0.082$ (on-policy at epoch $0$). The capped-step sweep: $-0.396$, $-0.326$,
 $-0.221$, $-0.051$ and $-0.104$, all five negative, for the reason given in
-\Cref{tab:allevals_setaside}. No resolution family remains set aside. Both are re-scorings of checkpoints already listed in
-\Cref{tab:allevals_used}: the family scored on the primary-endpoint arms is printed in full in
-\Cref{tab:respaired,tab:reschk}, where \Cref{app:estimator} states what its three rows do and do
-not settle, and the family scored on the matched-grid cells is printed in full in
-\Cref{tab:resother}, where the same subsection states why its two rows are supporting evidence
-for the estimator's resolution sensitivity rather than a matched primary comparison.
+\Cref{tab:allevals_setaside}.
 
 \subsection{De novo generation quality}
 \label{app:generation}
@@ -1605,9 +1430,9 @@ borrows from. The point is not that it scores higher, but that most entries are
 quantities the other classes do not define, which is why the measurement of
 \Cref{sec:mainresult} has no direct precedent to be compared against. The likelihood
 column classifies the \emph{kind} of density each class defines rather than asserting
-exactness for any of them, ours included: what we compute is a 12-step discretisation
-of a continuous-flow likelihood with a stochastic trace, whose accuracy --- not whose
-identity --- is fixed by that step count (\Cref{app:density}). 3D molecular generators
+exactness for any of them, ours included: what we compute is a finite-step
+discretisation of a continuous-flow likelihood with a stochastic trace, whose accuracy
+--- not whose identity --- is fixed by that discretisation (\Cref{app:density}). 3D molecular generators
 \citep{edm,geoldm,flowmol3,zatom1,symphony} assemble composition and geometry de novo
 but are not trained against a transferable energy and report no density--energy check,
 while conformer models and Boltzmann samplers
@@ -1685,8 +1510,8 @@ diverged. In the configuration all thirty grid runs use ($M = 8$, cap $1500$), 6
 variance plus an outlier rejector leave the failure rate where it was, and we have no
 configuration of this objective that we can claim is safe. What is demonstrably fixed
 is the failure's \emph{visibility}: the callback aborts at the first non-finite
-parameter and leaves the last good checkpoint intact, which is why the
-resolution-ablation launcher refuses any checkpoint containing a non-finite parameter.
+parameter and leaves the last good checkpoint intact, and why every evaluation
+launcher refuses any checkpoint containing a non-finite parameter.
 
 \paragraph{Where the instability lives.} The grid discriminates in both directions, and
 the attribution it supports is the reverse-time log-density objective and its gradient,
@@ -1700,9 +1525,7 @@ $\frac{1}{M}\sum_m \Var_k[\log q_\theta]$, and its lost seed nevertheless drove 
 to non-finite values at optimiser step $\approx 25\,800$, late in a $30\,000$-step run.
 What survives both cuts is the reverse-time log-density of \eqref{eq:ffjord}, the second
 derivatives its divergence term back-propagates, and the within-group variance formed
-from them; the coarse resolution at which the training estimator runs ($n = 4$) is a
-suspect in the stability problem as well as in the measurement one
-(\Cref{app:estimator}). The grid does not separate the estimator from its gradient, and
+from them. The grid does not separate the estimator from its gradient, and
 we do not claim it does. The per-cell dose--response is suggestive rather than
 conclusive at these counts: $1/5$, $0/5$, $2/5$ and $3/5$ for B, C, D and F.
 
@@ -1745,15 +1568,15 @@ is corrected for multiplicity, and every row involving cell D, cell F or the val
 of the earlier round is conditional on completion.
 
 \begin{table}[h]
-\caption{Every inferential statistic computed for this paper, in one place, including
-the resolution analysis. Conventions are defined in the text immediately above:
+\caption{Every inferential statistic computed for this paper, in one place.
+Conventions are defined in the text immediately above:
 \emph{Welch} is a two-sided unequal-variance $t$ on per-seed arm means, \emph{perm.} an
 exact permutation test over seed relabellings, \emph{Wilcoxon} a two-sided signed-rank
 test on paired per-parent values ($93$ parents). $\Delta$ is the difference of arm means
 (or, for the Wilcoxon rows, the median paired shift). Seed counts are completed seeds.
 This table is a completeness record and nothing in the paper is stated in terms of it;
 the corresponding descriptive results are in
-\Cref{tab:primary,tab:scaleseeds,tab:p0seeds,tab:respaired,tab:resother}. No $p$-value
+\Cref{tab:primary,tab:scaleseeds,tab:p0seeds}. No $p$-value
 is corrected for multiplicity, degrees of freedom are small throughout, and every row
 involving a value-carrying cell is conditional on completion (\Cref{app:stability}).}
 \label{tab:inferential}
@@ -1779,11 +1602,6 @@ adverse imputation (ii), at the worst value in any arm & 5 vs 5 & $+0.124$ & per
 (4) B zero energies $-$ A flow matching       & 4 vs 5 & $-0.030$ & Welch & $t = -0.96$ \\
 (5) E gradient only $-$ A flow matching       & 5 vs 5 & $-0.132$ & Welch & $t = -7.60$ \\
 (6) F gradient $+$ value $-$ D true energies  & 2 vs 3 & $-0.227$ & Welch & $t = -10.05$ \\
-\midrule
-\multicolumn{5}{@{}l}{\emph{Resolution analysis, same checkpoints at every step count (\Cref{tab:respaired})}}\\
-value vs flow matching, $n = 4$               & 4 vs 5 & $+0.382$ & Welch & $t = 9.41$ \\
-value vs flow matching, $n = 12$              & 4 vs 5 & $+0.215$ & Welch & $t = 6.36$ \\
-value vs flow matching, $n = 48$              & 4 vs 5 & $+0.037$ & Welch & $t = 1.94$ \\
 \midrule
 \multicolumn{5}{@{}l}{\emph{Perturbation families (\Cref{app:perturb})}}\\
 fixed-RMSD shells, value vs flow matching     & 4 vs 4 & $+0.124$ & Welch & $t = 4.94$ \\
@@ -1829,7 +1647,7 @@ absolute terms, and closes $23.3\%$ of the gap to it.} The teacher's own energie
 score $0.927$ on the primary endpoint. Read that as headroom rather than as a score:
 a model could in principle align with GFN2-xTB better than the teacher does, so it is
 a reference and not an attainable maximum. What the residual is we cannot say;
-under-training (item vii), the objective's own limits and the estimator's resolution
+under-training (item vii), the objective's own limits and the estimator
 (item vi) are all live, and the one thing it is \emph{not} is teacher--evaluator
 disagreement. The reference is ensemble-dependent and must be re-measured, not
 inherited, on any narrower ensemble (\Cref{app:scalediag}).
@@ -1867,46 +1685,25 @@ supporting context only. The
 torsional and bond-angle families, the partial correlation given RMSD, and a
 noise-scale sweep have not been run (\Cref{app:perturb}).
 
-\emph{(vi) The likelihood estimator has not been validated, and its discretisation
-error is not controlled.}
-\emph{(vi-a) What is reported is a discretised estimate of $\log q_\theta$ at
-$t = 1$, and it is not converged.} Every step count targets that one quantity and
-fixes only how accurately it is reached (\Cref{app:density}); the accuracy is the
-problem. On ten molecules the reported value moves $-65.5 \to -114.3 \to -199.9$ nats
-at $n = 4, 12, 48$ with no plateau, and since all three estimate the same quantity
-that spread is discretisation error, dominated by the $O(\Delta t)$ Euler state
-integration. No step count we can afford demonstrates convergence, and we do not
-assert that the reported value is converged. \emph{(vi-b) Training and evaluation run
-at different discretisation accuracies.} The value term is evaluated at $n = 4$ for
-affordability while every reported evaluation runs at $n = 12$; the objective works
-from the less accurate estimate --- $1.5\times10^{-1}$ against $4.7\times10^{-2}$
-error on the analytic linear-flow check --- and we cannot say whether that mismatch
-attenuates the reported effect, inflates it, or is immaterial. \emph{(vi-c) The
-size of the measured effect depends on the step count, and this is measured rather than
-suspected.}
-The strictly paired ablation of \Cref{tab:respaired} gives $\Delta r = +0.382$ at
-$n = 4$, $+0.215$ at $n = 12$ and $+0.037$ at $n = 48$, on identical molecules and
-identical checkpoints, with five control seeds and four value seeds at every step
-count; at $n = 48$ the two arms' observed seed ranges overlap. Every number in this
-paper is computed at $n = 12$, where $\Delta r = +0.215$ and the ranges do not overlap.
-The magnitude of the observed gap therefore decreases as the finite-step estimator is
-refined; this analysis establishes estimator-resolution sensitivity but does not
-distinguish model-dependent numerical error from an effect learned specifically under
-the four-step training estimator. The two arms do not move together under that
-refinement: the value arm falls from $+0.571$ to $+0.306$ while the flow-matching arm
-rises from $+0.189$ to $+0.269$, checkpoint by checkpoint in \Cref{tab:reschk}. A second
-family, on the matched-grid checkpoints at $n = 4$ and $n = 48$ only, shows the same two
-directions and is reported as supporting evidence in \Cref{tab:resother}.
-\Cref{app:estimator} states the reading we attach to the asymmetry and the comparison
-that would test it. What we
-claim is accordingly an improvement in the ordering of $\log q_\theta$ \emph{as
-estimated at $n = 12$}, conditional on that step count. A repeat-to-repeat variance
-study on the reported population, and agreement with an exact divergence, are not
-reported here; under classical attenuation the reported $r$ would be a lower bound
-(\Cref{rem:attenuation}), but that is an argument, not a measurement. The missing
-measurements are a higher-order or adaptive integrator for the state, more steps at both
-training and evaluation time until the reported value stops moving, and an arm whose
-value term is computed at the resolution the evaluation uses.
+\emph{(vi) The likelihood estimator has not been validated.}
+\emph{(vi-a) What is reported is a finite-step estimate of $\log q_\theta$ at
+$t = 1$, and it is not certified as converged.} Every reported $\log q_\theta$ comes
+from an ODE integration of the clamped positional flow with Hutchinson divergence
+estimation (\Cref{app:density}). That estimate is biased by the explicit-Euler state
+integration and noisy from the stochastic trace, and we do not assert that it is
+converged. \emph{(vi-b) The training objective and the evaluation metric are formed by
+the same estimator but not at the same cost.} The value term is evaluated inside the
+training loop, where an FFJORD objective is affordable only at reduced accuracy; the
+objective therefore works from a less accurate estimate than the metric measures, and we
+cannot say whether that mismatch attenuates the reported effect, inflates it, or is
+immaterial. \emph{(vi-c) Neither the estimator's noise nor its bias has been measured on
+the reported population.} A repeat-to-repeat variance study on that population, and
+agreement with an exact divergence, are not reported here; under classical attenuation
+the reported $r$ would be a lower bound (\Cref{rem:attenuation}), but that is an
+argument, not a measurement. The missing measurements are the ordinary numerical ones: a
+higher-order or adaptive integrator for the state, and a validation of the estimate
+against an exact reference on real molecules. We have not run them, and no result in this
+paper reflects them.
 \emph{(vi-d) The reported density is a position-only flow density.} \Cref{eq:ffjord}
 is integrated with the discrete channels clamped at their data labels for the whole
 reverse trajectory (\Cref{ass:A2}). That object is normalised and is what every
@@ -1970,9 +1767,9 @@ within-parent design mitigates but does not remove.
 %  Do not delete it to save appendix space -- the main text now depends on it.
 % ---------------------------------------------------------------------------
 \emph{(ix) What the compressed main-text statement leaves here.} The conclusion states
-four bounds --- the finite-step clamped positional-flow object, the step-count
-dependence of the ordering gap, the conditioning of every value-cell mean on
-completion, and locality together with the absence of raw calibration --- and this
+three bounds --- the finite-step clamped positional-flow object, the conditioning
+of every value-cell mean on completion, and locality together with the absence of raw
+calibration --- and this
 subsection is where each is developed. Four further qualifications travelled with them
 and are recorded here rather than in the main text. \emph{(ix-a) The reported gradient
 is a surrogate.} The gradient of $\Ls_{\mathrm{value}}$ is the truncated-adjoint
@@ -2094,7 +1891,7 @@ one job per cell and seed, differing only in the physics block and the seed. Mat
 configurations read the training-split shard only, take $M = 8$ parents per value step and cap
 the value loss at $1500$. Diverged runs are recorded, not re-rolled.
 \item \emph{Evaluate, stage one} (first environment): \texttt{eval\_boltzmann\_stage1.py
---checkpoint <ckpt> --n\_molecules 120 --n\_perturb 8 --sigma 0.15 --n\_ode\_steps 12
+--checkpoint <ckpt> --n\_molecules 120 --n\_perturb 8 --sigma 0.15
 --n\_hutchinson 2 --eval\_seed 12345}, which emits the perturbed geometries and their
 $\log q_\theta$.
 \item \emph{Evaluate, stage two} (second environment): \texttt{eval\_boltzmann\_stage2.py
@@ -2105,7 +1902,6 @@ disjoint parents and drops the data geometry; \texttt{analyze\_calibration.py --
 --drop\_reference} produces \Cref{tab:scaleseeds,tab:scaleperm};
 \texttt{retrieval\_utility.py} produces \Cref{tab:retrieval};
 \texttt{measure\_oracle\_ceiling.py} produces the teacher-evaluator agreement reference;
-\texttt{analyze\_resolution\_ablation.py} produces \Cref{tab:respaired,tab:reschk};
 re-running \texttt{analyze\_calibration.py} on copies of the same per-record files whose
 energy column has been replaced by the teacher energy for the matching (parent,
 displacement) pair produces the second block of \Cref{tab:esencalib}; and

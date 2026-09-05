@@ -166,10 +166,11 @@ discrete--continuous, bond-free de novo generator, at the price of one free cons
 \label{sec:method:impl}
 \emph{(i)} $\lambda_E$ was fixed once from a smoke run before any Boltzmann evaluation and never
 tuned against a reported metric; the weight is small, its \emph{contribution} is not.
-\emph{(ii)} \eqref{eq:ffjord} is integrated in $n$ explicit Euler steps over the whole of $[0,1]$,
-the divergence integral by the midpoint rule on the same interval; the interval is not truncated, so
-$n$ controls discretisation error rather than which density is meant (\Cref{app:estimator}).
-Training uses $n = 4$ and every reported evaluation $n = 12$. \emph{(iii)} The reverse-time solve back-propagates second derivatives through a stochastic
+\emph{(ii)} $\log q_\theta$ comes from an ODE integration of the clamped positional flow: \eqref{eq:ffjord}
+advanced by explicit Euler steps over the whole of $[0,1]$, its divergence integral taken by the
+midpoint rule on the same interval and its trace by Hutchinson probes \citep{hutchinson}; the
+interval is not truncated, so the discretisation controls numerical error rather than which density
+is meant (\Cref{app:constants}). \emph{(iii)} The reverse-time solve back-propagates second derivatives through a stochastic
 trace, and runs carrying it reach non-finite weights at a rate that runs without it do not ($6$ of
 $20$ against $0$ of $10$ in the matched grid of \Cref{sec:ablation}); a guard aborts on the first
 non-finite parameter, and because divergence is not independent of the objective, \textbf{every

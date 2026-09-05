@@ -37,8 +37,8 @@ $\log q_\theta$ clamp & $10^{6}$ & $\Ls_{\mathrm{anchor}}$ & inactive ($\lambda_
 value loss cap       & $3000$ (earlier round), $1500$ (matched grid) & $\Ls_{\mathrm{value}}$ & rejects finite outliers \\
 \midrule
 \multicolumn{4}{@{}l}{\emph{Density estimator}}\\
-ODE steps            & 4 train / 12 eval & FFJORD & explicit Euler in state, midpoint-rule divergence quadrature \\
-Hutchinson probes    & 2 train / 2 eval & divergence & Rademacher \\
+ODE steps           & $4$ & FFJORD & explicit Euler in state, midpoint-rule divergence quadrature \\
+Hutchinson probes    & $2$ & divergence & Rademacher \\
 parents per step $M$ & $4$ (earlier round), $8$ (matched grid); $1$ diagnosed only & $\Ls_{\mathrm{value}}$ & estimator variance $\propto 1/M$ \\
 step interval        & every 4th step & $\Ls_{\mathrm{value}}$ & amortises the FFJORD cost \\
 atoms per parent     & $\leq 50$ & $\Ls_{\mathrm{value}}$ & memory bound \\

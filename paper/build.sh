@@ -51,7 +51,7 @@ No LaTeX toolchain is available in this shell. Options, in order of preference:
      and never used; threeparttable was never loaded at all.)
      Overleaf and any full TeX Live ship cleveref, so uploading this
      directory as-is is enough.
-  3. Everything else the build needs (iclr2026_conference.{sty,bst},
+  3. Everything else the build needs (iclr2027_conference.{sty,bst},
      math_commands.tex, natbib.sty, fancyhdr.sty) is vendored in this
      directory, so no network access is required.
 
@@ -62,7 +62,8 @@ fi
 # --- required inputs -------------------------------------------------------
 for f in sections/01_intro.tex sections/02_method.tex sections/03_theory.tex \
          sections/04_experiments.tex sections/05_conclusion.tex \
-         sections/A1_proofs.tex sections/A2_details.tex refs.bib \
+         sections/A1_proofs.tex sections/A2_details.tex sections/A3_related.tex \
+         refs.bib \
          figures/fig1_objective_float.tex figures/tabA2_constants.tex; do
   [ -f "$f" ] || echo "WARNING: missing input '$f' (build will continue)." >&2
 done

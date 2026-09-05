@@ -6,18 +6,17 @@
 %  inside the conclusion, carrying exactly four things and nothing else:
 %    (1) the measured object is a finite-step estimate of the clamped
 %        positional-flow density, not the joint conditional;
-%    (2) the ordering gap depends on the integration step count, so no
-%        solver-converged likelihood is claimed  (the ONE resolution clause,
-%        with NO printed gaps);
-%    (3) value-cell means are conditional on completion;
-%    (4) the objective is local -- relative basin mass is not identified and
+%    (2) value-cell means are conditional on completion;
+%    (3) the objective is local -- relative basin mass is not identified and
 %        raw calibration is not achieved.
+%  The old item on integration step count was DELETED with the rest of the
+%  resolution sweep (main text and appendix); do not re-add it.
 %  EVERYTHING else the old paragraph carried (the surrogate-gradient detail,
 %  the 6-of-20 / 0-of-10 divergence tally, the under-training alternative, the
 %  three named extensions) was APPENDED to app:limitations, not deleted.
 %
 %  NO adverse-imputation values here.  NO t values, NO significance language,
-%  NO n = 4 / 48 numbers.  The section opens and closes POSITIVE.
+%  NO step counts of any kind.  The section opens and closes POSITIVE.
 %
 %  \label{sec:limitations} must stay: main.tex's ethics statement and
 %  A1_proofs.tex both \Cref it.
@@ -35,9 +34,7 @@ in the correct geometry--energy correspondence rather than in an auxiliary penal
 
 The same analysis bounds what it buys. What we measure is a finite-step estimate of the clamped
 positional-flow density $q_\theta$, which need not equal the generator's joint conditional
-$p_\theta(x \mid c)$ (\Cref{ass:A2}), and a same-checkpoint sensitivity analysis shows that the size
-of the ordering gap depends on the integration step count, so what we claim is improved ordering
-\emph{as estimated at} $n = 12$ and not a solver-converged likelihood (\Cref{app:estimator}); the
+$p_\theta(x \mid c)$ (\Cref{ass:A2}); the
 objective is also numerically demanding, so every value-cell mean is conditional on completion and
 carries its launched, completed and diverged counts (\Cref{app:stability}). And it is local: inside
 a group the density--energy relation is fixed only up to one constant per connected component and

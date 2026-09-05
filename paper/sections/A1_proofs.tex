@@ -5,8 +5,8 @@
 %    A.1  setup, notation, standing assumptions
 %    A.2  the log-density estimator: change of variables, Hutchinson trace,
 %         and the integration scheme (explicit Euler in the state, midpoint
-%         quadrature for the divergence integral).  It targets log q at t=1
-%         at EVERY step count; the step count controls accuracy, not target.
+%         quadrature for the divergence integral).  It targets log q at t=1;
+%         the discretisation controls accuracy, not target.
 %    A.3  the flow-matching score read-out          (lem:score)
 %    A.4  why the gradient condition is a trapped surrogate (prop:trap/conflict)
 %    A.5  the value condition                       (thm:certificate, cor:gauge)
@@ -39,8 +39,8 @@
 %  divergence is prior work (rem:logvar); the implemented gradient is a
 %  truncated-adjoint surrogate (rem:idealresidual); the objective is local and
 %  does not identify basin mass (cor:basins); kT = 1 eV is numerical
-%  (app:hyper); the likelihood estimate is resolution-dependent (ass:A-disc,
-%  app:estimator); value-arm means are conditional on completion (app:p0cells).
+%  (app:hyper); the likelihood estimate is a finite-step one (ass:A-disc);
+%  value-arm means are conditional on completion (app:p0cells).
 %
 %  Theorem environments are declared in main.tex and the counters continue from
 %  the main text, so appendix-only results start after Theorem 1 / Lemma 1 /
@@ -138,10 +138,9 @@ rotation-quotiented density.
 The reported $\log q_\theta$ is a discretised continuous-flow likelihood ---
 explicit Euler in the state, midpoint-rule quadrature for the divergence integral,
 with a stochastic trace estimator --- so it is a biased and noisy estimate of the
-exact clamped positional-flow log-density. The step count controls that bias; it
-does not change which density is estimated. Step counts and probe counts are in
-\Cref{app:hyper}; the consequences are worked through in
-\Cref{app:density,app:estimator}.
+exact clamped positional-flow log-density. The discretisation controls that bias; it
+does not change which density is estimated. The integrator and probe settings are in
+\Cref{app:hyper}; the scheme is derived in \Cref{app:density}.
 \end{assumption}
 
 \begin{remark}[What the theory is scoped to, given the implemented gradient]
@@ -275,7 +274,7 @@ trace equals the trace of $J$ restricted to the centre-of-mass-free subspace.
 Rotations enjoy no such identity and are not quotiented anywhere in the
 implementation.
 
-\paragraph{Step 3: the integration scheme, and what the step count does and does not
+\paragraph{Step 3: the integration scheme, and what the discretisation does and does not
 control.} The reverse-time solve of \eqref{eq:app-ffjord} uses \emph{explicit Euler
 in the state with midpoint-rule quadrature for the divergence integral}. With $n$
 steps the implementation sets $\Delta t = 1/n$ and evaluates the field and its
@@ -295,9 +294,9 @@ and carries $O(\Delta t)$ error. The \emph{divergence} integral is approximated 
 the midpoint rule on $[0,1]$: all $n$ nodes are interior to the interval, the
 interval itself is not truncated, and the rule carries $O(\Delta t^{2})$ error and
 is exact for integrands linear in $t$. The half-step offset therefore avoids
-evaluating the field at $t = 1$ without moving the endpoint the scheme targets. For
-every $n$, what the estimator targets is $\log q_\theta$ at $t = 1$; there is no
-family of smoothed marginals indexed by the step count, and refining $n$ estimates
+evaluating the field at $t = 1$ without moving the endpoint the scheme targets. What
+the estimator targets is $\log q_\theta$ at $t = 1$; there is no
+family of smoothed marginals indexed by the discretisation, and a finer grid estimates
 the \emph{same} quantity more accurately rather than a different one. Analytic
 checks on the implementation confirm this: on a field of constant divergence, and on
 a time-varying one, the accumulated integral equals the full-interval value at every
@@ -305,12 +304,11 @@ $n$ rather than a truncated $1 - 1/(2n)$ value, and on a linear continuous
 normalising flow the estimate converges to the closed-form endpoint log-density as
 $n$ grows.
 
-Step-count dependence in the reported numbers is accordingly \emph{numerical
-discretisation error}, dominated by the $O(\Delta t)$ Euler state integration rather
-than by the $O(\Delta t^{2})$ quadrature, together with whatever endpoint stiffness
-the learned field carries. \Cref{app:estimator} tabulates the step counts, reports
-what the absence of a plateau looks like on real molecules, and measures how much of
-the reported effect size depends on the choice.
+What the finite grid costs is accordingly \emph{numerical discretisation error},
+dominated by the $O(\Delta t)$ Euler state integration rather than by the
+$O(\Delta t^{2})$ quadrature, together with whatever endpoint stiffness the learned
+field carries. The integrator and probe settings the implementation uses are in
+\Cref{app:hyper}.
 
 Two uses of the symbol $\epsilon$ must be kept apart, and neither is a smoothing
 scale of the reported density: the $\epsilon$ of \eqref{eq:app-eps} below is the
@@ -368,6 +366,16 @@ score by $t\|\delta v\|/((1-t)\sigma^2)$.
 Matching $s_\theta \to +F/kT$ is Boltzmann-attracting because
 $\nabla_{\vx}\log \pi = -\nabla_{\vx}E/kT = +F/kT$. The sign in
 \eqref{eq:app-score} is not a convention that may be flipped.
+\end{remark}
+
+\begin{remark}[The read-out as implemented]
+\label{rem:readoutdefect}
+\Cref{lem:score} takes a velocity. Under the parameterisation this implementation uses,
+the network's position output is the endpoint prediction rather than a velocity, and the
+gradient-supervision term fed that output straight into \eqref{eq:app-score}, so the
+score the baseline actually matched is $(1-t)$ times the intended one. Every force number
+in this paper was produced with that read-out. \Cref{app:forcemech} states the defect in
+full and reports what the diagnostics run under both read-outs say about it.
 \end{remark}
 
 \begin{remark}[Amplification at the probe times used]
@@ -529,11 +537,10 @@ to this paper. Estimating it under a reference measure that is not the model's o
 \begin{remark}[The certificate is about the exact clamped density; what is formed is its discretisation]
 \label{rem:epscert}
 \Cref{thm:certificate} is stated for the exact normalised $q_\theta$, whereas what
-the objective and the metric both form is its Euler/midpoint estimate at a finite
-step count (\Cref{app:density}). The residual the objective can enforce therefore
-carries discretisation bias, which does not vanish at the step counts we can afford
-(\Cref{app:estimator}); the target quantity is the same at every step count, and the
-accuracy is not.
+the objective and the metric both form is its finite-step Euler/midpoint estimate
+(\Cref{app:density}). The residual the objective can enforce therefore
+carries discretisation bias; the target quantity is unchanged by the discretisation,
+and the accuracy is not.
 \end{remark}
 
 \begin{proof}[Proof of \Cref{thm:certificate}]
@@ -700,7 +707,7 @@ weakening it. Connectivity is therefore a property of the supervision design;
 groups tiled along a path between basins would make $\mathcal{G}_c$ connected, which
 is an experiment this paper does not contain. One further gap belongs here: the
 objective and the evaluation metric average over \emph{different} clouds --- different
-potentials, parents, displacement scales and estimator step counts
+potentials, parents and displacement scales
 (\Cref{sec:setup}) --- so the corollary bounds what the objective can constrain and
 does not identify the two.
 
@@ -925,8 +932,8 @@ the normalised evaluation analogue of the same Boltzmann-residual form the train
 objective uses. The two are not one quantity in different units: they share that
 residual structure but are evaluated with different potentials (eSEN against
 GFN2-xTB), different populations (training shards against held-out parents) and at
-different discretisation accuracies ($n = 4$ against $n = 12$; the same target
-quantity, different Euler bias). The identity is also the
+different discretisation accuracies --- the same target quantity, a different Euler
+bias. The identity is also the
 bridge between the ordering result and
 the calibration result, and it shows that the two cannot both be read through the
 $\rho = 0$ idealisation. At $\rho = 0$, $r = 1/\sqrt{1+\tau^2}$ is strictly
@@ -964,11 +971,8 @@ stochastic trace noise. The classical attenuation model,
 $r_{\mathrm{meas}} \approx r_{\mathrm{true}}/\sqrt{1 + \Var(\text{noise})/\Var(\log p)}$,
 would make the reported correlation an under-estimate of the true one, and
 geometry-dependent discretisation bias would enter $\Var_k(w)$ as an estimator
-floor. This is an argument and not a measurement, and we do not lean on it --- the
-more so because what we \emph{can} measure points the other way: the step counts we
-can afford show no plateau, and the gap shrinks precisely as the estimator becomes
-more accurate, which is what a partly artefactual gap at coarse resolution would
-also do (\Cref{app:estimator}). What is measured instead is the teacher-evaluator agreement
+floor. This is an argument and not a measurement, and we do not lean on it. What is
+measured instead is the teacher-evaluator agreement
 reference: pushing the teacher's own energies through the identical pipeline gives
 $r = 0.927$ on the primary population, so a model reproducing its teacher exactly
 would score about that rather than $1$, and our $0.369$ is about $40\%$ of it in

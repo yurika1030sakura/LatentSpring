@@ -166,8 +166,7 @@ independent scorer, the primary-endpoint construction and the aggregation rules 
 standard errors over independently trained seeds, and every seed-level result --- and which give the
 adverse imputation for the one unreported run. The inferential statistics computed
 during the analysis are collected once, for completeness and in one place, in
-\Cref{app:inferential}. The sensitivity of every reported number to the integrator step count is in
-\Cref{app:estimator}. The complete launch record, including every run that diverged, every run that
+\Cref{app:inferential}. The complete launch record, including every run that diverged, every run that
 completed without being scored, and the later seeds launched outside the matched design, is in
 \Cref{app:p0cells,app:cells,app:stability}, and \Cref{app:allevals} inventories every evaluation we
 ran, scored or not. \Cref{app:figdetail} states how each main-text figure panel was constructed from
@@ -193,9 +192,9 @@ survive the corrections and which are superseded by the matched grid.
 because divergence is objective-dependent, every value-cell mean is reported conditional on
 completion with its launched, completed and diverged counts beside it (\Cref{app:stability});
 a re-run at a different seed set should expect a different completion pattern. And every reported
-density is a finite-step estimate: training uses $n = 4$ integration steps and every reported
-evaluation $n = 12$, and \Cref{app:estimator} shows how the reported quantities move with that
-choice, so the step count must be matched for the numbers to be comparable.
+density is a finite-step estimate: $\log q_\theta$ comes from an ODE integration of the clamped
+positional flow with Hutchinson divergence estimation, whose settings are tabulated in
+\Cref{app:hyper,app:constants}.
 
 \subsubsection*{Ethics statement}
 
