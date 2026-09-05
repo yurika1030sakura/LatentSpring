@@ -88,12 +88,27 @@ detached endpoint. The gradient actually back-propagated through
 $\Ls_{\mathrm{value}}$ is therefore
 \begin{equation}
   \nabla_\theta \Ls_{\mathrm{value}}
-  \;\approx\; \sum_{\text{steps}} \Delta t \; \nabla_\theta
-  \big(\nabla\!\cdot v_\theta(\vx_{\text{step}}, t_{\text{step}})\big)
-  \qquad \text{(trajectory held fixed)} ,
+  \;=\; \frac{2}{MK} \sum_{m=1}^{M} \sum_{k=1}^{K}
+        \bigl( w_{m,k} - \bar w_m \bigr)\,
+        \nabla_\theta \log q_\theta(\vx_{m,k} \mid c_m),
+  \qquad \bar w_m = \frac{1}{K}\sum_{k} w_{m,k},
+  \label{eq:valuegrad}
 \end{equation}
-a truncated-adjoint surrogate: the reverse trajectory and the prior endpoint are held
-fixed and only the divergence evaluations are differentiated. We do not differentiate
+with $w_{m,k}$ as in \eqref{eq:lvalue} and $\Var_k$ the divide-by-$K$ variance, and with
+each per-geometry factor supplied by the frozen trajectory,
+\begin{equation}
+  \nabla_\theta \log q_\theta(\vx_{m,k} \mid c_m)
+  \;\approx\; -\sum_{\text{steps}} \Delta t \; \nabla_\theta
+  \big(\nabla\!\cdot v_\theta(\vx_{\text{step}}, t_{\text{step}})\big)
+  \qquad \text{(trajectory held fixed)} .
+  \label{eq:frozenfactor}
+\end{equation}
+The outer weighting in \eqref{eq:valuegrad} is exact: autograd differentiates the group
+means, so a geometry is pushed according to whether its residual sits above or below its
+own group's mean, and a group whose residuals are already equal contributes exactly zero.
+Only \eqref{eq:frozenfactor} is a surrogate --- a truncated adjoint in which the reverse
+trajectory and the prior endpoint are held fixed and only the divergence evaluations are
+differentiated. We do not differentiate
 through the ODE solve, and what the optimiser performs is therefore not exact
 likelihood-gradient descent --- neither on the continuous-time likelihood nor on its
 discretisation --- but descent on this surrogate.

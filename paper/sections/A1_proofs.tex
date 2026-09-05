@@ -935,18 +935,58 @@ different discretisation accuracies --- the same target quantity, a different Eu
 bias. The identity is also the
 bridge between the ordering result and
 the calibration result, and it shows that the two cannot both be read through the
-$\rho = 0$ idealisation. At $\rho = 0$, $r = 1/\sqrt{1+\tau^2}$ is strictly
-decreasing in $\tau$, so the arm with the larger $r$ must have the smaller
-$\mathrm{NRV}$. The measurement is the opposite: value supervision has both the
-larger $r$ ($0.369$ against $0.200$) and the larger $\mathrm{NRV}$ ($2.144$ against
-$1.402$). These two endpoints are aggregated differently --- $r$ is a mean over
-parents and $\mathrm{NRV}$ a median over parents (\Cref{app:scalediag}) --- so no
-per-parent $\rho$ can be recovered by combining them. What the disagreement does
-establish is that the zero-correlation simplification is not an adequate explanation
-of the observed arm-level behaviour: under it the arm with the larger $r$ must have
-the smaller $\mathrm{NRV}$, and no aggregation convention makes both reported
-endpoints consistent with that. The sign and the distribution of the residual
-correlation are \emph{not identified} by these aggregates, and we report neither.
+$\rho = 0$ idealisation. At $\rho = 0$, $r_m = 1/\sqrt{1+\tau_m^2}$ is strictly
+decreasing in $\tau_m$, so \emph{within a parent} a larger $r_m$ forces a smaller
+$\mathrm{NRV}_m$. That implication does not transfer verbatim to the arm level,
+because $r$ is a mean over parents while $\mathrm{NRV}$ is a median over parents
+(\Cref{app:scalediag}): three parents at $\mathrm{NRV} = (1,1,1)$ give mean
+$r = 0.707$ and median $\mathrm{NRV} = 1.00$, whereas $\mathrm{NRV} = (0.1,1.1,1.1)$
+gives mean $r = 0.778$ and median $\mathrm{NRV} = 1.10$ --- both larger, with
+$\rho = 0$ at every parent. The aggregates do nonetheless refute $\rho = 0$, by a
+bound rather than by that ordering: under $\rho = 0$ every $r_m$ is positive, so with
+$n$ parents $\mathrm{mean}_m\, r_m \ge (\lceil n/2\rceil / n)\,(1 +
+\mathrm{median}_m\,\mathrm{NRV}_m)^{-1/2}$. On the primary population that floor is
+$0.33$ for flow matching and $0.31$ for the scrambled control, against measured
+$0.200$ and $0.226$ --- a contradiction in each of those five and three seeds
+separately. A sharper instrument needs no aggregation at all: $\rho = 0$ forces
+$r_m > 0$ at \emph{every} parent, and $r_m < 0$ at $0.305 \pm 0.020$,
+$0.269 \pm 0.016$ and $0.159 \pm 0.025$ of the $93$ parents in the three arms.
+
+$\rho$ is in any case not a free third quantity. Write
+$c_m = \mathrm{sd}_k(L)/\mathrm{sd}_k(u)$ for the scale ratio and
+$\mathrm{slope}_m = r_m c_m$ for the regression slope of $\log q_\theta$ on $-E/kT$,
+the two read-outs \Cref{tab:scaleperm} already aggregates. Since
+$\Cov_k(w,u) = \Cov_k(L,u) - \Var_k(u)$,
+\begin{equation}
+  \rho_m \;=\; \frac{r_m c_m - 1}{\tau_m}
+         \;=\; \frac{\mathrm{slope}_m - 1}{\sqrt{\mathrm{NRV}_m}},
+  \qquad
+  \rho_m^{2} \;=\; \frac{(\mathrm{slope}_m - 1)^2}{\mathrm{NRV}_m},
+  \label{eq:app-rho}
+\end{equation}
+the second equality being the first term of \eqref{eq:scaledecomp} as a fraction of
+the whole: $\rho_m^2$ is the share of parent $m$'s normalised residual variance
+charged to the wrong slope, and $1 - \rho_m^2$ the share charged to the
+energy-unaligned remainder. So $\rho_m$ vanishes exactly when
+$\mathrm{slope}_m = 1$: the $\rho = 0$ hypothesis \emph{is} the perfect-calibration
+hypothesis, which \Cref{sec:scale} measures directly and rejects, median slopes being
+$0.130$ and $0.448$ against a target of $1$.
+
+Evaluated per parent on the primary population --- $93$ disjoint parents, displaced
+geometries only --- $\rho$ is negative in every arm. Averaging over parents as we do
+for $r$, then over seeds, gives $-0.636 \pm 0.011$ (flow matching, 5 seeds),
+$-0.526 \pm 0.020$ (energies scrambled, 3) and $-0.338 \pm 0.051$ (value, 4); the
+fraction of parents with $\rho_m < 0$ is $0.914 \pm 0.014$, $0.867 \pm 0.014$ and
+$0.772 \pm 0.040$. The median $\rho_m^2$ falls from $0.584 \pm 0.015$ to
+$0.268 \pm 0.043$: under flow matching most of $\mathrm{NRV}$ is wrong temperature,
+under value supervision most of it is energy-unaligned residual. Value supervision
+moves $\rho$ towards zero by $+0.298$ against flow matching (Welch $t = 5.7$,
+permutation $p = 0.008$ over seeds) and by $+0.188$ against the scrambled control
+($t = 3.4$, $p = 0.057$), without reaching it. Because \eqref{eq:app-rho} makes
+$\rho$ a deterministic function of the slope and $\mathrm{NRV}$ that
+\Cref{tab:scaleperm} already reports, this is a re-expression of those read-outs and
+not an independent measurement; a constant $\log q_\theta$ gives $\rho = -1$ exactly,
+so a large negative $\rho$ is the signature of a response that is too flat.
 \end{remark}
 
 \begin{remark}[The correlation certifies shape, not temperature or calibration]

@@ -216,12 +216,25 @@ order of magnitude, overshooting rather than approaching. The same separation
 appears against the eSEN training teacher, where $r$ rises from $0.202$ to $0.399$ while raw NRV
 rises from $1.676$ to $2.821$ (\Cref{app:scalediag}).
 
-\textbf{What a further intervention has to control.} Raw NRV additionally charges for the part of
-the residual that is not energy-aligned, and that part grows enough to push NRV up even as the
-rescaled bound falls; the free constant per group is not the cause, since $\mathrm{NRV}$ is
-invariant to it. Repair requires an additional scale-sensitive objective controlling the magnitude
-and the energy-unaligned component of the response --- a different term from \eqref{eq:lvalue}, and
-one this paper does not run.\label{sec:generation}\ On generation itself we detect \emph{no
+\textbf{What is left is an optimisation gap, not a missing term.} Raw NRV additionally charges for
+the part of the residual that is not energy-aligned, and that part grows enough to push NRV up even
+as the rescaled bound falls; the free constant per group is not the cause, since $\mathrm{NRV}$ is
+invariant to it. Both parts are already what \eqref{eq:lvalue} asks for. Writing
+$\log q_\theta = a\,(-E/kT) + b + \varepsilon$ within a group, with $\varepsilon$ uncorrelated with
+$E$ by construction, gives
+\begin{equation}
+  \Var_k\bigl(\log q_\theta + E/kT\bigr) \;=\; (a-1)^2\,\Var_k\bigl(E/kT\bigr) \;+\; \Var_k(\varepsilon),
+  \label{eq:scaledecomp}
+\end{equation}
+whose two terms are exactly the magnitude of the response and its energy-unaligned component, and
+which is minimised uniquely at $a = 1$ with $\Var_k(\varepsilon) = 0$. The variance form annihilates
+the free constant $b$ but not the slope $a$: \eqref{eq:lvalue} already demands a calibrated
+response, not merely a correctly ordered one. What we report is therefore not a term missing from
+the objective but a gap between what it asks for and what this training run reached, and the
+slope moving from $0.130$ to $0.448$ is movement along that axis rather than orthogonal to it. Which
+part of the pipeline holds the slope short --- the weight the value term carries against flow
+matching, the truncated-adjoint surrogate, the finite-step density estimate, or the perturbation
+budget --- is not identified by these experiments.\label{sec:generation}\ On generation itself we detect \emph{no
 degradation in validity, PoseBusters pass rate \citep{posebusters} or uniqueness} at the evaluated
 sample size (\Cref{app:generation}).
 
