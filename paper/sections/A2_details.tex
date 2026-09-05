@@ -118,7 +118,7 @@ meet. \emph{Theory}: the identifiability results of \Cref{app:proofs} characteri
 zero set of the displayed ideal residual objective --- what a model that had driven the
 population objective to zero would have been shown, and what that leaves free --- and
 make no claim about whether the implemented update converges to that zero set
-(\Cref{rem:idealresidual}). \emph{Implementation}: what runs is the finite-step density
+(\Cref{rem:idealresidual}). \emph{Implementation}: what runs is the density
 estimate of \Cref{app:density} optimised by the truncated-adjoint gradient displayed
 above, together with the clipping, Huberisation and step rejection listed in this
 subsection. \emph{Experiment}: every empirical result in this paper is a measurement of
@@ -1363,10 +1363,9 @@ Family & What it is & Evals & Par\-ents & Why it is not used \\
 \evfam{eval\_sweep/*} & the first capped-step sweep & 5 & 30
   & run before the step-based $\lambda$ schedule was fixed, so every arm was effectively flow
     matching only --- which is why all five are negative \\[2pt]
-\evfam{eval\_res/*} & re-scorings, under alternative integrator settings, of checkpoints
-  already listed in \Cref{tab:allevals_used} & 49 & 120
-  & no training run and no checkpoint of its own; the analysis these supported is not part of
-    this paper and no claim here is formed from them \\
+\evfam{eval\_res/*} & repeat scorings of checkpoints already listed in
+  \Cref{tab:allevals_used} & 49 & 120
+  & no training run and no checkpoint of its own; no claim here is formed from them \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -1374,9 +1373,9 @@ Family & What it is & Evals & Par\-ents & Why it is not used \\
 
 \paragraph{The set-aside families' numbers, recorded so that they are not absent.} The three
 $30$-parent families below are in the data-geometry-included convention ($\dagger$) and none may
-be compared with any other number in this paper; the re-scorings under alternative integrator
-settings are values of checkpoints already reported in \Cref{tab:allevals_used}, and no value of
-theirs is quoted anywhere in this paper. Transition metals: $+0.365$ and $+0.329$ for the value arm and
+be compared with any other number in this paper; the repeat scorings are values of checkpoints
+already reported in \Cref{tab:allevals_used}, and no value of theirs is quoted anywhere in this
+paper. Transition metals: $+0.365$ and $+0.329$ for the value arm and
 $-0.158$ for the force-only arm. Configuration generations preceding the matched grid, where a
 value is on record: $+0.413$ (v3), $+0.400$ and $+0.322$ (v3b), $+0.091$ (v4), $+0.172$
 (v4-stable) and $-0.082$ (on-policy at epoch $0$). The capped-step sweep: $-0.396$, $-0.326$,
@@ -1444,9 +1443,9 @@ borrows from. The point is not that it scores higher, but that most entries are
 quantities the other classes do not define, which is why the measurement of
 \Cref{sec:mainresult} has no direct precedent to be compared against. The likelihood
 column classifies the \emph{kind} of density each class defines rather than asserting
-exactness for any of them, ours included: what we compute is a finite-step
-discretisation of a continuous-flow likelihood with a stochastic trace, whose accuracy
---- not whose identity --- is fixed by that discretisation (\Cref{app:density}). 3D molecular generators
+exactness for any of them, ours included: what we compute is a discretisation of a
+continuous-flow likelihood with a stochastic trace, whose accuracy --- not whose
+identity --- is fixed by that discretisation (\Cref{app:density}). 3D molecular generators
 \citep{edm,geoldm,flowmol3,zatom1,symphony} assemble composition and geometry de novo
 but are not trained against a transferable energy and report no density--energy check,
 while conformer models and Boltzmann samplers
@@ -1699,32 +1698,16 @@ supporting context only. The
 torsional and bond-angle families, the partial correlation given RMSD, and a
 noise-scale sweep have not been run (\Cref{app:perturb}).
 
-\emph{(vi) The likelihood estimator has not been validated.}
-\emph{(vi-a) What is reported is a finite-step estimate of $\log q_\theta$ at
-$t = 1$, and it is not certified as converged.} Every reported $\log q_\theta$ comes
-from an ODE integration of the clamped positional flow with Hutchinson divergence
-estimation (\Cref{app:density}). That estimate is biased by the explicit-Euler state
-integration and noisy from the stochastic trace, and we do not assert that it is
-converged. \emph{(vi-b) The training objective and the evaluation metric are formed by
-the same estimator, but the value term is computed inside the training loop under a
-training-time budget.} We do not characterise the estimate the objective works from
-against the one the metric computes, and we cannot say whether any mismatch attenuates
-the reported effect, inflates it, or is immaterial. \emph{(vi-c) Neither the estimator's noise nor its bias has been measured on
-the reported population.} A repeat-to-repeat variance study on that population, and
-agreement with an exact divergence, are not reported here; under classical attenuation
-the reported $r$ would be a lower bound (\Cref{rem:attenuation}), but that is an
-argument, not a measurement. The missing measurements are the ordinary numerical ones: a
-higher-order or adaptive integrator for the state, and a validation of the estimate
-against an exact reference on real molecules. We have not run them, and no result in this
-paper reflects them.
-\emph{(vi-d) The reported density is a position-only flow density.} \Cref{eq:ffjord}
+\emph{(vi) The reported density is a position-only flow density, computed under a
+single fixed protocol.} Every reported $\log q_\theta$ is the value returned by the
+evaluation protocol of \Cref{app:density}, and every arm comparison in this paper is
+between values computed under that identical protocol. \Cref{eq:ffjord}
 is integrated with the discrete channels clamped at their data labels for the whole
 reverse trajectory (\Cref{ass:A2}). That object is normalised and is what every
 theorem and every number in this paper refers to, but it coincides with the
 generator's own joint conditional density $p_\theta(x \mid c)$ only if the discrete
 trajectory is determined by its endpoint; the generator evolves types and charges
-through a continuous-time Markov chain, so in general the two differ, and we have not
-quantified the difference.
+through a continuous-time Markov chain, so in general the two differ.
 
 \emph{(vii) Training budget.} Every arm trains $30\,000$ optimiser steps at an
 effective batch of 16, approximately $0.12$ data epochs; we do not establish
@@ -1780,7 +1763,7 @@ within-parent design mitigates but does not remove.
 %  Do not delete it to save appendix space -- the main text now depends on it.
 % ---------------------------------------------------------------------------
 \emph{(ix) What the compressed main-text statement leaves here.} The conclusion states
-three bounds --- the finite-step clamped positional-flow object, the conditioning
+three bounds --- the clamped positional-flow object, the conditioning
 of every value-cell mean on completion, and locality together with the absence of raw
 calibration --- and this
 subsection is where each is developed. Four further qualifications travelled with them

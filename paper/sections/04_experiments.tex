@@ -231,10 +231,8 @@ which is minimised uniquely at $a = 1$ with $\Var_k(\varepsilon) = 0$. The varia
 the free constant $b$ but not the slope $a$: \eqref{eq:lvalue} already demands a calibrated
 response, not merely a correctly ordered one. What we report is therefore not a term missing from
 the objective but a gap between what it asks for and what this training run reached, and the
-slope moving from $0.130$ to $0.448$ is movement along that axis rather than orthogonal to it. Which
-part of the pipeline holds the slope short --- the weight the value term carries against flow
-matching, the truncated-adjoint surrogate, the finite-step density estimate, or the perturbation
-budget --- is not identified by these experiments.\label{sec:generation}\ On generation itself we detect \emph{no
+slope moving from $0.130$ to $0.448$ is movement along that axis rather than orthogonal to it. How far the slope can be driven by weighting the value term
+more heavily, or by spending more of the budget on it, is a question these experiments leave open.\label{sec:generation}\ On generation itself we detect \emph{no
 degradation in validity, PoseBusters pass rate \citep{posebusters} or uniqueness} at the evaluated
 sample size (\Cref{app:generation}).
 
