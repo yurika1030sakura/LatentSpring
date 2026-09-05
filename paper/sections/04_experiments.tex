@@ -60,7 +60,7 @@ OMol25 \citep{omol25} against the OMol25/eSEN teacher \citep{esen} under the set
 \Cref{sec:method}, for $30\,000$ optimiser steps at effective batch $16$, approximately $0.12$ data
 epochs. The read-out protocol is fixed and operational: $\log q_\theta$ comes from an ODE integration
 of the clamped positional flow with Hutchinson divergence estimation
-\citep{ffjord,hutchinson} under the settings of \Cref{app:constants}, and every evaluation energy is a GFN2-xTB single point \citep{gfn2xtb}
+\citep{ffjord,hutchinson}, and every evaluation energy is a GFN2-xTB single point \citep{gfn2xtb}
 from an evaluator that enters no training loss and shares no parameters or functional form with the
 teacher. Each held-out parent contributes one group of $K = 9$ geometries, its data geometry plus
 $8$ isotropic displacements at $\sigma = 0.15$~\AA{} per coordinate: a local stress test rather than
@@ -138,9 +138,10 @@ log-density or the energy multiset alone does not.
 at $0.085 \pm 0.016$, below the physics-free baseline by $-0.132$; added to the value term it
 subtracts again, F scoring $0.194 \pm 0.016$ against D's $0.421$, a difference of $-0.227$. Cell E2,
 identical to E at $\lambda_1 = 0.01$, completed $5/5$ at $0.080 \pm 0.013$, so the result does not
-rest on one badly chosen weight (\Cref{app:p0cells}). The claim stays narrow: naive, off-policy,
-endpoint force matching, read through the flow-matching score identity \eqref{eq:score}, is harmful
-on this non-equilibrium corpus. It is not a claim that force supervision is unhelpful for
+rest on one badly chosen weight (\Cref{app:p0cells}). The claim stays narrow. Under this implementation's endpoint
+parameterisation these cells match a score equal to $(1-t)$ times \eqref{eq:score}
+(\Cref{app:forcemech}); what is measured is that comparator --- naive, off-policy, endpoint --- on
+this non-equilibrium corpus, and not \eqref{eq:score} at the scale it defines. It is not a claim that force supervision is unhelpful for
 energy-grounded generation, which can be made to work \citep{psm,driftingboltzmann}; \Cref{prop:trap,prop:conflict}
 name candidate mechanisms. Two forward-only diagnostics on the shared warm-start checkpoint locate
 the difficulty: the endpoint force is a poor target at the interpolant, where the force actually

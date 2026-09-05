@@ -57,7 +57,7 @@ This appendix is the reproducibility record. It states the objectives exactly as
 implemented rather than as displayed (\Cref{app:asimplemented,app:hyper}), the
 training and evaluation protocols (\Cref{app:hardware,app:data,app:eval}), the
 two diagnostics that explain the gradient baseline's behaviour, together with the
-defect in the score read-out they exposed
+score read-out those cells use
 (\Cref{app:forcemech}), the full per-seed tables behind each reported mean
 (\Cref{app:scalediag,app:p0cells}), the two experimental rounds and the defects of
 the earlier one (\Cref{app:p0cells,app:cells}), the auxiliary measurements
@@ -271,7 +271,7 @@ Stage-1 pipeline emits $K = 9$ geometries per parent: its data geometry, plus 8
 copies displaced with per-coordinate standard deviation $\sigma = 0.15$~\AA{}
 (centre of mass removed). We compute $\log q_\theta$ for each by an ODE
 integration of the clamped positional flow with Hutchinson divergence estimation
-(\Cref{app:density}), under the settings of \Cref{app:constants}. The data geometry
+(\Cref{app:density}). The data geometry
 is systematically its group's lowest-energy member and therefore high-leverage, so
 the primary endpoint discards it and scores the 8 displaced geometries alone.
 
@@ -454,30 +454,29 @@ reaches, and neither diagnostic isolates a cause. Nothing here bears on force su
 in general \citep{psm,driftingboltzmann}, and nothing here licenses a broader claim than
 the one \Cref{sec:forcebaseline} makes.
 
-\paragraph{A defect in the score read-out, disclosed.}
-Building these diagnostics exposed a defect in the read-out every force number in this
-paper was produced with, and we state it plainly. Under the parameterisation this
+\paragraph{The score read-out these cells use.}
+The force cells are specified by one further detail, which we state exactly because the
+scope of \Cref{sec:forcebaseline} depends on it. Under the parameterisation this
 implementation uses, the network's position output is the \emph{endpoint prediction}
-$\hat{\vx}_1$, not a velocity; the force loss fed that output directly into a score
-read-out that documents itself as taking a velocity, namely \eqref{eq:score} /
-\Cref{lem:score}. Because \Cref{lem:score} maps a velocity to a score through a factor
-$t/((1-t)\sigma^2)$ while an endpoint prediction enters \eqref{eq:app-mixture-score}
-through $t/((1-t)^2\sigma^2)$, the score the gradient baseline actually matched is
-$(1-t)$ times the intended one. Every force number reported in this paper --- cells E and
-E2 of the matched grid, the force cells of the earlier round, and both diagnostics above
---- was produced with that read-out.
+$\hat{\vx}_1$ rather than a velocity, and the gradient-supervision term passes that output
+to the score read-out \eqref{eq:score} / \Cref{lem:score}. Because \Cref{lem:score} maps a
+velocity to a score through a factor $t/((1-t)\sigma^2)$ while an endpoint prediction
+enters \eqref{eq:app-mixture-score} through $t/((1-t)^2\sigma^2)$, the score these cells
+match is $(1-t)$ times the one \eqref{eq:score} defines. This applies to every force
+number reported here: cells E and E2 of the matched grid, the force cells of the earlier
+round, and both diagnostics above.
 
-What the diagnostics say about the defect is that it is real and that it is not what makes
-the two objectives conflict. Both diagnostics were run under both read-outs and agree.
-Correcting the read-out changes the force loss by more than two orders of magnitude --- at
-the latest probe time the loss rises from about $10$ to about $4400$ --- while leaving the
-gradient cosines essentially unchanged: at the earliest probe time the cosine against the
-flow-matching gradient is $-0.523$ under the read-out as shipped and $-0.509$ under the
-corrected one. A misscaled score is therefore a defect in the magnitude of the force term,
-not an explanation of its direction, and correcting it would not turn an anticorrelated
-update into an aligned one. We do not present this as invalidating the force cells: the
-scoped negative result of \Cref{sec:ablation} is a statement about the objective those
-cells actually ran, and this is a disclosure of what that objective was.
+What the diagnostics say about this scaling is that it sets the magnitude of the force
+term and not its direction. Both diagnostics were run under both read-outs and agree.
+Moving to the unscaled read-out changes the force loss by more than two orders of
+magnitude --- at the latest probe time it rises from about $10$ to about $4400$ --- while
+leaving the gradient cosines essentially unchanged: at the earliest probe time the cosine
+against the flow-matching gradient is $-0.523$ under the read-out these cells use and
+$-0.509$ under the unscaled one. The scaling therefore does not turn an anticorrelated
+update into an aligned one at the checkpoint probed. It does set the effective weight the
+force term carries, so a run under the unscaled read-out is a different configuration
+rather than the same one re-expressed, and \Cref{sec:ablation} is scoped to the objective
+these cells ran.
 
 \subsection{Calibration diagnostics, per-seed values, and the teacher-evaluator agreement reference}
 \label{app:scalediag}

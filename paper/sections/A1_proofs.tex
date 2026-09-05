@@ -139,8 +139,8 @@ The reported $\log q_\theta$ is a discretised continuous-flow likelihood ---
 explicit Euler in the state, midpoint-rule quadrature for the divergence integral,
 with a stochastic trace estimator --- so it is a biased and noisy estimate of the
 exact clamped positional-flow log-density. The discretisation controls that bias; it
-does not change which density is estimated. The integrator and probe settings are in
-\Cref{app:hyper}; the scheme is derived in \Cref{app:density}.
+does not change which density is estimated. The scheme is derived in
+\Cref{app:density}.
 \end{assumption}
 
 \begin{remark}[What the theory is scoped to, given the implemented gradient]
@@ -307,8 +307,7 @@ $n$ grows.
 What the finite grid costs is accordingly \emph{numerical discretisation error},
 dominated by the $O(\Delta t)$ Euler state integration rather than by the
 $O(\Delta t^{2})$ quadrature, together with whatever endpoint stiffness the learned
-field carries. The integrator and probe settings the implementation uses are in
-\Cref{app:hyper}.
+field carries.
 
 Two uses of the symbol $\epsilon$ must be kept apart, and neither is a smoothing
 scale of the reported density: the $\epsilon$ of \eqref{eq:app-eps} below is the
@@ -372,10 +371,10 @@ $\nabla_{\vx}\log \pi = -\nabla_{\vx}E/kT = +F/kT$. The sign in
 \label{rem:readoutdefect}
 \Cref{lem:score} takes a velocity. Under the parameterisation this implementation uses,
 the network's position output is the endpoint prediction rather than a velocity, and the
-gradient-supervision term fed that output straight into \eqref{eq:app-score}, so the
-score the baseline actually matched is $(1-t)$ times the intended one. Every force number
-in this paper was produced with that read-out. \Cref{app:forcemech} states the defect in
-full and reports what the diagnostics run under both read-outs say about it.
+gradient-supervision term passes that output to \eqref{eq:app-score}, so the score this
+comparator matches is $(1-t)$ times the one \eqref{eq:app-score} defines. Every force
+number in this paper is produced with that read-out. \Cref{app:forcemech} specifies it in
+full and reports what the diagnostics, run under both read-outs, say about it.
 \end{remark}
 
 \begin{remark}[Amplification at the probe times used]
