@@ -1,0 +1,1005 @@
+{
+  "args": {
+    "arm": "real",
+    "n_ode_steps": [
+      4
+    ],
+    "n_hutchinson": [
+      2
+    ],
+    "n_reps": 3,
+    "M": 2,
+    "K": 4,
+    "n_atoms": 6,
+    "hidden": 32,
+    "kT": 1.0,
+    "objectives": [
+      "energy",
+      "rank"
+    ],
+    "fd_eps": [
+      0.0001,
+      0.001,
+      0.01
+    ],
+    "checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/p0/p0_A_fmonly_s1/lightning_logs/version_37027619/checkpoints/last.ckpt",
+    "config": "configs/sweep/p0_D_energy_s1.yaml",
+    "shards": null,
+    "max_atoms": 50,
+    "device": null,
+    "seed": 0,
+    "out": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/p1_surrogate_gradient/real_trainmatched_p0_A_fmonly_s1_M2.json",
+    "fd_all_reps": false,
+    "memprobe": false,
+    "probe_variant": "full",
+    "selfcheck": false
+  },
+  "results": [
+    {
+      "cost": {
+        "full": {
+          "fwd_seconds": 1.0396311283111572,
+          "cuda_peak_MB": 12167.046875,
+          "proc_max_rss_MB": 1834.78515625
+        },
+        "no_prior": {
+          "fwd_seconds": 0.5639464855194092,
+          "cuda_peak_MB": 12167.04736328125,
+          "proc_max_rss_MB": 1834.97265625
+        },
+        "surrogate": {
+          "fwd_seconds": 0.5417520999908447,
+          "cuda_peak_MB": 9954.16357421875,
+          "proc_max_rss_MB": 1835.2265625
+        }
+      },
+      "logp_max_value_deviation": 1.52587890625e-05,
+      "logp_mean": -118.76677856445313,
+      "logp_std": 32.93310750166397,
+      "objectives": {
+        "energy": {
+          "n_params": 5895729,
+          "cos_random_direction_reference": 0.00032860283435198214,
+          "loss": 882.9473266601562,
+          "loss_agreement": 0.0,
+          "cos_full_surr": 0.8533824241985889,
+          "rel_norm_surr_over_full": 0.8010773340945172,
+          "norm_full": 11718.3984274506,
+          "norm_surr": 9387.343372119509,
+          "norm_prior_path": 402.53921078897736,
+          "norm_traj_path": 6183.7690583512895,
+          "cos_full_prior": -0.1835498621480424,
+          "cos_full_traj": 0.6114863871211619,
+          "per_layer_cos": {
+            "min": -0.2951668948965738,
+            "p10": 0.6285763214431684,
+            "median": 0.8167298801315052,
+            "p90": 0.9474174109510901,
+            "max": 0.9995746863045901,
+            "n": 415
+          },
+          "per_layer_ratio": {
+            "min": 0.2715092005523922,
+            "p10": 0.5309427013959871,
+            "median": 0.7375462436498401,
+            "p90": 0.9382958171870396,
+            "max": 1.2906406191234179,
+            "n": 415
+          },
+          "descent_first_order": "descent",
+          "dot_full_surr": 93876017.66014189,
+          "directional_derivative_along_neg_surr": -10000.275257742725,
+          "heaviest_tensors": [
+            {
+              "name": "vector_field.conv_layers.1.edge_message.2.to_feats_out.0.weight",
+              "share_of_norm_full": 0.3615040522026692,
+              "cos": 0.9800706792838683,
+              "ratio": 0.979867615771516,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.0.edge_message.2.to_feats_out.0.weight",
+              "share_of_norm_full": 0.27757851996416744,
+              "cos": 0.9763728209532174,
+              "ratio": 0.9648775027297893,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.5.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.21538077448580853,
+              "cos": 0.6994654389863819,
+              "ratio": 0.5329815857726012,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.edge_updaters.1.edge_update_fn.0.weight",
+              "share_of_norm_full": 0.17524439545469167,
+              "cos": 0.9511995248213079,
+              "ratio": 0.9499776426686265,
+              "numel": 86016
+            },
+            {
+              "name": "vector_field.conv_layers.1.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.1740518115841845,
+              "cos": 0.8514106335969709,
+              "ratio": 0.8058125588113764,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.conv_layers.4.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.1644349942235954,
+              "cos": 0.8605145147635387,
+              "ratio": 0.6991215116442846,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.conv_layers.0.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.13617737821238246,
+              "cos": 0.8565153267047492,
+              "ratio": 0.7476431654427124,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.conv_layers.1.node_update.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.1352066102415758,
+              "cos": 0.9516876168155723,
+              "ratio": 0.9840528611121643,
+              "numel": 74752
+            }
+          ],
+          "lowest_cos_tensors": [
+            {
+              "name": "vector_field.conv_layers.3.edge_message.2.Wcp",
+              "cos": -0.2951668948965738,
+              "ratio": 0.2883488775572506,
+              "share_of_norm_full": 0.018162365899516923,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.token_embeddings.c.weight",
+              "cos": -0.04640308343528912,
+              "ratio": 0.8138301749524409,
+              "share_of_norm_full": 0.0013119110923829047,
+              "numel": 448
+            },
+            {
+              "name": "vector_field.node_position_updaters.5.gvps.2.scalar_to_vector_gates.weight",
+              "cos": 0.06169900337458871,
+              "ratio": 0.6520177866430401,
+              "share_of_norm_full": 0.02866610293127356,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.conv_layers.5.node_update.2.Wu",
+              "cos": 0.19795407908963,
+              "ratio": 0.5759275367732637,
+              "share_of_norm_full": 0.018284238258019704,
+              "numel": 1152
+            },
+            {
+              "name": "vector_field.conv_layers.5.node_update.2.Wh",
+              "cos": 0.376851182812125,
+              "ratio": 0.5538949340254564,
+              "share_of_norm_full": 0.012974417585758534,
+              "numel": 1024
+            }
+          ],
+          "n_tensors_negative_cos": 2,
+          "n_tensors_scored": 415,
+          "finite_difference": {
+            "theta_norm": 276.5274551557043,
+            "L0": 882.9473266601562,
+            "steps": [
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.0001,
+                "step_len": 2.945747739205889e-06,
+                "L_new": 710.5645751953125,
+                "delta_L": -172.38275146484375
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.001,
+                "step_len": 2.9457477392058887e-05,
+                "L_new": 552.9506225585938,
+                "delta_L": -329.9967041015625
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.01,
+                "step_len": 0.0002945747739205889,
+                "L_new": 2517.003662109375,
+                "delta_L": 1634.0563354492188
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.0001,
+                "step_len": 2.3597717458380046e-06,
+                "L_new": 667.34765625,
+                "delta_L": -215.59967041015625
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.001,
+                "step_len": 2.359771745838004e-05,
+                "L_new": 517.9164428710938,
+                "delta_L": -365.0308837890625
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.01,
+                "step_len": 0.00023597717458380044,
+                "L_new": 31774.20703125,
+                "delta_L": 30891.259704589844
+              }
+            ]
+          }
+        },
+        "rank": {
+          "n_params": 5895729,
+          "cos_random_direction_reference": 0.00032860283435198214,
+          "loss": 2.725379705429077,
+          "loss_agreement": 1.430511474609375e-06,
+          "cos_full_surr": 0.8985357236919953,
+          "rel_norm_surr_over_full": 0.8229128311961873,
+          "norm_full": 146.36461460042042,
+          "norm_surr": 120.44531938777078,
+          "norm_prior_path": 1.8702038369019844,
+          "norm_traj_path": 65.3218761320088,
+          "cos_full_prior": 0.01689576197516534,
+          "cos_full_traj": 0.5833971117218274,
+          "per_layer_cos": {
+            "min": -0.6787976698513596,
+            "p10": 0.5267294375612258,
+            "median": 0.8433436834070035,
+            "p90": 0.9802189404033906,
+            "max": 0.9999043368289638,
+            "n": 415
+          },
+          "per_layer_ratio": {
+            "min": 0.30917557077286684,
+            "p10": 0.478222660660425,
+            "median": 0.7354072387403701,
+            "p90": 0.9533737783031009,
+            "max": 2.1679483892748173,
+            "n": 415
+          },
+          "descent_first_order": "descent",
+          "dot_full_surr": 15840.22584878899,
+          "directional_derivative_along_neg_surr": -131.51383490288873,
+          "heaviest_tensors": [
+            {
+              "name": "vector_field.conv_layers.1.edge_message.2.to_feats_out.0.weight",
+              "share_of_norm_full": 0.4073638077309337,
+              "cos": 0.9909113904757665,
+              "ratio": 0.962604898440512,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.0.edge_message.2.to_feats_out.0.weight",
+              "share_of_norm_full": 0.34057354477299806,
+              "cos": 0.9901562352039522,
+              "ratio": 0.9579226339211385,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.1.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.17394398566123875,
+              "cos": 0.9175098763557039,
+              "ratio": 0.9042763467461101,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.edge_updaters.1.edge_update_fn.0.weight",
+              "share_of_norm_full": 0.17175253974780208,
+              "cos": 0.9680466252762069,
+              "ratio": 0.9458447168820524,
+              "numel": 86016
+            },
+            {
+              "name": "vector_field.conv_layers.0.edge_message.2.Wu",
+              "share_of_norm_full": 0.1568782788124234,
+              "cos": 0.9640284948402975,
+              "ratio": 0.7075222541810996,
+              "numel": 1152
+            },
+            {
+              "name": "vector_field.conv_layers.0.node_update.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.15196851917394383,
+              "cos": 0.9746923137457875,
+              "ratio": 0.9572361300673803,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.1.edge_message.1.to_feats_out.0.weight",
+              "share_of_norm_full": 0.1487638206027557,
+              "cos": 0.9612326107574888,
+              "ratio": 0.9009171442337617,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.1.node_update.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.14535607426712102,
+              "cos": 0.9812859575576647,
+              "ratio": 0.9796807431499998,
+              "numel": 74752
+            }
+          ],
+          "lowest_cos_tensors": [
+            {
+              "name": "vector_field.node_position_updaters.3.gvps.2.scalar_to_vector_gates.weight",
+              "cos": -0.6787976698513596,
+              "ratio": 2.1679483892748173,
+              "share_of_norm_full": 0.001620893777864208,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.node_position_updaters.3.gvps.2.Wu",
+              "cos": -0.42441710293325596,
+              "ratio": 1.9794632165124373,
+              "share_of_norm_full": 0.002932102817411152,
+              "numel": 36
+            },
+            {
+              "name": "vector_field.node_position_updaters.5.gvps.2.scalar_to_vector_gates.weight",
+              "cos": -0.3944747682295311,
+              "ratio": 0.5223425569694266,
+              "share_of_norm_full": 0.015988537002671156,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.node_position_updaters.1.gvps.2.Wcp",
+              "cos": -0.21571135895868163,
+              "ratio": 1.265324738686902,
+              "share_of_norm_full": 2.632459743343224e-05,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.conv_layers.3.edge_message.2.Wcp",
+              "cos": -0.14008677268153819,
+              "ratio": 0.38365482759702174,
+              "share_of_norm_full": 0.014287082493138847,
+              "numel": 256
+            }
+          ],
+          "n_tensors_negative_cos": 8,
+          "n_tensors_scored": 415,
+          "finite_difference": {
+            "theta_norm": 276.5274551646545,
+            "L0": 2.725379705429077,
+            "steps": [
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.0001,
+                "step_len": 0.00022958754775217213,
+                "L_new": 1.7301229238510132,
+                "delta_L": -0.995256781578064
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.001,
+                "step_len": 0.0022958754775217216,
+                "L_new": 1.635069489479065,
+                "delta_L": -1.0903102159500122
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.01,
+                "step_len": 0.022958754775217215,
+                "L_new": 26.577674865722656,
+                "delta_L": 23.85229516029358
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.0001,
+                "step_len": 0.00018893053892812982,
+                "L_new": 1.6329660415649414,
+                "delta_L": -1.0924136638641357
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.001,
+                "step_len": 0.0018893053892812981,
+                "L_new": 1.2110718488693237,
+                "delta_L": -1.5143078565597534
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.01,
+                "step_len": 0.018893053892812983,
+                "L_new": 47.72235107421875,
+                "delta_L": 44.99697136878967
+              }
+            ]
+          }
+        }
+      },
+      "rep": 0,
+      "n_ode_steps": 4,
+      "n_hutchinson": 2,
+      "arm": "real",
+      "n_atoms_total": 205,
+      "n_virtual_mols": 10
+    },
+    {
+      "cost": {
+        "full": {
+          "fwd_seconds": 0.6315035820007324,
+          "cuda_peak_MB": 26142.58642578125,
+          "proc_max_rss_MB": 1998.50390625
+        },
+        "no_prior": {
+          "fwd_seconds": 0.559093713760376,
+          "cuda_peak_MB": 26142.5869140625,
+          "proc_max_rss_MB": 1998.50390625
+        },
+        "surrogate": {
+          "fwd_seconds": 0.5421814918518066,
+          "cuda_peak_MB": 21367.08154296875,
+          "proc_max_rss_MB": 1998.50390625
+        }
+      },
+      "logp_max_value_deviation": 1.52587890625e-05,
+      "logp_mean": -167.84562301635742,
+      "logp_std": 53.46278008014059,
+      "objectives": {
+        "energy": {
+          "n_params": 5895729,
+          "cos_random_direction_reference": 0.00032860283435198214,
+          "loss": 1142.2760009765625,
+          "loss_agreement": 0.0,
+          "cos_full_surr": 0.6729084428607297,
+          "rel_norm_surr_over_full": 0.7391261733160717,
+          "norm_full": 19906.305305796726,
+          "norm_surr": 14713.271265534948,
+          "norm_prior_path": 541.4948081151581,
+          "norm_traj_path": 14812.101225172044,
+          "cos_full_prior": -0.10140754724966076,
+          "cos_full_traj": 0.6792103533446757,
+          "per_layer_cos": {
+            "min": -0.3092205549247783,
+            "p10": 0.3820467353348487,
+            "median": 0.6884734710112471,
+            "p90": 0.9144974540963233,
+            "max": 0.999779597386758,
+            "n": 415
+          },
+          "per_layer_ratio": {
+            "min": 0.290695694522884,
+            "p10": 0.43845406013822313,
+            "median": 0.7282293063259758,
+            "p90": 1.0552664853859215,
+            "max": 3.559739179944784,
+            "n": 415
+          },
+          "descent_first_order": "descent",
+          "dot_full_surr": 197086047.53100118,
+          "directional_derivative_along_neg_surr": -13395.120906433956,
+          "heaviest_tensors": [
+            {
+              "name": "vector_field.conv_layers.0.edge_message.2.to_feats_out.0.weight",
+              "share_of_norm_full": 0.2750026774444382,
+              "cos": 0.9195676393161815,
+              "ratio": 0.9977402600167937,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.5.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.27282452870331114,
+              "cos": 0.7340423871762307,
+              "ratio": 0.4741106653868154,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.node_position_updaters.5.gvps.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.1944488281722065,
+              "cos": 0.7774931400358414,
+              "ratio": 0.5098139868868552,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.1.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.18650048944812928,
+              "cos": 0.7244187761493086,
+              "ratio": 0.8875832577078544,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.conv_layers.4.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.16208528883027626,
+              "cos": 0.6767183464430334,
+              "ratio": 0.6514016467898242,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.conv_layers.1.edge_message.2.to_feats_out.0.weight",
+              "share_of_norm_full": 0.14813692617326268,
+              "cos": 0.7356550822055922,
+              "ratio": 1.0833549525920143,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.node_position_updaters.5.gvps.0.Wu",
+              "share_of_norm_full": 0.14358505630361346,
+              "cos": 0.8194630970736881,
+              "ratio": 0.3730322270796103,
+              "numel": 1152
+            },
+            {
+              "name": "vector_field.conv_layers.0.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.13401963634459513,
+              "cos": 0.4535779375675002,
+              "ratio": 0.9229986186364896,
+              "numel": 115968
+            }
+          ],
+          "lowest_cos_tensors": [
+            {
+              "name": "vector_field.edge_embedding.2.weight",
+              "cos": -0.3092205549247783,
+              "ratio": 0.3639963936291728,
+              "share_of_norm_full": 0.0038771171846095367,
+              "numel": 16384
+            },
+            {
+              "name": "vector_field.edge_embedding.2.bias",
+              "cos": -0.3092204260053361,
+              "ratio": 0.3639963640348786,
+              "share_of_norm_full": 0.00010825300730751539,
+              "numel": 128
+            },
+            {
+              "name": "vector_field.conv_layers.2.edge_message.0.Wcp",
+              "cos": -0.30365596118982785,
+              "ratio": 1.0642688150218182,
+              "share_of_norm_full": 0.022303084206815805,
+              "numel": 264
+            },
+            {
+              "name": "vector_field.scalar_embedding.4.bias",
+              "cos": -0.2684792704448184,
+              "ratio": 1.4993400651799067,
+              "share_of_norm_full": 0.017846221427078427,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.conv_layers.3.message_layer_norm.feat_norm.weight",
+              "cos": -0.08827301997182066,
+              "ratio": 0.7251956946930458,
+              "share_of_norm_full": 0.026676921477631656,
+              "numel": 256
+            }
+          ],
+          "n_tensors_negative_cos": 6,
+          "n_tensors_scored": 415
+        },
+        "rank": {
+          "n_params": 5895729,
+          "cos_random_direction_reference": 0.00032860283435198214,
+          "loss": 0.4759748876094818,
+          "loss_agreement": 2.086162567138672e-07,
+          "cos_full_surr": 0.924721961657698,
+          "rel_norm_surr_over_full": 0.9377554833427418,
+          "norm_full": 28.426410976122202,
+          "norm_surr": 26.657022764612897,
+          "norm_prior_path": 0.41668508863581966,
+          "norm_traj_path": 10.80119859740741,
+          "cos_full_prior": 0.024593777205807573,
+          "cos_full_traj": 0.34864915201592445,
+          "per_layer_cos": {
+            "min": -0.4859835871796369,
+            "p10": 0.746642918719809,
+            "median": 0.9280403942223283,
+            "p90": 0.9794989891443516,
+            "max": 0.9999779992601209,
+            "n": 415
+          },
+          "per_layer_ratio": {
+            "min": 0.10139470248822115,
+            "p10": 0.7833309008605099,
+            "median": 0.9301765687791318,
+            "p90": 1.0680464830510734,
+            "max": 2.1948590146373137,
+            "n": 415
+          },
+          "descent_first_order": "descent",
+          "dot_full_surr": 700.7205358656374,
+          "directional_derivative_along_neg_surr": -26.286526520727644,
+          "heaviest_tensors": [
+            {
+              "name": "vector_field.conv_layers.1.edge_message.2.to_feats_out.0.weight",
+              "share_of_norm_full": 0.3054541248798598,
+              "cos": 0.9909414824821406,
+              "ratio": 0.9601538682690378,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.0.edge_message.2.to_feats_out.0.weight",
+              "share_of_norm_full": 0.23018124234795082,
+              "cos": 0.9834896668515963,
+              "ratio": 1.0046495349608073,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.1.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.20714468596864694,
+              "cos": 0.9687329288356415,
+              "ratio": 0.9677863228524253,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.conv_layers.5.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.20387615761255035,
+              "cos": 0.8585983179978764,
+              "ratio": 0.883415622107247,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.edge_updaters.1.edge_update_fn.0.weight",
+              "share_of_norm_full": 0.16712328688495384,
+              "cos": 0.9646347844282481,
+              "ratio": 0.952730788951931,
+              "numel": 86016
+            },
+            {
+              "name": "vector_field.conv_layers.4.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.16326393985184207,
+              "cos": 0.9343035461337696,
+              "ratio": 0.9348317245936983,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.conv_layers.1.edge_message.1.to_feats_out.0.weight",
+              "share_of_norm_full": 0.15096472973573702,
+              "cos": 0.9851460151909961,
+              "ratio": 0.9566965016144449,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.0.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.14984998985065912,
+              "cos": 0.9677272062828366,
+              "ratio": 0.9131182880270278,
+              "numel": 115968
+            }
+          ],
+          "lowest_cos_tensors": [
+            {
+              "name": "vector_field.node_position_updaters.3.gvps.1.scalar_to_vector_gates.bias",
+              "cos": -0.4859835871796369,
+              "ratio": 0.5252105779564967,
+              "share_of_norm_full": 0.0005916034521448543,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.node_position_updaters.4.gvps.2.Wcp",
+              "cos": -0.16134427091333234,
+              "ratio": 1.8591061991840574,
+              "share_of_norm_full": 0.001520574266285245,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.node_position_updaters.5.gvps.2.scalar_to_vector_gates.weight",
+              "cos": -0.08591179887618842,
+              "ratio": 2.1948590146373137,
+              "share_of_norm_full": 0.014105041760921996,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.conv_layers.0.edge_message.1.Wcp",
+              "cos": -0.0643560439721611,
+              "ratio": 0.8722763632954957,
+              "share_of_norm_full": 4.6333635942522346e-10,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.node_position_updaters.5.gvps.2.Wh",
+              "cos": 0.06906090761330191,
+              "ratio": 1.0243058259085405,
+              "share_of_norm_full": 0.02624160260406796,
+              "numel": 1024
+            }
+          ],
+          "n_tensors_negative_cos": 4,
+          "n_tensors_scored": 415
+        }
+      },
+      "rep": 1,
+      "n_ode_steps": 4,
+      "n_hutchinson": 2,
+      "arm": "real",
+      "n_atoms_total": 300,
+      "n_virtual_mols": 10
+    },
+    {
+      "cost": {
+        "full": {
+          "fwd_seconds": 0.5535097122192383,
+          "cuda_peak_MB": 3195.99365234375,
+          "proc_max_rss_MB": 1999.48046875
+        },
+        "no_prior": {
+          "fwd_seconds": 0.5583922863006592,
+          "cuda_peak_MB": 3195.994140625,
+          "proc_max_rss_MB": 1999.48046875
+        },
+        "surrogate": {
+          "fwd_seconds": 0.5495424270629883,
+          "cuda_peak_MB": 2627.466796875,
+          "proc_max_rss_MB": 1999.48046875
+        }
+      },
+      "logp_max_value_deviation": 3.814697265625e-06,
+      "logp_mean": -59.997456359863286,
+      "logp_std": 7.4510851450761795,
+      "objectives": {
+        "energy": {
+          "n_params": 5895729,
+          "cos_random_direction_reference": 0.00032860283435198214,
+          "loss": 105.54296112060547,
+          "loss_agreement": 0.0,
+          "cos_full_surr": 0.6071667596176634,
+          "rel_norm_surr_over_full": 0.6091043887493051,
+          "norm_full": 1655.0711517087502,
+          "norm_surr": 1008.1111021981666,
+          "norm_prior_path": 46.75447120028949,
+          "norm_traj_path": 1302.067241159724,
+          "cos_full_prior": 0.16276408249698968,
+          "cos_full_traj": 0.7951737201098629,
+          "per_layer_cos": {
+            "min": -0.6725159676724235,
+            "p10": 0.3430840703420806,
+            "median": 0.6574615406640342,
+            "p90": 0.8909865796775256,
+            "max": 0.9994078829333999,
+            "n": 415
+          },
+          "per_layer_ratio": {
+            "min": 0.1005466122308094,
+            "p10": 0.36187026329291144,
+            "median": 0.6365230600801578,
+            "p90": 0.9309801026500123,
+            "max": 1.9037106398881594,
+            "n": 415
+          },
+          "descent_first_order": "descent",
+          "dot_full_surr": 1013055.0686888804,
+          "directional_derivative_along_neg_surr": -1004.9041881196761,
+          "heaviest_tensors": [
+            {
+              "name": "vector_field.conv_layers.5.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.25188047891743914,
+              "cos": 0.5336106860089449,
+              "ratio": 0.49713619967653694,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.node_position_updaters.5.gvps.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.2171394864534723,
+              "cos": 0.35908141832717516,
+              "ratio": 0.44313382450239286,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.1.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.18980008563544104,
+              "cos": 0.9357012343925203,
+              "ratio": 0.8578576260574686,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.node_position_updaters.3.gvps.0.Wh",
+              "share_of_norm_full": 0.18781818304266903,
+              "cos": 0.8437874718112383,
+              "ratio": 0.29469883375433964,
+              "numel": 1024
+            },
+            {
+              "name": "vector_field.conv_layers.0.edge_message.2.to_feats_out.0.weight",
+              "share_of_norm_full": 0.1787646967503506,
+              "cos": 0.8680050991170453,
+              "ratio": 0.8348813086603262,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.4.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.16327150261661508,
+              "cos": 0.6909469767806337,
+              "ratio": 0.6990893917014841,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.node_position_updaters.5.gvps.0.Wu",
+              "share_of_norm_full": 0.15780156251995778,
+              "cos": 0.1923787136712087,
+              "ratio": 0.21840802335362836,
+              "numel": 1152
+            },
+            {
+              "name": "vector_field.conv_layers.3.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.15587474248954752,
+              "cos": 0.5232267099124055,
+              "ratio": 0.6422954672801757,
+              "numel": 115968
+            }
+          ],
+          "lowest_cos_tensors": [
+            {
+              "name": "vector_field.node_position_updaters.3.gvps.2.scalar_to_vector_gates.weight",
+              "cos": -0.6725159676724235,
+              "ratio": 0.1005466122308094,
+              "share_of_norm_full": 0.015961535996232446,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.node_position_updaters.5.gvps.2.scalar_to_vector_gates.weight",
+              "cos": -0.5149876542254604,
+              "ratio": 0.22672329873934588,
+              "share_of_norm_full": 0.04139665031049813,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.node_position_updaters.4.gvps.2.Wcp",
+              "cos": -0.503836089305401,
+              "ratio": 0.3381439099235903,
+              "share_of_norm_full": 0.0018288298211492464,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.node_position_updaters.1.gvps.2.Wcp",
+              "cos": -0.41718131060813934,
+              "ratio": 0.37567019671322055,
+              "share_of_norm_full": 9.027463631691344e-05,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.node_position_updaters.3.gvps.2.Wcp",
+              "cos": -0.3603300463060461,
+              "ratio": 1.0069860663138228,
+              "share_of_norm_full": 4.7882376187914756e-05,
+              "numel": 256
+            }
+          ],
+          "n_tensors_negative_cos": 11,
+          "n_tensors_scored": 415
+        },
+        "rank": {
+          "n_params": 5895729,
+          "cos_random_direction_reference": 0.00032860283435198214,
+          "loss": 2.059814929962158,
+          "loss_agreement": 1.430511474609375e-06,
+          "cos_full_surr": 0.6032057499664875,
+          "rel_norm_surr_over_full": 0.5158256116139266,
+          "norm_full": 67.07255970357674,
+          "norm_surr": 34.59774413160908,
+          "norm_prior_path": 0.9539965192646174,
+          "norm_traj_path": 53.655496347125435,
+          "cos_full_prior": 0.2280619867346429,
+          "cos_full_traj": 0.8570497769450932,
+          "per_layer_cos": {
+            "min": -0.7049407062071864,
+            "p10": 0.341155198261904,
+            "median": 0.6037709962825725,
+            "p90": 0.90013552658414,
+            "max": 0.9998035486562767,
+            "n": 415
+          },
+          "per_layer_ratio": {
+            "min": 0.05377297697132672,
+            "p10": 0.26515132922894136,
+            "median": 0.5392909439251957,
+            "p90": 0.9337599638714996,
+            "max": 2.3901858623187877,
+            "n": 415
+          },
+          "descent_first_order": "descent",
+          "dot_full_surr": 1399.7746880922284,
+          "directional_derivative_along_neg_surr": -40.45855367816801,
+          "heaviest_tensors": [
+            {
+              "name": "vector_field.node_position_updaters.3.gvps.0.Wh",
+              "share_of_norm_full": 0.2579244175638401,
+              "cos": 0.9597240635977786,
+              "ratio": 0.4468445526928663,
+              "numel": 1024
+            },
+            {
+              "name": "vector_field.conv_layers.5.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.25439538444993853,
+              "cos": 0.49325914529700027,
+              "ratio": 0.44631164481425617,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.node_position_updaters.5.gvps.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.2157253653684576,
+              "cos": 0.49443771857793156,
+              "ratio": 0.26542085824468076,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.0.edge_message.2.to_feats_out.0.weight",
+              "share_of_norm_full": 0.18157842685538597,
+              "cos": 0.8608387645149087,
+              "ratio": 0.7955960852098644,
+              "numel": 74752
+            },
+            {
+              "name": "vector_field.conv_layers.4.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.1606494518255086,
+              "cos": 0.6617038785989778,
+              "ratio": 0.5045784413578476,
+              "numel": 115968
+            },
+            {
+              "name": "vector_field.conv_layers.0.edge_message.2.Wu",
+              "share_of_norm_full": 0.15941341136933693,
+              "cos": 0.7639239735930219,
+              "ratio": 0.488934662957346,
+              "numel": 1152
+            },
+            {
+              "name": "vector_field.edge_updaters.2.edge_update_fn.0.weight",
+              "share_of_norm_full": 0.1566407397339413,
+              "cos": 0.40033695119121476,
+              "ratio": 0.42364580078144143,
+              "numel": 86016
+            },
+            {
+              "name": "vector_field.conv_layers.3.edge_message.0.to_feats_out.0.weight",
+              "share_of_norm_full": 0.15527604933802638,
+              "cos": 0.5469515185284746,
+              "ratio": 0.5156010199084167,
+              "numel": 115968
+            }
+          ],
+          "lowest_cos_tensors": [
+            {
+              "name": "vector_field.node_position_updaters.3.gvps.2.scalar_to_vector_gates.weight",
+              "cos": -0.7049407062071864,
+              "ratio": 0.10610228352175827,
+              "share_of_norm_full": 0.018767601749629173,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.node_position_updaters.4.gvps.1.scalar_to_vector_gates.bias",
+              "cos": -0.6774894527650106,
+              "ratio": 0.4518262998096512,
+              "share_of_norm_full": 0.0005392986380413372,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.node_position_updaters.1.gvps.2.Wcp",
+              "cos": -0.5689529378375122,
+              "ratio": 0.17334994987101804,
+              "share_of_norm_full": 7.944851795276117e-05,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.node_position_updaters.4.gvps.2.Wcp",
+              "cos": -0.52594375339338,
+              "ratio": 0.6252722179921394,
+              "share_of_norm_full": 0.001052768197179988,
+              "numel": 256
+            },
+            {
+              "name": "vector_field.node_position_updaters.4.gvps.2.Wh",
+              "cos": -0.397973424713589,
+              "ratio": 0.05902904808934116,
+              "share_of_norm_full": 0.03634630006040328,
+              "numel": 1024
+            }
+          ],
+          "n_tensors_negative_cos": 10,
+          "n_tensors_scored": 415
+        }
+      },
+      "rep": 2,
+      "n_ode_steps": 4,
+      "n_hutchinson": 2,
+      "arm": "real",
+      "n_atoms_total": 105,
+      "n_virtual_mols": 10
+    }
+  ]
+}

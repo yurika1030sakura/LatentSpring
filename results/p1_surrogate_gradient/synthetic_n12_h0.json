@@ -1,0 +1,1539 @@
+{
+  "args": {
+    "arm": "synthetic",
+    "n_ode_steps": [
+      12
+    ],
+    "n_hutchinson": [
+      0
+    ],
+    "n_reps": 3,
+    "M": 3,
+    "K": 4,
+    "n_atoms": 6,
+    "hidden": 32,
+    "kT": 1.0,
+    "objectives": [
+      "energy",
+      "rank"
+    ],
+    "fd_eps": [
+      0.0001,
+      0.001,
+      0.01
+    ],
+    "checkpoint": null,
+    "config": null,
+    "shards": null,
+    "max_atoms": 14,
+    "device": null,
+    "seed": 0,
+    "out": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/p1_surrogate_gradient/synthetic_n12_h0.json",
+    "fd_all_reps": true,
+    "memprobe": false,
+    "probe_variant": "full",
+    "selfcheck": false
+  },
+  "results": [
+    {
+      "cost": {
+        "full": {
+          "fwd_seconds": 10.508464097976685,
+          "cuda_peak_MB": null,
+          "proc_max_rss_MB": 46407.16015625
+        },
+        "no_prior": {
+          "fwd_seconds": 6.596613645553589,
+          "cuda_peak_MB": null,
+          "proc_max_rss_MB": 46407.16015625
+        },
+        "surrogate": {
+          "fwd_seconds": 6.666193008422852,
+          "cuda_peak_MB": null,
+          "proc_max_rss_MB": 46407.16015625
+        }
+      },
+      "logp_max_value_deviation": 0.0,
+      "logp_mean": -28.591907557235203,
+      "logp_std": 2.3983410179256337,
+      "objectives": {
+        "energy": {
+          "n_params": 1698,
+          "cos_random_direction_reference": 0.01936293638065418,
+          "loss": 28.2847054941019,
+          "loss_agreement": 0.0,
+          "cos_full_surr": 0.2274751969756655,
+          "rel_norm_surr_over_full": 0.43737751640797823,
+          "norm_full": 51.798482175608605,
+          "norm_surr": 22.65549148767062,
+          "norm_prior_path": 30.660812064324844,
+          "norm_traj_path": 54.12748882891449,
+          "cos_full_prior": 0.22875145818047213,
+          "cos_full_traj": 0.7321827628734889,
+          "per_layer_cos": {
+            "min": -0.991601584923595,
+            "p10": -0.962348087110262,
+            "median": -0.3132235932098849,
+            "p90": 0.3623848330909082,
+            "max": 0.548079966373602,
+            "n": 8
+          },
+          "per_layer_ratio": {
+            "min": 3.862760368319976e-15,
+            "p10": 4.378154981362162e-15,
+            "median": 0.3735358008800971,
+            "p90": 0.5261589078946626,
+            "max": 0.5645423349935881,
+            "n": 8
+          },
+          "descent_first_order": "descent",
+          "dot_full_surr": 266.94670953395223,
+          "directional_derivative_along_neg_surr": -11.782869935937065,
+          "per_layer_table": {
+            "vector_field.edge.0.weight": {
+              "cos": 0.13678506364668278,
+              "ratio": 0.5645423349935881,
+              "numel": 384,
+              "n_a": 23.34648584836508,
+              "n_b": 13.180079634730783
+            },
+            "vector_field.edge.0.bias": {
+              "cos": -0.20674672638763947,
+              "ratio": 0.4934999834268447,
+              "numel": 32,
+              "n_a": 11.866355302297768,
+              "n_b": 5.856046145020999
+            },
+            "vector_field.edge.2.weight": {
+              "cos": 0.28280120454118235,
+              "ratio": 0.46746812886064143,
+              "numel": 1024,
+              "n_a": 24.261631778923228,
+              "n_b": 11.341539610799117
+            },
+            "vector_field.edge.2.bias": {
+              "cos": -0.4197004600321303,
+              "ratio": 0.2796034728995527,
+              "numel": 32,
+              "n_a": 10.747142776665708,
+              "n_b": 3.0049384441030735
+            },
+            "vector_field.edge.4.weight": {
+              "cos": 0.548079966373602,
+              "ratio": 0.5097088677094088,
+              "numel": 32,
+              "n_a": 25.382297869336213,
+              "n_b": 12.9375823068423
+            },
+            "vector_field.selfterm.0.weight": {
+              "cos": -0.9148576821605648,
+              "ratio": 4.5990383869516705e-15,
+              "numel": 128,
+              "n_a": 9.814151346679052,
+              "n_b": 4.5135658778730394e-14
+            },
+            "vector_field.selfterm.0.bias": {
+              "cos": -0.991601584923595,
+              "ratio": 4.731262958298846e-15,
+              "numel": 32,
+              "n_a": 10.72915644959399,
+              "n_b": 5.07624604837572e-14
+            },
+            "vector_field.selfterm.2.weight": {
+              "cos": -0.9498108737616907,
+              "ratio": 3.862760368319976e-15,
+              "numel": 32,
+              "n_a": 13.87869887265602,
+              "n_b": 5.3610087969142805e-14
+            }
+          },
+          "heaviest_tensors": [
+            {
+              "name": "vector_field.edge.4.weight",
+              "share_of_norm_full": 0.4900201087608024,
+              "cos": 0.548079966373602,
+              "ratio": 0.5097088677094088,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.weight",
+              "share_of_norm_full": 0.46838499430679825,
+              "cos": 0.28280120454118235,
+              "ratio": 0.46746812886064143,
+              "numel": 1024
+            },
+            {
+              "name": "vector_field.edge.0.weight",
+              "share_of_norm_full": 0.45071756676605307,
+              "cos": 0.13678506364668278,
+              "ratio": 0.5645423349935881,
+              "numel": 384
+            },
+            {
+              "name": "vector_field.selfterm.2.weight",
+              "share_of_norm_full": 0.2679364006382288,
+              "cos": -0.9498108737616907,
+              "ratio": 3.862760368319976e-15,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.0.bias",
+              "share_of_norm_full": 0.22908693081137266,
+              "cos": -0.20674672638763947,
+              "ratio": 0.4934999834268447,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.bias",
+              "share_of_norm_full": 0.2074798782757853,
+              "cos": -0.4197004600321303,
+              "ratio": 0.2796034728995527,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.0.bias",
+              "share_of_norm_full": 0.2071326417098423,
+              "cos": -0.991601584923595,
+              "ratio": 4.731262958298846e-15,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.0.weight",
+              "share_of_norm_full": 0.18946793292913203,
+              "cos": -0.9148576821605648,
+              "ratio": 4.5990383869516705e-15,
+              "numel": 128
+            }
+          ],
+          "lowest_cos_tensors": [
+            {
+              "name": "vector_field.selfterm.0.bias",
+              "cos": -0.991601584923595,
+              "ratio": 4.731262958298846e-15,
+              "share_of_norm_full": 0.2071326417098423,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.2.weight",
+              "cos": -0.9498108737616907,
+              "ratio": 3.862760368319976e-15,
+              "share_of_norm_full": 0.2679364006382288,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.0.weight",
+              "cos": -0.9148576821605648,
+              "ratio": 4.5990383869516705e-15,
+              "share_of_norm_full": 0.18946793292913203,
+              "numel": 128
+            },
+            {
+              "name": "vector_field.edge.2.bias",
+              "cos": -0.4197004600321303,
+              "ratio": 0.2796034728995527,
+              "share_of_norm_full": 0.2074798782757853,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.0.bias",
+              "cos": -0.20674672638763947,
+              "ratio": 0.4934999834268447,
+              "share_of_norm_full": 0.22908693081137266,
+              "numel": 32
+            }
+          ],
+          "n_tensors_negative_cos": 5,
+          "n_tensors_scored": 8,
+          "finite_difference": {
+            "theta_norm": 14.237672189157964,
+            "L0": 28.2847054941019,
+            "steps": [
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.0001,
+                "step_len": 6.284424329044581e-05,
+                "L_new": 28.26775569048294,
+                "delta_L": -0.016949803618960146
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.001,
+                "step_len": 0.000628442432904458,
+                "L_new": 28.100076367949836,
+                "delta_L": -0.18462912615206406
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.01,
+                "step_len": 0.006284424329044581,
+                "L_new": 25.75641264345603,
+                "delta_L": -2.528292850645869
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.0001,
+                "step_len": 2.7486659050913938e-05,
+                "L_new": 28.2106868821291,
+                "delta_L": -0.07401861197280013
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.001,
+                "step_len": 0.00027486659050913933,
+                "L_new": 27.524589587304437,
+                "delta_L": -0.7601159067974628
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.01,
+                "step_len": 0.0027486659050913937,
+                "L_new": 25.907223119557667,
+                "delta_L": -2.3774823745442326
+              }
+            ]
+          }
+        },
+        "rank": {
+          "n_params": 1698,
+          "cos_random_direction_reference": 0.01936293638065418,
+          "loss": 0.6542139854758766,
+          "loss_agreement": 0.0,
+          "cos_full_surr": 0.4670470939857518,
+          "rel_norm_surr_over_full": 0.6558791845815738,
+          "norm_full": 1.779678319846711,
+          "norm_surr": 1.167253965238566,
+          "norm_prior_path": 0.9575937513958352,
+          "norm_traj_path": 1.1844723017474137,
+          "cos_full_prior": 0.540602781020482,
+          "cos_full_traj": 0.6051960027167722,
+          "per_layer_cos": {
+            "min": -0.9945920323726439,
+            "p10": -0.9722748328793579,
+            "median": 0.4563702284210064,
+            "p90": 0.6847331897507171,
+            "max": 0.7453983675581508,
+            "n": 8
+          },
+          "per_layer_ratio": {
+            "min": 4.104187851542838e-15,
+            "p10": 4.241765895635583e-15,
+            "median": 0.5760962399223308,
+            "p90": 0.9194886077489701,
+            "max": 1.158227205222264,
+            "n": 8
+          },
+          "descent_first_order": "descent",
+          "dot_full_surr": 0.9702140109064125,
+          "directional_derivative_along_neg_surr": -0.8311935875138516,
+          "per_layer_table": {
+            "vector_field.edge.0.weight": {
+              "cos": 0.7453983675581508,
+              "ratio": 0.8171720659747015,
+              "numel": 384,
+              "n_a": 0.8073666956677811,
+              "n_b": 0.6597575106980087
+            },
+            "vector_field.edge.0.bias": {
+              "cos": 0.6587338278332455,
+              "ratio": 0.6872669997516369,
+              "numel": 32,
+              "n_a": 0.38543322449121625,
+              "n_b": 0.2648955358006773
+            },
+            "vector_field.edge.2.weight": {
+              "cos": 0.6528450355244971,
+              "ratio": 0.7474270655433015,
+              "numel": 1024,
+              "n_a": 0.7934243893199081,
+              "n_b": 0.593026863039865
+            },
+            "vector_field.edge.2.bias": {
+              "cos": 0.46216868138447503,
+              "ratio": 0.46492548009302476,
+              "numel": 32,
+              "n_a": 0.28255773873222456,
+              "n_b": 0.13136829233407896
+            },
+            "vector_field.edge.4.weight": {
+              "cos": 0.4505717754575377,
+              "ratio": 1.158227205222264,
+              "numel": 32,
+              "n_a": 0.6021509430578164,
+              "n_b": 0.6974276038998053
+            },
+            "vector_field.selfterm.0.weight": {
+              "cos": -0.9627103188108067,
+              "ratio": 4.104187851542838e-15,
+              "numel": 128,
+              "n_a": 0.5478516150259161,
+              "n_b": 2.2484859428374884e-15
+            },
+            "vector_field.selfterm.0.bias": {
+              "cos": -0.9945920323726439,
+              "ratio": 5.182136761624242e-15,
+              "numel": 32,
+              "n_a": 0.4879824300020035,
+              "n_b": 2.5287916895401106e-15
+            },
+            "vector_field.selfterm.2.weight": {
+              "cos": -0.9530892556926562,
+              "ratio": 4.300727914532473e-15,
+              "numel": 32,
+              "n_a": 0.6209761826248662,
+              "n_b": 2.670649602874577e-15
+            }
+          },
+          "heaviest_tensors": [
+            {
+              "name": "vector_field.edge.0.weight",
+              "share_of_norm_full": 0.4536587801650143,
+              "cos": 0.7453983675581508,
+              "ratio": 0.8171720659747015,
+              "numel": 384
+            },
+            {
+              "name": "vector_field.edge.2.weight",
+              "share_of_norm_full": 0.44582460800457924,
+              "cos": 0.6528450355244971,
+              "ratio": 0.7474270655433015,
+              "numel": 1024
+            },
+            {
+              "name": "vector_field.selfterm.2.weight",
+              "share_of_norm_full": 0.3489260815844252,
+              "cos": -0.9530892556926562,
+              "ratio": 4.300727914532473e-15,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.4.weight",
+              "share_of_norm_full": 0.3383481926720788,
+              "cos": 0.4505717754575377,
+              "ratio": 1.158227205222264,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.0.weight",
+              "share_of_norm_full": 0.3078374383259915,
+              "cos": -0.9627103188108067,
+              "ratio": 4.104187851542838e-15,
+              "numel": 128
+            },
+            {
+              "name": "vector_field.selfterm.0.bias",
+              "share_of_norm_full": 0.27419698524171204,
+              "cos": -0.9945920323726439,
+              "ratio": 5.182136761624242e-15,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.0.bias",
+              "share_of_norm_full": 0.21657465857336217,
+              "cos": 0.6587338278332455,
+              "ratio": 0.6872669997516369,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.bias",
+              "share_of_norm_full": 0.158768995262336,
+              "cos": 0.46216868138447503,
+              "ratio": 0.46492548009302476,
+              "numel": 32
+            }
+          ],
+          "lowest_cos_tensors": [
+            {
+              "name": "vector_field.selfterm.0.bias",
+              "cos": -0.9945920323726439,
+              "ratio": 5.182136761624242e-15,
+              "share_of_norm_full": 0.27419698524171204,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.0.weight",
+              "cos": -0.9627103188108067,
+              "ratio": 4.104187851542838e-15,
+              "share_of_norm_full": 0.3078374383259915,
+              "numel": 128
+            },
+            {
+              "name": "vector_field.selfterm.2.weight",
+              "cos": -0.9530892556926562,
+              "ratio": 4.300727914532473e-15,
+              "share_of_norm_full": 0.3489260815844252,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.4.weight",
+              "cos": 0.4505717754575377,
+              "ratio": 1.158227205222264,
+              "share_of_norm_full": 0.3383481926720788,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.bias",
+              "cos": 0.46216868138447503,
+              "ratio": 0.46492548009302476,
+              "share_of_norm_full": 0.158768995262336,
+              "numel": 32
+            }
+          ],
+          "n_tensors_negative_cos": 3,
+          "n_tensors_scored": 8,
+          "finite_difference": {
+            "theta_norm": 14.237672189157964,
+            "L0": 0.6542139854758766,
+            "steps": [
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.0001,
+                "step_len": 0.0012197578773054788,
+                "L_new": 0.653034008460178,
+                "delta_L": -0.0011799770156986078
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.001,
+                "step_len": 0.012197578773054787,
+                "L_new": 0.6427061220518289,
+                "delta_L": -0.011507863424047748
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.01,
+                "step_len": 0.12197578773054789,
+                "L_new": 0.5521766368720555,
+                "delta_L": -0.10203734860382108
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.0001,
+                "step_len": 0.0008000138019540688,
+                "L_new": 0.6517023586249575,
+                "delta_L": -0.002511626850919102
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.001,
+                "step_len": 0.008000138019540687,
+                "L_new": 0.631465876446069,
+                "delta_L": -0.022748109029807617
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.01,
+                "step_len": 0.08000138019540688,
+                "L_new": 0.7457005120749124,
+                "delta_L": 0.09148652659903578
+              }
+            ]
+          }
+        }
+      },
+      "rep": 0,
+      "n_ode_steps": 12,
+      "n_hutchinson": 0,
+      "arm": "synthetic"
+    },
+    {
+      "cost": {
+        "full": {
+          "fwd_seconds": 7.252974987030029,
+          "cuda_peak_MB": null,
+          "proc_max_rss_MB": 140026.328125
+        },
+        "no_prior": {
+          "fwd_seconds": 7.000563859939575,
+          "cuda_peak_MB": null,
+          "proc_max_rss_MB": 140026.328125
+        },
+        "surrogate": {
+          "fwd_seconds": 7.113342046737671,
+          "cuda_peak_MB": null,
+          "proc_max_rss_MB": 140026.328125
+        }
+      },
+      "logp_max_value_deviation": 0.0,
+      "logp_mean": -24.350292690549235,
+      "logp_std": 1.6213440289857077,
+      "objectives": {
+        "energy": {
+          "n_params": 1698,
+          "cos_random_direction_reference": 0.01936293638065418,
+          "loss": 2895.9681749819524,
+          "loss_agreement": 0.0,
+          "cos_full_surr": 0.9450690955659599,
+          "rel_norm_surr_over_full": 0.604616308036289,
+          "norm_full": 296.68563297414147,
+          "norm_surr": 179.3809720562349,
+          "norm_prior_path": 48.68410732242506,
+          "norm_traj_path": 96.94330112342071,
+          "cos_full_prior": 0.7261122305762348,
+          "cos_full_traj": 0.9470287593449188,
+          "per_layer_cos": {
+            "min": -0.9920045098379044,
+            "p10": -0.95605679443198,
+            "median": 0.9484563175342322,
+            "p90": 0.9897106627046662,
+            "max": 0.9904442143292892,
+            "n": 8
+          },
+          "per_layer_ratio": {
+            "min": 2.8204785960840177e-14,
+            "p10": 2.877709016736392e-14,
+            "median": 0.5335862157046005,
+            "p90": 0.6525337923922372,
+            "max": 0.6626122210228784,
+            "n": 8
+          },
+          "descent_first_order": "descent",
+          "dot_full_surr": 50296.3478391763,
+          "directional_derivative_along_neg_surr": -280.3884228222862,
+          "per_layer_table": {
+            "vector_field.edge.0.weight": {
+              "cos": 0.9578631548209551,
+              "ratio": 0.6626122210228784,
+              "numel": 384,
+              "n_a": 169.2357860397161,
+              "n_b": 112.13770006432891
+            },
+            "vector_field.edge.0.bias": {
+              "cos": 0.9904442143292892,
+              "ratio": 0.5539593771673914,
+              "numel": 32,
+              "n_a": 104.73395457399037,
+              "n_b": 58.01835624408557
+            },
+            "vector_field.edge.2.weight": {
+              "cos": 0.9390494802475092,
+              "ratio": 0.6244184757892572,
+              "numel": 1024,
+              "n_a": 118.76427239887481,
+              "n_b": 74.15860594952557
+            },
+            "vector_field.edge.2.bias": {
+              "cos": 0.9893962834369706,
+              "ratio": 0.5132130542418096,
+              "numel": 32,
+              "n_a": 84.66400387681553,
+              "n_b": 43.450672013960904
+            },
+            "vector_field.edge.4.weight": {
+              "cos": 0.9604879146918044,
+              "ratio": 0.6482144658362481,
+              "numel": 32,
+              "n_a": 131.35805623149383,
+              "n_b": 85.14819225338562
+            },
+            "vector_field.selfterm.0.weight": {
+              "cos": -0.9406506306865838,
+              "ratio": 2.8204785960840177e-14,
+              "numel": 128,
+              "n_a": 25.937315907018192,
+              "n_b": 7.315564435561433e-13
+            },
+            "vector_field.selfterm.0.bias": {
+              "cos": -0.9920045098379044,
+              "ratio": 3.46341401588521e-14,
+              "numel": 32,
+              "n_a": 22.529116447941217,
+              "n_b": 7.802765767130962e-13
+            },
+            "vector_field.selfterm.2.weight": {
+              "cos": -0.914952752131407,
+              "ratio": 2.9022363398731237e-14,
+              "numel": 32,
+              "n_a": 27.394382741594626,
+              "n_b": 7.950497310104906e-13
+            }
+          },
+          "heaviest_tensors": [
+            {
+              "name": "vector_field.edge.0.weight",
+              "share_of_norm_full": 0.570421237938631,
+              "cos": 0.9578631548209551,
+              "ratio": 0.6626122210228784,
+              "numel": 384
+            },
+            {
+              "name": "vector_field.edge.4.weight",
+              "share_of_norm_full": 0.44275165910356956,
+              "cos": 0.9604879146918044,
+              "ratio": 0.6482144658362481,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.weight",
+              "share_of_norm_full": 0.40030341613888015,
+              "cos": 0.9390494802475092,
+              "ratio": 0.6244184757892572,
+              "numel": 1024
+            },
+            {
+              "name": "vector_field.edge.0.bias",
+              "share_of_norm_full": 0.35301323331392587,
+              "cos": 0.9904442143292892,
+              "ratio": 0.5539593771673914,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.bias",
+              "share_of_norm_full": 0.2853660388880195,
+              "cos": 0.9893962834369706,
+              "ratio": 0.5132130542418096,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.2.weight",
+              "share_of_norm_full": 0.09233471289788497,
+              "cos": -0.914952752131407,
+              "ratio": 2.9022363398731237e-14,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.0.weight",
+              "share_of_norm_full": 0.08742356563412977,
+              "cos": -0.9406506306865838,
+              "ratio": 2.8204785960840177e-14,
+              "numel": 128
+            },
+            {
+              "name": "vector_field.selfterm.0.bias",
+              "share_of_norm_full": 0.07593598726738753,
+              "cos": -0.9920045098379044,
+              "ratio": 3.46341401588521e-14,
+              "numel": 32
+            }
+          ],
+          "lowest_cos_tensors": [
+            {
+              "name": "vector_field.selfterm.0.bias",
+              "cos": -0.9920045098379044,
+              "ratio": 3.46341401588521e-14,
+              "share_of_norm_full": 0.07593598726738753,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.0.weight",
+              "cos": -0.9406506306865838,
+              "ratio": 2.8204785960840177e-14,
+              "share_of_norm_full": 0.08742356563412977,
+              "numel": 128
+            },
+            {
+              "name": "vector_field.selfterm.2.weight",
+              "cos": -0.914952752131407,
+              "ratio": 2.9022363398731237e-14,
+              "share_of_norm_full": 0.09233471289788497,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.weight",
+              "cos": 0.9390494802475092,
+              "ratio": 0.6244184757892572,
+              "share_of_norm_full": 0.40030341613888015,
+              "numel": 1024
+            },
+            {
+              "name": "vector_field.edge.0.weight",
+              "cos": 0.9578631548209551,
+              "ratio": 0.6626122210228784,
+              "share_of_norm_full": 0.570421237938631,
+              "numel": 384
+            }
+          ],
+          "n_tensors_negative_cos": 3,
+          "n_tensors_scored": 8,
+          "finite_difference": {
+            "theta_norm": 14.102010723772931,
+            "L0": 2895.9681749819524,
+            "steps": [
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.0001,
+                "step_len": 7.861486400771668e-06,
+                "L_new": 2895.5734879618635,
+                "delta_L": -0.3946870200888952
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.001,
+                "step_len": 7.861486400771668e-05,
+                "L_new": 2892.088985537717,
+                "delta_L": -3.879189444235635
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.01,
+                "step_len": 0.0007861486400771668,
+                "L_new": 2867.057595729035,
+                "delta_L": -28.910579252917614
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.0001,
+                "step_len": 4.75318288331206e-06,
+                "L_new": 2895.55175252079,
+                "delta_L": -0.4164224611622558
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.001,
+                "step_len": 4.7531828833120595e-05,
+                "L_new": 2891.9736104380413,
+                "delta_L": -3.9945645439111104
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.01,
+                "step_len": 0.00047531828833120593,
+                "L_new": 2870.967890867918,
+                "delta_L": -25.000284114034457
+              }
+            ]
+          }
+        },
+        "rank": {
+          "n_params": 1698,
+          "cos_random_direction_reference": 0.01936293638065418,
+          "loss": 0.8206273991869275,
+          "loss_agreement": 0.0,
+          "cos_full_surr": 0.8019479400136567,
+          "rel_norm_surr_over_full": 0.47388080464747895,
+          "norm_full": 2.875780119954093,
+          "norm_surr": 1.3627769972330692,
+          "norm_prior_path": 1.3005409898095792,
+          "norm_traj_path": 0.9595260075417597,
+          "cos_full_prior": 0.6941764324432393,
+          "cos_full_traj": 0.9172226733359493,
+          "per_layer_cos": {
+            "min": -0.9995742675918164,
+            "p10": -0.9974828149677221,
+            "median": 0.9205205871439579,
+            "p90": 0.9785795371292679,
+            "max": 0.9855937241175329,
+            "n": 8
+          },
+          "per_layer_ratio": {
+            "min": 2.328364206141223e-15,
+            "p10": 2.3639520294487816e-15,
+            "median": 0.48858344822464594,
+            "p90": 0.608547329202779,
+            "max": 0.6141433893067607,
+            "n": 8
+          },
+          "descent_first_order": "descent",
+          "dot_full_surr": 3.142871665718902,
+          "directional_derivative_along_neg_surr": -2.3062259431294114,
+          "per_layer_table": {
+            "vector_field.edge.0.weight": {
+              "cos": 0.9373781906167198,
+              "ratio": 0.6141433893067607,
+              "numel": 384,
+              "n_a": 1.2740193416705645,
+              "n_b": 0.7824305565359285
+            },
+            "vector_field.edge.0.bias": {
+              "cos": 0.9755734569914402,
+              "ratio": 0.513722488692502,
+              "numel": 32,
+              "n_a": 0.9011294517238907,
+              "n_b": 0.46293046457370696
+            },
+            "vector_field.edge.2.weight": {
+              "cos": 0.9036629836711959,
+              "ratio": 0.5551952942675416,
+              "numel": 1024,
+              "n_a": 0.9857798403957186,
+              "n_b": 0.5473003285715111
+            },
+            "vector_field.edge.2.bias": {
+              "cos": 0.9855937241175329,
+              "ratio": 0.4634444077567898,
+              "numel": 32,
+              "n_a": 0.7919094743877974,
+              "n_b": 0.36700601735464344
+            },
+            "vector_field.edge.4.weight": {
+              "cos": 0.9413079585729645,
+              "ratio": 0.606149017729644,
+              "numel": 32,
+              "n_a": 1.113523773854529,
+              "n_b": 0.674961341740529
+            },
+            "vector_field.selfterm.0.weight": {
+              "cos": -0.9965864781288245,
+              "ratio": 2.328364206141223e-15,
+              "numel": 128,
+              "n_a": 0.7270066397430645,
+              "n_b": 1.6927362376047582e-15
+            },
+            "vector_field.selfterm.0.bias": {
+              "cos": -0.9995742675918164,
+              "ratio": 2.451806931626177e-15,
+              "numel": 32,
+              "n_a": 0.736382998510864,
+              "n_b": 1.805468940080605e-15
+            },
+            "vector_field.selfterm.2.weight": {
+              "cos": -0.9957556835954331,
+              "ratio": 2.3792039537234497e-15,
+              "numel": 32,
+              "n_a": 0.7732217711792402,
+              "n_b": 1.8396522950946966e-15
+            }
+          },
+          "heaviest_tensors": [
+            {
+              "name": "vector_field.edge.0.weight",
+              "share_of_norm_full": 0.44301695141104946,
+              "cos": 0.9373781906167198,
+              "ratio": 0.6141433893067607,
+              "numel": 384
+            },
+            {
+              "name": "vector_field.edge.4.weight",
+              "share_of_norm_full": 0.3872075497455989,
+              "cos": 0.9413079585729645,
+              "ratio": 0.606149017729644,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.weight",
+              "share_of_norm_full": 0.34278693059866305,
+              "cos": 0.9036629836711959,
+              "ratio": 0.5551952942675416,
+              "numel": 1024
+            },
+            {
+              "name": "vector_field.edge.0.bias",
+              "share_of_norm_full": 0.3133513043891115,
+              "cos": 0.9755734569914402,
+              "ratio": 0.513722488692502,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.bias",
+              "share_of_norm_full": 0.2753720525755769,
+              "cos": 0.9855937241175329,
+              "ratio": 0.4634444077567898,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.2.weight",
+              "share_of_norm_full": 0.26887374518451823,
+              "cos": -0.9957556835954331,
+              "ratio": 2.3792039537234497e-15,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.0.bias",
+              "share_of_norm_full": 0.25606373498493307,
+              "cos": -0.9995742675918164,
+              "ratio": 2.451806931626177e-15,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.0.weight",
+              "share_of_norm_full": 0.2528032775171524,
+              "cos": -0.9965864781288245,
+              "ratio": 2.328364206141223e-15,
+              "numel": 128
+            }
+          ],
+          "lowest_cos_tensors": [
+            {
+              "name": "vector_field.selfterm.0.bias",
+              "cos": -0.9995742675918164,
+              "ratio": 2.451806931626177e-15,
+              "share_of_norm_full": 0.25606373498493307,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.0.weight",
+              "cos": -0.9965864781288245,
+              "ratio": 2.328364206141223e-15,
+              "share_of_norm_full": 0.2528032775171524,
+              "numel": 128
+            },
+            {
+              "name": "vector_field.selfterm.2.weight",
+              "cos": -0.9957556835954331,
+              "ratio": 2.3792039537234497e-15,
+              "share_of_norm_full": 0.26887374518451823,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.weight",
+              "cos": 0.9036629836711959,
+              "ratio": 0.5551952942675416,
+              "share_of_norm_full": 0.34278693059866305,
+              "numel": 1024
+            },
+            {
+              "name": "vector_field.edge.0.weight",
+              "cos": 0.9373781906167198,
+              "ratio": 0.6141433893067607,
+              "share_of_norm_full": 0.44301695141104946,
+              "numel": 384
+            }
+          ],
+          "n_tensors_negative_cos": 3,
+          "n_tensors_scored": 8,
+          "finite_difference": {
+            "theta_norm": 14.102010723772931,
+            "L0": 0.8206273991869275,
+            "steps": [
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.0001,
+                "step_len": 0.001034799585875394,
+                "L_new": 0.817392885445154,
+                "delta_L": -0.003234513741773526
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.001,
+                "step_len": 0.010347995858753942,
+                "L_new": 0.7898148976787117,
+                "delta_L": -0.030812501508215795
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.01,
+                "step_len": 0.10347995858753942,
+                "L_new": 0.5897118775501896,
+                "delta_L": -0.2309155216367379
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.0001,
+                "step_len": 0.0004903716604035098,
+                "L_new": 0.8166166683925954,
+                "delta_L": -0.004010730794332118
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.001,
+                "step_len": 0.004903716604035098,
+                "L_new": 0.7841405004747516,
+                "delta_L": -0.03648689871217592
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.01,
+                "step_len": 0.04903716604035098,
+                "L_new": 0.6044307911775836,
+                "delta_L": -0.21619660800934393
+              }
+            ]
+          }
+        }
+      },
+      "rep": 1,
+      "n_ode_steps": 12,
+      "n_hutchinson": 0,
+      "arm": "synthetic"
+    },
+    {
+      "cost": {
+        "full": {
+          "fwd_seconds": 7.025086402893066,
+          "cuda_peak_MB": null,
+          "proc_max_rss_MB": 140026.328125
+        },
+        "no_prior": {
+          "fwd_seconds": 5.872289180755615,
+          "cuda_peak_MB": null,
+          "proc_max_rss_MB": 140026.328125
+        },
+        "surrogate": {
+          "fwd_seconds": 6.1898462772369385,
+          "cuda_peak_MB": null,
+          "proc_max_rss_MB": 140026.328125
+        }
+      },
+      "logp_max_value_deviation": 0.0,
+      "logp_mean": -26.633362942168514,
+      "logp_std": 2.7586525167196676,
+      "objectives": {
+        "energy": {
+          "n_params": 1698,
+          "cos_random_direction_reference": 0.01936293638065418,
+          "loss": 2643.04142650883,
+          "loss_agreement": 0.0,
+          "cos_full_surr": 0.608168590510156,
+          "rel_norm_surr_over_full": 1.3520607638866835,
+          "norm_full": 87.90260582387211,
+          "norm_surr": 118.84966437785455,
+          "norm_prior_path": 79.56410081668378,
+          "norm_traj_path": 57.652093922170145,
+          "cos_full_prior": 0.47491353345869736,
+          "cos_full_traj": -0.3844456253167393,
+          "per_layer_cos": {
+            "min": 0.49294492417170027,
+            "p10": 0.5507695398684056,
+            "median": 0.6322374372531052,
+            "p90": 0.9140122437024456,
+            "max": 0.9936094980118799,
+            "n": 8
+          },
+          "per_layer_ratio": {
+            "min": 4.273589940719282e-15,
+            "p10": 4.474860081676188e-15,
+            "median": 1.096713613871561,
+            "p90": 1.4614814962919433,
+            "max": 1.4697311785471767,
+            "n": 8
+          },
+          "descent_first_order": "descent",
+          "dot_full_surr": 6353.65597963296,
+          "directional_derivative_along_neg_surr": -53.459603886074134,
+          "per_layer_table": {
+            "vector_field.edge.0.weight": {
+              "cos": 0.6117835162319523,
+              "ratio": 1.3526612582310649,
+              "numel": 384,
+              "n_a": 49.6741023086961,
+              "n_b": 67.19223373037951
+            },
+            "vector_field.edge.0.bias": {
+              "cos": 0.5755515180241364,
+              "ratio": 1.210830444047374,
+              "numel": 32,
+              "n_a": 21.462474452835615,
+              "n_b": 25.987417472082367
+            },
+            "vector_field.edge.2.weight": {
+              "cos": 0.6248874894966533,
+              "ratio": 1.4579459181825576,
+              "numel": 1024,
+              "n_a": 40.99685531404153,
+              "n_b": 59.77119786342775
+            },
+            "vector_field.edge.2.bias": {
+              "cos": 0.49294492417170027,
+              "ratio": 0.9825967836957479,
+              "numel": 32,
+              "n_a": 19.428467774896678,
+              "n_b": 19.09034994774996
+            },
+            "vector_field.edge.4.weight": {
+              "cos": 0.6395873850095573,
+              "ratio": 1.4697311785471767,
+              "numel": 32,
+              "n_a": 47.77615245990553,
+              "n_b": 70.21810086134656
+            },
+            "vector_field.selfterm.0.weight": {
+              "cos": 0.8759849784310008,
+              "ratio": 4.273589940719282e-15,
+              "numel": 128,
+              "n_a": 8.19030911261022,
+              "n_b": 3.500202263503251e-14
+            },
+            "vector_field.selfterm.0.bias": {
+              "cos": 0.9936094980118799,
+              "ratio": 5.602353269908084e-15,
+              "numel": 32,
+              "n_a": 6.763520785734814,
+              "n_b": 3.789163279005273e-14
+            },
+            "vector_field.selfterm.2.weight": {
+              "cos": 0.879899134712688,
+              "ratio": 4.561118713514862e-15,
+              "numel": 32,
+              "n_a": 7.532820911567,
+              "n_b": 3.4358090425304324e-14
+            }
+          },
+          "heaviest_tensors": [
+            {
+              "name": "vector_field.edge.0.weight",
+              "share_of_norm_full": 0.5651038651598868,
+              "cos": 0.6117835162319523,
+              "ratio": 1.3526612582310649,
+              "numel": 384
+            },
+            {
+              "name": "vector_field.edge.4.weight",
+              "share_of_norm_full": 0.5435123567967168,
+              "cos": 0.6395873850095573,
+              "ratio": 1.4697311785471767,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.weight",
+              "share_of_norm_full": 0.4663895333909183,
+              "cos": 0.6248874894966533,
+              "ratio": 1.4579459181825576,
+              "numel": 1024
+            },
+            {
+              "name": "vector_field.edge.0.bias",
+              "share_of_norm_full": 0.24416198190801477,
+              "cos": 0.5755515180241364,
+              "ratio": 1.210830444047374,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.bias",
+              "share_of_norm_full": 0.2210226601680607,
+              "cos": 0.49294492417170027,
+              "ratio": 0.9825967836957479,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.0.weight",
+              "share_of_norm_full": 0.09317481587543497,
+              "cos": 0.8759849784310008,
+              "ratio": 4.273589940719282e-15,
+              "numel": 128
+            },
+            {
+              "name": "vector_field.selfterm.2.weight",
+              "share_of_norm_full": 0.08569508083367054,
+              "cos": 0.879899134712688,
+              "ratio": 4.561118713514862e-15,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.0.bias",
+              "share_of_norm_full": 0.07694334795133018,
+              "cos": 0.9936094980118799,
+              "ratio": 5.602353269908084e-15,
+              "numel": 32
+            }
+          ],
+          "lowest_cos_tensors": [
+            {
+              "name": "vector_field.edge.2.bias",
+              "cos": 0.49294492417170027,
+              "ratio": 0.9825967836957479,
+              "share_of_norm_full": 0.2210226601680607,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.0.bias",
+              "cos": 0.5755515180241364,
+              "ratio": 1.210830444047374,
+              "share_of_norm_full": 0.24416198190801477,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.0.weight",
+              "cos": 0.6117835162319523,
+              "ratio": 1.3526612582310649,
+              "share_of_norm_full": 0.5651038651598868,
+              "numel": 384
+            },
+            {
+              "name": "vector_field.edge.2.weight",
+              "cos": 0.6248874894966533,
+              "ratio": 1.4579459181825576,
+              "share_of_norm_full": 0.4663895333909183,
+              "numel": 1024
+            },
+            {
+              "name": "vector_field.edge.4.weight",
+              "cos": 0.6395873850095573,
+              "ratio": 1.4697311785471767,
+              "share_of_norm_full": 0.5435123567967168,
+              "numel": 32
+            }
+          ],
+          "n_tensors_negative_cos": 0,
+          "n_tensors_scored": 8,
+          "finite_difference": {
+            "theta_norm": 14.217754526855934,
+            "L0": 2643.04142650883,
+            "steps": [
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.0001,
+                "step_len": 1.196280578601714e-05,
+                "L_new": 2642.965376491226,
+                "delta_L": -0.07605001760430241
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.001,
+                "step_len": 0.0001196280578601714,
+                "L_new": 2642.2767216067273,
+                "delta_L": -0.7647049021029488
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.01,
+                "step_len": 0.001196280578601714,
+                "L_new": 2634.586826196673,
+                "delta_L": -8.454600312157254
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.0001,
+                "step_len": 1.6174440329270372e-05,
+                "L_new": 2642.9166399903047,
+                "delta_L": -0.12478651852552503
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.001,
+                "step_len": 0.0001617444032927037,
+                "L_new": 2641.8102932724078,
+                "delta_L": -1.2311332364224654
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.01,
+                "step_len": 0.001617444032927037,
+                "L_new": 2631.396260951658,
+                "delta_L": -11.645165557172277
+              }
+            ]
+          }
+        },
+        "rank": {
+          "n_params": 1698,
+          "cos_random_direction_reference": 0.01936293638065418,
+          "loss": 0.949555236961405,
+          "loss_agreement": 0.0,
+          "cos_full_surr": 0.361293284245471,
+          "rel_norm_surr_over_full": 0.2664465254691752,
+          "norm_full": 3.034813125078927,
+          "norm_surr": 0.8086154126255295,
+          "norm_prior_path": 1.739946216017032,
+          "norm_traj_path": 1.2316488305573776,
+          "cos_full_prior": 0.9627035139887502,
+          "cos_full_traj": 0.8668164530029016,
+          "per_layer_cos": {
+            "min": 0.5720937239486179,
+            "p10": 0.6108516171519113,
+            "median": 0.8342010875307698,
+            "p90": 0.9976661267442666,
+            "max": 0.9995636658745128,
+            "n": 8
+          },
+          "per_layer_ratio": {
+            "min": 7.647029297869814e-16,
+            "p10": 7.713224570674974e-16,
+            "median": 0.33723420315944785,
+            "p90": 0.5867632209478236,
+            "max": 0.6658457049513227,
+            "n": 8
+          },
+          "descent_first_order": "descent",
+          "dot_full_surr": 0.886612515484102,
+          "directional_derivative_along_neg_surr": -1.096457601031027,
+          "per_layer_table": {
+            "vector_field.edge.0.weight": {
+              "cos": 0.5720937239486179,
+              "ratio": 0.5528707278034669,
+              "numel": 384,
+              "n_a": 0.7701506139618622,
+              "n_b": 0.4257937304593816
+            },
+            "vector_field.edge.0.bias": {
+              "cos": 0.7813036989942479,
+              "ratio": 0.344380740607046,
+              "numel": 32,
+              "n_a": 0.5560900907688098,
+              "n_b": 0.19150671730320215
+            },
+            "vector_field.edge.2.weight": {
+              "cos": 0.6274621428104655,
+              "ratio": 0.47661896740921056,
+              "numel": 1024,
+              "n_a": 0.7850042092673205,
+              "n_b": 0.37414789563287415
+            },
+            "vector_field.edge.2.bias": {
+              "cos": 0.8870984760672918,
+              "ratio": 0.3300876657118498,
+              "numel": 32,
+              "n_a": 0.5732262666491821,
+              "n_b": 0.18921492028294687
+            },
+            "vector_field.edge.4.weight": {
+              "cos": 0.7173318942723669,
+              "ratio": 0.6658457049513227,
+              "numel": 32,
+              "n_a": 0.7273801563028376,
+              "n_b": 0.4843229529410662
+            },
+            "vector_field.selfterm.0.weight": {
+              "cos": 0.994681415948028,
+              "ratio": 7.647029297869814e-16,
+              "numel": 128,
+              "n_a": 1.320347667738066,
+              "n_b": 1.009673729856707e-15
+            },
+            "vector_field.selfterm.0.bias": {
+              "cos": 0.9995636658745128,
+              "ratio": 8.255766559254417e-16,
+              "numel": 32,
+              "n_a": 1.323956850158976,
+              "n_b": 1.0930278689438286e-15
+            },
+            "vector_field.selfterm.2.weight": {
+              "cos": 0.9968528956884467,
+              "ratio": 7.741593973305756e-16,
+              "numel": 32,
+              "n_a": 1.2802257076331562,
+              "n_b": 9.910987622683939e-16
+            }
+          },
+          "heaviest_tensors": [
+            {
+              "name": "vector_field.selfterm.0.bias",
+              "share_of_norm_full": 0.43625646640912813,
+              "cos": 0.9995636658745128,
+              "ratio": 8.255766559254417e-16,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.selfterm.0.weight",
+              "share_of_norm_full": 0.4350672062233577,
+              "cos": 0.994681415948028,
+              "ratio": 7.647029297869814e-16,
+              "numel": 128
+            },
+            {
+              "name": "vector_field.selfterm.2.weight",
+              "share_of_norm_full": 0.42184663597692235,
+              "cos": 0.9968528956884467,
+              "ratio": 7.741593973305756e-16,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.weight",
+              "share_of_norm_full": 0.2586664077534938,
+              "cos": 0.6274621428104655,
+              "ratio": 0.47661896740921056,
+              "numel": 1024
+            },
+            {
+              "name": "vector_field.edge.0.weight",
+              "share_of_norm_full": 0.2537720057942061,
+              "cos": 0.5720937239486179,
+              "ratio": 0.5528707278034669,
+              "numel": 384
+            },
+            {
+              "name": "vector_field.edge.4.weight",
+              "share_of_norm_full": 0.23967873022953282,
+              "cos": 0.7173318942723669,
+              "ratio": 0.6658457049513227,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.bias",
+              "share_of_norm_full": 0.18888354670413984,
+              "cos": 0.8870984760672918,
+              "ratio": 0.3300876657118498,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.0.bias",
+              "share_of_norm_full": 0.1832370125769597,
+              "cos": 0.7813036989942479,
+              "ratio": 0.344380740607046,
+              "numel": 32
+            }
+          ],
+          "lowest_cos_tensors": [
+            {
+              "name": "vector_field.edge.0.weight",
+              "cos": 0.5720937239486179,
+              "ratio": 0.5528707278034669,
+              "share_of_norm_full": 0.2537720057942061,
+              "numel": 384
+            },
+            {
+              "name": "vector_field.edge.2.weight",
+              "cos": 0.6274621428104655,
+              "ratio": 0.47661896740921056,
+              "share_of_norm_full": 0.2586664077534938,
+              "numel": 1024
+            },
+            {
+              "name": "vector_field.edge.4.weight",
+              "cos": 0.7173318942723669,
+              "ratio": 0.6658457049513227,
+              "share_of_norm_full": 0.23967873022953282,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.0.bias",
+              "cos": 0.7813036989942479,
+              "ratio": 0.344380740607046,
+              "share_of_norm_full": 0.1832370125769597,
+              "numel": 32
+            },
+            {
+              "name": "vector_field.edge.2.bias",
+              "cos": 0.8870984760672918,
+              "ratio": 0.3300876657118498,
+              "share_of_norm_full": 0.18888354670413984,
+              "numel": 32
+            }
+          ],
+          "n_tensors_negative_cos": 0,
+          "n_tensors_scored": 8,
+          "finite_difference": {
+            "theta_norm": 14.217754526855934,
+            "L0": 0.949555236961405,
+            "steps": [
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.0001,
+                "step_len": 0.0017582838893327143,
+                "L_new": 0.9479961836109316,
+                "delta_L": -0.0015590533504733495
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.001,
+                "step_len": 0.01758283889332714,
+                "L_new": 0.9339697927497194,
+                "delta_L": -0.015585444211685617
+              },
+              {
+                "direction": "surrogate",
+                "eps_rel": 0.01,
+                "step_len": 0.17582838893327143,
+                "L_new": 0.806333050392868,
+                "delta_L": -0.14322218656853702
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.0001,
+                "step_len": 0.0004684886331011295,
+                "L_new": 0.945242561279981,
+                "delta_L": -0.004312675681424016
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.001,
+                "step_len": 0.004684886331011295,
+                "L_new": 0.9072004569674257,
+                "delta_L": -0.0423547799939793
+              },
+              {
+                "direction": "full",
+                "eps_rel": 0.01,
+                "step_len": 0.04684886331011295,
+                "L_new": 0.8904923149020285,
+                "delta_L": -0.059062922059376466
+              }
+            ]
+          }
+        }
+      },
+      "rep": 2,
+      "n_ode_steps": 12,
+      "n_hutchinson": 0,
+      "arm": "synthetic"
+    }
+  ]
+}

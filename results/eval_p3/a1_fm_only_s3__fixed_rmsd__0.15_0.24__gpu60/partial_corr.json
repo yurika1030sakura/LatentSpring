@@ -1,0 +1,68 @@
+{
+  "label": "a1_fm_only_s3__fixed_rmsd__0.15_0.24",
+  "records_csv": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_p3/a1_fm_only_s3__fixed_rmsd__0.15_0.24__gpu60/boltz_records.csv",
+  "kT_eV": 1.0,
+  "drop_reference": false,
+  "n_groups": 120,
+  "n_groups_rmsd_constant": 120,
+  "n_records": 960,
+  "mean_pearson_r": 0.24163845388433317,
+  "median_pearson_r": 0.25991171238273114,
+  "mean_partial_r_given_rmsd": 0.24163845388433317,
+  "median_partial_r_given_rmsd": 0.25991171238273114,
+  "mean_r_logp_rmsd": NaN,
+  "mean_r_negE_rmsd": NaN,
+  "ci95_mean_pearson_r": [
+    0.1776185801057666,
+    0.3020820127339207
+  ],
+  "ci95_mean_partial_r": [
+    0.18186840332528806,
+    0.304582513878067
+  ],
+  "ci95_delta_raw_minus_partial": [
+    0.0,
+    0.0
+  ],
+  "pooled_demeaned_r": 0.15821147002004773,
+  "pooled_demeaned_partial_r": 0.15821147002004773,
+  "pooled_slope_negE": 0.16609269886254108,
+  "pooled_t_negE": 4.959356034833392,
+  "pooled_slope_rmsd": NaN,
+  "pooled_t_rmsd": NaN,
+  "rmsd_strata": [
+    {
+      "bin": 0,
+      "rmsd_lo": 0.1499999989999995,
+      "rmsd_hi": 0.15000000000000002,
+      "n": 240,
+      "rmsd_mean": 0.14999999999999988,
+      "r_pooled_demeaned": 0.27690983141224307
+    },
+    {
+      "bin": 1,
+      "rmsd_lo": 0.15000000000000002,
+      "rmsd_hi": 0.19500000000000006,
+      "n": 240,
+      "rmsd_mean": 0.1500000000000001,
+      "r_pooled_demeaned": 0.17403976389976003
+    },
+    {
+      "bin": 2,
+      "rmsd_lo": 0.19500000000000006,
+      "rmsd_hi": 0.24,
+      "n": 217,
+      "rmsd_mean": 0.23999999999999985,
+      "r_pooled_demeaned": 0.1680520713366407
+    },
+    {
+      "bin": 3,
+      "rmsd_lo": 0.24,
+      "rmsd_hi": 0.24000000100000043,
+      "n": 263,
+      "rmsd_mean": 0.24000000000000007,
+      "r_pooled_demeaned": 0.15435738385812653
+    }
+  ],
+  "interpretation": "If mean_partial_r_given_rmsd collapses toward 0 while mean_pearson_r is positive, the headline correlation is a geometry-distance artefact. If n_groups_rmsd_constant == n_groups the RMSD was fixed by construction and mean_pearson_r is ALREADY the controlled number."
+}

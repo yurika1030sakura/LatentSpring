@@ -1,0 +1,68 @@
+{
+  "label": "wide_a3_energy_only_s5_noref",
+  "records_csv": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/eval_ours/wide_a3_energy_only_s5/boltz_records.csv",
+  "kT_eV": 1.0,
+  "drop_reference": true,
+  "n_groups": 120,
+  "n_groups_rmsd_constant": 0,
+  "n_records": 954,
+  "mean_pearson_r": 0.3862851427356414,
+  "median_pearson_r": 0.47648959368777793,
+  "mean_partial_r_given_rmsd": 0.38595586131339027,
+  "median_partial_r_given_rmsd": 0.4606550138077121,
+  "mean_r_logp_rmsd": -0.1375930333290548,
+  "mean_r_negE_rmsd": -0.3157002115950143,
+  "ci95_mean_pearson_r": [
+    0.3240449028779268,
+    0.4466093810366681
+  ],
+  "ci95_mean_partial_r": [
+    0.31543470551953096,
+    0.4542947999573576
+  ],
+  "ci95_delta_raw_minus_partial": [
+    -0.042599478517742616,
+    0.043126585591821025
+  ],
+  "pooled_demeaned_r": 0.37044874898071967,
+  "pooled_demeaned_partial_r": 0.358743993749376,
+  "pooled_slope_negE": 0.3132770142561059,
+  "pooled_t_negE": 11.85196486924404,
+  "pooled_slope_rmsd": -17.12339449683356,
+  "pooled_t_rmsd": -0.8203903687436225,
+  "rmsd_strata": [
+    {
+      "bin": 0,
+      "rmsd_lo": 0.04592990655358228,
+      "rmsd_hi": 0.2315552338609635,
+      "n": 239,
+      "rmsd_mean": 0.20577716757695644,
+      "r_pooled_demeaned": 0.3734602609150386
+    },
+    {
+      "bin": 1,
+      "rmsd_lo": 0.2315552338609635,
+      "rmsd_hi": 0.24909894488811007,
+      "n": 238,
+      "rmsd_mean": 0.24165205045098348,
+      "r_pooled_demeaned": 0.29035711641568934
+    },
+    {
+      "bin": 2,
+      "rmsd_lo": 0.24909894488811007,
+      "rmsd_hi": 0.26071509824496253,
+      "n": 238,
+      "rmsd_mean": 0.25509583538256897,
+      "r_pooled_demeaned": 0.40962133531538014
+    },
+    {
+      "bin": 3,
+      "rmsd_lo": 0.26071509824496253,
+      "rmsd_hi": 0.32982592442427877,
+      "n": 239,
+      "rmsd_mean": 0.2722501587116688,
+      "r_pooled_demeaned": 0.34007528830181305
+    }
+  ],
+  "interpretation": "If mean_partial_r_given_rmsd collapses toward 0 while mean_pearson_r is positive, the headline correlation is a geometry-distance artefact. If n_groups_rmsd_constant == n_groups the RMSD was fixed by construction and mean_pearson_r is ALREADY the controlled number."
+}
