@@ -38,3 +38,14 @@ over parents.
   carry every field the metrics use — so they are omitted for size.
 
 Both live under `/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/`.
+
+## Added after the first publication of this directory
+
+| directory | contents |
+|---|---|
+| `rescore/` | the published stage-1 geometries re-scored at other solver resolutions (`<arm>__n<steps>.json`), holding parents, geometries and xTB energies fixed so that only the ODE step count varies. Each record carries `log_p_theta_published` beside `log_p_theta_new`. |
+| `genstrain/` | estimator-free generation quality: 500 samples per arm (`samples.json`) and their GFN2-xTB relaxation (`xtb_relax.csv`, strain `delta_E_kcal_per_atom` = E(generated) − E(relaxed)). No density enters this measurement. |
+
+Model weights are still excluded; so are the Stage-1 coordinate dumps under
+`eval_ours/*/boltz1/`. The generated geometries under `genstrain/` ARE included,
+because nothing else in the repository records what the models actually produce.
