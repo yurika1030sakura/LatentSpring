@@ -574,3 +574,8 @@ budget. Proposal variance scales with kT; score cap scales inversely so capped
 physical-force drift stays fixed. This tests target suitability/local relaxation,
 not final mode populations. No untrained FM temperature feature is changed.
 Keep every 1-eV result. See notes/target_temperature_audit.md and its evidence.
+
+The 300-K/1000-K diagnostic jobs are 45735846/45735854 (source f4a8a08), both
+RUNNING at September 9 21:23 UTC. Their launchers include independent xTB
+assessment. Native-mean training and its dependent assessment remain active.
+The full suite passes 193 tests, including cold-target Gaussian MALA invariance.

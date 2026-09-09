@@ -33,30 +33,37 @@ contribution has been demonstrated. Do not restart completed data audits.
    only after a teacher's target accuracy and utility are supported.
 
 Completed comparison (condition 5846, one seed):
-- Pure FM16/FM64: xTB 29/32 and 30/32; median successful strain 4.76794/4.67530
+- Pure FM16 / FM64: xTB 29/32 and 30/32; median successful strain 4.76794/4.67530
   eV. One overlap per 64. Maximum 16-to-64 coordinate drift .66522 A, so no
   solver-convergence certificate. FM importance weights remain unknown.
-- Reference-mean initialization/100 updates: xTB 0/32 and 6/32; final ESS3.485/64.
-- Reference-mean 500 joint: ESS6.894/256, xTB12/32, median strain15.8157 eV.
-  Energy-gradient: ESS1.00036/256, xTB32/32, median6.76552 eV; one weight .999822.
-  Independent assessment45729911 is complete. Energy improves31 paired cases,
-  worsens1. Neither establishes adequate geometry and calibrated sampling.
-- Native-mean two-update preflight: initial xTB30/32, median16.7263 eV,
-  overlaps21/64, ESS1.928/64. Final28/32, median16.9588, overlaps20/64, ESS1.781.
-- FM-initialized MALA at1eV (45733994): complete, 8,512 queries; acceptance.7139,
-  xTB25/32, median9.58024 eV. Energy increases by4.122 eV during the fixed run.
+- Reference-mean initialization / 100 updates: xTB 0/32 and 6/32; final ESS 3.485/64.
+- Reference-mean 500 joint: ESS 6.894/256, xTB 12/32, median strain 15.8157 eV.
+  Energy-gradient: ESS 1.00036/256, xTB 32/32, median 6.76552 eV; one weight 0.999822.
+  Independent assessment 45729911 is complete. Energy improves 31 paired cases,
+  worsens 1. Neither establishes adequate geometry and calibrated sampling.
+- Native-mean two-update preflight: initial xTB 30/32, median 16.7263 eV,
+  overlaps 21/64, ESS 1.928/64. Final 28/32, median 16.9588, overlaps 20/64, ESS 1.781.
+- FM-initialized MALA at 1 eV (45733994): complete, 8,512 queries; acceptance 0.7139,
+  xTB 25/32, median 9.58024 eV. Energy increases by 4.122 eV during the fixed run.
   This suggests target-temperature relevance needs scrutiny; it is not proof
-  of equilibrium. The source reference passes xTB with strain.89014 eV.
+  of equilibrium. The source reference passes xTB with strain 0.89014 eV.
 
-Raw replay is complete: all3,941,522 accepted tensors matched bitwise; original
+Raw replay is complete: all 3,941,522 accepted tensors matched bitwise; original
 charge/spin/source IDs and float64 energies are restored. Use immutable
 source_index_readonly.sqlite; old WAL failure did not invalidate the producer.
-Official validation audit:2,762,021 records,2,564,135 eligible; explicit source
+Official validation audit: 2,762,021 records, 2,564,135 eligible; explicit source
 links do not exhaust every parent-trajectory relation. Reserved data is untouched.
 
-193 tests pass. The last main-text build is9/9 pages and remains an audit draft.
+193 tests pass. The last main-text build is 9/9 pages and remains an audit draft.
 These engineering checks are not ICLR readiness. Latest summary figures are in
 research/figures/work_campaign_reference500. Source hashes and all outcomes are
 in research/evidence; jobs.jsonl records both accepted/rejected submissions.
 Authors/submission belong to the user. No subagents or external messages are
 authorized. Never write home or modify the shared FlowMol installation.
+
+Temperature diagnostic jobs from source f4a8a08:
+- 45735846, fm_mala_300K_5846_v1 (kT=.025851999786435 eV).
+- 45735854, fm_mala_1000K_5846_v1 (kT=.08617333262145 eV).
+Both were RUNNING at September 9 21:23 UTC. Each launcher includes the same
+independent xTB assessment after the 8,512-query MALA run. Inspect terminal
+scheduler state and complete result files before interpreting outcomes.
