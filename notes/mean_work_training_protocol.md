@@ -81,3 +81,17 @@ Batching in the separate fairchem process uses its AtomicData batching utility,
 with the same ASE conversion, state validation and predictor as serial queries.
 Serial remains the default; enable batches only after a recorded energy/force
 agreement check. Batch size changes roundoff and throughput, not potential counts.
+
+Independent structure assessment uses all stored geometries for contact and
+element-pair-distance diagnostics. The latter is permutation/rigid-motion
+invariant but incomplete, and is not molecular RMSD or basin coverage. Contact
+graphs use RDKit covalent radii, factor 1.25 for contacts and .6 for overlaps;
+disconnected components are not automatically failures of the restrained target.
+Select 32 sample indices by torch.randperm with seed 9059 before inspecting any
+xTB outcomes, using the same indices for every arm. GFN2-xTB uses original total
+charge and multiplicity, single-point forces, and tight relaxation (200 cycles).
+Retain every attempt and failure. Report success-only strain with its convergence
+denominator, and pairwise outcomes including both-failed cases. This protocol
+first evaluates the completed 100-update calibration; it also applies unchanged
+to the ongoing 500-update paired experiment. Source sample/result hashes and
+the evaluator version are recorded. No final reserved condition is used.

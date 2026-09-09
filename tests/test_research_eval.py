@@ -30,3 +30,19 @@ def test_xtb_uses_provided_triplet_instead_of_minimum_parity(monkeypatch,tmp_pat
     result=module.evaluate(task,'xtb',tmp_path,20)
     assert commands[0][commands[0].index('--uhf')+1]=='2'
     assert result['spin_metadata_available']
+
+
+def test_work_panel_selection_and_failure_accounting(monkeypatch):
+    directory=Path(__file__).resolve().parents[1]/'scripts/research'
+    monkeypatch.syspath_prepend(str(directory))
+    spec=importlib.util.spec_from_file_location('assess_work_panel',directory/'assess_work_panel.py')
+    module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+    selected=module.select_indices(64,32,9059)
+    assert len(set(selected))==32 and selected==module.select_indices(64,32,9059)
+    with pytest.raises(ValueError):module.select_indices(16,32,9059)
+    left=[{'sample_id':i,'success':i%2==0,'strain_eV':3.} for i in range(4)]
+    right=[{'sample_id':i,'success':i<2,'strain_eV':2.} for i in range(4)]
+    result=module.paired_outcomes(left,right)
+    assert (result['better'],result['worse'],result['both_failed'],result['tie'])==(2,1,1,0)
+    assert result['attempted_pairs']==4
+    with pytest.raises(ValueError):module.paired_outcomes(left,right[:-1])

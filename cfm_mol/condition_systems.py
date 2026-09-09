@@ -38,7 +38,10 @@ def graph_from_condition(condition,atom_map,*,device='cpu',dtype=torch.float32,n
     if not 2<=n<=200 or condition.get('n_atoms',n)!=n:raise ValueError('Condition must have 2--200 atoms')
     mapping={atomic_number_table[symbol]:i for i,symbol in enumerate(atom_map)}
     if any(int(z) not in mapping for z in numbers):raise ValueError('Condition contains unsupported elements')
-    src,dst=torch.where(~torch.eye(n,dtype=torch.bool))
+    # FlowMol's upper-edge mask assumes all upper edges followed by their
+    # reverse partners in the same order, rather than row-major adjacency.
+    upper=torch.triu_indices(n,n,offset=1)
+    src,dst=torch.cat([upper,upper.flip(0)],dim=1)
     graph=dgl.graph((src,dst),num_nodes=n).to(device)
     types=torch.tensor([mapping[int(z)] for z in numbers],device=device)
     atoms=one_hot(types,len(atom_map)).to(dtype)

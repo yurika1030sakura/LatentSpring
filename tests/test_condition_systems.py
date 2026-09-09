@@ -42,3 +42,14 @@ def test_reserved_manifest_requires_matching_frozen_protocol(tmp_path):
 def test_graph_rejects_electron_parity_inconsistent_condition():
     row=condition();row['spin_multiplicity']=2
     with pytest.raises(ValueError,match='parity'):graph_from_condition(row,['H','C'])
+
+
+def test_condition_edges_match_flowmol_reverse_partner_and_mask_convention():
+    import dgl
+    from flowmol.data_processing.utils import get_upper_edge_mask
+    graphs=[graph_from_condition(condition(),['H','C']),
+        graph_from_condition({'atomic_numbers':[1,1],'charge':0,'spin_multiplicity':1},['H','C'])]
+    batched=dgl.batch(graphs);src,dst=batched.edges();mask=get_upper_edge_mask(batched)
+    assert torch.equal(mask,src<dst)
+    assert torch.equal(src[mask],dst[~mask])
+    assert torch.equal(dst[mask],src[~mask])
