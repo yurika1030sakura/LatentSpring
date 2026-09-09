@@ -12,6 +12,7 @@ import tempfile
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('name')
 p.add_argument('--launcher', default='scripts/research/runtime_smoke.slurm')
+p.add_argument('--partition',help='Optional Slurm partition override; launcher resource/time limits still apply')
 p.add_argument('--gpu-hours', type=float, default=1.)
 p.add_argument('--config')
 p.add_argument('--seed', type=int)
@@ -27,7 +28,10 @@ if subprocess.run(['git','diff','--quiet','HEAD','--',args.launcher],cwd=root).r
     raise ValueError('Commit launcher changes before submitting their source snapshot')
 snapshot = root/'runs/source_snapshots'/rev
 out = root/'runs'/args.name
-command = ['sbatch', '--parsable', args.launcher, str(snapshot), str(out)]
+command = ['sbatch', '--parsable']
+if args.partition is not None:command+=['--partition',args.partition]
+launcher_index=len(command)
+command += [args.launcher, str(snapshot), str(out)]
 if args.config is not None or args.seed is not None:
     if args.launcher_arg:
         raise ValueError('Use named smoke arguments or explicit launcher arguments, not both')
@@ -55,14 +59,15 @@ else:
     if not (snapshot/args.launcher).is_file():
         raise ValueError('Incomplete source snapshot; refusing submission')
     # Use the launcher from the same snapshot, not the mutable working tree.
-    command[2] = str(snapshot/args.launcher)
+    command[launcher_index] = str(snapshot/args.launcher)
     out.mkdir(parents=True)
     submitted = subprocess.run(command, cwd=root, capture_output=True, text=True)
     job = submitted.stdout.strip() if submitted.returncode == 0 else None
     record = {'at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'job_id':job, 'name':args.name, 'source_commit':rev,
         'snapshot':str(snapshot), 'output':str(out),
-        'max_gpu_hours':args.gpu_hours, 'launcher':args.launcher, 'config':args.config, 'seed':args.seed,
+        'max_gpu_hours':args.gpu_hours, 'launcher':args.launcher, 'partition_override':args.partition,
+        'config':args.config, 'seed':args.seed,
         'launcher_args':args.launcher_arg,
         'submission_state':'submitted' if submitted.returncode == 0 else 'rejected',
         'submission_error':submitted.stderr.strip() if submitted.returncode else None}
