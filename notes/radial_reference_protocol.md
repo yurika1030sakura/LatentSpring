@@ -54,3 +54,30 @@ graphs. Rotation, translation, permutation, strict checkpoint restoration,
 full density differentiation and the discrete adjoint have separate checks.
 The analytic trace removes only trace-estimation error, not ODE discretization
 error. Its finite-step log-density is still an approximation to the CNF.
+
+## Recorded first result and bounded follow-up
+
+The 10,000-update reference completes in 156.4 CPU training seconds. The local
+analytic-trace midpoint-32 to midpoint-64 differences are at most 0.00248 nats,
+and the eight-replica mean differences are at most 0.02581 nats. Sampling RMS
+drift is at most 0.000625 Angstrom. However, xTB converges for only 16/32 samples,
+with a successful-only strain median of 38.23 eV. This is a poor molecular
+generator even though it is a useful tractable density control. All failures
+are retained in `radial_reference_development_v1` (job 45601575).
+
+Two bounded follow-ups are distinct, not seed replication:
+
+1. Restart the same scratch initialization and data order for 100,000 FM-only
+   updates. This tests training scale before attributing the entire quality
+   gap to architectural capacity. It remains a scratch model, unlike the
+   pretrained original backbone, and needs independent numerical checks.
+2. From the 10,000-update reference, run eight 20-update engineering controls:
+   FM, exact value/shuffled/zero labels, squared/product with independent/common
+   Gaussian probes. All use seed 9012, identical FM batches, learning rate
+   0.0002 and, where present, energy weight 0.001, eight parents, two local
+   siblings and midpoint-64. Stochastic arms use two independent replicas.
+   Record applied/skipped terms, gradient norms and wall time. This is a
+   runtime and estimator check on a poor generator, not a molecular result.
+   Exact traces have different computational cost and are not advertised as
+   equal-cost stochastic estimators. Replica means versus products have equal
+   trace counts; common Gaussian and independent controls are kept explicit.
