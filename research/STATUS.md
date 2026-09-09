@@ -16,7 +16,7 @@ that all scientific checks passed.
 
 ## What is established
 
-- 208 tests pass, including real FlowMol parameter gradients, full-state and
+- 209 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
   dedicated Gaussian/Rademacher probe streams for common/independent controls,
@@ -427,7 +427,7 @@ parameters. Tests compare forward gradients with energy-only autograd and
 backward gradients with the full objective, with/without checkpointing.
 This intentional ablation is not the full mean-work gradient.
 
-The full suite passes 208 tests. Batched oracle inference agrees with serial ASE
+The full suite passes 209 tests. Batched oracle inference agrees with serial ASE
 on 32 generated geometries: maximum energy difference 8.87e-6 eV and force
 component difference 5.04e-4 eV/A. Warm measured times were 75.88 s serial versus
 6.99 s with batch 16 (10.86x in this single timing, not a general speed guarantee).
@@ -509,7 +509,7 @@ controls are retained and continue to their predeclared assessments.
 Native-mean preflight 45730876 (source a2f4a7b) was RUNNING at 20:43 UTC, with
 two updates and 132 total potential queries prescribed. Its fixed-index xTB
 assessment 45730934 is queued after successful completion. These outcomes are
-pending. The full suite passes 208 tests after the parameterization change.
+pending. The full suite passes 209 tests after the parameterization change.
 
 Native-mean preflight 45730876 and its xTB assessment 45730934 have now completed.
 Before training, xTB convergence recovers to 30/32, but successful-only median
@@ -544,7 +544,7 @@ their assessment 45732403 is queued after both. Each retains the same 8,512-quer
 budget. A direct MALA baseline from the 64 fixed FM16 samples is now implemented:
 132 moves plus initial queries also totals 8,512 calls. It preserves rejected
 proposals in query counts and does not call finite-time MCMC equilibrated.
-The suite passes 208 tests, including clipped-drift MH Gaussian stationarity and
+The suite passes 209 tests, including clipped-drift MH Gaussian stationarity and
 cached-value consistency. The new rendering script assembles completed results
 with source hashes, failure denominators and explicit missing FM importance ESS.
 
@@ -578,7 +578,7 @@ Keep every 1-eV result. See notes/target_temperature_audit.md and its evidence.
 The 300-K/1000-K diagnostic jobs are 45735846/45735854 (source f4a8a08), both
 RUNNING at September 9 21:23 UTC. Their launchers include independent xTB
 assessment. Native-mean training and its dependent assessment remain active.
-The full suite passes 208 tests, including cold-target Gaussian MALA invariance.
+The full suite passes 209 tests, including cold-target Gaussian MALA invariance.
 
 ## Physical-temperature results and terminal-noise resolution
 
@@ -614,5 +614,12 @@ Actual Gaussian factors remain explicit and positive at every finite step.
 See notes/terminal_noise_resolution.md; the identity and scheduling idea are
 established mathematics, not claimed as new. Temperature-input initialization
 now preserves the pretrained constant-input field before learning the new target.
-The full suite passes 208 tests. A real 300-K CPU update check is finite but has
+The full suite passes 209 tests. A real 300-K CPU update check is finite but has
 only 4 evaluation particles and ESS 1; it is not performance evidence.
+
+Current 300-K training jobs 45744181/45744274/45744278/45744280 (source 71a853f)
+were all RUNNING at 22:34 UTC. Explicitly labelled eight-atom assessment 45745430
+and AgBr2 normalizer/moment/xTB assessment 45745431 are queued with afterok
+requirements. No outcome from these ongoing runs is claimed. The comparison
+code tests the energy-offset sign and rejects potential/restraint mismatches.
+The full suite passes 209 tests. See NEXT for the exact active experiment map.

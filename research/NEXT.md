@@ -1,69 +1,70 @@
 # Next research decision
 
-The ICLR objective is active, not achieved. Existing results do not establish
-both useful molecular generation and calibrated sampling. No replicated new
-contribution has been demonstrated. Do not restart completed data audits.
+The ICLR objective remains active and unachieved. No replicated new molecular
+contribution is established. Do not restart completed audits or resubmit live jobs.
 
-1. Inspect the native-mean 500-update pair: 45732136 (joint), 45732178
-   (energy-gradient), source c37c8d9. Both were RUNNING at September 9 21:20 UTC.
-   Their independent xTB assessment 45732403 is queued afterok on both. Each
-   learning arm uses 8,512 potential queries. Compare completed results, not
-   training loss, and retain every failure. Never resubmit these accepted jobs.
-2. Inspect the prospective 300-K/1000-K FM-initialized MALA diagnostic after its
-   terminal state. Same 64 FM16 geometries, state, .1 restraint, seed 9061,
-   132 moves and 8,512 queries. Proposal std is .1*sqrt(kT/1eV) and score cap is
-   100*(1eV/kT), retaining fixed capped physical-force drift. All 1-eV results
-   stay in the record. See notes/target_temperature_audit.md before interpreting
-   geometry changes. Finite-time MALA is not declared equilibrated.
-3. Separate generation relevance from correctness for the declared target.
-   kT=1 eV is about 11,604.5 K; independent three-atom quadrature itself is
-   extended. A higher xTB success rate alone does not validate eSEN Boltzmann
-   sampling, and a lower rate alone does not invalidate it. The 300/1000-K
-   targets still include an explicit harmonic restraint. OMol has no thermal
-   label assumed here; the FM initialization retains its trained constant-kT
-   input rather than extrapolating an untrained conditioning feature.
-4. Expand only a justified target/method comparison across training seeds and
-   the 664 audited new development conditions. The 722 reserved conditions
-   remain free of method outcomes until a protocol is frozen. Condition-only
-   graph input passes a real PbCl2 smoke without reference-coordinate loading.
-   Its edge ordering respects FlowMol's upper/reverse-pair convention.
-5. Demonstrate value beyond current SNF/FEAT, FKC, EWFM, FALCON, RegFlow and
-   direct MCMC baselines. Work identities, symmetry averaging, defensive IS and
-   invertible regression alone are established methods. Distill to an FM student
-   only after a teacher's target accuracy and utility are supported.
+Current 300-K experiments (source 71a853f; each 500 updates, batch 16, 16 path steps,
+256 evaluation samples, seed 9051, 8,512 potential queries, maximum 2 GPU-hours):
 
-Completed comparison (condition 5846, one seed):
-- Pure FM16 / FM64: xTB 29/32 and 30/32; median successful strain 4.76794/4.67530
-  eV. One overlap per 64. Maximum 16-to-64 coordinate drift .66522 A, so no
-  solver-convergence certificate. FM importance weights remain unknown.
-- Reference-mean initialization / 100 updates: xTB 0/32 and 6/32; final ESS 3.485/64.
-- Reference-mean 500 joint: ESS 6.894/256, xTB 12/32, median strain 15.8157 eV.
-  Energy-gradient: ESS 1.00036/256, xTB 32/32, median 6.76552 eV; one weight 0.999822.
-  Independent assessment 45729911 is complete. Energy improves 31 paired cases,
-  worsens 1. Neither establishes adequate geometry and calibrated sampling.
-- Native-mean two-update preflight: initial xTB 30/32, median 16.7263 eV,
-  overlaps 21/64, ESS 1.928/64. Final 28/32, median 16.9588, overlaps 20/64, ESS 1.781.
-- FM-initialized MALA at 1 eV (45733994): complete, 8,512 queries; acceptance 0.7139,
-  xTB 25/32, median 9.58024 eV. Energy increases by 4.122 eV during the fixed run.
-  This suggests target-temperature relevance needs scrutiny; it is not proof
-  of equilibrium. The source reference passes xTB with strain 0.89014 eV.
+- 45744181: work300_fixed_joint_5846_v1, fixed noise, joint work training.
+- 45744274: work300_annealed_joint_5846_v1, square-root noise, joint work.
+- 45744278: work300_annealed_energy_5846_v1, same annealing, energy-gradient control.
+- 45744280: work300_annealed_joint_1137_v1, AgBr2, annealed joint work.
 
-Raw replay is complete: all 3,941,522 accepted tensors matched bitwise; original
-charge/spin/source IDs and float64 energies are restored. Use immutable
-source_index_readonly.sqlite; old WAL failure did not invalidate the producer.
-Official validation audit: 2,762,021 records, 2,564,135 eligible; explicit source
-links do not exhaust every parent-trajectory relation. Reserved data is untouched.
+All four were RUNNING at September 9 22:34 UTC. Their completed-result assessments
+are queued from source f8a61d9:
 
-193 tests pass. The last main-text build is 9/9 pages and remains an audit draft.
-These engineering checks are not ICLR readiness. Latest summary figures are in
-research/figures/work_campaign_reference500. Source hashes and all outcomes are
-in research/evidence; jobs.jsonl records both accepted/rejected submissions.
-Authors/submission belong to the user. No subagents or external messages are
-authorized. Never write home or modify the shared FlowMol installation.
+- 45745430: work300_assessment_5846_v1, afterok on the three eight-atom runs.
+  Compares final samples with explicit fixed_joint/annealed_joint/annealed_energy
+  labels and the same 32 fixed xTB indices; all 256 geometries enter diagnostics.
+- 45745431: work300_assessment_1137_v1, afterok on 45744280. Compares initial/final
+  normalizers and invariant moments with the independent reference, then xTB.
+  Empirical importance-sampling errors cannot reveal a commonly missed tail.
 
-Temperature diagnostic jobs from source f4a8a08:
-- 45735846, fm_mala_300K_5846_v1 (kT=.025851999786435 eV).
-- 45735854, fm_mala_1000K_5846_v1 (kT=.08617333262145 eV).
-Both were RUNNING at September 9 21:23 UTC. Each launcher includes the same
-independent xTB assessment after the 8,512-query MALA run. Inspect terminal
-scheduler state and complete result files before interpreting outcomes.
+Next actions:
+
+1. Inspect exact terminal states and result files for those six jobs. Preserve
+   all outcomes. Compare against the existing 8,512-query 300-K FM+MALA baseline:
+   xTB 31/32, median successful strain 2.40954 eV, 30 improvements/1 worsening/1
+   both-failed against the initial FM panel. These are MALA gains, not novelty
+   or proof of equilibrium. The 1000-K control gives 30/32 and 2.07368 eV.
+2. Apply the terminal-noise diagnosis carefully. Gaussian smoothing implies a
+   necessary target-curvature ceiling 40.050 eV/A2 for the old fixed schedule;
+   four finite-force probes show 185--233 eV/A2. Square-root noise raises the
+   ceiling to 640.050, but passing this local screen does not prove accuracy.
+   This uses established second-order Tweedie mathematics, not a new theorem.
+   See notes/terminal_noise_resolution.md. Both initializations retain the same
+   pretrained field by neutralizing the old constant-temperature input column.
+3. Independent AgBr2 cold reference 45738454 completed: four 4,096-point scrambles,
+   relative normalizer SE 4.18% at 300 K and 1.45% at 1000 K; minimum ESS 116.6/632.2.
+   New queries 16,408 plus the separately retained 12,304-query pilot. No learned
+   FM templates enter the proposal. The full 6D Jacobian and Gaussian integrals
+   pass. This is statistical reference evidence, not certified global coverage.
+   Refine if candidate accuracy reaches the current reference uncertainty.
+4. Expand a supported comparison across training seeds and the 664 audited new
+   development conditions. The 722 reserved conditions remain free of method
+   outcomes until a protocol is frozen. Condition-only input passes a real
+   PbCl2 smoke without opening reference-coordinate data.
+5. Require practical value beyond SNF/FEAT, FKC, EWFM, FALCON, RegFlow and direct
+   MCMC. Equivariant augmented coupling flows are also established (NeurIPS 2023).
+   Neither corrected identities, reference construction nor noise scheduling
+   alone establishes the contribution. Distill only a qualified teacher.
+
+Retained 1-eV controls correspond to about 11,604.5 K. Independent AgBr2 quadrature
+is extended; compactness/xTB quality are not direct correctness tests for that
+hot target. Reference-mean 500 joint: ESS 6.894/256, xTB 12/32, median 15.8157 eV.
+Native-mean 500 joint: ESS 8.671/256, xTB 16/32, median 15.3193 eV. Both energy-only
+controls have xTB 32/32 but severely concentrated weights. The direct 1-eV MALA
+control worsens structure quality. Keep all of this evidence. The new 300-K and
+1000-K targets still include an explicit .1-eV/A2 restraint and are not unconfined
+or empirically inferred OMol thermal ensembles.
+
+Data audit is complete: 3,941,522 accepted raw/processed records match bitwise;
+original charge, spin, sources and float64 energy are restored. Use immutable
+source_index_readonly.sqlite. Official validation: 2,762,021 total, 2,564,135
+eligible; explicit source links do not exhaust all parent-trajectory relations.
+
+209 tests pass. Last main-text build: 9/9 pages, still an audit/development draft.
+Code/tests are not ICLR readiness. Authors and submission belong to the user.
+No subagents or external messages are authorized. Never write home or edit the
+shared FlowMol installation. Source hashes and every submission are recorded.
