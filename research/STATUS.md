@@ -332,3 +332,11 @@ population across seeds; retain these negative controls before further
 method selection. Evidence is in `refined_importance_5846_v1.json` and
 `direct_importance_budget_5846_v1.json`. The active long-term goal records
 the user's explicit ICLR objective; it is not marked achieved.
+
+
+The official validation archive has now also completed download, checksum and
+extraction: 2,762,021 records in 80 ASE-LMDB files. See
+`evidence/official_validation_recovery.json`. Its contents have not been used
+for method outcome evaluation; source/composition overlap and an evaluation
+manifest are the next required checks. `research/NEXT.md` records the next
+research decision and the remaining negative evidence.
