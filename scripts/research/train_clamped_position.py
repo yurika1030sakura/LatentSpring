@@ -51,6 +51,10 @@ def main():
     p.add_argument('--energy-cap',type=float,default=1500.)
     p.add_argument('--energy-estimator',choices=['squared','replica_product'],default='replica_product')
     p.add_argument('--common-probes',action='store_true')
+    p.add_argument('--checkpoint-energy',action='store_true')
+    p.add_argument('--perturbation-indices',type=int,nargs='+')
+    p.add_argument('--energy-control',choices=['value','shuffle','zero'],default='value')
+    p.add_argument('--energy-gradient-diagnostics',action='store_true')
     p.add_argument('--energy-shard',type=Path,default=Path('/n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/perturbation_train_n30000_s0.pt'))
     args=p.parse_args()
     if args.steps<1 or args.batch_size<1 or args.energy_every<1:
@@ -66,6 +70,9 @@ def main():
         raise ValueError('This protocol requires bond-free OMol25 with max_atoms=200')
     model=model_from_config(cfg)
     warm=torch.load(args.warm_checkpoint,map_location='cpu',weights_only=False)
+    warm_protocol=warm.get('research_protocol',{})
+    if warm_protocol and warm_protocol['data_endpoint_time']!=args.terminal_time:
+        raise ValueError('Warm position checkpoint has a different endpoint time')
     model.load_state_dict(warm['state_dict'],strict=True)
     model.to(args.device).float().train()
     ds_cfg=dict(cfg['dataset'],fake_atom_p=0.,fake_atom_std=1.,
@@ -81,14 +88,15 @@ def main():
     energy_loader=None
     if args.lambda_energy:
         energy_loader=PerturbationLoader([args.energy_shard],n_atom_types=model.n_atom_types,
-            b_parents=1,device=args.device,max_atoms_per_parent=12,seed=args.seed+2)
+            b_parents=1,device=args.device,max_atoms_per_parent=12,seed=args.seed+2,
+            perturbation_indices=args.perturbation_indices)
     optimizer=torch.optim.AdamW(model.parameters(),lr=args.lr,weight_decay=1e-12)
     args.out.mkdir(parents=True,exist_ok=True)
     if (args.out/'metrics.jsonl').exists():
         raise ValueError('Refusing to overwrite an existing experiment')
     protocol={k:str(v) if isinstance(v,Path) else v for k,v in vars(args).items()}
     protocol.update(format='clamped_position_v1',
-        composition_prior_checkpoint=str(args.warm_checkpoint),
+        composition_prior_checkpoint=warm_protocol.get('composition_prior_checkpoint',str(args.warm_checkpoint)),
         warm_sha256=hashlib.sha256(args.warm_checkpoint.read_bytes()).hexdigest(),
         config_sha256=hashlib.sha256(args.config.read_bytes()).hexdigest(),
         data_order_sha256=hashlib.sha256(order.numpy().tobytes()).hexdigest(),
@@ -112,12 +120,23 @@ def main():
                 'n_atoms':g.batch_num_nodes().cpu().tolist(),'energy_applied':False}
         if energy_loader is not None and step%args.energy_every==0:
             gp,energies,pid,pnbi,puem=energy_loader.next_batch()
+            if args.energy_control=='zero':
+                energies=torch.where(torch.isfinite(energies),torch.zeros_like(energies),energies)
+            elif args.energy_control=='shuffle':
+                energies=energies.clone()
+                shuffle_generator=torch.Generator(device=args.device).manual_seed(args.seed+704729*step)
+                for parent in pid.unique():
+                    selected=torch.where((pid==parent)&torch.isfinite(energies))[0]
+                    order_e=torch.randperm(len(selected),device=args.device,generator=shuffle_generator)
+                    energies[selected]=energies[selected[order_e]]
+            fm_grads=[None if p.grad is None else p.grad.detach().clone() for p in model.parameters()] if args.energy_gradient_diagnostics else None
             try:
                 energy,diagnostics=energy_consistency_loss_per_mol(model,gp,pnbi,puem,
                     energies,pid,kT=1.,n_ode_steps=args.energy_steps,n_hutchinson=1,
                     density_options={'mode':'clamped_cnf','terminal_time':args.terminal_time,
                         'n_trace_replicates':2,'residual_estimator':args.energy_estimator,
                         'common_trace_within_parent':args.common_probes,
+                        'checkpoint_steps':args.checkpoint_energy,
                         'trace_seed':args.seed+1729+1000033*step})
                 finite=bool(torch.isfinite(energy))
                 allowed=finite and (args.energy_cap<=0 or abs(float(energy.detach()))<=args.energy_cap)
@@ -126,9 +145,22 @@ def main():
                 if allowed:
                     (args.lambda_energy*energy).backward()
                     energy_applied+=1;record['energy_applied']=True
+                    if fm_grads is not None:
+                        fm_squared=[];aux_squared=[];dots=[]
+                        for parameter,original in zip(model.parameters(),fm_grads):
+                            if parameter.grad is None:continue
+                            auxiliary=parameter.grad if original is None else parameter.grad-original
+                            aux_squared.append(auxiliary.square().sum())
+                            if original is not None:
+                                fm_squared.append(original.square().sum());dots.append((original*auxiliary).sum())
+                        fm_norm=torch.stack(fm_squared).sum().sqrt()
+                        aux_norm=torch.stack(aux_squared).sum().sqrt()
+                        record.update(fm_gradient_norm=float(fm_norm),weighted_energy_gradient_norm=float(aux_norm),
+                            fm_energy_gradient_cosine=float(torch.stack(dots).sum()/(fm_norm*aux_norm).clamp_min(1e-30)))
                 else:energy_skipped+=1
             except FloatingPointError as exc:
                 energy_skipped+=1;record['energy_error']=str(exc)
+            del fm_grads
         norm=torch.nn.utils.clip_grad_norm_(model.parameters(),1.,error_if_nonfinite=True)
         optimizer.step()
         record.update(gradient_norm=float(norm),seconds=time.monotonic()-tick)

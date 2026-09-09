@@ -195,6 +195,19 @@ def test_real_ctmc_head_is_endpoint_and_adapter_uses_velocity(monkeypatch):
     assert grads and all(torch.isfinite(grad).all() for grad in grads)
     assert any(grad.abs().sum() > 0 for grad in grads)
     assert vf.training and torch.equal(g.ndata['x_1_true'], original_x)
+    def density_grads(saved):
+        q=log_density_clamped_flow(model,g,nbi,uem,n_ode_steps=2,n_hutchinson=1,
+            n_trace_replicates=2,for_training=True,checkpoint_steps=saved,
+            xi_fn=lambda step,k,x:((torch.arange(x.numel()).reshape(x.shape)+step+k)%2*2-1).to(x))
+        grads=torch.autograd.grad(q.square().mean(),tuple(vf.parameters()),allow_unused=True)
+        return q.detach(),grads
+    plain,saved=density_grads(False),density_grads(True)
+    assert torch.equal(plain[0],saved[0])
+    for left,right in zip(plain[1],saved[1]):
+        if left is None:
+            assert right is None
+        else:
+            torch.testing.assert_close(left,right,rtol=2e-5,atol=2e-6)
     # eval() still bootstraps a previous endpoint at t=0 in stock FlowMol.
     # The clamped field must execute just one denoise pass even at the boundary.
     calls=[]
@@ -326,3 +339,25 @@ def test_conditional_fm_path_matches_the_defined_terminal_time(power):
     expected=prime[nbi,None]/info['alpha_T'][nbi,None]*(info['x1']-info['x0'])
     assert torch.allclose(actual,expected,atol=1e-12)
     assert torch.allclose(info['x0']+info['alpha_T'][nbi,None]*(target-info['x0']),info['x1'],atol=1e-12)
+
+
+@pytest.mark.parametrize('exact',[False,True])
+def test_checkpointed_steps_preserve_density_parameter_gradients_and_rng(exact):
+    g,nbi,uem=graph_batch((3,3));model=SimpleNamespace(vector_field=LinearHead())
+    def compute(checkpoint_steps):
+        generator=torch.Generator().manual_seed(92)
+        calls=[]
+        def probes(step,k,x):
+            calls.append((step,k))
+            return (2*torch.randint(0,2,x.shape,generator=generator)-1).to(x)
+        q=log_density_clamped_flow(model,g,nbi,uem,n_ode_steps=4,
+            n_hutchinson=0 if exact else 1,n_trace_replicates=2,xi_fn=probes,
+            for_training=True,checkpoint_steps=checkpoint_steps)
+        loss=(q[0]*q[1]).mean()
+        grad=torch.autograd.grad(loss,model.vector_field.a)[0]
+        return q.detach(),grad.detach(),generator.get_state(),calls
+    plain=compute(False);saved=compute(True)
+    for expected,actual in zip(plain[:3],saved[:3]):
+        assert torch.equal(expected,actual)
+    assert plain[3]==saved[3]
+    assert model.vector_field.training

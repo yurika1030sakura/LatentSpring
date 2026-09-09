@@ -111,7 +111,7 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
                              *, n_ode_steps=32, n_hutchinson=2, prior_std=1.0,
                              terminal_time=0.95, for_training=False,
                              parameterization="endpoint", kT=None, xi_fn=None,
-                             n_trace_replicates=1):
+                             n_trace_replicates=1, checkpoint_steps=False):
     """Log q_T(x), explicit midpoint integration of state AND log-Jacobian.
 
     With n_trace_replicates>1, return (replicates, graphs) estimates from
@@ -125,6 +125,8 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
     objective (not a claim of an unbiased continuous-likelihood gradient).
     Autocast is disabled; float16/bfloat16 inputs are promoted to float32.
     A local graph scope and model-mode restoration prevent side effects.
+    Optional non-reentrant step checkpointing trades recomputation for memory;
+    its per-step probe caches preserve both global and dedicated RNG streams.
     """
     if not isinstance(n_trace_replicates, int) or n_trace_replicates < 1:
         raise ValueError("n_trace_replicates must be a positive integer")
@@ -150,32 +152,53 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
             graph.ndata[f"{key}_t"] = graph.ndata[f"{key}_1_true"]
         graph.edata["e_t"] = graph.edata["e_1_true"]
         x = center_by_graph(x, node_batch_idx, n_graphs).requires_grad_(True)
+        def make_step(step_index):
+            # One cache per integration step. Recomputations must reuse the
+            # exact trace draws, including draws from dedicated generators
+            # that torch checkpoint's global-RNG preservation cannot capture.
+            probe_cache = []
+            def advance(state, time):
+                # Re-entry during backward happens after the outer scope has
+                # ended, so recreate the discrete condition and model mode.
+                with graph.local_scope(), deterministic_field(model.vector_field):
+                    for key in ('a', 'c'):
+                        graph.ndata[f'{key}_t'] = graph.ndata[f'{key}_1_true']
+                    graph.edata['e_t'] = graph.edata['e_1_true']
+                    v_start = position_velocity(model, graph, state, time, node_batch_idx,
+                        upper_edge_mask, parameterization=parameterization, kT=kT)
+                    midpoint = state - 0.5*dt*v_start
+                    if not for_training:
+                        midpoint = midpoint.detach().requires_grad_(True)
+                    v_mid = position_velocity(model, graph, midpoint, time, node_batch_idx,
+                        upper_edge_mask, parameterization=parameterization, kT=kT)
+                    if not probe_cache:
+                        for replica in range(n_trace_replicates):
+                            probes = None if n_hutchinson == 0 else [
+                                (xi_fn(step_index, replica*n_hutchinson+k, midpoint) if xi_fn is not None else
+                                 torch.randint(0, 2, midpoint.shape, device=state.device).to(state)*2-1)
+                                for k in range(n_hutchinson)]
+                            if probes is not None:
+                                if any(probe.shape != state.shape for probe in probes):
+                                    raise ValueError("Trace probe shape must match coordinates")
+                                probes = [probe.to(state).detach() for probe in probes]
+                            probe_cache.append(probes)
+                    traces = [_trace(v_mid, midpoint, node_batch_idx, n_graphs,
+                                     probes, for_training) for probes in probe_cache]
+                    return state-dt*v_mid, torch.stack(traces)
+            return advance
+
         for step in range(n_ode_steps):
-            # A predictor at an interior time avoids evaluating a learned
-            # endpoint head exactly at its singular t=1. With the same midpoint
-            # time in both stages this is second-order for smooth v(x,t).
+            # Both stages use an interior midpoint time. This is second-order
+            # for smooth non-autonomous fields and avoids the t=1 singularity.
             t_mid = x.new_full((n_graphs,), terminal_time-(step+0.5)*dt)
-            v_start = position_velocity(model, graph, x, t_mid, node_batch_idx,
-                upper_edge_mask, parameterization=parameterization, kT=kT)
-            x_mid = x - 0.5*dt*v_start
-            if not for_training:
-                x_mid = x_mid.detach().requires_grad_(True)
-            v_mid = position_velocity(model, graph, x_mid, t_mid, node_batch_idx,
-                upper_edge_mask, parameterization=parameterization, kT=kT)
-            traces = []
-            for replica in range(n_trace_replicates):
-                probes = None if n_hutchinson == 0 else [
-                    (xi_fn(step, replica*n_hutchinson+k, x_mid) if xi_fn is not None else
-                     torch.randint(0, 2, x_mid.shape, device=x.device).to(x)*2-1)
-                    for k in range(n_hutchinson)]
-                if probes is not None:
-                    if any(probe.shape != x.shape for probe in probes):
-                        raise ValueError("Trace probe shape must match coordinates")
-                    probes = [probe.to(x).detach() for probe in probes]
-                traces.append(_trace(v_mid, x_mid, node_batch_idx, n_graphs, probes, for_training))
-            divergence = torch.stack(traces)
+            advance = make_step(step)
+            if checkpoint_steps and for_training:
+                from torch.utils.checkpoint import checkpoint
+                x, divergence = checkpoint(advance, x, t_mid, use_reentrant=False,
+                                            preserve_rng_state=False)
+            else:
+                x, divergence = advance(x, t_mid)
             integral = integral + dt*divergence
-            x = x - dt*v_mid
             if not for_training:
                 x = x.detach().requires_grad_(True)
                 integral = integral.detach()

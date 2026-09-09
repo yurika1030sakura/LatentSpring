@@ -35,6 +35,7 @@ class PerturbationLoader:
         device: str = "cuda",
         seed: int = 0,
         max_atoms_per_parent: int | None = None,
+        perturbation_indices: list[int] | None = None,
     ):
         if isinstance(shard_paths, (str, Path)):
             shard_paths = [shard_paths]
@@ -70,6 +71,11 @@ class PerturbationLoader:
         self.energies = torch.cat(energies, dim=0)
         self.group_id = torch.cat(group_id, dim=0)
         self.K = K
+        self.perturbation_indices = list(range(K)) if perturbation_indices is None else list(perturbation_indices)
+        if perturbation_indices is not None and (len(self.perturbation_indices)<2 or
+                len(set(self.perturbation_indices))!=len(self.perturbation_indices) or
+                any(not isinstance(i,int) or i<0 or i>=K for i in self.perturbation_indices)):
+            raise ValueError('Select at least two distinct valid perturbation indices')
         self.M = int(self.group_id.max().item()) + 1
 
         self.b_parents = b_parents
@@ -147,7 +153,7 @@ class PerturbationLoader:
         n_total_a = self.n_atom_types + self.n_extra_atom_classes
         for new_pid, par in enumerate(parent_indices):
             base = par * K
-            for k in range(K):
+            for k in self.perturbation_indices:
                 ns = int(self.nia[base + k, 0])
                 ne = int(self.nia[base + k, 1])
                 pos = self.positions[ns:ne]
@@ -183,7 +189,7 @@ class PerturbationLoader:
                 pid_per_virtual.append(new_pid)
 
         g_batched = dgl.batch(graphs).to(self.device)
-        energies_t = torch.tensor(energies_list, dtype=torch.float32, device=self.device)
+        energies_t = torch.tensor(energies_list, dtype=self.energies.dtype, device=self.device)
         parent_id_t = torch.tensor(pid_per_virtual, dtype=torch.long, device=self.device)
         node_batch_idx, _ = get_batch_idxs(g_batched)
         uem = get_upper_edge_mask(g_batched)

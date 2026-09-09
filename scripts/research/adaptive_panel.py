@@ -29,7 +29,8 @@ def main():
     model.load_state_dict(torch.load(checkpoint,map_location='cpu',weights_only=False)['state_dict'],strict=True)
     model.to(args.device).double().eval()
     loader=PerturbationLoader([source['shard']],n_atom_types=model.n_atom_types,
-        b_parents=1,device=args.device,max_atoms_per_parent=12)
+        b_parents=1,device=args.device,max_atoms_per_parent=12,
+        perturbation_indices=source.get('perturbation_indices'))
     rows=source['rows']
     hardest=sorted(range(len(rows)),key=lambda i:rows[i]['resolutions'][-1]['max_mean_centered_change_from_previous'],reverse=True)[:2]
     selected=list(dict.fromkeys([0]+hardest))

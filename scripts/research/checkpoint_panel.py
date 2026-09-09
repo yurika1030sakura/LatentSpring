@@ -37,6 +37,7 @@ def main():
     p.add_argument('--terminal-time', type=float, default=0.95)
     p.add_argument('--device', default='cuda')
     p.add_argument('--composition-split', type=Path)
+    p.add_argument('--perturbation-indices', type=int, nargs='+')
     args = p.parse_args()
     if args.replicas < 2:
         raise ValueError('At least two replicas needed for noise diagnostics')
@@ -48,7 +49,8 @@ def main():
     model.to(args.device).eval()
     loader = PerturbationLoader([args.shard], n_atom_types=model.n_atom_types,
         n_charge_classes=6, n_bond_types=4, b_parents=1, device=args.device,
-        max_atoms_per_parent=args.max_atoms, seed=9002)
+        max_atoms_per_parent=args.max_atoms, seed=9002,
+        perturbation_indices=args.perturbation_indices)
     if args.composition_split:
         split=json.loads(args.composition_split.read_text())
         held={item['parent_id'] for item in split['perturbation_parents']}
@@ -62,6 +64,7 @@ def main():
         'config_sha256':hashlib.sha256(args.config.read_bytes()).hexdigest(),
         'shard':str(args.shard), 'shard_sha256':hashlib.sha256(args.shard.read_bytes()).hexdigest(),
         'terminal_time':args.terminal_time, 'replicas':args.replicas,
+        'perturbation_indices':args.perturbation_indices,
         'probe_policy':'independent Rademacher replicas, fixed over time and across resolutions',
         'rows':[], 'complete':False}
     if args.composition_split:
