@@ -76,22 +76,24 @@ def main():
         if x.ndim!=3 or x.shape[1:]!=(n,3) or not torch.isfinite(x).all():raise ValueError('Invalid saved geometry')
         if count is None:count=len(x)
         if len(x)!=count:raise ValueError('Matched panels must have identical sample counts')
-        if data['work'].shape!=(count,):raise ValueError('One work value is required per sample')
+        work=data.get('work')
+        if work is not None and work.shape!=(count,):raise ValueError('One work value is required per sample')
         selected=select_indices(count,args.xtb_count,args.seed)
-        weights=normalized_weights(-data['work'].double()).numpy()
+        weights=normalized_weights(-work.double()).numpy() if work is not None else None
         radii=[table.GetRcovalent(int(z)) for z in numbers]
         contacts=[contact_summary(item.numpy(),radii) for item in x]
         profiles=[distance_profile(item.numpy(),numbers) for item in x]
         pair_distances=[profile_rms(a,b) for a,b in itertools.combinations(profiles,2)]
         profile_vectors=np.asarray([np.concatenate([profile[k] for k in sorted(profile)]) for profile in profiles])
-        mean=np.sum(weights[:,None]*profile_vectors,axis=0)
+        mean=np.sum(weights[:,None]*profile_vectors,axis=0) if weights is not None else None
         geometry.append({'arm':name,'particles':count,'contact_rows':contacts,
             'overlap_count':sum(row['overlap_pairs']>0 for row in contacts),
             'multiple_contact_components_count':sum(row['contact_components']>1 for row in contacts),
             'contact_components':quantiles([row['contact_components'] for row in contacts]),
             'pair_distance_profile_rms_A':quantiles(pair_distances),
-            'weighted_profile_variance_A2':float(np.sum(weights[:,None]*(profile_vectors-mean)**2)/profile_vectors.shape[1]),
-            'weights':WeightedPaths(x,-data['work'].double(),{}).summary()})
+            'weighted_profile_variance_A2':float(np.sum(weights[:,None]*(profile_vectors-mean)**2)/profile_vectors.shape[1]) if weights is not None else None,
+            'weights':WeightedPaths(x,-work.double(),{}).summary() if work is not None else None,
+            'weight_scope':'finite-path importance weights' if weights is not None else 'unavailable: no proposal density was evaluated'})
         for index in selected:
             tasks.append({'arm':name,'validation_index':condition.get('source_row',0),'sample_id':index,
                 'positions':x[index].tolist(),'symbols':[table.GetElementSymbol(int(z)) for z in numbers],

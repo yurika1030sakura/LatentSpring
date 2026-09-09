@@ -95,3 +95,18 @@ denominator, and pairwise outcomes including both-failed cases. This protocol
 first evaluates the completed 100-update calibration; it also applies unchanged
 to the ongoing 500-update paired experiment. Source sample/result hashes and
 the evaluator version are recorded. No final reserved condition is used.
+
+The initial/100-update panels pass xTB relaxation 0/32 and 6/32 respectively;
+29 and 24 fail initial SCC. Both complete panels have multiple contact components.
+To diagnose whether the stochastic bridge damaged otherwise useful FM outputs,
+sample the original electronic FM checkpoint on exactly this condition and the
+same intrinsic Gaussian initial draws. Midpoint resolutions 16/64 cost 32/128
+neural calls per sample; report coordinate differences and the same xTB subset.
+No FM density is evaluated, so its importance weights/ESS remain unavailable.
+Earlier eight-condition FM results are not a matched control for this condition.
+
+Development manifests may now supply the work trainer's atomic numbers, total
+charge and spin directly. No reference-coordinate dataset is loaded in that
+branch, and reserved manifests are rejected for training. A two-update CPU
+interface check on the first three-atom development condition (manifest row 167,
+PbCl2 singlet) is not a training-benefit comparison. Its poor ESS is retained.

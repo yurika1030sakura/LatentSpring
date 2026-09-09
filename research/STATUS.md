@@ -14,7 +14,7 @@ that all scientific checks passed.
 
 ## What is established
 
-- 183 tests pass, including real FlowMol parameter gradients, full-state and
+- 186 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
   dedicated Gaussian/Rademacher probe streams for common/independent controls,
@@ -425,7 +425,7 @@ parameters. Tests compare forward gradients with energy-only autograd and
 backward gradients with the full objective, with/without checkpointing.
 This intentional ablation is not the full mean-work gradient.
 
-The full suite passes 183 tests. Batched oracle inference agrees with serial ASE
+The full suite passes 186 tests. Batched oracle inference agrees with serial ASE
 on 32 generated geometries: maximum energy difference 8.87e-6 eV and force
 component difference 5.04e-4 eV/A. Warm measured times were 75.88 s serial versus
 6.99 s with batch 16 (10.86x in this single timing, not a general speed guarantee).
@@ -441,3 +441,35 @@ method outcome queries. See notes/mean_work_training_protocol.md for the next
 The two jobs are 45726541 (joint) and 45726651 (energy-gradient control), source
 a76313a. Both were RUNNING at the September 9 20:13 UTC scheduler check; each
 has a two-hour GPU limit. Their scientific results are still pending.
+
+## Independent work-sampler assessment and condition-only inputs
+
+Job 45728505 completed the frozen xTB protocol on the 100-update calibration.
+For 32 outcome-independent sample indices per arm, initial samples converge
+0/32 and jointly trained samples 6/32. Initial single-point SCC fails 29/32;
+joint single-point SCC fails 24/32. The other failures occur in relaxation.
+The six successful joint relaxations have median strain 12.7574 eV, a strongly
+selected subset, not a whole-panel quality result. All failures and raw logs
+are retained. Both complete 64-sample panels have multiple contact components;
+median counts fall from six to five. Their element-pair-profile dispersion also
+falls (median pair profile RMS 4.7846 to 2.6505 A). These distance diagnostics
+are not chemical bonds or mode labels, and fragments are allowed by the target.
+See evidence/mean_work_independent_assessment.json. This evidence strengthens
+the need for matched structure checks, rather than establishing sampling success.
+
+A pure FM control is now specified on this same condition and same intrinsic
+Gaussian seeds. Earlier FM xTB panels used other conditions and cannot be
+compared directly. Midpoint-16 and midpoint-64 use 32 and 128 field calls per
+sample; likelihood and importance weights are unavailable and must stay null.
+This is a diagnostic of stochastic-bridge initialization, not an equal-training-
+cost Boltzmann baseline. The same fixed-index xTB protocol applies.
+
+The condition-only graph constructor now respects FlowMol's upper-then-reversed
+edge ordering. The earlier row-major constructor was not used in any method
+outcome experiment; a regression test checks batching and reverse partners.
+The work trainer now accepts audited development manifests without opening a
+reference-coordinate dataset. A two-update CPU smoke on development row 167
+(PbCl2, charge zero, singlet), four transitions and 12 oracle queries completes
+with finite gradients and saved parameters. Its four-particle ESS remains about
+one; it is an interface check, not a performance result. Reserved conditions
+remain unqueried. See evidence/official_condition_work_smoke.json.

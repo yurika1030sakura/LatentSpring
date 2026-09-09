@@ -20,6 +20,7 @@ from flowmol.data_processing.dataset import MoleculeDataset
 from flowmol.data_processing.utils import get_batch_idxs,get_upper_edge_mask
 
 from cfm_mol.clamped_density import deterministic_field,position_velocity
+from cfm_mol.condition_systems import load_condition,graph_from_condition
 from cfm_mol.electronic_metadata import ElectronicMetadata
 from cfm_mol.energy_oracle import EnergyOracle
 from cfm_mol.nonequilibrium import centered_orthonormal_basis,normalized_weights,WeightedPaths
@@ -32,7 +33,8 @@ from molecular_tempered_pilot import sha,write_json,geometry_metrics
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--config',type=Path,required=True);p.add_argument('--checkpoint',type=Path,required=True)
-    p.add_argument('--metadata',type=Path,required=True);p.add_argument('--oracle',type=Path,required=True)
+    p.add_argument('--metadata',type=Path);p.add_argument('--oracle',type=Path,required=True)
+    p.add_argument('--condition-manifest',type=Path);p.add_argument('--condition-index',type=int)
     p.add_argument('--oracle-python',type=Path,required=True);p.add_argument('--out',type=Path,required=True)
     p.add_argument('--source-row',type=int,default=5846);p.add_argument('--steps',type=int,default=100)
     p.add_argument('--path-steps',type=int,default=16);p.add_argument('--batch',type=int,default=2)
@@ -49,20 +51,39 @@ def main():
     if min(args.steps,args.path_steps,args.batch,args.eval_particles)<1 or args.eval_particles%args.batch:
         raise ValueError('Positive counts and evaluation divisible by batch are required')
     if any(not math.isfinite(v) or v<=0 for v in [args.lr,args.noise,args.kT,args.restraint,args.prior_std,args.max_drift_per_sqrt_dimension]):raise ValueError('Invalid scale')
+    if (args.condition_manifest is None)!=(args.condition_index is None):raise ValueError('Condition manifest and index must be specified together')
+    if args.condition_manifest is None and args.metadata is None:raise ValueError('Legacy rows require verified electronic metadata')
     args.out.mkdir(parents=True,exist_ok=True);output=args.out/'results.json'
     if output.exists():raise FileExistsError(output)
     torch.manual_seed(args.seed)
     cfg=read_config_file(args.config);cfg['mol_fm'].pop('bgfm',None);cfg['mol_fm']['prior_config']['x']['align']=False
     if cfg['dataset']['max_atoms']!=200 or cfg['mol_fm']['total_loss_weights']['e']!=0:raise ValueError('Require bond-free max_atoms=200')
-    metadata=ElectronicMetadata(args.metadata,'val',[atomic_numbers[s] for s in cfg['dataset']['atom_map']])
-    dataset=MoleculeDataset('val',dict(cfg['dataset'],fake_atom_p=0.,fake_atom_std=1.,
-        explicit_aromaticity=cfg['mol_fm'].get('explicit_aromaticity',False)),prior_config=cfg['mol_fm']['prior_config'])
-    metadata.verify_processed_file(dataset.processed_data_dir/'val_data_processed.pt')
-    base=dataset[args.source_row];n=base.num_nodes();dimension=3*(n-1)
+    metadata=None
+    if args.condition_manifest is not None:
+        # No reference-coordinate dataset is opened in this branch. This loader
+        # refuses reserved conditions: training is development, even after freeze.
+        condition=load_condition(args.condition_manifest,args.condition_index)
+        condition['requested_kT_eV']=args.kT
+        base=graph_from_condition(condition,cfg['dataset']['atom_map'],
+            n_bond_classes=5 if cfg['mol_fm'].get('explicit_aromaticity',False) else 4)
+        numbers=np.asarray(condition['atomic_numbers']);charge=condition['charge'];spin=condition['spin_multiplicity']
+        energy_zero=float(condition['energy_eV'])
+        source_condition={k:condition[k] for k in ['raw_index','manifest_index','manifest_sha256','manifest_role','source']}
+        source_condition['reference_geometry_loaded']=False
+    else:
+        metadata=ElectronicMetadata(args.metadata,'val',[atomic_numbers[s] for s in cfg['dataset']['atom_map']])
+        dataset=MoleculeDataset('val',dict(cfg['dataset'],fake_atom_p=0.,fake_atom_std=1.,
+            explicit_aromaticity=cfg['mol_fm'].get('explicit_aromaticity',False)),prior_config=cfg['mol_fm']['prior_config'])
+        metadata.verify_processed_file(dataset.processed_data_dir/'val_data_processed.pt')
+        base=dataset[args.source_row]
+        accepted=int(metadata.indices[args.source_row]);charge=int(metadata.values['total_charge'][accepted]);spin=int(metadata.values['spin_multiplicity'][accepted])
+        energy_zero=float(metadata.values['energy_float64'][accepted])
+        numbers=np.array([atomic_numbers[cfg['dataset']['atom_map'][int(i)]] for i in base.ndata['a_1_true'].argmax(-1)])
+        source_condition={'source_row':args.source_row,'raw_index':int(metadata.values['raw_indices'][accepted]),
+            'reference_geometry_loaded':True,'reference_geometry_used_to_initialize':False}
+    if not math.isfinite(energy_zero):raise ValueError('Finite logging energy offset required')
+    n=base.num_nodes();dimension=3*(n-1)
     if not 2<=n<=200:raise ValueError('Invalid atom count')
-    accepted=int(metadata.indices[args.source_row]);charge=int(metadata.values['total_charge'][accepted]);spin=int(metadata.values['spin_multiplicity'][accepted])
-    energy_zero=float(metadata.values['energy_float64'][accepted])
-    numbers=np.array([atomic_numbers[cfg['dataset']['atom_map'][int(i)]] for i in base.ndata['a_1_true'].argmax(-1)])
     state=torch.load(str(args.checkpoint),map_location='cpu',weights_only=False);protocol=state.get('research_protocol',{})
     if protocol.get('position_parameterization')!='displacement' or protocol.get('data_endpoint_time')!=1.:
         raise ValueError('This proposal trainer requires the explicit T=1 displacement checkpoint')
@@ -75,7 +96,8 @@ def main():
         for parameter in forward.parameters():parameter.requires_grad_(False)
     parameters=[v for model in [forward,backward] for v in model.parameters() if v.requires_grad]
     optimizer=torch.optim.AdamW(parameters,lr=args.lr,weight_decay=0.)
-    graph=dgl.batch([base]*args.batch).to(args.device);metadata.attach(graph,[args.source_row]*args.batch,args.kT)
+    graph=dgl.batch([base]*args.batch).to(args.device)
+    if metadata is not None:metadata.attach(graph,[args.source_row]*args.batch,args.kT)
     nbi,_=get_batch_idxs(graph);uem=get_upper_edge_mask(graph)
     basis=centered_orthonormal_basis(n,device=args.device);prior_std=args.prior_std
     terminal_std=math.sqrt(args.kT/args.restraint) if args.reference_kernel=='gaussian' else None
@@ -89,9 +111,9 @@ def main():
         return sign*torch.einsum('nk,bnd->bkd',basis,v.double().reshape(args.batch,n,3)).reshape_as(z)
     root=Path(__file__).resolve().parents[2]
     report={'complete':False,'scope':__doc__,'configuration':{k:str(v.resolve()) if isinstance(v,Path) else v for k,v in vars(args).items()},
-        'checkpoint_sha256':sha(args.checkpoint),'oracle_sha256':sha(args.oracle),'metadata_progress_sha256':metadata.progress_sha256,
-        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py',root/'scripts/research/oracle_worker.py']},
-        'condition':{'source_row':args.source_row,'raw_index':int(metadata.values['raw_indices'][accepted]),
+        'checkpoint_sha256':sha(args.checkpoint),'oracle_sha256':sha(args.oracle),'metadata_progress_sha256':metadata.progress_sha256 if metadata else None,
+        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py',root/'scripts/research/oracle_worker.py',root/'cfm_mol/condition_systems.py']},
+        'condition':{**source_condition,
             'numbers':numbers.tolist(),'charge':charge,'spin_multiplicity':spin},
         'energy_zero_eV':energy_zero,'prior_std':prior_std,'evaluations':{},'training':[]}
     write_json(output,report);start=time.perf_counter()

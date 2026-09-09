@@ -9,10 +9,18 @@ data audits. STATUS and evidence retain failures as well as improvements.
    budget and evaluation panels. First batch-two joint calibration reduced mean
    energy by 13.6534 eV, but ESS stayed 3.485/64 and unweighted overlap worsened.
    Backward-only samples stayed bitwise unchanged. Neither is sampling success.
+   Independent xTB on the initial/100-update panels now gives 0/32 and 6/32
+   converged, with extensive SCC failures. All 64 geometries per arm have multiple
+   contact components. Compare the pending same-condition pure FM control before
+   blaming this on the pretrained generator or declaring work training useful.
+   Apply the frozen 32-index xTB protocol to the completed 500-update arms too.
 2. Repeat promising training across seeds and new development conditions before
    choosing a final recipe. The 664 audited development candidates have no checked
    old-composition/source-link overlap. Use condition-only graphs. Reserved 722
    conditions must remain free of method outcomes until the protocol is frozen.
+   The manifest-based work trainer now passes a real two-update PbCl2 CPU smoke;
+   it opens no reference-coordinate dataset. Condition graph edge ordering has
+   been corrected and tested before any broader experiment used it.
 3. Require normalizer/moment/coverage checks and independent potential evaluation.
    The AgBr2 reference gives log(mean Z-hat)=144093.1275689 with relative SE 1.67%;
    simple confinement-Gaussian IS beats learned templates. On the eight-atom
@@ -36,7 +44,7 @@ just to improve metrics. Electronic-state FM conditioning is a semantic repair,
 not a demonstrated quality gain: both 10k continuations pass 32/32 xTB, with
 median strain 3.94384 eV (global) versus 3.89309 eV (legacy).
 
-183 tests pass. Batched oracle inference passed the serial energy/force check;
+186 tests pass. Batched oracle inference passed the serial energy/force check;
 serial remains the default and potential counts still include every structure.
 The main-text build remains 9/9 pages and is an audit/development draft. These
 engineering checks are not ICLR readiness. Authors and submission belong to the

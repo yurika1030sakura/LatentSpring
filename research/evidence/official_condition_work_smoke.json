@@ -1,0 +1,135 @@
+{
+  "source_result": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/official_condition_work_smoke_v1/results.json",
+  "source_result_sha256": "80d3fa47176a25b1a7f2b6f6b6b9634c287373800aac414cb2f6ab32e656307e",
+  "complete": true,
+  "scope": "Train a stochastic proposal by mean finite-path work, initialized from FM.\n\nThis is an existing path-space KL/SNF teacher objective. The eventual position\nstudent remains a separately evaluated flow-matching model. Work is shifted by\na fixed source energy for logging; no normalizer is assumed known.\n",
+  "configuration": {
+    "config": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/configs/sweep/a1_fm_only_s2.yaml",
+    "checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/electronic_fm_global_v1/last.ckpt",
+    "metadata": null,
+    "oracle": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+    "condition_manifest": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/research/evidence/official_development_candidates.json",
+    "condition_index": 167,
+    "oracle_python": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python3.11",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/official_condition_work_smoke_v1",
+    "source_row": 5846,
+    "steps": 2,
+    "path_steps": 4,
+    "batch": 2,
+    "eval_particles": 4,
+    "lr": 1e-05,
+    "noise": 0.2,
+    "kT": 1.0,
+    "restraint": 0.1,
+    "seed": 9051,
+    "mode": "joint",
+    "oracle_batch_size": 1,
+    "reference_kernel": "gaussian",
+    "prior_std": 1.0,
+    "max_drift_per_sqrt_dimension": 20.0,
+    "checkpoint_steps": true,
+    "device": "cpu"
+  },
+  "checkpoint_sha256": "aa25f1c31a7f5d692a8b6a0d1ccb8f564dc82ead95be05c5419f157ba63bbf18",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "metadata_progress_sha256": null,
+  "source_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/scripts/research/train_molecular_work.py": "0ebea29e125dbf1ca7ecc4e6bb7686cd5251f6035a9469610f72bbdccc5a230b",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/path_work.py": "1d028deecac9d01b7fe9c6d154c1c2a0c88ebf138f3df295f33097947425c418",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/energy_oracle.py": "87a01e5d0b4c5f1e7f3d938615486504472f5f88de3debab7a5a95551d3a436a",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/scripts/research/oracle_worker.py": "df0413ae2887561c13934c62e4eac8941a5a33efa551ca97d80c319b6d998b51",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/condition_systems.py": "6d421721ade12f787ee38ebd2b62d22fa7c0ba73167e5a339792106ca8284e74"
+  },
+  "condition": {
+    "raw_index": 2574436,
+    "manifest_index": 167,
+    "manifest_sha256": "fcdc8622e7e41e990b23e35774174222d32b61ee6d3698f5781b9462fc36b3fc",
+    "manifest_role": "new_development",
+    "source": "ml_elytes/elytes_md_eqv2_electro_2791_Pb+2_3_group_0_shell_0_0_1_1733/orca.tar.zst",
+    "reference_geometry_loaded": false,
+    "numbers": [
+      82,
+      17,
+      17
+    ],
+    "charge": 0,
+    "spin_multiplicity": 1
+  },
+  "energy_zero_eV": -30291.546128741997,
+  "prior_std": 1.0,
+  "evaluations": {
+    "initial": {
+      "mean_shifted_work": 44.14127109351175,
+      "work_std": 75.45346757814167,
+      "mean_energy_eV": -30285.19024318347,
+      "weights": {
+        "particles": 4,
+        "ess": 1.0014318831829045,
+        "ess_fraction": 0.25035797079572614,
+        "maximum_weight": 0.9992845702477535,
+        "log_mean_weight": 3.9053231671222273
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 24.96610208985817,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 5.247765352718583,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_geometry": {
+        "weighted_pair_distance_variance_A2": 0.0011579056362631078,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 3.0111561152432116,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "oracle_evaluations": 4
+    },
+    "final": {
+      "mean_shifted_work": 35.467360553288785,
+      "work_std": 61.331938233259265,
+      "mean_energy_eV": -30285.275873621413,
+      "weights": {
+        "particles": 4,
+        "ess": 1.0015912265717668,
+        "ess_fraction": 0.2503978066429417,
+        "maximum_weight": 0.999205018708573,
+        "log_mean_weight": 4.469119270401553
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 24.471906011335985,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 5.158263223686037,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_geometry": {
+        "weighted_pair_distance_variance_A2": 0.0012308782231906454,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 2.970455980658314,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "oracle_evaluations": 4
+    }
+  },
+  "training": [
+    {
+      "step": 1,
+      "mean_shifted_work": 164.62252408546726,
+      "mean_energy_eV": -30283.85581072898,
+      "gradient_norm": 3001.615966796875,
+      "seconds": 25.631827181903645
+    },
+    {
+      "step": 2,
+      "mean_shifted_work": 14.76541410600964,
+      "mean_energy_eV": -30282.77570874137,
+      "gradient_norm": 388.5013122558594,
+      "seconds": 29.076484157005325
+    }
+  ],
+  "oracle_evaluations": 12,
+  "seconds": 36.54489534790628,
+  "peak_gpu_bytes": null
+}
