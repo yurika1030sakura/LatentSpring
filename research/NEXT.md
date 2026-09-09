@@ -85,3 +85,9 @@ RUNNING at 20:43 UTC. Its independent assessment 45730934 is queued afterok,
 native_mean_xtb_5846_v1. Inspect both exact results before claiming initialization
 repair or starting longer native-mean training. The suite currently passes 190
 tests. No final reserved condition is used by any of these jobs.
+
+Native preflight and assessment are COMPLETE: initial xTB 30/32, median
+successful strain 16.7263 eV, overlaps 21/64, ESS 1.928/64. Two-update final:
+28/32, 16.9588 eV, 20/64, ESS 1.781/64. Convergence recovered, quality did not.
+Proceed with the prescribed native-mean joint/energy-gradient 500-update pair;
+compare all arms after completed independent assessment, not training loss alone.

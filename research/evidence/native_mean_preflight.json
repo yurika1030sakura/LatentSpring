@@ -1,0 +1,2237 @@
+{
+  "complete": true,
+  "scope": "Two-update native-mean calibration; restored SCC convergence does not establish adequate geometry or sampling efficiency.",
+  "training": {
+    "source_result": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/native_mean_preflight_5846_v1/results.json",
+    "source_sha256": {
+      "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/a2f4a7b053c4a3440af594982eff81d79e6bd0bc/scripts/research/train_molecular_work.py": "72aec3335bd32f932045909586295b611f522bd8dc0a05e29714faeaa12c6c50",
+      "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/a2f4a7b053c4a3440af594982eff81d79e6bd0bc/cfm_mol/path_work.py": "014f9f16c03458825a1f488e36fbfec36a95cd7a52459d86a2045edbe25b0e65",
+      "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/a2f4a7b053c4a3440af594982eff81d79e6bd0bc/cfm_mol/energy_oracle.py": "87a01e5d0b4c5f1e7f3d938615486504472f5f88de3debab7a5a95551d3a436a",
+      "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/a2f4a7b053c4a3440af594982eff81d79e6bd0bc/scripts/research/oracle_worker.py": "df0413ae2887561c13934c62e4eac8941a5a33efa551ca97d80c319b6d998b51",
+      "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/a2f4a7b053c4a3440af594982eff81d79e6bd0bc/cfm_mol/condition_systems.py": "6d421721ade12f787ee38ebd2b62d22fa7c0ba73167e5a339792106ca8284e74"
+    },
+    "complete": true,
+    "scope": "Train a stochastic proposal by mean finite-path work, initialized from FM.\n\nThis is an existing path-space KL/SNF teacher objective. The eventual position\nstudent remains a separately evaluated flow-matching model. Work is shifted by\na fixed source energy for logging; no normalizer is assumed known.\n",
+    "configuration": {
+      "config": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/a2f4a7b053c4a3440af594982eff81d79e6bd0bc/configs/sweep/a1_fm_only_s2.yaml",
+      "checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/electronic_fm_global_v1/last.ckpt",
+      "metadata": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/raw_metadata_replay_v1",
+      "oracle": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+      "condition_manifest": null,
+      "condition_index": null,
+      "oracle_python": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python3.11",
+      "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/native_mean_preflight_5846_v1",
+      "source_row": 5846,
+      "steps": 2,
+      "path_steps": 16,
+      "batch": 2,
+      "eval_particles": 64,
+      "lr": 1e-05,
+      "noise": 0.2,
+      "kT": 1.0,
+      "restraint": 0.1,
+      "seed": 9051,
+      "mode": "joint",
+      "oracle_batch_size": 1,
+      "reference_kernel": "gaussian",
+      "mean_parameterization": "native",
+      "prior_std": 1.0,
+      "max_drift_per_sqrt_dimension": 20.0,
+      "checkpoint_steps": true,
+      "device": "cuda"
+    },
+    "checkpoint_sha256": "aa25f1c31a7f5d692a8b6a0d1ccb8f564dc82ead95be05c5419f157ba63bbf18",
+    "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+    "metadata_progress_sha256": "bb9016536bf309bd12d923f2de7b2b732c657ac52c4c1df0ee1685d35cf5e750",
+    "condition": {
+      "source_row": 5846,
+      "raw_index": 589712,
+      "reference_geometry_loaded": true,
+      "reference_geometry_used_to_initialize": false,
+      "numbers": [
+        1,
+        15,
+        8,
+        6,
+        1,
+        6,
+        8,
+        12
+      ],
+      "charge": 1,
+      "spin_multiplicity": 1
+    },
+    "energy_zero_eV": -20924.201862654783,
+    "prior_std": 1.0,
+    "evaluations": {
+      "initial": {
+        "mean_shifted_work": 9.193905895768918,
+        "work_std": 14.275045179357084,
+        "mean_energy_eV": -20907.506070096635,
+        "weights": {
+          "particles": 64,
+          "ess": 1.9280125187229282,
+          "ess_fraction": 0.030125195605045754,
+          "maximum_weight": 0.6882903750112095,
+          "log_mean_weight": 8.22239941469509
+        },
+        "geometry": {
+          "weighted_pair_distance_variance_A2": 1.5088198423446275,
+          "weighted_overlap_fraction": 0.328125,
+          "unweighted_overlap_fraction": 0.328125,
+          "weighted_radius_gyration_A": 2.20851941640801,
+          "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+        },
+        "weighted_geometry": {
+          "weighted_pair_distance_variance_A2": 1.016196917600025,
+          "weighted_overlap_fraction": 6.6091202176989935e-06,
+          "unweighted_overlap_fraction": 0.328125,
+          "weighted_radius_gyration_A": 2.256540431316263,
+          "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+        },
+        "oracle_evaluations": 64
+      },
+      "final": {
+        "mean_shifted_work": 7.4014745860833875,
+        "work_std": 13.616597779608336,
+        "mean_energy_eV": -20907.928146503124,
+        "weights": {
+          "particles": 64,
+          "ess": 1.7812792159812374,
+          "ess_fraction": 0.027832487749706834,
+          "maximum_weight": 0.7055734302958703,
+          "log_mean_weight": 8.801074529680086
+        },
+        "geometry": {
+          "weighted_pair_distance_variance_A2": 1.6203769656041846,
+          "weighted_overlap_fraction": 0.3125,
+          "unweighted_overlap_fraction": 0.3125,
+          "weighted_radius_gyration_A": 2.2639772013430974,
+          "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+        },
+        "weighted_geometry": {
+          "weighted_pair_distance_variance_A2": 0.8486491765141282,
+          "weighted_overlap_fraction": 1.257831223195155e-05,
+          "unweighted_overlap_fraction": 0.3125,
+          "weighted_radius_gyration_A": 2.322441208094492,
+          "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+        },
+        "oracle_evaluations": 64
+      }
+    },
+    "training": [
+      {
+        "step": 1,
+        "mean_shifted_work": 7.576179742226772,
+        "mean_energy_eV": -20917.968165878476,
+        "gradient_norm": 365.99114990234375,
+        "seconds": 71.45582626992837
+      },
+      {
+        "step": 2,
+        "mean_shifted_work": 11.47597693613773,
+        "mean_energy_eV": -20903.885486482635,
+        "gradient_norm": 419.6377258300781,
+        "seconds": 76.84888239600696
+      }
+    ],
+    "oracle_evaluations": 132,
+    "seconds": 114.50090466905385,
+    "peak_gpu_bytes": 229221888
+  },
+  "assessment": {
+    "source_result": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/native_mean_xtb_5846_v1/assessment.json",
+    "source_sha256": {
+      "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/a2f4a7b053c4a3440af594982eff81d79e6bd0bc/scripts/research/assess_work_panel.py": "197d3d6c600666b743ca81701e978b860c9d4c56fccacfe8d684420c6d749259",
+      "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/a2f4a7b053c4a3440af594982eff81d79e6bd0bc/scripts/research/eval_position_xtb.py": "d663aefcd419cbadcb4787faee00fa3b0d34c3f690d0d1b260336835c7cfcf1d"
+    },
+    "complete": true,
+    "scope": "Assess fixed work-sampler outputs with geometry diagnostics and independent xTB.\n\nAll geometries enter contact/diversity diagnostics. A seeded subset, selected\nwithout energies or work weights, enters GFN2 single-point and relaxation checks.\nFailures remain in every denominator. This is conditional method development,\nnot a certificate of chemical validity or equilibrium mode coverage.\n",
+    "condition": {
+      "source_row": 5846,
+      "raw_index": 589712,
+      "reference_geometry_loaded": true,
+      "reference_geometry_used_to_initialize": false,
+      "numbers": [
+        1,
+        15,
+        8,
+        6,
+        1,
+        6,
+        8,
+        12
+      ],
+      "charge": 1,
+      "spin_multiplicity": 1
+    },
+    "sources": [
+      {
+        "arm": "initial",
+        "samples": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/native_mean_preflight_5846_v1/initial_samples.pt",
+        "samples_sha256": "7c6a441e157c63fcbc4c8dc0150db8d8d5e0db8b4e43e151f6522b89c30f1df9",
+        "results_sha256": "50a9b5e6d503908e701271f6df7216d2b895aed59025579ef741187ad4939690"
+      },
+      {
+        "arm": "joint",
+        "samples": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/native_mean_preflight_5846_v1/final_samples.pt",
+        "samples_sha256": "ae48317e4aa8a472c14a458736dfec43e0d7026154da337004902243617de3ae",
+        "results_sha256": "50a9b5e6d503908e701271f6df7216d2b895aed59025579ef741187ad4939690"
+      }
+    ],
+    "geometry": [
+      {
+        "arm": "initial",
+        "particles": 64,
+        "contact_rows": [
+          {
+            "min_covalent_distance_ratio": 0.7966265709309933,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.7594705799974265,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.7600378768975328,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.7080012168646066,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.7148613785111774,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.6761125699672633,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.6480276315626458,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 9
+          },
+          {
+            "min_covalent_distance_ratio": 0.6259049081407545,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.7477249055944704,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.7040549879256647,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.6746582295133362,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.46271764463755305,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.7141791152068733,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.7827064786289787,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.8882511454558825,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.7421935577937694,
+            "overlap_pairs": 0,
+            "contact_components": 4,
+            "contact_edges": 4
+          },
+          {
+            "min_covalent_distance_ratio": 0.7458127181196748,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 9
+          },
+          {
+            "min_covalent_distance_ratio": 0.8799771397586412,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.6510368622432509,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.5667550635980435,
+            "overlap_pairs": 1,
+            "contact_components": 1,
+            "contact_edges": 9
+          },
+          {
+            "min_covalent_distance_ratio": 0.609758859630139,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.803669248177104,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.7171479255348941,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.9438655150503588,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.8738301614198019,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.5269216535783026,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.6482184184790406,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.6990706405585244,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.7563380206615463,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 9
+          },
+          {
+            "min_covalent_distance_ratio": 0.7965935540070329,
+            "overlap_pairs": 0,
+            "contact_components": 4,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.5327098053270033,
+            "overlap_pairs": 1,
+            "contact_components": 4,
+            "contact_edges": 4
+          },
+          {
+            "min_covalent_distance_ratio": 0.5630683136867203,
+            "overlap_pairs": 1,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.8627280478472241,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.5153745440580303,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 9
+          },
+          {
+            "min_covalent_distance_ratio": 0.546938626197105,
+            "overlap_pairs": 1,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.895611195208923,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.541195653776728,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.8118645810152346,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.4364761982625579,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.5990796147949552,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.5638714859253645,
+            "overlap_pairs": 1,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.8102487968539084,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.6188381207758136,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.703396087095428,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.5138167953786843,
+            "overlap_pairs": 1,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.4030697769167138,
+            "overlap_pairs": 2,
+            "contact_components": 2,
+            "contact_edges": 10
+          },
+          {
+            "min_covalent_distance_ratio": 0.8209412025121928,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.5497912255401453,
+            "overlap_pairs": 1,
+            "contact_components": 1,
+            "contact_edges": 9
+          },
+          {
+            "min_covalent_distance_ratio": 0.68135712630114,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.8041148535658532,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.4835575342944204,
+            "overlap_pairs": 2,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.7862389350303526,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.5840117550637636,
+            "overlap_pairs": 1,
+            "contact_components": 1,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.38719790926716957,
+            "overlap_pairs": 2,
+            "contact_components": 1,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.7258499146613506,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.7869410554432787,
+            "overlap_pairs": 0,
+            "contact_components": 4,
+            "contact_edges": 4
+          },
+          {
+            "min_covalent_distance_ratio": 0.39824807186406147,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.8167504735619407,
+            "overlap_pairs": 0,
+            "contact_components": 4,
+            "contact_edges": 4
+          },
+          {
+            "min_covalent_distance_ratio": 0.5097515542494028,
+            "overlap_pairs": 1,
+            "contact_components": 1,
+            "contact_edges": 9
+          },
+          {
+            "min_covalent_distance_ratio": 0.5114278668052198,
+            "overlap_pairs": 1,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.6535696748032803,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.7488507897969843,
+            "overlap_pairs": 0,
+            "contact_components": 4,
+            "contact_edges": 4
+          },
+          {
+            "min_covalent_distance_ratio": 0.6919688465192215,
+            "overlap_pairs": 0,
+            "contact_components": 4,
+            "contact_edges": 4
+          },
+          {
+            "min_covalent_distance_ratio": 0.5648750977774838,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 7
+          }
+        ],
+        "overlap_count": 21,
+        "multiple_contact_components_count": 51,
+        "contact_components": {
+          "q10": 1.0,
+          "median": 2.0,
+          "q90": 3.700000000000003
+        },
+        "pair_distance_profile_rms_A": {
+          "q10": 0.956731040979409,
+          "median": 1.3438489314470223,
+          "q90": 1.850804455183979
+        },
+        "weighted_profile_variance_A2": 0.5502377638745848,
+        "weights": {
+          "particles": 64,
+          "ess": 1.9280125187229282,
+          "ess_fraction": 0.030125195605045754,
+          "maximum_weight": 0.6882903750112095,
+          "log_mean_weight": 8.22239941469509
+        },
+        "weight_scope": "finite-path importance weights"
+      },
+      {
+        "arm": "joint",
+        "particles": 64,
+        "contact_rows": [
+          {
+            "min_covalent_distance_ratio": 0.8127817001508282,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.7532977162139848,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.76947204836379,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.710710646996028,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.7178618074941009,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.6776785468317766,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.608711476295186,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 10
+          },
+          {
+            "min_covalent_distance_ratio": 0.6320317206418513,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.8067317668334981,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.707569052553017,
+            "overlap_pairs": 0,
+            "contact_components": 4,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.6725774122619558,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.45353546175235193,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.7141943653526528,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.7983372148479067,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.8977736621421378,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.7304104451033225,
+            "overlap_pairs": 0,
+            "contact_components": 5,
+            "contact_edges": 3
+          },
+          {
+            "min_covalent_distance_ratio": 0.7412571751185131,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 9
+          },
+          {
+            "min_covalent_distance_ratio": 0.8837888912715863,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.6661596561638647,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.5931898540126801,
+            "overlap_pairs": 1,
+            "contact_components": 1,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.6174009777253662,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.7977834310651817,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.7590839779086168,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.9604322743933563,
+            "overlap_pairs": 0,
+            "contact_components": 4,
+            "contact_edges": 4
+          },
+          {
+            "min_covalent_distance_ratio": 0.8942544457778214,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.5451691886198893,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.6390161178417028,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.7212142586446364,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.7706373467714889,
+            "overlap_pairs": 0,
+            "contact_components": 1,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.8261396663102583,
+            "overlap_pairs": 0,
+            "contact_components": 4,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.5472680913092581,
+            "overlap_pairs": 1,
+            "contact_components": 4,
+            "contact_edges": 4
+          },
+          {
+            "min_covalent_distance_ratio": 0.5932030478649258,
+            "overlap_pairs": 1,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.7847967460505263,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.5171120773450049,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.3048184434184975,
+            "overlap_pairs": 1,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.9003801715919967,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.5666625411161393,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.8138108030594369,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.46305744268650983,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.7370445499869518,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.5672554430724049,
+            "overlap_pairs": 1,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.8107700734997157,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.6250666637488936,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.6961986316203388,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 7
+          },
+          {
+            "min_covalent_distance_ratio": 0.5165375976764603,
+            "overlap_pairs": 1,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.416883877658229,
+            "overlap_pairs": 2,
+            "contact_components": 2,
+            "contact_edges": 10
+          },
+          {
+            "min_covalent_distance_ratio": 0.8294041775421298,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.5551559824793211,
+            "overlap_pairs": 1,
+            "contact_components": 1,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.66847335033503,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.8206061898099162,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.464231822547597,
+            "overlap_pairs": 1,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.7874699395844322,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.5958898349775116,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.40315772036064285,
+            "overlap_pairs": 2,
+            "contact_components": 1,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.7272104048402123,
+            "overlap_pairs": 0,
+            "contact_components": 3,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.802115959517572,
+            "overlap_pairs": 0,
+            "contact_components": 5,
+            "contact_edges": 3
+          },
+          {
+            "min_covalent_distance_ratio": 0.39641199639462776,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 8
+          },
+          {
+            "min_covalent_distance_ratio": 0.821760047977191,
+            "overlap_pairs": 0,
+            "contact_components": 4,
+            "contact_edges": 4
+          },
+          {
+            "min_covalent_distance_ratio": 0.5183359136547359,
+            "overlap_pairs": 1,
+            "contact_components": 1,
+            "contact_edges": 9
+          },
+          {
+            "min_covalent_distance_ratio": 0.4979661831986093,
+            "overlap_pairs": 1,
+            "contact_components": 4,
+            "contact_edges": 5
+          },
+          {
+            "min_covalent_distance_ratio": 0.6631996328329368,
+            "overlap_pairs": 0,
+            "contact_components": 2,
+            "contact_edges": 6
+          },
+          {
+            "min_covalent_distance_ratio": 0.7689733277801645,
+            "overlap_pairs": 0,
+            "contact_components": 4,
+            "contact_edges": 4
+          },
+          {
+            "min_covalent_distance_ratio": 0.7063792354741383,
+            "overlap_pairs": 0,
+            "contact_components": 4,
+            "contact_edges": 4
+          },
+          {
+            "min_covalent_distance_ratio": 0.5819217616480757,
+            "overlap_pairs": 1,
+            "contact_components": 2,
+            "contact_edges": 6
+          }
+        ],
+        "overlap_count": 20,
+        "multiple_contact_components_count": 50,
+        "contact_components": {
+          "q10": 1.0,
+          "median": 2.0,
+          "q90": 4.0
+        },
+        "pair_distance_profile_rms_A": {
+          "q10": 0.9775189947654235,
+          "median": 1.3974900814195135,
+          "q90": 1.9171458668405505
+        },
+        "weighted_profile_variance_A2": 0.3343672602282069,
+        "weights": {
+          "particles": 64,
+          "ess": 1.7812792159812374,
+          "ess_fraction": 0.027832487749706834,
+          "maximum_weight": 0.7055734302958703,
+          "log_mean_weight": 8.801074529680086
+        },
+        "weight_scope": "finite-path importance weights"
+      }
+    ],
+    "xtb_subset_indices": [
+      0,
+      1,
+      2,
+      3,
+      5,
+      6,
+      8,
+      10,
+      11,
+      14,
+      18,
+      19,
+      20,
+      21,
+      24,
+      25,
+      26,
+      27,
+      29,
+      34,
+      36,
+      38,
+      40,
+      42,
+      45,
+      47,
+      51,
+      54,
+      57,
+      60,
+      61,
+      62
+    ],
+    "subset_seed": 9059,
+    "requested_xtb": 64,
+    "xtb_rows": [
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 0,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -429.491029999023,
+        "initial_max_force_norm_eV_A": 14.262136898485354,
+        "converged": true,
+        "relaxed_energy_eV": -436.68771007581097,
+        "strain_eV": 7.19668007678797,
+        "failure": null,
+        "seconds": 0.7899770910007646
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 1,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -428.9832815060083,
+        "initial_max_force_norm_eV_A": 18.308040142095493,
+        "converged": true,
+        "relaxed_energy_eV": -437.78816715890224,
+        "strain_eV": 8.804885652893915,
+        "failure": null,
+        "seconds": 0.5869549150011153
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 2,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -422.6426077741167,
+        "initial_max_force_norm_eV_A": 11.35359870096599,
+        "converged": true,
+        "relaxed_energy_eV": -434.9040453718285,
+        "strain_eV": 12.26143759771179,
+        "failure": null,
+        "seconds": 0.7608642630002578
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 3,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -422.64937976919754,
+        "initial_max_force_norm_eV_A": 34.60728209343508,
+        "converged": true,
+        "relaxed_energy_eV": -437.40620577648804,
+        "strain_eV": 14.756826007290499,
+        "failure": null,
+        "seconds": 0.8294063369976357
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 5,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -430.524391302491,
+        "initial_max_force_norm_eV_A": 44.579988862955474,
+        "converged": true,
+        "relaxed_energy_eV": -438.7092374768583,
+        "strain_eV": 8.184846174367294,
+        "failure": null,
+        "seconds": 0.6766727200010791
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 6,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -421.3776049517572,
+        "initial_max_force_norm_eV_A": 59.80704733899851,
+        "converged": true,
+        "relaxed_energy_eV": -438.7092534873849,
+        "strain_eV": 17.33164853562772,
+        "failure": null,
+        "seconds": 0.41037432400116813
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 8,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -425.39148205773324,
+        "initial_max_force_norm_eV_A": 22.002843524046355,
+        "converged": true,
+        "relaxed_energy_eV": -437.9543030666563,
+        "strain_eV": 12.562821008923038,
+        "failure": null,
+        "seconds": 0.5509034839997184
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 10,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -420.542764759104,
+        "initial_max_force_norm_eV_A": 59.44998183150436,
+        "converged": true,
+        "relaxed_energy_eV": -436.6637275679218,
+        "strain_eV": 16.120962808817808,
+        "failure": null,
+        "seconds": 0.5336418990009406
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 11,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -323.47231229241385,
+        "initial_max_force_norm_eV_A": 738.3404676029857,
+        "converged": true,
+        "relaxed_energy_eV": -436.90593494577377,
+        "strain_eV": 113.43362265335992,
+        "failure": null,
+        "seconds": 0.5270914540014928
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 14,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -427.2483178580193,
+        "initial_max_force_norm_eV_A": 8.349199182328363,
+        "converged": true,
+        "relaxed_energy_eV": -435.8344396953638,
+        "strain_eV": 8.586121837344535,
+        "failure": null,
+        "seconds": 0.5924785549977969
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 18,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -416.74070529822063,
+        "initial_max_force_norm_eV_A": 82.55524107594815,
+        "converged": true,
+        "relaxed_energy_eV": -437.42847878400323,
+        "strain_eV": 20.6877734857826,
+        "failure": null,
+        "seconds": 0.48242894600116415
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 19,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -372.1898393811455,
+        "initial_max_force_norm_eV_A": 247.0640997487181,
+        "converged": true,
+        "relaxed_energy_eV": -433.0703536580357,
+        "strain_eV": 60.88051427689021,
+        "failure": null,
+        "seconds": 0.4521268989992677
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 20,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -415.25309274681916,
+        "initial_max_force_norm_eV_A": 132.4377694366211,
+        "converged": true,
+        "relaxed_energy_eV": -437.6472682448692,
+        "strain_eV": 22.39417549805006,
+        "failure": null,
+        "seconds": 0.4168283800026984
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 21,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -430.39264985404037,
+        "initial_max_force_norm_eV_A": 16.72677670983275,
+        "converged": true,
+        "relaxed_energy_eV": -438.7324349301045,
+        "strain_eV": 8.339785076064118,
+        "failure": null,
+        "seconds": 0.6431140989989217
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 24,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -428.40065909069796,
+        "initial_max_force_norm_eV_A": 6.9272463288881845,
+        "converged": true,
+        "relaxed_energy_eV": -433.60827942775495,
+        "strain_eV": 5.207620337056994,
+        "failure": null,
+        "seconds": 0.398657228997763
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 25,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -407.0601580172241,
+        "initial_max_force_norm_eV_A": 127.14205129081718,
+        "converged": true,
+        "relaxed_energy_eV": -436.75720446756594,
+        "strain_eV": 29.697046450341816,
+        "failure": null,
+        "seconds": 0.6689059330019518
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 26,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -412.67779111707387,
+        "initial_max_force_norm_eV_A": 71.068188335372,
+        "converged": true,
+        "relaxed_energy_eV": -432.9483057197482,
+        "strain_eV": 20.270514602674325,
+        "failure": null,
+        "seconds": 0.47305840400076704
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 27,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -423.7923108818379,
+        "initial_max_force_norm_eV_A": 37.22088017817716,
+        "converged": true,
+        "relaxed_energy_eV": -435.5960941668086,
+        "strain_eV": 11.803783284970677,
+        "failure": null,
+        "seconds": 0.5659077830023307
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 29,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": false,
+        "ok": false,
+        "failure": "single_point_exit_1",
+        "energy_present": false,
+        "seconds": 0.5958924349979497
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 34,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -404.37422274981424,
+        "initial_max_force_norm_eV_A": 169.97706459848604,
+        "converged": true,
+        "relaxed_energy_eV": -438.7745015042473,
+        "strain_eV": 34.40027875443309,
+        "failure": null,
+        "seconds": 0.4947450649997336
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 36,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -406.46587211043624,
+        "initial_max_force_norm_eV_A": 177.09603075776113,
+        "converged": true,
+        "relaxed_energy_eV": -433.764343320351,
+        "strain_eV": 27.298471209914737,
+        "failure": null,
+        "seconds": 0.575170583997533
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 38,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": false,
+        "ok": false,
+        "failure": "single_point_exit_1",
+        "energy_present": false,
+        "seconds": 0.4426339149977139
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 40,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -403.8189966331672,
+        "initial_max_force_norm_eV_A": 146.03484226252502,
+        "converged": true,
+        "relaxed_energy_eV": -438.7323599571843,
+        "strain_eV": 34.9133633240171,
+        "failure": null,
+        "seconds": 0.6589522520007449
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 42,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -416.8536912034069,
+        "initial_max_force_norm_eV_A": 117.30294677482266,
+        "converged": true,
+        "relaxed_energy_eV": -438.7092588241092,
+        "strain_eV": 21.85556762070229,
+        "failure": null,
+        "seconds": 0.6923865690005186
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 45,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -264.71001529425126,
+        "initial_max_force_norm_eV_A": 703.8987877323722,
+        "converged": true,
+        "relaxed_energy_eV": -436.39943230022755,
+        "strain_eV": 171.68941700597628,
+        "failure": null,
+        "seconds": 0.5557392929986236
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 47,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -403.20023167692364,
+        "initial_max_force_norm_eV_A": 167.6818745323049,
+        "converged": true,
+        "relaxed_energy_eV": -435.2791991490356,
+        "strain_eV": 32.07896747211197,
+        "failure": null,
+        "seconds": 0.8151775610022014
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 51,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -424.7542665439322,
+        "initial_max_force_norm_eV_A": 14.480660970440308,
+        "converged": true,
+        "relaxed_energy_eV": -436.7567890228421,
+        "strain_eV": 12.002522478909896,
+        "failure": null,
+        "seconds": 0.7354742839997925
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 54,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -427.36638150268357,
+        "initial_max_force_norm_eV_A": 22.94441316787316,
+        "converged": true,
+        "relaxed_energy_eV": -436.12802034012867,
+        "strain_eV": 8.761638837445105,
+        "failure": null,
+        "seconds": 0.4991902050023782
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 57,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -425.4864530867857,
+        "initial_max_force_norm_eV_A": 19.66028841696831,
+        "converged": true,
+        "relaxed_energy_eV": -433.85827654699665,
+        "strain_eV": 8.371823460210976,
+        "failure": null,
+        "seconds": 0.5546986709996418
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 60,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -415.15951739202586,
+        "initial_max_force_norm_eV_A": 96.12856709232072,
+        "converged": true,
+        "relaxed_energy_eV": -434.9298088564031,
+        "strain_eV": 19.770291464377237,
+        "failure": null,
+        "seconds": 0.6636766219999117
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 61,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -423.15507973683697,
+        "initial_max_force_norm_eV_A": 30.692921231070926,
+        "converged": true,
+        "relaxed_energy_eV": -435.42479978799236,
+        "strain_eV": 12.269720051155389,
+        "failure": null,
+        "seconds": 0.5997829619991535
+      },
+      {
+        "arm": "initial",
+        "validation_index": 5846,
+        "sample_id": 62,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -418.88569593636686,
+        "initial_max_force_norm_eV_A": 49.452826892808396,
+        "converged": true,
+        "relaxed_energy_eV": -436.8334694313822,
+        "strain_eV": 17.947773495015326,
+        "failure": null,
+        "seconds": 0.5082520789983391
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 0,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -429.6469472124783,
+        "initial_max_force_norm_eV_A": 13.277167361511086,
+        "converged": true,
+        "relaxed_energy_eV": -436.68794808275874,
+        "strain_eV": 7.041000870280413,
+        "failure": null,
+        "seconds": 0.6529084540015901
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 1,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -428.6481210987462,
+        "initial_max_force_norm_eV_A": 19.337265673156832,
+        "converged": true,
+        "relaxed_energy_eV": -437.87209782454164,
+        "strain_eV": 9.223976725795467,
+        "failure": null,
+        "seconds": 0.6125182670002687
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 2,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -422.72944866935126,
+        "initial_max_force_norm_eV_A": 10.069974148324413,
+        "converged": true,
+        "relaxed_energy_eV": -434.90405553057366,
+        "strain_eV": 12.1746068612224,
+        "failure": null,
+        "seconds": 0.5661863929999527
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 3,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": false,
+        "ok": false,
+        "failure": "single_point_exit_1",
+        "energy_present": false,
+        "seconds": 0.41285341199909453
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 5,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -430.63845670644497,
+        "initial_max_force_norm_eV_A": 43.61541116217337,
+        "converged": true,
+        "relaxed_energy_eV": -438.7092339023978,
+        "strain_eV": 8.070777195952815,
+        "failure": null,
+        "seconds": 0.6404495970018615
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 6,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -418.81662594590915,
+        "initial_max_force_norm_eV_A": 74.23638675024887,
+        "converged": true,
+        "relaxed_energy_eV": -437.2164942303627,
+        "strain_eV": 18.399868284453532,
+        "failure": null,
+        "seconds": 0.37949918000231264
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 8,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -426.71896555271644,
+        "initial_max_force_norm_eV_A": 20.05836772576653,
+        "converged": true,
+        "relaxed_energy_eV": -437.95435355792773,
+        "strain_eV": 11.235388005211291,
+        "failure": null,
+        "seconds": 0.6860075620024872
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 10,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -420.63673944931713,
+        "initial_max_force_norm_eV_A": 60.37427327555936,
+        "converged": true,
+        "relaxed_energy_eV": -436.6636414812184,
+        "strain_eV": 16.026902031901272,
+        "failure": null,
+        "seconds": 0.506218219998118
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 11,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -310.7514255384892,
+        "initial_max_force_norm_eV_A": 817.9704747820851,
+        "converged": true,
+        "relaxed_energy_eV": -436.90594907961264,
+        "strain_eV": 126.15452354112347,
+        "failure": null,
+        "seconds": 0.6688185519997205
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 14,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -426.3918892585049,
+        "initial_max_force_norm_eV_A": 8.499876828628278,
+        "converged": true,
+        "relaxed_energy_eV": -435.83445782320837,
+        "strain_eV": 9.442568564703492,
+        "failure": null,
+        "seconds": 0.6596032880006533
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 18,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -419.46155935169315,
+        "initial_max_force_norm_eV_A": 68.53983176597576,
+        "converged": true,
+        "relaxed_energy_eV": -437.42846971765914,
+        "strain_eV": 17.966910365965987,
+        "failure": null,
+        "seconds": 0.4894105909988866
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 19,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -382.6150648611899,
+        "initial_max_force_norm_eV_A": 188.35984577774747,
+        "converged": true,
+        "relaxed_energy_eV": -433.0703553757272,
+        "strain_eV": 50.455290514537296,
+        "failure": null,
+        "seconds": 0.5176938059994427
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 20,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": false,
+        "ok": false,
+        "failure": "single_point_exit_1",
+        "energy_present": false,
+        "seconds": 0.44772964300136664
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 21,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -430.52426615049563,
+        "initial_max_force_norm_eV_A": 13.045589410284864,
+        "converged": true,
+        "relaxed_energy_eV": -438.7324125655016,
+        "strain_eV": 8.208146415005956,
+        "failure": null,
+        "seconds": 0.6313787520011829
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 24,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -427.9013303762174,
+        "initial_max_force_norm_eV_A": 8.12697156896771,
+        "converged": true,
+        "relaxed_energy_eV": -433.6082743278785,
+        "strain_eV": 5.706943951661117,
+        "failure": null,
+        "seconds": 0.5285933519990067
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 25,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -411.7518121803373,
+        "initial_max_force_norm_eV_A": 111.89601655910356,
+        "converged": true,
+        "relaxed_energy_eV": -436.75696960712526,
+        "strain_eV": 25.005157426787946,
+        "failure": null,
+        "seconds": 0.5668376270004956
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 26,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -414.6287692967067,
+        "initial_max_force_norm_eV_A": 76.49134506587632,
+        "converged": true,
+        "relaxed_energy_eV": -436.8197757694258,
+        "strain_eV": 22.191006472719096,
+        "failure": null,
+        "seconds": 0.5241021410001849
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 27,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -424.4532215703918,
+        "initial_max_force_norm_eV_A": 31.325588144711507,
+        "converged": true,
+        "relaxed_energy_eV": -435.5960942424019,
+        "strain_eV": 11.142872672010071,
+        "failure": null,
+        "seconds": 0.5077797720005037
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 29,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": false,
+        "ok": false,
+        "failure": "single_point_exit_1",
+        "energy_present": false,
+        "seconds": 0.4402852650018758
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 34,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -184.88180633780368,
+        "initial_max_force_norm_eV_A": 1592.2840186369904,
+        "converged": true,
+        "relaxed_energy_eV": -437.95030988505965,
+        "strain_eV": 253.06850354725597,
+        "failure": null,
+        "seconds": 0.4748370019988215
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 36,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -412.4102443106319,
+        "initial_max_force_norm_eV_A": 136.13152910958112,
+        "converged": true,
+        "relaxed_energy_eV": -433.7643232762262,
+        "strain_eV": 21.354078965594283,
+        "failure": null,
+        "seconds": 0.6268854580011975
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 38,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -324.8473194850492,
+        "initial_max_force_norm_eV_A": 738.0684558071747,
+        "converged": true,
+        "relaxed_energy_eV": -437.2165193513702,
+        "strain_eV": 112.36919986632103,
+        "failure": null,
+        "seconds": 0.743139345999225
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 40,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -406.38521645581403,
+        "initial_max_force_norm_eV_A": 134.5461174251266,
+        "converged": true,
+        "relaxed_energy_eV": -438.73225301325266,
+        "strain_eV": 32.34703655743863,
+        "failure": null,
+        "seconds": 0.5742735179992451
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 42,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -417.8026661844776,
+        "initial_max_force_norm_eV_A": 108.11053522594628,
+        "converged": true,
+        "relaxed_energy_eV": -438.7092573835656,
+        "strain_eV": 20.90659119908804,
+        "failure": null,
+        "seconds": 0.769846259001497
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 45,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -290.8258943323357,
+        "initial_max_force_norm_eV_A": 606.5183432577002,
+        "converged": true,
+        "relaxed_energy_eV": -436.39942755741896,
+        "strain_eV": 145.57353322508328,
+        "failure": null,
+        "seconds": 0.6600865220025298
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 47,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -405.7072403476314,
+        "initial_max_force_norm_eV_A": 158.69498765088053,
+        "converged": true,
+        "relaxed_energy_eV": -435.7992652374834,
+        "strain_eV": 30.092024889851984,
+        "failure": null,
+        "seconds": 0.9248375050010509
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 51,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -424.73525637542735,
+        "initial_max_force_norm_eV_A": 13.170025681273083,
+        "converged": true,
+        "relaxed_energy_eV": -437.3001574002657,
+        "strain_eV": 12.56490102483832,
+        "failure": null,
+        "seconds": 0.6278749939992849
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 54,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -426.9996434051867,
+        "initial_max_force_norm_eV_A": 22.387956584387663,
+        "converged": true,
+        "relaxed_energy_eV": -436.12800006976835,
+        "strain_eV": 9.128356664581645,
+        "failure": null,
+        "seconds": 0.5711726949994045
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 57,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -425.0959827561926,
+        "initial_max_force_norm_eV_A": 19.257364605746094,
+        "converged": true,
+        "relaxed_energy_eV": -433.85797310406656,
+        "strain_eV": 8.761990347873962,
+        "failure": null,
+        "seconds": 0.6384501780012215
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 60,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -417.03905906623277,
+        "initial_max_force_norm_eV_A": 86.68729476887073,
+        "converged": true,
+        "relaxed_energy_eV": -434.9298265635324,
+        "strain_eV": 17.890767497299635,
+        "failure": null,
+        "seconds": 0.6871589600013976
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 61,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": true,
+        "initial_energy_eV": -424.54051140130804,
+        "initial_max_force_norm_eV_A": 23.484657265555796,
+        "converged": true,
+        "relaxed_energy_eV": -435.4247482791511,
+        "strain_eV": 10.88423687784308,
+        "failure": null,
+        "seconds": 0.6084420650004176
+      },
+      {
+        "arm": "joint",
+        "validation_index": 5846,
+        "sample_id": 62,
+        "charge_recorded": 1,
+        "spin": 1,
+        "n_atoms": 8,
+        "uhf_assumed": 0,
+        "spin_metadata_available": true,
+        "success": false,
+        "ok": false,
+        "failure": "single_point_exit_1",
+        "energy_present": false,
+        "seconds": 0.4312735800012888
+      }
+    ],
+    "xtb_binary": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol/bin/xtb",
+    "xtb_sha256": "85da9d385d12ac9674ac311f3cdc669bb90b0423680e33317fbc631af97f78cf",
+    "contact_factor": 1.25,
+    "overlap_factor": 0.6,
+    "radii_source": "RDKit GetRcovalent",
+    "limitations": [
+      "Contact graphs are distance heuristics; fragments are allowed by the declared target.",
+      "Distance profiles are incomplete invariants, not aligned molecular RMSD or mode labels.",
+      "Importance ESS describes these weights, not proven mode coverage.",
+      "One training seed and one condition do not establish reproducible molecular benefit.",
+      "Strain statistics condition on convergence; report failures alongside them."
+    ],
+    "xtb_summaries": [
+      {
+        "arm": "initial",
+        "attempted": 32,
+        "converged": 30,
+        "strain_eV_success_only": {
+          "q10": 8.324291185894435,
+          "median": 16.726305672222765,
+          "q90": 37.51007841930445
+        },
+        "initial_max_force_norm_eV_A": {
+          "q10": 13.971283078733418,
+          "median": 54.45140436215638,
+          "q90": 184.09283765685691
+        },
+        "force_values_present": 30
+      },
+      {
+        "arm": "joint",
+        "attempted": 32,
+        "converged": 28,
+        "strain_eV_success_only": {
+          "q10": 8.166935649290014,
+          "median": 16.958834764600454,
+          "q90": 116.50479696876177
+        },
+        "initial_max_force_norm_eV_A": {
+          "q10": 12.152904831696729,
+          "median": 64.45705252076756,
+          "q90": 645.9833770225426
+        },
+        "force_values_present": 28
+      }
+    ],
+    "paired": [
+      {
+        "before": "initial",
+        "after": "joint",
+        "attempted_pairs": 32,
+        "better": 18,
+        "worse": 13,
+        "tie": 0,
+        "both_failed": 1,
+        "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+      }
+    ]
+  }
+}

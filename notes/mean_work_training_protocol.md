@@ -142,3 +142,19 @@ Check initial structure quality before longer training. Existing reference-mean
 500-update controls continue unchanged. Tests verify exact unbounded native
 means and density factors, full finite-difference/checkpoint gradients, and the
 energy-only gradient ablation under both mean parameterizations.
+
+The native-mean two-update preflight completed. Before training, xTB convergence
+recovers to 30/32, but successful-only median strain is 16.7263 eV and overlap
+incidence is 21/64. Weight ESS is 1.928/64. After two updates the corresponding
+values are 28/32, 16.9588 eV, 20/64 and 1.781/64. This restores evaluator
+convergence, not adequate sample quality or Boltzmann efficiency. Native mean
+compensation is not a demonstrated final solution.
+
+The next native-mean calibration mirrors the reference-mean 500-update protocol:
+500 updates, batch 16, 16 transitions, 256 held-noise samples before/after,
+seed 9051, learning rate 1e-5, batch-16 oracle inference. Compare joint work
+gradients with forward-energy-only plus backward conditional likelihood. Every
+arm uses 8,512 potential calls; native/reference changes no neural call count.
+The same fixed 32 indices enter xTB assessment, and all 256 geometries enter
+contact/diversity/weight diagnostics. Both older reference-mean runs continue.
+No new temperature, target, checkpoint or electronic state is selected here.

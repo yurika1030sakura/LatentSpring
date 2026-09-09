@@ -71,7 +71,8 @@ def main():
         if not json.loads(parent.read_text())['complete']:raise ValueError('Require completed source training')
         data=torch.load(str(path),map_location='cpu',weights_only=False)
         if condition is None:condition=data['condition']
-        if data['condition']!=condition:raise ValueError('Matched panel conditions differ')
+        if any(data['condition'][key]!=condition[key] for key in ['numbers','charge','spin_multiplicity']):
+            raise ValueError('Matched panel physical conditions differ')
         x=data['positions'].double();numbers=condition['numbers'];n=len(numbers)
         if x.ndim!=3 or x.shape[1:]!=(n,3) or not torch.isfinite(x).all():raise ValueError('Invalid saved geometry')
         if count is None:count=len(x)
@@ -98,7 +99,7 @@ def main():
             tasks.append({'arm':name,'validation_index':condition.get('source_row',0),'sample_id':index,
                 'positions':x[index].tolist(),'symbols':[table.GetElementSymbol(int(z)) for z in numbers],
                 'charge_recorded':condition['charge'],'spin':condition['spin_multiplicity']})
-        sources.append({'arm':name,'samples':str(path.resolve()),'samples_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
+        sources.append({'arm':name,'condition':data['condition'],'samples':str(path.resolve()),'samples_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
             'results_sha256':hashlib.sha256(parent.read_bytes()).hexdigest()})
     report={'complete':False,'scope':__doc__,'condition':condition,'sources':sources,'geometry':geometry,
         'source_sha256':{str(path):hashlib.sha256(path.read_bytes()).hexdigest() for path in

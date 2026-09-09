@@ -508,3 +508,18 @@ Native-mean preflight 45730876 (source a2f4a7b) was RUNNING at 20:43 UTC, with
 two updates and 132 total potential queries prescribed. Its fixed-index xTB
 assessment 45730934 is queued after successful completion. These outcomes are
 pending. The full suite passes 190 tests after the parameterization change.
+
+Native-mean preflight 45730876 and its xTB assessment 45730934 have now completed.
+Before training, xTB convergence recovers to 30/32, but successful-only median
+strain is 16.7263 eV, overlaps occur in 21/64 geometries, and weight ESS is only
+1.928/64. After two updates: 28/32, 16.9588 eV, 20/64 and ESS 1.781/64. Restored
+evaluator convergence is not adequate geometry or useful sampling. This motivates
+the predeclared native-mean 500-update joint/energy-gradient comparison, with
+8,512 potential queries per arm and the same initial checkpoint, random streams,
+noise, restraint, temperature and electronic state as the reference-mean runs.
+See evidence/native_mean_preflight.json and notes/mean_work_training_protocol.md.
+
+Assessment now compares explicit physical conditions (ordered atomic numbers,
+total charge and multiplicity), preserving each arm's complete source metadata.
+This permits comparison across provenance-schema updates without dropping or
+misidentifying electronic state. Missing FM weights remain null, never fabricated.

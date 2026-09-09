@@ -60,13 +60,16 @@ def test_fm_assessment_does_not_fabricate_importance_weights(monkeypatch,tmp_pat
     sample=tmp_path/'samples.pt'
     torch.save({'condition':{'numbers':[1,1],'charge':0,'spin_multiplicity':1},
         'positions':torch.tensor([[[0.,0,0],[0,0,.7]],[[0.,0,0],[0,0,1.2]]])},sample)
+    second=tmp_path/'second.pt';data=torch.load(sample,weights_only=False)
+    data['condition']['reference_geometry_loaded']=False;torch.save(data,second)
     binary=tmp_path/'xtb';binary.write_text('test binary identity')
     monkeypatch.setattr(module.shutil,'which',lambda name:str(binary))
     def failed(task,*args):return {**task,'success':False,'failure':'test_failure'}
     monkeypatch.setattr(module,'evaluate',failed)
-    monkeypatch.setattr(sys,'argv',['assess_work_panel','--samples','fm',str(sample),
+    monkeypatch.setattr(sys,'argv',['assess_work_panel','--samples','fm',str(sample),'--samples','other',str(second),
         '--out',str(tmp_path/'out'),'--xtb-count','2'])
     module.main();report=json.loads((tmp_path/'out/assessment.json').read_text())
     assert report['complete'] and report['geometry'][0]['weights'] is None
     assert report['geometry'][0]['weighted_profile_variance_A2'] is None
     assert report['xtb_summaries'][0]['attempted']==2 and report['xtb_summaries'][0]['converged']==0
+    assert report['sources'][1]['condition']['reference_geometry_loaded'] is False
