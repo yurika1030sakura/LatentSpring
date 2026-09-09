@@ -180,6 +180,20 @@ def test_real_ctmc_head_is_endpoint_and_adapter_uses_velocity():
     logp.sum().backward()
     grads = [p.grad for p in vf.parameters() if p.grad is not None]
     assert grads and all(torch.isfinite(grad).all() for grad in grads)
+    # The new conditional training path must exercise the actual FlowMol head,
+    # retain parameter gradients in deterministic mode, and restore caller state.
+    from cfm_mol.clamped_fm import clamped_fm_loss
+    vf.zero_grad(set_to_none=True)
+    vf.train()
+    original_x = g.ndata['x_1_true'].clone()
+    loss = clamped_fm_loss(model, g, nbi, uem, terminal_time=.8,
+                          generator=torch.Generator().manual_seed(100))
+    loss.backward()
+    grads = [p.grad for p in vf.parameters() if p.grad is not None]
+    assert torch.isfinite(loss) and loss > 0
+    assert grads and all(torch.isfinite(grad).all() for grad in grads)
+    assert any(grad.abs().sum() > 0 for grad in grads)
+    assert vf.training and torch.equal(g.ndata['x_1_true'], original_x)
 
 
 def test_trace_replicates_share_one_trajectory_and_use_distinct_probes():
@@ -284,3 +298,18 @@ def test_adaptive_reference_matches_analytic_density_for_each_fixed_probe():
         assert torch.allclose(torch.tensor(value['log_q'],dtype=x.dtype),expected,atol=1e-7,rtol=0)
     assert head.training
     assert torch.equal(g.ndata['x_1_true'],x)
+
+
+@pytest.mark.parametrize('power',[1,2])
+def test_conditional_fm_path_matches_the_defined_terminal_time(power):
+    from cfm_mol.clamped_fm import clamped_fm_path
+    g,nbi,uem=graph_batch()
+    scheduler=Schedule(power)
+    xt,t,target,info=clamped_fm_path(g,nbi,scheduler,terminal_time=.8,
+                                  generator=torch.Generator().manual_seed(28))
+    alpha=scheduler.alpha_t(t)[:,1]
+    prime=scheduler.alpha_t_prime(t)[:,1]
+    actual=prime[nbi,None]/(1-alpha[nbi,None])*(target-xt)
+    expected=prime[nbi,None]/info['alpha_T'][nbi,None]*(info['x1']-info['x0'])
+    assert torch.allclose(actual,expected,atol=1e-12)
+    assert torch.allclose(info['x0']+info['alpha_T'][nbi,None]*(target-info['x0']),info['x1'],atol=1e-12)

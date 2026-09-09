@@ -24,7 +24,7 @@ snapshot = root/'runs/source_snapshots'/rev
 out = root/'runs'/args.name
 command = ['sbatch', '--parsable', args.launcher, str(snapshot), str(out)]
 if args.config is not None or args.seed is not None:
-    command += [args.config or 'configs/research/runtime_smoke.yaml', str(args.seed or 9001)]
+    command += [args.config or 'configs/research/runtime_smoke.yaml', str(9001 if args.seed is None else args.seed)]
 if not args.submit:
     print(json.dumps({'command':command, 'source_commit':rev}, indent=2))
 else:

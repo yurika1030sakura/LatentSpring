@@ -14,6 +14,10 @@ import torch
 from .clamped_density import center_by_graph, deterministic_field, position_velocity, _trace
 
 
+class ReferenceBudgetExceeded(RuntimeError):
+    """A recorded convergence failure, not permission to use partial densities."""
+
+
 def log_density_clamped_reference(model, graph, node_batch_idx, upper_edge_mask,
         *, terminal_time=0.95, prior_std=1., rtol=1e-5, atol=1e-7,
         quadrature_orders=(2,4), n_replicates=8, seed=9003, max_nfe=10000):
@@ -40,7 +44,7 @@ def log_density_clamped_reference(model, graph, node_batch_idx, upper_edge_mask,
             nonlocal nfe
             nfe += 1
             if nfe > max_nfe:
-                raise RuntimeError('Reference position solve exceeded the NFE budget')
+                raise ReferenceBudgetExceeded(f'Reference position solve exceeded {max_nfe} evaluations')
             x = state_tensor(y)
             velocity = position_velocity(model,graph,x,x.new_full((n_graphs,),t),
                                           node_batch_idx,upper_edge_mask)

@@ -8,7 +8,8 @@ import torch
 from flowmol.model_utils.load import read_config_file,model_from_config
 from cfm_mol.perturbation_loader import PerturbationLoader
 from cfm_mol.clamped_density import log_density_clamped_flow
-from cfm_mol.clamped_reference import log_density_clamped_reference
+from cfm_mol.clamped_reference import log_density_clamped_reference,ReferenceBudgetExceeded
+from checkpoint_panel import write_json
 
 
 def main():
@@ -16,6 +17,8 @@ def main():
     p.add_argument('--panel',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--device',default='cuda')
+    p.add_argument('--rtols',type=float,nargs='+',default=[1e-5,3e-6])
+    p.add_argument('--max-nfe',type=int,default=6000)
     args=p.parse_args();source=json.loads(args.panel.read_text())
     if not source['complete']:raise ValueError('Source panel is incomplete')
     checkpoint=Path(source['checkpoint'])
@@ -32,8 +35,11 @@ def main():
     selected=list(dict.fromkeys([0]+hardest))
     report={'selection':'first parent plus two largest 64-to-128 mean centered changes; development diagnosis',
         'source_panel':str(args.panel),'source_panel_sha256':hashlib.sha256(args.panel.read_bytes()).hexdigest(),
-        'dtype':'float64','rows':[],'complete':False}
+        'dtype':'float64','terminal_time':source['terminal_time'],
+        'requested_rtols':args.rtols,'max_nfe':args.max_nfe,
+        'rows':[],'complete':False,'all_reference_solves_succeeded':True}
     args.out.mkdir(parents=True,exist_ok=True)
+    write_json(args.out/'reference.json',report)
     for index in selected:
         original=rows[index];parent=original['parent_id']
         loader._order=torch.tensor([parent]);loader._ptr=0
@@ -45,22 +51,31 @@ def main():
         for key,value in list(g.edata.items()):
             if value.is_floating_point():g.edata[key]=value.double()
         row={'parent_id':parent,'geometry_sha256':fingerprint,'probe_seed':9100+index,'references':[]}
+        report['rows'].append(row)
+        write_json(args.out/'reference.json',report)
         gen=torch.Generator().manual_seed(9100+index)
         x=g.ndata['x_1_true']
         probes=[(2*torch.randint(0,2,x.shape,generator=gen)-1).to(x) for _ in range(8)]
         q=log_density_clamped_flow(model,g,nbi,uem,n_ode_steps=128,n_hutchinson=1,
-            n_trace_replicates=8,xi_fn=lambda step,k,x:probes[k])
+            terminal_time=source['terminal_time'],n_trace_replicates=8,xi_fn=lambda step,k,x:probes[k])
         row['midpoint_128_float64']=q.cpu().tolist()
-        for rtol in [1e-5,1e-7]:
-            result=log_density_clamped_reference(model,g,nbi,uem,rtol=rtol,atol=rtol/100,
-                quadrature_orders=(2,4),n_replicates=8,seed=9100+index,max_nfe=5000)
+        write_json(args.out/'reference.json',report)
+        for rtol in args.rtols:
+            try:
+                result=log_density_clamped_reference(model,g,nbi,uem,rtol=rtol,atol=rtol/100,
+                    terminal_time=source['terminal_time'],quadrature_orders=(2,4),
+                    n_replicates=8,seed=9100+index,max_nfe=args.max_nfe)
+                result['success']=True
+            except ReferenceBudgetExceeded as exc:
+                result={'success':False,'rtol':rtol,'error':str(exc)}
+                report['all_reference_solves_succeeded']=False
             row['references'].append(result)
-            print(json.dumps({'parent':parent,'rtol':rtol,'nfe':result['nfe'],
-                'intervals':result['accepted_intervals'],'seconds':result['total_seconds']}),flush=True)
-        report['rows'].append(row)
-        (args.out/'reference.json').write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')
+            write_json(args.out/'reference.json',report)
+            print(json.dumps({'parent':parent,'rtol':rtol,'success':result['success'],
+                'nfe':result.get('nfe'),'seconds':result.get('total_seconds'),
+                'error':result.get('error')}),flush=True)
     report['complete']=True
-    (args.out/'reference.json').write_text(json.dumps(report,indent=2,allow_nan=False)+'\n')
+    write_json(args.out/'reference.json',report)
 
 
 if __name__=='__main__':main()
