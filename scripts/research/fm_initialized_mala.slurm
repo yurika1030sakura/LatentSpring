@@ -10,6 +10,7 @@
 set -euo pipefail
 SOURCE_ROOT="${1:?source required}"
 RUN_ROOT="${2:?output required}"
+BGFM_KT="${3:-1.0}"
 BGFM_STORE=/n/holylabs/woo_lab/Lab/yulili/bgfm
 FLOWMOL_ENV="$BGFM_STORE/envs/flowmol"
 export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH="$SOURCE_ROOT"
@@ -22,7 +23,8 @@ cd "$SOURCE_ROOT"
 "$FLOWMOL_ENV/bin/python" -u scripts/research/fm_initialized_mala.py \
  --samples /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work_fm_control_5846_v2/sampling/fm_midpoint_16_samples.pt \
  --out "$RUN_ROOT/sampling" --oracle "$BGFM_STORE/checkpoints/omol25/esen_sm_conserving_all.pt" \
- --oracle-python "$BGFM_STORE/envs/omol25/bin/python" --steps 132 --proposal-std .1 --seed 9061 --oracle-batch-size 16
+ --oracle-python "$BGFM_STORE/envs/omol25/bin/python" --steps 132 --proposal-std .1 --seed 9061 --oracle-batch-size 16 \
+ --kT "$BGFM_KT" --scale-proposal-with-temperature
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
 exec "$FLOWMOL_ENV/bin/python" -u scripts/research/assess_work_panel.py \
  --samples initial_fm "$RUN_ROOT/sampling/initial_samples.pt" --samples mala "$RUN_ROOT/sampling/final_samples.pt" \

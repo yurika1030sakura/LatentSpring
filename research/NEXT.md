@@ -1,105 +1,62 @@
 # Next research decision
 
-The user's ICLR objective is active and not achieved. Do not restart completed
-data audits. STATUS and evidence retain failures as well as improvements.
+The ICLR objective is active, not achieved. Existing results do not establish
+both useful molecular generation and calibrated sampling. No replicated new
+contribution has been demonstrated. Do not restart completed data audits.
 
-1. Inspect the larger-batch mean-work experiment after its terminal state.
-   Compare joint gradients against forward-energy-only gradients plus backward
-   conditional likelihood, using identical initialization, noise, steps, oracle
-   budget and evaluation panels. First batch-two joint calibration reduced mean
-   energy by 13.6534 eV, but ESS stayed 3.485/64 and unweighted overlap worsened.
-   Backward-only samples stayed bitwise unchanged. Neither is sampling success.
-   Independent xTB on the initial/100-update panels now gives 0/32 and 6/32
-   converged, with extensive SCC failures. All 64 geometries per arm have multiple
-   contact components. Compare the pending same-condition pure FM control before
-   blaming this on the pretrained generator or declaring work training useful.
-   Apply the frozen 32-index xTB protocol to the completed 500-update arms too.
-2. Repeat promising training across seeds and new development conditions before
-   choosing a final recipe. The 664 audited development candidates have no checked
-   old-composition/source-link overlap. Use condition-only graphs. Reserved 722
-   conditions must remain free of method outcomes until the protocol is frozen.
-   The manifest-based work trainer now passes a real two-update PbCl2 CPU smoke;
-   it opens no reference-coordinate dataset. Condition graph edge ordering has
-   been corrected and tested before any broader experiment used it.
-3. Require normalizer/moment/coverage checks and independent potential evaluation.
-   The AgBr2 reference gives log(mean Z-hat)=144093.1275689 with relative SE 1.67%;
-   simple confinement-Gaussian IS beats learned templates. On the eight-atom
-   condition, defensive mixtures, center optimization and global-refresh SMC all
-   remain poor. Keep these controls and their construction budgets.
-4. Distill a physics teacher to FM only after its benefit is established. Account
-   for SNF/FEAT, FKC, EWFM, FALCON and RegFlow. Work identities, symmetry averaging,
-   defensive IS and exact-likelihood regression alone are existing methods.
-   No defensible new molecular contribution is established yet.
+1. Inspect the native-mean 500-update pair: 45732136 (joint), 45732178
+   (energy-gradient), source c37c8d9. Both were RUNNING at September 9 21:20 UTC.
+   Their independent xTB assessment 45732403 is queued afterok on both. Each
+   learning arm uses 8,512 potential queries. Compare completed results, not
+   training loss, and retain every failure. Never resubmit these accepted jobs.
+2. Inspect the prospective 300-K/1000-K FM-initialized MALA diagnostic after its
+   terminal state. Same 64 FM16 geometries, state, .1 restraint, seed 9061,
+   132 moves and 8,512 queries. Proposal std is .1*sqrt(kT/1eV) and score cap is
+   100*(1eV/kT), retaining fixed capped physical-force drift. All 1-eV results
+   stay in the record. See notes/target_temperature_audit.md before interpreting
+   geometry changes. Finite-time MALA is not declared equilibrated.
+3. Separate generation relevance from correctness for the declared target.
+   kT=1 eV is about 11,604.5 K; independent three-atom quadrature itself is
+   extended. A higher xTB success rate alone does not validate eSEN Boltzmann
+   sampling, and a lower rate alone does not invalidate it. The 300/1000-K
+   targets still include an explicit harmonic restraint. OMol has no thermal
+   label assumed here; the FM initialization retains its trained constant-kT
+   input rather than extrapolating an untrained conditioning feature.
+4. Expand only a justified target/method comparison across training seeds and
+   the 664 audited new development conditions. The 722 reserved conditions
+   remain free of method outcomes until a protocol is frozen. Condition-only
+   graph input passes a real PbCl2 smoke without reference-coordinate loading.
+   Its edge ordering respects FlowMol's upper/reverse-pair convention.
+5. Demonstrate value beyond current SNF/FEAT, FKC, EWFM, FALCON, RegFlow and
+   direct MCMC baselines. Work identities, symmetry averaging, defensive IS and
+   invertible regression alone are established methods. Distill to an FM student
+   only after a teacher's target accuracy and utility are supported.
 
-Raw training replay is complete: all 3,941,522 accepted tensors matched bitwise;
-original charges, spins, source IDs and float64 energies are restored. Use the
-integrity-checked source_index_readonly.sqlite in immutable read mode. The old
-cross-host WAL error did not invalidate the producer. Official validation audit
-completed 2,762,021 records, with 2,564,135 eligible. Explicit source links do not
-exhaust every possible parent-trajectory relationship.
+Completed comparison (condition 5846, one seed):
+- Pure FM16/FM64: xTB 29/32 and 30/32; median successful strain 4.76794/4.67530
+  eV. One overlap per 64. Maximum 16-to-64 coordinate drift .66522 A, so no
+  solver-convergence certificate. FM importance weights remain unknown.
+- Reference-mean initialization/100 updates: xTB 0/32 and 6/32; final ESS3.485/64.
+- Reference-mean 500 joint: ESS6.894/256, xTB12/32, median strain15.8157 eV.
+  Energy-gradient: ESS1.00036/256, xTB32/32, median6.76552 eV; one weight .999822.
+  Independent assessment45729911 is complete. Energy improves31 paired cases,
+  worsens1. Neither establishes adequate geometry and calibrated sampling.
+- Native-mean two-update preflight: initial xTB30/32, median16.7263 eV,
+  overlaps21/64, ESS1.928/64. Final28/32, median16.9588, overlaps20/64, ESS1.781.
+- FM-initialized MALA at1eV (45733994): complete, 8,512 queries; acceptance.7139,
+  xTB25/32, median9.58024 eV. Energy increases by4.122 eV during the fixed run.
+  This suggests target-temperature relevance needs scrutiny; it is not proof
+  of equilibrium. The source reference passes xTB with strain.89014 eV.
 
-Current kT=1 eV with harmonic confinement is a declared computational target,
-not ambient-temperature OMol equilibrium. Do not change it after seeing results
-just to improve metrics. Electronic-state FM conditioning is a semantic repair,
-not a demonstrated quality gain: both 10k continuations pass 32/32 xTB, with
-median strain 3.94384 eV (global) versus 3.89309 eV (legacy).
+Raw replay is complete: all3,941,522 accepted tensors matched bitwise; original
+charge/spin/source IDs and float64 energies are restored. Use immutable
+source_index_readonly.sqlite; old WAL failure did not invalidate the producer.
+Official validation audit:2,762,021 records,2,564,135 eligible; explicit source
+links do not exhaust every parent-trajectory relation. Reserved data is untouched.
 
-192 tests pass. Batched oracle inference passed the serial energy/force check;
-serial remains the default and potential counts still include every structure.
-The main-text build remains 9/9 pages and is an audit/development draft. These
-engineering checks are not ICLR readiness. Authors and submission belong to the
-user. No subagents or external messages are authorized. Never write home or edit
-the shared FlowMol installation.
-
-See research/jobs.jsonl for source snapshots and job IDs; re-query Slurm before
-reporting any job as running or complete.
-
-Submitted from a76313a: 45726541 (mean_work_joint_b16_5846_v1) and 45726651
-(mean_work_energy_b16_5846_v1). Both were RUNNING at the September 9 20:13 UTC
-check, with two GPU-hours maximum each. Do not infer completion from this note.
-
-Same-condition pure FM control: 45729734, work_fm_control_5846_v2, source 9f99c7c,
-regular gpu partition, half-hour maximum; PENDING for priority at 20:32 UTC.
-Version v1 was rejected by gpu_test's submit limit and has no job ID. The source
-reference itself passes xTB with strain .89014 eV and no overlap, so poor work
-samples cannot be excused solely by unsupported condition/electronic state.
-
-At 20:34 UTC, 45729734 had started RUNNING. The 500-update independent assessment
-is queued as 45729911 (mean_work_xtb_500_v1), source bf7669a, afterok dependencies
-on 45726541 and 45726651. It compares initial/joint/energy-only samples on the
-same 32 fixed indices, with all 256 geometries per arm entering diagnostics.
-Do not resubmit accepted jobs. If a dependency fails, retain that result and
-inspect the dependency before changing the assessment job.
-
-FM control 45729734 is now COMPLETED: 29/32 and 30/32 xTB convergence for
-midpoint-16/64, versus 0/32 for bridge initialization and 6/32 after 100 work
-updates. One overlap per 64 FM samples; solver-coordinate drift can still reach
-.66522 A. Initialization damage is now a concrete concern. A native-mean option
-compensates reference expansion before the same residual bound; inspect its
-two-update preflight and independent structure metrics before larger training.
-The 500-update reference-mean comparison remains a required retained control.
-
-Native-mean preflight: 45730876, native_mean_preflight_5846_v1, source a2f4a7b,
-two updates / batch two / 16 transitions / 64 evaluation samples, serial oracle,
-RUNNING at 20:43 UTC. Its independent assessment 45730934 is queued afterok,
-native_mean_xtb_5846_v1. Inspect both exact results before claiming initialization
-repair or starting longer native-mean training. The suite currently passes 190
-tests. No final reserved condition is used by any of these jobs.
-
-Native preflight and assessment are COMPLETE: initial xTB 30/32, median
-successful strain 16.7263 eV, overlaps 21/64, ESS 1.928/64. Two-update final:
-28/32, 16.9588 eV, 20/64, ESS 1.781/64. Convergence recovered, quality did not.
-Proceed with the prescribed native-mean joint/energy-gradient 500-update pair;
-compare all arms after completed independent assessment, not training loss alone.
-
-Reference-mean 500-update training and assessment are now COMPLETE. Joint:
-ESS 6.894/256, xTB 12/32, median successful strain 15.8157 eV. Energy-gradient:
-ESS 1.00036/256, xTB 32/32, median strain 6.76552 eV; one importance weight holds
-99.9822% mass. Energy improves 31 paired xTB cases, worsens one. Both retain
-fundamental limitations; no positive main-method result is established.
-
-Native-mean 500-update jobs 45732136 and 45732178 are RUNNING, source c37c8d9;
-assessment 45732403 waits afterok on both. A matched-oracle FM-initialized MALA
-baseline uses 64 particles and 132 moves, totaling 8,512 queries. Apply the same
-fixed-index independent xTB protocol. It must not acquire a fabricated endpoint
-density, normalizer or importance ESS, or an assumed equilibration label.
+193 tests pass. The last main-text build is9/9 pages and remains an audit draft.
+These engineering checks are not ICLR readiness. Latest summary figures are in
+research/figures/work_campaign_reference500. Source hashes and all outcomes are
+in research/evidence; jobs.jsonl records both accepted/rejected submissions.
+Authors/submission belong to the user. No subagents or external messages are
+authorized. Never write home or modify the shared FlowMol installation.

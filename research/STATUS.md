@@ -2,8 +2,10 @@
 
 **Not yet submission ready.** The project now has a specified conditional
 sampler, full density gradients and independent generation checks. No molecular
-benefit of the corrected energy objective has been established. Numerical
-convergence remains a blocking scientific gate, not merely a runtime issue.
+benefit of the corrected energy objective has been established. The old CNF
+density remains numerically unresolved. The finite-path branch avoids that
+likelihood integration, but sampling coverage and target suitability remain
+unresolved scientific gates.
 Authors and submission accounts are outside the user's requested execution.
 
 Active checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
@@ -14,7 +16,7 @@ that all scientific checks passed.
 
 ## What is established
 
-- 192 tests pass, including real FlowMol parameter gradients, full-state and
+- 193 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
   dedicated Gaussian/Rademacher probe streams for common/independent controls,
@@ -425,7 +427,7 @@ parameters. Tests compare forward gradients with energy-only autograd and
 backward gradients with the full objective, with/without checkpointing.
 This intentional ablation is not the full mean-work gradient.
 
-The full suite passes 192 tests. Batched oracle inference agrees with serial ASE
+The full suite passes 193 tests. Batched oracle inference agrees with serial ASE
 on 32 generated geometries: maximum energy difference 8.87e-6 eV and force
 component difference 5.04e-4 eV/A. Warm measured times were 75.88 s serial versus
 6.99 s with batch 16 (10.86x in this single timing, not a general speed guarantee).
@@ -507,7 +509,7 @@ controls are retained and continue to their predeclared assessments.
 Native-mean preflight 45730876 (source a2f4a7b) was RUNNING at 20:43 UTC, with
 two updates and 132 total potential queries prescribed. Its fixed-index xTB
 assessment 45730934 is queued after successful completion. These outcomes are
-pending. The full suite passes 192 tests after the parameterization change.
+pending. The full suite passes 193 tests after the parameterization change.
 
 Native-mean preflight 45730876 and its xTB assessment 45730934 have now completed.
 Before training, xTB convergence recovers to 30/32, but successful-only median
@@ -542,6 +544,33 @@ their assessment 45732403 is queued after both. Each retains the same 8,512-quer
 budget. A direct MALA baseline from the 64 fixed FM16 samples is now implemented:
 132 moves plus initial queries also totals 8,512 calls. It preserves rejected
 proposals in query counts and does not call finite-time MCMC equilibrated.
-The suite passes 192 tests, including clipped-drift MH Gaussian stationarity and
+The suite passes 193 tests, including clipped-drift MH Gaussian stationarity and
 cached-value consistency. The new rendering script assembles completed results
 with source hashes, failure denominators and explicit missing FM importance ESS.
+
+## Direct MALA and target-temperature audit
+
+FM-initialized MALA 45733994 completed 132 moves for 64 chains: exactly 8,512
+potential queries, 228.4 s for sampling and 4m41s for the complete job. Acceptance
+is .7139, but this is not a mixing certificate. Mean eSEN energy rises from
+-20920.795 to -20916.673 eV. xTB convergence falls from 29/32 to 25/32 and
+successful-only median strain rises from 4.76794 to 9.58024 eV. In paired ranking,
+three cases improve, 27 worsen, two fail both. No equilibrium density or ESS is
+claimed. This is a direct, matched-oracle baseline, with additional FM setup
+cost and no learned-model amortization. See evidence/fm_initialized_mala.json.
+
+These results also expose a target-definition issue. The existing kT=1-eV
+calibration corresponds to about 11,604.5 K. Independent AgBr2 quadrature for
+that target gives mean farthest Ag-Br distance 7.0083 A and radius of gyration
+3.4852 A, versus 2.4972 and 1.9369 A for the recorded OMol structure. These are
+means, not contact/dissociation probabilities or proof of eight-atom mixing.
+Compactness and xTB relaxation are not direct tests of sampling this hot eSEN
+target correctly. Earlier structure comparisons diagnose generation relevance;
+they must not alone be used to declare a Boltzmann sampler mathematically wrong.
+
+A prospective, fixed diagnostic now compares 300-K and 1000-K MALA targets, using
+identical FM initial geometries, state, oracle, restraint, seed and 8,512-query
+budget. Proposal variance scales with kT; score cap scales inversely so capped
+physical-force drift stays fixed. This tests target suitability/local relaxation,
+not final mode populations. No untrained FM temperature feature is changed.
+Keep every 1-eV result. See notes/target_temperature_audit.md and its evidence.

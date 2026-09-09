@@ -22,6 +22,8 @@ def main():
     p.add_argument('--steps',type=int,default=132);p.add_argument('--proposal-std',type=float,default=.1)
     p.add_argument('--seed',type=int,default=9061);p.add_argument('--kT',type=float,default=1.)
     p.add_argument('--restraint',type=float,default=.1);p.add_argument('--oracle-batch-size',type=int,default=16)
+    p.add_argument('--scale-proposal-with-temperature',action='store_true',
+        help='Scale proposal std by sqrt(kT/1eV) and score cap by 1eV/kT, preserving the capped physical-force drift')
     args=p.parse_args()
     if args.steps<1 or any(not math.isfinite(v) or v<=0 for v in [args.kT,args.restraint,args.proposal_std]):raise ValueError('Positive counts/scales required')
     parent=args.samples.parent/'results.json';source=json.loads(parent.read_text())
@@ -29,6 +31,8 @@ def main():
     entries=[(i,row) for i,row in enumerate(source['samples']) if row['file']==args.samples.name]
     if len(entries)!=1 or sha(args.samples)!=entries[0][1]['sha256']:raise ValueError('FM source sample hash mismatch')
     source_field_calls=source['neural_field_calls_per_sample'][entries[0][0]]
+    proposal_std=args.proposal_std*math.sqrt(args.kT) if args.scale_proposal_with_temperature else args.proposal_std
+    score_cap=100./args.kT if args.scale_proposal_with_temperature else 100.
     data=torch.load(str(args.samples),map_location='cpu',weights_only=False)
     condition=data['condition'];numbers=condition['numbers'];positions=data['positions'].double()
     n=len(numbers);basis=centered_orthonormal_basis(n)
@@ -41,6 +45,7 @@ def main():
         'source_samples_sha256':sha(args.samples),'source_results_sha256':sha(parent),'oracle_sha256':sha(args.oracle),
         'script_sha256':sha(Path(__file__)),'kernel_sha256':sha(root/'cfm_mol/fixed_target_mcmc.py'),
         'initialization_field_calls_per_sample':source_field_calls,'particles':len(positions),'history':[],
+        'effective_proposal_std_A':proposal_std,'effective_score_norm_cap_per_A':score_cap,
         'limitations':['FM initialization is not equilibrium.','No endpoint density, normalizer or importance ESS is claimed.',
             'Acceptance is not mixing or mode coverage.','One seed/condition; this is a budgeted baseline.']}
     write_json(output,report);start=time.perf_counter();snapshots=[]
@@ -65,7 +70,7 @@ def main():
                 if step in [0,args.steps]:
                     torch.save({'positions':x,'energy_eV':energy,'condition':condition,
                         'density_scope':'unknown finite-time MCMC endpoint density'},args.out/('initial_samples.pt' if step==0 else 'final_samples.pt'))
-        final,_,stats=mala_population(initial,target,steps=args.steps,proposal_std=args.proposal_std,
+        final,_,stats=mala_population(initial,target,steps=args.steps,proposal_std=proposal_std,max_score_norm=score_cap,
             generator=torch.Generator().manual_seed(args.seed),callback=record)
         if stats['target_evaluations']!=oracle.evaluated:raise RuntimeError('Oracle query accounting mismatch')
         torch.save({'condition':condition,'snapshots':snapshots},args.out/'trajectory_snapshots.pt')

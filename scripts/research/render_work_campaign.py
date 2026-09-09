@@ -16,6 +16,7 @@ def main():
     p.add_argument('--runs',type=Path,required=True);p.add_argument('--out',type=Path,required=True)
     p.add_argument('--include-reference-500',action='store_true')
     p.add_argument('--include-native-500',action='store_true')
+    p.add_argument('--include-mala',action='store_true')
     args=p.parse_args();sources={};rows=[];condition=None
     def read(relative):
         nonlocal condition
@@ -62,6 +63,12 @@ def main():
         for mode in ['joint','energy']:
             train=read(f'{prefix}_{mode}_b16_5846_v1/results.json')
             add(f'{label}: {mode} 500',assessment,mode,train,'final')
+    if args.include_mala:
+        mala=read('fm_mala_5846_v1/sampling/results.json')
+        assessment=read('fm_mala_5846_v1/assessment/assessment.json')
+        add('FM + MALA (132 moves)',assessment,'mala')
+        rows[-1]['sampling_oracle_queries']=mala['oracle_evaluations']
+        rows[-1]['mean_energy_eV']=mala['history'][-1]['mean_energy_eV']
     report={'complete':True,'scope':'Single-condition, single-training-seed development; no useful Boltzmann sampling established.',
         'sources':sources,'condition':condition,'rows':rows,
         'limitations':['Different training budgets; the 500-update arms are the matched learning controls.',
