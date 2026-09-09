@@ -23,3 +23,12 @@ way to train a clearly defined multi-composition molecular flow with noisy
 density estimates, plus physical improvements under strong matched controls.
 The independent-product identity, a conditional factorization, corrected code
 or the present constructed toys alone do not satisfy that contribution test.
+
+## Additional baseline check (September 9)
+
+[EWFM v2](https://arxiv.org/html/2509.03726v2) uses importance-weighted
+conditional FM with proposal-density correction and amortized sample buffers.
+A softmax of energy labels alone on the archived perturbations would instead
+train an energy-tilted proposal; it must not be presented as a faithful EWFM
+implementation. A proper comparison must specify the proposal and target
+domain, count density/buffer costs and report finite-sample weight degeneracy.

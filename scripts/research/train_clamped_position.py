@@ -48,6 +48,7 @@ def main():
     p.add_argument('--lambda-energy',type=float,default=0.)
     p.add_argument('--energy-every',type=int,default=4)
     p.add_argument('--energy-steps',type=int,default=16)
+    p.add_argument('--energy-solver',choices=['midpoint','rk4'],default='midpoint')
     p.add_argument('--energy-cap',type=float,default=1500.)
     p.add_argument('--energy-estimator',choices=['squared','replica_product'],default='replica_product')
     p.add_argument('--common-probes',action='store_true')
@@ -150,6 +151,7 @@ def main():
                 energy,diagnostics=energy_consistency_loss_per_mol(model,gp,pnbi,puem,
                     energies,pid,kT=1.,n_ode_steps=args.energy_steps,n_hutchinson=1,
                     density_options={'mode':'clamped_cnf','terminal_time':args.terminal_time,
+                        'solver':args.energy_solver,
                         'parameterization':args.position_parameterization,
                         'n_trace_replicates':2,'residual_estimator':args.energy_estimator,
                         'common_trace_within_parent':args.common_probes,

@@ -147,13 +147,51 @@ def _midpoint_step(model, graph, state, time, node_batch_idx, upper_edge_mask,
         return state-dt*v_mid,torch.stack(traces)
 
 
+def _rk4_step(model, graph, state, time, node_batch_idx, upper_edge_mask,
+              *, dt, n_hutchinson, n_trace_replicates, parameterization,
+              kT, xi_fn, step_index, probe_cache, for_training):
+    """Classical RK4 for the augmented coordinate/divergence ODE.
+
+    Each replica shares its probe across the four stages of one step. Replicas
+    remain independent, and cached probes are reused in the discrete adjoint.
+    ``time`` is the step's midpoint time, matching the midpoint backend API.
+    """
+    n_graphs=graph.batch_size
+    with graph.local_scope(),deterministic_field(model.vector_field):
+        for key in ('a','c'):graph.ndata[f'{key}_t']=graph.ndata[f'{key}_1_true']
+        graph.edata['e_t']=graph.edata['e_1_true']
+        if not probe_cache:
+            for replica in range(n_trace_replicates):
+                probes=None if n_hutchinson==0 else [
+                    (xi_fn(step_index,replica*n_hutchinson+k,state) if xi_fn is not None else
+                     torch.randint(0,2,state.shape,device=state.device).to(state)*2-1)
+                    for k in range(n_hutchinson)]
+                if probes is not None:
+                    if any(probe.shape!=state.shape for probe in probes):
+                        raise ValueError('Trace probe shape must match coordinates')
+                    probes=[probe.to(state).detach() for probe in probes]
+                probe_cache.append(probes)
+        velocities=[];divergences=[]
+        for stage,(offset,fraction) in enumerate([(0.,.5),(.5,0.),(.5,0.),(1.,-.5)]):
+            current=state if stage==0 else state-offset*dt*velocities[-1]
+            if not for_training:current=current.detach().requires_grad_(True)
+            velocity=position_velocity(model,graph,current,time+fraction*dt,node_batch_idx,
+                upper_edge_mask,parameterization=parameterization,kT=kT)
+            velocities.append(velocity)
+            divergences.append(torch.stack([_trace(velocity,current,node_batch_idx,n_graphs,
+                probes,for_training) for probes in probe_cache]))
+        following=state-dt*(velocities[0]+2*velocities[1]+2*velocities[2]+velocities[3])/6
+        divergence=(divergences[0]+2*divergences[1]+2*divergences[2]+divergences[3])/6
+        return following,divergence
+
+
 def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
                              *, n_ode_steps=32, n_hutchinson=2, prior_std=1.0,
                              terminal_time=0.95, for_training=False,
                              parameterization="endpoint", kT=None, xi_fn=None,
                              n_trace_replicates=1, checkpoint_steps=False,
-                             discrete_adjoint=False):
-    """Log q_T(x), explicit midpoint integration of state AND log-Jacobian.
+                             discrete_adjoint=False, solver='midpoint'):
+    """Log q_T(x), midpoint or RK4 integration of state AND log-Jacobian.
 
     With n_trace_replicates>1, return (replicates, graphs) estimates from
     independent traces on ONE deterministic trajectory. xi_fn sample indices
@@ -177,6 +215,9 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
         raise ValueError("terminal_time must be in (0, 1]")
     if not math.isfinite(prior_std) or prior_std <= 0:
         raise ValueError("prior_std must be positive and finite")
+    if solver not in {'midpoint','rk4'}:raise ValueError('Unknown density solver')
+    if solver=='rk4' and parameterization=='endpoint' and terminal_time==1:
+        raise ValueError('RK4 endpoint-head evaluation requires terminal_time<1')
     if discrete_adjoint and for_training:
         if checkpoint_steps:
             raise ValueError('Select step checkpointing or the discrete adjoint, not both')
@@ -184,7 +225,7 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
         return log_density_discrete_adjoint(model,graph,node_batch_idx,upper_edge_mask,
             n_ode_steps=n_ode_steps,n_hutchinson=n_hutchinson,prior_std=prior_std,
             terminal_time=terminal_time,parameterization=parameterization,kT=kT,
-            xi_fn=xi_fn,n_trace_replicates=n_trace_replicates)
+            xi_fn=xi_fn,n_trace_replicates=n_trace_replicates,solver=solver)
     x = graph.ndata["x_1_true"].detach().clone()
     if x.dtype in (torch.float16, torch.bfloat16):
         x = x.float()
@@ -204,7 +245,8 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
         def make_step(step_index):
             probe_cache=[]
             def advance(state,time):
-                return _midpoint_step(model,graph,state,time,node_batch_idx,upper_edge_mask,
+                step_function=_midpoint_step if solver=='midpoint' else _rk4_step
+                return step_function(model,graph,state,time,node_batch_idx,upper_edge_mask,
                     dt=dt,n_hutchinson=n_hutchinson,n_trace_replicates=n_trace_replicates,
                     parameterization=parameterization,kT=kT,xi_fn=xi_fn,step_index=step_index,
                     probe_cache=probe_cache,for_training=for_training)
@@ -237,7 +279,7 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
 def sample_clamped_flow(model, graph, node_batch_idx, upper_edge_mask, *,
                         n_ode_steps=128, terminal_time=0.95, prior_std=1.0,
                         parameterization="endpoint", kT=None, x0=None,
-                        generator=None):
+                        generator=None, solver='midpoint'):
     """Sample the SAME memoryless COM-free ODE used by the density diagnostic.
 
     The condition is the graph's fixed discrete composition; no bonds, history
@@ -250,6 +292,9 @@ def sample_clamped_flow(model, graph, node_batch_idx, upper_edge_mask, *,
         raise ValueError("Require positive steps and terminal_time in (0,1]")
     if not math.isfinite(prior_std) or prior_std <= 0:
         raise ValueError("prior_std must be positive and finite")
+    if solver not in {'midpoint','rk4'}:raise ValueError('Unknown sampling solver')
+    if solver=='rk4' and parameterization=='endpoint' and terminal_time==1:
+        raise ValueError('RK4 endpoint-head evaluation requires terminal_time<1')
     reference = graph.ndata['x_1_true']
     if reference.dtype in (torch.float16, torch.bfloat16):
         reference = reference.float()
@@ -269,6 +314,14 @@ def sample_clamped_flow(model, graph, node_batch_idx, upper_edge_mask, *,
         x = center_by_graph(x, node_batch_idx, graph.batch_size)
         for step in range(n_ode_steps):
             t = x.new_full((graph.batch_size,), (step+0.5)*dt)
+            if solver=='rk4':
+                velocities=[]
+                for stage,(offset,fraction) in enumerate([(0.,-.5),(.5,0.),(.5,0.),(1.,.5)]):
+                    current=x if stage==0 else x+offset*dt*velocities[-1]
+                    velocities.append(position_velocity(model,graph,current,t+fraction*dt,
+                        node_batch_idx,upper_edge_mask,parameterization=parameterization,kT=kT))
+                x=x+dt*(velocities[0]+2*velocities[1]+2*velocities[2]+velocities[3])/6
+                continue
             v = position_velocity(model,graph,x,t,node_batch_idx,upper_edge_mask,
                 parameterization=parameterization,kT=kT)
             midpoint = x+0.5*dt*v

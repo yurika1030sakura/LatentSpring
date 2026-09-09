@@ -39,6 +39,7 @@ def main():
     p.add_argument('--seed',type=int,default=9005)
     p.add_argument('--terminal-time',type=float,default=.8)
     p.add_argument('--device',default='cuda')
+    p.add_argument('--solver',choices=['midpoint','rk4'],default='midpoint')
     args=p.parse_args()
     if args.parents<1 or args.samples<1 or len(set(arm for arm,_ in args.checkpoint))!=len(args.checkpoint):
         raise ValueError('Require positive counts and unique arm names')
@@ -64,6 +65,7 @@ def main():
         'config_sha256':hashlib.sha256(args.config.read_bytes()).hexdigest(),
         'terminal_time':args.terminal_time,'seed':args.seed,'validation_indices':indices,
         'sampling_steps':args.steps,
+        'solver':args.solver,
         'selection':'seeded random <=12-atom composition-disjoint validation, excluding clipped charge boundaries',
         'reference_coordinate_use':'composition only for generation; independent normal prior; used as FM target for separate loss diagnostic',
         'spin_metadata_available':False,'arms':[],'references':[],'complete':False}
@@ -100,7 +102,7 @@ def main():
             outputs=[];start=time.monotonic()
             for steps in args.steps:
                 outputs.append(sample_clamped_flow(model,g,nbi,uem,x0=x0,
-                    n_ode_steps=steps,terminal_time=args.terminal_time,parameterization=parameterization).cpu())
+                    n_ode_steps=steps,terminal_time=args.terminal_time,parameterization=parameterization,solver=args.solver).cpu())
             n=base.num_nodes()
             for sample in range(args.samples):
                 sl=slice(sample*n,(sample+1)*n)

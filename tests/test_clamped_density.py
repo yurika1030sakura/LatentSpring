@@ -89,13 +89,14 @@ def test_com_trace_normalization_and_second_order_convergence():
 
 
 @pytest.mark.parametrize('adjoint',[False,True])
-def test_full_discretized_gradient_matches_finite_difference(adjoint):
+@pytest.mark.parametrize('solver',['midpoint','rk4'])
+def test_full_discretized_gradient_matches_finite_difference(adjoint,solver):
     g, nbi, uem = graph_batch()
     head = LinearHead()
     model = SimpleNamespace(vector_field=head)
     def objective():
         p = log_density_clamped_flow(model, g, nbi, uem, n_ode_steps=4,
-                                    n_hutchinson=0, for_training=True,discrete_adjoint=adjoint)
+                                    n_hutchinson=0, for_training=True,discrete_adjoint=adjoint,solver=solver)
         return ((p-p.mean())**2).mean()
     derivative = torch.autograd.grad(objective(), head.a)[0].item()
     initial, eps = head.a.item(), 1e-5
@@ -157,7 +158,8 @@ def test_constant_field_and_graph_model_restoration():
     assert head.training and not head.dropout.training
 
 
-def test_real_ctmc_head_is_endpoint_and_adapter_uses_velocity(monkeypatch):
+@pytest.mark.parametrize('solver',['midpoint','rk4'])
+def test_real_ctmc_head_is_endpoint_and_adapter_uses_velocity(monkeypatch,solver):
     from flowmol.models.ctmc_vector_field import CTMCVectorField
     from flowmol.models.interpolant_scheduler import InterpolantScheduler
     torch.manual_seed(7)
@@ -179,7 +181,7 @@ def test_real_ctmc_head_is_endpoint_and_adapter_uses_velocity(monkeypatch):
     actual = position_velocity(model, g, x, t, nbi, uem)
     assert torch.allclose(actual, expected, atol=2e-6)
     assert not torch.allclose(actual, endpoint, atol=1e-3)
-    logp = log_density_clamped_flow(model, g, nbi, uem, n_ode_steps=2, n_hutchinson=1, for_training=True)
+    logp = log_density_clamped_flow(model, g, nbi, uem, n_ode_steps=2, n_hutchinson=1, for_training=True,solver=solver)
     logp.sum().backward()
     grads = [p.grad for p in vf.parameters() if p.grad is not None]
     assert grads and all(torch.isfinite(grad).all() for grad in grads)
@@ -199,7 +201,7 @@ def test_real_ctmc_head_is_endpoint_and_adapter_uses_velocity(monkeypatch):
     assert vf.training and torch.equal(g.ndata['x_1_true'], original_x)
     def density_grads(saved,adjoint=False):
         q=log_density_clamped_flow(model,g,nbi,uem,n_ode_steps=2,n_hutchinson=1,
-            n_trace_replicates=2,for_training=True,checkpoint_steps=saved,discrete_adjoint=adjoint,
+            n_trace_replicates=2,for_training=True,checkpoint_steps=saved,discrete_adjoint=adjoint,solver=solver,
             xi_fn=lambda step,k,x:((torch.arange(x.numel()).reshape(x.shape)+step+k)%2*2-1).to(x))
         grads=torch.autograd.grad(q.square().mean(),tuple(vf.parameters()),allow_unused=True)
         return q.detach(),grads
@@ -402,7 +404,8 @@ def test_checkpointed_steps_preserve_density_parameter_gradients_and_rng(exact):
 
 
 @pytest.mark.parametrize('exact',[False,True])
-def test_discrete_adjoint_matches_nonlinear_divergence_gradient_and_probe_stream(exact):
+@pytest.mark.parametrize('solver',['midpoint','rk4'])
+def test_discrete_adjoint_matches_nonlinear_divergence_gradient_and_probe_stream(exact,solver):
     class Nonlinear(nn.Module):
         def __init__(self):
             super().__init__()
@@ -421,7 +424,7 @@ def test_discrete_adjoint_matches_nonlinear_divergence_gradient_and_probe_stream
             return (2*torch.randint(0,2,x.shape,generator=generator)-1).to(x)
         q=log_density_clamped_flow(model,g,nbi,uem,n_ode_steps=5,
             n_hutchinson=0 if exact else 1,n_trace_replicates=2,parameterization='velocity',
-            prior_std=1.2,xi_fn=probes,for_training=True,discrete_adjoint=adjoint)
+            prior_std=1.2,xi_fn=probes,for_training=True,discrete_adjoint=adjoint,solver=solver)
         loss=(q[0]*q[1]).mean()
         grads=torch.autograd.grad(loss,tuple(model.vector_field.parameters()),allow_unused=True)
         return q.detach(),grads,generator.get_state(),calls
@@ -432,3 +435,26 @@ def test_discrete_adjoint_matches_nonlinear_divergence_gradient_and_probe_stream
         else:torch.testing.assert_close(expected,actual,rtol=1e-12,atol=1e-12)
     assert torch.equal(plain[2],adjoint[2]) and plain[3]==adjoint[3]
     assert model.vector_field.training
+
+
+def test_rk4_state_and_density_have_fourth_order_accuracy_for_time_varying_field():
+    class TimeLinear(nn.Module):
+        def forward(self,g,t,node_batch_idx,**kwargs):
+            return {'x':.7*(1+t[node_batch_idx,None])*g.ndata['x_t']}
+    g,nbi,uem=graph_batch();model=SimpleNamespace(vector_field=TimeLinear())
+    x=g.ndata['x_1_true'].clone();T=.95;integral=.7*(T+T*T/2)
+    counts=g.batch_num_nodes().to(x)
+    sq=x.new_zeros(2).index_add(0,nbi,x.square().sum(-1))
+    exact=-.5*sq*math.exp(-2*integral)-1.5*(counts-1)*math.log(2*math.pi)-3*(counts-1)*integral
+    density_errors=[];sampling_errors=[]
+    for n in [4,8,16]:
+        q=log_density_clamped_flow(model,g,nbi,uem,terminal_time=T,n_ode_steps=n,
+            n_hutchinson=0,parameterization='velocity',solver='rk4')
+        sample=sample_clamped_flow(model,g,nbi,uem,terminal_time=T,n_ode_steps=n,
+            x0=x,parameterization='velocity',solver='rk4')
+        density_errors.append(float((q-exact).abs().max()))
+        sampling_errors.append(float((sample-x*math.exp(integral)).abs().max()))
+    for errors in [density_errors,sampling_errors]:
+        assert errors[0]/errors[1]>12 and errors[1]/errors[2]>12
+    with pytest.raises(ValueError,match='terminal_time<1'):
+        log_density_clamped_flow(model,g,nbi,uem,terminal_time=1.,solver='rk4')

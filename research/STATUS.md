@@ -14,7 +14,7 @@ that all scientific checks passed.
 
 ## What is established
 
-- 105 tests pass, including real FlowMol parameter gradients, full-state and
+- 111 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities and smooth geometry.
 - Legacy scalar ordering cannot be promoted to likelihood or Boltzmann sampling.
@@ -71,6 +71,28 @@ between these policies. Replica products correct stochastic squared-loss bias
 on a fixed trajectory, not quadrature bias. Common probes are a required
 control, not an omitted competitor. All Gaussian and unstable product toy
 arms remain in `evidence/evidence.json` and the development appendix.
+
+## New provenance and theory checks
+
+Deterministic replay exactly reproduces all 150,000 training and 50,000 validation
+perturbed geometries and atom/charge labels. In these two shards, perturbation
+parent index equals the processed source row index. This recovers processed-tensor
+provenance and the Gaussian perturbation mechanism, not raw OMol identifiers,
+spin, unclipped charge or energy precision. See
+`evidence/train_perturbation_provenance.json` and
+`evidence/val_perturbation_provenance.json`.
+
+The follow-up theory audit removes unsupported gradient-noise lower bounds,
+corrects the endpoint-force conditional expectation, distinguishes discrete
+quadrature from an exactly normalized discrete sampler, and replaces the old
+capability matrix with the actual sampler/density scope. See
+`audit/20260909/THEORY_FOLLOWUP.md`.
+
+Classical RK4 is now available for both sampling and density, including full
+discrete-adjoint gradients. It passes analytic fourth-order and real-network
+gradient checks. Its extra trace evaluations are explicitly counted; it is not
+an equal-cost replacement per step. Molecular RK4 experiments have not yet run.
+See `notes/rk4_density_protocol.md`.
 
 ## Running, with automatic evaluation
 

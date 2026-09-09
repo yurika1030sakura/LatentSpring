@@ -9,7 +9,7 @@ coordinate/temperature input derivatives are deliberately unsupported.
 import math
 import torch
 from torch.autograd.function import once_differentiable
-from .clamped_density import center_by_graph,_midpoint_step
+from .clamped_density import center_by_graph,_midpoint_step,_rk4_step
 
 
 class _DensityAdjoint(torch.autograd.Function):
@@ -31,7 +31,8 @@ class _DensityAdjoint(torch.autograd.Function):
                 states.append(x.detach())
                 cache=[];probes.append(cache)
                 time=x.new_full((graph.batch_size,),options['terminal_time']-(step+.5)*dt)
-                following,divergence=_midpoint_step(model,graph,x.detach().requires_grad_(True),
+                step_function=_midpoint_step if options['solver']=='midpoint' else _rk4_step
+                following,divergence=step_function(model,graph,x.detach().requires_grad_(True),
                     time,node_batch_idx,upper_edge_mask,dt=dt,
                     n_hutchinson=options['n_hutchinson'],n_trace_replicates=options['n_trace_replicates'],
                     parameterization=options['parameterization'],kT=options['kT'],xi_fn=options['xi_fn'],
@@ -61,7 +62,8 @@ class _DensityAdjoint(torch.autograd.Function):
             for step in reversed(range(options['n_ode_steps'])):
                 state=ctx.states[step].detach().requires_grad_(True)
                 time=state.new_full((ctx.graph.batch_size,),options['terminal_time']-(step+.5)*dt)
-                following,divergence=_midpoint_step(ctx.model,ctx.graph,state,time,ctx.nbi,ctx.uem,
+                step_function=_midpoint_step if options['solver']=='midpoint' else _rk4_step
+                following,divergence=step_function(ctx.model,ctx.graph,state,time,ctx.nbi,ctx.uem,
                     dt=dt,n_hutchinson=options['n_hutchinson'],
                     n_trace_replicates=options['n_trace_replicates'],
                     parameterization=options['parameterization'],kT=options['kT'],

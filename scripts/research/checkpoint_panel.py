@@ -39,6 +39,7 @@ def main():
     p.add_argument('--composition-split', type=Path)
     p.add_argument('--perturbation-indices', type=int, nargs='+')
     p.add_argument('--geometry-softening',type=float)
+    p.add_argument('--solver',choices=['midpoint','rk4'],default='midpoint')
     args = p.parse_args()
     if args.replicas < 2:
         raise ValueError('At least two replicas needed for noise diagnostics')
@@ -75,6 +76,8 @@ def main():
         'perturbation_indices':args.perturbation_indices,
         'geometry_softening':softening,
         'position_parameterization':parameterization,
+        'solver':args.solver,'field_evaluations_per_step':4 if args.solver=='rk4' else 2,
+        'trace_stages_per_step':4 if args.solver=='rk4' else 1,
         'probe_policy':'independent Rademacher replicas, fixed over time and across resolutions',
         'rows':[], 'complete':False}
     if args.composition_split:
@@ -95,7 +98,7 @@ def main():
             start = time.monotonic()
             q = log_density_clamped_flow(model, graph, nbi, uem,
                 n_ode_steps=steps, n_hutchinson=1, n_trace_replicates=args.replicas,
-                terminal_time=args.terminal_time, xi_fn=lambda step,k,x:probes[k],parameterization=parameterization)
+                terminal_time=args.terminal_time, xi_fn=lambda step,k,x:probes[k],parameterization=parameterization,solver=args.solver)
             centered = (q.double()-q.double().mean(-1,keepdim=True)).cpu()
             item = {'steps':steps, 'seconds':time.monotonic()-start,
                 'log_q':q.cpu().tolist(), 'centered_log_q':centered.tolist(),
@@ -120,7 +123,7 @@ def main():
         if i < args.exact_parent_count:
             start = time.monotonic()
             q = log_density_clamped_flow(model,graph,nbi,uem,n_ode_steps=32,
-                n_hutchinson=0,terminal_time=args.terminal_time,parameterization=parameterization)
+                n_hutchinson=0,terminal_time=args.terminal_time,parameterization=parameterization,solver=args.solver)
             row['exact_trace_32'] = {'log_q':q.cpu().tolist(),
                 'centered_log_q':(q-q.mean()).cpu().tolist(), 'seconds':time.monotonic()-start}
         report['rows'].append(row)
