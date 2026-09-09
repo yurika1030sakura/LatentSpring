@@ -1,0 +1,86 @@
+{
+  "complete": true,
+  "scope": "Refine an independent FM pilot with the declared target, retaining all centers.",
+  "conditions": [
+    {
+      "source_row": 5846,
+      "symbols": [
+        "H",
+        "P",
+        "O",
+        "C",
+        "H",
+        "C",
+        "O",
+        "Mg"
+      ],
+      "charge": 1,
+      "spin_multiplicity": 1,
+      "spin_provenance": "declared minimum electron-parity multiplicity; original OMol state unknown",
+      "source_scope": "legacy validation development condition, not blind test",
+      "fm_center_seconds": 32.814760982990265,
+      "fm_center_field_evaluations": 8192,
+      "center_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/center_refinement_preflight_v1/centers_5846.pt",
+      "center_sha256": "9cc872e15b5e17f8f2440751dacc9563eeb9910e480d91702c6e7e6b5b3a3f81",
+      "symmetry_templates": {
+        "total_identical_atom_permutations": 8,
+        "used_permutations": 8,
+        "all_permutations_enumerated": true,
+        "reflections_included": true,
+        "template_count": 512,
+        "permutation_seed": 54877
+      },
+      "original_center_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_symmetry_5846_v1/centers_5846.pt",
+      "refinement_oracle_calls": 96,
+      "refinement_seconds": 19.445689999964088
+    }
+  ],
+  "source_pilot": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_symmetry_5846_v1/results.json",
+  "source_pilot_sha256": "0e540605709e82ac5a0007d2e15733fcbddc0f3a72f667aff8cd038d8ec61758",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "source_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/scripts/research/refine_molecular_centers.py": "ae46ca6988baa2a7085a955ef4518321ea3cc12bd3c0be46910a9a6d54dd156a",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/proposal_refinement.py": "06e109c90e6700e573e9696f2bbd9615a23e37c7ed9042db313c775b20cec8da"
+  },
+  "target": {
+    "kT": 1.0,
+    "restraint": 0.1
+  },
+  "diagnostics": {
+    "steps": 2,
+    "max_step": 0.05,
+    "target_evaluations": 96,
+    "history": [
+      {
+        "step": 1,
+        "accepted_centers": 32,
+        "mean_log_target_gain": 1.164604265679941,
+        "minimum_step": 0.05
+      },
+      {
+        "step": 2,
+        "accepted_centers": 32,
+        "mean_log_target_gain": 2.0028779941143284,
+        "minimum_step": 0.05
+      }
+    ],
+    "minimum_log_target_gain": 0.3210530913420371,
+    "scope": "all centers retained; monotone proposal optimization, not target draws"
+  },
+  "original_geometry": {
+    "weighted_pair_distance_variance_A2": 1.2720859319538362,
+    "weighted_overlap_fraction": 0.0625,
+    "unweighted_overlap_fraction": 0.0625,
+    "weighted_radius_gyration_A": 2.1244250175734183,
+    "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+  },
+  "refined_geometry": {
+    "weighted_pair_distance_variance_A2": 1.269108751121908,
+    "weighted_overlap_fraction": 0.03125,
+    "unweighted_overlap_fraction": 0.03125,
+    "weighted_radius_gyration_A": 2.126300434399409,
+    "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+  },
+  "source_record": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/center_refinement_preflight_v1/results.json",
+  "source_record_sha256": "0bf847b75c925d8750571fa447e5d1b0c99972107cb5caf78e33cefe8422e96c"
+}

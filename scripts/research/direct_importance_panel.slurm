@@ -11,6 +11,7 @@ set -euo pipefail
 SOURCE_ROOT="${1:?source required}"
 RUN_ROOT="${2:?output required}"
 SOURCE_ROW="${3:-1137}"
+PARTICLE_COUNT="${4:-1024}"
 BGFM_STORE=/n/holylabs/woo_lab/Lab/yulili/bgfm
 export PYTHONPATH="$SOURCE_ROOT"
 export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
@@ -22,4 +23,4 @@ cd "$SOURCE_ROOT"
 exec "$BGFM_STORE/envs/flowmol/bin/python" -u scripts/research/direct_importance_panel.py \
  --pilot "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_symmetry_${SOURCE_ROW}_v1" \
  --source-row "$SOURCE_ROW" --oracle "$BGFM_STORE/checkpoints/omol25/esen_sm_conserving_all.pt" \
- --oracle-python "$BGFM_STORE/envs/omol25/bin/python" --out "$RUN_ROOT"
+ --oracle-python "$BGFM_STORE/envs/omol25/bin/python" --out "$RUN_ROOT" --particles "$PARTICLE_COUNT"
