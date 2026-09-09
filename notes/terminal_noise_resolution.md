@@ -52,3 +52,17 @@ Coupling Flows](https://arxiv.org/abs/2308.10364), NeurIPS2023, already provide
 equivariant augmented coupling constructions for molecular distributions.
 Any future invertible replacement must compare against that work as well as
 RegFlow and FALCON, rather than claiming the coupling construction itself.
+
+The initial 300-K AgBr2 run completed with ESS44.08/256. Its log-normalizer point
+estimate differs from the independent reference by-.00924 nat, with empirical
+relative errors13.7% for the work estimate and4.18% for the reference. Weighted
+moment differences lie within the current estimated errors. This is consistency
+on one condition/seed, not proof of a general contribution. The eight-atom runs
+improve structure quality but retain ESS near1, so the broader goal is unresolved.
+
+The next fixed replication protocol repeats AgBr2 annealed joint training with
+seeds9052 and9053, and adds fixed-noise joint and annealed energy-gradient
+controls at seed9051. All use the same checkpoint,300-K target,500 updates,
+batch16,16 transitions and256 before/after evaluation samples, totaling8,512
+potential queries each. No hyperparameter is selected from their results.
+The equal-query FM-initialized MALA comparison is queued separately.
