@@ -1,0 +1,47 @@
+{
+  "scope": "CPU float32 midpoint coordinate-path diagnostic; not a density or molecular performance result",
+  "sources": {
+    "internal_geometry_rho0_v1": {
+      "path": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/internal_geometry_rho0_v1/report.json",
+      "sha256": "95e654c41571fa658deb5721f4c27eb393335ed13d112dd86e1d0bd7c7a7b057"
+    },
+    "internal_geometry_rho01_v1": {
+      "path": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/internal_geometry_rho01_v1/report.json",
+      "sha256": "87d158d64f79d259402b4817434409e77469893ee253c77c151ecfad74197a42"
+    }
+  },
+  "results": [
+    {
+      "checkpoint": "runs/displacement_development_rho0_v1/training/last.ckpt",
+      "checkpoint_sha256": "39576834333b3ca3eed262404c09f8a5ae8ff634d8d389ee4b49b23407429e36",
+      "parent": 1137,
+      "terminal_time": 1.0,
+      "steps": 256,
+      "device": "cpu",
+      "dtype": "float32",
+      "geometry_softening": 0.0,
+      "minimum_input_pair_distance_A": 2.4086188204819337e-05,
+      "minimum_used_internal_pair_distance_A": 2.4086188204819337e-05,
+      "calls_with_used_internal_distance_below_1e_3_A": 33,
+      "seconds": 15.942263682001794,
+      "complete": true,
+      "scope": "coordinate-path diagnostic; CPU/GPU roundoff may give different trajectories; no trace or performance inference"
+    },
+    {
+      "checkpoint": "runs/displacement_development_rho01_v2/training/last.ckpt",
+      "checkpoint_sha256": "704cf7be0763ed466cbd21d8dcb012d47685aff9689db91645a1a95088c23ce9",
+      "parent": 1137,
+      "terminal_time": 1.0,
+      "steps": 256,
+      "device": "cpu",
+      "dtype": "float32",
+      "geometry_softening": 0.1,
+      "minimum_input_pair_distance_A": 0.0017810941208153963,
+      "minimum_used_internal_pair_distance_A": 0.0002208305086242035,
+      "calls_with_used_internal_distance_below_1e_3_A": 5,
+      "seconds": 20.59877305899863,
+      "complete": true,
+      "scope": "coordinate-path diagnostic; CPU/GPU roundoff may give different trajectories; no trace or performance inference"
+    }
+  ]
+}

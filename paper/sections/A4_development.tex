@@ -6,7 +6,7 @@ archived main-text study. They do not validate the historical likelihood interpr
 establish a molecular benefit from the corrected energy loss. The runs use committed source
 snapshots, fixed initial checkpoints, dedicated trace random-number streams and recorded failures.
 The development evidence and per-seed values are generated from the raw run records by
-\texttt{scripts/research/render\_evidence.py}. The code currently passes 111 tests, including an
+\texttt{scripts/research/render\_evidence.py}. The code currently passes 114 tests, including an
 actual FlowMol endpoint head, full trajectory gradients, independent replicas and conditional FM.
 
 \subsection{A conditional sampler that matches the density definition}
@@ -144,6 +144,12 @@ This excludes an exact chemical-identity match with the training set, but it is 
 validation development pool, not a new blind test set. The historical test file duplicates
 validation. Original source identities and spin metadata remain unavailable.
 
+Deterministic replay of the perturbation generator exactly reproduces all 150,000 training
+and 50,000 validation geometries, including atom and charge labels, from processed source
+row indices. This recovers the processed-parent mapping and Gaussian perturbation mechanism.
+It does not recover raw OMol identifiers, original electronic spin, unclipped charge or
+precision already lost in archived float32 energies.
+
 One conditional position FM run completes 1,000 optimizer steps, processing distinct random
 OMol25 training structures, in 104.2 seconds of its training loop with peak allocated memory
 5.06 GiB. We select eight development parents with a fixed seed, excluding charge values at
@@ -188,6 +194,25 @@ on the predeclared local sigmas $0.03,0.06$ \AA{} fails a necessary 0.1-nat 128-
 gate for two of eight parents, with changes 0.2561 and 0.4563 nats. The largest
 per-replica change in the latter case is 7.8051 nats: averaging replicas can obscure
 integration instability. Failed parents are retained.
+
+We also train a residual velocity parameterization $v_\theta=D_\theta-X_t$, with target
+$D^*=X_t+\alpha'(t)(X_1-X_0)/\alpha(T)$, to remove the endpoint conversion denominator.
+Two matched FM-only runs use $T=1$, 10,000 updates and geometric softening $\rho=0$ or
+$0.1$ \AA. This comparison holds the training order and initialization fixed. Comparing
+either against the previous endpoint head additionally changes terminal time and regression
+weighting; it does not isolate the head alone. xTB converges for 31/32 and 30/32 samples,
+with successful-only median strain 4.14 and 3.98 eV. Each improves 15 paired results and
+worsens 17 against the 10,000-update endpoint checkpoint under the failure-aware ordering.
+Neither median therefore establishes a generation improvement. Maximum 64-to-128-step
+coordinate drift is 0.0602 and 0.3576 \AA, respectively.
+
+Both residual-velocity runs fail the local density screen for five of eight parents at
+128-to-256 midpoint steps. The maximum centred mean drift is 40.98 nats without smoothing
+and 0.4408 nats with smoothing. On the difficult parent, a separate CPU float32 reverse-path
+diagnostic finds minimum input atom distances $2.41\cdot10^{-5}$ and $0.00178$ \AA.
+Near-collisions occur both in the reverse trajectory and internal network predictions.
+These measurements identify a numerical concern, not a proof that collisions uniquely
+cause the observed error; CPU and GPU trajectories can differ through roundoff.
 
 An adaptive float64 DOP853 trajectory with independent Gauss--Legendre divergence
 quadrature succeeds on an easy original-checkpoint parent at relative tolerances

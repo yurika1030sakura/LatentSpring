@@ -14,9 +14,10 @@ that all scientific checks passed.
 
 ## What is established
 
-- 111 tests pass, including real FlowMol parameter gradients, full-state and
+- 114 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
-  conditional FM targets, stochastic-replica identities and smooth geometry.
+  conditional FM targets, stochastic-replica identities, smooth geometry and
+  dedicated Gaussian/Rademacher probe streams for common/independent controls.
 - Legacy scalar ordering cannot be promoted to likelihood or Boltzmann sampling.
   The old routine integrates an endpoint prediction as velocity and freezes
   trajectory gradients. It is retained only for historical reproduction.
@@ -46,6 +47,8 @@ that all scientific checks passed.
 | Smoothed geometry counterfactual, rho=0.1 | Full-panel worst 64→128 drift falls to 2.5136 nats, still not converged; this changes the field without retraining | `smooth_density_v3`, 45584305 |
 | Checkpointed high-resolution energy | Four updates, 128 steps, two local siblings, 609 s, 19.03 GiB | `highres_energy_smoke_v1`, 45581074 |
 | Exact discrete-adjoint high-resolution energy | Same four updates, 275 s, 1.69 GiB; relative L2 final-weight difference 3.18e-8 from checkpointed run | `adjoint_energy_smoke_v1`, 45583400 |
+| Displacement velocity, T=1, rho=0 | 10,000 FM-only updates; xTB 31/32 converge; median successful strain 4.14 eV; five of eight local density parents fail 0.1-nat gate, maximum drift 40.98 nats | `displacement_development_rho0_v1`, 45586851 |
+| Displacement velocity, T=1, rho=0.1 | Matched 10,000 updates; xTB 30/32 converge; median successful strain 3.98 eV; five of eight density parents fail, maximum drift 0.4408 nats | `displacement_development_rho01_v2`, 45586884 |
 
 All molecular training above uses a single seed; warm versus 1,000 versus
 10,000 updates is not seed replication. Warm q_0.8 was not trained for the new
@@ -91,24 +94,33 @@ capability matrix with the actual sampler/density scope. See
 Classical RK4 is now available for both sampling and density, including full
 discrete-adjoint gradients. It passes analytic fourth-order and real-network
 gradient checks. Its extra trace evaluations are explicitly counted; it is not
-an equal-cost replacement per step. Molecular RK4 experiments have not yet run.
+an equal-cost replacement per step. Molecular RK4 experiments are running below.
 See `notes/rk4_density_protocol.md`.
 
-## Running, with automatic evaluation
+The completed displacement runs each improve 15 paired xTB results and worsen
+17 against the endpoint 10,000-update checkpoint, counting failures. Their
+successful-only medians therefore do not establish better generation. Maximum
+coordinate RMS drift is 0.0602 / 0.3576 Angstrom (rho=0 / 0.1). Comparing endpoint
+and displacement runs changes both the regression target and terminal time.
+See `evidence/displacement_comparison.json` for all parents and sources.
 
-Source `b6921f0e27c6f8df6a93b77a953e757ec04527b9`:
+For difficult parent 1137, a separate CPU float32 coordinate-path diagnostic
+finds minimum input atom distances 2.41e-5 / 0.00178 Angstrom (rho=0 / 0.1).
+Near-collisions occur in the reverse trajectory itself as well as internal
+network coordinates. This is a numerical diagnostic, not proof of a unique
+failure cause; CPU and GPU trajectories can differ in roundoff.
 
-- 45586851, `displacement_development_rho0_v1`: direct residual velocity head,
-  T=1, original geometric normalization, 10,000 FM-only updates.
-- 45586884, `displacement_development_rho01_v2`: identical initialization,
-  training order and seed, smooth geometric normalization rho=0.1 Angstrom.
+## Running
 
-Each job automatically follows training with matched conditional sampling,
-independent xTB evaluation and the eight-parent local density panel at
-64/128/256 steps. No energy advantage is claimed before those outputs exist.
-This head removes the endpoint conversion denominator but does not guarantee
-a well-conditioned learned flow. The full target and predeclared comparison
-are in `notes/displacement_geometry_flow.md`.
+Source `5dff3351d2633bc58245adf39e555f21197338df`:
+
+- 45595533, `rk4_density_rho0_v1`: fixed original-geometry displacement weights.
+- 45595874, `rk4_density_rho01_v1`: fixed smoothed-geometry displacement weights.
+
+Both retain all eight local-panel parents and the same eight probes, testing
+RK4 at 16/32/64 steps. Four field and four trace stages per RK4 step are counted
+explicitly. Passing a mean-drift screen alone will still require independent
+adaptive and per-replica checks before molecular energy claims.
 
 ## Data and evidence limits
 

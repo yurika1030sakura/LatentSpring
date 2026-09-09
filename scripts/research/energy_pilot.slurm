@@ -20,6 +20,8 @@ TRAIN_STEPS="${8:-2}"
 ENERGY_PARENTS="${9:-8}"
 LAMBDA_ENERGY="${10:-.001}"
 ODE_STEPS="${11:-128}"
+ODE_SOLVER="${12:-midpoint}"
+TRACE_DISTRIBUTION="${13:-rademacher}"
 FLOWMOL_ENV=/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol
 export PYTHONPATH="$SOURCE_ROOT"
 export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
@@ -34,6 +36,7 @@ exec "$FLOWMOL_ENV/bin/python" -u scripts/research/train_clamped_position.py \
  --warm-checkpoint "$POSITION_CKPT" \
  --out "$RUN_ROOT" --steps "$TRAIN_STEPS" --seed "$TRAIN_SEED" --terminal-time "$TERMINAL_TIME" --lr 2e-5 \
  --lambda-energy "$LAMBDA_ENERGY" --energy-every 1 --energy-steps "$ODE_STEPS" \
+ --energy-solver "$ODE_SOLVER" --trace-distribution "$TRACE_DISTRIBUTION" \
  --perturbation-indices 0 1 --common-probes --discrete-adjoint-energy \
  --energy-parents "$ENERGY_PARENTS" --energy-estimator "$ESTIMATOR" --energy-control "$CONTROL" \
  --energy-gradient-diagnostics

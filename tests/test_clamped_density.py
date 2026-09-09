@@ -274,11 +274,12 @@ def test_sampler_and_density_describe_same_analytic_flow():
     assert torch.allclose(logq,prior-3*(counts-1)*0.3*0.95,atol=2e-5,rtol=0)
 
 
-def test_common_probes_cancel_constant_jacobian_group_noise():
+@pytest.mark.parametrize('distribution',['rademacher','gaussian'])
+def test_common_probes_cancel_constant_jacobian_group_noise(distribution):
     from cfm_mol.replica_loss import make_grouped_probe_sampler, grouped_replica_residual
     g,nbi,uem = graph_batch((3,3))
     parents = torch.zeros(2,dtype=torch.long)
-    sampler = make_grouped_probe_sampler(nbi,parents)
+    sampler = make_grouped_probe_sampler(nbi,parents,distribution=distribution)
     probe = sampler(0,0,g.ndata['x_1_true'])
     assert torch.equal(probe[:3],probe[3:])
     model = SimpleNamespace(vector_field=LinearHead())
@@ -295,14 +296,16 @@ def test_common_probes_cancel_constant_jacobian_group_noise():
 
 
 @pytest.mark.parametrize('common',[False,True])
-def test_energy_trace_rng_is_separate_from_fm_rng(common):
+@pytest.mark.parametrize('distribution',['rademacher','gaussian'])
+def test_energy_trace_rng_is_separate_from_fm_rng(common,distribution):
     from cfm_mol.bgfm_density import energy_consistency_loss_per_mol
     g,nbi,uem=graph_batch((3,3))
     model=SimpleNamespace(vector_field=LinearHead())
     torch.manual_seed(441)
     before=torch.get_rng_state().clone()
     options={'mode':'clamped_cnf','n_trace_replicates':2,'trace_seed':998,
-             'common_trace_within_parent':common,'residual_estimator':'replica_product'}
+             'common_trace_within_parent':common,'residual_estimator':'replica_product',
+             'trace_distribution':distribution}
     kwargs=dict(energies=torch.tensor([0.2,0.5]),parent_id=torch.zeros(2,dtype=torch.long),
                 n_ode_steps=2,n_hutchinson=1,density_options=options)
     loss,_=energy_consistency_loss_per_mol(model,g,nbi,uem,**kwargs)

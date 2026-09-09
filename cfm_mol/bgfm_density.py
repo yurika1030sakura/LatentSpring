@@ -318,12 +318,18 @@ def _energy_density(model, graph, node_batch_idx, upper_edge_mask,
     estimator = options.pop('residual_estimator', 'squared')
     common_probes = options.pop('common_trace_within_parent', False)
     trace_seed = options.pop('trace_seed', None)
+    distribution=options.pop('trace_distribution','rademacher')
+    if distribution not in {'rademacher','gaussian'}:raise ValueError('Unknown trace probe distribution')
     generator = None
-    if trace_seed is not None:
+    if trace_seed is not None or distribution!='rademacher':
         if mode != 'clamped_cnf' or 'xi_fn' in options:
-            raise ValueError('A trace seed requires clamped flow without a custom callback')
-        generator = torch.Generator(device=graph.device).manual_seed(int(trace_seed))
+            raise ValueError('Trace RNG options require clamped flow without a custom callback')
+        if trace_seed is not None:
+            generator = torch.Generator(device=graph.device).manual_seed(int(trace_seed))
+    if not common_probes and (trace_seed is not None or distribution!='rademacher'):
         def independent_probe(step, replica, x):
+            if distribution=='gaussian':
+                return torch.randn(x.shape,device=x.device,dtype=x.dtype,generator=generator)
             return (2*torch.randint(0,2,x.shape,device=x.device,generator=generator)-1).to(x)
         options['xi_fn'] = independent_probe
     if common_probes:
@@ -332,7 +338,7 @@ def _energy_density(model, graph, node_batch_idx, upper_edge_mask,
         if 'xi_fn' in options and trace_seed is None:
             raise ValueError('Cannot combine common probes with a custom probe callback')
         from cfm_mol.replica_loss import make_grouped_probe_sampler
-        options['xi_fn'] = make_grouped_probe_sampler(node_batch_idx,parent_id,generator=generator)
+        options['xi_fn'] = make_grouped_probe_sampler(node_batch_idx,parent_id,generator=generator,distribution=distribution)
     if estimator not in {'squared', 'replica_product'}:
         raise ValueError('Unknown residual estimator')
     if estimator == 'replica_product' and mode != 'clamped_cnf':

@@ -52,6 +52,7 @@ def main():
     p.add_argument('--energy-cap',type=float,default=1500.)
     p.add_argument('--energy-estimator',choices=['squared','replica_product'],default='replica_product')
     p.add_argument('--common-probes',action='store_true')
+    p.add_argument('--trace-distribution',choices=['rademacher','gaussian'],default='rademacher')
     p.add_argument('--checkpoint-energy',action='store_true')
     p.add_argument('--discrete-adjoint-energy',action='store_true')
     p.add_argument('--perturbation-indices',type=int,nargs='+')
@@ -154,6 +155,7 @@ def main():
                         'solver':args.energy_solver,
                         'parameterization':args.position_parameterization,
                         'n_trace_replicates':2,'residual_estimator':args.energy_estimator,
+                        'trace_distribution':args.trace_distribution,
                         'common_trace_within_parent':args.common_probes,
                         'checkpoint_steps':args.checkpoint_energy,
                         'discrete_adjoint':args.discrete_adjoint_energy,

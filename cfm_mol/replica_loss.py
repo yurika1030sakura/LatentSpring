@@ -67,7 +67,7 @@ def grouped_replica_residual(log_q, energies, parent_id, *, kT=1.0,
         "trace_noise_penalty": float(torch.stack(penalties).mean())}
 
 
-def make_grouped_probe_sampler(node_batch_idx, parent_id, generator=None):
+def make_grouped_probe_sampler(node_batch_idx, parent_id, generator=None, distribution='rademacher'):
     """Common random probes across corresponding atoms of sibling geometries.
 
     DGL batches store nodes contiguously and perturbation shards preserve atom
@@ -75,6 +75,7 @@ def make_grouped_probe_sampler(node_batch_idx, parent_id, generator=None):
     Common random numbers reduce contrast variance but do not generally remove
     the squared-loss bias when Jacobians depend on geometry.
     """
+    if distribution not in {'rademacher','gaussian'}:raise ValueError('Unknown trace probe distribution')
     counts = torch.bincount(node_batch_idx,minlength=len(parent_id))
     if (counts == 0).any() or (node_batch_idx[1:] < node_batch_idx[:-1]).any():
         raise ValueError('Require nonempty, contiguous DGL graph nodes')
@@ -93,6 +94,9 @@ def make_grouped_probe_sampler(node_batch_idx, parent_id, generator=None):
     offsets = torch.tensor(graph_offsets,device=node_batch_idx.device)
     mapping = offsets[node_batch_idx]+local_index
     def sample(step, replica, x):
-        base = (2*torch.randint(0,2,(total,x.shape[-1]),device=x.device,generator=generator)-1).to(x)
+        if distribution=='gaussian':
+            base=torch.randn((total,x.shape[-1]),device=x.device,dtype=x.dtype,generator=generator)
+        else:
+            base = (2*torch.randint(0,2,(total,x.shape[-1]),device=x.device,generator=generator)-1).to(x)
         return base[mapping]
     return sample
