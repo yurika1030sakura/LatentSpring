@@ -36,3 +36,21 @@ A softmax of energy labels alone on the archived perturbations would instead
 train an energy-tilted proposal; it must not be presented as a faithful EWFM
 implementation. A proper comparison must specify the proposal and target
 domain, count density/buffer costs and report finite-sample weight degeneracy.
+
+## Regression-trained exact-likelihood flows
+
+[RegFlow](https://arxiv.org/abs/2506.01158), accepted at ICLR 2026 according to
+its [official repository](https://github.com/danyalrehman/RegFlow), trains
+normalizing flows by regressing coupled pairs supplied by a pretrained CNF or
+an invertible optimal-transport mapping, with a forward/backward consistency
+regularizer. Thus replacing a costly CNF likelihood by a regression-trained
+invertible student is an existing strong baseline, not a new contribution.
+It is distinct from FALCON's few-step flow-map approach and must be considered
+before committing to a redesigned exact-likelihood geometry architecture.
+
+A possible subsequent physics-teacher study would optimize mean generalized
+work using differentiable Gaussian paths and external energy/force evaluations.
+This is a path-space KL / stochastic-normalizing-flow objective, also existing
+prior work. It could train the forward and auxiliary backward proposals rather
+than relying on fixed backward drift or hand-constructed templates. It has not
+been implemented or shown useful in this project; do not report it as a result.

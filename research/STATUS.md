@@ -14,7 +14,7 @@ that all scientific checks passed.
 
 ## What is established
 
-- 162 tests pass, including real FlowMol parameter gradients, full-state and
+- 168 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
   dedicated Gaussian/Rademacher probe streams for common/independent controls,
@@ -340,3 +340,38 @@ extraction: 2,762,021 records in 80 ASE-LMDB files. See
 for method outcome evaluation; source/composition overlap and an evaluation
 manifest are the next required checks. `research/NEXT.md` records the next
 research decision and the remaining negative evidence.
+
+
+## Active goal continuation: official evaluation and global refresh
+
+The previous goal turn made concrete progress; no blocker was declared.
+Current source 4c61d84 adds a fixed-q0 independence-MH refresh and a matched
+hybrid (one global + one MALA) mutation. It is standard MCMC. Initial ancestry
+is retained, and separate accepted-proposal IDs are not called independent
+samples. The full suite passes 168 tests. A real eight-atom preflight completes
+both hybrid arms with 20 potential queries each; it is an interface check.
+
+- 45706102, `official_validation_audit_v1`, is running the full official
+  2,762,021-record validation audit. It compares against 1,087,994 old training
+  compositions, 28,453 old development compositions and 4,313,500 explicit
+  source/reference-link hashes. Input-file hashes are checked. Candidate panels
+  use a fixed hash of composition for development/reserved partition assignment
+  and fixed within-stratum hash ranking, never energy or method outcomes. The
+  completed 1,000-row preflight retains 967 candidates and excludes 33 by atom
+  range, with no observed old-composition/source overlap. Full results remain
+  incomplete; do not use reserved candidate outcomes before protocol freeze.
+- 45706103, `hybrid_smc_5846_v1`, is running three seeds of four matched arms:
+  confinement or defensive-symmetry prior, each with two MALA moves or one
+  independence-MH move followed by MALA. There are 64 particles, 16 fixed stages
+  and 2,112 potential calls per arm/seed. Early global acceptance can still be
+  zero at the final bridge; no improvement is yet established.
+
+The unused perturbation-shard draft was preserved as
+`notes/archive/build_perturbation_shard_unvalidated.py` and removed from active
+research entry points. It remains explicitly unvalidated.
+
+RegFlow (arXiv:2506.01158) is now added to required prior-work comparisons.
+Regression-training an exact-likelihood invertible student is not a new idea.
+A mean-work-trained stochastic teacher is another possible existing-method
+baseline, not yet implemented or evaluated here. Prefer evidence-driven method
+selection over accumulating architectural changes without molecular gains.

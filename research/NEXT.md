@@ -25,8 +25,9 @@ and the evidence files before running more experiments; do not restart the audit
 5. Before physics-student training, choose a teacher whose normalizer/moments
    and sampling coverage survive independent checks. A possible next controlled
    comparison is mixing exact independence-MH refreshes with local MALA inside
-   SMC, since all current SMC mutation is local. This is established MCMC and
-   must be compared at equal potential budgets. It is not implemented yet.
+   SMC, since all current SMC mutation is local. This is established MCMC. The control is now implemented and running in
+   job 45706103 with matched potential budgets; inspect completed results before
+   launching further variants.
 6. Temperature/constraint choices are explicit computational targets. Current
    kT=1 eV is not ambient-temperature molecular equilibrium. A prospective
    physically motivated temperature study must retain existing negative results
@@ -38,12 +39,19 @@ used WAL and caused a cross-host live-reader locking error; it completed normall
 Future producers use DELETE journaling. Read the NumPy sidecars through
 ElectronicMetadata, which verifies completeness and input hashes.
 
-Current tests: 162 pass. Main-text build: 9/9 pages. Both are engineering gates,
+Current tests: 168 pass. Main-text build: 9/9 pages. Both are engineering gates,
 not evidence of ICLR readiness. The original main paper remains an audit /
 development draft; rewrite around a genuine contribution only once supported.
 
-The old untracked build_perturbation_shard.py is a draft and was not used in the
-new experiments. Validate it with original electronic-state metadata or archive
-it before anyone uses it. No subagents, external publication or messages to
+The old perturbation-shard draft is archived at
+notes/archive/build_perturbation_shard_unvalidated.py and was never used in the
+reported experiments. No subagents, external publication or messages to
 other people have been authorized. Author and submission management belongs to
 the user. Never write home or edit the shared FlowMol installation.
+
+
+Official validation audit job 45706102 and global-refresh job 45706103 were
+confirmed RUNNING during this continuation. Inspect their live scheduler state
+and immutable run directories before relying on old status. Reserved evaluation
+conditions have not been subjected to method outcome queries. RegFlow must be
+considered alongside FALCON if an exact-likelihood student is investigated.
