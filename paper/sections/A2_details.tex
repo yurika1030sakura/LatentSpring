@@ -34,7 +34,7 @@
 %  named, and is cross-referenced rather than restated anywhere else:
 %    q_theta is not the joint conditional      -> ass:A2, limitation (vi-d)
 %    the log-variance divergence is prior work -> rem:logvar, App. C
-%    the gradient is a truncated-adjoint one   -> app:asimplemented,
+%    the gradient is a frozen-trajectory one   -> app:asimplemented,
 %                                                 rem:idealresidual
 %    value-arm means are completion-conditional-> app:p0cells reporting rules
 %    the objective is local, not basin-mass    -> cor:basins, limitation (iii)
@@ -87,7 +87,7 @@ the value-loss cap is rejected outright for that step rather than clipped, becau
 such values are finite and therefore invisible to a non-finiteness test. The
 implemented $\Ls_{\mathrm{force}}$ and $\Ls_{\mathrm{value}}$ are accordingly
 clipped and Huberised variants of the stated objectives. All thresholds are in
-\Cref{tab:constants}; for a converged model they are inactive.
+\Cref{tab:constants}; their inactivity must be measured rather than inferred from convergence.
 
 \paragraph{Frozen-trajectory gradient.} The reverse-time trajectory used for the
 continuous-flow log-density is advanced without gradient tracking, each state is
@@ -95,41 +95,43 @@ detached before its divergence is taken, and the prior term is computed from a
 detached endpoint. The gradient actually back-propagated through
 $\Ls_{\mathrm{value}}$ is therefore
 \begin{equation}
-  \nabla_\theta \Ls_{\mathrm{value}}
+  \widehat g_{\mathrm{value}}
   \;=\; \frac{2}{MK} \sum_{m=1}^{M} \sum_{k=1}^{K}
         \bigl( w_{m,k} - \bar w_m \bigr)\,
-        \nabla_\theta \log q_\theta(\vx_{m,k} \mid c_m),
+        \widehat g_{\ell,m,k},
   \qquad \bar w_m = \frac{1}{K}\sum_{k} w_{m,k},
   \label{eq:valuegrad}
 \end{equation}
-with $w_{m,k}$ as in \eqref{eq:lvalue} and $\Var_k$ the divide-by-$K$ variance, and with
+with $w_{m,k}=\widehat\ell_\theta(x_{m,k})+E_{m,k}/kT$ and $\Var_k$ the divide-by-$K$ variance, and with
 each per-geometry factor supplied by the frozen trajectory,
 \begin{equation}
-  \nabla_\theta \log q_\theta(\vx_{m,k} \mid c_m)
-  \;\approx\; -\sum_{\text{steps}} \Delta t \; \nabla_\theta
-  \big(\nabla\!\cdot v_\theta(\vx_{\text{step}}, t_{\text{step}})\big)
+  \widehat g_{\ell,m,k}
+  \;=\; -\sum_{\text{steps}} \Delta t \; \nabla_\theta
+  \big(\nabla\!\cdot u_\theta(\vx_{\text{step}}, t_{\text{step}})\big)
   \qquad \text{(trajectory held fixed)} .
   \label{eq:frozenfactor}
 \end{equation}
 The outer weighting in \eqref{eq:valuegrad} is exact: autograd differentiates the group
 means, so a geometry is pushed according to whether its residual sits above or below its
 own group's mean, and a group whose residuals are already equal contributes exactly zero.
-Only \eqref{eq:frozenfactor} is a surrogate --- a truncated adjoint in which the reverse
+Here $u_\theta=D_\theta$ is the archived raw head, not the converted velocity.
+Equation \eqref{eq:frozenfactor} is a surrogate in which the reverse
 trajectory and the prior endpoint are held fixed and only the divergence evaluations are
 differentiated. We do not differentiate
 through the ODE solve, and what the optimiser performs is therefore not exact
 likelihood-gradient descent --- neither on the continuous-time likelihood nor on its
-discretisation --- but descent on this surrogate.
+discretisation. A stop-gradient update is not guaranteed to descend the underlying
+scalar when its trajectory is recomputed after each update.
 
 Three scopes are kept apart throughout the paper, and this paragraph is the place they
 meet. \emph{Theory}: the identifiability results of \Cref{app:proofs} characterise the
 zero set of the displayed ideal residual objective --- what a model that had driven the
 population objective to zero would have been shown, and what that leaves free --- and
 make no claim about whether the implemented update converges to that zero set
-(\Cref{rem:idealresidual}). \emph{Implementation}: what runs is the density
-estimate of \Cref{app:density} optimised by the truncated-adjoint gradient displayed
+(\Cref{rem:idealresidual}). \emph{Archived implementation}: what runs is the unvalidated
+scalar of \Cref{sec:method:impl}, updated by the frozen-trajectory gradient displayed
 above, together with the clipping, Huberisation and step rejection listed in this
-subsection. \emph{Experiment}: every empirical result in this paper is a measurement of
+subsection. \emph{Archived experiment}: the main-text empirical results measure
 the behaviour of that implemented procedure, and none of it is offered as evidence about
 convergence to the ideal zero set. Where a statement belongs to one scope rather than
 another we say so at the statement.
@@ -1446,54 +1448,33 @@ Bond-free flow-matching control (ours, 2 seeds) & 35.5 & 23.0 & 16.0 & 100.0 \\
 \subsection{The capability matrix}
 \label{app:capability}
 
-\Cref{tab:capability} places the configuration studied here among the model classes it
-borrows from. The point is not that it scores higher, but that most entries are
-quantities the other classes do not define, which is why the measurement of
-\Cref{sec:mainresult} has no direct precedent to be compared against. The likelihood
-column classifies the \emph{kind} of density each class defines rather than asserting
-exactness for any of them, ours included: what we compute is a discretisation of a
-continuous-flow likelihood with a stochastic trace, whose accuracy --- not whose
-identity --- is fixed by that discretisation (\Cref{app:density}). 3D molecular generators
-\citep{edm,geoldm,flowmol3,zatom1,symphony} assemble composition and geometry de novo
-but are not trained against a transferable energy and report no density--energy check,
-while conformer models and Boltzmann samplers
-\citep{torsionaldiff,tbg,sbg,arbg,adjointsampling} have tractable densities --- and, for
-Adjoint Sampling, a universal-potential energy target --- but receive the molecular
-graph and therefore do not generate composition.
+\Cref{tab:capability} records the distinct objects in this project. It does not
+use an unvalidated likelihood claim to exempt the method from empirical baselines.
+Off-policy log-dispersion regularization already combines data training and energy
+labels \citep{ldr2026}. Conformer and Boltzmann sampling methods should be compared
+on compatible conditional systems and independent generated-structure endpoints.
+A method without a tractable density can still be compared on energy, geometry,
+coverage and sampling cost.
 
 \begin{table}[h]
-\caption{Capability matrix. Entries record what each model class \emph{can be asked},
-not how well it scores; ``n/a'' marks a question that is undefined for that class,
-``n.r.'' a capability the authors do not report, ``graph'' a model that is given the
-molecular graph, and ``FF'' a classical force field as the energy target. The likelihood
-column records the kind of density a class defines: ``bound'' a variational bound,
-``CNF'' a continuous-flow likelihood (exact in continuous time; what any implementation
-reports is a discretisation, ours included). Methods without a tractable likelihood
-cannot be given a density--energy measurement at all, so the last column states which
-question each class can be asked rather than which model is better. The Elements column records
-the element coverage of each model's training corpus, not a demonstrated evaluation scope: every
-result in this paper is evaluated on main-group organic parents at the singlet default
-(\Cref{ass:charge}).}
+\centering
+\caption{Sampler and density scope after the audit. These are definitions and
+limitations, not comparative performance or novelty claims.}
 \label{tab:capability}
-\begin{center}
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{lccccccc}
+\begin{tabular}{p{0.30\linewidth}p{0.63\linewidth}}
 \toprule
- & Ele- & Bond & De-novo & Likeli- & Energy- & Amor- & $\log p$ vs.\ $E$ \\
- & ments & labels & comp. & hood & trained & tised & reported \\
+Object & Established interpretation \\
 \midrule
-EDM / GeoLDM              & $\sim$5   & implicit & yes & bound & no  & yes & no \\
-FlowMol3 (+ our control)  & $\sim$10  & yes (no) & yes & CNF   & no  & yes & no \\
-Zatom-1                   & OMol25    & no    & yes & n.r.    & no  & yes & no \\
-Torsional diffusion       & organic   & graph & no  & CNF     & no  & yes & yes \\
-Transferable BG           & peptides  & n/a   & no  & CNF     & FF  & partly & yes \\
-SBG / ArBG                & peptides  & n/a   & no  & CNF     & FF  & partly & yes \\
-Adjoint Sampling          & organic   & graph & no  & CNF     & yes & yes & yes \\
-\textbf{This paper}       & \textbf{83 (corpus)} & \textbf{no} & \textbf{yes} & CNF & \textbf{yes} & \textbf{yes} & \textbf{yes} \\
+Archived joint FlowMol sampler & Generates composition and coordinates; the clamped
+scalar is not its established conditional density. \\
+Archived energy readout & Endpoint-head integration with a frozen-trajectory update;
+retained for reproduction as a scalar. \\
+Corrected conditional geometry flow & An ideal continuous-time density under the
+stated flow assumptions; numerical and stochastic estimates require validation. \\
+Frozen composition factor & A separately sampled implicit prior; no tractable
+composition likelihood or thermodynamic composition weights are claimed. \\
 \bottomrule
 \end{tabular}
-\end{center}
 \end{table}
 
 \subsection{Numerical stability of the value objective}
@@ -1759,7 +1740,7 @@ rather than the teacher's energy labels (\Cref{app:stability}). Because divergen
 independent of the physics block, every mean for a value-carrying cell is conditional
 on completion, and we report launched, completed and diverged counts for every such
 cell. The implemented objectives are moreover clipped and Huberised variants of the
-stated ones, the $\Ls_{\mathrm{value}}$ gradient is the truncated-adjoint surrogate of
+stated ones, the $\Ls_{\mathrm{value}}$ gradient is the frozen-trajectory surrogate of
 \Cref{rem:idealresidual}, and rotations are not quotiented (\Cref{ass:A3}), which the
 within-parent design mitigates but does not remove.
 
@@ -1776,7 +1757,7 @@ of every value-cell mean on completion, and locality together with the absence o
 calibration --- and this
 subsection is where each is developed. Four further qualifications travelled with them
 and are recorded here rather than in the main text. \emph{(ix-a) The reported gradient
-is a surrogate.} The gradient of $\Ls_{\mathrm{value}}$ is the truncated-adjoint
+is a surrogate.} The gradient of $\Ls_{\mathrm{value}}$ is the frozen-trajectory
 surrogate of \Cref{rem:idealresidual} and not an exact likelihood gradient
 (\Cref{sec:method:impl}), so the optimiser follows a related but distinct descent
 direction from the one the stated objective defines. \emph{(ix-b) The divergence tally
@@ -1805,8 +1786,9 @@ systems \citep{fab} would address the allocation target directly. None is run he
 
 \paragraph{\Cref{fig:objective} (schematic).} No measured quantity appears in the
 figure. \emph{(a)} A bond-free de novo flow samples a composition $c$ and a geometry
-$x$ jointly; with the endpoint discrete labels clamped, reversing the positional ODE
-defines the normalised clamped positional-flow density $\log q_\theta(x \mid c)$.
+$x$ jointly. A separate deterministic projected positional ODE has an ideal
+normalized density under the flow assumptions. The archived clamped-head scalar
+does not establish that density or the joint generator's conditional likelihood.
 \emph{(b)} A universal neural potential assigns an energy value $E_k = E(c,x_k)$ to
 each of $K$ displaced geometries of a single parent; only the values enter the
 objective. \emph{(c)} $\Ls_{\mathrm{value}}$ vanishes exactly when $\log q_\theta$ is

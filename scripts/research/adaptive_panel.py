@@ -19,12 +19,19 @@ def main():
     p.add_argument('--device',default='cuda')
     p.add_argument('--rtols',type=float,nargs='+',default=[1e-5,3e-6])
     p.add_argument('--max-nfe',type=int,default=6000)
+    p.add_argument('--midpoint-steps',type=int,default=128)
     args=p.parse_args();source=json.loads(args.panel.read_text())
     if not source['complete']:raise ValueError('Source panel is incomplete')
     checkpoint=Path(source['checkpoint'])
     if hashlib.sha256(checkpoint.read_bytes()).hexdigest()!=source['checkpoint_sha256']:
         raise ValueError('Checkpoint changed')
-    cfg=read_config_file('configs/sweep/a1_fm_only_s2.yaml');cfg['mol_fm'].pop('bgfm',None)
+    config=Path('configs/sweep/a1_fm_only_s2.yaml')
+    if hashlib.sha256(config.read_bytes()).hexdigest()!=source['config_sha256']:
+        raise ValueError('Reference architecture config differs from source panel')
+    if hashlib.sha256(Path(source['shard']).read_bytes()).hexdigest()!=source['shard_sha256']:
+        raise ValueError('Source perturbation shard changed')
+    if args.midpoint_steps<1:raise ValueError('Require a positive midpoint step count')
+    cfg=read_config_file(config);cfg['mol_fm'].pop('bgfm',None)
     model=model_from_config(cfg)
     model.load_state_dict(torch.load(checkpoint,map_location='cpu',weights_only=False)['state_dict'],strict=True)
     from cfm_mol.smooth_geometry import patch_smooth_geometry
@@ -36,12 +43,13 @@ def main():
     rows=source['rows']
     hardest=sorted(range(len(rows)),key=lambda i:rows[i]['resolutions'][-1]['max_mean_centered_change_from_previous'],reverse=True)[:2]
     selected=list(dict.fromkeys([0]+hardest))
-    report={'selection':'first parent plus two largest 64-to-128 mean centered changes; development diagnosis',
+    report={'selection':'first parent plus two largest mean centered changes between final source resolutions; development diagnosis',
         'source_panel':str(args.panel),'source_panel_sha256':hashlib.sha256(args.panel.read_bytes()).hexdigest(),
         'dtype':'float64','terminal_time':source['terminal_time'],
         'geometry_softening':source.get('geometry_softening',0.),
         'position_parameterization':source.get('position_parameterization','endpoint'),
         'requested_rtols':args.rtols,'max_nfe':args.max_nfe,
+        'midpoint_steps':args.midpoint_steps,
         'rows':[],'complete':False,'all_reference_solves_succeeded':True}
     args.out.mkdir(parents=True,exist_ok=True)
     write_json(args.out/'reference.json',report)
@@ -60,17 +68,18 @@ def main():
         write_json(args.out/'reference.json',report)
         gen=torch.Generator().manual_seed(9100+index)
         x=g.ndata['x_1_true']
-        probes=[(2*torch.randint(0,2,x.shape,generator=gen)-1).to(x) for _ in range(8)]
-        q=log_density_clamped_flow(model,g,nbi,uem,n_ode_steps=128,n_hutchinson=1,
-            terminal_time=source['terminal_time'],n_trace_replicates=8,xi_fn=lambda step,k,x:probes[k],
+        probes=[(2*torch.randint(0,2,x.shape,generator=gen)-1).to(x) for _ in range(source['replicas'])]
+        q=log_density_clamped_flow(model,g,nbi,uem,n_ode_steps=args.midpoint_steps,n_hutchinson=1,
+            terminal_time=source['terminal_time'],n_trace_replicates=source['replicas'],xi_fn=lambda step,k,x:probes[k],
             parameterization=source.get('position_parameterization','endpoint'))
-        row['midpoint_128_float64']=q.cpu().tolist()
+        row['midpoint_float64']=q.cpu().tolist()
+        if args.midpoint_steps==128:row['midpoint_128_float64']=q.cpu().tolist()
         write_json(args.out/'reference.json',report)
         for rtol in args.rtols:
             try:
                 result=log_density_clamped_reference(model,g,nbi,uem,rtol=rtol,atol=rtol/100,
                     terminal_time=source['terminal_time'],quadrature_orders=(2,4),
-                    n_replicates=8,seed=9100+index,max_nfe=args.max_nfe,
+                    n_replicates=source['replicas'],seed=9100+index,max_nfe=args.max_nfe,
                     parameterization=source.get('position_parameterization','endpoint'))
                 result['success']=True
             except ReferenceBudgetExceeded as exc:

@@ -6,7 +6,7 @@ archived main-text study. They do not validate the historical likelihood interpr
 establish a molecular benefit from the corrected energy loss. The runs use committed source
 snapshots, fixed initial checkpoints, dedicated trace random-number streams and recorded failures.
 The development evidence and per-seed values are generated from the raw run records by
-\texttt{scripts/research/render\_evidence.py}. The code currently passes 103 tests, including an
+\texttt{scripts/research/render\_evidence.py}. The code currently passes 105 tests, including an
 actual FlowMol endpoint head, full trajectory gradients, independent replicas and conditional FM.
 
 \subsection{A conditional sampler that matches the density definition}
@@ -248,3 +248,17 @@ invariant under orthogonal coordinate changes; the Rademacher expression general
 is not. Deliberate Jacobian regularization of neural ODEs predates this work
 \citep{finlay2020}. Removing an implicit regularizer can increase optimization variance
 or hurt useful smoothness, so debiasing alone does not predict better molecular results.
+
+\subsection{Geometry diagnostics beyond relaxation strain}
+
+We also retain all 32 samples in a simple distance-based diagnostic. A pair is
+flagged as extremely short when its separation is below $0.6$ times the sum of
+RDKit covalent radii. Contact edges use $1.25$ times that sum. The warm, 1,000-step
+and 10,000-step samples respectively have 5, 0 and 0 geometries with an extremely
+short pair, but 13, 12 and 12 geometries with more contact components than their
+reference structure. These thresholds define geometric diagnostics, not inferred
+chemical bonds or chemical validity. The reference itself may be disconnected.
+Among the four samples per condition, median pair-profile distances remain
+nonzero; this establishes variation only, not conformational coverage or correct
+mode populations. These results reinforce why low strain and successful
+relaxation are insufficient generation endpoints.

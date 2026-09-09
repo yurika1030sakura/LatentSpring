@@ -14,7 +14,7 @@ that all scientific checks passed.
 
 ## What is established
 
-- 103 tests pass, including real FlowMol parameter gradients, full-state and
+- 105 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities and smooth geometry.
 - Legacy scalar ordering cannot be promoted to likelihood or Boltzmann sampling.

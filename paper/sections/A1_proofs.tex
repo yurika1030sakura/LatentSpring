@@ -53,9 +53,8 @@
 
 This appendix collects everything the main text states without proof, in the order
 the argument uses it: the standing assumptions (\Cref{app:setup}); what the
-reported log-density actually is, derived from the flow (\Cref{app:density}); the
-score read-out the gradient baseline relies on and the two reasons it is a poor
-target (\Cref{app:score,app:trap}); the certificate behind the value objective and
+ideal density identity and its difference from the archived scalar (\Cref{app:density}); the
+score read-out and its assumptions and sensitivity (\Cref{app:score,app:trap}); the certificate behind the value objective and
 exactly what it identifies (\Cref{app:certificate,app:l2g}); the identity linking
 the training objective to the reported metric (\Cref{app:surrogate}); and a closing
 inventory of which statements this paper exercises and which it only states
@@ -86,7 +85,8 @@ smooth in $\vx$, with conservative forces $F(c,\vx) = -\nabla_{\vx} E(c,\vx)$,
 and $kT>0$ is a fixed temperature scale in eV. Throughout, $F$ denotes the
 \emph{force} and never a free energy.
 
-The target is the joint Boltzmann law and its two factors,
+For a specified reference measure and configuration domain, the formal Boltzmann
+law and its two factors are
 \begin{equation}
   \pi(c,\vx) = \frac{e^{-E(c,\vx)/kT}}{\mathcal{Z}},
   \qquad
@@ -98,7 +98,12 @@ The target is the joint Boltzmann law and its two factors,
 so that $\mathcal{Z} = \sum_{c} Z(c) = \sum_c e^{-A(c)/kT}$,
 $\pi(c) = e^{-A(c)/kT}/\mathcal{Z}$ and
 $\pi(\vx \mid c) = e^{-E(c,\vx)/kT}/Z(c)$. Neither $Z(c)$ nor $\mathcal{Z}$ is
-ever formed. The generative model is a flow $\mathrm{d}\vx_t/\mathrm{d}t =
+ever formed. These laws require $0<Z(c)<\infty$ and, for the joint law,
+$0<\mathcal Z<\infty$. Neither condition has been established for the archived
+unconfined teacher: removing overall translation does not confine dissociating
+fragments. Any confinement or symmetry measure would need to be specified as part
+of the target. The grouped experiments claim neither this joint law nor its composition
+weights. The ideal generative model is a flow $\mathrm{d}\vx_t/\mathrm{d}t =
 v_\theta(\vx_t,t)$ transporting $p_0 = \mathcal{N}(0,\sigma^2 I)$ on the
 centre-of-mass-free subspace at $t=0$ to $q_\theta := q_1^\theta$ at $t=1$ with
 the discrete channels clamped at their endpoint labels (\Cref{ass:A2}),
@@ -112,17 +117,18 @@ $E(c,\cdot)$ is the teacher potential at fixed $(N,q,s)$ and is $C^1$ in $\vx$ o
 a connected domain.
 \end{assumption}
 
-\begin{assumption}[Which density is reported: the clamped positional-flow density]
+\begin{assumption}[Ideal clamped positional-flow density]
 \label{ass:A2}
 The ideal quantity every theorem below is stated for, distinguished from the archived empirical readout, is
-$\log q_\theta(\cdot \mid c)$, is the log-density of the \emph{clamped
+$\log q_\theta(\cdot \mid c)$, the log-density of the \emph{clamped
 positional flow}: the flow obtained by holding the discrete channels --- atom
 types, formal charges and the empty bond tensor --- at their endpoint labels
 $(a_1, c_1, e_1)$ for the whole reverse trajectory, while only $\vx$ evolves.
-That object is positive on the sampled support and normalised on the
-centre-of-mass-free subspace by construction, being an exact change of variables
-applied to a normalised Gaussian prior \citep{ffjord}, up to the discretisation of
-\Cref{ass:A-disc}. Equality with the generator's joint conditional density $p_\theta(\cdot\mid c)$ requires a separate argument, including discrete dynamics, self-conditioning and geometric sampling operations. Such equality has not been established, and
+Assume the deterministic projected field defines a global diffeomorphism on the
+stated integration interval. Its exact pushforward of a normalized Gaussian is
+then positive and normalized on the centre-of-mass-free subspace \citep{ffjord}.
+A finite-step divergence quadrature is not, in general, the exact log determinant
+of its discrete sampler and need not itself normalize. Equality with the generator's joint conditional density $p_\theta(\cdot\mid c)$ requires a separate argument, including discrete dynamics, self-conditioning and geometric sampling operations. Such equality has not been established, and
 this is recorded as a limitation (\Cref{app:limitations}). The symbol $q_\theta$ is
 used nowhere else in this appendix.
 \end{assumption}
@@ -136,20 +142,21 @@ effective dimension $3(N-1)$, i.e.\ centre-of-mass removal only. We do not claim
 rotation-quotiented density.
 \end{assumption}
 
-\begin{assumption}[Discretised likelihood]
+\begin{assumption}[Discretisation and its scope]
 \label{ass:A-disc}
-The reported $\log q_\theta$ is a discretised continuous-flow likelihood ---
-explicit Euler in the state, midpoint-rule quadrature for the divergence integral,
-with a stochastic trace estimator --- so it is a biased and noisy estimate of the
-exact clamped positional-flow log-density. The discretisation controls that bias; it
-does not change which density is estimated. The scheme is derived in
-\Cref{app:density}.
+For a correctly specified projected velocity, a convergent numerical state solve
+and consistent divergence quadrature estimate the ideal density with discretisation
+error and stochastic trace noise. The archived Euler routine instead integrates
+the endpoint head and omits the differentiated projection; refining that routine
+does not establish this identification. Its actual operations are described in
+\Cref{app:density}; the corrected midpoint branch is evaluated separately in
+\Cref{app:newdevelopment}.
 \end{assumption}
 
 \begin{remark}[What the theory is scoped to, given the implemented gradient]
 \label{rem:idealresidual}
-The gradient actually back-propagated through $\Ls_{\mathrm{value}}$ is a
-truncated-adjoint surrogate: the reverse trajectory is advanced without gradient
+The archived gradient back-propagated through $\Ls_{\mathrm{value}}$ is a
+frozen-trajectory surrogate: the reverse trajectory is advanced without gradient
 tracking, each state is detached before its divergence is taken, and the prior term
 is computed from a detached endpoint, so the parameter gradient flows only through
 the divergence evaluations (\Cref{app:asimplemented}). We do not differentiate
@@ -163,17 +170,12 @@ whether, or to what, the implemented update converges.
 
 \begin{assumption}[Rigid-motion and symmetry factors]
 \label{ass:rigid}
-$Z(c)$ in \eqref{eq:app-targets} is an integral over $\R^{3N}$ and therefore
-carries translational and rotational volume factors and a symmetry-number
-correction. We take $Z(c)$ to be the configurational integral in the
-centre-of-mass-removed space that the density estimator actually models; as noted
-in \Cref{ass:A3}, rotations are \emph{not} quotiented by the implementation.
-Within a parent group this is benign: all $K$ perturbations are small
-displacements of one data geometry in one frame, so any rotational volume
-factor is approximately constant within the group and cancels from the per-group
-correlation, and is exactly annihilated by the within-parent variance loss. It is
-\emph{not} benign for any comparison across groups or across separated basins,
-which is one more reason we make none (\Cref{thm:l2g}).
+We use Lebesgue measure on the zero-centroid Cartesian subspace with ordered
+atom labels. Rotations are not quotiented. A coordinate-independent symmetry or
+normalization factor cancels within a parent. A geometry-dependent Jacobian from
+changing coordinates does not cancel in general and must not be treated as an
+arbitrary offset. Cross-composition thermodynamic comparisons require a specified
+measure and symmetry convention; none is inferred from the grouped experiments.
 \end{assumption}
 
 \begin{assumption}[Well-posed conditional energy]
@@ -190,14 +192,13 @@ limitation (\Cref{app:limitations}) and is the reason no radical, open-shell or
 transition-metal result is reported.
 \end{assumption}
 
-\subsection{The reported log-density: change of variables, trace estimation, and the integration scheme}
+\subsection{Ideal change of variables and the archived numerical readout}
 \label{app:density}
 
-Everything the value objective constrains, and everything the calibration
-diagnostics measure, is the number this subsection defines. It is derived in three
-steps --- an exact identity, an unbiased estimator of the one expensive term in it,
-and an integration scheme --- and the third step is the one that decides how
-\emph{accurately} the density is reported, not which density it is.
+The first two steps give an ideal density identity and an unbiased stochastic
+trace on a deterministic trajectory. The third describes the archived numerical
+operations. Their endpoint-head and projection defects prevent identification of
+the measured scalar with the ideal density, independently of resolution.
 
 \paragraph{Step 1: the instantaneous change of variables.} Let $\vx_t$ solve
 $\mathrm{d}\vx_t/\mathrm{d}t = v_\theta(\vx_t,t)$ and let $p_t$ be the law of
@@ -229,8 +230,8 @@ trajectory that ends at $\vx_1$ and using $p_0 = \mathcal{N}(0,\sigma^2 I)$ give
 In practice the trajectory is generated \emph{backwards} from the data point
 $\vx_1$, so one reverse solve returns both $\vx_0$ and the accumulated divergence.
 \Cref{eq:app-ffjord} is exact in continuous time and requires no invertibility
-argument beyond uniqueness of the ODE solution; every approximation in the reported
-number enters in steps 2 and 3.
+argument beyond the global flow assumptions above. Applying the identity requires
+the same field, state space and prior normalization as the sampler.
 
 \paragraph{Step 2: the trace, and why a stochastic estimator is used.} The
 divergence is the trace of the Jacobian, $\nabla\!\cdot v_\theta = \operatorname{tr} J$
@@ -259,7 +260,8 @@ read. First, with independent entries the estimator's variance is
 because $\epsilon^{\!\top} J\epsilon = \sum_i J_{ii} + \sum_{i<j}(J_{ij}+J_{ji})\epsilon_i\epsilon_j$
 and the products $\epsilon_i\epsilon_j$ over distinct pairs are uncorrelated with unit
 variance. Rademacher probes are the standard choice because the diagonal of $J$
-contributes no variance at all, whereas Gaussian probes pay $2\lVert J\rVert_F^2$;
+contributes no variance at all, whereas Gaussian probes pay
+$2\lVert (J+J^\top)/2\rVert_F^2$;
 averaging $n_{\mathrm{p}}$ probes divides \eqref{eq:app-hutchvar} by
 $n_{\mathrm{p}}$. Second, the divergence enters \eqref{eq:app-ffjord}
 \emph{linearly}, so trace noise adds variance to the reported $\log q_\theta$ but
@@ -291,24 +293,17 @@ accumulating $-\Delta t\,\nabla\!\cdot v_\theta(\vx_{t_k},t_k)$, advancing the s
 by $\vx \leftarrow \vx - \Delta t\, v_\theta(\vx,t_k)$, and adding the prior
 log-density at the end.
 
-Two schemes are in play and they must not be conflated. The \emph{state} update is
-explicit Euler with $n$ steps of size $1/n$, which traverses the whole of $[0,1]$
-and carries $O(\Delta t)$ error. The \emph{divergence} integral is approximated by
-the midpoint rule on $[0,1]$: all $n$ nodes are interior to the interval, the
-interval itself is not truncated. However the state is a start-of-step approximation, not a midpoint state, so the implemented divergence accumulation is generally only first-order. The time-only constant/linear-divergence checks do not establish second-order accuracy for a state-dependent field. The half-step offset therefore avoids
-evaluating the field at $t = 1$ without moving the endpoint the scheme targets. What
-the estimator targets is $\log q_\theta$ at $t = 1$; there is no
-family of smoothed marginals indexed by the discretisation, and a finer grid estimates
-the \emph{same} quantity more accurately rather than a different one. Analytic
-checks on the implementation confirm this: on a field of constant divergence, and on
-a time-varying one, the accumulated integral equals the full-interval value at every
-$n$ rather than a truncated $1 - 1/(2n)$ value, and on a linear continuous
-normalising flow the estimate converges to the closed-form endpoint log-density as
-$n$ grows.
-
-What the finite grid costs is accordingly \emph{numerical discretisation error},
-first-order in both the state and generally the accumulated divergence, together with whatever endpoint stiffness the learned
-field carries.
+The midpoint offset is in time only: the state remains a start-of-step
+approximation. For a regular, correctly specified field the scheme is generally
+first-order in both state and accumulated divergence. Interior evaluation times
+avoid an endpoint evaluation but do not prove convergence in the presence of an
+endpoint singularity. More fundamentally, the archived code supplies the raw
+endpoint head in place of $v_\theta$ and does not project its differentiated field.
+Its resolution study therefore concerns $\widehat\ell_\theta$, not a validated
+likelihood of the intended sampler. Analytic integration tests with a supplied
+velocity do not test this head adapter. The corrected branch uses midpoint states
+and the actual velocity conversion, with a separately stated terminal time;
+its molecular convergence failures are reported in \Cref{app:newdevelopment}.
 
 Two uses of the symbol $\epsilon$ must be kept apart, and neither is a smoothing
 scale of the reported density: the $\epsilon$ of \eqref{eq:app-eps} below is the
@@ -320,10 +315,9 @@ different glyph throughout.
 \subsection{The flow-matching score read-out}
 \label{app:score}
 
-The gradient-supervision baseline of \Cref{sec:method} needs the score of the
-model's own time-$t$ marginal. Flow matching supplies it in closed form, which is
-convenient and, as \Cref{app:trap} shows, also the source of the baseline's
-trouble.
+For an independent Gaussian interpolation, the population FM velocity determines
+the interpolation marginal's score. Substituting an arbitrary learned velocity
+defines a read-out; it does not make that read-out the learned ODE density's score.
 
 \begin{lemma}[Flow-matching score read-out]
 \label{lem:score}
@@ -382,9 +376,9 @@ full and reports what the diagnostics, run under both read-outs, say about it.
 \label{rem:app-amplification}
 With $\sigma = 1$, the factor $t/((1-t)\sigma^2)$ equals $5.7$, $11.5$ and $32.3$
 at the three training probe times $t \in \{0.85, 0.92, 0.97\}$. The pole at
-$t = 1$ is not a removable artefact: $s_\theta$ is the score of the
-\emph{smoothed} marginal $p_t$, and the smoothing vanishes exactly as the
-read-off amplification diverges.
+$t = 1$ appears in this read-out's sensitivity. At the population optimum,
+the read-out equals the smoothed marginal score; for an arbitrary learned model,
+this score identification is not guaranteed.
 \end{remark}
 
 \subsection{Why the gradient condition is a trapped surrogate}
@@ -398,93 +392,79 @@ stated as \emph{diagnostic hypotheses} rather than as explanations of the
 measurement in \Cref{sec:ablation}; neither is isolated experimentally, and neither
 bears on force supervision in general \citep{psm,driftingboltzmann}.
 
-\begin{proposition}[Bias--variance trap: a diagnostic hypothesis]
+\begin{proposition}[Smoothing and read-out sensitivity]
 \label{prop:trap}
-At the population optimum of $\Ls_{\mathrm{FM}}$, and with
-$\epsilon = (1-t)\sigma/t$, the read-out is, up to a factor $1/t$, the score of
-$p_{\mathrm{data}} * \mathcal{N}(0,\epsilon^2 I)$ evaluated at
-$\vx_1 + \epsilon z$, $z \sim \mathcal{N}(0,I)$. Compared with the endpoint target
-$F(\vx_1)/kT$ this incurs a scale error and a smoothing error, each $O(1-t)$ or
-smaller, together with an evaluation-point displacement of size $\epsilon$, while
-by \Cref{rem:app-amplification} the gradient noise injected into the parameters
-grows as $(1-t)^{-2}$. No choice of $t$ makes the deterministic terms and the noise
-term small together.
+At the population optimum for the independent Gaussian interpolant and $0<t<1$,
+write $\epsilon=(1-t)\sigma/t$ and $y=x_t/t=x_1+\epsilon z$. Then
+\[
+ s^*(x_t,t)=t^{-1}\nabla\log\bigl(p_{\mathrm{data}}*
+                 \mathcal N(0,\epsilon^2I)\bigr)(y).
+\]
+At a fixed input, perturbing the velocity by $\delta v$ perturbs this read-out
+by $t\delta v/((1-t)\sigma^2)$. Thus its velocity-error covariance is multiplied
+by $t^2/((1-t)^2\sigma^4)$. This is a sensitivity identity, not a lower bound on
+training error or a claim that parameter-gradient variance must diverge.
 \end{proposition}
 
-\begin{proposition}[Objective conflict: a diagnostic hypothesis]
+\begin{proposition}[Endpoint force regression]
 \label{prop:conflict}
-The population minimiser of $\Ls_{\mathrm{FM}}$ has implied score
-$\nabla \log p^{\mathrm{data}}_t(\vx_t)$. The network input is $\vx_t$ while the
-force target is the endpoint quantity $F(c,\vx_1)/kT = \nabla\log\pi(\vx_1)$, so the
-population minimiser of the idealised \emph{squared} off-policy force loss is not
-$\nabla\log\pi(\vx_1)$ but the conditional expectation
+For squared force loss and an unrestricted predictor of $(x_t,t,c)$, the
+population target is the conditional expectation
 \begin{equation}
-  s_\theta(\vx_t,t) \;\longrightarrow\;
-  \E\bigl[\nabla\log\pi(\vx_1) \bigm| \vx_t, t, c\bigr]
-  \;=\; \E\bigl[F(c,\vx_1)/kT \bigm| \vx_t, t, c\bigr],
-  \label{eq:app-condexp}
+ s_{\mathrm{force}}(x_t,t,c)
+ =\E[F(c,x_1)/kT\mid x_t,t,c].
+ \label{eq:app-condexp}
 \end{equation}
-a smoothed and shrunk field. The two population targets differ whenever the corpus
-is not drawn from the target law, $p_{\mathrm{data}} \neq \pi$, and the joint
-minimiser is neither; a fixed $\lambda_1$ moreover weights the conflicting target
-by $(1-t)^{-2}$.
+It need not equal either the realized endpoint force or the interpolation score.
+When $p_{\mathrm{data}}=\pi$ and integration by parts has no boundary term,
+$s_{\mathrm{force}}=t\nabla\log p_t$. Distribution mismatch can introduce further
+differences, but $p_{\mathrm{data}}\ne\pi$ alone does not prove unequal targets
+at every probe time.
 \end{proposition}
 
-\begin{proof}[Proof of \Cref{prop:trap} and \Cref{prop:conflict}]
-Reparameterise the smoothing. Write $\vx_t = t\,y$ with
+\begin{proof}
+Write $x_t=ty$ and
 \begin{equation}
-  y = \vx_1 + \epsilon z, \qquad z \sim \mathcal{N}(0,I), \qquad
-  \epsilon = (1-t)\sigma/t ,
-  \label{eq:app-eps}
+ y=x_1+\epsilon z,\qquad \epsilon=(1-t)\sigma/t,
+ \qquad z\sim\mathcal N(0,I).
+ \label{eq:app-eps}
 \end{equation}
-so that $p_t(\vx) = t^{-d} \tilde p_\epsilon(\vx/t)$ with
-$\tilde p_\epsilon = p_{\mathrm{data}} \ast \mathcal{N}(0,\epsilon^2 I)$, and
-therefore $s_\theta(\vx_t,t) = t^{-1}\nabla\log\tilde p_\epsilon(\vx_1+\epsilon z)$
-at the population optimum. Against the target $\nabla\log\pi(\vx_1)$ this exposes
-four mismatches: a $1/t$ prefactor contributing relative error $(1-t)/t = O(1-t)$;
-a smoothing error $\nabla\log(p \ast \mathcal{N}_\epsilon) - \nabla\log p =
-O(\epsilon^2) = O((1-t)^2)$ by the heat-flow expansion; an evaluation-point
-displacement contributing $\epsilon\,\nabla^2\log\pi\,z$ to first order; and, since
-by \Cref{lem:score} any velocity error is multiplied by $t/((1-t)\sigma^2)$ and the
-loss is quadratic in the score, parameter-gradient noise scaling as $(1-t)^{-2}$.
-The first three shrink as $t \to 1$ while the fourth diverges, so the total error is
-bounded below by a trade-off of the form $O(1-t) + O((1-t)^{-2}\eta)$ with $\eta$
-the velocity-estimation noise level, which is \Cref{prop:trap}; averaging over
-probe times, as we do, reduces the constant but not the trade-off.
+The density change under scaling gives
+$p_t(x)=t^{-d}(p_{\mathrm{data}}*\mathcal N_\epsilon)(x/t)$, yielding the first
+identity. The sensitivity and covariance statements follow from the affine
+map in \Cref{lem:score}. With a sufficiently smooth positive data density,
+a local heat-kernel expansion gives smoothing error $O(\epsilon^2)$, but
+this is not a universal lower bound or a noise-versus-bias impossibility result.
+Velocity-error covariance can itself decrease with $t$; the model Jacobian,
+residual distribution and loss robustification also affect gradient variance.
 
-For \Cref{prop:conflict}, the displacement is not merely noise that averages away.
-The loss is minimised over functions of $\vx_t$, and $(\vx_t,\vx_1)$ are dependent
-but not mutually determined, so for a squared loss the population minimiser over
-measurable functions of the input is the conditional expectation
-\eqref{eq:app-condexp}, by the orthogonality property of $L^2$ projection; it equals
-$\nabla\log\pi(\vx_1)$ only if $\vx_1$ is $\sigma(\vx_t)$-measurable, which the
-interpolation makes false for every $t < 1$. The result is a shrinkage \emph{bias}
-in the learned score rather than a variance term, and the two population targets ---
-the score of the data interpolation marginal, and the conditional expectation of
-endpoint Boltzmann scores --- are distinct whenever $p_{\mathrm{data}} \neq \pi$.
-
-Two caveats bound both propositions. The implemented $\ell$ is Huberised and
-per-atom norm-capped \eqref{eq:score}, so its population minimiser is a robustified
-location functional of the same conditional law and not \eqref{eq:app-condexp}. And
-both arguments concern population objectives at their exact optima, so they name
-mechanisms the construction admits rather than ones we have isolated.
+Conditional expectation is the squared-loss minimizer by the $L^2$ projection
+identity. It equals the endpoint force almost surely precisely when that force
+is measurable from the input, which is weaker than recovering all of $x_1$.
+If $p_{\mathrm{data}}=\pi$, integration by parts in $x_1$ with
+$K_t(x\mid x_1)=\mathcal N(x;t x_1,(1-t)^2\sigma^2I)$ gives
+\[
+ \int K_t\nabla_{x_1}p_{\mathrm{data}}\,\mathrm dx_1
+ =-\int p_{\mathrm{data}}\nabla_{x_1}K_t\,\mathrm dx_1
+ =t\nabla_xp_t(x).
+\]
+Division by $p_t(x)$ proves the stated factor. For example, for centered
+Gaussian data with variance $a$ and a Gaussian energy target with variance $b$,
+the two targets at a given $t$ coincide when $b=ta$, even though $b\ne a$.
+This rules out an unconditional claim that distribution mismatch forces
+pointwise disagreement at every time.
 \end{proof}
 
-\begin{remark}[The antecedent holds for our data, and on-policy variants are outside what we measure]
+\begin{remark}[Scope of the archived force comparator]
 \label{rem:antecedent}
-The training corpus is a curated union of relaxation trajectories, molecular
-dynamics snapshots and conformer sets across many systems, charges and spins
-\citep{omol25}. It is not an equilibrium sample from a single-temperature Boltzmann
-distribution, and the training $kT = 1.0$~eV is not a physical temperature of the
-dataset, so the antecedent $p_{\mathrm{data}} \neq \pi$ of \Cref{prop:conflict}
-holds by construction. Querying forces at model samples rather than at data points
-would partially repair the evaluation-point displacement and the objective conflict,
-because the two targets would then refer to one distribution; it would not repair
-the $(1-t)^{-1}$ amplification. No such variant is measured here: the
-gradient-supervision cells of the matched grid (\Cref{app:p0cells}) carry the
-off-policy endpoint term alone, whereas the earlier round's force cells also carried
-an on-policy distillation term, which is why that round's \emph{force} comparisons
-are confounded and are superseded by cell E (\Cref{app:cells}).
+OMol25 is a heterogeneous collection of geometries, charges and electronic
+states, not a specified single-temperature equilibrium corpus. The archived
+force comparator additionally uses the wrong head adapter, endpoint forces,
+Huberization, norm caps and an altered prior coupling. The identities above
+isolate assumptions and possible mismatches; they do not establish a causal
+explanation of its empirical failure. Querying forces at generated samples
+alone would not make the read-out the learned flow's score. Correctly specified
+potential-score matching and on-policy methods require their own comparison.
 \end{remark}
 
 \subsection{The value condition: a partition-function-free certificate}
