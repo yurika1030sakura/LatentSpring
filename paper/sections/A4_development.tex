@@ -214,6 +214,26 @@ Near-collisions occur both in the reverse trajectory and internal network predic
 These measurements identify a numerical concern, not a proof that collisions uniquely
 cause the observed error; CPU and GPU trajectories can differ through roundoff.
 
+Classical RK4, keeping weights, geometries and eight fixed probe replicas unchanged,
+fails the 0.1-nat 32-to-64-step screen on two of eight parents without smoothing and
+one with smoothing; maximum drift is 18.2032 and 0.5573 nats. At the largest tested
+resolutions, midpoint-256 and RK4-64 both use 256 trace stages, but disagree by more
+than 0.1 nat on three and five parents, respectively. They use different numbers of
+velocity evaluations, so trace-stage matching does not imply equal runtime.
+\Cref{fig:solverdevelopment} retains every parent and both comparisons.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../research/evidence/solver_comparison.pdf}
+\caption{Fixed-weight numerical checks on the two separately trained residual velocity
+models. The dashed line is a necessary 0.1-nat screen, not a certification threshold
+for the true density. Mean changes may conceal larger per-replica changes; no failed
+parent is removed. All curves use the same eight probes, held fixed over integration
+time and resolutions. These panels report integration sensitivity, not energy-trained
+generation improvements.}
+\label{fig:solverdevelopment}
+\end{figure}
+
 An adaptive float64 DOP853 trajectory with independent Gauss--Legendre divergence
 quadrature succeeds on an easy original-checkpoint parent at relative tolerances
 $10^{-5}$ and $3\cdot10^{-6}$. Its maximum centred mean change between these tolerances
@@ -239,6 +259,13 @@ the same four optimizer updates take 609 seconds and 19.03 GiB with step checkpo
 versus 275 seconds and 1.69 GiB with the discrete adjoint. Final weights differ by
 $3.18\cdot10^{-8}$ in relative Euclidean norm. This establishes a practical implementation
 improvement within floating-point agreement, not a new adjoint result or molecular advantage.
+
+A separate eight-parent runtime calibration uses RK4-64 and two independent Gaussian
+replicas, sharing each probe within a parent. Two optimizer updates take 220.1 seconds
+with peak allocation 3.78 GiB; both energy contributions are applied. At energy weight
+0.001, the energy-gradient norms are 0.989 and 0.331, versus FM norms 3.090 and 4.417.
+This tests practical batch size and gradient scale only; the underlying density has
+not passed numerical certification and no molecular benefit is inferred.
 
 \begin{figure}[ht]
 \centering

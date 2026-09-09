@@ -12,6 +12,12 @@ set -euo pipefail
 SOURCE_ROOT="${1:?source snapshot required}"
 RUN_ROOT="${2:?output directory required}"
 POSITION_CKPT="${3:?displacement checkpoint required}"
+shift 3
+if (( $# )); then
+  ODE_STEPS=("$@")
+else
+  ODE_STEPS=(16 32 64)
+fi
 FLOWMOL_ENV=/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol
 export PYTHONPATH="$SOURCE_ROOT"
 export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
@@ -26,5 +32,5 @@ exec "$FLOWMOL_ENV/bin/python" -u scripts/research/checkpoint_panel.py \
   --checkpoint "$POSITION_CKPT" \
   --shard /n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/perturbation_val_n10000_s0.pt \
   --parents 8 --replicas 8 --max-atoms 12 --out "$RUN_ROOT" \
-  --terminal-time 1 --exact-parent-count 0 --solver rk4 --steps 16 32 64 --perturbation-indices 0 1 \
+  --terminal-time 1 --exact-parent-count 0 --solver rk4 --steps "${ODE_STEPS[@]}" --perturbation-indices 0 1 \
   --composition-split /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/composition_audit_v2/composition_split.json

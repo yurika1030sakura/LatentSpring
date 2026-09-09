@@ -49,6 +49,8 @@ that all scientific checks passed.
 | Exact discrete-adjoint high-resolution energy | Same four updates, 275 s, 1.69 GiB; relative L2 final-weight difference 3.18e-8 from checkpointed run | `adjoint_energy_smoke_v1`, 45583400 |
 | Displacement velocity, T=1, rho=0 | 10,000 FM-only updates; xTB 31/32 converge; median successful strain 4.14 eV; five of eight local density parents fail 0.1-nat gate, maximum drift 40.98 nats | `displacement_development_rho0_v1`, 45586851 |
 | Displacement velocity, T=1, rho=0.1 | Matched 10,000 updates; xTB 30/32 converge; median successful strain 3.98 eV; five of eight density parents fail, maximum drift 0.4408 nats | `displacement_development_rho01_v2`, 45586884 |
+| Fixed-weight RK4, rho=0 / 0.1 | At 32-to-64 steps, two / one of eight parents fail 0.1-nat screen; worst drift 18.2032 / 0.5573 nats | `rk4_density_rho0_v1`, 45595533; `rk4_density_rho01_v1`, 45595874 |
+| RK4 common Gaussian energy, eight parents | Two updates, both contributions applied, 220.1 s, 3.78 GiB; weighted energy gradient norms 0.989 / 0.331 versus FM 3.090 / 4.417 | `rk4_energy_b8_pilot_v1`, 45599167 |
 
 All molecular training above uses a single seed; warm versus 1,000 versus
 10,000 updates is not seed replication. Warm q_0.8 was not trained for the new
@@ -94,7 +96,10 @@ capability matrix with the actual sampler/density scope. See
 Classical RK4 is now available for both sampling and density, including full
 discrete-adjoint gradients. It passes analytic fourth-order and real-network
 gradient checks. Its extra trace evaluations are explicitly counted; it is not
-an equal-cost replacement per step. Molecular RK4 experiments are running below.
+an equal-cost replacement per step. The completed 16/32/64-step molecular panel
+still fails its necessary screen. Moreover, midpoint-256 versus RK4-64 differs
+by more than 0.1 nat on three / five parents (rho=0 / 0.1), although these two
+resolutions both use 256 trace stages. See `evidence/solver_comparison.json`.
 See `notes/rk4_density_protocol.md`.
 
 The completed displacement runs each improve 15 paired xTB results and worsen
@@ -112,15 +117,17 @@ failure cause; CPU and GPU trajectories can differ in roundoff.
 
 ## Running
 
-Source `5dff3351d2633bc58245adf39e555f21197338df`:
+Source `26d75f55c91388737ddb48b64dcb04393b556450`:
 
-- 45595533, `rk4_density_rho0_v1`: fixed original-geometry displacement weights.
-- 45595874, `rk4_density_rho01_v1`: fixed smoothed-geometry displacement weights.
+- 45600126, `adaptive_displacement_rho01_v1`: independent float64 DOP853
+  trajectory and Gauss--Legendre trace quadrature at two tolerances, retaining
+  the first parent and the two largest RK4 drift cases. Each position solve has
+  a 6,000-evaluation limit. Recorded failures remain failures.
 
-Both retain all eight local-panel parents and the same eight probes, testing
-RK4 at 16/32/64 steps. Four field and four trace stages per RK4 step are counted
-explicitly. Passing a mean-drift screen alone will still require independent
-adaptive and per-replica checks before molecular energy claims.
+The eight-parent energy run above is a runtime/gradient calibration, not an
+energy-advantage experiment. It uses RK4-64, two common-within-parent Gaussian
+replicas, the discrete adjoint and energy weight 0.001. No molecular performance
+claim follows from its two finite updates.
 
 ## Data and evidence limits
 
