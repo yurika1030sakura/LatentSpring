@@ -1,0 +1,55 @@
+{
+  "complete": false,
+  "scope": "Audit official validation overlap and freeze outcome-independent candidate panels.\n\nThis checks whole-system compositions and explicit calculation/reference links.\nIt does not infer complete chemical or trajectory identities from path names.\nCandidates are ranked by a fixed hash, never by energies or method outcomes.\n",
+  "source_raw_records": 2762021,
+  "raw_directory": "/n/holylabs/woo_lab/Lab/yulili/bgfm/raw_data/omol25/v250514/official_validation/val_extracted/val",
+  "old_training_unique_compositions": 1087994,
+  "old_development_unique_compositions": 28453,
+  "training_source_link_hashes": 4313500,
+  "validation_archive_sha256": "bc2f2aa70459ed029217f188d1e8ab0d90abbb90065235f6414d79246bad1ab8",
+  "validation_manifest_sha256": "0ec627a3c01f21fa5bfd2e0c9efac44a788de0c4d7b282d9304f5881db31dcf1",
+  "script_sha256": "6a3f4724d3975b54dc1e10246f2d4aa5b7b4ee5bbd66fbe972305f8e5113eb1e",
+  "processed_input_sha256": {
+    "train": "e31300074a7c2a6baf48a0f01c476cf8f4503f4fa4210b4df6c2e2f649bb3d03",
+    "val": "8c441b968b74e1fa8937620b3720085e090c90df3d88ef2b9477841537228136"
+  },
+  "partition_rule": "SHA256(seed || elemental-count vector) mod 5: zero=new development, otherwise=reserved evaluation",
+  "selection_rule": "minimum SHA256 ranks within composition/electronic-state and stratum; no outcome-based ranking",
+  "capacity_per_stratum": 8,
+  "seed": 20270918,
+  "max_atoms": 200,
+  "remaining_limitations": [
+    "explicit source links do not exhaust parent-trajectory relations",
+    "candidate selection is not evidence of method quality",
+    "official validation is not relabeled as an official test set"
+  ],
+  "counts": {
+    "scanned": 1000,
+    "eligible": 967,
+    "reserved_evaluation": 706,
+    "new_development": 261,
+    "outside_atom_range": 33
+  },
+  "domains": {
+    "elytes": 497,
+    "biomolecules": 121,
+    "metal_complexes": 45,
+    "spice": 11,
+    "orbnet_denali": 8,
+    "geom_orca6": 11,
+    "reactivity": 274
+  },
+  "sizes": {
+    "81-200": 421,
+    "41-80": 224,
+    "13-24": 175,
+    "25-40": 147
+  },
+  "seconds": 46.20813307608478,
+  "candidate_counts": {
+    "new_development": 42,
+    "reserved_evaluation": 83
+  },
+  "source_record": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/official_validation_audit_preflight_v2/audit.json",
+  "source_record_sha256": "667ec4c2e04a66e25fd375631459f8f2d51b0592d08bad7cf7217efe49416c3b"
+}
