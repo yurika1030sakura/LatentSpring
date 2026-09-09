@@ -1,8 +1,8 @@
 # Active research status — September 9, 2026
 
 **Not yet submission ready.** The project now has a specified conditional
-sampler, full density gradients and independent generation checks. No molecular
-benefit of the corrected energy objective has been established. The old CNF
+sampler, full density gradients and independent generation checks. No repeatable molecular advantage against matched strong baselines has yet
+been established; the first independent three-atom calibration is recorded below. The old CNF
 density remains numerically unresolved. The finite-path branch avoids that
 likelihood integration, but sampling coverage and target suitability remain
 unresolved scientific gates.
@@ -623,3 +623,37 @@ and AgBr2 normalizer/moment/xTB assessment 45745431 are queued with afterok
 requirements. No outcome from these ongoing runs is claimed. The comparison
 code tests the energy-offset sign and rejects potential/restraint mismatches.
 The full suite passes 209 tests. See NEXT for the exact active experiment map.
+
+## First independent 300-K calibration and broader development panel
+
+The initial 300-K jobs 45744181/45744274/45744278/45744280 and assessments 45745430/
+45745431 are COMPLETE. AgBr2 annealed joint work, seed 9051, gives ESS 44.080/256,
+maximum weight .06089 and log-normalizer difference -.00924 nat from the independent
+reference. Empirical relative normalizer SE is 13.73%, versus 4.18% for the reference;
+the close point estimate is not .9%-precision evidence. Weighted invariant moments
+are consistent within these finite-sample error estimates. xTB improves from 28/32
+to 32/32, with successful-only median strain 1.61084 to .45196 eV. This is one
+three-atom condition and one training seed, not a general ICLR contribution.
+
+The eight-atom case remains uncalibrated: fixed joint / annealed joint / annealed
+energy have ESS 1.0003 / 1.0687 / 1.0006 out of 256. All three pass xTB 32/32, with
+median strain .56999 / .94594 / .13002 eV. Better geometry and energy do not imply
+correct target populations. These negative sampling results remain retained.
+
+The fixed replication and ablation runs from source be9fb7a are 45750942 (annealed
+joint, seed 9052), 45750951 (seed 9053), 45750959 (fixed joint, seed 9051), 45750966
+(annealed energy-gradient, seed 9051). The replicas were RUNNING and the two
+regular-GPU controls were PENDING for priority at 23:36 UTC. Frozen-loader check
+45751790 is also pending; it must reproduce a saved evaluation-stream prefix
+before the independent 4096-sample evaluation is used. Trained temperature
+weights must not be reset a second time during inference.
+
+An outcome-independent eight-condition development panel is frozen by hash and
+replays byte-for-byte. It spans 9--20 atoms, neutral/charged and singlet/open-shell
+strata, including Re and Pt. All eight raw reference identities/labels are checked;
+all eight condition-only CPU interface tests complete. No reference coordinates
+enter generation. Full baseline 45747806 and independent assessment 45749290 are
+queued. The same-condition AgBr2 FM control 45747807 and MALA 45749291 are also
+queued. Every failure is retained. Reserved evaluation data remains untouched.
+The full suite passes 210 tests; the new frozen-inference loader still requires
+its pending real-GPU numerical check.
