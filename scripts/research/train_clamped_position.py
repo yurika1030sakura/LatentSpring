@@ -55,6 +55,8 @@ def main():
     p.add_argument('--perturbation-indices',type=int,nargs='+')
     p.add_argument('--energy-control',choices=['value','shuffle','zero'],default='value')
     p.add_argument('--energy-gradient-diagnostics',action='store_true')
+    p.add_argument('--energy-parents',type=int,default=1)
+    p.add_argument('--geometry-softening',type=float)
     p.add_argument('--energy-shard',type=Path,default=Path('/n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/perturbation_train_n30000_s0.pt'))
     args=p.parse_args()
     if args.steps<1 or args.batch_size<1 or args.energy_every<1:
@@ -74,6 +76,9 @@ def main():
     if warm_protocol and warm_protocol['data_endpoint_time']!=args.terminal_time:
         raise ValueError('Warm position checkpoint has a different endpoint time')
     model.load_state_dict(warm['state_dict'],strict=True)
+    from cfm_mol.smooth_geometry import patch_smooth_geometry
+    args.geometry_softening=warm_protocol.get('geometry_softening',0.) if args.geometry_softening is None else args.geometry_softening
+    patch_smooth_geometry(model,args.geometry_softening)
     model.to(args.device).float().train()
     ds_cfg=dict(cfg['dataset'],fake_atom_p=0.,fake_atom_std=1.,
                 explicit_aromaticity=cfg['mol_fm'].get('explicit_aromaticity',False))
@@ -88,7 +93,7 @@ def main():
     energy_loader=None
     if args.lambda_energy:
         energy_loader=PerturbationLoader([args.energy_shard],n_atom_types=model.n_atom_types,
-            b_parents=1,device=args.device,max_atoms_per_parent=12,seed=args.seed+2,
+            b_parents=args.energy_parents,device=args.device,max_atoms_per_parent=12,seed=args.seed+2,
             perturbation_indices=args.perturbation_indices)
     optimizer=torch.optim.AdamW(model.parameters(),lr=args.lr,weight_decay=1e-12)
     args.out.mkdir(parents=True,exist_ok=True)
@@ -103,6 +108,8 @@ def main():
         data_endpoint_time=args.terminal_time,alignment=False,history_self_conditioning=False,
         steric_retractions=False,energy_temperature_eV=1.,
         purpose='development baseline; not a finished molecular result')
+    if energy_loader is not None:
+        protocol['energy_shard_sha256']=hashlib.sha256(args.energy_shard.read_bytes()).hexdigest()
     (args.out/'protocol.json').write_text(json.dumps(protocol,indent=2)+'\n')
     started=time.monotonic();energy_applied=0;energy_skipped=0
     metrics=args.out/'metrics.jsonl'
@@ -120,6 +127,7 @@ def main():
                 'n_atoms':g.batch_num_nodes().cpu().tolist(),'energy_applied':False}
         if energy_loader is not None and step%args.energy_every==0:
             gp,energies,pid,pnbi,puem=energy_loader.next_batch()
+            record['energy_parent_indices']=energy_loader._last_parent_indices
             if args.energy_control=='zero':
                 energies=torch.where(torch.isfinite(energies),torch.zeros_like(energies),energies)
             elif args.energy_control=='shuffle':

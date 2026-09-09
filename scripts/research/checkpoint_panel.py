@@ -38,14 +38,18 @@ def main():
     p.add_argument('--device', default='cuda')
     p.add_argument('--composition-split', type=Path)
     p.add_argument('--perturbation-indices', type=int, nargs='+')
+    p.add_argument('--geometry-softening',type=float)
     args = p.parse_args()
     if args.replicas < 2:
         raise ValueError('At least two replicas needed for noise diagnostics')
     cfg = read_config_file(args.config)
     cfg['mol_fm'].pop('bgfm', None)
     model = model_from_config(cfg)
-    state = torch.load(args.checkpoint, map_location='cpu', weights_only=False)['state_dict']
-    model.load_state_dict(state, strict=True)
+    checkpoint = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
+    model.load_state_dict(checkpoint['state_dict'], strict=True)
+    from cfm_mol.smooth_geometry import patch_smooth_geometry
+    softening=checkpoint.get('research_protocol',{}).get('geometry_softening',0.) if args.geometry_softening is None else args.geometry_softening
+    patch_smooth_geometry(model,softening)
     model.to(args.device).eval()
     loader = PerturbationLoader([args.shard], n_atom_types=model.n_atom_types,
         n_charge_classes=6, n_bond_types=4, b_parents=1, device=args.device,
@@ -65,6 +69,7 @@ def main():
         'shard':str(args.shard), 'shard_sha256':hashlib.sha256(args.shard.read_bytes()).hexdigest(),
         'terminal_time':args.terminal_time, 'replicas':args.replicas,
         'perturbation_indices':args.perturbation_indices,
+        'geometry_softening':softening,
         'probe_policy':'independent Rademacher replicas, fixed over time and across resolutions',
         'rows':[], 'complete':False}
     if args.composition_split:

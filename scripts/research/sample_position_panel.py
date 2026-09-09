@@ -79,9 +79,12 @@ def main():
             raise ValueError('Evaluation T differs from position training endpoint')
         model=model_from_config(cfg)
         model.load_state_dict(state['state_dict'],strict=True);model.to(args.device).float().eval()
+        from cfm_mol.smooth_geometry import patch_smooth_geometry
+        patch_smooth_geometry(model,(protocol or {}).get('geometry_softening',0.))
         arm={'name':name,'checkpoint':str(checkpoint),
             'checkpoint_sha256':hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
             'position_training_steps':state['global_step'] if protocol is not None else 0,
+            'geometry_softening':(protocol or {}).get('geometry_softening',0.),
             'samples':[],'held_fm_losses':[]}
         report['arms'].append(arm)
         for row,(index,base) in enumerate(zip(indices,graphs)):

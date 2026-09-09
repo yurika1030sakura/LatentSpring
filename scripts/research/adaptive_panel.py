@@ -27,6 +27,8 @@ def main():
     cfg=read_config_file('configs/sweep/a1_fm_only_s2.yaml');cfg['mol_fm'].pop('bgfm',None)
     model=model_from_config(cfg)
     model.load_state_dict(torch.load(checkpoint,map_location='cpu',weights_only=False)['state_dict'],strict=True)
+    from cfm_mol.smooth_geometry import patch_smooth_geometry
+    patch_smooth_geometry(model,source.get('geometry_softening',0.))
     model.to(args.device).double().eval()
     loader=PerturbationLoader([source['shard']],n_atom_types=model.n_atom_types,
         b_parents=1,device=args.device,max_atoms_per_parent=12,
@@ -37,6 +39,7 @@ def main():
     report={'selection':'first parent plus two largest 64-to-128 mean centered changes; development diagnosis',
         'source_panel':str(args.panel),'source_panel_sha256':hashlib.sha256(args.panel.read_bytes()).hexdigest(),
         'dtype':'float64','terminal_time':source['terminal_time'],
+        'geometry_softening':source.get('geometry_softening',0.),
         'requested_rtols':args.rtols,'max_nfe':args.max_nfe,
         'rows':[],'complete':False,'all_reference_solves_succeeded':True}
     args.out.mkdir(parents=True,exist_ok=True)

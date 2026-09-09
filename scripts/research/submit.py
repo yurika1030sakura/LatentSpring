@@ -21,6 +21,9 @@ root = Path(__file__).resolve().parents[2]
 if not args.name.replace('_', '').replace('-', '').isalnum():
     raise ValueError('Use an alphanumeric experiment name')
 rev = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root).decode().strip()
+subprocess.run(['git','cat-file','-e',f'{rev}:{args.launcher}'],cwd=root,check=True)
+if subprocess.run(['git','diff','--quiet','HEAD','--',args.launcher],cwd=root).returncode:
+    raise ValueError('Commit launcher changes before submitting their source snapshot')
 snapshot = root/'runs/source_snapshots'/rev
 out = root/'runs'/args.name
 command = ['sbatch', '--parsable', args.launcher, str(snapshot), str(out)]
