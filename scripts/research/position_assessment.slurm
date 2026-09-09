@@ -13,6 +13,7 @@ SOURCE_ROOT="${1:?source required}"
 RUN_ROOT="${2:?output required}"
 POSITION_CKPT="${3:-/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/position_cfm_10000_s9004_v2/last.ckpt}"
 ARM_NAME="${4:-position_10000}"
+TERMINAL_TIME="${5:-.8}"
 
 FLOWMOL_ENV=/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol
 export PYTHONPATH="$SOURCE_ROOT"
@@ -27,7 +28,7 @@ cd "$SOURCE_ROOT"
  --config configs/sweep/a1_fm_only_s2.yaml \
  --checkpoint "$ARM_NAME" "$POSITION_CKPT" \
  --split /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/composition_audit_v2/composition_split.json \
- --out "$RUN_ROOT/sampling" --parents 8 --samples 4 --terminal-time .8
+ --out "$RUN_ROOT/sampling" --parents 8 --samples 4 --terminal-time "$TERMINAL_TIME"
 export PATH="$FLOWMOL_ENV/bin:$PATH"
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
 exec "$FLOWMOL_ENV/bin/python" -u scripts/research/eval_position_xtb.py \

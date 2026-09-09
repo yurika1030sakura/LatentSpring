@@ -13,6 +13,9 @@ SOURCE_ROOT="${1:?source required}"
 RUN_ROOT="${2:?output required}"
 TRAIN_STEPS="${3:-1000}"
 TRAIN_SEED="${4:-9004}"
+POSITION_PARAMETERIZATION="${5:-endpoint}"
+TERMINAL_TIME="${6:-.8}"
+GEOMETRY_SOFTENING="${7:-0}"
 FLOWMOL_ENV=/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol
 export PYTHONPATH="$SOURCE_ROOT"
 export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
@@ -25,4 +28,5 @@ cd "$SOURCE_ROOT"
 exec "$FLOWMOL_ENV/bin/python" -u scripts/research/train_clamped_position.py \
  --config configs/sweep/a1_fm_only_s2.yaml \
  --warm-checkpoint /n/holylabs/woo_lab/Lab/yulili/bgfm/runs/abl/a1_fm_only_s2/lightning_logs/version_30674367/checkpoints/midstep-step=30000.ckpt \
- --out "$RUN_ROOT" --steps "$TRAIN_STEPS" --seed "$TRAIN_SEED" --terminal-time .8 --lr 2e-5
+ --out "$RUN_ROOT" --steps "$TRAIN_STEPS" --seed "$TRAIN_SEED" --terminal-time "$TERMINAL_TIME" --lr 2e-5 \
+ --position-parameterization "$POSITION_PARAMETERIZATION" --geometry-softening "$GEOMETRY_SOFTENING"

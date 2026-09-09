@@ -20,9 +20,12 @@ class ReferenceBudgetExceeded(RuntimeError):
 
 def log_density_clamped_reference(model, graph, node_batch_idx, upper_edge_mask,
         *, terminal_time=0.95, prior_std=1., rtol=1e-5, atol=1e-7,
-        quadrature_orders=(2,4), n_replicates=8, seed=9003, max_nfe=10000):
-    if not 0 < terminal_time < 1 or not math.isfinite(prior_std) or prior_std <= 0:
-        raise ValueError('Require T in (0,1) and positive finite prior std')
+        quadrature_orders=(2,4), n_replicates=8, seed=9003, max_nfe=10000,
+        parameterization='endpoint'):
+    if not 0 < terminal_time <= 1 or not math.isfinite(prior_std) or prior_std <= 0:
+        raise ValueError('Require T in (0,1] and positive finite prior std')
+    if terminal_time==1 and parameterization=='endpoint':
+        raise ValueError('Adaptive endpoint evaluation requires T<1')
     if n_replicates < 1 or any(order < 1 for order in quadrature_orders):
         raise ValueError('Replicates and quadrature orders must be positive')
     x_template = graph.ndata['x_1_true']
@@ -47,7 +50,7 @@ def log_density_clamped_reference(model, graph, node_batch_idx, upper_edge_mask,
                 raise ReferenceBudgetExceeded(f'Reference position solve exceeded {max_nfe} evaluations')
             x = state_tensor(y)
             velocity = position_velocity(model,graph,x,x.new_full((n_graphs,),t),
-                                          node_batch_idx,upper_edge_mask)
+                                          node_batch_idx,upper_edge_mask,parameterization=parameterization)
             if not torch.isfinite(velocity).all():
                 raise FloatingPointError('Non-finite reference velocity')
             return velocity.double().cpu().numpy().reshape(-1)
@@ -77,7 +80,7 @@ def log_density_clamped_reference(model, graph, node_batch_idx, upper_edge_mask,
                     with torch.enable_grad():
                         x=state_tensor(solution.sol(t)).requires_grad_(True)
                         velocity=position_velocity(model,graph,x,x.new_full((n_graphs,),t),
-                                                   node_batch_idx,upper_edge_mask)
+                                                   node_batch_idx,upper_edge_mask,parameterization=parameterization)
                         traces=[_trace(velocity,x,node_batch_idx,n_graphs,[probe],False) for probe in probes]
                     integral += half*weight*torch.stack(traces).double()
             value=prior[None,:]-integral

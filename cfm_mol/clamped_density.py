@@ -63,8 +63,8 @@ def position_velocity(model, graph, x, t, node_batch_idx, upper_edge_mask,
     The helper deliberately avoids patched sampling methods and stale steric
     context: nonsmooth retractions have no ordinary CNF change of variables.
     """
-    if parameterization not in {"endpoint", "velocity"}:
-        raise ValueError("parameterization must be endpoint or velocity")
+    if parameterization not in {"endpoint", "velocity", "displacement"}:
+        raise ValueError("parameterization must be endpoint, displacement or velocity")
     n_graphs = graph.batch_size
     x_centered = center_by_graph(x, node_batch_idx, n_graphs)
     graph.ndata["x_t"] = x_centered
@@ -72,6 +72,10 @@ def position_velocity(model, graph, x, t, node_batch_idx, upper_edge_mask,
     if kT is not None:
         kwargs["kT"] = kT
     prediction = model.vector_field(graph, t, **kwargs)["x"]
+    if parameterization == 'displacement':
+        # A separately trained research head: its raw coordinate increment is
+        # the velocity. This is not the semantics of archived endpoint weights.
+        prediction = prediction-x_centered
     if parameterization == "endpoint":
         scheduler = model.vector_field.interpolant_scheduler
         feature = list(scheduler.feats).index("x")

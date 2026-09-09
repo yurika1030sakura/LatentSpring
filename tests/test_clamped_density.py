@@ -334,18 +334,49 @@ def test_adaptive_reference_matches_analytic_density_for_each_fixed_probe():
 
 
 @pytest.mark.parametrize('power',[1,2])
-def test_conditional_fm_path_matches_the_defined_terminal_time(power):
+@pytest.mark.parametrize('parameterization,terminal_time', [('endpoint',.8),('displacement',.8),('displacement',1.)])
+def test_conditional_fm_path_matches_the_defined_terminal_time(power,parameterization,terminal_time):
     from cfm_mol.clamped_fm import clamped_fm_path
     g,nbi,uem=graph_batch()
     scheduler=Schedule(power)
-    xt,t,target,info=clamped_fm_path(g,nbi,scheduler,terminal_time=.8,
+    xt,t,target,info=clamped_fm_path(g,nbi,scheduler,terminal_time=terminal_time,parameterization=parameterization,
                                   generator=torch.Generator().manual_seed(28))
     alpha=scheduler.alpha_t(t)[:,1]
     prime=scheduler.alpha_t_prime(t)[:,1]
-    actual=prime[nbi,None]/(1-alpha[nbi,None])*(target-xt)
+    actual=target-xt
+    if parameterization=='endpoint':actual=prime[nbi,None]/(1-alpha[nbi,None])*actual
     expected=prime[nbi,None]/info['alpha_T'][nbi,None]*(info['x1']-info['x0'])
     assert torch.allclose(actual,expected,atol=1e-12)
-    assert torch.allclose(info['x0']+info['alpha_T'][nbi,None]*(target-info['x0']),info['x1'],atol=1e-12)
+    if parameterization=='endpoint':
+        assert torch.allclose(info['x0']+info['alpha_T'][nbi,None]*(target-info['x0']),info['x1'],atol=1e-12)
+
+
+def test_displacement_head_has_same_velocity_density_and_gradient_at_time_one():
+    class Residual(LinearHead):
+        def forward(self,g,t,**kwargs):
+            x=g.ndata['x_t']
+            return {'x':x+self.a*x}
+    g,nbi,uem=graph_batch();head=Residual();model=SimpleNamespace(vector_field=head)
+    x=g.ndata['x_1_true'].clone()
+    with deterministic_field(head):
+        value=position_velocity(model,g,x,x.new_ones(2),nbi,uem,parameterization='displacement')
+    torch.testing.assert_close(value,.3*x)
+    sample=sample_clamped_flow(model,g,nbi,uem,terminal_time=1.,parameterization='displacement',
+                               n_ode_steps=64,x0=x)
+    h=.3/64
+    torch.testing.assert_close(sample,x*(1+h+h*h/2)**64,atol=1e-12,rtol=0)
+    g.ndata['x_1_true']=sample.detach()
+    q=log_density_clamped_flow(model,g,nbi,uem,terminal_time=1.,parameterization='displacement',
+                               n_ode_steps=64,n_hutchinson=0,for_training=True,discrete_adjoint=True)
+    counts=g.batch_num_nodes().to(x)
+    reverse=sample.detach()*(1-h+h*h/2)**64
+    prior=-.5*x.new_zeros(2).index_add(0,nbi,reverse.square().sum(-1))-1.5*(counts-1)*math.log(2*math.pi)
+    torch.testing.assert_close(q,prior-3*(counts-1)*.3,atol=1e-12,rtol=0)
+    assert torch.isfinite(torch.autograd.grad(q.sum(),head.a)[0])
+    from cfm_mol.clamped_reference import log_density_clamped_reference
+    reference=log_density_clamped_reference(model,g,nbi,uem,terminal_time=1.,
+        parameterization='displacement',rtol=1e-9,atol=1e-11,n_replicates=2)
+    assert reference['nfe']>0
 
 
 @pytest.mark.parametrize('exact',[False,True])

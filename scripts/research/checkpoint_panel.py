@@ -47,6 +47,10 @@ def main():
     model = model_from_config(cfg)
     checkpoint = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
     model.load_state_dict(checkpoint['state_dict'], strict=True)
+    protocol=checkpoint.get('research_protocol',{})
+    parameterization=protocol.get('position_parameterization','endpoint')
+    if protocol and protocol['data_endpoint_time']!=args.terminal_time:
+        raise ValueError('Evaluation T differs from position training endpoint')
     from cfm_mol.smooth_geometry import patch_smooth_geometry
     softening=checkpoint.get('research_protocol',{}).get('geometry_softening',0.) if args.geometry_softening is None else args.geometry_softening
     patch_smooth_geometry(model,softening)
@@ -70,6 +74,7 @@ def main():
         'terminal_time':args.terminal_time, 'replicas':args.replicas,
         'perturbation_indices':args.perturbation_indices,
         'geometry_softening':softening,
+        'position_parameterization':parameterization,
         'probe_policy':'independent Rademacher replicas, fixed over time and across resolutions',
         'rows':[], 'complete':False}
     if args.composition_split:
@@ -90,7 +95,7 @@ def main():
             start = time.monotonic()
             q = log_density_clamped_flow(model, graph, nbi, uem,
                 n_ode_steps=steps, n_hutchinson=1, n_trace_replicates=args.replicas,
-                terminal_time=args.terminal_time, xi_fn=lambda step,k,x:probes[k])
+                terminal_time=args.terminal_time, xi_fn=lambda step,k,x:probes[k],parameterization=parameterization)
             centered = (q.double()-q.double().mean(-1,keepdim=True)).cpu()
             item = {'steps':steps, 'seconds':time.monotonic()-start,
                 'log_q':q.cpu().tolist(), 'centered_log_q':centered.tolist(),
@@ -115,7 +120,7 @@ def main():
         if i < args.exact_parent_count:
             start = time.monotonic()
             q = log_density_clamped_flow(model,graph,nbi,uem,n_ode_steps=32,
-                n_hutchinson=0,terminal_time=args.terminal_time)
+                n_hutchinson=0,terminal_time=args.terminal_time,parameterization=parameterization)
             row['exact_trace_32'] = {'log_q':q.cpu().tolist(),
                 'centered_log_q':(q-q.mean()).cpu().tolist(), 'seconds':time.monotonic()-start}
         report['rows'].append(row)

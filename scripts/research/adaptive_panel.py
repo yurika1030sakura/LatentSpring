@@ -40,6 +40,7 @@ def main():
         'source_panel':str(args.panel),'source_panel_sha256':hashlib.sha256(args.panel.read_bytes()).hexdigest(),
         'dtype':'float64','terminal_time':source['terminal_time'],
         'geometry_softening':source.get('geometry_softening',0.),
+        'position_parameterization':source.get('position_parameterization','endpoint'),
         'requested_rtols':args.rtols,'max_nfe':args.max_nfe,
         'rows':[],'complete':False,'all_reference_solves_succeeded':True}
     args.out.mkdir(parents=True,exist_ok=True)
@@ -61,14 +62,16 @@ def main():
         x=g.ndata['x_1_true']
         probes=[(2*torch.randint(0,2,x.shape,generator=gen)-1).to(x) for _ in range(8)]
         q=log_density_clamped_flow(model,g,nbi,uem,n_ode_steps=128,n_hutchinson=1,
-            terminal_time=source['terminal_time'],n_trace_replicates=8,xi_fn=lambda step,k,x:probes[k])
+            terminal_time=source['terminal_time'],n_trace_replicates=8,xi_fn=lambda step,k,x:probes[k],
+            parameterization=source.get('position_parameterization','endpoint'))
         row['midpoint_128_float64']=q.cpu().tolist()
         write_json(args.out/'reference.json',report)
         for rtol in args.rtols:
             try:
                 result=log_density_clamped_reference(model,g,nbi,uem,rtol=rtol,atol=rtol/100,
                     terminal_time=source['terminal_time'],quadrature_orders=(2,4),
-                    n_replicates=8,seed=9100+index,max_nfe=args.max_nfe)
+                    n_replicates=8,seed=9100+index,max_nfe=args.max_nfe,
+                    parameterization=source.get('position_parameterization','endpoint'))
                 result['success']=True
             except ReferenceBudgetExceeded as exc:
                 result={'success':False,'rtol':rtol,'error':str(exc)}

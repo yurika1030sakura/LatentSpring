@@ -75,6 +75,7 @@ def main():
     for name,path in args.checkpoint:
         checkpoint=Path(path);state=torch.load(checkpoint,map_location='cpu',weights_only=False)
         protocol=state.get('research_protocol')
+        parameterization=(protocol or {}).get('position_parameterization','endpoint')
         if protocol is not None and protocol['data_endpoint_time']!=args.terminal_time:
             raise ValueError('Evaluation T differs from position training endpoint')
         model=model_from_config(cfg)
@@ -85,6 +86,7 @@ def main():
             'checkpoint_sha256':hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
             'position_training_steps':state['global_step'] if protocol is not None else 0,
             'geometry_softening':(protocol or {}).get('geometry_softening',0.),
+            'position_parameterization':parameterization,
             'samples':[],'held_fm_losses':[]}
         report['arms'].append(arm)
         for row,(index,base) in enumerate(zip(indices,graphs)):
@@ -95,7 +97,7 @@ def main():
             outputs=[];start=time.monotonic()
             for steps in args.steps:
                 outputs.append(sample_clamped_flow(model,g,nbi,uem,x0=x0,
-                    n_ode_steps=steps,terminal_time=args.terminal_time).cpu())
+                    n_ode_steps=steps,terminal_time=args.terminal_time,parameterization=parameterization).cpu())
             n=base.num_nodes()
             for sample in range(args.samples):
                 sl=slice(sample*n,(sample+1)*n)
@@ -108,7 +110,8 @@ def main():
             # Matched FM draws across arms; loss is a diagnostic, not likelihood.
             with torch.no_grad():
                 generator=torch.Generator(device=args.device).manual_seed(args.seed+index)
-                fm=clamped_fm_loss(model,g,nbi,uem,terminal_time=args.terminal_time,generator=generator)
+                fm=clamped_fm_loss(model,g,nbi,uem,terminal_time=args.terminal_time,generator=generator,
+                    parameterization=parameterization)
             arm['held_fm_losses'].append({'validation_index':index,'loss':float(fm)})
             write_json(args.out/'samples.json',report)
             print(json.dumps({'arm':name,'parent':index,'seconds':time.monotonic()-start}),flush=True)

@@ -58,14 +58,15 @@ def main():
     p.add_argument('--energy-gradient-diagnostics',action='store_true')
     p.add_argument('--energy-parents',type=int,default=1)
     p.add_argument('--geometry-softening',type=float)
+    p.add_argument('--position-parameterization',choices=['endpoint','displacement'])
     p.add_argument('--energy-shard',type=Path,default=Path('/n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/perturbation_train_n30000_s0.pt'))
     args=p.parse_args()
     if args.steps<1 or args.batch_size<1 or args.energy_every<1:
         raise ValueError('Steps and batch settings must be positive')
     if args.energy_parents<1 or (args.checkpoint_energy and args.discrete_adjoint_energy):
         raise ValueError('Require positive energy parent count and one gradient mode')
-    if not 0<args.terminal_time<1 or not math.isfinite(args.lr) or args.lr<=0:
-        raise ValueError('Require T in (0,1) and a positive finite learning rate')
+    if not 0<args.terminal_time<=1 or not math.isfinite(args.lr) or args.lr<=0:
+        raise ValueError('Require T in (0,1] and a positive finite learning rate')
     if not math.isfinite(args.lambda_energy) or args.lambda_energy<0:
         raise ValueError('Energy weight must be finite and nonnegative')
     torch.manual_seed(args.seed)
@@ -76,6 +77,9 @@ def main():
     model=model_from_config(cfg)
     warm=torch.load(args.warm_checkpoint,map_location='cpu',weights_only=False)
     warm_protocol=warm.get('research_protocol',{})
+    args.position_parameterization=warm_protocol.get('position_parameterization','endpoint') if args.position_parameterization is None else args.position_parameterization
+    if args.position_parameterization=='endpoint' and args.terminal_time==1:
+        raise ValueError('This endpoint training protocol requires T<1')
     if warm_protocol and warm_protocol['data_endpoint_time']!=args.terminal_time:
         raise ValueError('Warm position checkpoint has a different endpoint time')
     model.load_state_dict(warm['state_dict'],strict=True)
@@ -123,7 +127,8 @@ def main():
         nbi,_=get_batch_idxs(g);uem=get_upper_edge_mask(g)
         optimizer.zero_grad(set_to_none=True)
         fm_generator=torch.Generator(device=args.device).manual_seed(args.seed+1000003*step)
-        fm=clamped_fm_loss(model,g,nbi,uem,terminal_time=args.terminal_time,generator=fm_generator)
+        fm=clamped_fm_loss(model,g,nbi,uem,terminal_time=args.terminal_time,generator=fm_generator,
+            parameterization=args.position_parameterization)
         if not torch.isfinite(fm):raise FloatingPointError('Non-finite clamped FM objective')
         fm.backward()
         record={'step':step+1,'data_indices':indices,'fm_loss':float(fm.detach()),
@@ -145,6 +150,7 @@ def main():
                 energy,diagnostics=energy_consistency_loss_per_mol(model,gp,pnbi,puem,
                     energies,pid,kT=1.,n_ode_steps=args.energy_steps,n_hutchinson=1,
                     density_options={'mode':'clamped_cnf','terminal_time':args.terminal_time,
+                        'parameterization':args.position_parameterization,
                         'n_trace_replicates':2,'residual_estimator':args.energy_estimator,
                         'common_trace_within_parent':args.common_probes,
                         'checkpoint_steps':args.checkpoint_energy,
