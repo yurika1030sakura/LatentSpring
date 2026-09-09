@@ -1,0 +1,129 @@
+{
+  "complete": true,
+  "scope": "Independent randomized-QMC reference for a three-atom restrained eSEN target.\n\nNo learned model or generated templates enter the integration proposal. This\nestimates thermodynamic integrals; finite-sample uncertainty and resolution\nchanges are reported, never silently labeled an exact reference.\n",
+  "source_row": 1137,
+  "symbols": [
+    "Ag",
+    "Br",
+    "Br"
+  ],
+  "charge": 0,
+  "spin_multiplicity": 2,
+  "electronic_state": "declared minimum electron-parity state, matching the current pilot",
+  "configuration": {
+    "config": "configs/sweep/a1_fm_only_s2.yaml",
+    "processed": "/n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/val_data_processed.pt",
+    "source_row": 1137,
+    "out": "runs/triatomic_reference_preflight_v1",
+    "oracle": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+    "oracle_python": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python",
+    "power": 4,
+    "scrambles": 2,
+    "batch": 64,
+    "kT": 1.0,
+    "restraint": 0.1,
+    "oracle_device": "cpu"
+  },
+  "proposal_scales_A": [
+    0.5,
+    1.0,
+    3.1622776601683795
+  ],
+  "intrinsic_dimension": 6,
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "source_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/scripts/research/triatomic_oracle_reference.py": "cae8e905b1fc2d2fb31cbeb2e50063e6b01674a81192e9223dca081b99f1bdad",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/triatomic_reference.py": "745b0bd2fafc6e06b745249bd06a0f8dc35ddf2cd5a0a08ac253790cbb356ebc",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/energy_oracle.py": "a3492212822ac03d5c9bf6cdbddcd89bdf002dda25f000b427c8e506c36069bc",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/scripts/research/oracle_worker.py": "0069b36a21c15ccdfec16f84067b8616fa7cc2fe6a8c73ada60532f963db30ba"
+  },
+  "target": "eSEN + restraint/2*sum_i||x_i||^2 on orthonormal COM-free H",
+  "normalization_assumption": "eSEN bounded below and harmonic confinement positive",
+  "rotation_reduction": "uses architectural rotation invariance; finite-precision variation checked separately",
+  "rows": [
+    {
+      "scramble": 0,
+      "resolutions": [
+        {
+          "particles": 24,
+          "log_normalizer_estimate": 144092.38983056092,
+          "weight_ess": 4.458760053289276,
+          "maximum_weight": 0.40502967212671454,
+          "moments": {
+            "minimum_anchor_distance_A": 4.217221960661619,
+            "maximum_anchor_distance_A": 6.906303441570752,
+            "outer_pair_distance_A": 5.800014171964552,
+            "angle_cosine": 0.5602844528370656,
+            "radius_gyration_A": 3.37840187623348
+          }
+        },
+        {
+          "particles": 48,
+          "log_normalizer_estimate": 144092.72018226556,
+          "weight_ess": 9.204228095952878,
+          "maximum_weight": 0.20325175596685058,
+          "moments": {
+            "minimum_anchor_distance_A": 4.62007105377849,
+            "maximum_anchor_distance_A": 6.729154886042945,
+            "outer_pair_distance_A": 5.61562411354747,
+            "angle_cosine": 0.4566168894570566,
+            "radius_gyration_A": 3.3886277946013665
+          }
+        }
+      ]
+    },
+    {
+      "scramble": 1,
+      "resolutions": [
+        {
+          "particles": 24,
+          "log_normalizer_estimate": 144092.23788188398,
+          "weight_ess": 5.618157982861435,
+          "maximum_weight": 0.32704733838633526,
+          "moments": {
+            "minimum_anchor_distance_A": 4.884388051142755,
+            "maximum_anchor_distance_A": 7.216066711698478,
+            "outer_pair_distance_A": 6.024005462801377,
+            "angle_cosine": 0.42196520872211457,
+            "radius_gyration_A": 3.6054850359191897
+          }
+        },
+        {
+          "particles": 48,
+          "log_normalizer_estimate": 144092.81980140237,
+          "weight_ess": 6.607198801569628,
+          "maximum_weight": 0.32746773817292296,
+          "moments": {
+            "minimum_anchor_distance_A": 3.973288007663272,
+            "maximum_anchor_distance_A": 5.807121397929354,
+            "outer_pair_distance_A": 5.580322800487117,
+            "angle_cosine": 0.0905576922218822,
+            "radius_gyration_A": 3.0711041947296835
+          }
+        }
+      ]
+    }
+  ],
+  "convergence_certified": false,
+  "rotation_energy_check_max_eV": 6.493995897471905e-06,
+  "oracle_evaluations": 112,
+  "aggregate": [
+    {
+      "particles_per_scramble": 24,
+      "log_of_mean_normalizer_estimate": 144092.31673950033,
+      "relative_standard_error_across_scrambles": 0.07582849802031842,
+      "log_estimate_range": 0.1519486769393552,
+      "mean_weight_ess": 5.038459018075356
+    },
+    {
+      "particles_per_scramble": 48,
+      "log_of_mean_normalizer_estimate": 144092.7712318179,
+      "relative_standard_error_across_scrambles": 0.049768416841176805,
+      "log_estimate_range": 0.09961913680308498,
+      "mean_weight_ess": 7.905713448761253
+    }
+  ],
+  "seconds": 24.985871052136645,
+  "source_record": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/triatomic_reference_preflight_v1/reference.json",
+  "source_record_sha256": "c858549f774a29fbf6ac853822a9ef370eed7d6f2acd258f87d972be1f06687b"
+}
