@@ -438,3 +438,6 @@ Placeholder coordinates are rejected as FM data targets; reserved outcome use
 requires a frozen method/manifest protocol. No reserved condition has received
 method outcome queries. See notes/mean_work_training_protocol.md for the next
 500-update, batch-16 matched experiment (8,512 potential queries per arm).
+The two jobs are 45726541 (joint) and 45726651 (energy-gradient control), source
+a76313a. Both were RUNNING at the September 9 20:13 UTC scheduler check; each
+has a two-hour GPU limit. Their scientific results are still pending.

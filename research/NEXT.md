@@ -45,3 +45,7 @@ the shared FlowMol installation.
 
 See research/jobs.jsonl for source snapshots and job IDs; re-query Slurm before
 reporting any job as running or complete.
+
+Submitted from a76313a: 45726541 (mean_work_joint_b16_5846_v1) and 45726651
+(mean_work_energy_b16_5846_v1). Both were RUNNING at the September 9 20:13 UTC
+check, with two GPU-hours maximum each. Do not infer completion from this note.
