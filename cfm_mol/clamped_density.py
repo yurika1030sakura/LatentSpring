@@ -111,6 +111,18 @@ def _trace(v, x, node_batch_idx, n_graphs, probes, create_graph):
     return x.new_zeros(n_graphs).index_add(0, node_batch_idx, per_atom)
 
 
+def _field_trace(model, graph, velocity, x, t, node_batch_idx, probes,
+                 create_graph, parameterization):
+    """Use a tested analytic hook only for an explicitly exact-trace request."""
+    analytic=getattr(model.vector_field,'exact_clamped_divergence',None)
+    if probes is None and analytic is not None:
+        result=analytic(graph,x,t,node_batch_idx,parameterization)
+        if result.shape!=(graph.batch_size,):
+            raise ValueError('Analytic divergence must return one value per graph')
+        return result if create_graph else result.detach()
+    return _trace(velocity,x,node_batch_idx,graph.batch_size,probes,create_graph)
+
+
 def _midpoint_step(model, graph, state, time, node_batch_idx, upper_edge_mask,
                    *, dt, n_hutchinson, n_trace_replicates, parameterization,
                    kT, xi_fn, step_index, probe_cache, for_training):
@@ -142,7 +154,8 @@ def _midpoint_step(model, graph, state, time, node_batch_idx, upper_edge_mask,
                         raise ValueError('Trace probe shape must match coordinates')
                     probes=[probe.to(state).detach() for probe in probes]
                 probe_cache.append(probes)
-        traces=[_trace(v_mid,midpoint,node_batch_idx,n_graphs,probes,for_training)
+        traces=[_field_trace(model,graph,v_mid,midpoint,time,node_batch_idx,probes,
+                            for_training,parameterization)
                 for probes in probe_cache]
         return state-dt*v_mid,torch.stack(traces)
 
@@ -178,8 +191,9 @@ def _rk4_step(model, graph, state, time, node_batch_idx, upper_edge_mask,
             velocity=position_velocity(model,graph,current,time+fraction*dt,node_batch_idx,
                 upper_edge_mask,parameterization=parameterization,kT=kT)
             velocities.append(velocity)
-            divergences.append(torch.stack([_trace(velocity,current,node_batch_idx,n_graphs,
-                probes,for_training) for probes in probe_cache]))
+            divergences.append(torch.stack([_field_trace(model,graph,velocity,current,
+                time+fraction*dt,node_batch_idx,probes,for_training,parameterization)
+                for probes in probe_cache]))
         following=state-dt*(velocities[0]+2*velocities[1]+2*velocities[2]+velocities[3])/6
         divergence=(divergences[0]+2*divergences[1]+2*divergences[2]+divergences[3])/6
         return following,divergence

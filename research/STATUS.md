@@ -14,10 +14,15 @@ that all scientific checks passed.
 
 ## What is established
 
-- 114 tests pass, including real FlowMol parameter gradients, full-state and
+- 120 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
   dedicated Gaussian/Rademacher probe streams for common/independent controls.
+- A separate equivariant pair-kernel reference has a tested analytic divergence,
+  including its coordinate and parameter gradients, collision derivatives,
+  symmetries, checkpoint loading and discrete-adjoint gradients. It is prior-art
+  architecture for a cheaper exact-trace comparison, with unproven molecular
+  capacity. See `notes/radial_reference_protocol.md`.
 - Legacy scalar ordering cannot be promoted to likelihood or Boltzmann sampling.
   The old routine integrates an endpoint prediction as velocity and freezes
   trajectory gradients. It is retained only for historical reproduction.
@@ -123,6 +128,8 @@ Source `26d75f55c91388737ddb48b64dcb04393b556450`:
   trajectory and Gauss--Legendre trace quadrature at two tolerances, retaining
   the first parent and the two largest RK4 drift cases. Each position solve has
   a 6,000-evaluation limit. Recorded failures remain failures.
+- 45600490, `rk4_density_rho01_fine_v1` (source `227ffa3`): all eight smoothed
+  displacement parents, RK4 128/256, preserving the same probes and geometries.
 
 The eight-parent energy run above is a runtime/gradient calibration, not an
 energy-advantage experiment. It uses RK4-64, two common-within-parent Gaussian

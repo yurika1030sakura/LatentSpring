@@ -17,6 +17,10 @@
   already uses Jacobian and kinetic regularization to simplify neural ODE
   dynamics and reduce integration cost. Our smooth-geometry trial is an
   engineering response to measured stiffness, not a claimed new principle.
+- [Koehler, Klein and Noe, ICML 2020](https://proceedings.mlr.press/v119/kohler20a.html)
+  already constructs equivariant pair-kernel flows with analytic divergence.
+  The new restricted radial reference follows that architectural class; its
+  value is as an exact-trace control, not as an architectural novelty claim.
 
 A defensible contribution would require a reproducible, computationally useful
 way to train a clearly defined multi-composition molecular flow with noisy

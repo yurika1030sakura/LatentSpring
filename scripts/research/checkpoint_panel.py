@@ -40,15 +40,21 @@ def main():
     p.add_argument('--perturbation-indices', type=int, nargs='+')
     p.add_argument('--geometry-softening',type=float)
     p.add_argument('--solver',choices=['midpoint','rk4'],default='midpoint')
+    p.add_argument('--exact-steps',type=int,nargs='+',default=[32])
     args = p.parse_args()
     if args.replicas < 2:
         raise ValueError('At least two replicas needed for noise diagnostics')
+    for resolutions in [args.steps,args.exact_steps]:
+        if not resolutions or any(s<1 for s in resolutions) or resolutions!=sorted(set(resolutions)):
+            raise ValueError('Resolutions must be positive, distinct and increasing')
     cfg = read_config_file(args.config)
     cfg['mol_fm'].pop('bgfm', None)
     model = model_from_config(cfg)
     checkpoint = torch.load(args.checkpoint, map_location='cpu', weights_only=False)
-    model.load_state_dict(checkpoint['state_dict'], strict=True)
     protocol=checkpoint.get('research_protocol',{})
+    from cfm_mol.radial_reference import prepare_research_backbone
+    prepare_research_backbone(model,protocol)
+    model.load_state_dict(checkpoint['state_dict'], strict=True)
     parameterization=protocol.get('position_parameterization','endpoint')
     if protocol and protocol['data_endpoint_time']!=args.terminal_time:
         raise ValueError('Evaluation T differs from position training endpoint')
@@ -69,6 +75,7 @@ def main():
         loader._order=loader._fresh_order();loader._ptr=0
     args.out.mkdir(parents=True, exist_ok=True)
     report = {'claim':'numerical development panel; no held-out or sampling claim',
+        'position_backbone':protocol.get('position_backbone','flowmol'),
         'checkpoint':str(args.checkpoint), 'checkpoint_sha256':hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
         'config_sha256':hashlib.sha256(args.config.read_bytes()).hexdigest(),
         'shard':str(args.shard), 'shard_sha256':hashlib.sha256(args.shard.read_bytes()).hexdigest(),
@@ -83,6 +90,7 @@ def main():
     if args.composition_split:
         report['composition_split_sha256']=hashlib.sha256(args.composition_split.read_bytes()).hexdigest()
         report['composition_disjoint_development']=True
+    write_json(args.out/'panel.json',report)
     for i in range(args.parents):
         graph, energy, pid, nbi, uem = loader.next_batch()
         x = graph.ndata['x_1_true']
@@ -94,6 +102,7 @@ def main():
             'energies_eV':[float(e) if torch.isfinite(e) else None for e in energy],
             'resolutions':[]}
         previous = None
+        report['rows'].append(row)
         for steps in args.steps:
             start = time.monotonic()
             q = log_density_clamped_flow(model, graph, nbi, uem,
@@ -117,16 +126,25 @@ def main():
                     estimated_noise_bias=float(bias),
                     unbiased_replica_product_residual=float(plug_in-bias))
             row['resolutions'].append(item)
+            write_json(args.out/'panel.json',report)
             previous = centered
             print(json.dumps({'parent':row['parent_id'], 'steps':steps,
                 'seconds':item['seconds'], 'probe_variance':item['mean_probe_variance']}), flush=True)
         if i < args.exact_parent_count:
-            start = time.monotonic()
-            q = log_density_clamped_flow(model,graph,nbi,uem,n_ode_steps=32,
-                n_hutchinson=0,terminal_time=args.terminal_time,parameterization=parameterization,solver=args.solver)
-            row['exact_trace_32'] = {'log_q':q.cpu().tolist(),
-                'centered_log_q':(q-q.mean()).cpu().tolist(), 'seconds':time.monotonic()-start}
-        report['rows'].append(row)
+            row['exact_trace_resolutions']=[];previous_exact=None
+            for steps in args.exact_steps:
+                start = time.monotonic()
+                q = log_density_clamped_flow(model,graph,nbi,uem,n_ode_steps=steps,
+                    n_hutchinson=0,terminal_time=args.terminal_time,parameterization=parameterization,solver=args.solver)
+                centered=q.double()-q.double().mean()
+                item={'steps':steps,'log_q':q.cpu().tolist(),'centered_log_q':centered.cpu().tolist(),
+                      'seconds':time.monotonic()-start}
+                if previous_exact is not None:
+                    item['max_centered_change_from_previous']=float((centered-previous_exact).abs().max())
+                row['exact_trace_resolutions'].append(item)
+                if steps==32:row['exact_trace_32']=item
+                previous_exact=centered
+                write_json(args.out/'panel.json',report)
         write_json(args.out/'panel.json',report)
     report['complete'] = True
     write_json(args.out/'panel.json',report)

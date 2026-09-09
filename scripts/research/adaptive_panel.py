@@ -33,6 +33,8 @@ def main():
     if args.midpoint_steps<1:raise ValueError('Require a positive midpoint step count')
     cfg=read_config_file(config);cfg['mol_fm'].pop('bgfm',None)
     model=model_from_config(cfg)
+    from cfm_mol.radial_reference import prepare_research_backbone
+    prepare_research_backbone(model,source)
     model.load_state_dict(torch.load(checkpoint,map_location='cpu',weights_only=False)['state_dict'],strict=True)
     from cfm_mol.smooth_geometry import patch_smooth_geometry
     patch_smooth_geometry(model,source.get('geometry_softening',0.))
@@ -48,6 +50,7 @@ def main():
         'dtype':'float64','terminal_time':source['terminal_time'],
         'geometry_softening':source.get('geometry_softening',0.),
         'position_parameterization':source.get('position_parameterization','endpoint'),
+        'position_backbone':source.get('position_backbone','flowmol'),
         'requested_rtols':args.rtols,'max_nfe':args.max_nfe,
         'midpoint_steps':args.midpoint_steps,
         'rows':[],'complete':False,'all_reference_solves_succeeded':True}

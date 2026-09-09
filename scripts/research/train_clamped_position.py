@@ -53,6 +53,7 @@ def main():
     p.add_argument('--energy-estimator',choices=['squared','replica_product'],default='replica_product')
     p.add_argument('--common-probes',action='store_true')
     p.add_argument('--trace-distribution',choices=['rademacher','gaussian'],default='rademacher')
+    p.add_argument('--energy-exact-trace',action='store_true')
     p.add_argument('--checkpoint-energy',action='store_true')
     p.add_argument('--discrete-adjoint-energy',action='store_true')
     p.add_argument('--perturbation-indices',type=int,nargs='+')
@@ -61,6 +62,7 @@ def main():
     p.add_argument('--energy-parents',type=int,default=1)
     p.add_argument('--geometry-softening',type=float)
     p.add_argument('--position-parameterization',choices=['endpoint','displacement'])
+    p.add_argument('--position-backbone',choices=['flowmol','radial_reference'])
     p.add_argument('--energy-shard',type=Path,default=Path('/n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/perturbation_train_n30000_s0.pt'))
     args=p.parse_args()
     if args.steps<1 or args.batch_size<1 or args.energy_every<1:
@@ -79,14 +81,27 @@ def main():
     model=model_from_config(cfg)
     warm=torch.load(args.warm_checkpoint,map_location='cpu',weights_only=False)
     warm_protocol=warm.get('research_protocol',{})
-    args.position_parameterization=warm_protocol.get('position_parameterization','endpoint') if args.position_parameterization is None else args.position_parameterization
+    from cfm_mol.radial_reference import prepare_research_backbone,patch_radial_reference
+    warm_backbone=warm_protocol.get('position_backbone','flowmol')
+    args.position_backbone=warm_backbone if args.position_backbone is None else args.position_backbone
+    if warm_backbone=='radial_reference' and args.position_backbone!='radial_reference':
+        raise ValueError('Cannot load a radial checkpoint into the original backbone')
+    prepare_research_backbone(model,warm_protocol)
+    default_head='displacement' if args.position_backbone=='radial_reference' else warm_protocol.get('position_parameterization','endpoint')
+    args.position_parameterization=default_head if args.position_parameterization is None else args.position_parameterization
     if args.position_parameterization=='endpoint' and args.terminal_time==1:
         raise ValueError('This endpoint training protocol requires T<1')
     if warm_protocol and warm_protocol['data_endpoint_time']!=args.terminal_time:
         raise ValueError('Warm position checkpoint has a different endpoint time')
     model.load_state_dict(warm['state_dict'],strict=True)
+    if args.position_backbone=='radial_reference':
+        if args.position_parameterization!='displacement':
+            raise ValueError('Radial reference requires the displacement head')
+        patch_radial_reference(model)
     from cfm_mol.smooth_geometry import patch_smooth_geometry
     args.geometry_softening=warm_protocol.get('geometry_softening',0.) if args.geometry_softening is None else args.geometry_softening
+    if args.position_backbone=='radial_reference' and args.geometry_softening!=0:
+        raise ValueError('The radial reference has its own smooth kernels; geometry softening does not apply')
     patch_smooth_geometry(model,args.geometry_softening)
     model.to(args.device).float().train()
     ds_cfg=dict(cfg['dataset'],fake_atom_p=0.,fake_atom_std=1.,
@@ -150,7 +165,7 @@ def main():
             fm_grads=[None if p.grad is None else p.grad.detach().clone() for p in model.parameters()] if args.energy_gradient_diagnostics else None
             try:
                 energy,diagnostics=energy_consistency_loss_per_mol(model,gp,pnbi,puem,
-                    energies,pid,kT=1.,n_ode_steps=args.energy_steps,n_hutchinson=1,
+                    energies,pid,kT=1.,n_ode_steps=args.energy_steps,n_hutchinson=0 if args.energy_exact_trace else 1,
                     density_options={'mode':'clamped_cnf','terminal_time':args.terminal_time,
                         'solver':args.energy_solver,
                         'parameterization':args.position_parameterization,
