@@ -52,6 +52,7 @@ def main():
     p.add_argument('--energy-estimator',choices=['squared','replica_product'],default='replica_product')
     p.add_argument('--common-probes',action='store_true')
     p.add_argument('--checkpoint-energy',action='store_true')
+    p.add_argument('--discrete-adjoint-energy',action='store_true')
     p.add_argument('--perturbation-indices',type=int,nargs='+')
     p.add_argument('--energy-control',choices=['value','shuffle','zero'],default='value')
     p.add_argument('--energy-gradient-diagnostics',action='store_true')
@@ -61,6 +62,8 @@ def main():
     args=p.parse_args()
     if args.steps<1 or args.batch_size<1 or args.energy_every<1:
         raise ValueError('Steps and batch settings must be positive')
+    if args.energy_parents<1 or (args.checkpoint_energy and args.discrete_adjoint_energy):
+        raise ValueError('Require positive energy parent count and one gradient mode')
     if not 0<args.terminal_time<1 or not math.isfinite(args.lr) or args.lr<=0:
         raise ValueError('Require T in (0,1) and a positive finite learning rate')
     if not math.isfinite(args.lambda_energy) or args.lambda_energy<0:
@@ -145,6 +148,7 @@ def main():
                         'n_trace_replicates':2,'residual_estimator':args.energy_estimator,
                         'common_trace_within_parent':args.common_probes,
                         'checkpoint_steps':args.checkpoint_energy,
+                        'discrete_adjoint':args.discrete_adjoint_energy,
                         'trace_seed':args.seed+1729+1000033*step})
                 finite=bool(torch.isfinite(energy))
                 allowed=finite and (args.energy_cap<=0 or abs(float(energy.detach()))<=args.energy_cap)

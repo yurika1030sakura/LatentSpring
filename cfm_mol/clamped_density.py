@@ -107,11 +107,48 @@ def _trace(v, x, node_batch_idx, n_graphs, probes, create_graph):
     return x.new_zeros(n_graphs).index_add(0, node_batch_idx, per_atom)
 
 
+def _midpoint_step(model, graph, state, time, node_batch_idx, upper_edge_mask,
+                   *, dt, n_hutchinson, n_trace_replicates, parameterization,
+                   kT, xi_fn, step_index, probe_cache, for_training):
+    """One deterministic coordinate step and its stochastic divergence value.
+
+    The probe cache is populated once and reused during gradient recomputation.
+    All graph/model context is re-established on every call, including backward.
+    """
+    n_graphs=graph.batch_size
+    with graph.local_scope(), deterministic_field(model.vector_field):
+        for key in ('a','c'):
+            graph.ndata[f'{key}_t']=graph.ndata[f'{key}_1_true']
+        graph.edata['e_t']=graph.edata['e_1_true']
+        v_start=position_velocity(model,graph,state,time,node_batch_idx,
+            upper_edge_mask,parameterization=parameterization,kT=kT)
+        midpoint=state-0.5*dt*v_start
+        if not for_training:
+            midpoint=midpoint.detach().requires_grad_(True)
+        v_mid=position_velocity(model,graph,midpoint,time,node_batch_idx,
+            upper_edge_mask,parameterization=parameterization,kT=kT)
+        if not probe_cache:
+            for replica in range(n_trace_replicates):
+                probes=None if n_hutchinson==0 else [
+                    (xi_fn(step_index,replica*n_hutchinson+k,midpoint) if xi_fn is not None else
+                     torch.randint(0,2,midpoint.shape,device=state.device).to(state)*2-1)
+                    for k in range(n_hutchinson)]
+                if probes is not None:
+                    if any(probe.shape!=state.shape for probe in probes):
+                        raise ValueError('Trace probe shape must match coordinates')
+                    probes=[probe.to(state).detach() for probe in probes]
+                probe_cache.append(probes)
+        traces=[_trace(v_mid,midpoint,node_batch_idx,n_graphs,probes,for_training)
+                for probes in probe_cache]
+        return state-dt*v_mid,torch.stack(traces)
+
+
 def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
                              *, n_ode_steps=32, n_hutchinson=2, prior_std=1.0,
                              terminal_time=0.95, for_training=False,
                              parameterization="endpoint", kT=None, xi_fn=None,
-                             n_trace_replicates=1, checkpoint_steps=False):
+                             n_trace_replicates=1, checkpoint_steps=False,
+                             discrete_adjoint=False):
     """Log q_T(x), explicit midpoint integration of state AND log-Jacobian.
 
     With n_trace_replicates>1, return (replicates, graphs) estimates from
@@ -136,6 +173,14 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
         raise ValueError("terminal_time must be in (0, 1]")
     if not math.isfinite(prior_std) or prior_std <= 0:
         raise ValueError("prior_std must be positive and finite")
+    if discrete_adjoint and for_training:
+        if checkpoint_steps:
+            raise ValueError('Select step checkpointing or the discrete adjoint, not both')
+        from .clamped_adjoint import log_density_discrete_adjoint
+        return log_density_discrete_adjoint(model,graph,node_batch_idx,upper_edge_mask,
+            n_ode_steps=n_ode_steps,n_hutchinson=n_hutchinson,prior_std=prior_std,
+            terminal_time=terminal_time,parameterization=parameterization,kT=kT,
+            xi_fn=xi_fn,n_trace_replicates=n_trace_replicates)
     x = graph.ndata["x_1_true"].detach().clone()
     if x.dtype in (torch.float16, torch.bfloat16):
         x = x.float()
@@ -153,38 +198,12 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
         graph.edata["e_t"] = graph.edata["e_1_true"]
         x = center_by_graph(x, node_batch_idx, n_graphs).requires_grad_(True)
         def make_step(step_index):
-            # One cache per integration step. Recomputations must reuse the
-            # exact trace draws, including draws from dedicated generators
-            # that torch checkpoint's global-RNG preservation cannot capture.
-            probe_cache = []
-            def advance(state, time):
-                # Re-entry during backward happens after the outer scope has
-                # ended, so recreate the discrete condition and model mode.
-                with graph.local_scope(), deterministic_field(model.vector_field):
-                    for key in ('a', 'c'):
-                        graph.ndata[f'{key}_t'] = graph.ndata[f'{key}_1_true']
-                    graph.edata['e_t'] = graph.edata['e_1_true']
-                    v_start = position_velocity(model, graph, state, time, node_batch_idx,
-                        upper_edge_mask, parameterization=parameterization, kT=kT)
-                    midpoint = state - 0.5*dt*v_start
-                    if not for_training:
-                        midpoint = midpoint.detach().requires_grad_(True)
-                    v_mid = position_velocity(model, graph, midpoint, time, node_batch_idx,
-                        upper_edge_mask, parameterization=parameterization, kT=kT)
-                    if not probe_cache:
-                        for replica in range(n_trace_replicates):
-                            probes = None if n_hutchinson == 0 else [
-                                (xi_fn(step_index, replica*n_hutchinson+k, midpoint) if xi_fn is not None else
-                                 torch.randint(0, 2, midpoint.shape, device=state.device).to(state)*2-1)
-                                for k in range(n_hutchinson)]
-                            if probes is not None:
-                                if any(probe.shape != state.shape for probe in probes):
-                                    raise ValueError("Trace probe shape must match coordinates")
-                                probes = [probe.to(state).detach() for probe in probes]
-                            probe_cache.append(probes)
-                    traces = [_trace(v_mid, midpoint, node_batch_idx, n_graphs,
-                                     probes, for_training) for probes in probe_cache]
-                    return state-dt*v_mid, torch.stack(traces)
+            probe_cache=[]
+            def advance(state,time):
+                return _midpoint_step(model,graph,state,time,node_batch_idx,upper_edge_mask,
+                    dt=dt,n_hutchinson=n_hutchinson,n_trace_replicates=n_trace_replicates,
+                    parameterization=parameterization,kT=kT,xi_fn=xi_fn,step_index=step_index,
+                    probe_cache=probe_cache,for_training=for_training)
             return advance
 
         for step in range(n_ode_steps):

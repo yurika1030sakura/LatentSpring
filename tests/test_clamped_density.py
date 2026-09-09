@@ -88,13 +88,14 @@ def test_com_trace_normalization_and_second_order_convergence():
     assert errors[-1] < 1e-4
 
 
-def test_full_discretized_gradient_matches_finite_difference():
+@pytest.mark.parametrize('adjoint',[False,True])
+def test_full_discretized_gradient_matches_finite_difference(adjoint):
     g, nbi, uem = graph_batch()
     head = LinearHead()
     model = SimpleNamespace(vector_field=head)
     def objective():
         p = log_density_clamped_flow(model, g, nbi, uem, n_ode_steps=4,
-                                    n_hutchinson=0, for_training=True)
+                                    n_hutchinson=0, for_training=True,discrete_adjoint=adjoint)
         return ((p-p.mean())**2).mean()
     derivative = torch.autograd.grad(objective(), head.a)[0].item()
     initial, eps = head.a.item(), 1e-5
@@ -109,7 +110,8 @@ def test_full_discretized_gradient_matches_finite_difference():
     assert derivative == pytest.approx((upper-lower)/(2*eps), rel=1e-6, abs=1e-7)
 
 
-def test_prior_path_retains_translation_parameter_gradient():
+@pytest.mark.parametrize('adjoint',[False,True])
+def test_prior_path_retains_translation_parameter_gradient(adjoint):
     # A COM-free shift has zero divergence; only the prior/trajectory gradient
     # can train it. The archived frozen-trajectory estimator cannot do so.
     class Shift(nn.Module):
@@ -123,7 +125,7 @@ def test_prior_path_retains_translation_parameter_gradient():
     model = SimpleNamespace(vector_field=Shift())
     def objective():
         return log_density_clamped_flow(model, g, nbi, uem, parameterization='velocity',
-            n_ode_steps=2, n_hutchinson=0, for_training=True).sum()
+            n_ode_steps=2, n_hutchinson=0, for_training=True,discrete_adjoint=adjoint).sum()
     grad = torch.autograd.grad(objective(), model.vector_field.a)[0].item()
     eps = 1e-5
     with torch.no_grad():
@@ -195,9 +197,9 @@ def test_real_ctmc_head_is_endpoint_and_adapter_uses_velocity(monkeypatch):
     assert grads and all(torch.isfinite(grad).all() for grad in grads)
     assert any(grad.abs().sum() > 0 for grad in grads)
     assert vf.training and torch.equal(g.ndata['x_1_true'], original_x)
-    def density_grads(saved):
+    def density_grads(saved,adjoint=False):
         q=log_density_clamped_flow(model,g,nbi,uem,n_ode_steps=2,n_hutchinson=1,
-            n_trace_replicates=2,for_training=True,checkpoint_steps=saved,
+            n_trace_replicates=2,for_training=True,checkpoint_steps=saved,discrete_adjoint=adjoint,
             xi_fn=lambda step,k,x:((torch.arange(x.numel()).reshape(x.shape)+step+k)%2*2-1).to(x))
         grads=torch.autograd.grad(q.square().mean(),tuple(vf.parameters()),allow_unused=True)
         return q.detach(),grads
@@ -208,6 +210,11 @@ def test_real_ctmc_head_is_endpoint_and_adapter_uses_velocity(monkeypatch):
             assert right is None
         else:
             torch.testing.assert_close(left,right,rtol=2e-5,atol=2e-6)
+    adjoint=density_grads(False,True)
+    assert torch.equal(plain[0],adjoint[0])
+    for left,right in zip(plain[1],adjoint[1]):
+        if left is None:assert right is None
+        else:torch.testing.assert_close(left,right,rtol=2e-5,atol=2e-6)
     # eval() still bootstraps a previous endpoint at t=0 in stock FlowMol.
     # The clamped field must execute just one denoise pass even at the boundary.
     calls=[]
@@ -360,4 +367,37 @@ def test_checkpointed_steps_preserve_density_parameter_gradients_and_rng(exact):
     for expected,actual in zip(plain[:3],saved[:3]):
         assert torch.equal(expected,actual)
     assert plain[3]==saved[3]
+    assert model.vector_field.training
+
+
+@pytest.mark.parametrize('exact',[False,True])
+def test_discrete_adjoint_matches_nonlinear_divergence_gradient_and_probe_stream(exact):
+    class Nonlinear(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.a=nn.Parameter(torch.tensor(.2,dtype=torch.float64))
+            self.b=nn.Parameter(torch.tensor(-.05,dtype=torch.float64))
+            self.unused=nn.Parameter(torch.tensor(4.,dtype=torch.float64))
+        def forward(self,g,t,node_batch_idx,**kwargs):
+            x=g.ndata['x_t']
+            return {'x':(1+.2*t[node_batch_idx,None])*(self.a*x.tanh()+self.b*x.square())}
+    g,nbi,uem=graph_batch();model=SimpleNamespace(vector_field=Nonlinear())
+    def compute(adjoint):
+        generator=torch.Generator().manual_seed(219)
+        calls=[]
+        def probes(step,k,x):
+            calls.append((step,k))
+            return (2*torch.randint(0,2,x.shape,generator=generator)-1).to(x)
+        q=log_density_clamped_flow(model,g,nbi,uem,n_ode_steps=5,
+            n_hutchinson=0 if exact else 1,n_trace_replicates=2,parameterization='velocity',
+            prior_std=1.2,xi_fn=probes,for_training=True,discrete_adjoint=adjoint)
+        loss=(q[0]*q[1]).mean()
+        grads=torch.autograd.grad(loss,tuple(model.vector_field.parameters()),allow_unused=True)
+        return q.detach(),grads,generator.get_state(),calls
+    plain,adjoint=compute(False),compute(True)
+    assert torch.equal(plain[0],adjoint[0])
+    for expected,actual in zip(plain[1],adjoint[1]):
+        if expected is None:assert actual is None
+        else:torch.testing.assert_close(expected,actual,rtol=1e-12,atol=1e-12)
+    assert torch.equal(plain[2],adjoint[2]) and plain[3]==adjoint[3]
     assert model.vector_field.training
