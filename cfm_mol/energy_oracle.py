@@ -12,7 +12,8 @@ import torch
 
 class EnergyOracle:
     def __init__(self, interpreter, worker, checkpoint, *, numbers, charge,
-                 spin_multiplicity, device='cpu', timeout_seconds=60.):
+                 spin_multiplicity, device='cpu', timeout_seconds=60., batch_size=1):
+        if not isinstance(batch_size,int) or batch_size<1:raise ValueError('Positive integer oracle batch size required')
         self.timeout=timeout_seconds;self.evaluated=0;self.requested_evaluations=0
         self.condition={'numbers':list(map(int,numbers)),'charge':int(charge),
                         'spin_multiplicity':int(spin_multiplicity)}
@@ -22,7 +23,7 @@ class EnergyOracle:
         environment.setdefault('XDG_CACHE_HOME','/tmp/bgfm_oracle_cache')
         environment.setdefault('MPLCONFIGDIR','/tmp/bgfm_oracle_mpl')
         self.process=subprocess.Popen([str(interpreter),'-u',str(worker),'--checkpoint',str(checkpoint),
-            '--device',device],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.stderr,
+            '--device',device,'--batch-size',str(batch_size)],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.stderr,
             text=True,bufsize=1,env=environment)
         try:
             if self._receive().get('ready') is not True:raise RuntimeError('Oracle handshake failed')

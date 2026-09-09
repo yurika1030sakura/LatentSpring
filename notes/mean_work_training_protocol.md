@@ -58,3 +58,26 @@ statistics, unweighted geometry/energy, and importance weights. The frozen-forwa
 control isolates auxiliary-path improvement from changed generation. No result
 may be promoted to an ICLR contribution without stronger matched baselines,
 multiple training seeds and the reserved evaluation protocol.
+
+Both first calibration jobs completed. Joint energy decreased by 13.6534 eV on
+64 held-noise draws, but ESS remained 3.485/64 and unweighted overlap increased
+from 12.5% to 17.1875%. Backward-only coordinates were bitwise unchanged; its ESS
+was 2.666/64. This does not establish useful molecular sampling.
+
+The next matched development run uses 500 updates, batch 16, 16 transitions,
+256 evaluation particles before/after and seed 9051. Both arms start from the
+same electronic FM checkpoint and use the same oracle and random streams.
+Each uses 8,512 potential evaluations, including 512 for evaluation. Compare
+full joint mean-work gradients to an intentional forward-energy-only ablation.
+For that ablation, detach both states entering each backward conditional density
+and the forward log-kernel term, while keeping backward parameters live. Thus
+forward parameters receive only terminal energy/restraint gradients; backward
+parameters retain conditional negative-log-likelihood gradients. Work values
+and sampled paths do not change at fixed parameters. Networks have disjoint
+parameters; global norm clipping and optimizer settings match. This is a
+gradient control, not an alternative derivation of full mean-work gradients.
+
+Batching in the separate fairchem process uses its AtomicData batching utility,
+with the same ASE conversion, state validation and predictor as serial queries.
+Serial remains the default; enable batches only after a recorded energy/force
+agreement check. Batch size changes roundoff and throughput, not potential counts.

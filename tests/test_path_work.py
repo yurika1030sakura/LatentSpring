@@ -66,6 +66,29 @@ def test_gaussian_reference_bridge_has_constant_work_for_different_endpoint_widt
 def torch_zero(x,t):return torch.zeros_like(x)
 
 
+@pytest.mark.parametrize('checked',[False,True])
+def test_energy_gradient_control_preserves_values_and_backward_gradient(checked):
+    a=torch.tensor(.2,dtype=torch.float64,requires_grad=True)
+    b=torch.tensor(-.3,dtype=torch.float64,requires_grad=True)
+    def draw(control):
+        g=torch.Generator().manual_seed(447)
+        x=torch.randn(40,2,dtype=torch.float64,generator=g)
+        return gaussian_training_path(x,lambda z,t:a*torch.tanh(z),lambda z,t:b*torch.tanh(z),
+            [0,.2,.6,1.],.4,g,terminal_std=2.,max_drift_norm=3.,
+            checkpoint_steps=checked,forward_energy_only=control)
+    joint=draw(False);control=draw(True)
+    energy=lambda path:.5*((path.terminal-.3)/.8).square().sum(-1)
+    joint_loss=joint.work(energy(joint)).mean();control_loss=control.work(energy(control)).mean()
+    torch.testing.assert_close(joint.terminal,control.terminal,rtol=0,atol=0)
+    torch.testing.assert_close(joint_loss,control_loss,rtol=0,atol=0)
+    joint_grad=torch.autograd.grad(joint_loss,(a,b))
+    control_grad=torch.autograd.grad(control_loss,(a,b),retain_graph=True)
+    energy_grad,=torch.autograd.grad(energy(control).mean(),a)
+    torch.testing.assert_close(control_grad[0],energy_grad,rtol=1e-12,atol=1e-12)
+    torch.testing.assert_close(control_grad[1],joint_grad[1],rtol=1e-12,atol=1e-12)
+    assert abs(float(joint_grad[0]-control_grad[0]))>.01
+
+
 def test_reference_residual_gradient_and_checkpoint_agreement():
     a=torch.tensor(.2,dtype=torch.float64,requires_grad=True)
     def loss(value,checked=False):

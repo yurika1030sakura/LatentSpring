@@ -1,81 +1,47 @@
 # Next research decision
 
-The user's explicit ICLR objective is active. It is not achieved. See STATUS
-and the evidence files before running more experiments; do not restart the audit.
+The user's ICLR objective is active and not achieved. Do not restart completed
+data audits. STATUS and evidence retain failures as well as improvements.
 
-1. Audit the newly recovered official validation archive (2,762,021 records),
-   preserving source IDs, charge/spin, and precision. Check training overlap and
-   establish an evaluation manifest before querying final method outcomes.
-   Path: woo_lab bgfm/raw_data/omol25/v250514/official_validation/val_extracted/val.
-   SHA256 of the compressed archive:
-   bc2f2aa70459ed029217f188d1e8ab0d90abbb90065235f6414d79246bad1ab8.
-2. Summarize the completed center-refinement and matched-budget IS experiments.
-   The eight-atom condition remains low-ESS; refining centers alone is not a
-   demonstrated solution. Count the 1,632 pilot oracle queries when comparing
-   three 1,024-particle repetitions with three 1,568-particle controls.
-3. The independent AgBr2 reference is complete: log(mean Z-hat)=144093.1275689,
-   relative SE about 1.67%. The simple confinement Gaussian beats both learned
-   template proposals at 1,024 direct-IS queries per seed. Preserve this baseline.
-   Do not promote symmetry averaging or defensive mixtures as new mathematics.
-4. Electronic-state conditioning is now implemented and trained. Both 10k-update
-   continuations pass 32/32 xTB, but global-state median strain 3.94384 eV does
-   not improve on legacy continuation 3.89309 eV. This remains a necessary
-   semantic correction, not a positive generation result. Sampling-panel loading
-   and xTB use the recorded original multiplicity and prior width.
-5. Before physics-student training, choose a teacher whose normalizer/moments
-   and sampling coverage survive independent checks. A possible next controlled
-   comparison is mixing exact independence-MH refreshes with local MALA inside
-   SMC, since all current SMC mutation is local. This is established MCMC. The control is now implemented and running in
-   job 45706103 with matched potential budgets; inspect completed results before
-   launching further variants.
-6. Temperature/constraint choices are explicit computational targets. Current
-   kT=1 eV is not ambient-temperature molecular equilibrium. A prospective
-   physically motivated temperature study must retain existing negative results
-   and freeze its protocol before use of the new evaluation data.
+1. Inspect the larger-batch mean-work experiment after its terminal state.
+   Compare joint gradients against forward-energy-only gradients plus backward
+   conditional likelihood, using identical initialization, noise, steps, oracle
+   budget and evaluation panels. First batch-two joint calibration reduced mean
+   energy by 13.6534 eV, but ESS stayed 3.485/64 and unweighted overlap worsened.
+   Backward-only samples stayed bitwise unchanged. Neither is sampling success.
+2. Repeat promising training across seeds and new development conditions before
+   choosing a final recipe. The 664 audited development candidates have no checked
+   old-composition/source-link overlap. Use condition-only graphs. Reserved 722
+   conditions must remain free of method outcomes until the protocol is frozen.
+3. Require normalizer/moment/coverage checks and independent potential evaluation.
+   The AgBr2 reference gives log(mean Z-hat)=144093.1275689 with relative SE 1.67%;
+   simple confinement-Gaussian IS beats learned templates. On the eight-atom
+   condition, defensive mixtures, center optimization and global-refresh SMC all
+   remain poor. Keep these controls and their construction budgets.
+4. Distill a physics teacher to FM only after its benefit is established. Account
+   for SNF/FEAT, FKC, EWFM, FALCON and RegFlow. Work identities, symmetry averaging,
+   defensive IS and exact-likelihood regression alone are existing methods.
+   No defensible new molecular contribution is established yet.
 
-Raw training replay is complete and exact: 3,941,522 records. Use the checked
-`source_index_readonly.sqlite` with immutable read mode. The original producer
-used WAL and caused a cross-host live-reader locking error; it completed normally.
-Future producers use DELETE journaling. Read the NumPy sidecars through
-ElectronicMetadata, which verifies completeness and input hashes.
+Raw training replay is complete: all 3,941,522 accepted tensors matched bitwise;
+original charges, spins, source IDs and float64 energies are restored. Use the
+integrity-checked source_index_readonly.sqlite in immutable read mode. The old
+cross-host WAL error did not invalidate the producer. Official validation audit
+completed 2,762,021 records, with 2,564,135 eligible. Explicit source links do not
+exhaust every possible parent-trajectory relationship.
 
-Current tests: 177 pass. Main-text build: 9/9 pages. Both are engineering gates,
-not evidence of ICLR readiness. The original main paper remains an audit /
-development draft; rewrite around a genuine contribution only once supported.
+Current kT=1 eV with harmonic confinement is a declared computational target,
+not ambient-temperature OMol equilibrium. Do not change it after seeing results
+just to improve metrics. Electronic-state FM conditioning is a semantic repair,
+not a demonstrated quality gain: both 10k continuations pass 32/32 xTB, with
+median strain 3.94384 eV (global) versus 3.89309 eV (legacy).
 
-The old perturbation-shard draft is archived at
-notes/archive/build_perturbation_shard_unvalidated.py and was never used in the
-reported experiments. No subagents, external publication or messages to
-other people have been authorized. Author and submission management belongs to
-the user. Never write home or edit the shared FlowMol installation.
+183 tests pass. Batched oracle inference passed the serial energy/force check;
+serial remains the default and potential counts still include every structure.
+The main-text build remains 9/9 pages and is an audit/development draft. These
+engineering checks are not ICLR readiness. Authors and submission belong to the
+user. No subagents or external messages are authorized. Never write home or edit
+the shared FlowMol installation.
 
-
-Official validation audit job 45706102 and global-refresh job 45706103 were
-confirmed RUNNING during this continuation. Inspect their live scheduler state
-and immutable run directories before relying on old status. Reserved evaluation
-conditions have not been subjected to method outcome queries. RegFlow must be
-considered alongside FALCON if an exact-likelihood student is investigated.
-
-
-Latest continuation: official-data audit and global-refresh SMC are complete.
-Use committed `official_development_candidates.json` for method development;
-`official_reserved_candidates.json` must remain untouched by method outcomes
-until a protocol is frozen. The new-data audit has 2,564,135 eligible records and
-zero checked old-composition/source-link overlaps; candidate sets are 664/722.
-
-Global refresh did not solve the eight-atom problem. A mean-work-trained
-stochastic teacher is now implemented with an exact Gaussian reference bridge,
-full checkpointed gradients and a first-order-only external-force handoff.
-Do not confuse this with a final FM student. Initial geometries are still poor;
-the joint/backward-only GPU calibration must be inspected before larger runs.
-The old Euler preflight's parameter-gradient check passed, but its geometry
-was bad; its source commit and negative results are retained. For any new
-architecture, account for RegFlow, FALCON, SNF and the other prior work.
-
-
-Current GPU calibration jobs: 45716497 (`mean_work_joint_5846_v1`) and
-45716504 (`mean_work_backward_5846_v1`), source 87f4df7. Each is bounded to
-two GPU-hours and 100 updates. Inspect exact scheduler/run state before
-reporting them active or complete. Training uses native prior width one and
-exact Gaussian-reference transitions to the confinement width; old Euler
-preflights are retained separately and were geometrically poor.
+See research/jobs.jsonl for source snapshots and job IDs; re-query Slurm before
+reporting any job as running or complete.

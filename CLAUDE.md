@@ -108,9 +108,10 @@ and has passed a CPU H2 energy/force smoke in `envs/omol25`. See
 statement was caused by checking an obsolete storage path. The public OMol training archive is now available under
 `/n/holylabs/woo_lab/Lab/yulili/bgfm/raw_data/omol25/v250514/`. Exact replay has
 restored metadata for every legacy record, with an integrity-checked read-only
-index and original energy/charge/spin sidecars. The independent test split remains
-to be audited; an official validation archive is being recovered separately.
-Read the latest STATUS for the immutable index path and completed evidence.
+index and original energy/charge/spin sidecars. Official validation recovery and
+overlap auditing are also complete, with 664 development and 722 reserved
+conditions. Reserved method outcomes remain unqueried; explicit source links
+do not exhaust every parent-trajectory relationship. Read STATUS for full scope.
 
 Do not merge the environments: flowmol (torch 2.2 + DGL + Lightning) is for
 training/inference; omol25 (torch 2.8 + fairchem) is for preprocessing/oracle

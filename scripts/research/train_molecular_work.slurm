@@ -12,6 +12,11 @@ set -euo pipefail
 SOURCE_ROOT="${1:?source required}"
 RUN_ROOT="${2:?output required}"
 MODE="${3:-joint}"
+TRAIN_STEPS="${4:-100}"
+TRAIN_BATCH="${5:-2}"
+EVAL_PARTICLES="${6:-64}"
+ORACLE_BATCH="${7:-1}"
+TRAIN_SEED="${8:-9051}"
 BGFM_STORE=/n/holylabs/woo_lab/Lab/yulili/bgfm
 export PYTHONPATH="$SOURCE_ROOT" PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
@@ -26,4 +31,5 @@ exec "$BGFM_STORE/envs/flowmol/bin/python" -u scripts/research/train_molecular_w
  --metadata /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/raw_metadata_replay_v1 \
  --oracle "$BGFM_STORE/checkpoints/omol25/esen_sm_conserving_all.pt" \
  --oracle-python "$BGFM_STORE/envs/omol25/bin/python" --out "$RUN_ROOT" \
- --mode "$MODE" --steps 100 --path-steps 16 --batch 2 --eval-particles 64 --checkpoint-steps
+ --mode "$MODE" --steps "$TRAIN_STEPS" --path-steps 16 --batch "$TRAIN_BATCH" \
+ --eval-particles "$EVAL_PARTICLES" --oracle-batch-size "$ORACLE_BATCH" --seed "$TRAIN_SEED" --checkpoint-steps

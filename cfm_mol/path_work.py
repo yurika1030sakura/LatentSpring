@@ -57,7 +57,8 @@ class TrainablePath:
 
 
 def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,generator,*,
-                           prior_std=1.,checkpoint_steps=False,terminal_std=None,max_drift_norm=None):
+                           prior_std=1.,checkpoint_steps=False,terminal_std=None,max_drift_norm=None,
+                           forward_energy_only=False):
     """Simulate reparameterized paths and retain complete first-order gradients.
 
     x0 must be an independent draw from the stated isotropic Gaussian.
@@ -69,6 +70,10 @@ def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,gen
     conditional are exact at any step count.
     Backward drift is an auxiliary normalized kernel, not physical time reversal.
     Noise is generated once and reused exactly during checkpoint recomputation.
+    forward_energy_only is an intentional gradient ablation: work values are
+    unchanged, but path-factor gradients only train the backward parameters.
+    Forward parameters then receive only terminal-energy gradients. This mode
+    is not the full mean-work gradient and requires disjoint parameter sets.
     """
     _states(x0);grid=_schedule(times,'times')
     if not math.isfinite(noise_scale) or noise_scale<=0 or not math.isfinite(prior_std) or prior_std<=0:
@@ -95,12 +100,16 @@ def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,gen
                 drift=drift*max_drift_norm/torch.sqrt(max_drift_norm**2+drift.square().sum(-1,keepdim=True))
             mean=af*state+dt*drift
             terminal=mean+sf*epsilon
-            reverse_drift=backward_drift(terminal,right)
+            reverse_input=terminal.detach() if forward_energy_only else terminal
+            reverse_state=state.detach() if forward_energy_only else state
+            reverse_drift=backward_drift(reverse_input,right)
             if reverse_drift.shape!=terminal.shape or not torch.isfinite(reverse_drift).all():raise ValueError('Invalid backward drift')
             if max_drift_norm is not None:
                 reverse_drift=reverse_drift*max_drift_norm/torch.sqrt(max_drift_norm**2+reverse_drift.square().sum(-1,keepdim=True))
-            reverse_mean=ab*terminal+dt*reverse_drift
-            change=gaussian_log_density(terminal,mean,sf)-gaussian_log_density(state,reverse_mean,sb)
+            reverse_mean=ab*reverse_input+dt*reverse_drift
+            log_forward=gaussian_log_density(terminal,mean,sf)
+            if forward_energy_only:log_forward=log_forward.detach()
+            change=log_forward-gaussian_log_density(reverse_state,reverse_mean,sb)
             return terminal,change
         if checkpoint_steps:
             x,increment=checkpoint(step,x,noise,use_reentrant=False)

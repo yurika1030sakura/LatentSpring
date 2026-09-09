@@ -39,7 +39,8 @@ def main():
     p.add_argument('--eval-particles',type=int,default=64);p.add_argument('--lr',type=float,default=1e-5)
     p.add_argument('--noise',type=float,default=.2);p.add_argument('--kT',type=float,default=1.)
     p.add_argument('--restraint',type=float,default=.1);p.add_argument('--seed',type=int,default=9051)
-    p.add_argument('--mode',choices=['joint','backward_only'],default='joint')
+    p.add_argument('--mode',choices=['joint','backward_only','forward_energy_only'],default='joint')
+    p.add_argument('--oracle-batch-size',type=int,default=1)
     p.add_argument('--reference-kernel',choices=['euler','gaussian'],default='gaussian')
     p.add_argument('--prior-std',type=float,default=1.)
     p.add_argument('--max-drift-per-sqrt-dimension',type=float,default=20.)
@@ -89,19 +90,21 @@ def main():
     root=Path(__file__).resolve().parents[2]
     report={'complete':False,'scope':__doc__,'configuration':{k:str(v.resolve()) if isinstance(v,Path) else v for k,v in vars(args).items()},
         'checkpoint_sha256':sha(args.checkpoint),'oracle_sha256':sha(args.oracle),'metadata_progress_sha256':metadata.progress_sha256,
-        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py']},
+        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py',root/'scripts/research/oracle_worker.py']},
         'condition':{'source_row':args.source_row,'raw_index':int(metadata.values['raw_indices'][accepted]),
             'numbers':numbers.tolist(),'charge':charge,'spin_multiplicity':spin},
         'energy_zero_eV':energy_zero,'prior_std':prior_std,'evaluations':{},'training':[]}
     write_json(output,report);start=time.perf_counter()
-    with EnergyOracle(args.oracle_python,root/'scripts/research/oracle_worker.py',args.oracle,numbers=numbers,charge=charge,spin_multiplicity=spin) as oracle:
+    with EnergyOracle(args.oracle_python,root/'scripts/research/oracle_worker.py',args.oracle,numbers=numbers,charge=charge,spin_multiplicity=spin,
+                      batch_size=args.oracle_batch_size) as oracle:
         def draw(seed,training):
             g=torch.Generator(device=args.device).manual_seed(seed)
             x0=torch.randn((args.batch,dimension),device=args.device,dtype=torch.float64,generator=g)*prior_std
             path=gaussian_training_path(x0,lambda z,t:drift(forward,z,t,1.),lambda z,t:drift(backward,z,t,-1.),
                 torch.linspace(0,1,args.path_steps+1,dtype=torch.float64),args.noise,g,prior_std=prior_std,
                 checkpoint_steps=args.checkpoint_steps and training,terminal_std=terminal_std,
-                max_drift_norm=args.max_drift_per_sqrt_dimension*math.sqrt(dimension))
+                max_drift_norm=args.max_drift_per_sqrt_dimension*math.sqrt(dimension),
+                forward_energy_only=args.mode=='forward_energy_only' and training)
             positions=torch.einsum('nk,bkd->bnd',basis,path.terminal.reshape(args.batch,n-1,3))
             energy,force=oracle.evaluate(positions)
             linked=external_energy(positions,energy,force) if training else energy.to(positions)

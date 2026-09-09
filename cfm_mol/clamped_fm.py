@@ -14,6 +14,8 @@ from .clamped_density import center_by_graph,deterministic_field
 
 def clamped_fm_path(graph,node_batch_idx,scheduler,*,terminal_time=0.8,
                     prior_std=1.,generator=None,parameterization='endpoint'):
+    if 'has_reference_geometry' in graph.ndata and not graph.ndata['has_reference_geometry'].all():
+        raise ValueError('Condition-only placeholder coordinates cannot be used as FM targets')
     if not math.isfinite(terminal_time) or not 0<terminal_time<=1:
         raise ValueError('terminal_time must be in (0,1]')
     if not math.isfinite(prior_std) or prior_std<=0:

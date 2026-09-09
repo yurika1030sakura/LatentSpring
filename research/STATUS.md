@@ -14,7 +14,7 @@ that all scientific checks passed.
 
 ## What is established
 
-- 177 tests pass, including real FlowMol parameter gradients, full-state and
+- 183 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
   dedicated Gaussian/Rademacher probe streams for common/independent controls,
@@ -68,7 +68,8 @@ conditional path, so its sampling comparison is an initialization diagnostic,
 not a fair comparison with the original joint generator. The same eight
 conditions and four priors per condition are reused. Reference structures
 converge 8/8 with median strain 1.07 eV. xTB uses the recorded interior charge
-and declared minimum electron-parity spin; the original DFT spin is unavailable.
+and declared minimum electron-parity spin; those historical runs preceded recovery
+of original DFT spin. The later electronic-state panel uses original spin.
 Failure-conditioned medians alone do not establish quality, connectivity,
 diversity or Boltzmann populations. The 10,000-step sampler's maximum
 64→128 coordinate RMS drift is 0.0930 Angstrom.
@@ -245,7 +246,7 @@ Gaussian. Both use existing mathematical identities with explicit citations;
 see `notes/rotation_mixture_protocol.md` and `notes/defensive_symmetry_proposal.md`.
 No new theorem or molecular training advantage is claimed.
 
-Currently active:
+Historical launch notes (both jobs completed; final results below):
 
 - 45665423, `raw_metadata_replay_v1`: complete raw-to-legacy exact replay,
   restoring source paths, true charge/spin and float64 energies without changing
@@ -304,7 +305,7 @@ The method therefore remains scientifically not submission ready. The current
 candidate needs repeatable value beyond the simple baselines; theory repairs,
 metadata recovery and a larger test count are not that evidence.
 
-Active/next work:
+Historical launch notes (jobs and archive recovery completed; results below):
 
 - 45696874: refine all independent FM pilot centers by 50 monotone steps, then
   use the normalized defensive proposals; optimization is proposal construction,
@@ -342,7 +343,7 @@ manifest are the next required checks. `research/NEXT.md` records the next
 research decision and the remaining negative evidence.
 
 
-## Active goal continuation: official evaluation and global refresh
+## Official evaluation and global-refresh protocol
 
 The previous goal turn made concrete progress; no blocker was declared.
 Current source 4c61d84 adds a fixed-q0 independence-MH refresh and a matched
@@ -351,16 +352,16 @@ is retained, and separate accepted-proposal IDs are not called independent
 samples. The full suite passes 168 tests. A real eight-atom preflight completes
 both hybrid arms with 20 potential queries each; it is an interface check.
 
-- 45706102, `official_validation_audit_v1`, is running the full official
+- 45706102, `official_validation_audit_v1`, completed the full official
   2,762,021-record validation audit. It compares against 1,087,994 old training
   compositions, 28,453 old development compositions and 4,313,500 explicit
   source/reference-link hashes. Input-file hashes are checked. Candidate panels
   use a fixed hash of composition for development/reserved partition assignment
   and fixed within-stratum hash ranking, never energy or method outcomes. The
   completed 1,000-row preflight retains 967 candidates and excludes 33 by atom
-  range, with no observed old-composition/source overlap. Full results remain
-  incomplete; do not use reserved candidate outcomes before protocol freeze.
-- 45706103, `hybrid_smc_5846_v1`, is running three seeds of four matched arms:
+  range, with no observed old-composition/source overlap. Full results are given
+  below; do not use reserved candidate outcomes before protocol freeze.
+- 45706103, `hybrid_smc_5846_v1`, completed three seeds of four matched arms:
   confinement or defensive-symmetry prior, each with two MALA moves or one
   independence-MH move followed by MALA. There are 64 particles, 16 fixed stages
   and 2,112 potential calls per arm/seed. Early global acceptance can still be
@@ -373,7 +374,7 @@ research entry points. It remains explicitly unvalidated.
 RegFlow (arXiv:2506.01158) is now added to required prior-work comparisons.
 Regression-training an exact-likelihood invertible student is not a new idea.
 A mean-work-trained stochastic teacher is another possible existing-method
-baseline, not yet implemented or evaluated here. Prefer evidence-driven method
+baseline, now implemented with calibration results below. Prefer evidence-driven method
 selection over accumulating architectural changes without molecular gains.
 
 
@@ -407,11 +408,33 @@ An exact Gaussian reference bridge now keeps the native unit-width input while
 matching the confinement endpoint width; zero neural residual gives constant
 Gaussian work at any tested step count. The neural residual is smoothly bounded.
 
-The new Gaussian-reference preflight remains low-ESS and has poor geometry;
-two finite updates do not establish value. A backward-only control confirms
-bitwise unchanged forward coordinates after training. The full suite passes
-177 tests, including fixed-noise gradients, checkpoint agreement and the oracle
-force handoff. The bounded next GPU runs compare 100 joint mean-work updates
-with 100 backward-only updates using 16 path steps and two paths per update.
-They are teacher calibration, not final FM-student performance claims.
-See `notes/mean_work_training_protocol.md` and `cfm_mol/path_work.py`.
+The joint and backward-only jobs 45716497 / 45716504 both completed 100 updates,
+with 16 path steps and two paths per update. Joint training lowers held-noise mean
+energy by 13.6534 eV and work standard deviation from 19.798 to 7.424, but weight
+ESS remains only 3.485/64. Unweighted overlap rises from 12.5% to 17.1875%.
+Backward-only training changes no forward sample coordinate (bitwise checked),
+although work standard deviation falls to 13.189. Its ESS is 2.666/64.
+These are a single-seed, single-condition teacher calibration, not a molecular
+sampling success or final FM-student performance claim. Each used 328 oracle
+queries including evaluation. See evidence/mean_work_calibration.json.
+
+The next matched control removes path-factor gradients to the forward network,
+leaving only terminal-energy gradients there while retaining backward conditional
+likelihood training. Work values and forward simulation are unchanged at fixed
+parameters. Tests compare forward gradients with energy-only autograd and
+backward gradients with the full objective, with/without checkpointing.
+This intentional ablation is not the full mean-work gradient.
+
+The full suite passes 183 tests. Batched oracle inference agrees with serial ASE
+on 32 generated geometries: maximum energy difference 8.87e-6 eV and force
+component difference 5.04e-4 eV/A. Warm measured times were 75.88 s serial versus
+6.99 s with batch 16 (10.86x in this single timing, not a general speed guarantee).
+A separate four-geometry directional force check agrees within .00130 eV/A at
+h=.01 A; smaller h shows worse finite-precision cancellation. Neither check is
+independent physical-accuracy validation. Both reports are retained in evidence.
+
+Condition manifests can now construct graphs without reference geometries.
+Placeholder coordinates are rejected as FM data targets; reserved outcome use
+requires a frozen method/manifest protocol. No reserved condition has received
+method outcome queries. See notes/mean_work_training_protocol.md for the next
+500-update, batch-16 matched experiment (8,512 potential queries per arm).
