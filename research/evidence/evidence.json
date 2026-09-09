@@ -1,0 +1,378 @@
+{
+  "sources": {
+    "affine": {
+      "file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/toy_trace_v1/toy.json",
+      "sha256": "a47090ff9bff367d0541c1f84eb8cf808d9fbe33556641fbc25591ac0aec45de"
+    },
+    "nonlinear": {
+      "file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/toy_nonlinear_v1/toy.json",
+      "sha256": "ce2c45a8a332c7dce3ccf70b4260655096638d80dcdc6ef9f6915c34ed4906b6"
+    },
+    "old_density": {
+      "file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/numerical_panel_v1/panel.json",
+      "sha256": "bcc01cb606bc27258e1cb8f0b382ce1c1350332488a1ae1ca809c0ebeddc1fc4"
+    },
+    "sampling": {
+      "file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/position_samples_v1/samples.json",
+      "sha256": "f3ff000b765730569d74b67e2f99c7e39aa9d85b05ced2000c6d90fa865b8471"
+    },
+    "xtb": {
+      "file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/position_xtb_v1/xtb.json",
+      "sha256": "125bb35b9c5abe2c597df28fdeca8e112334af92c178ed5243bf51cee0e6ccc5"
+    },
+    "split": {
+      "file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/composition_audit_v2/composition_split.json",
+      "sha256": "636797485ede12c2c0cf17722d4eb9c6003ba105400ebacf821458993e483635"
+    }
+  },
+  "tables": {
+    "affine": [
+      {
+        "arm": "exact",
+        "seeds": 5,
+        "mean_exact_kl": 0.0,
+        "per_seed_exact_kl": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "per_seed_a": [
+          0.5999999999999999,
+          0.6,
+          0.6000000000000001,
+          0.6,
+          0.6000000000000001
+        ]
+      },
+      {
+        "arm": "squared_2",
+        "seeds": 5,
+        "mean_exact_kl": 0.7475567594670498,
+        "per_seed_exact_kl": [
+          0.738127427510934,
+          0.7608678746093396,
+          0.7600379589416135,
+          0.7117783541113154,
+          0.7669721821620465
+        ],
+        "per_seed_a": [
+          0.02474930301496755,
+          0.016828433067518633,
+          0.017114836125851428,
+          0.03412326826518495,
+          0.014727942098691021
+        ]
+      },
+      {
+        "arm": "product_2",
+        "seeds": 5,
+        "mean_exact_kl": 0.0013828134280124526,
+        "per_seed_exact_kl": [
+          0.002371862386743917,
+          1.1477853329999732e-06,
+          0.0013768604534953877,
+          0.0007251817390341309,
+          0.002439014775455828
+        ],
+        "per_seed_a": [
+          0.5655694513732983,
+          0.5992424430339961,
+          0.6262349443681553,
+          0.5809593315783381,
+          0.5650856479775778
+        ]
+      },
+      {
+        "arm": "common_2",
+        "seeds": 5,
+        "mean_exact_kl": 0.0,
+        "per_seed_exact_kl": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "per_seed_a": [
+          0.5999999999999998,
+          0.5999999999999999,
+          0.6000000000000001,
+          0.6,
+          0.6000000000000001
+        ]
+      },
+      {
+        "arm": "rotated_squared_2",
+        "seeds": 5,
+        "mean_exact_kl": 0.0,
+        "per_seed_exact_kl": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "per_seed_a": [
+          0.5999999999999999,
+          0.6,
+          0.6000000000000001,
+          0.6,
+          0.6000000000000001
+        ]
+      }
+    ],
+    "nonlinear": [
+      {
+        "arm": "exact",
+        "seeds": 5,
+        "mean_exact_kl": 8.011868446630306e-33,
+        "per_seed_exact_kl": [
+          3.081487864088579e-33,
+          2.7733390776797213e-32,
+          3.081487864088579e-33,
+          3.081487864088579e-33,
+          3.081487864088579e-33
+        ],
+        "per_seed_a": [
+          0.6000000000000001,
+          0.6000000000000003,
+          0.6000000000000001,
+          0.5999999999999999,
+          0.5999999999999999
+        ]
+      },
+      {
+        "arm": "squared_rademacher",
+        "seeds": 5,
+        "mean_exact_kl": 0.08546726831286476,
+        "per_seed_exact_kl": [
+          0.08765320000399315,
+          0.08464918534739918,
+          0.08340155467358762,
+          0.08710575217440322,
+          0.08452664936494066
+        ],
+        "per_seed_a": [
+          0.007874333138818856,
+          0.018109334542632145,
+          0.02241344910466743,
+          0.009726322792479333,
+          0.018530652046800204
+        ]
+      },
+      {
+        "arm": "product_rademacher",
+        "seeds": 5,
+        "mean_exact_kl": 0.002594339276869004,
+        "per_seed_exact_kl": [
+          0.0016184095206566132,
+          0.0007071468198159909,
+          0.00013466566273974789,
+          0.0076216510065019935,
+          0.002889823374630675
+        ],
+        "per_seed_a": [
+          0.5195410776779863,
+          0.5468155349529273,
+          0.6232091072461396,
+          0.7746041365212128,
+          0.4924858443061077
+        ]
+      },
+      {
+        "arm": "squared_common_rademacher",
+        "seeds": 5,
+        "mean_exact_kl": 0.08140798457144806,
+        "per_seed_exact_kl": [
+          0.08080333062295325,
+          0.07695084497727712,
+          0.08700972380562083,
+          0.08768670563994,
+          0.07458931781144906
+        ],
+        "per_seed_a": [
+          0.03148146255874342,
+          0.04519968944047282,
+          0.010051781490011838,
+          0.007761173257251699,
+          0.053779096161844515
+        ]
+      },
+      {
+        "arm": "product_common_rademacher",
+        "seeds": 5,
+        "mean_exact_kl": 0.03744997199030353,
+        "per_seed_exact_kl": [
+          0.001196883170073068,
+          0.09285590972504354,
+          0.06507547038394144,
+          2.6898953503793544e-06,
+          0.028118906777109237
+        ],
+        "per_seed_a": [
+          0.6691919991993749,
+          1.2094453581388152,
+          1.1101978885688946,
+          0.5967198198882705,
+          0.26462613575080346
+        ]
+      },
+      {
+        "arm": "squared_gaussian",
+        "seeds": 5,
+        "mean_exact_kl": 0.08732213633303261,
+        "per_seed_exact_kl": [
+          0.08655025985576928,
+          0.08551567921255711,
+          0.08664358496138802,
+          0.09106141116083633,
+          0.08683974647461234
+        ],
+        "per_seed_a": [
+          0.011611484904988962,
+          0.015138715540311463,
+          0.011294347637231904,
+          -0.0035276714375234316,
+          0.010628308120656559
+        ]
+      },
+      {
+        "arm": "product_gaussian",
+        "seeds": 5,
+        "mean_exact_kl": 0.015821080560295908,
+        "per_seed_exact_kl": [
+          4.916840488336016e-06,
+          0.02654327067565592,
+          0.0013712228446265849,
+          0.028784022933152492,
+          0.022401969507556213
+        ],
+        "per_seed_a": [
+          0.6044347899897151,
+          0.2741578843678466,
+          0.5259399469211564,
+          0.26068290127650456,
+          0.30065424774192795
+        ]
+      },
+      {
+        "arm": "squared_common_gaussian",
+        "seeds": 5,
+        "mean_exact_kl": 0.08211261492831447,
+        "per_seed_exact_kl": [
+          0.07554144143864236,
+          0.07725206403207484,
+          0.0960148178626955,
+          0.08497949277907638,
+          0.07677525852908326
+        ],
+        "per_seed_a": [
+          0.05030392910577572,
+          0.04411488521953668,
+          -0.019725162713276505,
+          0.01697514950625869,
+          0.045833022642565155
+        ]
+      }
+    ],
+    "strain": {
+      "warm": {
+        "attempted": 32,
+        "converged": 29,
+        "median_strain_eV_success_only": 13.09071093038267,
+        "mean_strain_eV_success_only": 21.451056308926656
+      },
+      "position_1000": {
+        "attempted": 32,
+        "converged": 30,
+        "median_strain_eV_success_only": 5.008792981505366,
+        "mean_strain_eV_success_only": 8.200432701033764
+      },
+      "reference": {
+        "attempted": 8,
+        "converged": 8,
+        "median_strain_eV_success_only": 1.0656998320487219,
+        "mean_strain_eV_success_only": 1.0043501379279043
+      }
+    },
+    "parent_strain": [
+      {
+        "parent": 15713,
+        "warm": 4.419038240209574,
+        "warm_converged": 4,
+        "position_1000": 4.719834013738762,
+        "position_1000_converged": 4
+      },
+      {
+        "parent": 30816,
+        "warm": 32.878610778920006,
+        "warm_converged": 2,
+        "position_1000": 4.998994105956626,
+        "position_1000_converged": 3
+      },
+      {
+        "parent": 39096,
+        "warm": 32.757721072172274,
+        "warm_converged": 4,
+        "position_1000": 10.012547377928342,
+        "position_1000_converged": 4
+      },
+      {
+        "parent": 38309,
+        "warm": 26.69168616627735,
+        "warm_converged": 4,
+        "position_1000": 8.655890862913054,
+        "position_1000_converged": 4
+      },
+      {
+        "parent": 5981,
+        "warm": 52.726418676495314,
+        "warm_converged": 4,
+        "position_1000": 19.181401367831768,
+        "position_1000_converged": 3
+      },
+      {
+        "parent": 25035,
+        "warm": 12.332291645714491,
+        "warm_converged": 4,
+        "position_1000": 3.0554995134001786,
+        "position_1000_converged": 4
+      },
+      {
+        "parent": 11889,
+        "warm": 2.483126491485393,
+        "warm_converged": 4,
+        "position_1000": 1.5041322022156436,
+        "position_1000_converged": 4
+      },
+      {
+        "parent": 26872,
+        "warm": 5.999881857741229,
+        "warm_converged": 3,
+        "position_1000": 3.116212001438342,
+        "position_1000_converged": 4
+      }
+    ],
+    "sampling": [
+      {
+        "arm": "warm",
+        "n": 32,
+        "held_fm_mean": 1.4705699272453785,
+        "coordinate_drift_median_A": 0.00928917434066534,
+        "coordinate_drift_max_A": 0.09022915363311768,
+        "samples_above_0_01_A": 15
+      },
+      {
+        "arm": "position_1000",
+        "n": 32,
+        "held_fm_mean": 1.2112124264240265,
+        "coordinate_drift_median_A": 0.00885784812271595,
+        "coordinate_drift_max_A": 0.15853716433048248,
+        "samples_above_0_01_A": 14
+      }
+    ]
+  },
+  "claim": "development evidence only; molecular energy-training benefit unestablished"
+}

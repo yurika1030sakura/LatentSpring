@@ -1,0 +1,169 @@
+\section{Development experiments after the implementation audit}
+\label{app:newdevelopment}
+
+This section reports new implementation checks and mechanism experiments separately from the
+archived main-text study. They do not validate the historical likelihood interpretation or
+establish a molecular benefit from the corrected energy loss. The runs use committed source
+snapshots, fixed initial checkpoints, dedicated trace random-number streams and recorded failures.
+The development evidence and per-seed values are generated from the raw run records by
+\texttt{scripts/research/render\_evidence.py}. The code currently passes 88 tests, including an
+actual FlowMol endpoint head, full trajectory gradients, independent replicas and conditional FM.
+
+\subsection{A conditional sampler that matches the density definition}
+
+Let $m$ denote the atom count, ordered atom types and charge inputs. We separate a frozen
+composition prior $\pi(m)$ from a position flow $q_{\theta,T}(x\mid m)$:
+\[
+ m\sim\pi,\qquad X_0\sim\mathcal N_{\mathrm{COM}}(0,I),\qquad
+ \dot X_t=P v_\theta(PX_t,t;m),\quad 0\le t\le T.
+\]
+Here $P$ removes the unweighted centroid. There is no history-dependent self-conditioning,
+prior alignment or steric retraction. A frozen original generator can supply $m$, discarding
+its coordinates; the position checkpoint must not replace that composition checkpoint, since
+its shared backbone updates also change the discrete logits. The conditional geometry density
+is specified, while the implicit composition prior is not claimed to have a tractable density.
+
+The initial position experiment uses $T=0.8$. To train the data to this time, rather than merely
+stopping a time-one flow early, define $\tau(t)=\alpha(t)/\alpha(T)$ and
+\[
+ X_t=X_0+\tau(t)(X_1-X_0),\qquad
+ D^*=X_0+\frac{X_1-X_0}{\alpha(T)}.
+\]
+The existing endpoint-to-velocity conversion then gives
+\[
+ \frac{\alpha'(t)}{1-\alpha(t)}(D^*-X_t)
+   =\frac{\alpha'(t)}{\alpha(T)}(X_1-X_0).
+\]
+Endpoint regression therefore defines a positive time-weighting of the appropriate conditional
+FM loss. This position objective replaces the joint CTMC objective during geometry fine-tuning.
+The initial experiment sets the force and energy weights to zero; OMol25, 83 element types,
+bond-free training and the 200-atom model limit remain unchanged.
+
+Calling \texttt{eval()} alone is insufficient to disable the original network's special
+self-conditioning branch exactly at $t=0$. The corrected context also disables and restores
+that flag. Interior midpoint calculations are unchanged; adaptive solvers that evaluate the
+boundary require this explicit change. It fixes the field definition but does not establish
+numerical convergence of the trained field.
+
+\subsection{Bias from squaring a stochastic density}
+
+For $K$ geometries within a parent, let $C=I-\mathbf1\mathbf1^\top/K$ and
+$r=\ell_h+\beta E$, where $\ell_h$ is the exact-trace value along a specified deterministic
+numerical trajectory. If $\widehat r=r+\epsilon$ has conditionally zero-mean trace noise and
+covariance $\Sigma$, then the standard quadratic-form identity gives
+\[
+ \mathbb E\,\frac{\|C\widehat r\|^2}{K}
+ =\frac{\|Cr\|^2}{K}+\frac{\operatorname{tr}(C\Sigma)}{K}.
+\]
+The extra term generally depends on model parameters. For two conditionally independent trace
+replicas along the same trajectory,
+\[
+ L_\times=\frac{(C\widehat r_1)^\top(C\widehat r_2)}{K},\qquad
+ \mathbb E L_\times=\frac{\|Cr\|^2}{K}.
+\]
+Against the equal-budget squared replica mean $L_{\mathrm{mean}}$,
+\[
+ L_{\mathrm{mean}}-L_\times
+ =\frac{\|C(\widehat r_1-\widehat r_2)\|^2}{4K}\ge0.
+\]
+These are standard independent-product identities, not claimed new theorems. Their gradient
+interpretation additionally requires full trajectory and prior differentiation and an exchange
+of differentiation and expectation. Positivity clipping or outcome-dependent skipping changes
+the objective. The product can be negative and has substantial optimization variance.
+Neither replica products nor common probes correct ODE integration error.
+
+We include common probes across sibling geometries as a control, while keeping the two replicas
+independent. Common probes can cancel noise for an affine field, but do not generally cancel
+state-dependent Jacobian contributions. Gaussian probes control Rademacher probes' orientation
+dependence; they do not remove squared-loss bias. Off-policy log-dispersion regularisation itself
+is already covered by LDR \citep{ldr2026}. Molecular usefulness and computational advantages
+remain necessary beyond the estimator identities.
+
+\subsection{Two exactly solvable mechanism experiments}
+
+The first experiment uses a two-dimensional Gaussian CNF with
+$A=a\left[\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right]$ and target $a=0.6$.
+It isolates trace-noise bias from numerical integration. Over five optimization seeds, the
+squared two-probe residual attains mean exact KL $0.74756$, while the independent product
+attains $0.00138$. Exact traces, common probes and the rotated diagonal squared-loss control
+all attain zero to numerical precision. Thus this example does not demonstrate superiority
+over common probes.
+
+The second experiment uses the nonlinear shear
+\[
+ v_a(x)=(a\sin(3x_2),0),\quad
+ \Phi_a^{-1}(y)=(y_1-a\sin(3y_2),y_2).
+\]
+Its exact divergence is zero, but its stochastic trace is
+$3a\cos(3x_2)\xi_1\xi_2$. Common probes therefore leave state-dependent differences between
+geometries. Independent off-policy examples have standard deviation $0.35$ in each coordinate;
+all arms use groups of 64, two probes, 3,000 Adam steps and the same five data seeds. The target
+is $a=0.6$. Ground-truth KL is
+$\tfrac14(a-0.6)^2(1-e^{-18})$. We report every arm in \Cref{tab:sheartoy}; the noisier product
+variants are not omitted.
+
+\begin{table}[ht]
+\centering
+\caption{Nonlinear shear mechanism test. Mean exact KL over five optimization seeds; no molecular
+claim. All numerical values are from completed runs.}
+\label{tab:sheartoy}
+\begin{tabular}{lr}
+\toprule
+Estimator and probe policy & Mean exact KL $\downarrow$\\
+\midrule
+Exact trace & $<10^{-30}$\\
+Squared, independent Rademacher & 0.08547\\
+Product, independent Rademacher & 0.00259\\
+Squared, common Rademacher & 0.08141\\
+Product, common Rademacher & 0.03745\\
+Squared, independent Gaussian & 0.08732\\
+Product, independent Gaussian & 0.01582\\
+Squared, common Gaussian & 0.08211\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+These constructed examples establish a mechanism and illustrate variance tradeoffs. They do
+not predict the magnitude or sign of an effect in molecular training.
+
+\subsection{Molecular runtime, split audit and preliminary sampling}
+
+Four equal trace-budget controls---squared versus product, crossed with independent versus
+common probes---each complete 20 real optimizer steps with finite weights. The two
+independent-probe arms each skip one energy outlier, and the common-probe arms skip none.
+Their raw objective means are not compared as performance endpoints. A separate eight-parent
+numerical panel at $T=0.95$ keeps geometries and probes fixed across 16, 32, 64 and 128 steps.
+Two parents still have maximum centred mean log-density changes of 90.36 and 66.18 nats between
+64 and 128 steps. Those density values are not certified as converged. These evaluation probes
+are fixed over time, whereas training resamples probes over integration steps; their noise
+magnitudes are not interchangeable.
+
+A full scan of 3,902,107 archived training structures finds 6,527 validation structures whose
+elemental composition is absent from the training set. Of these, 59 contain at most 12 atoms.
+This excludes an exact chemical-identity match with the training set, but it is still an old
+validation development pool, not a new blind test set. The historical test file duplicates
+validation. Original source identities and spin metadata remain unavailable.
+
+One conditional position FM run completes 1,000 optimizer steps, processing distinct random
+OMol25 training structures, in 104.2 seconds of its training loop with peak allocated memory
+5.06 GiB. We select eight development parents with a fixed seed, excluding charge values at
+legacy clipping boundaries. For each parent, four independent Gaussian coordinate priors are
+shared between the warm checkpoint and the fine-tuned checkpoint. Both use the same
+128-step clamped sampler at $T=0.8$. The warm checkpoint has not been trained for this new
+conditional path, so this is a warm-start diagnostic, not a fair comparison with its original
+joint generator.
+
+Independent GFN2-xTB optimization converges for 29/32 warm samples and 30/32 fine-tuned samples.
+Successful samples have median strain 13.09 and 5.01 eV, respectively; these medians condition on
+different success sets. Pairing the same priors and ranking a nonconverged result below a
+converged one gives 28 improvements, three deteriorations and one pair in which both fail.
+The eight reference structures all converge and have median strain 1.07 eV. This is one
+training seed, not a replicated energy-training result. Original spin is unknown; both
+single-point and relaxation calculations explicitly use minimum electron-parity spin and the
+stored charge. The result is under that declared computational convention.
+
+Sampling also remains solver-sensitive: the median/max coordinate RMS change from 64 to 128
+steps is 0.0093/0.0902 \AA{} for the warm checkpoint and 0.0089/0.1585 \AA{} after fine-tuning.
+Further training, tighter numerical checks, multiple seeds, fair conditional baselines and
+independent data are required before an energy-regularisation or Boltzmann-sampling claim.
+Strain alone does not establish valid connectivity, diversity or equilibrium populations.

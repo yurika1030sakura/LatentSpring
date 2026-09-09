@@ -46,7 +46,7 @@ Usage:
   python scripts/preprocess_omol25.py \\
       --src /n/netscratch/ryl_lab/Lab/omol25/train_4M \\
       --out_dir /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/data/omol25_4m_processed \\
-      --max_atoms 120 --val_frac 0.01
+      --max_atoms 200 --val_frac 0.01
 """
 from __future__ import annotations
 
@@ -76,7 +76,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", required=True, help="Directory or comma-sep list of LMDB shards")
     ap.add_argument("--out_dir", type=Path, required=True)
-    ap.add_argument("--max_atoms", type=int, default=120)
+    ap.add_argument("--max_atoms", type=int, default=200)
     ap.add_argument("--val_frac", type=float, default=0.01,
                     help="Fraction of surviving molecules held out for val.")
     ap.add_argument("--max_n_mols", type=int, default=None,

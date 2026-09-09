@@ -189,10 +189,11 @@ survive the corrections and which are superseded by the matched grid.
 \emph{Two caveats a re-runner should expect.} Diverged runs are recorded rather than re-rolled, and
 because divergence is objective-dependent, every value-cell mean is reported conditional on
 completion with its launched, completed and diverged counts beside it (\Cref{app:stability});
-a re-run at a different seed set should expect a different completion pattern. And every reported
-density is computed by one protocol: $\log q_\theta$ comes from an ODE integration of the clamped
-positional flow with Hutchinson divergence estimation, and every arm comparison in this paper is
-between values computed under it.
+a re-run at a different seed set should expect a different completion pattern. The archived main-text comparisons use the legacy scalar readout, which the audit finds is not a
+validated likelihood: it integrates an endpoint head as a velocity and freezes the numerical
+trajectory in its gradient. The corrected $q_T$ coordinate flow is a separately defined sampler,
+trained and diagnosed only in the development experiments of \Cref{app:newdevelopment}.
+Numbers from these implementations must not be pooled or described as one likelihood protocol.
 
 \subsubsection*{Ethics statement}
 
@@ -225,5 +226,6 @@ states what the paper does not establish.
 \input{sections/A1_proofs}
 \input{sections/A2_details}
 \input{sections/A3_related}
+\input{sections/A4_development}
 
 \end{document}

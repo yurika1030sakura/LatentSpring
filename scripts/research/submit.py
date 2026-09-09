@@ -42,12 +42,18 @@ else:
     # Use the launcher from the same snapshot, not the mutable working tree.
     command[2] = str(snapshot/args.launcher)
     out.mkdir(parents=True)
-    job = subprocess.check_output(command, cwd=root).decode().strip()
+    submitted = subprocess.run(command, cwd=root, capture_output=True, text=True)
+    job = submitted.stdout.strip() if submitted.returncode == 0 else None
     record = {'at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'job_id':job, 'name':args.name, 'source_commit':rev,
         'snapshot':str(snapshot), 'output':str(out),
         'max_gpu_hours':args.gpu_hours, 'launcher':args.launcher, 'config':args.config, 'seed':args.seed,
-        'launcher_args':args.launcher_arg}
+        'launcher_args':args.launcher_arg,
+        'submission_state':'submitted' if submitted.returncode == 0 else 'rejected',
+        'submission_error':submitted.stderr.strip() if submitted.returncode else None}
     with (root/'research/jobs.jsonl').open('a') as f:
         f.write(json.dumps(record)+'\n')
+    (out/'submission.json').write_text(json.dumps(record, indent=2)+'\n')
     print(json.dumps(record, indent=2))
+    if submitted.returncode:
+        raise SystemExit(submitted.returncode)
