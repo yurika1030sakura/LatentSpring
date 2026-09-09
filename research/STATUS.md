@@ -14,7 +14,7 @@ that all scientific checks passed.
 
 ## What is established
 
-- 168 tests pass, including real FlowMol parameter gradients, full-state and
+- 177 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
   dedicated Gaussian/Rademacher probe streams for common/independent controls,
@@ -375,3 +375,43 @@ Regression-training an exact-likelihood invertible student is not a new idea.
 A mean-work-trained stochastic teacher is another possible existing-method
 baseline, not yet implemented or evaluated here. Prefer evidence-driven method
 selection over accumulating architectural changes without molecular gains.
+
+
+## Completed official-data audit and next physics-teacher calibration
+
+Official validation audit 45706102 completed all 2,762,021 records. There are
+2,564,135 eligible records with 2--200 atoms; 197,886 are outside that atom range.
+No eligible record overlapped the old training/development elemental composition
+sets or the checked explicit source links, and no missing/invalid electronic
+state or nonfinite label was found. Fixed hash partitions yield 512,042 new
+potential development records and 2,052,093 reserved records. Fixed stratified
+reservoirs select 664 development and 722 reserved conditions; their elemental
+composition sets are disjoint. The full candidate manifests and source hashes
+are committed. Reserved conditions have not received method outcome queries.
+Explicit calculation/reference links do not exhaust every parent-trajectory
+relationship; keep this limitation rather than claiming more than the audit.
+
+Global-refresh SMC 45706103 completed all 12 arms (four methods, three seeds).
+It did not give a stable improvement on the eight-atom condition. Mean initial
+ancestral ESS for confinement MALA/hybrid is 2.66/1.58, and for defensive-symmetry
+MALA/hybrid is 2.18/1.38. Log-normalizer ranges remain 2.44--4.50 nats; final
+independence acceptance is often zero. These are negative controls, not a
+successful main method. Initial ancestry alone is not a mixing certificate.
+
+A trainable finite-path mean-work module now provides full forward/backward
+parameter gradients and external oracle-force derivatives, without neural
+Jacobian traces. It is an existing path-KL/SNF objective, not a new identity.
+The Euler/native-mismatch preflight gave poor geometries at both four and sixteen
+steps. Plain and checkpointed two-update runs have identical parameter tensors.
+An exact Gaussian reference bridge now keeps the native unit-width input while
+matching the confinement endpoint width; zero neural residual gives constant
+Gaussian work at any tested step count. The neural residual is smoothly bounded.
+
+The new Gaussian-reference preflight remains low-ESS and has poor geometry;
+two finite updates do not establish value. A backward-only control confirms
+bitwise unchanged forward coordinates after training. The full suite passes
+177 tests, including fixed-noise gradients, checkpoint agreement and the oracle
+force handoff. The bounded next GPU runs compare 100 joint mean-work updates
+with 100 backward-only updates using 16 path steps and two paths per update.
+They are teacher calibration, not final FM-student performance claims.
+See `notes/mean_work_training_protocol.md` and `cfm_mol/path_work.py`.

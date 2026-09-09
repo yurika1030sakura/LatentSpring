@@ -39,7 +39,7 @@ used WAL and caused a cross-host live-reader locking error; it completed normall
 Future producers use DELETE journaling. Read the NumPy sidecars through
 ElectronicMetadata, which verifies completeness and input hashes.
 
-Current tests: 168 pass. Main-text build: 9/9 pages. Both are engineering gates,
+Current tests: 177 pass. Main-text build: 9/9 pages. Both are engineering gates,
 not evidence of ICLR readiness. The original main paper remains an audit /
 development draft; rewrite around a genuine contribution only once supported.
 
@@ -55,3 +55,27 @@ confirmed RUNNING during this continuation. Inspect their live scheduler state
 and immutable run directories before relying on old status. Reserved evaluation
 conditions have not been subjected to method outcome queries. RegFlow must be
 considered alongside FALCON if an exact-likelihood student is investigated.
+
+
+Latest continuation: official-data audit and global-refresh SMC are complete.
+Use committed `official_development_candidates.json` for method development;
+`official_reserved_candidates.json` must remain untouched by method outcomes
+until a protocol is frozen. The new-data audit has 2,564,135 eligible records and
+zero checked old-composition/source-link overlaps; candidate sets are 664/722.
+
+Global refresh did not solve the eight-atom problem. A mean-work-trained
+stochastic teacher is now implemented with an exact Gaussian reference bridge,
+full checkpointed gradients and a first-order-only external-force handoff.
+Do not confuse this with a final FM student. Initial geometries are still poor;
+the joint/backward-only GPU calibration must be inspected before larger runs.
+The old Euler preflight's parameter-gradient check passed, but its geometry
+was bad; its source commit and negative results are retained. For any new
+architecture, account for RegFlow, FALCON, SNF and the other prior work.
+
+
+Current GPU calibration jobs: 45716497 (`mean_work_joint_5846_v1`) and
+45716504 (`mean_work_backward_5846_v1`), source 87f4df7. Each is bounded to
+two GPU-hours and 100 updates. Inspect exact scheduler/run state before
+reporting them active or complete. Training uses native prior width one and
+exact Gaussian-reference transitions to the confinement width; old Euler
+preflights are retained separately and were geometrically poor.
