@@ -44,7 +44,7 @@ just to improve metrics. Electronic-state FM conditioning is a semantic repair,
 not a demonstrated quality gain: both 10k continuations pass 32/32 xTB, with
 median strain 3.94384 eV (global) versus 3.89309 eV (legacy).
 
-190 tests pass. Batched oracle inference passed the serial energy/force check;
+192 tests pass. Batched oracle inference passed the serial energy/force check;
 serial remains the default and potential counts still include every structure.
 The main-text build remains 9/9 pages and is an audit/development draft. These
 engineering checks are not ICLR readiness. Authors and submission belong to the
@@ -91,3 +91,15 @@ successful strain 16.7263 eV, overlaps 21/64, ESS 1.928/64. Two-update final:
 28/32, 16.9588 eV, 20/64, ESS 1.781/64. Convergence recovered, quality did not.
 Proceed with the prescribed native-mean joint/energy-gradient 500-update pair;
 compare all arms after completed independent assessment, not training loss alone.
+
+Reference-mean 500-update training and assessment are now COMPLETE. Joint:
+ESS 6.894/256, xTB 12/32, median successful strain 15.8157 eV. Energy-gradient:
+ESS 1.00036/256, xTB 32/32, median strain 6.76552 eV; one importance weight holds
+99.9822% mass. Energy improves 31 paired xTB cases, worsens one. Both retain
+fundamental limitations; no positive main-method result is established.
+
+Native-mean 500-update jobs 45732136 and 45732178 are RUNNING, source c37c8d9;
+assessment 45732403 waits afterok on both. A matched-oracle FM-initialized MALA
+baseline uses 64 particles and 132 moves, totaling 8,512 queries. Apply the same
+fixed-index independent xTB protocol. It must not acquire a fabricated endpoint
+density, normalizer or importance ESS, or an assumed equilibration label.

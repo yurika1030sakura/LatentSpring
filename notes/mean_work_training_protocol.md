@@ -158,3 +158,24 @@ arm uses 8,512 potential calls; native/reference changes no neural call count.
 The same fixed 32 indices enter xTB assessment, and all 256 geometries enter
 contact/diversity/weight diagnostics. Both older reference-mean runs continue.
 No new temperature, target, checkpoint or electronic state is selected here.
+
+## Direct MALA control from FM
+
+Run 64 independent chains from the stored same-condition midpoint-16 FM samples,
+without selecting by quality or energy. Use 132 MALA moves, proposal standard
+deviation .1 A in the orthonormal COM-free coordinates, score-norm cap 100 and
+seed 9061. The clipped drift enters both forward and reverse Gaussian proposal
+densities, with exact Metropolis correction. The oracle returns energies/forces
+together; cache accepted values, querying every proposal even if later rejected.
+This gives 64*(132+1)=8,512 potential queries, matching one 500-update teacher
+arm including its evaluations. The 32 neural calls per initial FM sample are
+additional setup cost. Neural training can amortize over future samples; report
+this distinction and wall time rather than equating all compute with oracle cost.
+
+The target is unchanged (eSEN, original state, kT=1 eV, restraint .1 eV/A2).
+Store intermediate configurations and energies every ten steps, acceptance per
+chain and the full final population. The same fixed 32 sample indices enter
+xTB. Finite-time MCMC from FM is not assumed equilibrated, and its endpoint
+density, normalizer and importance ESS remain unknown. Acceptance alone is not
+a convergence or mode-coverage criterion. This is a strong direct-sampling
+baseline, not a teacher certified for distillation.

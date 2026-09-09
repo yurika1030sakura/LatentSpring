@@ -14,7 +14,7 @@ that all scientific checks passed.
 
 ## What is established
 
-- 190 tests pass, including real FlowMol parameter gradients, full-state and
+- 192 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
   dedicated Gaussian/Rademacher probe streams for common/independent controls,
@@ -425,7 +425,7 @@ parameters. Tests compare forward gradients with energy-only autograd and
 backward gradients with the full objective, with/without checkpointing.
 This intentional ablation is not the full mean-work gradient.
 
-The full suite passes 190 tests. Batched oracle inference agrees with serial ASE
+The full suite passes 192 tests. Batched oracle inference agrees with serial ASE
 on 32 generated geometries: maximum energy difference 8.87e-6 eV and force
 component difference 5.04e-4 eV/A. Warm measured times were 75.88 s serial versus
 6.99 s with batch 16 (10.86x in this single timing, not a general speed guarantee).
@@ -507,7 +507,7 @@ controls are retained and continue to their predeclared assessments.
 Native-mean preflight 45730876 (source a2f4a7b) was RUNNING at 20:43 UTC, with
 two updates and 132 total potential queries prescribed. Its fixed-index xTB
 assessment 45730934 is queued after successful completion. These outcomes are
-pending. The full suite passes 190 tests after the parameterization change.
+pending. The full suite passes 192 tests after the parameterization change.
 
 Native-mean preflight 45730876 and its xTB assessment 45730934 have now completed.
 Before training, xTB convergence recovers to 30/32, but successful-only median
@@ -523,3 +523,25 @@ Assessment now compares explicit physical conditions (ordered atomic numbers,
 total charge and multiplicity), preserving each arm's complete source metadata.
 This permits comparison across provenance-schema updates without dropping or
 misidentifying electronic state. Missing FM weights remain null, never fabricated.
+
+## Completed reference-mean 500-update comparison
+
+Jobs 45726541 / 45726651 and assessment 45729911 completed. Both learning arms
+used 8,512 potential queries and identical initialization/noise/settings except
+the gradient ablation. Joint mean-work training ends with ESS 6.894/256, mean
+energy -20907.189 eV, overlap incidence 7/256 and xTB convergence 12/32. The
+energy-gradient arm ends with ESS 1.00036/256, mean energy -20919.395 eV, overlap
+9/256 and xTB convergence 32/32. Its maximum importance weight is .999822.
+Successful-only median strain is 15.8157 eV (joint) versus 6.76552 eV (energy).
+In the failure-inclusive paired ranking, energy improves 31 cases and worsens
+one against joint. No method achieves adequate geometry and sampling together.
+The better work ESS is not sufficient novelty or practical sampling efficiency.
+
+Native-mean 500-update jobs 45732136 / 45732178 are running from source c37c8d9;
+their assessment 45732403 is queued after both. Each retains the same 8,512-query
+budget. A direct MALA baseline from the 64 fixed FM16 samples is now implemented:
+132 moves plus initial queries also totals 8,512 calls. It preserves rejected
+proposals in query counts and does not call finite-time MCMC equilibrated.
+The suite passes 192 tests, including clipped-drift MH Gaussian stationarity and
+cached-value consistency. The new rendering script assembles completed results
+with source hashes, failure denominators and explicit missing FM importance ESS.

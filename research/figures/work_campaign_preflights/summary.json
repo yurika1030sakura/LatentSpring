@@ -1,0 +1,285 @@
+{
+  "complete": true,
+  "scope": "Single-condition, single-training-seed development; no useful Boltzmann sampling established.",
+  "sources": {
+    "work_fm_control_5846_v2/assessment/assessment.json": {
+      "path": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work_fm_control_5846_v2/assessment/assessment.json",
+      "sha256": "e1ae2c0f63e699c32a92380567b17e545ab6151a1d8d28f48fc0c4bfc1a7b5a0"
+    },
+    "mean_work_joint_5846_v1/results.json": {
+      "path": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/mean_work_joint_5846_v1/results.json",
+      "sha256": "7349d3b01bb119602bf1660de77bf96c53b20147f3236231e85c42e1a632c1e0"
+    },
+    "mean_work_xtb_100_v1/assessment.json": {
+      "path": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/mean_work_xtb_100_v1/assessment.json",
+      "sha256": "83c1bb833f23241c885df07dd83993f88aced461b07cd3eb2c47c91ae19e7924"
+    },
+    "native_mean_preflight_5846_v1/results.json": {
+      "path": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/native_mean_preflight_5846_v1/results.json",
+      "sha256": "50a9b5e6d503908e701271f6df7216d2b895aed59025579ef741187ad4939690"
+    },
+    "native_mean_xtb_5846_v1/assessment.json": {
+      "path": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/native_mean_xtb_5846_v1/assessment.json",
+      "sha256": "0e5862c20bdb7648649535d44949e2af0b40578a1ead379d9a461216c129d192"
+    }
+  },
+  "condition": {
+    "numbers": [
+      1,
+      15,
+      8,
+      6,
+      1,
+      6,
+      8,
+      12
+    ],
+    "charge": 1,
+    "spin_multiplicity": 1
+  },
+  "rows": [
+    {
+      "label": "FM16",
+      "particles": 64,
+      "xtb_attempted": 32,
+      "xtb_converged": 29,
+      "strain_eV_success_only": {
+        "q10": 2.824471633813221,
+        "median": 4.767940166065898,
+        "q90": 10.123285956459094
+      },
+      "initial_max_force_norm_eV_A": {
+        "q10": 5.311768427458162,
+        "median": 11.212319516269208,
+        "q90": 36.796338768561654
+      },
+      "force_values_present": 30,
+      "overlap_count": 1,
+      "multiple_contact_components_count": 28,
+      "contact_components": {
+        "q10": 1.0,
+        "median": 1.0,
+        "q90": 2.0
+      },
+      "pair_distance_profile_rms_A": {
+        "q10": 0.933248763965569,
+        "median": 1.3913823817445088,
+        "q90": 2.0727202590616205
+      },
+      "weights": null,
+      "mean_energy_eV": null,
+      "mean_shifted_work": null,
+      "work_std": null,
+      "training_updates": 0,
+      "training_batch": null,
+      "training_oracle_queries": 0
+    },
+    {
+      "label": "FM64",
+      "particles": 64,
+      "xtb_attempted": 32,
+      "xtb_converged": 30,
+      "strain_eV_success_only": {
+        "q10": 2.657520929449879,
+        "median": 4.6752951259008455,
+        "q90": 8.282607629172466
+      },
+      "initial_max_force_norm_eV_A": {
+        "q10": 5.711172071601675,
+        "median": 9.906932951426532,
+        "q90": 33.35339292508826
+      },
+      "force_values_present": 32,
+      "overlap_count": 1,
+      "multiple_contact_components_count": 27,
+      "contact_components": {
+        "q10": 1.0,
+        "median": 1.0,
+        "q90": 2.0
+      },
+      "pair_distance_profile_rms_A": {
+        "q10": 0.9406853369019932,
+        "median": 1.3906702712823127,
+        "q90": 2.0876538904838817
+      },
+      "weights": null,
+      "mean_energy_eV": null,
+      "mean_shifted_work": null,
+      "work_std": null,
+      "training_updates": 0,
+      "training_batch": null,
+      "training_oracle_queries": 0
+    },
+    {
+      "label": "Reference mean: initial",
+      "particles": 64,
+      "xtb_attempted": 32,
+      "xtb_converged": 0,
+      "strain_eV_success_only": null,
+      "initial_max_force_norm_eV_A": {
+        "q10": 17.621634046594234,
+        "median": 56.02683343262227,
+        "q90": 205.1726981422788
+      },
+      "force_values_present": 3,
+      "overlap_count": 8,
+      "multiple_contact_components_count": 64,
+      "contact_components": {
+        "q10": 5.0,
+        "median": 6.0,
+        "q90": 7.0
+      },
+      "pair_distance_profile_rms_A": {
+        "q10": 3.3196321821769352,
+        "median": 4.784602349458673,
+        "q90": 7.3563629794479475
+      },
+      "weights": {
+        "particles": 64,
+        "ess": 3.0467182237624315,
+        "ess_fraction": 0.04760497224628799,
+        "maximum_weight": 0.4318953017602462,
+        "log_mean_weight": 11.49661020437426
+      },
+      "mean_energy_eV": -20888.563219744065,
+      "mean_shifted_work": 16.270981764310292,
+      "work_std": 19.798125531717474,
+      "training_updates": 0,
+      "training_batch": 2,
+      "training_oracle_queries": 0
+    },
+    {
+      "label": "Reference mean: joint 100",
+      "particles": 64,
+      "xtb_attempted": 32,
+      "xtb_converged": 6,
+      "strain_eV_success_only": {
+        "q10": 8.306852266182204,
+        "median": 12.75744467831521,
+        "q90": 27.266280918081776
+      },
+      "initial_max_force_norm_eV_A": {
+        "q10": 8.327074131647024,
+        "median": 18.65180253469468,
+        "q90": 125.2435083413333
+      },
+      "force_values_present": 8,
+      "overlap_count": 11,
+      "multiple_contact_components_count": 64,
+      "contact_components": {
+        "q10": 3.0,
+        "median": 5.0,
+        "q90": 6.0
+      },
+      "pair_distance_profile_rms_A": {
+        "q10": 1.860080043691139,
+        "median": 2.650477068988083,
+        "q90": 3.8454141321405273
+      },
+      "weights": {
+        "particles": 64,
+        "ess": 3.485464487259541,
+        "ess_fraction": 0.05446038261343033,
+        "maximum_weight": 0.379501388479184,
+        "log_mean_weight": 20.412398394331067
+      },
+      "mean_energy_eV": -20902.21660436371,
+      "mean_shifted_work": -10.716903130461517,
+      "work_std": 7.423952842858524,
+      "training_updates": 100,
+      "training_batch": 2,
+      "training_oracle_queries": 200
+    },
+    {
+      "label": "Native mean: initial",
+      "particles": 64,
+      "xtb_attempted": 32,
+      "xtb_converged": 30,
+      "strain_eV_success_only": {
+        "q10": 8.324291185894435,
+        "median": 16.726305672222765,
+        "q90": 37.51007841930445
+      },
+      "initial_max_force_norm_eV_A": {
+        "q10": 13.971283078733418,
+        "median": 54.45140436215638,
+        "q90": 184.09283765685691
+      },
+      "force_values_present": 30,
+      "overlap_count": 21,
+      "multiple_contact_components_count": 51,
+      "contact_components": {
+        "q10": 1.0,
+        "median": 2.0,
+        "q90": 3.700000000000003
+      },
+      "pair_distance_profile_rms_A": {
+        "q10": 0.956731040979409,
+        "median": 1.3438489314470223,
+        "q90": 1.850804455183979
+      },
+      "weights": {
+        "particles": 64,
+        "ess": 1.9280125187229282,
+        "ess_fraction": 0.030125195605045754,
+        "maximum_weight": 0.6882903750112095,
+        "log_mean_weight": 8.22239941469509
+      },
+      "mean_energy_eV": -20907.506070096635,
+      "mean_shifted_work": 9.193905895768918,
+      "work_std": 14.275045179357084,
+      "training_updates": 0,
+      "training_batch": 2,
+      "training_oracle_queries": 0
+    },
+    {
+      "label": "Native mean: joint 2",
+      "particles": 64,
+      "xtb_attempted": 32,
+      "xtb_converged": 28,
+      "strain_eV_success_only": {
+        "q10": 8.166935649290014,
+        "median": 16.958834764600454,
+        "q90": 116.50479696876177
+      },
+      "initial_max_force_norm_eV_A": {
+        "q10": 12.152904831696729,
+        "median": 64.45705252076756,
+        "q90": 645.9833770225426
+      },
+      "force_values_present": 28,
+      "overlap_count": 20,
+      "multiple_contact_components_count": 50,
+      "contact_components": {
+        "q10": 1.0,
+        "median": 2.0,
+        "q90": 4.0
+      },
+      "pair_distance_profile_rms_A": {
+        "q10": 0.9775189947654235,
+        "median": 1.3974900814195135,
+        "q90": 1.9171458668405505
+      },
+      "weights": {
+        "particles": 64,
+        "ess": 1.7812792159812374,
+        "ess_fraction": 0.027832487749706834,
+        "maximum_weight": 0.7055734302958703,
+        "log_mean_weight": 8.801074529680086
+      },
+      "mean_energy_eV": -20907.928146503124,
+      "mean_shifted_work": 7.4014745860833875,
+      "work_std": 13.616597779608336,
+      "training_updates": 2,
+      "training_batch": 2,
+      "training_oracle_queries": 4
+    }
+  ],
+  "limitations": [
+    "Different training budgets; the 500-update arms are the matched learning controls.",
+    "Strain quantiles condition on convergence and are not confidence intervals.",
+    "Contact graphs and distance profiles are incomplete geometry heuristics.",
+    "FM importance weights were not evaluated and remain null.",
+    "No observed ESS or convergence rate proves equilibrium mode coverage."
+  ]
+}
