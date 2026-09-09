@@ -179,3 +179,27 @@ def test_real_ctmc_head_is_endpoint_and_adapter_uses_velocity():
     logp.sum().backward()
     grads = [p.grad for p in vf.parameters() if p.grad is not None]
     assert grads and all(torch.isfinite(grad).all() for grad in grads)
+
+
+def test_trace_replicates_share_one_trajectory_and_use_distinct_probes():
+    g, nbi, uem = graph_batch()
+    class CountHead(LinearHead):
+        def __init__(self):
+            super().__init__()
+            self.calls = 0
+        def forward(self, *args, **kwargs):
+            self.calls += 1
+            return super().forward(*args, **kwargs)
+    head = CountHead()
+    model = SimpleNamespace(vector_field=head)
+    seen = []
+    def probes(step, sample, x):
+        seen.append((step, sample))
+        return torch.ones_like(x) if sample == 0 else ((torch.arange(x.numel()).reshape(x.shape)%2)*2-1).to(x)
+    q = log_density_clamped_flow(model, g, nbi, uem, n_ode_steps=3,
+        n_hutchinson=1, n_trace_replicates=2, xi_fn=probes, for_training=True)
+    assert q.shape == (2, 2)
+    assert head.calls == 6  # two midpoint stages per step, shared by both traces
+    assert seen == [(step, sample) for step in range(3) for sample in range(2)]
+    assert not torch.allclose(q[0], q[1])
+    assert torch.isfinite(torch.autograd.grad((q[0]*q[1]).mean(), head.a)[0])

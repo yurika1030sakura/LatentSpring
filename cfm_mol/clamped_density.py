@@ -102,8 +102,14 @@ def _trace(v, x, node_batch_idx, n_graphs, probes, create_graph):
 def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
                              *, n_ode_steps=32, n_hutchinson=2, prior_std=1.0,
                              terminal_time=0.95, for_training=False,
-                             parameterization="endpoint", kT=None, xi_fn=None):
+                             parameterization="endpoint", kT=None, xi_fn=None,
+                             n_trace_replicates=1):
     """Log q_T(x), explicit midpoint integration of state AND log-Jacobian.
+
+    With n_trace_replicates>1, return (replicates, graphs) estimates from
+    independent traces on ONE deterministic trajectory. xi_fn sample indices
+    run across all replicates, so callbacks must supply independent probes
+    when independence is needed. The default returns (graphs,).
 
     ``xi_fn(step, sample, x)`` permits fixed probes for finite differences and
     comparisons. Zero probes selects exact divergence. No trajectory detach
@@ -112,6 +118,8 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
     Autocast is disabled; float16/bfloat16 inputs are promoted to float32.
     A local graph scope and model-mode restoration prevent side effects.
     """
+    if not isinstance(n_trace_replicates, int) or n_trace_replicates < 1:
+        raise ValueError("n_trace_replicates must be a positive integer")
     if n_ode_steps < 1 or n_hutchinson < 0:
         raise ValueError("Require n_ode_steps >= 1 and n_hutchinson >= 0")
     if not math.isfinite(terminal_time) or not 0 < terminal_time <= 1:
@@ -126,7 +134,7 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
     n_graphs = graph.batch_size
     dt = terminal_time / n_ode_steps
     n_atoms = torch.bincount(node_batch_idx, minlength=n_graphs).to(x)
-    integral = x.new_zeros(n_graphs)
+    integral = x.new_zeros((n_trace_replicates, n_graphs))
     with graph.local_scope(), deterministic_field(model.vector_field), \
             torch.enable_grad(), torch.autocast(device_type=x.device.type, enabled=False):
         # Clamp the discrete inputs explicitly, irrespective of prior graph state.
@@ -146,15 +154,18 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
                 x_mid = x_mid.detach().requires_grad_(True)
             v_mid = position_velocity(model, graph, x_mid, t_mid, node_batch_idx,
                 upper_edge_mask, parameterization=parameterization, kT=kT)
-            probes = None if n_hutchinson == 0 else [
-                (xi_fn(step, k, x_mid) if xi_fn is not None else
-                 torch.randint(0, 2, x_mid.shape, device=x.device).to(x)*2-1)
-                for k in range(n_hutchinson)]
-            if probes is not None:
-                if any(probe.shape != x.shape for probe in probes):
-                    raise ValueError("Trace probe shape must match coordinates")
-                probes = [probe.to(x).detach() for probe in probes]
-            divergence = _trace(v_mid, x_mid, node_batch_idx, n_graphs, probes, for_training)
+            traces = []
+            for replica in range(n_trace_replicates):
+                probes = None if n_hutchinson == 0 else [
+                    (xi_fn(step, replica*n_hutchinson+k, x_mid) if xi_fn is not None else
+                     torch.randint(0, 2, x_mid.shape, device=x.device).to(x)*2-1)
+                    for k in range(n_hutchinson)]
+                if probes is not None:
+                    if any(probe.shape != x.shape for probe in probes):
+                        raise ValueError("Trace probe shape must match coordinates")
+                    probes = [probe.to(x).detach() for probe in probes]
+                traces.append(_trace(v_mid, x_mid, node_batch_idx, n_graphs, probes, for_training))
+            divergence = torch.stack(traces)
             integral = integral + dt*divergence
             x = x - dt*v_mid
             if not for_training:
@@ -164,4 +175,5 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
         logp = -0.5*sq/prior_std**2 - 1.5*(n_atoms-1)*math.log(2*math.pi*prior_std**2) - integral
         if not torch.isfinite(logp).all():
             raise FloatingPointError("Non-finite clamped-flow density; inspect field and resolution")
-        return logp if for_training else logp.detach()
+        result = logp[0] if n_trace_replicates == 1 else logp
+        return result if for_training else result.detach()

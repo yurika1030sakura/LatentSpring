@@ -315,6 +315,11 @@ def _energy_density(model, graph, node_batch_idx, upper_edge_mask,
                     *, density_options=None, **kwargs):
     options = dict(density_options or {})
     mode = options.pop('mode', 'legacy')
+    estimator = options.pop('residual_estimator', 'squared')
+    if estimator not in {'squared', 'replica_product'}:
+        raise ValueError('Unknown residual estimator')
+    if estimator == 'replica_product' and mode != 'clamped_cnf':
+        raise ValueError('Replica products require the deterministic clamped flow')
     if mode == 'legacy':
         if options:
             raise ValueError('Legacy density does not accept corrected solver options')
@@ -368,6 +373,13 @@ def energy_consistency_loss_per_mol(
         model, g_pert, node_batch_idx, upper_edge_mask,
         n_ode_steps=n_ode_steps, n_hutchinson=n_hutchinson, prior_std=prior_std,
         for_training=True, kT=kT_tensor, density_options=density_options)
+    if (density_options or {}).get('mode') == 'clamped_cnf':
+        from cfm_mol.replica_loss import grouped_replica_residual
+        estimator = (density_options or {}).get('residual_estimator', 'squared')
+        loss, diag = grouped_replica_residual(log_p, energies, parent_id,
+            kT=kT_tensor if kT_tensor is not None else kT, estimator=estimator)
+        diag['logp_mean'] = float(log_p.detach().mean())
+        return loss, diag
     # kT can be a scalar (fixed-T training) or a (B,) tensor per virtual mol
     # (T-conditional training). The variance loss is computed per-parent so we
     # need E/kT to broadcast correctly.
@@ -478,10 +490,14 @@ def energy_consistency_loss_per_mol_with_anchor(
     Returns:
         (L_var, L_anchor, diag) -- two losses + merged diagnostics.
     """
+    if (density_options or {}).get('residual_estimator', 'squared') != 'squared':
+        raise ValueError('Replica-product anchor training is not implemented')
     log_p = _energy_density(
         model, g_pert, node_batch_idx, upper_edge_mask,
         n_ode_steps=n_ode_steps, n_hutchinson=n_hutchinson, prior_std=prior_std,
         for_training=True, kT=kT_tensor, density_options=density_options)
+    if log_p.ndim == 2:
+        log_p = log_p.mean(0)
     # Variable kT support: kT_tensor (M*K,) per virtual mol if T-conditional;
     # else scalar kT.
     kT_div = kT_tensor if kT_tensor is not None else float(kT)

@@ -615,7 +615,7 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
                 self.log('train_L_energy_nan_skip', 1.0, on_step=True)
                 L_energy = torch.zeros_like(L_energy).detach()
                 l2 = 0.0
-            elif energy_loss_cap > 0 and float(L_energy) > energy_loss_cap:
+            elif energy_loss_cap > 0 and abs(float(L_energy)) > energy_loss_cap:
                 # outlier parent this step -- skip rather than let it detonate
                 self.log('train_L_energy_outlier_skip', 1.0, on_step=True)
                 self.log('train_L_energy_outlier_val', float(L_energy), on_step=True)
@@ -644,6 +644,9 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
             self.log('train_L_energy', L_energy.detach(), on_step=True, prog_bar=True)
             self.log('train_lambda_2', l2, on_step=True)
             self.log('train_logp_mean', energy_diag['logp_mean'], on_step=True)
+            for diagnostic in ('squared_replica_mean', 'trace_noise_penalty'):
+                if diagnostic in energy_diag:
+                    self.log('train_'+diagnostic, energy_diag[diagnostic], on_step=True)
             self.log('train_energy_residual_within_std',
                      energy_diag['residual_within_std'], on_step=True)
             self.log('train_energy_n_groups',

@@ -404,10 +404,11 @@ def main():
 
     callbacks = [
         LearningRateMonitor(logging_interval='step'),
-        TQDMProgressBar(refresh_rate=50),
         BatchStatsCallback(prefix="[smoke]" if args.fast else "[train]"),
         FiniteWeightGuard(every_n_steps=200),
     ]
+    if cfg['training'].get('trainer_args', {}).get('enable_progress_bar', True):
+        callbacks.append(TQDMProgressBar(refresh_rate=50))
     callbacks.extend(_checkpoint_callbacks(cfg, fast=args.fast))
 
     trainer_kwargs = dict(cfg['training']['trainer_args'])
