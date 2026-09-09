@@ -1,0 +1,246 @@
+{
+  "complete": true,
+  "scope": "Matched-oracle tempered sampling from Gaussian or FM-mixture proposals.\n\nDevelopment comparison with fixed schedules. A separate FM pilot fixes a finite\nGaussian mixture with exact density; this is not the FM model's likelihood.\nRaw electronic-state provenance is unavailable, so the computed spin is declared.\n",
+  "configuration": {
+    "config": "configs/sweep/a1_fm_only_s2.yaml",
+    "checkpoint": "runs/displacement_development_rho01_v2/training/last.ckpt",
+    "oracle": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+    "oracle_python": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python",
+    "out": "runs/defensive_preflight_v1",
+    "source_rows": [
+      1137
+    ],
+    "seeds": [
+      9031
+    ],
+    "particles": 4,
+    "centers": 4,
+    "stages": 2,
+    "fm_steps": 16,
+    "mixture_std": 0.3,
+    "proposal_std": 0.08,
+    "moves": 1,
+    "resample_threshold": 0.5,
+    "beta_power": 2.0,
+    "max_score_norm": 100.0,
+    "max_permutations": 64,
+    "rotation_tolerance": 1e-10,
+    "defensive_fraction": 0.2,
+    "kT": 1.0,
+    "restraint_strength": 0.1,
+    "arms": [
+      "defensive_mixture_mala",
+      "defensive_symmetry_mala"
+    ],
+    "device": "cpu",
+    "oracle_device": "cpu"
+  },
+  "checkpoint_sha256": "704cf7be0763ed466cbd21d8dcb012d47685aff9689db91645a1a95088c23ce9",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "source_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/scripts/research/molecular_tempered_pilot.py": "cfc05b2a10a8fd266f0105a43d2f5c7e1f0825d02a03d49056ba1e59c8022d06",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/tempered_smc.py": "ff43719e192b724f02c154c49dfd834dc986766be6953a55273fc0c8f1273bdd",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/energy_oracle.py": "a3492212822ac03d5c9bf6cdbddcd89bdf002dda25f000b427c8e506c36069bc",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/rotation_mixture.py": "eb636e06219e38617d3abe3df911d46684ff2a10571286bce0e606d3bf5a5058",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/defensive_proposal.py": "98d0b9aea9ffa39e8456a21aed5a8bfa8734661aead0d9180a739adb860b8026",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/scripts/research/oracle_worker.py": "0069b36a21c15ccdfec16f84067b8616fa7cc2fe6a8c73ada60532f963db30ba"
+  },
+  "research_protocol": {
+    "config": "configs/sweep/a1_fm_only_s2.yaml",
+    "warm_checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/abl/a1_fm_only_s2/lightning_logs/version_30674367/checkpoints/midstep-step=30000.ckpt",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/displacement_development_rho01_v2/training",
+    "steps": 10000,
+    "seed": 9004,
+    "terminal_time": 1.0,
+    "lr": 2e-05,
+    "batch_size": 1,
+    "device": "cuda",
+    "lambda_energy": 0.0,
+    "energy_every": 4,
+    "energy_steps": 16,
+    "energy_cap": 1500.0,
+    "energy_estimator": "replica_product",
+    "common_probes": false,
+    "checkpoint_energy": false,
+    "discrete_adjoint_energy": false,
+    "perturbation_indices": null,
+    "energy_control": "value",
+    "energy_gradient_diagnostics": false,
+    "energy_parents": 1,
+    "geometry_softening": 0.1,
+    "position_parameterization": "displacement",
+    "energy_shard": "/n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/perturbation_train_n30000_s0.pt",
+    "format": "clamped_position_v1",
+    "composition_prior_checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/abl/a1_fm_only_s2/lightning_logs/version_30674367/checkpoints/midstep-step=30000.ckpt",
+    "warm_sha256": "4d5b3a188d81a75c2c4b1170b065a090b3535beae72c9ce196d5877e2dd38ff4",
+    "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+    "data_order_sha256": "6e3ae9f1e76e78f11015d370dc09d1408906eae1778c64ef9f98b1838c94d519",
+    "data_endpoint_time": 1.0,
+    "alignment": false,
+    "history_self_conditioning": false,
+    "steric_retractions": false,
+    "energy_temperature_eV": 1.0,
+    "purpose": "development baseline; not a finished molecular result"
+  },
+  "target": "exp(-(eSEN(x)+restraint_strength/2*||x||^2)/kT) on intrinsic COM-free H",
+  "normalization_assumption": "eSEN bounded below, positive harmonic confinement",
+  "conditions": [
+    {
+      "source_row": 1137,
+      "symbols": [
+        "Ag",
+        "Br",
+        "Br"
+      ],
+      "charge": 0,
+      "spin_multiplicity": 2,
+      "spin_provenance": "declared minimum electron-parity multiplicity; original OMol state unknown",
+      "source_scope": "legacy validation development condition, not blind test",
+      "fm_center_seconds": 1.0030073288362473,
+      "fm_center_field_evaluations": 128,
+      "center_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/defensive_preflight_v1/centers_1137.pt",
+      "center_sha256": "b947ea31d9c43720b81ed5dc6dfa65f27be2c21a327226070709d51352e4fe2a",
+      "symmetry_templates": {
+        "total_identical_atom_permutations": 2,
+        "used_permutations": 2,
+        "all_permutations_enumerated": true,
+        "reflections_included": true,
+        "template_count": 16,
+        "permutation_seed": 50168
+      }
+    }
+  ],
+  "rows": [
+    {
+      "source_row": 1137,
+      "seed": 9031,
+      "arm": "defensive_mixture_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.25,
+          "ess_before_resampling": 1.2585870456256563,
+          "resampled": true,
+          "distinct_initial_ancestors": 1,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 8,
+          "log_normalizer_estimate": 36022.75922589527
+        },
+        {
+          "stage": 2,
+          "beta": 1.0,
+          "ess_before_resampling": 2.906118875199756,
+          "resampled": false,
+          "distinct_initial_ancestors": 1,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 12,
+          "log_normalizer_estimate": 144094.7858903211
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 4,
+        "ess": 2.906118875199756,
+        "ess_fraction": 0.726529718799939,
+        "maximum_weight": 0.3938694137432145,
+        "distinct_initial_ancestors": 1,
+        "ancestral_ess": 1.0,
+        "log_normalizer_estimate": 144094.7858903211,
+        "target_evaluations": 12,
+        "resampling_events": 1,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.007787081457534954,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 3.2621610896646933,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -144082.00623521698,
+      "unweighted_mean_energy_eV": -144081.38731764077,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/defensive_preflight_v1/particles_1137_9031_defensive_mixture_mala.pt",
+      "particle_sha256": "9b05348468ca6ac28bc123a4e2fb54eac5a32f75e7e23ab5a0944c3ded6820e9",
+      "defensive_component": {
+        "fraction": 0.2,
+        "standard_deviation_A": 3.1622776601683795,
+        "initial_wide_particles": 1,
+        "final_weight_from_wide_ancestors": 1.0
+      },
+      "oracle_evaluations": 12,
+      "requested_oracle_evaluations": 12,
+      "seconds": 0.5098268298897892
+    },
+    {
+      "source_row": 1137,
+      "seed": 9031,
+      "arm": "defensive_symmetry_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.25,
+          "ess_before_resampling": 1.6347585413404775,
+          "resampled": true,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 8,
+          "log_normalizer_estimate": 36022.30280039571
+        },
+        {
+          "stage": 2,
+          "beta": 1.0,
+          "ess_before_resampling": 1.076993004166048,
+          "resampled": true,
+          "distinct_initial_ancestors": 1,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 12,
+          "log_normalizer_estimate": 144091.1381431061
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 4,
+        "ess": 4.0,
+        "ess_fraction": 1.0,
+        "maximum_weight": 0.25,
+        "distinct_initial_ancestors": 1,
+        "ancestral_ess": 1.0,
+        "log_normalizer_estimate": 144091.1381431061,
+        "target_evaluations": 12,
+        "resampling_events": 2,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.005290343591808672,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 4.610611977548909,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -144079.4132497026,
+      "unweighted_mean_energy_eV": -144079.4132497026,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/defensive_preflight_v1/particles_1137_9031_defensive_symmetry_mala.pt",
+      "particle_sha256": "0dd708a21cd4a483ed3db1a295ff634499c0c6fcfbc58b77b51a9edd85b84ffe",
+      "defensive_component": {
+        "fraction": 0.2,
+        "standard_deviation_A": 3.1622776601683795,
+        "initial_wide_particles": 1,
+        "final_weight_from_wide_ancestors": 1.0
+      },
+      "density_numerics": {
+        "cumulative_max_order": 512,
+        "cumulative_max_final_log_refinement_change": 2.1600499167107046e-12,
+        "certified_error_bound": false,
+        "scope": "deterministic quadrature convergence screen; sampling identities concern the exact integral"
+      },
+      "oracle_evaluations": 12,
+      "requested_oracle_evaluations": 12,
+      "seconds": 1.1219818438403308
+    }
+  ],
+  "source_record": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/defensive_preflight_v1/results.json",
+  "source_record_sha256": "15eebcaf8922fbd579cf054f82e1a4d2cf962173b876b3fc6dc78972098aa305"
+}

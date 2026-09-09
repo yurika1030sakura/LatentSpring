@@ -26,6 +26,7 @@ from cfm_mol.radial_reference import prepare_research_backbone
 from cfm_mol.smooth_geometry import patch_smooth_geometry
 from cfm_mol.tempered_smc import DensityValue,IsotropicGaussianMixture,tempered_smc
 from cfm_mol.rotation_mixture import RotatedGaussianMixture,symmetry_templates
+from cfm_mol.defensive_proposal import DefensiveProposal
 
 
 def sha(path):
@@ -66,9 +67,11 @@ def main():
     p.add_argument('--max-score-norm',type=float,default=100.)
     p.add_argument('--max-permutations',type=int,default=64)
     p.add_argument('--rotation-tolerance',type=float,default=1e-10)
+    p.add_argument('--defensive-fraction',type=float,default=.2)
     p.add_argument('--kT',type=float,default=1.);p.add_argument('--restraint-strength',type=float,default=.1)
     p.add_argument('--arms',nargs='+',choices=['prior_rwm','prior_mala','mixture_rwm','mixture_mala',
-        'rotation_rwm','rotation_mala','symmetry_rwm','symmetry_mala'],
+        'rotation_rwm','rotation_mala','symmetry_rwm','symmetry_mala','confinement_mala',
+        'defensive_mixture_mala','defensive_symmetry_mala'],
                    default=['prior_rwm','prior_mala','mixture_rwm','mixture_mala'])
     p.add_argument('--device',default='cpu');p.add_argument('--oracle-device',default='cpu')
     args=p.parse_args()
@@ -79,7 +82,7 @@ def main():
     if output.exists():raise FileExistsError(output)
     root=Path(__file__).resolve().parents[2]
     source_files=[Path(__file__).resolve(),root/'cfm_mol/tempered_smc.py',root/'cfm_mol/energy_oracle.py',
-        root/'cfm_mol/rotation_mixture.py',root/'scripts/research/oracle_worker.py']
+        root/'cfm_mol/rotation_mixture.py',root/'cfm_mol/defensive_proposal.py',root/'scripts/research/oracle_worker.py']
     cfg=read_config_file(args.config);cfg['mol_fm'].pop('bgfm',None);cfg['mol_fm']['prior_config']['x']['align']=False
     dataset=MoleculeDataset('val',dict(cfg['dataset'],fake_atom_p=0.,fake_atom_std=1.,
         explicit_aromaticity=cfg['mol_fm'].get('explicit_aromaticity',False)),prior_config=cfg['mol_fm']['prior_config'])
@@ -119,15 +122,20 @@ def main():
                          center_file=str(center_file.resolve()),center_sha256=sha(center_file))
         report['conditions'].append(condition);write_json(output,report)
         mixtures={'prior':IsotropicGaussianMixture(torch.zeros(1,dimension,dtype=torch.float64),1.),
-                  'mixture':IsotropicGaussianMixture(centers,args.mixture_std)}
+                  'mixture':IsotropicGaussianMixture(centers,args.mixture_std),
+                  'confinement':IsotropicGaussianMixture(torch.zeros(1,dimension,dtype=torch.float64),np.sqrt(args.kT/args.restraint_strength))}
         if any(arm.startswith('rotation_') for arm in args.arms):
             mixtures['rotation']=RotatedGaussianMixture(centers,args.mixture_std,tolerance=args.rotation_tolerance)
-        if any(arm.startswith('symmetry_') for arm in args.arms):
+        if any(arm.startswith('symmetry_') or arm.startswith('defensive_symmetry_') for arm in args.arms):
             augmented,symmetries=symmetry_templates(centers,basis,numbers,
                 max_permutations=args.max_permutations,reflect=True,seed=49031+source_row)
             mixtures['symmetry']=RotatedGaussianMixture(augmented,args.mixture_std,tolerance=args.rotation_tolerance)
             condition['symmetry_templates']=symmetries
             write_json(output,report)
+        for family in ['mixture','symmetry']:
+            if any(arm.startswith('defensive_'+family+'_') for arm in args.arms):
+                mixtures['defensive_'+family]=DefensiveProposal(mixtures[family],dimension,
+                    np.sqrt(args.kT/args.restraint_strength),args.defensive_fraction)
         with EnergyOracle(args.oracle_python,root/'scripts/research/oracle_worker.py',args.oracle,
                 numbers=numbers,charge=charge,spin_multiplicity=spin,device=args.oracle_device) as oracle:
             def target(z):
@@ -159,9 +167,15 @@ def main():
                         row.update(success=True,summary=result.summary(),geometry=geometry_metrics(x,weights,numbers),
                             weighted_energy_eV=float(weights@energy),unweighted_mean_energy_eV=float(energy.mean()),
                             particle_file=str(particle_file.resolve()),particle_sha256=sha(particle_file))
-                        if isinstance(initial,RotatedGaussianMixture):
-                            row['density_numerics']={'cumulative_max_order':initial.max_observed_order,
-                                'cumulative_max_final_log_refinement_change':initial.max_observed_refinement_change,
+                        density_component=initial.local if isinstance(initial,DefensiveProposal) else initial
+                        if isinstance(initial,DefensiveProposal):
+                            row['defensive_component']={'fraction':initial.wide_fraction,
+                                'standard_deviation_A':initial.confinement_std,
+                                'initial_wide_particles':int((components==-1).sum()),
+                                'final_weight_from_wide_ancestors':float(weights@(components[result.ancestors]==-1).double())}
+                        if isinstance(density_component,RotatedGaussianMixture):
+                            row['density_numerics']={'cumulative_max_order':density_component.max_observed_order,
+                                'cumulative_max_final_log_refinement_change':density_component.max_observed_refinement_change,
                                 'certified_error_bound':False,
                                 'scope':'deterministic quadrature convergence screen; sampling identities concern the exact integral'}
                     except Exception as exc:
