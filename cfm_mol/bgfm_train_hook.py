@@ -560,6 +560,14 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
         # The selected density mode determines whether this is the archived
         # raw-head scalar or the corrected clamped q_T objective.
         if energy_enabled and (batch_idx % energy_every_k_steps == 0):
+            step_density_options = dict(density_options)
+            if bgfm_config.get('energy_trace_seed') is not None:
+                # Separate trace randomness from FM times/priors. Stateless
+                # step-derived seeds also survive checkpoint resumes.
+                step_density_options['trace_seed'] = (
+                    int(bgfm_config['energy_trace_seed']) + int(torch.initial_seed())
+                    + 1000003*int(self.global_step) + 1009*int(batch_idx)
+                    + 104729*int(getattr(self, 'global_rank', 0))) % (2**63-1)
             pert_loader = self._bgfm_perturbation_loader  # lazily initialized below
             (g_pert, energies_pert, parent_id_pert,
              nbi_pert, uem_pert) = pert_loader.next_batch()
@@ -583,7 +591,7 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
                             kT=kT_step,
                             n_ode_steps=energy_n_ode_steps,
                             n_hutchinson=energy_n_hutchinson, prior_std=1.0,
-                            density_options=density_options)
+                            density_options=step_density_options)
                 else:
                     from cfm_mol.bgfm_density import energy_consistency_loss_per_mol
                     L_energy, energy_diag = energy_consistency_loss_per_mol(
@@ -591,7 +599,7 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
                         energies=energies_pert, parent_id=parent_id_pert, kT=kT_step,
                         n_ode_steps=energy_n_ode_steps,
                         n_hutchinson=energy_n_hutchinson, prior_std=1.0,
-                        density_options=density_options)
+                        density_options=step_density_options)
                     L_anchor = None
             except FloatingPointError:
                 # The corrected solver fails explicitly on non-finite log q.

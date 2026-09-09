@@ -223,3 +223,40 @@ def test_sampler_and_density_describe_same_analytic_flow():
     counts = g.batch_num_nodes().to(x0)
     prior = -0.5*x0.new_zeros(2).index_add(0,nbi,x0.square().sum(-1))-1.5*(counts-1)*math.log(2*math.pi)
     assert torch.allclose(logq,prior-3*(counts-1)*0.3*0.95,atol=2e-5,rtol=0)
+
+
+def test_common_probes_cancel_constant_jacobian_group_noise():
+    from cfm_mol.replica_loss import make_grouped_probe_sampler, grouped_replica_residual
+    g,nbi,uem = graph_batch((3,3))
+    parents = torch.zeros(2,dtype=torch.long)
+    sampler = make_grouped_probe_sampler(nbi,parents)
+    probe = sampler(0,0,g.ndata['x_1_true'])
+    assert torch.equal(probe[:3],probe[3:])
+    model = SimpleNamespace(vector_field=LinearHead())
+    q = log_density_clamped_flow(model,g,nbi,uem,n_ode_steps=3,n_hutchinson=1,
+        n_trace_replicates=2,xi_fn=sampler)
+    exact = log_density_clamped_flow(model,g,nbi,uem,n_ode_steps=3,n_hutchinson=0)
+    energy = torch.tensor([0.3,-0.4])
+    noisy_loss,_ = grouped_replica_residual(q,energy,parents)
+    exact_loss,_ = grouped_replica_residual(exact,energy,parents)
+    assert noisy_loss.item() == pytest.approx(exact_loss.item(),abs=1e-10)
+    _,unequal,_ = graph_batch((3,4))
+    with pytest.raises(ValueError,match='same atom count'):
+        make_grouped_probe_sampler(unequal,parents)
+
+
+@pytest.mark.parametrize('common',[False,True])
+def test_energy_trace_rng_is_separate_from_fm_rng(common):
+    from cfm_mol.bgfm_density import energy_consistency_loss_per_mol
+    g,nbi,uem=graph_batch((3,3))
+    model=SimpleNamespace(vector_field=LinearHead())
+    torch.manual_seed(441)
+    before=torch.get_rng_state().clone()
+    options={'mode':'clamped_cnf','n_trace_replicates':2,'trace_seed':998,
+             'common_trace_within_parent':common,'residual_estimator':'replica_product'}
+    kwargs=dict(energies=torch.tensor([0.2,0.5]),parent_id=torch.zeros(2,dtype=torch.long),
+                n_ode_steps=2,n_hutchinson=1,density_options=options)
+    loss,_=energy_consistency_loss_per_mol(model,g,nbi,uem,**kwargs)
+    assert torch.equal(before,torch.get_rng_state())
+    repeat,_=energy_consistency_loss_per_mol(model,g,nbi,uem,**kwargs)
+    assert loss.item()==repeat.item()

@@ -56,3 +56,11 @@ Implementation: `cfm_mol/replica_loss.py`, with shared-trajectory replicas in
 `cfm_mol/clamped_density.py`. Exact enumeration tests check values, parameter
 gradients, negative realizations, group offsets and missing-value handling.
 This does not yet establish improved molecular sampling.
+
+The initial molecular quadrature panel fixes each probe over time; training
+by default redraws probes at each integration stage. These policies have
+different covariance, so panel noise magnitudes must not be substituted for
+training noise magnitudes. Step-derived dedicated trace generators in the
+matched experiments separate trace draws from FM times/priors. Common probes
+across sibling geometries are included as an equal-budget control, alongside
+the independent product; they are not shared between replicas.

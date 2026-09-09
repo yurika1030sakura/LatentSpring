@@ -46,12 +46,11 @@ def grouped_replica_residual(log_q, energies, parent_id, *, kT=1.0,
         r = log_q[:, mask].double()+e
         r = r-r.mean(-1, keepdim=True)
         plug_in = r.mean(0).square().mean()
+        penalty = (r[0]-r[1]).square().mean()/4 if len(r) == 2 else plug_in.new_zeros(())
         if estimator == "replica_product":
             value = (r[0]*r[1]).mean()
-            penalty = (r[0]-r[1]).square().mean()/4
         else:
             value = plug_in
-            penalty = plug_in.new_zeros(())
         losses.append(value)
         plug_ins.append(plug_in.detach())
         penalties.append(penalty.detach())
@@ -66,3 +65,34 @@ def grouped_replica_residual(log_q, energies, parent_id, *, kT=1.0,
         "residual_within_std": math.sqrt(float(plug_in)),
         "squared_replica_mean": float(plug_in),
         "trace_noise_penalty": float(torch.stack(penalties).mean())}
+
+
+def make_grouped_probe_sampler(node_batch_idx, parent_id, generator=None):
+    """Common random probes across corresponding atoms of sibling geometries.
+
+    DGL batches store nodes contiguously and perturbation shards preserve atom
+    order. Replicas remain independent: every callback draws fresh base noise.
+    Common random numbers reduce contrast variance but do not generally remove
+    the squared-loss bias when Jacobians depend on geometry.
+    """
+    counts = torch.bincount(node_batch_idx,minlength=len(parent_id))
+    if (counts == 0).any() or (node_batch_idx[1:] < node_batch_idx[:-1]).any():
+        raise ValueError('Require nonempty, contiguous DGL graph nodes')
+    parent_counts, parent_offsets, graph_offsets = {}, {}, []
+    total = 0
+    for parent, count in zip(parent_id.cpu().tolist(),counts.cpu().tolist()):
+        if parent not in parent_counts:
+            parent_counts[parent] = count
+            parent_offsets[parent] = total
+            total += count
+        elif parent_counts[parent] != count:
+            raise ValueError('Sibling geometries must have the same atom count and order')
+        graph_offsets.append(parent_offsets[parent])
+    starts = counts.cumsum(0)-counts
+    local_index = torch.arange(len(node_batch_idx),device=node_batch_idx.device)-starts[node_batch_idx]
+    offsets = torch.tensor(graph_offsets,device=node_batch_idx.device)
+    mapping = offsets[node_batch_idx]+local_index
+    def sample(step, replica, x):
+        base = (2*torch.randint(0,2,(total,x.shape[-1]),device=x.device,generator=generator)-1).to(x)
+        return base[mapping]
+    return sample

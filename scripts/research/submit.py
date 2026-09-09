@@ -12,6 +12,8 @@ p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('name')
 p.add_argument('--launcher', default='scripts/research/runtime_smoke.slurm')
 p.add_argument('--gpu-hours', type=float, default=1.)
+p.add_argument('--config')
+p.add_argument('--seed', type=int)
 p.add_argument('--submit', action='store_true')
 args = p.parse_args()
 root = Path(__file__).resolve().parents[2]
@@ -21,6 +23,8 @@ rev = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root).decode().s
 snapshot = root/'runs/source_snapshots'/rev
 out = root/'runs'/args.name
 command = ['sbatch', '--parsable', args.launcher, str(snapshot), str(out)]
+if args.config is not None or args.seed is not None:
+    command += [args.config or 'configs/research/runtime_smoke.yaml', str(args.seed or 9001)]
 if not args.submit:
     print(json.dumps({'command':command, 'source_commit':rev}, indent=2))
 else:
@@ -38,7 +42,7 @@ else:
     record = {'at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'job_id':job, 'name':args.name, 'source_commit':rev,
         'snapshot':str(snapshot), 'output':str(out),
-        'max_gpu_hours':args.gpu_hours, 'launcher':args.launcher}
+        'max_gpu_hours':args.gpu_hours, 'launcher':args.launcher, 'config':args.config, 'seed':args.seed}
     with (root/'research/jobs.jsonl').open('a') as f:
         f.write(json.dumps(record)+'\n')
     print(json.dumps(record, indent=2))

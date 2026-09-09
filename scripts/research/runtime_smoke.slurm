@@ -11,6 +11,8 @@
 set -euo pipefail
 SOURCE_ROOT="${1:?immutable source directory required}"
 RUN_ROOT="${2:?run output directory required}"
+CONFIG_PATH="${3:-configs/research/runtime_smoke.yaml}"
+TRAIN_SEED="${4:-9001}"
 FLOWMOL_ENV=/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol
 export PYTHONPATH="$SOURCE_ROOT"
 export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
@@ -23,6 +25,6 @@ mkdir -p "$TMPDIR" "$MPLCONFIGDIR" "$XDG_CACHE_HOME" "$RUN_ROOT"
 cd "$SOURCE_ROOT"
 nvidia-smi -L
 exec "$FLOWMOL_ENV/bin/python" -u scripts/run_train.py \
-  --config configs/research/runtime_smoke.yaml --seed 9001 \
+  --config "$CONFIG_PATH" --seed "$TRAIN_SEED" \
   --override_output_dir "$RUN_ROOT" --no_auto_resume \
   --resume_from /n/holylabs/woo_lab/Lab/yulili/bgfm/runs/abl/a1_fm_only_s2/lightning_logs/version_30674367/checkpoints/midstep-step=30000.ckpt

@@ -1,0 +1,225 @@
+# Equal total trace budget: two independent replicas, one probe each.
+checkpointing:
+  every_n_epochs: 1
+  every_n_train_steps: 20
+  monitor: null
+  save_last: true
+  save_top_k: 0
+dataset:
+  atom_map:
+  - H
+  - He
+  - Li
+  - Be
+  - B
+  - C
+  - N
+  - O
+  - F
+  - Ne
+  - Na
+  - Mg
+  - Al
+  - Si
+  - P
+  - S
+  - Cl
+  - Ar
+  - K
+  - Ca
+  - Sc
+  - Ti
+  - V
+  - Cr
+  - Mn
+  - Fe
+  - Co
+  - Ni
+  - Cu
+  - Zn
+  - Ga
+  - Ge
+  - As
+  - Se
+  - Br
+  - Kr
+  - Rb
+  - Sr
+  - Y
+  - Zr
+  - Nb
+  - Mo
+  - Tc
+  - Ru
+  - Rh
+  - Pd
+  - Ag
+  - Cd
+  - In
+  - Sn
+  - Sb
+  - Te
+  - I
+  - Xe
+  - Cs
+  - Ba
+  - La
+  - Ce
+  - Pr
+  - Nd
+  - Pm
+  - Sm
+  - Eu
+  - Gd
+  - Tb
+  - Dy
+  - Ho
+  - Er
+  - Tm
+  - Yb
+  - Lu
+  - Hf
+  - Ta
+  - W
+  - Re
+  - Os
+  - Ir
+  - Pt
+  - Au
+  - Hg
+  - Tl
+  - Pb
+  - Bi
+  bond_tolerance: 1.2
+  confs_per_mol: null
+  dataset_name: omol25
+  dataset_size: null
+  max_atoms: 200
+  processed_data_dir: /n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed
+  raw_data_dir: /n/netscratch/ryl_lab/Lab/omol25/train_4M
+interpolant_scheduler:
+  schedule_type:
+    a: linear
+    c: linear
+    e: linear
+    x: linear
+lr_scheduler:
+  base_lr: 0.0002
+  restart_interval: 0
+  restart_type: linear
+  warmup_length: 0.02
+  weight_decay: 1.0e-12
+mol_fm:
+  bgfm:
+    divergence_method: hutchinson
+    divergence_samples: 1
+    enabled: true
+    energy_b_parents: 1
+    energy_density_options:
+      mode: clamped_cnf
+      parameterization: endpoint
+      terminal_time: 0.95
+      n_trace_replicates: 2
+      residual_estimator: replica_product
+      common_trace_within_parent: false
+    energy_every_k_steps: 1
+    energy_loss_cap: 1500.0
+    energy_max_atoms_per_parent: 12
+    energy_n_hutchinson: 1
+    energy_trace_seed: 1729
+    energy_n_ode_steps: 8
+    energy_perturbation_shards:
+    - /n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/perturbation_train_n30000_s0.pt
+    force_diagnostics: false
+    kT: 1.0
+    lambda_1: 0.0
+    lambda_2: 3.0e-05
+    ramp_frac: 0.0
+    t_eval_values:
+    - 0.85
+    - 0.92
+    - 0.97
+    warmup_frac: 0.0
+  distort_p: 0.2
+  explicit_aromaticity: false
+  fake_atom_p: 0.0
+  parameterization: ctmc
+  prior_config:
+    a:
+      align: false
+      kwargs: {}
+      type: ctmc
+    c:
+      align: false
+      kwargs: {}
+      type: ctmc
+    e:
+      align: false
+      kwargs: {}
+      type: ctmc
+    x:
+      align: true
+      kwargs:
+        std: 1.0
+      type: centered-normal
+  time_scaled_loss: true
+  total_loss_weights:
+    a: 0.4
+    c: 1.0
+    e: 0.0
+    x: 3.0
+training:
+  batch_size: 2
+  ema_decay: 0
+  evaluation:
+    mols_to_sample: 20
+    sample_interval: 1.0
+    val_loss_interval: 0.25
+  max_num_edges: 2000
+  num_workers: 0
+  output_dir: /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/smoke_product_independent
+  trainer_args:
+    accelerator: gpu
+    accumulate_grad_batches: 1
+    devices: 1
+    enable_progress_bar: false
+    gradient_clip_val: 1.0
+    limit_val_batches: 0
+    log_every_n_steps: 1
+    max_epochs: 10
+    max_steps: 20
+    num_nodes: 1
+    num_sanity_val_steps: 0
+    precision: 32-true
+vector_field:
+  a_token_dim: 64
+  attention: false
+  c_token_dim: 64
+  convs_per_update: 1
+  e_token_dim: 64
+  high_confidence_threshold: 0.9
+  message_norm: sum
+  n_cp_feats: 4
+  n_expansion_gvps: 3
+  n_heads: 32
+  n_hidden_edge_feats: 128
+  n_hidden_scalars: 256
+  n_message_gvps: 3
+  n_molecule_updates: 6
+  n_recycles: 1
+  n_update_gvps: 3
+  n_vec_channels: 32
+  rbf_dim: 32
+  rbf_dmax: 10
+  s_message_dim: null
+  self_conditioning: true
+  separate_mol_updaters: true
+  stochasticity: 30.0
+  time_embedding_dim: 64
+  update_edge_w_distance: true
+  v_message_dim: null
+wandb:
+  entity: null
+  mode: disabled
+  name: smoke_product_independent
+  project: cfm_mol

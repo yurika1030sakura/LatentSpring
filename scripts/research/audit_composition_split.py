@@ -22,7 +22,7 @@ def key(types):
 
 
 def load(path):
-    return torch.load(path,map_location='cpu',weights_only=False,mmap=True)
+    return torch.load(str(path),map_location='cpu',weights_only=False,mmap=True)
 
 
 def main():

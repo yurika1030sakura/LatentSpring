@@ -312,10 +312,27 @@ def within_group_variance_loss(
 
 
 def _energy_density(model, graph, node_batch_idx, upper_edge_mask,
-                    *, density_options=None, **kwargs):
+                    *, density_options=None, parent_id=None, **kwargs):
     options = dict(density_options or {})
     mode = options.pop('mode', 'legacy')
     estimator = options.pop('residual_estimator', 'squared')
+    common_probes = options.pop('common_trace_within_parent', False)
+    trace_seed = options.pop('trace_seed', None)
+    generator = None
+    if trace_seed is not None:
+        if mode != 'clamped_cnf' or 'xi_fn' in options:
+            raise ValueError('A trace seed requires clamped flow without a custom callback')
+        generator = torch.Generator(device=graph.device).manual_seed(int(trace_seed))
+        def independent_probe(step, replica, x):
+            return (2*torch.randint(0,2,x.shape,device=x.device,generator=generator)-1).to(x)
+        options['xi_fn'] = independent_probe
+    if common_probes:
+        if mode != 'clamped_cnf' or parent_id is None:
+            raise ValueError('Common probes require clamped flow and parent IDs')
+        if 'xi_fn' in options and trace_seed is None:
+            raise ValueError('Cannot combine common probes with a custom probe callback')
+        from cfm_mol.replica_loss import make_grouped_probe_sampler
+        options['xi_fn'] = make_grouped_probe_sampler(node_batch_idx,parent_id,generator=generator)
     if estimator not in {'squared', 'replica_product'}:
         raise ValueError('Unknown residual estimator')
     if estimator == 'replica_product' and mode != 'clamped_cnf':
@@ -370,7 +387,7 @@ def energy_consistency_loss_per_mol(
         (loss, diagnostics_dict)
     """
     log_p = _energy_density(
-        model, g_pert, node_batch_idx, upper_edge_mask,
+        model, g_pert, node_batch_idx, upper_edge_mask, parent_id=parent_id,
         n_ode_steps=n_ode_steps, n_hutchinson=n_hutchinson, prior_std=prior_std,
         for_training=True, kT=kT_tensor, density_options=density_options)
     if (density_options or {}).get('mode') == 'clamped_cnf':
@@ -493,7 +510,7 @@ def energy_consistency_loss_per_mol_with_anchor(
     if (density_options or {}).get('residual_estimator', 'squared') != 'squared':
         raise ValueError('Replica-product anchor training is not implemented')
     log_p = _energy_density(
-        model, g_pert, node_batch_idx, upper_edge_mask,
+        model, g_pert, node_batch_idx, upper_edge_mask, parent_id=parent_id,
         n_ode_steps=n_ode_steps, n_hutchinson=n_hutchinson, prior_std=prior_std,
         for_training=True, kT=kT_tensor, density_options=density_options)
     if log_p.ndim == 2:
