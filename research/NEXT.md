@@ -78,3 +78,10 @@ updates. One overlap per 64 FM samples; solver-coordinate drift can still reach
 compensates reference expansion before the same residual bound; inspect its
 two-update preflight and independent structure metrics before larger training.
 The 500-update reference-mean comparison remains a required retained control.
+
+Native-mean preflight: 45730876, native_mean_preflight_5846_v1, source a2f4a7b,
+two updates / batch two / 16 transitions / 64 evaluation samples, serial oracle,
+RUNNING at 20:43 UTC. Its independent assessment 45730934 is queued afterok,
+native_mean_xtb_5846_v1. Inspect both exact results before claiming initialization
+repair or starting longer native-mean training. The suite currently passes 190
+tests. No final reserved condition is used by any of these jobs.

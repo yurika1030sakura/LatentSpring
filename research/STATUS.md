@@ -504,3 +504,7 @@ densities, target, noise and electronic state remain specified. Its quality
 requires a new two-update preflight; finite gradients alone are insufficient.
 See notes/mean_work_training_protocol.md. The existing 500-update reference-mean
 controls are retained and continue to their predeclared assessments.
+Native-mean preflight 45730876 (source a2f4a7b) was RUNNING at 20:43 UTC, with
+two updates and 132 total potential queries prescribed. Its fixed-index xTB
+assessment 45730934 is queued after successful completion. These outcomes are
+pending. The full suite passes 190 tests after the parameterization change.
