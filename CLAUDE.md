@@ -92,6 +92,26 @@ aligned/retracted production path needs separate justification.
 
 ## Environments and storage
 
+The work-correction development branch is specified in
+`notes/nonequilibrium_framework.md`: `cfm_mol/nonequilibrium.py` implements
+existing finite-path importance weights and an AIS teacher, while
+`cfm_mol/clamped_work.py` connects frozen conditional FM velocities to
+Gaussian proposals in an orthonormal COM-free basis. This changes the sampler;
+it does not retrospectively correct archived samples. Explicit spin, target
+confinement and ESS diagnostics are required. No molecular advantage is yet
+established, and AIS/SNF/FEAT identities are not claimed as new.
+
+The eSEN checkpoint is available at
+`/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt`
+and has passed a CPU H2 energy/force smoke in `envs/omol25`. See
+`research/evidence/oracle_availability.json`. The previous missing-checkpoint
+statement was caused by checking an obsolete storage path. The public OMol training archive is now available under
+`/n/holylabs/woo_lab/Lab/yulili/bgfm/raw_data/omol25/v250514/`. Exact replay has
+restored metadata for every legacy record, with an integrity-checked read-only
+index and original energy/charge/spin sidecars. The independent test split remains
+to be audited; an official validation archive is being recovered separately.
+Read the latest STATUS for the immutable index path and completed evidence.
+
 Do not merge the environments: flowmol (torch 2.2 + DGL + Lightning) is for
 training/inference; omol25 (torch 2.8 + fairchem) is for preprocessing/oracle
 queries. Never install fairchem into flowmol.

@@ -1,0 +1,4459 @@
+{
+  "complete": true,
+  "scope": "Matched-oracle tempered sampling from Gaussian or FM-mixture proposals.\n\nDevelopment comparison with fixed schedules. A separate FM pilot fixes a finite\nGaussian mixture with exact density; this is not the FM model's likelihood.\nRaw electronic-state provenance is unavailable, so the computed spin is declared.\n",
+  "configuration": {
+    "config": "configs/sweep/a1_fm_only_s2.yaml",
+    "checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/displacement_development_rho01_v2/training/last.ckpt",
+    "oracle": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+    "oracle_python": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1",
+    "source_rows": [
+      5846
+    ],
+    "seeds": [
+      9031,
+      9032,
+      9033
+    ],
+    "particles": 32,
+    "centers": 32,
+    "stages": 32,
+    "fm_steps": 128,
+    "mixture_std": 0.3,
+    "proposal_std": 0.08,
+    "moves": 1,
+    "resample_threshold": 0.5,
+    "beta_power": 2.0,
+    "max_score_norm": 100.0,
+    "max_permutations": 64,
+    "rotation_tolerance": 1e-10,
+    "defensive_fraction": 0.2,
+    "kT": 1.0,
+    "restraint_strength": 0.1,
+    "arms": [
+      "confinement_mala",
+      "symmetry_mala",
+      "defensive_mixture_mala",
+      "defensive_symmetry_mala"
+    ],
+    "device": "cpu",
+    "oracle_device": "cpu"
+  },
+  "checkpoint_sha256": "704cf7be0763ed466cbd21d8dcb012d47685aff9689db91645a1a95088c23ce9",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "source_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/152d9304faf66150a5f89c496f55cd77844f66db/scripts/research/molecular_tempered_pilot.py": "cfc05b2a10a8fd266f0105a43d2f5c7e1f0825d02a03d49056ba1e59c8022d06",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/152d9304faf66150a5f89c496f55cd77844f66db/cfm_mol/tempered_smc.py": "ff43719e192b724f02c154c49dfd834dc986766be6953a55273fc0c8f1273bdd",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/152d9304faf66150a5f89c496f55cd77844f66db/cfm_mol/energy_oracle.py": "a3492212822ac03d5c9bf6cdbddcd89bdf002dda25f000b427c8e506c36069bc",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/152d9304faf66150a5f89c496f55cd77844f66db/cfm_mol/rotation_mixture.py": "eb636e06219e38617d3abe3df911d46684ff2a10571286bce0e606d3bf5a5058",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/152d9304faf66150a5f89c496f55cd77844f66db/cfm_mol/defensive_proposal.py": "98d0b9aea9ffa39e8456a21aed5a8bfa8734661aead0d9180a739adb860b8026",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/152d9304faf66150a5f89c496f55cd77844f66db/scripts/research/oracle_worker.py": "0069b36a21c15ccdfec16f84067b8616fa7cc2fe6a8c73ada60532f963db30ba"
+  },
+  "research_protocol": {
+    "config": "configs/sweep/a1_fm_only_s2.yaml",
+    "warm_checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/abl/a1_fm_only_s2/lightning_logs/version_30674367/checkpoints/midstep-step=30000.ckpt",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/displacement_development_rho01_v2/training",
+    "steps": 10000,
+    "seed": 9004,
+    "terminal_time": 1.0,
+    "lr": 2e-05,
+    "batch_size": 1,
+    "device": "cuda",
+    "lambda_energy": 0.0,
+    "energy_every": 4,
+    "energy_steps": 16,
+    "energy_cap": 1500.0,
+    "energy_estimator": "replica_product",
+    "common_probes": false,
+    "checkpoint_energy": false,
+    "discrete_adjoint_energy": false,
+    "perturbation_indices": null,
+    "energy_control": "value",
+    "energy_gradient_diagnostics": false,
+    "energy_parents": 1,
+    "geometry_softening": 0.1,
+    "position_parameterization": "displacement",
+    "energy_shard": "/n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/perturbation_train_n30000_s0.pt",
+    "format": "clamped_position_v1",
+    "composition_prior_checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/abl/a1_fm_only_s2/lightning_logs/version_30674367/checkpoints/midstep-step=30000.ckpt",
+    "warm_sha256": "4d5b3a188d81a75c2c4b1170b065a090b3535beae72c9ce196d5877e2dd38ff4",
+    "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+    "data_order_sha256": "6e3ae9f1e76e78f11015d370dc09d1408906eae1778c64ef9f98b1838c94d519",
+    "data_endpoint_time": 1.0,
+    "alignment": false,
+    "history_self_conditioning": false,
+    "steric_retractions": false,
+    "energy_temperature_eV": 1.0,
+    "purpose": "development baseline; not a finished molecular result"
+  },
+  "target": "exp(-(eSEN(x)+restraint_strength/2*||x||^2)/kT) on intrinsic COM-free H",
+  "normalization_assumption": "eSEN bounded below, positive harmonic confinement",
+  "conditions": [
+    {
+      "source_row": 5846,
+      "symbols": [
+        "H",
+        "P",
+        "O",
+        "C",
+        "H",
+        "C",
+        "O",
+        "Mg"
+      ],
+      "charge": 1,
+      "spin_multiplicity": 1,
+      "spin_provenance": "declared minimum electron-parity multiplicity; original OMol state unknown",
+      "source_scope": "legacy validation development condition, not blind test",
+      "fm_center_seconds": 31.083884221035987,
+      "fm_center_field_evaluations": 8192,
+      "center_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/centers_5846.pt",
+      "center_sha256": "2c1d0bddb4f61a5876bc47fef7ce1222edcdbf8e05673a8516251e04648e471c",
+      "symmetry_templates": {
+        "total_identical_atom_permutations": 8,
+        "used_permutations": 8,
+        "all_permutations_enumerated": true,
+        "reflections_included": true,
+        "template_count": 512,
+        "permutation_seed": 54877
+      }
+    }
+  ],
+  "rows": [
+    {
+      "source_row": 5846,
+      "seed": 9031,
+      "arm": "confinement_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.0009765625,
+          "ess_before_resampling": 31.998241043663032,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 64,
+          "log_normalizer_estimate": 20.43452669090165
+        },
+        {
+          "stage": 2,
+          "beta": 0.00390625,
+          "ess_before_resampling": 31.97395731982809,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 96,
+          "log_normalizer_estimate": 81.73842395102969
+        },
+        {
+          "stage": 3,
+          "beta": 0.0087890625,
+          "ess_before_resampling": 31.866403300372397,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 128,
+          "log_normalizer_estimate": 183.91230820761652
+        },
+        {
+          "stage": 4,
+          "beta": 0.015625,
+          "ess_before_resampling": 31.59359777416495,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 160,
+          "log_normalizer_estimate": 326.95650385304884
+        },
+        {
+          "stage": 5,
+          "beta": 0.0244140625,
+          "ess_before_resampling": 31.035976763854382,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 192,
+          "log_normalizer_estimate": 510.8711627519456
+        },
+        {
+          "stage": 6,
+          "beta": 0.03515625,
+          "ess_before_resampling": 30.09758506639743,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 224,
+          "log_normalizer_estimate": 735.6587608576486
+        },
+        {
+          "stage": 7,
+          "beta": 0.0478515625,
+          "ess_before_resampling": 28.559672175835164,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 256,
+          "log_normalizer_estimate": 1001.3241874817847
+        },
+        {
+          "stage": 8,
+          "beta": 0.0625,
+          "ess_before_resampling": 26.437032606498526,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 288,
+          "log_normalizer_estimate": 1307.8662746755933
+        },
+        {
+          "stage": 9,
+          "beta": 0.0791015625,
+          "ess_before_resampling": 23.560795714652695,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 320,
+          "log_normalizer_estimate": 1655.2945408772084
+        },
+        {
+          "stage": 10,
+          "beta": 0.09765625,
+          "ess_before_resampling": 20.092870738814497,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 352,
+          "log_normalizer_estimate": 2043.6224111014621
+        },
+        {
+          "stage": 11,
+          "beta": 0.1181640625,
+          "ess_before_resampling": 16.1838551595932,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 384,
+          "log_normalizer_estimate": 2472.848651153716
+        },
+        {
+          "stage": 12,
+          "beta": 0.140625,
+          "ess_before_resampling": 12.095769628483781,
+          "resampled": true,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 416,
+          "log_normalizer_estimate": 2942.9967299250357
+        },
+        {
+          "stage": 13,
+          "beta": 0.1650390625,
+          "ess_before_resampling": 30.776263061758925,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 448,
+          "log_normalizer_estimate": 3454.020054394549
+        },
+        {
+          "stage": 14,
+          "beta": 0.19140625,
+          "ess_before_resampling": 27.40831333456024,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 480,
+          "log_normalizer_estimate": 4005.96494391056
+        },
+        {
+          "stage": 15,
+          "beta": 0.2197265625,
+          "ess_before_resampling": 22.676699887602737,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 512,
+          "log_normalizer_estimate": 4598.8347754837905
+        },
+        {
+          "stage": 16,
+          "beta": 0.25,
+          "ess_before_resampling": 18.024890696188507,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 544,
+          "log_normalizer_estimate": 5232.643489209683
+        },
+        {
+          "stage": 17,
+          "beta": 0.2822265625,
+          "ess_before_resampling": 13.77305985322672,
+          "resampled": true,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 576,
+          "log_normalizer_estimate": 5907.400461344363
+        },
+        {
+          "stage": 18,
+          "beta": 0.31640625,
+          "ess_before_resampling": 30.512321301095845,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 608,
+          "log_normalizer_estimate": 6623.05149335215
+        },
+        {
+          "stage": 19,
+          "beta": 0.3525390625,
+          "ess_before_resampling": 26.939389999330782,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 640,
+          "log_normalizer_estimate": 7379.653221609618
+        },
+        {
+          "stage": 20,
+          "beta": 0.390625,
+          "ess_before_resampling": 22.414847775676886,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 672,
+          "log_normalizer_estimate": 8177.196514081095
+        },
+        {
+          "stage": 21,
+          "beta": 0.4306640625,
+          "ess_before_resampling": 18.391017326336044,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 704,
+          "log_normalizer_estimate": 9015.706277235855
+        },
+        {
+          "stage": 22,
+          "beta": 0.47265625,
+          "ess_before_resampling": 15.229041272333689,
+          "resampled": true,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 736,
+          "log_normalizer_estimate": 9895.169639923519
+        },
+        {
+          "stage": 23,
+          "beta": 0.5166015625,
+          "ess_before_resampling": 30.62455983427147,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 768,
+          "log_normalizer_estimate": 10815.518592022392
+        },
+        {
+          "stage": 24,
+          "beta": 0.5625,
+          "ess_before_resampling": 27.942245770753615,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 800,
+          "log_normalizer_estimate": 11776.822668464676
+        },
+        {
+          "stage": 25,
+          "beta": 0.6103515625,
+          "ess_before_resampling": 25.43138364316432,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 832,
+          "log_normalizer_estimate": 12779.043189966711
+        },
+        {
+          "stage": 26,
+          "beta": 0.66015625,
+          "ess_before_resampling": 22.792371260053343,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 864,
+          "log_normalizer_estimate": 13822.235555723419
+        },
+        {
+          "stage": 27,
+          "beta": 0.7119140625,
+          "ess_before_resampling": 20.481210706597746,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 896,
+          "log_normalizer_estimate": 14906.348147804916
+        },
+        {
+          "stage": 28,
+          "beta": 0.765625,
+          "ess_before_resampling": 18.334621774526347,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 928,
+          "log_normalizer_estimate": 16031.412396944013
+        },
+        {
+          "stage": 29,
+          "beta": 0.8212890625,
+          "ess_before_resampling": 16.571815393089132,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 960,
+          "log_normalizer_estimate": 17197.435840299433
+        },
+        {
+          "stage": 30,
+          "beta": 0.87890625,
+          "ess_before_resampling": 15.102182827546232,
+          "resampled": true,
+          "distinct_initial_ancestors": 1,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 992,
+          "log_normalizer_estimate": 18404.367586081236
+        },
+        {
+          "stage": 31,
+          "beta": 0.9384765625,
+          "ess_before_resampling": 31.45879021751636,
+          "resampled": false,
+          "distinct_initial_ancestors": 1,
+          "acceptance_fraction": 0.8125,
+          "target_evaluations": 1024,
+          "log_normalizer_estimate": 19652.22542742139
+        },
+        {
+          "stage": 32,
+          "beta": 1.0,
+          "ess_before_resampling": 30.25456905569387,
+          "resampled": false,
+          "distinct_initial_ancestors": 1,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 1056,
+          "log_normalizer_estimate": 20941.008404326236
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 32,
+        "ess": 30.25456905569387,
+        "ess_fraction": 0.9454552829904335,
+        "maximum_weight": 0.04709967196549914,
+        "distinct_initial_ancestors": 1,
+        "ancestral_ess": 0.9999999999999991,
+        "log_normalizer_estimate": 20941.008404326236,
+        "target_evaluations": 1056,
+        "resampling_events": 4,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.14320620081287475,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 4.1640791593075335,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20904.6811731353,
+      "unweighted_mean_energy_eV": -20904.376429331096,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/particles_5846_9031_confinement_mala.pt",
+      "particle_sha256": "c2e5fdcccb823f46f255ddbd5387d7de78e8c3118a1dfa8c1709d5171ec65d9e",
+      "oracle_evaluations": 1056,
+      "requested_oracle_evaluations": 1056,
+      "seconds": 52.044832898071036
+    },
+    {
+      "source_row": 5846,
+      "seed": 9031,
+      "arm": "symmetry_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.0009765625,
+          "ess_before_resampling": 31.99676368929661,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 64,
+          "log_normalizer_estimate": 20.427473433587938
+        },
+        {
+          "stage": 2,
+          "beta": 0.00390625,
+          "ess_before_resampling": 31.954423318550198,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 96,
+          "log_normalizer_estimate": 81.71814895085505
+        },
+        {
+          "stage": 3,
+          "beta": 0.0087890625,
+          "ess_before_resampling": 31.77226867832986,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 128,
+          "log_normalizer_estimate": 183.86808844753074
+        },
+        {
+          "stage": 4,
+          "beta": 0.015625,
+          "ess_before_resampling": 31.36018444175243,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 160,
+          "log_normalizer_estimate": 326.87930308338434
+        },
+        {
+          "stage": 5,
+          "beta": 0.0244140625,
+          "ess_before_resampling": 30.586798797019092,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 192,
+          "log_normalizer_estimate": 510.7400348999468
+        },
+        {
+          "stage": 6,
+          "beta": 0.03515625,
+          "ess_before_resampling": 29.30657557638729,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 224,
+          "log_normalizer_estimate": 735.4723140956024
+        },
+        {
+          "stage": 7,
+          "beta": 0.0478515625,
+          "ess_before_resampling": 27.615116905349463,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 256,
+          "log_normalizer_estimate": 1001.080557654367
+        },
+        {
+          "stage": 8,
+          "beta": 0.0625,
+          "ess_before_resampling": 25.260317958394825,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 288,
+          "log_normalizer_estimate": 1307.5833530984073
+        },
+        {
+          "stage": 9,
+          "beta": 0.0791015625,
+          "ess_before_resampling": 22.91350658811827,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 320,
+          "log_normalizer_estimate": 1654.9807453637832
+        },
+        {
+          "stage": 10,
+          "beta": 0.09765625,
+          "ess_before_resampling": 20.586337538878766,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 352,
+          "log_normalizer_estimate": 2043.2737513473742
+        },
+        {
+          "stage": 11,
+          "beta": 0.1181640625,
+          "ess_before_resampling": 18.73878774898986,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 384,
+          "log_normalizer_estimate": 2472.4398900980505
+        },
+        {
+          "stage": 12,
+          "beta": 0.140625,
+          "ess_before_resampling": 17.192386340721036,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 416,
+          "log_normalizer_estimate": 2942.512128725487
+        },
+        {
+          "stage": 13,
+          "beta": 0.1650390625,
+          "ess_before_resampling": 15.642058315454557,
+          "resampled": true,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 448,
+          "log_normalizer_estimate": 3453.4978885146925
+        },
+        {
+          "stage": 14,
+          "beta": 0.19140625,
+          "ess_before_resampling": 31.407857416341248,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 480,
+          "log_normalizer_estimate": 4005.3703422131375
+        },
+        {
+          "stage": 15,
+          "beta": 0.2197265625,
+          "ess_before_resampling": 30.71714306989332,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 512,
+          "log_normalizer_estimate": 4598.164572615859
+        },
+        {
+          "stage": 16,
+          "beta": 0.25,
+          "ess_before_resampling": 29.70646932579387,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 544,
+          "log_normalizer_estimate": 5231.8494771208925
+        },
+        {
+          "stage": 17,
+          "beta": 0.2822265625,
+          "ess_before_resampling": 28.28032596266988,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 576,
+          "log_normalizer_estimate": 5906.428071557192
+        },
+        {
+          "stage": 18,
+          "beta": 0.31640625,
+          "ess_before_resampling": 26.075331595001302,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 608,
+          "log_normalizer_estimate": 6621.892115381161
+        },
+        {
+          "stage": 19,
+          "beta": 0.3525390625,
+          "ess_before_resampling": 23.483032709711615,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 640,
+          "log_normalizer_estimate": 7378.276501650156
+        },
+        {
+          "stage": 20,
+          "beta": 0.390625,
+          "ess_before_resampling": 20.684491326837566,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 672,
+          "log_normalizer_estimate": 8175.579116334519
+        },
+        {
+          "stage": 21,
+          "beta": 0.4306640625,
+          "ess_before_resampling": 16.45755449746296,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 704,
+          "log_normalizer_estimate": 9013.818491986245
+        },
+        {
+          "stage": 22,
+          "beta": 0.47265625,
+          "ess_before_resampling": 12.350963060939,
+          "resampled": true,
+          "distinct_initial_ancestors": 11,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 736,
+          "log_normalizer_estimate": 9893.00612881477
+        },
+        {
+          "stage": 23,
+          "beta": 0.5166015625,
+          "ess_before_resampling": 30.63908649437981,
+          "resampled": false,
+          "distinct_initial_ancestors": 11,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 768,
+          "log_normalizer_estimate": 10813.048786742711
+        },
+        {
+          "stage": 24,
+          "beta": 0.5625,
+          "ess_before_resampling": 26.736014690623257,
+          "resampled": false,
+          "distinct_initial_ancestors": 11,
+          "acceptance_fraction": 0.8125,
+          "target_evaluations": 800,
+          "log_normalizer_estimate": 11774.03673369202
+        },
+        {
+          "stage": 25,
+          "beta": 0.6103515625,
+          "ess_before_resampling": 20.994465690895844,
+          "resampled": false,
+          "distinct_initial_ancestors": 11,
+          "acceptance_fraction": 0.78125,
+          "target_evaluations": 832,
+          "log_normalizer_estimate": 12775.98368961678
+        },
+        {
+          "stage": 26,
+          "beta": 0.66015625,
+          "ess_before_resampling": 15.597924580824476,
+          "resampled": true,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 864,
+          "log_normalizer_estimate": 13818.891417680617
+        },
+        {
+          "stage": 27,
+          "beta": 0.7119140625,
+          "ess_before_resampling": 29.88548152414194,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 896,
+          "log_normalizer_estimate": 14902.891026287301
+        },
+        {
+          "stage": 28,
+          "beta": 0.765625,
+          "ess_before_resampling": 25.090108116571614,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 928,
+          "log_normalizer_estimate": 16027.872484531134
+        },
+        {
+          "stage": 29,
+          "beta": 0.8212890625,
+          "ess_before_resampling": 20.88858537437941,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 960,
+          "log_normalizer_estimate": 17193.800195819433
+        },
+        {
+          "stage": 30,
+          "beta": 0.87890625,
+          "ess_before_resampling": 17.60590118581375,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 992,
+          "log_normalizer_estimate": 18400.651864609943
+        },
+        {
+          "stage": 31,
+          "beta": 0.9384765625,
+          "ess_before_resampling": 15.035393383151387,
+          "resampled": true,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.8125,
+          "target_evaluations": 1024,
+          "log_normalizer_estimate": 19648.46869796275
+        },
+        {
+          "stage": 32,
+          "beta": 1.0,
+          "ess_before_resampling": 29.63301026142779,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.8125,
+          "target_evaluations": 1056,
+          "log_normalizer_estimate": 20937.256771536748
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 32,
+        "ess": 29.63301026142779,
+        "ess_fraction": 0.9260315706696184,
+        "maximum_weight": 0.053032139883418095,
+        "distinct_initial_ancestors": 2,
+        "ancestral_ess": 1.1888936393258993,
+        "log_normalizer_estimate": 20937.256771536748,
+        "target_evaluations": 1056,
+        "resampling_events": 4,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.252043104590324,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 1.9979649702402462,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20917.970980299804,
+      "unweighted_mean_energy_eV": -20917.956179953246,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/particles_5846_9031_symmetry_mala.pt",
+      "particle_sha256": "511ab36c7ce69e748575a5453356b568f2b70b701ea47e272cc3cf9fd1901919",
+      "density_numerics": {
+        "cumulative_max_order": 256,
+        "cumulative_max_final_log_refinement_change": 8.327560863108374e-11,
+        "certified_error_bound": false,
+        "scope": "deterministic quadrature convergence screen; sampling identities concern the exact integral"
+      },
+      "oracle_evaluations": 1056,
+      "requested_oracle_evaluations": 1056,
+      "seconds": 95.37063149409369
+    },
+    {
+      "source_row": 5846,
+      "seed": 9031,
+      "arm": "defensive_mixture_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.0009765625,
+          "ess_before_resampling": 31.994678878500583,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 64,
+          "log_normalizer_estimate": 20.418780994129897
+        },
+        {
+          "stage": 2,
+          "beta": 0.00390625,
+          "ess_before_resampling": 31.929894008888628,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 96,
+          "log_normalizer_estimate": 81.67763061231824
+        },
+        {
+          "stage": 3,
+          "beta": 0.0087890625,
+          "ess_before_resampling": 31.6546689562331,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 128,
+          "log_normalizer_estimate": 183.77599135344983
+        },
+        {
+          "stage": 4,
+          "beta": 0.015625,
+          "ess_before_resampling": 31.081286381036477,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 160,
+          "log_normalizer_estimate": 326.72669932416125
+        },
+        {
+          "stage": 5,
+          "beta": 0.0244140625,
+          "ess_before_resampling": 30.049410265801654,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 192,
+          "log_normalizer_estimate": 510.51672380274977
+        },
+        {
+          "stage": 6,
+          "beta": 0.03515625,
+          "ess_before_resampling": 28.844503582233333,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 224,
+          "log_normalizer_estimate": 735.1849730994719
+        },
+        {
+          "stage": 7,
+          "beta": 0.0478515625,
+          "ess_before_resampling": 27.53208146838761,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 256,
+          "log_normalizer_estimate": 1000.7078558852197
+        },
+        {
+          "stage": 8,
+          "beta": 0.0625,
+          "ess_before_resampling": 25.984721793998503,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 288,
+          "log_normalizer_estimate": 1307.090056678068
+        },
+        {
+          "stage": 9,
+          "beta": 0.0791015625,
+          "ess_before_resampling": 24.39865394413033,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 320,
+          "log_normalizer_estimate": 1654.348923327519
+        },
+        {
+          "stage": 10,
+          "beta": 0.09765625,
+          "ess_before_resampling": 22.799633615699385,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 352,
+          "log_normalizer_estimate": 2042.469022215675
+        },
+        {
+          "stage": 11,
+          "beta": 0.1181640625,
+          "ess_before_resampling": 21.529350343740592,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 384,
+          "log_normalizer_estimate": 2471.4497046792508
+        },
+        {
+          "stage": 12,
+          "beta": 0.140625,
+          "ess_before_resampling": 20.22347391503219,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 416,
+          "log_normalizer_estimate": 2941.3114637757258
+        },
+        {
+          "stage": 13,
+          "beta": 0.1650390625,
+          "ess_before_resampling": 19.185035439580815,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 448,
+          "log_normalizer_estimate": 3452.054858475731
+        },
+        {
+          "stage": 14,
+          "beta": 0.19140625,
+          "ess_before_resampling": 18.10506814584743,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 480,
+          "log_normalizer_estimate": 4003.669878028191
+        },
+        {
+          "stage": 15,
+          "beta": 0.2197265625,
+          "ess_before_resampling": 17.246957868371673,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 512,
+          "log_normalizer_estimate": 4596.159839842905
+        },
+        {
+          "stage": 16,
+          "beta": 0.25,
+          "ess_before_resampling": 16.478621862182575,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 544,
+          "log_normalizer_estimate": 5229.529285969491
+        },
+        {
+          "stage": 17,
+          "beta": 0.2822265625,
+          "ess_before_resampling": 15.890758826465147,
+          "resampled": true,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 576,
+          "log_normalizer_estimate": 5903.756560530228
+        },
+        {
+          "stage": 18,
+          "beta": 0.31640625,
+          "ess_before_resampling": 31.325521474473955,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 608,
+          "log_normalizer_estimate": 6618.886800748736
+        },
+        {
+          "stage": 19,
+          "beta": 0.3525390625,
+          "ess_before_resampling": 29.37909660488367,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 640,
+          "log_normalizer_estimate": 7374.869689408886
+        },
+        {
+          "stage": 20,
+          "beta": 0.390625,
+          "ess_before_resampling": 26.049752669193943,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 672,
+          "log_normalizer_estimate": 8171.777325789821
+        },
+        {
+          "stage": 21,
+          "beta": 0.4306640625,
+          "ess_before_resampling": 22.288850074898466,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 704,
+          "log_normalizer_estimate": 9009.592986671865
+        },
+        {
+          "stage": 22,
+          "beta": 0.47265625,
+          "ess_before_resampling": 17.98401877627507,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 736,
+          "log_normalizer_estimate": 9888.286388765766
+        },
+        {
+          "stage": 23,
+          "beta": 0.5166015625,
+          "ess_before_resampling": 13.781307808039907,
+          "resampled": true,
+          "distinct_initial_ancestors": 12,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 768,
+          "log_normalizer_estimate": 10807.87602244493
+        },
+        {
+          "stage": 24,
+          "beta": 0.5625,
+          "ess_before_resampling": 30.770560767963747,
+          "resampled": false,
+          "distinct_initial_ancestors": 12,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 800,
+          "log_normalizer_estimate": 11768.39763966169
+        },
+        {
+          "stage": 25,
+          "beta": 0.6103515625,
+          "ess_before_resampling": 27.205569372899664,
+          "resampled": false,
+          "distinct_initial_ancestors": 12,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 832,
+          "log_normalizer_estimate": 12769.843229875994
+        },
+        {
+          "stage": 26,
+          "beta": 0.66015625,
+          "ess_before_resampling": 22.273776534425053,
+          "resampled": false,
+          "distinct_initial_ancestors": 12,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 864,
+          "log_normalizer_estimate": 13812.195625946108
+        },
+        {
+          "stage": 27,
+          "beta": 0.7119140625,
+          "ess_before_resampling": 17.6406421190875,
+          "resampled": false,
+          "distinct_initial_ancestors": 12,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 896,
+          "log_normalizer_estimate": 14895.483873160043
+        },
+        {
+          "stage": 28,
+          "beta": 0.765625,
+          "ess_before_resampling": 13.755205649583669,
+          "resampled": true,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 0.8125,
+          "target_evaluations": 928,
+          "log_normalizer_estimate": 16019.737257400338
+        },
+        {
+          "stage": 29,
+          "beta": 0.8212890625,
+          "ess_before_resampling": 30.312641461290738,
+          "resampled": false,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 960,
+          "log_normalizer_estimate": 17184.895768242313
+        },
+        {
+          "stage": 30,
+          "beta": 0.87890625,
+          "ess_before_resampling": 27.66026408369688,
+          "resampled": false,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 992,
+          "log_normalizer_estimate": 18390.992770955814
+        },
+        {
+          "stage": 31,
+          "beta": 0.9384765625,
+          "ess_before_resampling": 25.326999525025165,
+          "resampled": false,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 1024,
+          "log_normalizer_estimate": 19638.01769655393
+        },
+        {
+          "stage": 32,
+          "beta": 1.0,
+          "ess_before_resampling": 22.75092149378844,
+          "resampled": false,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 1056,
+          "log_normalizer_estimate": 20925.968464510028
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 32,
+        "ess": 22.75092149378844,
+        "ess_fraction": 0.7109662966808887,
+        "maximum_weight": 0.07888135716637472,
+        "distinct_initial_ancestors": 8,
+        "ancestral_ess": 2.857369571462216,
+        "log_normalizer_estimate": 20925.968464510028,
+        "target_evaluations": 1056,
+        "resampling_events": 3,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.5129290491525217,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 2.128638417834786,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20918.573271871323,
+      "unweighted_mean_energy_eV": -20918.60198002919,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/particles_5846_9031_defensive_mixture_mala.pt",
+      "particle_sha256": "e7537540dabc53c2a5c6a2031daee4271e6471f9a67c4a118dcafab87cc95e48",
+      "defensive_component": {
+        "fraction": 0.2,
+        "standard_deviation_A": 3.1622776601683795,
+        "initial_wide_particles": 2,
+        "final_weight_from_wide_ancestors": 0.0
+      },
+      "oracle_evaluations": 1056,
+      "requested_oracle_evaluations": 1056,
+      "seconds": 65.02544315997511
+    },
+    {
+      "source_row": 5846,
+      "seed": 9031,
+      "arm": "defensive_symmetry_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.0009765625,
+          "ess_before_resampling": 31.99491860996291,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 64,
+          "log_normalizer_estimate": 20.429235352258413
+        },
+        {
+          "stage": 2,
+          "beta": 0.00390625,
+          "ess_before_resampling": 31.923849850848164,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 96,
+          "log_normalizer_estimate": 81.71456306877532
+        },
+        {
+          "stage": 3,
+          "beta": 0.0087890625,
+          "ess_before_resampling": 31.618859226502902,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 128,
+          "log_normalizer_estimate": 183.86193346071593
+        },
+        {
+          "stage": 4,
+          "beta": 0.015625,
+          "ess_before_resampling": 30.869788980634546,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 160,
+          "log_normalizer_estimate": 326.8769111627606
+        },
+        {
+          "stage": 5,
+          "beta": 0.0244140625,
+          "ess_before_resampling": 29.340958507187395,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 192,
+          "log_normalizer_estimate": 510.77189727648283
+        },
+        {
+          "stage": 6,
+          "beta": 0.03515625,
+          "ess_before_resampling": 27.123290895118487,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 224,
+          "log_normalizer_estimate": 735.5594395583767
+        },
+        {
+          "stage": 7,
+          "beta": 0.0478515625,
+          "ess_before_resampling": 24.34862897243058,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 256,
+          "log_normalizer_estimate": 1001.2342868916545
+        },
+        {
+          "stage": 8,
+          "beta": 0.0625,
+          "ess_before_resampling": 21.924638370579554,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 288,
+          "log_normalizer_estimate": 1307.8140204457957
+        },
+        {
+          "stage": 9,
+          "beta": 0.0791015625,
+          "ess_before_resampling": 19.510792720924268,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 320,
+          "log_normalizer_estimate": 1655.2835872919504
+        },
+        {
+          "stage": 10,
+          "beta": 0.09765625,
+          "ess_before_resampling": 17.46319546901479,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 352,
+          "log_normalizer_estimate": 2043.647528841036
+        },
+        {
+          "stage": 11,
+          "beta": 0.1181640625,
+          "ess_before_resampling": 15.766334495384788,
+          "resampled": true,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 384,
+          "log_normalizer_estimate": 2472.906594841328
+        },
+        {
+          "stage": 12,
+          "beta": 0.140625,
+          "ess_before_resampling": 31.772646418242264,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 416,
+          "log_normalizer_estimate": 2943.0529036732455
+        },
+        {
+          "stage": 13,
+          "beta": 0.1650390625,
+          "ess_before_resampling": 31.38628407692764,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 448,
+          "log_normalizer_estimate": 3454.0848206393707
+        },
+        {
+          "stage": 14,
+          "beta": 0.19140625,
+          "ess_before_resampling": 30.93652336028543,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 480,
+          "log_normalizer_estimate": 4006.0173864699477
+        },
+        {
+          "stage": 15,
+          "beta": 0.2197265625,
+          "ess_before_resampling": 29.91929506309252,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 512,
+          "log_normalizer_estimate": 4598.834908076162
+        },
+        {
+          "stage": 16,
+          "beta": 0.25,
+          "ess_before_resampling": 28.915273017653757,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 544,
+          "log_normalizer_estimate": 5232.563562359329
+        },
+        {
+          "stage": 17,
+          "beta": 0.2822265625,
+          "ess_before_resampling": 27.934415835360454,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 576,
+          "log_normalizer_estimate": 5907.157704419639
+        },
+        {
+          "stage": 18,
+          "beta": 0.31640625,
+          "ess_before_resampling": 26.086779866672142,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 608,
+          "log_normalizer_estimate": 6622.676935641962
+        },
+        {
+          "stage": 19,
+          "beta": 0.3525390625,
+          "ess_before_resampling": 24.238937918641316,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 640,
+          "log_normalizer_estimate": 7379.096378065431
+        },
+        {
+          "stage": 20,
+          "beta": 0.390625,
+          "ess_before_resampling": 22.37827091434295,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 672,
+          "log_normalizer_estimate": 8176.444596285909
+        },
+        {
+          "stage": 21,
+          "beta": 0.4306640625,
+          "ess_before_resampling": 20.68379406040966,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 704,
+          "log_normalizer_estimate": 9014.676868709705
+        },
+        {
+          "stage": 22,
+          "beta": 0.47265625,
+          "ess_before_resampling": 19.223851122614253,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 736,
+          "log_normalizer_estimate": 9893.787431637873
+        },
+        {
+          "stage": 23,
+          "beta": 0.5166015625,
+          "ess_before_resampling": 18.10729111159917,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 768,
+          "log_normalizer_estimate": 10813.795576959992
+        },
+        {
+          "stage": 24,
+          "beta": 0.5625,
+          "ess_before_resampling": 16.355482416331213,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 800,
+          "log_normalizer_estimate": 11774.735952740748
+        },
+        {
+          "stage": 25,
+          "beta": 0.6103515625,
+          "ess_before_resampling": 14.187963206952176,
+          "resampled": true,
+          "distinct_initial_ancestors": 12,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 832,
+          "log_normalizer_estimate": 12776.617132167552
+        },
+        {
+          "stage": 26,
+          "beta": 0.66015625,
+          "ess_before_resampling": 30.96960774967717,
+          "resampled": false,
+          "distinct_initial_ancestors": 12,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 864,
+          "log_normalizer_estimate": 13819.42373940898
+        },
+        {
+          "stage": 27,
+          "beta": 0.7119140625,
+          "ess_before_resampling": 28.049056213595723,
+          "resampled": false,
+          "distinct_initial_ancestors": 12,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 896,
+          "log_normalizer_estimate": 14903.186470215463
+        },
+        {
+          "stage": 28,
+          "beta": 0.765625,
+          "ess_before_resampling": 22.205086847786927,
+          "resampled": false,
+          "distinct_initial_ancestors": 12,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 928,
+          "log_normalizer_estimate": 16027.900987906825
+        },
+        {
+          "stage": 29,
+          "beta": 0.8212890625,
+          "ess_before_resampling": 14.859175885178066,
+          "resampled": true,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 960,
+          "log_normalizer_estimate": 17193.609409399465
+        },
+        {
+          "stage": 30,
+          "beta": 0.87890625,
+          "ess_before_resampling": 28.219838786145726,
+          "resampled": false,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 992,
+          "log_normalizer_estimate": 18400.33637007461
+        },
+        {
+          "stage": 31,
+          "beta": 0.9384765625,
+          "ess_before_resampling": 19.034194780824794,
+          "resampled": false,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 1024,
+          "log_normalizer_estimate": 19648.142207245884
+        },
+        {
+          "stage": 32,
+          "beta": 1.0,
+          "ess_before_resampling": 10.727575195625205,
+          "resampled": true,
+          "distinct_initial_ancestors": 5,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 1056,
+          "log_normalizer_estimate": 20937.043218871037
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 32,
+        "ess": 32.0,
+        "ess_fraction": 1.0,
+        "maximum_weight": 0.03125,
+        "distinct_initial_ancestors": 5,
+        "ancestral_ess": 2.4854368932038833,
+        "log_normalizer_estimate": 20937.043218871037,
+        "target_evaluations": 1056,
+        "resampling_events": 4,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.8088999870866016,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 2.1916899185993217,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20917.997662742593,
+      "unweighted_mean_energy_eV": -20917.99766274259,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/particles_5846_9031_defensive_symmetry_mala.pt",
+      "particle_sha256": "36048c83c4af03f6c35e00d34e580ba0864e475249b7c986fcbc1436bcafe191",
+      "defensive_component": {
+        "fraction": 0.2,
+        "standard_deviation_A": 3.1622776601683795,
+        "initial_wide_particles": 2,
+        "final_weight_from_wide_ancestors": 0.0
+      },
+      "density_numerics": {
+        "cumulative_max_order": 256,
+        "cumulative_max_final_log_refinement_change": 8.327560863108374e-11,
+        "certified_error_bound": false,
+        "scope": "deterministic quadrature convergence screen; sampling identities concern the exact integral"
+      },
+      "oracle_evaluations": 1056,
+      "requested_oracle_evaluations": 1056,
+      "seconds": 94.62274961499497
+    },
+    {
+      "source_row": 5846,
+      "seed": 9032,
+      "arm": "confinement_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.0009765625,
+          "ess_before_resampling": 31.997343976558454,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 64,
+          "log_normalizer_estimate": 20.434048074668446
+        },
+        {
+          "stage": 2,
+          "beta": 0.00390625,
+          "ess_before_resampling": 31.957278564519466,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 96,
+          "log_normalizer_estimate": 81.7378660041564
+        },
+        {
+          "stage": 3,
+          "beta": 0.0087890625,
+          "ess_before_resampling": 31.783676998900592,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 128,
+          "log_normalizer_estimate": 183.90943053987377
+        },
+        {
+          "stage": 4,
+          "beta": 0.015625,
+          "ess_before_resampling": 31.322779431246595,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 160,
+          "log_normalizer_estimate": 326.95255082500967
+        },
+        {
+          "stage": 5,
+          "beta": 0.0244140625,
+          "ess_before_resampling": 30.37012941833854,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 192,
+          "log_normalizer_estimate": 510.8718319353852
+        },
+        {
+          "stage": 6,
+          "beta": 0.03515625,
+          "ess_before_resampling": 28.835305364092097,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 224,
+          "log_normalizer_estimate": 735.6772441596861
+        },
+        {
+          "stage": 7,
+          "beta": 0.0478515625,
+          "ess_before_resampling": 26.84910937695885,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 256,
+          "log_normalizer_estimate": 1001.3526517615505
+        },
+        {
+          "stage": 8,
+          "beta": 0.0625,
+          "ess_before_resampling": 23.959773664508436,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 288,
+          "log_normalizer_estimate": 1307.9222882433821
+        },
+        {
+          "stage": 9,
+          "beta": 0.0791015625,
+          "ess_before_resampling": 20.485847877834114,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 320,
+          "log_normalizer_estimate": 1655.380043343633
+        },
+        {
+          "stage": 10,
+          "beta": 0.09765625,
+          "ess_before_resampling": 16.62389192801381,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 352,
+          "log_normalizer_estimate": 2043.7512033805606
+        },
+        {
+          "stage": 11,
+          "beta": 0.1181640625,
+          "ess_before_resampling": 12.744003025475953,
+          "resampled": true,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 384,
+          "log_normalizer_estimate": 2473.0233195680776
+        },
+        {
+          "stage": 12,
+          "beta": 0.140625,
+          "ess_before_resampling": 31.19041971589716,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 416,
+          "log_normalizer_estimate": 2943.210226658816
+        },
+        {
+          "stage": 13,
+          "beta": 0.1650390625,
+          "ess_before_resampling": 28.680843436683592,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 448,
+          "log_normalizer_estimate": 3454.309331253488
+        },
+        {
+          "stage": 14,
+          "beta": 0.19140625,
+          "ess_before_resampling": 24.956256617212922,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 480,
+          "log_normalizer_estimate": 4006.337631864313
+        },
+        {
+          "stage": 15,
+          "beta": 0.2197265625,
+          "ess_before_resampling": 21.09828293863897,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 512,
+          "log_normalizer_estimate": 4599.292920234601
+        },
+        {
+          "stage": 16,
+          "beta": 0.25,
+          "ess_before_resampling": 17.786191114225858,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 544,
+          "log_normalizer_estimate": 5233.167352255182
+        },
+        {
+          "stage": 17,
+          "beta": 0.2822265625,
+          "ess_before_resampling": 15.159975024433617,
+          "resampled": true,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 576,
+          "log_normalizer_estimate": 5907.959674520792
+        },
+        {
+          "stage": 18,
+          "beta": 0.31640625,
+          "ess_before_resampling": 30.99608195362729,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 608,
+          "log_normalizer_estimate": 6623.679663436996
+        },
+        {
+          "stage": 19,
+          "beta": 0.3525390625,
+          "ess_before_resampling": 28.9895026189224,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 640,
+          "log_normalizer_estimate": 7380.319855324955
+        },
+        {
+          "stage": 20,
+          "beta": 0.390625,
+          "ess_before_resampling": 26.64842388438326,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 672,
+          "log_normalizer_estimate": 8177.874395062705
+        },
+        {
+          "stage": 21,
+          "beta": 0.4306640625,
+          "ess_before_resampling": 24.155067043478358,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 704,
+          "log_normalizer_estimate": 9016.380843071309
+        },
+        {
+          "stage": 22,
+          "beta": 0.47265625,
+          "ess_before_resampling": 21.677176592691726,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 736,
+          "log_normalizer_estimate": 9895.79600666403
+        },
+        {
+          "stage": 23,
+          "beta": 0.5166015625,
+          "ess_before_resampling": 19.206279259679206,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 768,
+          "log_normalizer_estimate": 10816.154374967993
+        },
+        {
+          "stage": 24,
+          "beta": 0.5625,
+          "ess_before_resampling": 17.118682972175915,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 800,
+          "log_normalizer_estimate": 11777.423626048594
+        },
+        {
+          "stage": 25,
+          "beta": 0.6103515625,
+          "ess_before_resampling": 15.523627817675186,
+          "resampled": true,
+          "distinct_initial_ancestors": 4,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 832,
+          "log_normalizer_estimate": 12779.625169440376
+        },
+        {
+          "stage": 26,
+          "beta": 0.66015625,
+          "ess_before_resampling": 31.30123117846066,
+          "resampled": false,
+          "distinct_initial_ancestors": 4,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 864,
+          "log_normalizer_estimate": 13822.703700564345
+        },
+        {
+          "stage": 27,
+          "beta": 0.7119140625,
+          "ess_before_resampling": 29.776227299348406,
+          "resampled": false,
+          "distinct_initial_ancestors": 4,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 896,
+          "log_normalizer_estimate": 14906.721286381318
+        },
+        {
+          "stage": 28,
+          "beta": 0.765625,
+          "ess_before_resampling": 27.830747084842947,
+          "resampled": false,
+          "distinct_initial_ancestors": 4,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 928,
+          "log_normalizer_estimate": 16031.68006004208
+        },
+        {
+          "stage": 29,
+          "beta": 0.8212890625,
+          "ess_before_resampling": 25.74034276454265,
+          "resampled": false,
+          "distinct_initial_ancestors": 4,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 960,
+          "log_normalizer_estimate": 17197.573493294178
+        },
+        {
+          "stage": 30,
+          "beta": 0.87890625,
+          "ess_before_resampling": 23.883665755797807,
+          "resampled": false,
+          "distinct_initial_ancestors": 4,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 992,
+          "log_normalizer_estimate": 18404.405887232024
+        },
+        {
+          "stage": 31,
+          "beta": 0.9384765625,
+          "ess_before_resampling": 22.34002802269511,
+          "resampled": false,
+          "distinct_initial_ancestors": 4,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 1024,
+          "log_normalizer_estimate": 19652.157660580786
+        },
+        {
+          "stage": 32,
+          "beta": 1.0,
+          "ess_before_resampling": 20.661110887641154,
+          "resampled": false,
+          "distinct_initial_ancestors": 4,
+          "acceptance_fraction": 0.78125,
+          "target_evaluations": 1056,
+          "log_normalizer_estimate": 20940.8259620349
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 32,
+        "ess": 20.661110887641154,
+        "ess_fraction": 0.6456597152387861,
+        "maximum_weight": 0.08988330719839481,
+        "distinct_initial_ancestors": 4,
+        "ancestral_ess": 1.1665291094781562,
+        "log_normalizer_estimate": 20940.8259620349,
+        "target_evaluations": 1056,
+        "resampling_events": 3,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.686434482733097,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 3.7568421295779233,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20902.568126429916,
+      "unweighted_mean_energy_eV": -20901.100002466857,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/particles_5846_9032_confinement_mala.pt",
+      "particle_sha256": "2d6cc4df74cdb8bc48e43513ea79793241a2f28338638470a1f5abbfbcd40215",
+      "oracle_evaluations": 1056,
+      "requested_oracle_evaluations": 1056,
+      "seconds": 54.186610664008185
+    },
+    {
+      "source_row": 5846,
+      "seed": 9032,
+      "arm": "symmetry_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.0009765625,
+          "ess_before_resampling": 31.996315059674902,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 64,
+          "log_normalizer_estimate": 20.42887819004451
+        },
+        {
+          "stage": 2,
+          "beta": 0.00390625,
+          "ess_before_resampling": 31.945414557733717,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 96,
+          "log_normalizer_estimate": 81.71832012614244
+        },
+        {
+          "stage": 3,
+          "beta": 0.0087890625,
+          "ess_before_resampling": 31.724153091764716,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 128,
+          "log_normalizer_estimate": 183.86829410989145
+        },
+        {
+          "stage": 4,
+          "beta": 0.015625,
+          "ess_before_resampling": 31.0956069600631,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 160,
+          "log_normalizer_estimate": 326.87763361104953
+        },
+        {
+          "stage": 5,
+          "beta": 0.0244140625,
+          "ess_before_resampling": 29.768849504233025,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 192,
+          "log_normalizer_estimate": 510.7549459898694
+        },
+        {
+          "stage": 6,
+          "beta": 0.03515625,
+          "ess_before_resampling": 27.610980305484585,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 224,
+          "log_normalizer_estimate": 735.4981643280721
+        },
+        {
+          "stage": 7,
+          "beta": 0.0478515625,
+          "ess_before_resampling": 24.643639712169342,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 256,
+          "log_normalizer_estimate": 1001.1293951929376
+        },
+        {
+          "stage": 8,
+          "beta": 0.0625,
+          "ess_before_resampling": 21.16324271098223,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 288,
+          "log_normalizer_estimate": 1307.676113869863
+        },
+        {
+          "stage": 9,
+          "beta": 0.0791015625,
+          "ess_before_resampling": 17.853098234470835,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 320,
+          "log_normalizer_estimate": 1655.135611862954
+        },
+        {
+          "stage": 10,
+          "beta": 0.09765625,
+          "ess_before_resampling": 14.732112299434242,
+          "resampled": true,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 352,
+          "log_normalizer_estimate": 2043.5041383288003
+        },
+        {
+          "stage": 11,
+          "beta": 0.1181640625,
+          "ess_before_resampling": 31.4012209404858,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 384,
+          "log_normalizer_estimate": 2472.751839753541
+        },
+        {
+          "stage": 12,
+          "beta": 0.140625,
+          "ess_before_resampling": 29.878677933458583,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 416,
+          "log_normalizer_estimate": 2942.8812679052867
+        },
+        {
+          "stage": 13,
+          "beta": 0.1650390625,
+          "ess_before_resampling": 28.111180001985907,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 448,
+          "log_normalizer_estimate": 3453.905506153875
+        },
+        {
+          "stage": 14,
+          "beta": 0.19140625,
+          "ess_before_resampling": 25.44939907595761,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 480,
+          "log_normalizer_estimate": 4005.8110057112144
+        },
+        {
+          "stage": 15,
+          "beta": 0.2197265625,
+          "ess_before_resampling": 22.503918927893785,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 512,
+          "log_normalizer_estimate": 4598.611763776286
+        },
+        {
+          "stage": 16,
+          "beta": 0.25,
+          "ess_before_resampling": 19.473886351079663,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 544,
+          "log_normalizer_estimate": 5232.326937853398
+        },
+        {
+          "stage": 17,
+          "beta": 0.2822265625,
+          "ess_before_resampling": 16.89856493791123,
+          "resampled": false,
+          "distinct_initial_ancestors": 18,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 576,
+          "log_normalizer_estimate": 5906.9607001395525
+        },
+        {
+          "stage": 18,
+          "beta": 0.31640625,
+          "ess_before_resampling": 14.368106576002637,
+          "resampled": true,
+          "distinct_initial_ancestors": 10,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 608,
+          "log_normalizer_estimate": 6622.501019301703
+        },
+        {
+          "stage": 19,
+          "beta": 0.3525390625,
+          "ess_before_resampling": 31.315956962233205,
+          "resampled": false,
+          "distinct_initial_ancestors": 10,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 640,
+          "log_normalizer_estimate": 7378.92009983257
+        },
+        {
+          "stage": 20,
+          "beta": 0.390625,
+          "ess_before_resampling": 29.44416374165591,
+          "resampled": false,
+          "distinct_initial_ancestors": 10,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 672,
+          "log_normalizer_estimate": 8176.240892403982
+        },
+        {
+          "stage": 21,
+          "beta": 0.4306640625,
+          "ess_before_resampling": 26.629731777082664,
+          "resampled": false,
+          "distinct_initial_ancestors": 10,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 704,
+          "log_normalizer_estimate": 9014.50187198961
+        },
+        {
+          "stage": 22,
+          "beta": 0.47265625,
+          "ess_before_resampling": 23.296329968841643,
+          "resampled": false,
+          "distinct_initial_ancestors": 10,
+          "acceptance_fraction": 0.78125,
+          "target_evaluations": 736,
+          "log_normalizer_estimate": 9893.683215258816
+        },
+        {
+          "stage": 23,
+          "beta": 0.5166015625,
+          "ess_before_resampling": 18.849636321148697,
+          "resampled": false,
+          "distinct_initial_ancestors": 10,
+          "acceptance_fraction": 0.8125,
+          "target_evaluations": 768,
+          "log_normalizer_estimate": 10813.78901082987
+        },
+        {
+          "stage": 24,
+          "beta": 0.5625,
+          "ess_before_resampling": 13.093435509349883,
+          "resampled": true,
+          "distinct_initial_ancestors": 7,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 800,
+          "log_normalizer_estimate": 11774.843890493012
+        },
+        {
+          "stage": 25,
+          "beta": 0.6103515625,
+          "ess_before_resampling": 29.775788364092108,
+          "resampled": false,
+          "distinct_initial_ancestors": 7,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 832,
+          "log_normalizer_estimate": 12776.853278923529
+        },
+        {
+          "stage": 26,
+          "beta": 0.66015625,
+          "ess_before_resampling": 23.331736012725216,
+          "resampled": false,
+          "distinct_initial_ancestors": 7,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 864,
+          "log_normalizer_estimate": 13819.863009910841
+        },
+        {
+          "stage": 27,
+          "beta": 0.7119140625,
+          "ess_before_resampling": 14.919225739230201,
+          "resampled": true,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 896,
+          "log_normalizer_estimate": 14903.9227473634
+        },
+        {
+          "stage": 28,
+          "beta": 0.765625,
+          "ess_before_resampling": 28.087999602273303,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 928,
+          "log_normalizer_estimate": 16029.065731139033
+        },
+        {
+          "stage": 29,
+          "beta": 0.8212890625,
+          "ess_before_resampling": 21.81180743018071,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 960,
+          "log_normalizer_estimate": 17195.252960392027
+        },
+        {
+          "stage": 30,
+          "beta": 0.87890625,
+          "ess_before_resampling": 16.163532690001333,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 992,
+          "log_normalizer_estimate": 18402.466531232316
+        },
+        {
+          "stage": 31,
+          "beta": 0.9384765625,
+          "ess_before_resampling": 12.576967628261592,
+          "resampled": true,
+          "distinct_initial_ancestors": 1,
+          "acceptance_fraction": 0.8125,
+          "target_evaluations": 1024,
+          "log_normalizer_estimate": 19650.69919290768
+        },
+        {
+          "stage": 32,
+          "beta": 1.0,
+          "ess_before_resampling": 29.981247866110632,
+          "resampled": false,
+          "distinct_initial_ancestors": 1,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 1056,
+          "log_normalizer_estimate": 20939.996404388785
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 32,
+        "ess": 29.981247866110632,
+        "ess_fraction": 0.9369139958159572,
+        "maximum_weight": 0.04747948142934365,
+        "distinct_initial_ancestors": 1,
+        "ancestral_ess": 1.0000000000000004,
+        "log_normalizer_estimate": 20939.996404388785,
+        "target_evaluations": 1056,
+        "resampling_events": 5,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.08842633391571787,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 2.4205728754054765,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20916.3253568599,
+      "unweighted_mean_energy_eV": -20916.0759104924,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/particles_5846_9032_symmetry_mala.pt",
+      "particle_sha256": "c26e19be46d04294ae85b1e2f07d82ef0005fbb25233150cb72fd636bff732d2",
+      "density_numerics": {
+        "cumulative_max_order": 256,
+        "cumulative_max_final_log_refinement_change": 8.327560863108374e-11,
+        "certified_error_bound": false,
+        "scope": "deterministic quadrature convergence screen; sampling identities concern the exact integral"
+      },
+      "oracle_evaluations": 1056,
+      "requested_oracle_evaluations": 1056,
+      "seconds": 90.05250938795507
+    },
+    {
+      "source_row": 5846,
+      "seed": 9032,
+      "arm": "defensive_mixture_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.0009765625,
+          "ess_before_resampling": 31.994950964423456,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 64,
+          "log_normalizer_estimate": 20.423630303976648
+        },
+        {
+          "stage": 2,
+          "beta": 0.00390625,
+          "ess_before_resampling": 31.92078540532461,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 96,
+          "log_normalizer_estimate": 81.693925671443
+        },
+        {
+          "stage": 3,
+          "beta": 0.0087890625,
+          "ess_before_resampling": 31.596128627148182,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 128,
+          "log_normalizer_estimate": 183.81033353044637
+        },
+        {
+          "stage": 4,
+          "beta": 0.015625,
+          "ess_before_resampling": 30.767654752532273,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 160,
+          "log_normalizer_estimate": 326.78366709075175
+        },
+        {
+          "stage": 5,
+          "beta": 0.0244140625,
+          "ess_before_resampling": 29.4134406455586,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 192,
+          "log_normalizer_estimate": 510.62467177344456
+        },
+        {
+          "stage": 6,
+          "beta": 0.03515625,
+          "ess_before_resampling": 27.184557536766714,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 224,
+          "log_normalizer_estimate": 735.3242601261718
+        },
+        {
+          "stage": 7,
+          "beta": 0.0478515625,
+          "ess_before_resampling": 24.727999181047565,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 256,
+          "log_normalizer_estimate": 1000.9033762638109
+        },
+        {
+          "stage": 8,
+          "beta": 0.0625,
+          "ess_before_resampling": 22.144826463065076,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 288,
+          "log_normalizer_estimate": 1307.3517304574716
+        },
+        {
+          "stage": 9,
+          "beta": 0.0791015625,
+          "ess_before_resampling": 19.326904703974815,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 320,
+          "log_normalizer_estimate": 1654.6941900395661
+        },
+        {
+          "stage": 10,
+          "beta": 0.09765625,
+          "ess_before_resampling": 16.456687831788116,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 352,
+          "log_normalizer_estimate": 2042.9306865679382
+        },
+        {
+          "stage": 11,
+          "beta": 0.1181640625,
+          "ess_before_resampling": 13.24867445011689,
+          "resampled": true,
+          "distinct_initial_ancestors": 15,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 384,
+          "log_normalizer_estimate": 2472.054451624454
+        },
+        {
+          "stage": 12,
+          "beta": 0.140625,
+          "ess_before_resampling": 31.20445468071138,
+          "resampled": false,
+          "distinct_initial_ancestors": 15,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 416,
+          "log_normalizer_estimate": 2942.0896018800768
+        },
+        {
+          "stage": 13,
+          "beta": 0.1650390625,
+          "ess_before_resampling": 28.95040311589369,
+          "resampled": false,
+          "distinct_initial_ancestors": 15,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 448,
+          "log_normalizer_estimate": 3453.0172682069237
+        },
+        {
+          "stage": 14,
+          "beta": 0.19140625,
+          "ess_before_resampling": 24.906879114618704,
+          "resampled": false,
+          "distinct_initial_ancestors": 15,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 480,
+          "log_normalizer_estimate": 4004.8564791307713
+        },
+        {
+          "stage": 15,
+          "beta": 0.2197265625,
+          "ess_before_resampling": 19.450706519197134,
+          "resampled": false,
+          "distinct_initial_ancestors": 15,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 512,
+          "log_normalizer_estimate": 4597.637176013073
+        },
+        {
+          "stage": 16,
+          "beta": 0.25,
+          "ess_before_resampling": 14.289459695271379,
+          "resampled": true,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 544,
+          "log_normalizer_estimate": 5231.346867140114
+        },
+        {
+          "stage": 17,
+          "beta": 0.2822265625,
+          "ess_before_resampling": 30.461229065118665,
+          "resampled": false,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 576,
+          "log_normalizer_estimate": 5905.994810306424
+        },
+        {
+          "stage": 18,
+          "beta": 0.31640625,
+          "ess_before_resampling": 26.89670436268868,
+          "resampled": false,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 608,
+          "log_normalizer_estimate": 6621.5819080157025
+        },
+        {
+          "stage": 19,
+          "beta": 0.3525390625,
+          "ess_before_resampling": 22.826269121804273,
+          "resampled": false,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 640,
+          "log_normalizer_estimate": 7378.142138245314
+        },
+        {
+          "stage": 20,
+          "beta": 0.390625,
+          "ess_before_resampling": 19.574789810729897,
+          "resampled": false,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 672,
+          "log_normalizer_estimate": 8175.637227027575
+        },
+        {
+          "stage": 21,
+          "beta": 0.4306640625,
+          "ess_before_resampling": 17.0717395081551,
+          "resampled": false,
+          "distinct_initial_ancestors": 8,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 704,
+          "log_normalizer_estimate": 9014.079583386449
+        },
+        {
+          "stage": 22,
+          "beta": 0.47265625,
+          "ess_before_resampling": 15.442156890694575,
+          "resampled": true,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 736,
+          "log_normalizer_estimate": 9893.447191111209
+        },
+        {
+          "stage": 23,
+          "beta": 0.5166015625,
+          "ess_before_resampling": 31.502441867831685,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 768,
+          "log_normalizer_estimate": 10813.7146739699
+        },
+        {
+          "stage": 24,
+          "beta": 0.5625,
+          "ess_before_resampling": 30.659162385438652,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 800,
+          "log_normalizer_estimate": 11774.90051282778
+        },
+        {
+          "stage": 25,
+          "beta": 0.6103515625,
+          "ess_before_resampling": 29.819467156196918,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 832,
+          "log_normalizer_estimate": 12776.99706230034
+        },
+        {
+          "stage": 26,
+          "beta": 0.66015625,
+          "ess_before_resampling": 28.938483634198874,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 864,
+          "log_normalizer_estimate": 13820.0053188355
+        },
+        {
+          "stage": 27,
+          "beta": 0.7119140625,
+          "ess_before_resampling": 27.92402310281113,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 896,
+          "log_normalizer_estimate": 14903.927108395741
+        },
+        {
+          "stage": 28,
+          "beta": 0.765625,
+          "ess_before_resampling": 26.903998824264374,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 928,
+          "log_normalizer_estimate": 16028.754851589065
+        },
+        {
+          "stage": 29,
+          "beta": 0.8212890625,
+          "ess_before_resampling": 25.861830647333065,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 960,
+          "log_normalizer_estimate": 17194.50159473835
+        },
+        {
+          "stage": 30,
+          "beta": 0.87890625,
+          "ess_before_resampling": 24.631254925695217,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 992,
+          "log_normalizer_estimate": 18401.152474843777
+        },
+        {
+          "stage": 31,
+          "beta": 0.9384765625,
+          "ess_before_resampling": 23.324847872325556,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 1024,
+          "log_normalizer_estimate": 19648.707432150368
+        },
+        {
+          "stage": 32,
+          "beta": 1.0,
+          "ess_before_resampling": 21.854872832145556,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 1056,
+          "log_normalizer_estimate": 20937.17918706547
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 32,
+        "ess": 21.854872832145556,
+        "ess_fraction": 0.6829647760045486,
+        "maximum_weight": 0.09468107595475775,
+        "distinct_initial_ancestors": 2,
+        "ancestral_ess": 1.0002074398706056,
+        "log_normalizer_estimate": 20937.17918706547,
+        "target_evaluations": 1056,
+        "resampling_events": 3,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.20567372043783816,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 4.358048695510652,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20897.66409955994,
+      "unweighted_mean_energy_eV": -20896.496004921122,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/particles_5846_9032_defensive_mixture_mala.pt",
+      "particle_sha256": "622b973c987c202871cf1ccc32a511b1630f0bc21206b349f133f2aaa7830ab5",
+      "defensive_component": {
+        "fraction": 0.2,
+        "standard_deviation_A": 3.1622776601683795,
+        "initial_wide_particles": 7,
+        "final_weight_from_wide_ancestors": 1.0
+      },
+      "oracle_evaluations": 1056,
+      "requested_oracle_evaluations": 1056,
+      "seconds": 55.24006393412128
+    },
+    {
+      "source_row": 5846,
+      "seed": 9032,
+      "arm": "defensive_symmetry_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.0009765625,
+          "ess_before_resampling": 31.996914222212407,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 64,
+          "log_normalizer_estimate": 20.4323144195114
+        },
+        {
+          "stage": 2,
+          "beta": 0.00390625,
+          "ess_before_resampling": 31.947107713800907,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 96,
+          "log_normalizer_estimate": 81.72780873744469
+        },
+        {
+          "stage": 3,
+          "beta": 0.0087890625,
+          "ess_before_resampling": 31.739844148389015,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 128,
+          "log_normalizer_estimate": 183.89055658327723
+        },
+        {
+          "stage": 4,
+          "beta": 0.015625,
+          "ess_before_resampling": 31.2518285770306,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 160,
+          "log_normalizer_estimate": 326.9239925581877
+        },
+        {
+          "stage": 5,
+          "beta": 0.0244140625,
+          "ess_before_resampling": 30.44765046578918,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 192,
+          "log_normalizer_estimate": 510.8353916917848
+        },
+        {
+          "stage": 6,
+          "beta": 0.03515625,
+          "ess_before_resampling": 29.21301238146896,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 224,
+          "log_normalizer_estimate": 735.6238462717504
+        },
+        {
+          "stage": 7,
+          "beta": 0.0478515625,
+          "ess_before_resampling": 27.285836746389005,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 256,
+          "log_normalizer_estimate": 1001.2848103428187
+        },
+        {
+          "stage": 8,
+          "beta": 0.0625,
+          "ess_before_resampling": 24.521744064566324,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 288,
+          "log_normalizer_estimate": 1307.831473327875
+        },
+        {
+          "stage": 9,
+          "beta": 0.0791015625,
+          "ess_before_resampling": 21.290535408198632,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 320,
+          "log_normalizer_estimate": 1655.2820413314464
+        },
+        {
+          "stage": 10,
+          "beta": 0.09765625,
+          "ess_before_resampling": 17.805219499900037,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 352,
+          "log_normalizer_estimate": 2043.631327257225
+        },
+        {
+          "stage": 11,
+          "beta": 0.1181640625,
+          "ess_before_resampling": 14.395545830567771,
+          "resampled": true,
+          "distinct_initial_ancestors": 19,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 384,
+          "log_normalizer_estimate": 2472.9053671558213
+        },
+        {
+          "stage": 12,
+          "beta": 0.140625,
+          "ess_before_resampling": 30.90216366555956,
+          "resampled": false,
+          "distinct_initial_ancestors": 19,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 416,
+          "log_normalizer_estimate": 2943.081849705577
+        },
+        {
+          "stage": 13,
+          "beta": 0.1650390625,
+          "ess_before_resampling": 27.948815956353357,
+          "resampled": false,
+          "distinct_initial_ancestors": 19,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 448,
+          "log_normalizer_estimate": 3454.179893387022
+        },
+        {
+          "stage": 14,
+          "beta": 0.19140625,
+          "ess_before_resampling": 24.044512681376567,
+          "resampled": false,
+          "distinct_initial_ancestors": 19,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 480,
+          "log_normalizer_estimate": 4006.208873374967
+        },
+        {
+          "stage": 15,
+          "beta": 0.2197265625,
+          "ess_before_resampling": 19.979220422587165,
+          "resampled": false,
+          "distinct_initial_ancestors": 19,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 512,
+          "log_normalizer_estimate": 4599.184122793805
+        },
+        {
+          "stage": 16,
+          "beta": 0.25,
+          "ess_before_resampling": 16.31156268891562,
+          "resampled": false,
+          "distinct_initial_ancestors": 19,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 544,
+          "log_normalizer_estimate": 5233.095211405715
+        },
+        {
+          "stage": 17,
+          "beta": 0.2822265625,
+          "ess_before_resampling": 13.6445762455298,
+          "resampled": true,
+          "distinct_initial_ancestors": 5,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 576,
+          "log_normalizer_estimate": 5907.937692009688
+        },
+        {
+          "stage": 18,
+          "beta": 0.31640625,
+          "ess_before_resampling": 31.39268898871526,
+          "resampled": false,
+          "distinct_initial_ancestors": 5,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 608,
+          "log_normalizer_estimate": 6623.722623045697
+        },
+        {
+          "stage": 19,
+          "beta": 0.3525390625,
+          "ess_before_resampling": 29.99607721638634,
+          "resampled": false,
+          "distinct_initial_ancestors": 5,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 640,
+          "log_normalizer_estimate": 7380.428727369299
+        },
+        {
+          "stage": 20,
+          "beta": 0.390625,
+          "ess_before_resampling": 28.323925688579045,
+          "resampled": false,
+          "distinct_initial_ancestors": 5,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 672,
+          "log_normalizer_estimate": 8178.046290304822
+        },
+        {
+          "stage": 21,
+          "beta": 0.4306640625,
+          "ess_before_resampling": 26.655348228219104,
+          "resampled": false,
+          "distinct_initial_ancestors": 5,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 704,
+          "log_normalizer_estimate": 9016.598094607813
+        },
+        {
+          "stage": 22,
+          "beta": 0.47265625,
+          "ess_before_resampling": 24.950999693935344,
+          "resampled": false,
+          "distinct_initial_ancestors": 5,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 736,
+          "log_normalizer_estimate": 9896.075019186876
+        },
+        {
+          "stage": 23,
+          "beta": 0.5166015625,
+          "ess_before_resampling": 23.185182363671355,
+          "resampled": false,
+          "distinct_initial_ancestors": 5,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 768,
+          "log_normalizer_estimate": 10816.46289139179
+        },
+        {
+          "stage": 24,
+          "beta": 0.5625,
+          "ess_before_resampling": 21.21854987258474,
+          "resampled": false,
+          "distinct_initial_ancestors": 5,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 800,
+          "log_normalizer_estimate": 11777.771986589574
+        },
+        {
+          "stage": 25,
+          "beta": 0.6103515625,
+          "ess_before_resampling": 19.44626558459136,
+          "resampled": false,
+          "distinct_initial_ancestors": 5,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 832,
+          "log_normalizer_estimate": 12780.022922188937
+        },
+        {
+          "stage": 26,
+          "beta": 0.66015625,
+          "ess_before_resampling": 17.836286958354467,
+          "resampled": false,
+          "distinct_initial_ancestors": 5,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 864,
+          "log_normalizer_estimate": 13823.184079889907
+        },
+        {
+          "stage": 27,
+          "beta": 0.7119140625,
+          "ess_before_resampling": 16.670793294146183,
+          "resampled": false,
+          "distinct_initial_ancestors": 5,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 896,
+          "log_normalizer_estimate": 14907.262470666536
+        },
+        {
+          "stage": 28,
+          "beta": 0.765625,
+          "ess_before_resampling": 15.307957321965501,
+          "resampled": true,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 928,
+          "log_normalizer_estimate": 16032.271757872704
+        },
+        {
+          "stage": 29,
+          "beta": 0.8212890625,
+          "ess_before_resampling": 31.770510830075334,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.78125,
+          "target_evaluations": 960,
+          "log_normalizer_estimate": 17198.18188278885
+        },
+        {
+          "stage": 30,
+          "beta": 0.87890625,
+          "ess_before_resampling": 31.01226931345973,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 992,
+          "log_normalizer_estimate": 18405.007227720434
+        },
+        {
+          "stage": 31,
+          "beta": 0.9384765625,
+          "ess_before_resampling": 29.838175004777774,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.8125,
+          "target_evaluations": 1024,
+          "log_normalizer_estimate": 19652.746029714515
+        },
+        {
+          "stage": 32,
+          "beta": 1.0,
+          "ess_before_resampling": 28.460302840373362,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.78125,
+          "target_evaluations": 1056,
+          "log_normalizer_estimate": 20941.403956413822
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 32,
+        "ess": 28.460302840373362,
+        "ess_fraction": 0.8893844637616676,
+        "maximum_weight": 0.055594917335518454,
+        "distinct_initial_ancestors": 2,
+        "ancestral_ess": 1.0266186453540878,
+        "log_normalizer_estimate": 20941.403956413822,
+        "target_evaluations": 1056,
+        "resampling_events": 3,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.38297564926339667,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 4.373057360398091,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20901.38983291629,
+      "unweighted_mean_energy_eV": -20901.191724380744,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/particles_5846_9032_defensive_symmetry_mala.pt",
+      "particle_sha256": "f35682042a005549d2f4a702795be0f9d3cc990f01b64d01b68588d0ff8b8765",
+      "defensive_component": {
+        "fraction": 0.2,
+        "standard_deviation_A": 3.1622776601683795,
+        "initial_wide_particles": 7,
+        "final_weight_from_wide_ancestors": 0.9868631918997233
+      },
+      "density_numerics": {
+        "cumulative_max_order": 256,
+        "cumulative_max_final_log_refinement_change": 8.327560863108374e-11,
+        "certified_error_bound": false,
+        "scope": "deterministic quadrature convergence screen; sampling identities concern the exact integral"
+      },
+      "oracle_evaluations": 1056,
+      "requested_oracle_evaluations": 1056,
+      "seconds": 81.29378542909399
+    },
+    {
+      "source_row": 5846,
+      "seed": 9033,
+      "arm": "confinement_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.0009765625,
+          "ess_before_resampling": 31.99872356405289,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 64,
+          "log_normalizer_estimate": 20.43524345417772
+        },
+        {
+          "stage": 2,
+          "beta": 0.00390625,
+          "ess_before_resampling": 31.978467196089174,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 96,
+          "log_normalizer_estimate": 81.7405894350286
+        },
+        {
+          "stage": 3,
+          "beta": 0.0087890625,
+          "ess_before_resampling": 31.894110362395903,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 128,
+          "log_normalizer_estimate": 183.91462167387192
+        },
+        {
+          "stage": 4,
+          "beta": 0.015625,
+          "ess_before_resampling": 31.654873557743926,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 160,
+          "log_normalizer_estimate": 326.9590737175219
+        },
+        {
+          "stage": 5,
+          "beta": 0.0244140625,
+          "ess_before_resampling": 31.149462249845303,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 192,
+          "log_normalizer_estimate": 510.8777296582197
+        },
+        {
+          "stage": 6,
+          "beta": 0.03515625,
+          "ess_before_resampling": 30.242004070566008,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 224,
+          "log_normalizer_estimate": 735.674524224474
+        },
+        {
+          "stage": 7,
+          "beta": 0.0478515625,
+          "ess_before_resampling": 28.857668102546285,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 256,
+          "log_normalizer_estimate": 1001.3544647176387
+        },
+        {
+          "stage": 8,
+          "beta": 0.0625,
+          "ess_before_resampling": 26.883812426653606,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 288,
+          "log_normalizer_estimate": 1307.9145912599015
+        },
+        {
+          "stage": 9,
+          "beta": 0.0791015625,
+          "ess_before_resampling": 24.406442815848,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 320,
+          "log_normalizer_estimate": 1655.3586668167197
+        },
+        {
+          "stage": 10,
+          "beta": 0.09765625,
+          "ess_before_resampling": 21.454450904185983,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 352,
+          "log_normalizer_estimate": 2043.6955641592904
+        },
+        {
+          "stage": 11,
+          "beta": 0.1181640625,
+          "ess_before_resampling": 18.101529646682117,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 384,
+          "log_normalizer_estimate": 2472.931130212422
+        },
+        {
+          "stage": 12,
+          "beta": 0.140625,
+          "ess_before_resampling": 14.913993358285678,
+          "resampled": true,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 416,
+          "log_normalizer_estimate": 2943.0633414033236
+        },
+        {
+          "stage": 13,
+          "beta": 0.1650390625,
+          "ess_before_resampling": 31.386024973779524,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 448,
+          "log_normalizer_estimate": 3454.126429391646
+        },
+        {
+          "stage": 14,
+          "beta": 0.19140625,
+          "ess_before_resampling": 29.50871864213003,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 480,
+          "log_normalizer_estimate": 4006.100440968369
+        },
+        {
+          "stage": 15,
+          "beta": 0.2197265625,
+          "ess_before_resampling": 26.65425198439478,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 512,
+          "log_normalizer_estimate": 4598.9799423737
+        },
+        {
+          "stage": 16,
+          "beta": 0.25,
+          "ess_before_resampling": 23.35197888588396,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 544,
+          "log_normalizer_estimate": 5232.777088182229
+        },
+        {
+          "stage": 17,
+          "beta": 0.2822265625,
+          "ess_before_resampling": 20.21132229994225,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 576,
+          "log_normalizer_estimate": 5907.499589344537
+        },
+        {
+          "stage": 18,
+          "beta": 0.31640625,
+          "ess_before_resampling": 17.565241665474378,
+          "resampled": false,
+          "distinct_initial_ancestors": 16,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 608,
+          "log_normalizer_estimate": 6623.133317995863
+        },
+        {
+          "stage": 19,
+          "beta": 0.3525390625,
+          "ess_before_resampling": 15.205194049734025,
+          "resampled": true,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 640,
+          "log_normalizer_estimate": 7379.67967719091
+        },
+        {
+          "stage": 20,
+          "beta": 0.390625,
+          "ess_before_resampling": 31.47676875415776,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 672,
+          "log_normalizer_estimate": 8177.1594092368705
+        },
+        {
+          "stage": 21,
+          "beta": 0.4306640625,
+          "ess_before_resampling": 30.19189735742365,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 704,
+          "log_normalizer_estimate": 9015.552292167107
+        },
+        {
+          "stage": 22,
+          "beta": 0.47265625,
+          "ess_before_resampling": 28.559548088375077,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 736,
+          "log_normalizer_estimate": 9894.870344485236
+        },
+        {
+          "stage": 23,
+          "beta": 0.5166015625,
+          "ess_before_resampling": 27.07294963809025,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 768,
+          "log_normalizer_estimate": 10815.103512681379
+        },
+        {
+          "stage": 24,
+          "beta": 0.5625,
+          "ess_before_resampling": 25.473291639532206,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 800,
+          "log_normalizer_estimate": 11776.235427329235
+        },
+        {
+          "stage": 25,
+          "beta": 0.6103515625,
+          "ess_before_resampling": 23.83288829012915,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 832,
+          "log_normalizer_estimate": 12778.288065512757
+        },
+        {
+          "stage": 26,
+          "beta": 0.66015625,
+          "ess_before_resampling": 22.21863011852821,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 864,
+          "log_normalizer_estimate": 13821.257755462178
+        },
+        {
+          "stage": 27,
+          "beta": 0.7119140625,
+          "ess_before_resampling": 20.22823432424882,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 896,
+          "log_normalizer_estimate": 14905.156019459037
+        },
+        {
+          "stage": 28,
+          "beta": 0.765625,
+          "ess_before_resampling": 18.2358192773267,
+          "resampled": false,
+          "distinct_initial_ancestors": 6,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 928,
+          "log_normalizer_estimate": 16029.972181832958
+        },
+        {
+          "stage": 29,
+          "beta": 0.8212890625,
+          "ess_before_resampling": 15.844317050267229,
+          "resampled": true,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.8125,
+          "target_evaluations": 960,
+          "log_normalizer_estimate": 17195.708399563948
+        },
+        {
+          "stage": 30,
+          "beta": 0.87890625,
+          "ess_before_resampling": 31.1621265829238,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 992,
+          "log_normalizer_estimate": 18402.330526848807
+        },
+        {
+          "stage": 31,
+          "beta": 0.9384765625,
+          "ess_before_resampling": 28.53769434780887,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 1024,
+          "log_normalizer_estimate": 19649.894845576015
+        },
+        {
+          "stage": 32,
+          "beta": 1.0,
+          "ess_before_resampling": 23.688569466642665,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 1056,
+          "log_normalizer_estimate": 20938.444320560768
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 32,
+        "ess": 23.688569466642665,
+        "ess_fraction": 0.7402677958325833,
+        "maximum_weight": 0.09232906700390507,
+        "distinct_initial_ancestors": 2,
+        "ancestral_ess": 1.1219034419658998,
+        "log_normalizer_estimate": 20938.444320560768,
+        "target_evaluations": 1056,
+        "resampling_events": 3,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 1.157033287141624,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 3.768368292316468,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20900.948943943822,
+      "unweighted_mean_energy_eV": -20899.2451633924,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/particles_5846_9033_confinement_mala.pt",
+      "particle_sha256": "304c82ac378d354d622db01e95e699748c2f8e6557fa1b0f7441e6005bc2a2d4",
+      "oracle_evaluations": 1056,
+      "requested_oracle_evaluations": 1056,
+      "seconds": 52.70392055995762
+    },
+    {
+      "source_row": 5846,
+      "seed": 9033,
+      "arm": "symmetry_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.0009765625,
+          "ess_before_resampling": 31.995318917058064,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 64,
+          "log_normalizer_estimate": 20.428353149468293
+        },
+        {
+          "stage": 2,
+          "beta": 0.00390625,
+          "ess_before_resampling": 31.930154012032382,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 96,
+          "log_normalizer_estimate": 81.7142184666611
+        },
+        {
+          "stage": 3,
+          "beta": 0.0087890625,
+          "ess_before_resampling": 31.703023680585275,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 128,
+          "log_normalizer_estimate": 183.86339709024747
+        },
+        {
+          "stage": 4,
+          "beta": 0.015625,
+          "ess_before_resampling": 31.236000087179736,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 160,
+          "log_normalizer_estimate": 326.88641473611835
+        },
+        {
+          "stage": 5,
+          "beta": 0.0244140625,
+          "ess_before_resampling": 30.325334057923254,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 192,
+          "log_normalizer_estimate": 510.77919649569225
+        },
+        {
+          "stage": 6,
+          "beta": 0.03515625,
+          "ess_before_resampling": 28.824588036546526,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 224,
+          "log_normalizer_estimate": 735.526549225953
+        },
+        {
+          "stage": 7,
+          "beta": 0.0478515625,
+          "ess_before_resampling": 27.175986015372857,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 256,
+          "log_normalizer_estimate": 1001.1463113159245
+        },
+        {
+          "stage": 8,
+          "beta": 0.0625,
+          "ess_before_resampling": 25.156865386895323,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 288,
+          "log_normalizer_estimate": 1307.6606960486429
+        },
+        {
+          "stage": 9,
+          "beta": 0.0791015625,
+          "ess_before_resampling": 22.979402255174577,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 320,
+          "log_normalizer_estimate": 1655.07062042684
+        },
+        {
+          "stage": 10,
+          "beta": 0.09765625,
+          "ess_before_resampling": 20.934103892882632,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 352,
+          "log_normalizer_estimate": 2043.3580218316665
+        },
+        {
+          "stage": 11,
+          "beta": 0.1181640625,
+          "ess_before_resampling": 19.20566081465737,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 384,
+          "log_normalizer_estimate": 2472.5457570864296
+        },
+        {
+          "stage": 12,
+          "beta": 0.140625,
+          "ess_before_resampling": 16.941669046335623,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 416,
+          "log_normalizer_estimate": 2942.6226742656786
+        },
+        {
+          "stage": 13,
+          "beta": 0.1650390625,
+          "ess_before_resampling": 14.665175649202109,
+          "resampled": true,
+          "distinct_initial_ancestors": 13,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 448,
+          "log_normalizer_estimate": 3453.6312618241877
+        },
+        {
+          "stage": 14,
+          "beta": 0.19140625,
+          "ess_before_resampling": 31.593283023300145,
+          "resampled": false,
+          "distinct_initial_ancestors": 13,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 480,
+          "log_normalizer_estimate": 4005.5740371483944
+        },
+        {
+          "stage": 15,
+          "beta": 0.2197265625,
+          "ess_before_resampling": 30.618773379641908,
+          "resampled": false,
+          "distinct_initial_ancestors": 13,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 512,
+          "log_normalizer_estimate": 4598.414009874726
+        },
+        {
+          "stage": 16,
+          "beta": 0.25,
+          "ess_before_resampling": 28.90219413946919,
+          "resampled": false,
+          "distinct_initial_ancestors": 13,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 544,
+          "log_normalizer_estimate": 5232.128370386379
+        },
+        {
+          "stage": 17,
+          "beta": 0.2822265625,
+          "ess_before_resampling": 27.357882838793547,
+          "resampled": false,
+          "distinct_initial_ancestors": 13,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 576,
+          "log_normalizer_estimate": 5906.767319375889
+        },
+        {
+          "stage": 18,
+          "beta": 0.31640625,
+          "ess_before_resampling": 25.570942308409734,
+          "resampled": false,
+          "distinct_initial_ancestors": 13,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 608,
+          "log_normalizer_estimate": 6622.30594259569
+        },
+        {
+          "stage": 19,
+          "beta": 0.3525390625,
+          "ess_before_resampling": 23.80642333334824,
+          "resampled": false,
+          "distinct_initial_ancestors": 13,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 640,
+          "log_normalizer_estimate": 7378.743890208275
+        },
+        {
+          "stage": 20,
+          "beta": 0.390625,
+          "ess_before_resampling": 21.47162033077326,
+          "resampled": false,
+          "distinct_initial_ancestors": 13,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 672,
+          "log_normalizer_estimate": 8176.084582536269
+        },
+        {
+          "stage": 21,
+          "beta": 0.4306640625,
+          "ess_before_resampling": 19.546361938433986,
+          "resampled": false,
+          "distinct_initial_ancestors": 13,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 704,
+          "log_normalizer_estimate": 9014.316328902787
+        },
+        {
+          "stage": 22,
+          "beta": 0.47265625,
+          "ess_before_resampling": 17.906212946717577,
+          "resampled": false,
+          "distinct_initial_ancestors": 13,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 736,
+          "log_normalizer_estimate": 9893.421760538504
+        },
+        {
+          "stage": 23,
+          "beta": 0.5166015625,
+          "ess_before_resampling": 17.021682283100716,
+          "resampled": false,
+          "distinct_initial_ancestors": 13,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 768,
+          "log_normalizer_estimate": 10813.40123386373
+        },
+        {
+          "stage": 24,
+          "beta": 0.5625,
+          "ess_before_resampling": 14.362076044577433,
+          "resampled": true,
+          "distinct_initial_ancestors": 4,
+          "acceptance_fraction": 0.875,
+          "target_evaluations": 800,
+          "log_normalizer_estimate": 11774.356066365732
+        },
+        {
+          "stage": 25,
+          "beta": 0.6103515625,
+          "ess_before_resampling": 31.289036468992908,
+          "resampled": false,
+          "distinct_initial_ancestors": 4,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 832,
+          "log_normalizer_estimate": 12776.181521559756
+        },
+        {
+          "stage": 26,
+          "beta": 0.66015625,
+          "ess_before_resampling": 29.096079539843924,
+          "resampled": false,
+          "distinct_initial_ancestors": 4,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 864,
+          "log_normalizer_estimate": 13818.940748729461
+        },
+        {
+          "stage": 27,
+          "beta": 0.7119140625,
+          "ess_before_resampling": 25.559843223374013,
+          "resampled": false,
+          "distinct_initial_ancestors": 4,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 896,
+          "log_normalizer_estimate": 14902.60879691058
+        },
+        {
+          "stage": 28,
+          "beta": 0.765625,
+          "ess_before_resampling": 19.479173433596134,
+          "resampled": false,
+          "distinct_initial_ancestors": 4,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 928,
+          "log_normalizer_estimate": 16027.23630352548
+        },
+        {
+          "stage": 29,
+          "beta": 0.8212890625,
+          "ess_before_resampling": 13.221225835076787,
+          "resampled": true,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 960,
+          "log_normalizer_estimate": 17192.799462168256
+        },
+        {
+          "stage": 30,
+          "beta": 0.87890625,
+          "ess_before_resampling": 30.322976186918194,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.78125,
+          "target_evaluations": 992,
+          "log_normalizer_estimate": 18399.279301855633
+        },
+        {
+          "stage": 31,
+          "beta": 0.9384765625,
+          "ess_before_resampling": 25.391398858847896,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 1024,
+          "log_normalizer_estimate": 19646.717206994934
+        },
+        {
+          "stage": 32,
+          "beta": 1.0,
+          "ess_before_resampling": 18.60645621934607,
+          "resampled": false,
+          "distinct_initial_ancestors": 2,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 1056,
+          "log_normalizer_estimate": 20935.112240413495
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 32,
+        "ess": 18.60645621934607,
+        "ess_fraction": 0.5814517568545647,
+        "maximum_weight": 0.11756649764025266,
+        "distinct_initial_ancestors": 2,
+        "ancestral_ess": 1.622198811952646,
+        "log_normalizer_estimate": 20935.112240413495,
+        "target_evaluations": 1056,
+        "resampling_events": 3,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.45232728995312643,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 2.1899314350936225,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20916.413895744397,
+      "unweighted_mean_energy_eV": -20915.86464791244,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/particles_5846_9033_symmetry_mala.pt",
+      "particle_sha256": "15420d6c3307ee82c856de400cebb56c5bca333a06b83f82c801308b6929f49a",
+      "density_numerics": {
+        "cumulative_max_order": 256,
+        "cumulative_max_final_log_refinement_change": 8.327560863108374e-11,
+        "certified_error_bound": false,
+        "scope": "deterministic quadrature convergence screen; sampling identities concern the exact integral"
+      },
+      "oracle_evaluations": 1056,
+      "requested_oracle_evaluations": 1056,
+      "seconds": 89.5813412789721
+    },
+    {
+      "source_row": 5846,
+      "seed": 9033,
+      "arm": "defensive_mixture_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.0009765625,
+          "ess_before_resampling": 31.99358359380167,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 64,
+          "log_normalizer_estimate": 20.4180061053116
+        },
+        {
+          "stage": 2,
+          "beta": 0.00390625,
+          "ess_before_resampling": 31.8977926573887,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 96,
+          "log_normalizer_estimate": 81.67223990019762
+        },
+        {
+          "stage": 3,
+          "beta": 0.0087890625,
+          "ess_before_resampling": 31.491103942066054,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 128,
+          "log_normalizer_estimate": 183.76547617624067
+        },
+        {
+          "stage": 4,
+          "beta": 0.015625,
+          "ess_before_resampling": 30.561447540779927,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 160,
+          "log_normalizer_estimate": 326.7034895673488
+        },
+        {
+          "stage": 5,
+          "beta": 0.0244140625,
+          "ess_before_resampling": 29.00696964828064,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 192,
+          "log_normalizer_estimate": 510.50126811671936
+        },
+        {
+          "stage": 6,
+          "beta": 0.03515625,
+          "ess_before_resampling": 26.781836644489037,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 224,
+          "log_normalizer_estimate": 735.1664388588604
+        },
+        {
+          "stage": 7,
+          "beta": 0.0478515625,
+          "ess_before_resampling": 24.115128087039164,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 256,
+          "log_normalizer_estimate": 1000.7001931959358
+        },
+        {
+          "stage": 8,
+          "beta": 0.0625,
+          "ess_before_resampling": 20.990138151618428,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 288,
+          "log_normalizer_estimate": 1307.110713135959
+        },
+        {
+          "stage": 9,
+          "beta": 0.0791015625,
+          "ess_before_resampling": 17.896892362003435,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 320,
+          "log_normalizer_estimate": 1654.417403745762
+        },
+        {
+          "stage": 10,
+          "beta": 0.09765625,
+          "ess_before_resampling": 14.956737425711713,
+          "resampled": true,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 352,
+          "log_normalizer_estimate": 2042.6232098148514
+        },
+        {
+          "stage": 11,
+          "beta": 0.1181640625,
+          "ess_before_resampling": 31.04971736981933,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 384,
+          "log_normalizer_estimate": 2471.696635472869
+        },
+        {
+          "stage": 12,
+          "beta": 0.140625,
+          "ess_before_resampling": 28.576023229445212,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 416,
+          "log_normalizer_estimate": 2941.6677141008204
+        },
+        {
+          "stage": 13,
+          "beta": 0.1650390625,
+          "ess_before_resampling": 25.022377451073165,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 448,
+          "log_normalizer_estimate": 3452.5365107963935
+        },
+        {
+          "stage": 14,
+          "beta": 0.19140625,
+          "ess_before_resampling": 21.029590132783266,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 480,
+          "log_normalizer_estimate": 4004.311837045006
+        },
+        {
+          "stage": 15,
+          "beta": 0.2197265625,
+          "ess_before_resampling": 17.10627290861833,
+          "resampled": false,
+          "distinct_initial_ancestors": 17,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 512,
+          "log_normalizer_estimate": 4597.007806836738
+        },
+        {
+          "stage": 16,
+          "beta": 0.25,
+          "ess_before_resampling": 13.78937472286265,
+          "resampled": true,
+          "distinct_initial_ancestors": 7,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 544,
+          "log_normalizer_estimate": 5230.608451973173
+        },
+        {
+          "stage": 17,
+          "beta": 0.2822265625,
+          "ess_before_resampling": 31.056707693628763,
+          "resampled": false,
+          "distinct_initial_ancestors": 7,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 576,
+          "log_normalizer_estimate": 5905.145389452673
+        },
+        {
+          "stage": 18,
+          "beta": 0.31640625,
+          "ess_before_resampling": 29.0394549802215,
+          "resampled": false,
+          "distinct_initial_ancestors": 7,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 608,
+          "log_normalizer_estimate": 6620.587270480346
+        },
+        {
+          "stage": 19,
+          "beta": 0.3525390625,
+          "ess_before_resampling": 27.12887730826562,
+          "resampled": false,
+          "distinct_initial_ancestors": 7,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 640,
+          "log_normalizer_estimate": 7376.934980474773
+        },
+        {
+          "stage": 20,
+          "beta": 0.390625,
+          "ess_before_resampling": 25.30290465100024,
+          "resampled": false,
+          "distinct_initial_ancestors": 7,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 672,
+          "log_normalizer_estimate": 8174.205945270889
+        },
+        {
+          "stage": 21,
+          "beta": 0.4306640625,
+          "ess_before_resampling": 23.41263549024085,
+          "resampled": false,
+          "distinct_initial_ancestors": 7,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 704,
+          "log_normalizer_estimate": 9012.382087855613
+        },
+        {
+          "stage": 22,
+          "beta": 0.47265625,
+          "ess_before_resampling": 21.463926557129117,
+          "resampled": false,
+          "distinct_initial_ancestors": 7,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 736,
+          "log_normalizer_estimate": 9891.445848981595
+        },
+        {
+          "stage": 23,
+          "beta": 0.5166015625,
+          "ess_before_resampling": 19.528734851639317,
+          "resampled": false,
+          "distinct_initial_ancestors": 7,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 768,
+          "log_normalizer_estimate": 10811.425998971888
+        },
+        {
+          "stage": 24,
+          "beta": 0.5625,
+          "ess_before_resampling": 17.64802813100039,
+          "resampled": false,
+          "distinct_initial_ancestors": 7,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 800,
+          "log_normalizer_estimate": 11772.310097965279
+        },
+        {
+          "stage": 25,
+          "beta": 0.6103515625,
+          "ess_before_resampling": 16.040818068384016,
+          "resampled": false,
+          "distinct_initial_ancestors": 7,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 832,
+          "log_normalizer_estimate": 12774.099007484976
+        },
+        {
+          "stage": 26,
+          "beta": 0.66015625,
+          "ess_before_resampling": 14.518870398659557,
+          "resampled": true,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 864,
+          "log_normalizer_estimate": 13816.798078999576
+        },
+        {
+          "stage": 27,
+          "beta": 0.7119140625,
+          "ess_before_resampling": 31.531903194479714,
+          "resampled": false,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 896,
+          "log_normalizer_estimate": 14900.395584402328
+        },
+        {
+          "stage": 28,
+          "beta": 0.765625,
+          "ess_before_resampling": 30.222048757633498,
+          "resampled": false,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 928,
+          "log_normalizer_estimate": 16024.900724516508
+        },
+        {
+          "stage": 29,
+          "beta": 0.8212890625,
+          "ess_before_resampling": 28.51016814426766,
+          "resampled": false,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 960,
+          "log_normalizer_estimate": 17190.307257199125
+        },
+        {
+          "stage": 30,
+          "beta": 0.87890625,
+          "ess_before_resampling": 26.108548918546838,
+          "resampled": false,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 992,
+          "log_normalizer_estimate": 18396.622612755866
+        },
+        {
+          "stage": 31,
+          "beta": 0.9384765625,
+          "ess_before_resampling": 23.317303257771638,
+          "resampled": false,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 1024,
+          "log_normalizer_estimate": 19643.84809836953
+        },
+        {
+          "stage": 32,
+          "beta": 1.0,
+          "ess_before_resampling": 19.81103768020301,
+          "resampled": false,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 1056,
+          "log_normalizer_estimate": 20931.985555864343
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 32,
+        "ess": 19.81103768020301,
+        "ess_fraction": 0.6190949275063441,
+        "maximum_weight": 0.12604822020746012,
+        "distinct_initial_ancestors": 3,
+        "ancestral_ess": 1.4568500217369889,
+        "log_normalizer_estimate": 20931.985555864343,
+        "target_evaluations": 1056,
+        "resampling_events": 3,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 3.068374935076193,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 4.29351288792348,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20893.156012539417,
+      "unweighted_mean_energy_eV": -20892.181038557763,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/particles_5846_9033_defensive_mixture_mala.pt",
+      "particle_sha256": "224cbf6af7518c326cb71e6a90e32c41a3e0f1f62a9f22b79989d79da4926b39",
+      "defensive_component": {
+        "fraction": 0.2,
+        "standard_deviation_A": 3.1622776601683795,
+        "initial_wide_particles": 5,
+        "final_weight_from_wide_ancestors": 0.9966792354785348
+      },
+      "oracle_evaluations": 1056,
+      "requested_oracle_evaluations": 1056,
+      "seconds": 51.8697133269161
+    },
+    {
+      "source_row": 5846,
+      "seed": 9033,
+      "arm": "defensive_symmetry_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.0009765625,
+          "ess_before_resampling": 31.993867794283734,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 64,
+          "log_normalizer_estimate": 20.430617761591492
+        },
+        {
+          "stage": 2,
+          "beta": 0.00390625,
+          "ess_before_resampling": 31.923758794228736,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 96,
+          "log_normalizer_estimate": 81.72468634884376
+        },
+        {
+          "stage": 3,
+          "beta": 0.0087890625,
+          "ess_before_resampling": 31.61639901734317,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 128,
+          "log_normalizer_estimate": 183.8798733153255
+        },
+        {
+          "stage": 4,
+          "beta": 0.015625,
+          "ess_before_resampling": 30.92794346926625,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 160,
+          "log_normalizer_estimate": 326.9017554123037
+        },
+        {
+          "stage": 5,
+          "beta": 0.0244140625,
+          "ess_before_resampling": 29.82806682944113,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 192,
+          "log_normalizer_estimate": 510.8037842046102
+        },
+        {
+          "stage": 6,
+          "beta": 0.03515625,
+          "ess_before_resampling": 28.452770970439364,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 224,
+          "log_normalizer_estimate": 735.5926942192956
+        },
+        {
+          "stage": 7,
+          "beta": 0.0478515625,
+          "ess_before_resampling": 27.118962754748523,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 256,
+          "log_normalizer_estimate": 1001.2631249999284
+        },
+        {
+          "stage": 8,
+          "beta": 0.0625,
+          "ess_before_resampling": 25.593034466466246,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 288,
+          "log_normalizer_estimate": 1307.8117794812247
+        },
+        {
+          "stage": 9,
+          "beta": 0.0791015625,
+          "ess_before_resampling": 24.26613572104751,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 320,
+          "log_normalizer_estimate": 1655.2464171262009
+        },
+        {
+          "stage": 10,
+          "beta": 0.09765625,
+          "ess_before_resampling": 22.5282915836936,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 352,
+          "log_normalizer_estimate": 2043.556502869285
+        },
+        {
+          "stage": 11,
+          "beta": 0.1181640625,
+          "ess_before_resampling": 20.854165044975,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 384,
+          "log_normalizer_estimate": 2472.7609473219313
+        },
+        {
+          "stage": 12,
+          "beta": 0.140625,
+          "ess_before_resampling": 19.448134369420973,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 416,
+          "log_normalizer_estimate": 2942.8808539264255
+        },
+        {
+          "stage": 13,
+          "beta": 0.1650390625,
+          "ess_before_resampling": 18.357932956486945,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 448,
+          "log_normalizer_estimate": 3453.8978561254494
+        },
+        {
+          "stage": 14,
+          "beta": 0.19140625,
+          "ess_before_resampling": 16.99603251489901,
+          "resampled": false,
+          "distinct_initial_ancestors": 32,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 480,
+          "log_normalizer_estimate": 4005.8019883654797
+        },
+        {
+          "stage": 15,
+          "beta": 0.2197265625,
+          "ess_before_resampling": 15.568205796432188,
+          "resampled": true,
+          "distinct_initial_ancestors": 15,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 512,
+          "log_normalizer_estimate": 4598.568907173191
+        },
+        {
+          "stage": 16,
+          "beta": 0.25,
+          "ess_before_resampling": 31.481149246221076,
+          "resampled": false,
+          "distinct_initial_ancestors": 15,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 544,
+          "log_normalizer_estimate": 5232.28939900667
+        },
+        {
+          "stage": 17,
+          "beta": 0.2822265625,
+          "ess_before_resampling": 29.544112111248115,
+          "resampled": false,
+          "distinct_initial_ancestors": 15,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 576,
+          "log_normalizer_estimate": 5906.927495162302
+        },
+        {
+          "stage": 18,
+          "beta": 0.31640625,
+          "ess_before_resampling": 26.210064759561835,
+          "resampled": false,
+          "distinct_initial_ancestors": 15,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 608,
+          "log_normalizer_estimate": 6622.505495191024
+        },
+        {
+          "stage": 19,
+          "beta": 0.3525390625,
+          "ess_before_resampling": 22.07950235451438,
+          "resampled": false,
+          "distinct_initial_ancestors": 15,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 640,
+          "log_normalizer_estimate": 7379.028136203484
+        },
+        {
+          "stage": 20,
+          "beta": 0.390625,
+          "ess_before_resampling": 17.20964585122401,
+          "resampled": false,
+          "distinct_initial_ancestors": 15,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 672,
+          "log_normalizer_estimate": 8176.472388710055
+        },
+        {
+          "stage": 21,
+          "beta": 0.4306640625,
+          "ess_before_resampling": 13.104260487302392,
+          "resampled": true,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 704,
+          "log_normalizer_estimate": 9014.865630574284
+        },
+        {
+          "stage": 22,
+          "beta": 0.47265625,
+          "ess_before_resampling": 30.772420880164415,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 736,
+          "log_normalizer_estimate": 9894.133605105932
+        },
+        {
+          "stage": 23,
+          "beta": 0.5166015625,
+          "ess_before_resampling": 27.948326630900578,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 768,
+          "log_normalizer_estimate": 10814.307703950786
+        },
+        {
+          "stage": 24,
+          "beta": 0.5625,
+          "ess_before_resampling": 24.455256791129898,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 800,
+          "log_normalizer_estimate": 11775.429216064827
+        },
+        {
+          "stage": 25,
+          "beta": 0.6103515625,
+          "ess_before_resampling": 21.16638462307201,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.96875,
+          "target_evaluations": 832,
+          "log_normalizer_estimate": 12777.495989310295
+        },
+        {
+          "stage": 26,
+          "beta": 0.66015625,
+          "ess_before_resampling": 18.370970193235017,
+          "resampled": false,
+          "distinct_initial_ancestors": 9,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 864,
+          "log_normalizer_estimate": 13820.488807749494
+        },
+        {
+          "stage": 27,
+          "beta": 0.7119140625,
+          "ess_before_resampling": 15.773192188116333,
+          "resampled": true,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 896,
+          "log_normalizer_estimate": 14904.412891789148
+        },
+        {
+          "stage": 28,
+          "beta": 0.765625,
+          "ess_before_resampling": 31.150001129653337,
+          "resampled": false,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 928,
+          "log_normalizer_estimate": 16029.2734496854
+        },
+        {
+          "stage": 29,
+          "beta": 0.8212890625,
+          "ess_before_resampling": 29.448299847524602,
+          "resampled": false,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 960,
+          "log_normalizer_estimate": 17195.072425596813
+        },
+        {
+          "stage": 30,
+          "beta": 0.87890625,
+          "ess_before_resampling": 27.70550860250628,
+          "resampled": false,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 0.90625,
+          "target_evaluations": 992,
+          "log_normalizer_estimate": 18401.80639965201
+        },
+        {
+          "stage": 31,
+          "beta": 0.9384765625,
+          "ess_before_resampling": 26.064330967527802,
+          "resampled": false,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 0.9375,
+          "target_evaluations": 1024,
+          "log_normalizer_estimate": 19649.45467879318
+        },
+        {
+          "stage": 32,
+          "beta": 1.0,
+          "ess_before_resampling": 24.069186501699335,
+          "resampled": false,
+          "distinct_initial_ancestors": 3,
+          "acceptance_fraction": 0.84375,
+          "target_evaluations": 1056,
+          "log_normalizer_estimate": 20938.018285716964
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 32,
+        "ess": 24.069186501699335,
+        "ess_fraction": 0.7521620781781042,
+        "maximum_weight": 0.0627255899291251,
+        "distinct_initial_ancestors": 3,
+        "ancestral_ess": 1.0533628160814823,
+        "log_normalizer_estimate": 20938.018285716964,
+        "target_evaluations": 1056,
+        "resampling_events": 3,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.726078365379975,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 4.5689938903178975,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20900.1339093234,
+      "unweighted_mean_energy_eV": -20900.828155661136,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/particles_5846_9033_defensive_symmetry_mala.pt",
+      "particle_sha256": "31ab584e51a2f4c59a863eba4e96437185f821d968ca6259501cae0f1c51e74d",
+      "defensive_component": {
+        "fraction": 0.2,
+        "standard_deviation_A": 3.1622776601683795,
+        "initial_wide_particles": 5,
+        "final_weight_from_wide_ancestors": 0.9741694255702493
+      },
+      "density_numerics": {
+        "cumulative_max_order": 256,
+        "cumulative_max_final_log_refinement_change": 8.327560863108374e-11,
+        "certified_error_bound": false,
+        "scope": "deterministic quadrature convergence screen; sampling identities concern the exact integral"
+      },
+      "oracle_evaluations": 1056,
+      "requested_oracle_evaluations": 1056,
+      "seconds": 85.85376707208343
+    }
+  ],
+  "source_record": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_defensive_5846_v1/results.json",
+  "source_record_sha256": "ee68a5e3165c4fc4ee35a79c2df3417af74b1f01f755413355a922dbb280aec8"
+}

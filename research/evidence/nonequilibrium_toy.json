@@ -1,0 +1,372 @@
+{
+  "complete": true,
+  "scope": "Known-target AIS, basin-mass controls and matched CFM distillation.\n\nThis reproduces established work reweighting, not a new sampling algorithm or\nevidence of molecular benefit. Every seed and raw-particle control is retained.\n",
+  "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/nonequilibrium_toy_v1/results.json",
+  "source_sha256": "70066a22ad4ce4dec8398210b99f7a733b6087a9a38d8f1373fa8fdcb7710cc7",
+  "source_code_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/9a24ec40dc7acb6ae8b87e675a21bedef09a5388/scripts/research/toy_nonequilibrium.py": "38155196acc34e0b57a3442e81ac0029d65e7815aa84340e8c853151d31d69f9",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/9a24ec40dc7acb6ae8b87e675a21bedef09a5388/cfm_mol/nonequilibrium.py": "3e318c4e279411498aa217738279ca065a917193f53f47287975459c29c6a853"
+  },
+  "protocol": {
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/nonequilibrium_toy_v1",
+    "particles": 8192,
+    "seeds": 5,
+    "ais_steps": 16,
+    "fm_steps": 1000
+  },
+  "target": {
+    "dimension": 2,
+    "right_basin_probability": 0.8,
+    "mean_x": 1.8,
+    "variance_x": 6.01,
+    "mean_nearest_mode_squared_distance": 0.5,
+    "log_Z": 0
+  },
+  "rows": [
+    {
+      "seed": 0,
+      "ais": {
+        "particles": 8192,
+        "ess": 900.5713235135386,
+        "ess_fraction": 0.10993302288983625,
+        "maximum_weight": 0.00423491173602794,
+        "log_mean_weight": 0.06280553894097096,
+        "method": "random_walk_ais",
+        "steps": 16,
+        "moves_per_stage": 1,
+        "acceptance_fraction": 0.5398025512695312,
+        "target_evaluations_per_particle": 17
+      },
+      "ais_seconds": 0.24561040600383421,
+      "weighted_teacher": {
+        "right_basin_probability": 0.8020311896487784,
+        "mean_x": 1.8277727131615467,
+        "second_moment_about_target_mean_x": 5.9699938314525465,
+        "mean_nearest_mode_squared_distance": 0.4662532733255321
+      },
+      "unweighted_same_paths": {
+        "right_basin_probability": 0.5118408203125,
+        "mean_x": 0.050446552379511504,
+        "second_moment_about_target_mean_x": 12.444899056918029,
+        "mean_nearest_mode_squared_distance": 1.938760172664576
+      },
+      "terminal_energy_only": {
+        "right_basin_probability": 0.8065172351329113,
+        "mean_x": 1.8194695392919602,
+        "second_moment_about_target_mean_x": 5.686804462625275,
+        "mean_nearest_mode_squared_distance": 0.29736799255610213
+      },
+      "distilled": {
+        "weighted": {
+          "metrics": {
+            "right_basin_probability": 0.7498779296875,
+            "mean_x": 1.5004505910433181,
+            "second_moment_about_target_mean_x": 7.170281420656236,
+            "mean_nearest_mode_squared_distance": 0.8054515000227864
+          },
+          "seconds": 1.5013724320015172,
+          "steps": 1000,
+          "training_batch_size": 256,
+          "sampler": "midpoint128",
+          "last_training_loss": 5.661729335784912
+        },
+        "unweighted": {
+          "metrics": {
+            "right_basin_probability": 0.499267578125,
+            "mean_x": 0.04460982425058546,
+            "second_moment_about_target_mean_x": 12.480275792824168,
+            "mean_nearest_mode_squared_distance": 1.8332625539422036
+          },
+          "seconds": 1.2581231450021733,
+          "steps": 1000,
+          "training_batch_size": 256,
+          "sampler": "midpoint128",
+          "last_training_loss": 9.41025447845459
+        }
+      }
+    },
+    {
+      "seed": 1,
+      "ais": {
+        "particles": 8192,
+        "ess": 889.3066669214102,
+        "ess_fraction": 0.10855794273942995,
+        "maximum_weight": 0.004945858414092683,
+        "log_mean_weight": 0.041303621604136254,
+        "method": "random_walk_ais",
+        "steps": 16,
+        "moves_per_stage": 1,
+        "acceptance_fraction": 0.54058837890625,
+        "target_evaluations_per_particle": 17
+      },
+      "ais_seconds": 0.03616100000363076,
+      "weighted_teacher": {
+        "right_basin_probability": 0.8146760423880224,
+        "mean_x": 1.8998716698443645,
+        "second_moment_about_target_mean_x": 5.670968940909407,
+        "mean_nearest_mode_squared_distance": 0.4679640136659676
+      },
+      "unweighted_same_paths": {
+        "right_basin_probability": 0.5120849609375,
+        "mean_x": 0.06106237843633082,
+        "second_moment_about_target_mean_x": 12.399355052836428,
+        "mean_nearest_mode_squared_distance": 1.9408022845601929
+      },
+      "terminal_energy_only": {
+        "right_basin_probability": 0.8086609353920448,
+        "mean_x": 1.835550757013936,
+        "second_moment_about_target_mean_x": 5.660039856225076,
+        "mean_nearest_mode_squared_distance": 0.29973728093039165
+      },
+      "distilled": {
+        "weighted": {
+          "metrics": {
+            "right_basin_probability": 0.7733154296875,
+            "mean_x": 1.7216641199817104,
+            "second_moment_about_target_mean_x": 6.475418904658028,
+            "mean_nearest_mode_squared_distance": 0.6866460302262105
+          },
+          "seconds": 1.2951797420028015,
+          "steps": 1000,
+          "training_batch_size": 256,
+          "sampler": "midpoint128",
+          "last_training_loss": 5.880692481994629
+        },
+        "unweighted": {
+          "metrics": {
+            "right_basin_probability": 0.4959716796875,
+            "mean_x": -0.0250528985488927,
+            "second_moment_about_target_mean_x": 13.028321344948672,
+            "mean_nearest_mode_squared_distance": 1.8054590010738214
+          },
+          "seconds": 1.2778047249958036,
+          "steps": 1000,
+          "training_batch_size": 256,
+          "sampler": "midpoint128",
+          "last_training_loss": 9.458297729492188
+        }
+      }
+    },
+    {
+      "seed": 2,
+      "ais": {
+        "particles": 8192,
+        "ess": 913.7295607213655,
+        "ess_fraction": 0.11153925301774481,
+        "maximum_weight": 0.004083094082542869,
+        "log_mean_weight": -0.032126338250924036,
+        "method": "random_walk_ais",
+        "steps": 16,
+        "moves_per_stage": 1,
+        "acceptance_fraction": 0.54095458984375,
+        "target_evaluations_per_particle": 17
+      },
+      "ais_seconds": 0.03662939200148685,
+      "weighted_teacher": {
+        "right_basin_probability": 0.7910769466583696,
+        "mean_x": 1.7617368608538704,
+        "second_moment_about_target_mean_x": 6.200356603970415,
+        "mean_nearest_mode_squared_distance": 0.5062998421090789
+      },
+      "unweighted_same_paths": {
+        "right_basin_probability": 0.5108642578125,
+        "mean_x": 0.05322839786530688,
+        "second_moment_about_target_mean_x": 12.5417052076851,
+        "mean_nearest_mode_squared_distance": 2.0251796662641177
+      },
+      "terminal_energy_only": {
+        "right_basin_probability": 0.801294759726208,
+        "mean_x": 1.7929338570992361,
+        "second_moment_about_target_mean_x": 5.813269748947104,
+        "mean_nearest_mode_squared_distance": 0.30031020450033313
+      },
+      "distilled": {
+        "weighted": {
+          "metrics": {
+            "right_basin_probability": 0.755615234375,
+            "mean_x": 1.5946132675419449,
+            "second_moment_about_target_mean_x": 6.643248424324896,
+            "mean_nearest_mode_squared_distance": 0.7220221770330428
+          },
+          "seconds": 1.2684217240021098,
+          "steps": 1000,
+          "training_batch_size": 256,
+          "sampler": "midpoint128",
+          "last_training_loss": 6.7591118812561035
+        },
+        "unweighted": {
+          "metrics": {
+            "right_basin_probability": 0.5086669921875,
+            "mean_x": 0.07352183168165993,
+            "second_moment_about_target_mean_x": 12.493951321671828,
+            "mean_nearest_mode_squared_distance": 1.8077310533570268
+          },
+          "seconds": 1.2482148809940554,
+          "steps": 1000,
+          "training_batch_size": 256,
+          "sampler": "midpoint128",
+          "last_training_loss": 11.121223449707031
+        }
+      }
+    },
+    {
+      "seed": 3,
+      "ais": {
+        "particles": 8192,
+        "ess": 890.2556635394058,
+        "ess_fraction": 0.10867378705315012,
+        "maximum_weight": 0.004206864858158257,
+        "log_mean_weight": -0.01804120095597561,
+        "method": "random_walk_ais",
+        "steps": 16,
+        "moves_per_stage": 1,
+        "acceptance_fraction": 0.5385055541992188,
+        "target_evaluations_per_particle": 17
+      },
+      "ais_seconds": 0.037203715000941884,
+      "weighted_teacher": {
+        "right_basin_probability": 0.790300499837438,
+        "mean_x": 1.717093240214996,
+        "second_moment_about_target_mean_x": 6.150026489728199,
+        "mean_nearest_mode_squared_distance": 0.48797727596469226
+      },
+      "unweighted_same_paths": {
+        "right_basin_probability": 0.5059814453125,
+        "mean_x": 0.03393572082245415,
+        "second_moment_about_target_mean_x": 12.348075890090776,
+        "mean_nearest_mode_squared_distance": 1.9707627659632112
+      },
+      "terminal_energy_only": {
+        "right_basin_probability": 0.80435803333622,
+        "mean_x": 1.8056163715989877,
+        "second_moment_about_target_mean_x": 5.718319470000614,
+        "mean_nearest_mode_squared_distance": 0.29876494873061654
+      },
+      "distilled": {
+        "weighted": {
+          "metrics": {
+            "right_basin_probability": 0.7462158203125,
+            "mean_x": 1.4522408395736193,
+            "second_moment_about_target_mean_x": 6.655174934367684,
+            "mean_nearest_mode_squared_distance": 0.6728383368920259
+          },
+          "seconds": 1.348802467000496,
+          "steps": 1000,
+          "training_batch_size": 256,
+          "sampler": "midpoint128",
+          "last_training_loss": 5.421773910522461
+        },
+        "unweighted": {
+          "metrics": {
+            "right_basin_probability": 0.4830322265625,
+            "mean_x": -0.030914529083645448,
+            "second_moment_about_target_mean_x": 12.160501809500113,
+            "mean_nearest_mode_squared_distance": 1.8297507193631772
+          },
+          "seconds": 1.301285886002006,
+          "steps": 1000,
+          "training_batch_size": 256,
+          "sampler": "midpoint128",
+          "last_training_loss": 9.004676818847656
+        }
+      }
+    },
+    {
+      "seed": 4,
+      "ais": {
+        "particles": 8192,
+        "ess": 907.8357593633441,
+        "ess_fraction": 0.11081979484415821,
+        "maximum_weight": 0.004018984202798376,
+        "log_mean_weight": 0.010654477724228784,
+        "method": "random_walk_ais",
+        "steps": 16,
+        "moves_per_stage": 1,
+        "acceptance_fraction": 0.539031982421875,
+        "target_evaluations_per_particle": 17
+      },
+      "ais_seconds": 0.03714629099704325,
+      "weighted_teacher": {
+        "right_basin_probability": 0.7928125346620847,
+        "mean_x": 1.7409156483381318,
+        "second_moment_about_target_mean_x": 6.133052109150291,
+        "mean_nearest_mode_squared_distance": 0.4982689940690118
+      },
+      "unweighted_same_paths": {
+        "right_basin_probability": 0.5037841796875,
+        "mean_x": 0.024828357661538285,
+        "second_moment_about_target_mean_x": 12.541549801769918,
+        "mean_nearest_mode_squared_distance": 1.932602589970626
+      },
+      "terminal_energy_only": {
+        "right_basin_probability": 0.7985193884648367,
+        "mean_x": 1.781639693825282,
+        "second_moment_about_target_mean_x": 5.8709693008262835,
+        "mean_nearest_mode_squared_distance": 0.3093343625777971
+      },
+      "distilled": {
+        "weighted": {
+          "metrics": {
+            "right_basin_probability": 0.7900390625,
+            "mean_x": 1.7900896136613937,
+            "second_moment_about_target_mean_x": 5.6220506505738195,
+            "mean_nearest_mode_squared_distance": 0.6695981035851697
+          },
+          "seconds": 1.2848812909942353,
+          "steps": 1000,
+          "training_batch_size": 256,
+          "sampler": "midpoint128",
+          "last_training_loss": 5.84317684173584
+        },
+        "unweighted": {
+          "metrics": {
+            "right_basin_probability": 0.5111083984375,
+            "mean_x": 0.18536944264820931,
+            "second_moment_about_target_mean_x": 12.283473712332977,
+            "mean_nearest_mode_squared_distance": 1.9137162779206083
+          },
+          "seconds": 1.2556133520047297,
+          "steps": 1000,
+          "training_batch_size": 256,
+          "sampler": "midpoint128",
+          "last_training_loss": 11.086080551147461
+        }
+      }
+    }
+  ],
+  "aggregate": {
+    "weighted_teacher": {
+      "mean_absolute_right_basin_error": 0.008503450175781713,
+      "mean_right_basin_probability": 0.7981794426389385,
+      "mean_nearest_mode_squared_distance": 0.48535267982685654
+    },
+    "unweighted_same_paths": {
+      "mean_absolute_right_basin_error": 0.29108886718750004,
+      "mean_right_basin_probability": 0.5089111328125,
+      "mean_nearest_mode_squared_distance": 1.961621495884545
+    },
+    "terminal_energy_only": {
+      "mean_absolute_right_basin_error": 0.0044623150245094445,
+      "mean_right_basin_probability": 0.8038700704104442,
+      "mean_nearest_mode_squared_distance": 0.3011029578590481
+    },
+    "distilled_weighted": {
+      "mean_absolute_right_basin_error": 0.03698730468750004,
+      "mean_right_basin_probability": 0.7630126953125,
+      "mean_nearest_mode_squared_distance": 0.7113112295518471
+    },
+    "distilled_unweighted": {
+      "mean_absolute_right_basin_error": 0.300390625,
+      "mean_right_basin_probability": 0.499609375,
+      "mean_nearest_mode_squared_distance": 1.8379839211313675
+    }
+  },
+  "mean_ess_fraction": 0.10990476010886385,
+  "exponential_noise_counterexample": {
+    "true_right_mass": 0.8,
+    "left_log_noise_variance": 0,
+    "right_log_noise_variance": 2,
+    "limiting_mass_after_naive_noisy_reweighting": 0.9157761915991025,
+    "reason": "E[exp(-epsilon)|x]=exp(variance(x)/2) for zero-mean Gaussian log noise"
+  }
+}

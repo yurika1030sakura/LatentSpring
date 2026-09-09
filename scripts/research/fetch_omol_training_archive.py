@@ -18,7 +18,7 @@ import time
 import urllib.request
 
 
-URL='https://dl.fbaipublicfiles.com/opencatalystproject/data/omol/250514/train_4M.tar.gz'
+BASE_URL='https://dl.fbaipublicfiles.com/opencatalystproject/data/omol/250514'
 
 
 def write_json(path,data):
@@ -36,17 +36,19 @@ def digest(path):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out',type=Path,required=True);p.add_argument('--extract',action='store_true')
+    p.add_argument('--split',choices=['train_4M','val'],default='train_4M')
     args=p.parse_args();args.out.mkdir(parents=True,exist_ok=True)
-    archive=args.out/'train_4M.tar.gz';partial=args.out/'train_4M.tar.gz.partial'
+    url=f'{BASE_URL}/{args.split}.tar.gz'
+    archive=args.out/f'{args.split}.tar.gz';partial=args.out/f'{args.split}.tar.gz.partial'
     manifest=args.out/'download_manifest.json'
-    with urllib.request.urlopen(urllib.request.Request(URL,method='HEAD'),timeout=30) as response:
+    with urllib.request.urlopen(urllib.request.Request(url,method='HEAD'),timeout=30) as response:
         headers=dict(response.headers);length=int(response.headers['Content-Length']);etag=response.headers['ETag']
     previous=json.loads(manifest.read_text()) if manifest.exists() else None
-    if previous and (previous['url']!=URL or previous['expected_bytes']!=length or previous['etag']!=etag):
+    if previous and (previous['url']!=url or previous['expected_bytes']!=length or previous['etag']!=etag):
         raise ValueError('Remote object changed; refusing to reuse existing download')
     if (partial.exists() or archive.exists()) and previous is None:
         raise ValueError('Existing download has no provenance record')
-    report=previous or {'complete':False,'url':URL,'expected_bytes':length,'etag':etag,
+    report=previous or {'complete':False,'url':url,'split':args.split,'expected_bytes':length,'etag':etag,
         'response_headers':headers,'license':'CC BY 4.0',
         'license_source':'https://fair-chem.github.io/omol25/',
         'first_checked_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -57,7 +59,7 @@ def main():
             offset=partial.stat().st_size if partial.exists() else 0
             if offset>length:raise ValueError('Partial archive larger than advertised object')
             if offset==length:break
-            request=urllib.request.Request(URL,headers={'Accept-Encoding':'identity',**({'Range':f'bytes={offset}-','If-Match':etag} if offset else {})})
+            request=urllib.request.Request(url,headers={'Accept-Encoding':'identity',**({'Range':f'bytes={offset}-','If-Match':etag} if offset else {})})
             try:
                 with urllib.request.urlopen(request,timeout=30) as response,partial.open('ab' if offset else 'wb') as output:
                     if offset and (response.status!=206 or not response.headers.get('Content-Range','').startswith(f'bytes {offset}-')):
@@ -79,7 +81,7 @@ def main():
     report.update(archive=str(archive.resolve()),archive_sha256=digest(archive),download_complete=True)
     write_json(manifest,report)
     if args.extract:
-        destination=args.out/'train_4M_extracted';staging=args.out/'.train_4M_extract_partial'
+        destination=args.out/f'{args.split}_extracted';staging=args.out/f'.{args.split}_extract_partial'
         if not destination.exists():
             staging.mkdir(exist_ok=True);marker=staging/'.archive_sha256'
             if marker.exists() and marker.read_text()!=report['archive_sha256']:raise ValueError('Extraction source changed')

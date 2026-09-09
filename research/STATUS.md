@@ -14,10 +14,11 @@ that all scientific checks passed.
 
 ## What is established
 
-- 120 tests pass, including real FlowMol parameter gradients, full-state and
+- 162 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
-  dedicated Gaussian/Rademacher probe streams for common/independent controls.
+  dedicated Gaussian/Rademacher probe streams for common/independent controls,
+  finite-path work identities, AIS, weighted CFM and intrinsic molecular proposals.
 - A separate equivariant pair-kernel reference has a tested analytic divergence,
   including its coordinate and parameter gradients, collision derivatives,
   symmetries, checkpoint loading and discrete-adjoint gradients. It is prior-art
@@ -56,6 +57,10 @@ that all scientific checks passed.
 | Displacement velocity, T=1, rho=0.1 | Matched 10,000 updates; xTB 30/32 converge; median successful strain 3.98 eV; five of eight density parents fail, maximum drift 0.4408 nats | `displacement_development_rho01_v2`, 45586884 |
 | Fixed-weight RK4, rho=0 / 0.1 | At 32-to-64 steps, two / one of eight parents fail 0.1-nat screen; worst drift 18.2032 / 0.5573 nats | `rk4_density_rho0_v1`, 45595533; `rk4_density_rho01_v1`, 45595874 |
 | RK4 common Gaussian energy, eight parents | Two updates, both contributions applied, 220.1 s, 3.78 GiB; weighted energy gradient norms 0.989 / 0.331 versus FM 3.090 / 4.417 | `rk4_energy_b8_pilot_v1`, 45599167 |
+| Analytic-divergence radial reference, 10k / 100k FM updates | xTB 16/32 / 19/32 succeed; successful-only median strain 38.23 / 132.74 eV; all eight exact-trace 32/64 checks below 0.01 nat; poor generation retained | `radial_reference_development_v1`, 45601575; `radial_reference_development_100k_v1`, 45602524 |
+| Radial exact/noisy controls | Seven energy arms each apply 20/20 contributions with no skips; exact value/shuffle/zero and squared/product independent/common; FM-only also finite | `radial_estimator_smokes_v1`, 45602694 |
+| Finite-work/AIS toy, five seeds | Target basin mass .8: raw .5089, energy-only .8039, AIS .7982; within-mode spread target .5: raw 1.9616, energy-only .3011, AIS .4854; weighted FM student mass .7630 versus .4996 | `nonequilibrium_toy_v1`, 45608091 |
+| Frozen molecular FM work proposal | 32/32 eSEN evaluations finite; ESS 1.655/32, maximum weight 72.87%; executable but inefficient on the declared restrained target | `molecular_work_pilot_v1`, 45608819 |
 
 All molecular training above uses a single seed; warm versus 1,000 versus
 10,000 updates is not seed replication. Warm q_0.8 was not trained for the new
@@ -120,16 +125,39 @@ Near-collisions occur in the reverse trajectory itself as well as internal
 network coordinates. This is a numerical diagnostic, not proof of a unique
 failure cause; CPU and GPU trajectories can differ in roundoff.
 
-## Running
+## Latest completed numerical checks
 
-Source `26d75f55c91388737ddb48b64dcb04393b556450`:
+- 45600126, `adaptive_displacement_rho01_v1`, source `26d75f5`: all six
+  float64 DOP853 solves complete. For hard parent 1137, tighter tolerance still
+  changes the mean centered density by 0.09306 nat and quadrature order by
+  0.04008 nat. Successful ODE termination is not a density certificate.
+- 45600490, `rk4_density_rho01_fine_v1`, source `227ffa3`: all eight
+  RK4-128/256 comparisons complete. Parent 1137 drifts 0.45337 nat in the
+  replica mean and 1.09298 nat in an individual replica; the other seven
+  pass the necessary 0.1-nat mean screen. RK4-256 differs from the tighter
+  adaptive references by 0.000244 / 0.07284 / 0.001172 nat for parents
+  5846 / 1137 / 7544. Reference uncertainty still matters for 1137.
 
-- 45600126, `adaptive_displacement_rho01_v1`: independent float64 DOP853
-  trajectory and Gauss--Legendre trace quadrature at two tolerances, retaining
-  the first parent and the two largest RK4 drift cases. Each position solve has
-  a 6,000-evaluation limit. Recorded failures remain failures.
-- 45600490, `rk4_density_rho01_fine_v1` (source `227ffa3`): all eight smoothed
-  displacement parents, RK4 128/256, preserving the same probes and geometries.
+See `evidence/adaptive_reference_comparison.json`, which verifies complete
+source panels, matching geometry/probe policies and source hashes.
+
+## Non-equilibrium framework decision
+
+Adopt the correct work interpretation and a separate finite-step correction
+branch. The ideal residual `log q + beta U` is a generalized work; the legacy
+off-policy group loss does not thereby become globally identifying. Noisy
+unbiased log densities cannot be exponentiated into unbiased weights. These
+repairs are documented in `notes/nonequilibrium_framework.md` and Appendix E.
+SNF, AIS, FEAT and Microsoft's Enhanced Diffusion Sampling are explicit prior
+work; their identities are not claimed as a novel contribution.
+
+`cfm_mol/clamped_work.py` uses frozen conditional FM velocities and exact
+Gaussian transition factors in an orthonormal COM-free basis. The proposal
+stage runs in flowmol; the energy stage runs in omol25. The first molecular
+pilot fixes charge/spin by an explicit convention and includes a harmonic
+restraint in its target. Low ESS prevents a useful molecular claim. See
+`evidence/molecular_work_pilot.json`. The five-seed toy and all controls are in
+`evidence/nonequilibrium_toy.json`; FM distillation remains approximate.
 
 The eight-parent energy run above is a runtime/gradient calibration, not an
 energy-advantage experiment. It uses RK4-64, two common-within-parent Gaussian
@@ -147,11 +175,17 @@ duplicates validation. Energy labels have already lost precision in float32;
 charge clipping, missing source IDs and missing spin cannot be repaired from
 those tensors. New loader code preserves float64 when supplied.
 
-Raw directories are empty. The official Hugging Face **model repository**
-`facebook/OMol25` reports manual gating. A request for authentication on the
-machine or a raw-data backup is pending; credentials should not be sent in
-chat. The two environments remain separate. No home-directory writes or
-shared FlowMol dependency edits are part of this takeover.
+The eSEN checkpoint was found in woo_lab and verified by CPU H2 inference;
+the first new molecular work pilot also succeeds in all 32 energy calls.
+See `evidence/oracle_availability.json`. No checkpoint download or model token
+is needed. The public 2025-05-14 training archive has now been recovered:
+19,983,081,456 compressed bytes, SHA256
+`1924f4f50128344cef731069b409757192a83eacdb47e0d0169efc3138ff9688`,
+80 ASE-LMDB files and 3,986,754 raw records. Original electronic states and
+float64 energies are present. Exact replay is restoring their links to the
+3,941,522 accepted legacy records; an independent evaluation split remains
+to be constructed and audited. See `evidence/raw_training_recovery.json`. The two environments remain separate. No home-directory writes or shared
+FlowMol dependency edits are part of this takeover.
 
 ## Retained failed attempts
 
@@ -184,3 +218,117 @@ shared FlowMol dependency edits are part of this takeover.
 Official deadlines: September 18 (abstract), September 25 (paper), 23:59 AoE.
 https://iclr.cc/Conferences/2027/AuthorGuidelines . The existing PDF is a
 reviewable audit/development draft, not a submission-ready positive-result paper.
+
+
+## September 9 reconstruction follow-up
+
+- 45648858 completed: four matched-oracle tempered-SMC arms on condition 5846.
+  Endpoint ESS rises to 19.8--28.6/32, but ancestry remains 2--9 and the
+  log-normalizer estimates disagree by up to 16.45 nats. This is not convergence.
+- 45648859 completed: six work-path step/noise settings, with 32 target queries
+  each. ESS remains 1.42--3.00/32. More steps or changed noise alone do not solve
+  the finite-budget problem on this development condition.
+- 45665442 / 45665466 completed: three seeds and four MALA proposal arms for
+  conditions 5846 / 1137, including explicit rotational and permutation mixtures.
+  On AgBr2, rotation and symmetry arms retain much better ancestry than the
+  ordinary narrow mixture; on the eight-atom condition ancestry still collapses.
+  All controls and seeds are retained in the corresponding evidence JSON files.
+- 45674693 / 45674710 completed: three-seed defensive-mixture comparisons on
+  1137 / 5846. The broad component repairs a mathematical tail-coverage defect,
+  but the eight-atom results still have low ancestry and variable normalizers.
+  Bounded ideal weights do not imply a useful finite-budget result.
+
+The new rotational density uses the matrix-Fisher normalizer with observed
+quadrature refinement checks, not an optimally aligned Gaussian substituted
+for a density. The defensive component matches the known harmonic confinement
+Gaussian. Both use existing mathematical identities with explicit citations;
+see `notes/rotation_mixture_protocol.md` and `notes/defensive_symmetry_proposal.md`.
+No new theorem or molecular training advantage is claimed.
+
+Currently active:
+
+- 45665423, `raw_metadata_replay_v1`: complete raw-to-legacy exact replay,
+  restoring source paths, true charge/spin and float64 energies without changing
+  historical tensors. Over 2.8 million accepted records matched at last check.
+  This original source snapshot uses SQLite WAL. Cross-host live SQL reading
+  caused `OperationalError: locking protocol`; do not query that live database.
+  Use the atomic progress record and only its verified NumPy prefix. The writer
+  remains healthy. The working script now uses DELETE journaling for future
+  runs; after the original job closes, export and integrity-check a read-only
+  index before multi-host use. Never treat partially filled arrays as complete.
+- 45674682, `triatomic_reference_1137_v1`: independent, rotation-reduced
+  randomized-Sobol integration from analytic Gaussian proposals, without learned
+  templates. It was moved from serial_requeue to test with a one-hour limit
+  after a priority delay. The reference reports resolution changes and
+  independent-scramble uncertainty; it is not exact thermodynamic truth.
+
+Raw replay confirms that legacy validation 1137 is raw row 118392, a neutral
+AgBr2 doublet. The new declared electronic state matches the original source.
+The older singlet-only perturbation convention did not. Broader global
+charge/spin conditioning and a final source-group split remain required work.
+
+
+## Latest validated state (September 9 afternoon)
+
+Raw replay and export are complete. All 3,941,522 accepted geometries match
+legacy positions, types, charge features, forces and float32 energies bitwise.
+Recovered sidecars retain original float64 energies and true electronic states.
+There are 72,423 out-of-range legacy charges, 678,514 non-singlets and 403,895
+states above minimum-parity multiplicity. Electron parity is valid in all
+records. The read-only SQLite export passed integrity and exact split counts;
+use its immutable read mode, not the original live WAL database. The earlier
+cross-host WAL issue did not stop or invalidate the producer's complete replay.
+
+The independent three-atom reference 45674682 completed 12,304 eSEN queries.
+At 3,072 points per scramble (four scrambles), log(mean Z-hat)=144093.1275689,
+relative SE across scrambles=0.01675. The final resolution change is 0.0014593
+nat, but the scramble uncertainty is larger; this is a statistical reference.
+Rotation-energy variation was 6.49e-6 eV.
+
+Direct IS with 1,024 potential calls per seed on AgBr2 gives mean weight ESS
+233.85 for the confinement Gaussian, 44.52 for the ordinary defensive mixture,
+and 90.35 for the defensive symmetry mixture. Mean absolute log-normalizer
+errors against the reference are 0.05897, 0.15055 and 0.09840 nat respectively.
+Symmetry helps the mixture here, but does not beat the simple Gaussian baseline.
+The eight-atom condition remains severely weight-degenerate.
+
+The paired 10,000-update electronic-state FM continuations completed:
+45693190 global-state, 45693192 legacy features. Independent xTB assessment
+45696871 succeeds on 32/32 generated structures in both arms. Median strain is
+3.94384 eV (global) versus 3.89309 eV (legacy continuation), with means 5.81105
+and 5.75158 eV. This confirms a correct, usable state interface, not a quality
+advantage. The assessment uses original source multiplicities for both arms.
+It remains a single-training-seed development comparison.
+
+The method therefore remains scientifically not submission ready. The current
+candidate needs repeatable value beyond the simple baselines; theory repairs,
+metadata recovery and a larger test count are not that evidence.
+
+Active/next work:
+
+- 45696874: refine all independent FM pilot centers by 50 monotone steps, then
+  use the normalized defensive proposals; optimization is proposal construction,
+  not equilibrium sampling. All centers remain. Initial pilot improvement averages
+  5.32 log-target units; weight efficiency must still be evaluated.
+- 45696876: equal-oracle direct-IS control with 1,568 samples per seed. Counting
+  1,632 center-refinement queries once plus three times 1,024 endpoint queries
+  gives 4,704 calls, equal to three times 1,568 in this control. Extra model and
+  density costs are still separate and must be counted.
+- Official validation archive download/extraction is active under
+  `/n/holylabs/woo_lab/Lab/yulili/bgfm/raw_data/omol25/v250514/official_validation`.
+  URL is the public Meta 250514/val.tar.gz object, verified HTTP 200 and
+  21,293,980,744 bytes. Audit actual contents and train overlap before using it
+  as an independent evaluation source; do not equate its name with a blind test.
+- Finish assessment summaries/plots, freeze a final evaluation protocol, and
+  select a scientifically useful method before investing in broad physics-student
+  training. Global charge/spin baseline training is data FM, not Boltzmann training.
+- `scripts/research/build_perturbation_shard.py` is an older unvalidated draft;
+  none of the new reported experiments uses it. Validate or archive it before use.
+
+
+All proposal-refinement and equal-oracle-budget jobs have now completed.
+The refined eight-atom proposals still do not provide a stable high-ESS
+population across seeds; retain these negative controls before further
+method selection. Evidence is in `refined_importance_5846_v1.json` and
+`direct_importance_budget_5846_v1.json`. The active long-term goal records
+the user's explicit ICLR objective; it is not marked achieved.

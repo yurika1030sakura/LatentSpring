@@ -1,5 +1,12 @@
 # Running BGFM/HBFM on Harvard FASRC (Cannon) — this machine's setup
 
+**September 9 takeover correction:** this historical setup note describes an
+older checkout. The active, user-authorized research checkout is
+`/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`; its `CLAUDE.md` and
+`research/STATUS.md` supersede the older branch/storage statements below.
+Do not write into home or edit the shared FlowMol dependency. The obsolete netscratch raw directory is empty. A fresh public archive is
+now available at `STORE/raw_data/omol25/v250514/`; see the active STATUS.
+
 Companion to `notes/SETUP.md` (which is written for UMass Unity). This file records
 how the `norman` branch is wired up on the Harvard **FASRC / Cannon** cluster, where
 `$HOME` (`/n/home04/yulili`, 95 GB) is ~99 % full so **nothing large lives in the repo**.
@@ -34,19 +41,17 @@ write into it.
   and new `configs/omol25_4m_bgfm_onpolicy.yaml` (on-policy HBFM).
 - **FASRC SLURM launchers** in `scripts/fasrc/` (H200 partition `gpu_h200`, account `woo_lab`).
 
-## The one manual prerequisite (only for the ON-POLICY variant)
+## Oracle availability, verified September 9
 
-The **eSEN oracle checkpoint** (`esen_sm_conserving_all.pt`) is **not on this machine** and is
-gated. It is needed ONLY for the on-policy HBFM teacher (and the optional eSEN eval diagnostic).
-To enable on-policy training:
-```
-# request HF access to facebook/OMol25 + facebook/UMA, then:
-export HF_TOKEN=...  HF_HUB_DISABLE_XET=1
-# place the file at:
-#   $STORE/checkpoints/omol25/esen_sm_conserving_all.pt
-```
-The **off-policy 4M headline run needs none of this** — it trains on the precomputed DFT
-forces/energies already in the processed data.
+The eSEN checkpoint **is present** at
+`/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt`.
+SHA256: `01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025`.
+It loads in `envs/omol25` and returns finite H2 energy/forces on CPU. See
+`research/evidence/oracle_availability.json`. No new checkpoint download or
+model-access token is needed for this oracle. This verifies operation, not
+physical accuracy. Raw source metadata has been recovered in a separate public archive and is
+being linked by exact replay. The historical tensors are unchanged; a new
+independent evaluation split still requires an audit.
 
 ## Launch on the H200 (`gpu_h200` partition, gres `gpu:nvidia_h200:1`)
 
