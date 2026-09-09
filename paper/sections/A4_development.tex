@@ -6,7 +6,7 @@ archived main-text study. They do not validate the historical likelihood interpr
 establish a molecular benefit from the corrected energy loss. The runs use committed source
 snapshots, fixed initial checkpoints, dedicated trace random-number streams and recorded failures.
 The development evidence and per-seed values are generated from the raw run records by
-\texttt{scripts/research/render\_evidence.py}. The code currently passes 88 tests, including an
+\texttt{scripts/research/render\_evidence.py}. The code currently passes 103 tests, including an
 actual FlowMol endpoint head, full trajectory gradients, independent replicas and conditional FM.
 
 \subsection{A conditional sampler that matches the density definition}
@@ -167,3 +167,84 @@ steps is 0.0093/0.0902 \AA{} for the warm checkpoint and 0.0089/0.1585 \AA{} aft
 Further training, tighter numerical checks, multiple seeds, fair conditional baselines and
 independent data are required before an energy-regularisation or Boltzmann-sampling claim.
 Strain alone does not establish valid connectivity, diversity or equilibrium populations.
+
+\subsection{Further numerical and computational checks}
+
+A longer FM-only run uses the same initialization, seed and first 1,000 training examples,
+then continues to 10,000 distinct examples. It takes 1,036 seconds and peaks at 5.11 GiB.
+On the identical eight conditions and 32 Gaussian priors, xTB converges for 31/32 samples;
+the successful-only median strain is 4.49 eV. Compared with the 1,000-step checkpoint,
+22 paired samples improve, nine worsen and one pair fails under both checkpoints, using
+the same failure ranking as above. Maximum 64-to-128-step coordinate drift is 0.0930 \AA.
+The longer run is not an independent seed or an energy-training experiment.
+
+Numerical density checks remain unfavorable. At the 1,000-step checkpoint, the five-sigma
+panel has maximum centred mean 64-to-128-step changes of 82.74 and 112.61 nats for two
+parents. A counterfactual change from normalized internal edge directions $r/\|r\|$ to
+$r/\sqrt{\|r\|^2+\rho^2}$, with $\rho=0.1$ \AA, reduces these changes to 0.773 and 2.514
+nats, but changes the model itself and still fails convergence. It cannot be applied
+silently as a likelihood correction. Independently, the longer-trained original field
+on the predeclared local sigmas $0.03,0.06$ \AA{} fails a necessary 0.1-nat 128-to-256-step
+gate for two of eight parents, with changes 0.2561 and 0.4563 nats. The largest
+per-replica change in the latter case is 7.8051 nats: averaging replicas can obscure
+integration instability. Failed parents are retained.
+
+An adaptive float64 DOP853 trajectory with independent Gauss--Legendre divergence
+quadrature succeeds on an easy original-checkpoint parent at relative tolerances
+$10^{-5}$ and $3\cdot10^{-6}$. Its maximum centred mean change between these tolerances
+is 0.00354 nats, while the 128-step midpoint estimate differs by 0.2792 nats. Both
+previously identified difficult parents exceed the 6,000-position-evaluation budget
+at both tolerances. These failures are recorded rather than presented as reference values.
+
+To make full density differentiation affordable, a discrete-adjoint backend stores
+forward coordinate states and probe draws, then reconstructs one differentiable step
+at a time during backward. For a numerical map $x_{j+1}=F_j(x_j,\theta)$ and per-replica
+trace contribution $d_{r,j}$, upstream weights $w_r=\partial L/\partial\ell_r$ give
+\[
+ a_j=(\partial_xF_j)^\top a_{j+1}
+       -h\sum_r w_r\partial_xd_{r,j},\qquad
+ \partial_\theta L=\sum_j\left[(\partial_\theta F_j)^\top a_{j+1}
+       -h\sum_r w_r\partial_\theta d_{r,j}\right].
+\]
+The terminal state adjoint includes the Gaussian prior gradient. This is the ordinary
+chain rule for the discretized objective; no numerical trajectory inversion or frozen
+state-gradient approximation is used. Only first parameter derivatives are supported.
+At 128 steps, two local siblings and two common-within-parent independent trace replicas,
+the same four optimizer updates take 609 seconds and 19.03 GiB with step checkpointing,
+versus 275 seconds and 1.69 GiB with the discrete adjoint. Final weights differ by
+$3.18\cdot10^{-8}$ in relative Euclidean norm. This establishes a practical implementation
+improvement within floating-point agreement, not a new adjoint result or molecular advantage.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../research/evidence/molecular_progress.pdf}
+\caption{Completed molecular development checks. A: changing geometric normalization
+reduces two severe numerical errors but changes the field. B: the longer-trained local
+panel still fails its necessary numerical gate. C: matched full-gradient computation.
+D: FM-only conditional generation; medians use successful xTB evaluations, with all
+success counts shown. The warm checkpoint is not trained for the new conditional path.
+None of these panels establishes improved energy-trained molecular generation.}
+\label{fig:developmentprogress}
+\end{figure}
+
+\subsection{Interpretation of the common-probe control}
+
+The quadratic noise term has a more specific interpretation than generic gradient
+noise. At quadrature stage $s$, let $J_{i,s}$ be the projected velocity Jacobian for
+sibling $i$. Write $U_{i,s}=\operatorname{sym}J_{i,s}$ for Gaussian probes, or its
+off-diagonal part for Rademacher probes. With $R$ averaged independent replicas and
+fresh probes at each stage, the extra expected squared-loss penalties are
+\begin{align*}
+ B_{\mathrm{ind}}&=\frac{2}{R}\left(1-\frac1K\right)
+      \sum_s h_s^2\frac1K\sum_i\|U_{i,s}\|_F^2,\\
+ B_{\mathrm{common}}&=\frac{2}{R}\sum_s h_s^2\frac1K
+      \sum_i\|U_{i,s}-\overline U_s\|_F^2.
+\end{align*}
+These follow from the standard covariance of quadratic forms. Common probes change
+Jacobian-magnitude regularization into within-neighbourhood Jacobian-dispersion
+regularization. For probes fixed over time, apply the same covariance formula to
+$\sum_s h_sJ_{i,s}$; cross-time terms cannot be dropped. The Gaussian expression is
+invariant under orthogonal coordinate changes; the Rademacher expression generally
+is not. Deliberate Jacobian regularization of neural ODEs predates this work
+\citep{finlay2020}. Removing an implicit regularizer can increase optimization variance
+or hurt useful smoothness, so debiasing alone does not predict better molecular results.

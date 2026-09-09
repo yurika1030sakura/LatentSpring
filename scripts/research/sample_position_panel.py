@@ -42,6 +42,8 @@ def main():
     args=p.parse_args()
     if args.parents<1 or args.samples<1 or len(set(arm for arm,_ in args.checkpoint))!=len(args.checkpoint):
         raise ValueError('Require positive counts and unique arm names')
+    if not args.steps or any(s<1 for s in args.steps) or args.steps!=sorted(set(args.steps)):
+        raise ValueError('Sampling resolutions must be positive, distinct and increasing')
     split=json.loads(args.split.read_text())
     cfg=read_config_file(args.config);cfg['mol_fm'].pop('bgfm',None)
     cfg['mol_fm']['prior_config']['x']['align']=False
@@ -61,6 +63,7 @@ def main():
         'split_sha256':hashlib.sha256(args.split.read_bytes()).hexdigest(),
         'config_sha256':hashlib.sha256(args.config.read_bytes()).hexdigest(),
         'terminal_time':args.terminal_time,'seed':args.seed,'validation_indices':indices,
+        'sampling_steps':args.steps,
         'selection':'seeded random <=12-atom composition-disjoint validation, excluding clipped charge boundaries',
         'reference_coordinate_use':'composition only for generation; independent normal prior; used as FM target for separate loss diagnostic',
         'spin_metadata_available':False,'arms':[],'references':[],'complete':False}
@@ -105,7 +108,10 @@ def main():
                 item={'validation_index':index,'sample_id':sample,'positions':x.tolist(),
                       **geometry_summary(x),'seconds_per_parent':time.monotonic()-start}
                 if len(outputs)>=2:
-                    item['coordinate_rms_64_128_A']=float((outputs[-1][sl]-outputs[-2][sl]).square().sum(-1).mean().sqrt())
+                    drift=float((outputs[-1][sl]-outputs[-2][sl]).square().sum(-1).mean().sqrt())
+                    item['coordinate_convergence']={'coarse_steps':args.steps[-2],
+                        'fine_steps':args.steps[-1],'rms_A':drift}
+                    if args.steps[-2:]==[64,128]:item['coordinate_rms_64_128_A']=drift
                 arm['samples'].append(item)
             # Matched FM draws across arms; loss is a diagnostic, not likelihood.
             with torch.no_grad():

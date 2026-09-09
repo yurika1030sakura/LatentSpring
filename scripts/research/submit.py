@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import subprocess
 import tarfile
+import tempfile
 
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('name')
@@ -38,10 +39,21 @@ else:
     if out.exists():
         raise ValueError('Output directory already exists; use a new experiment name')
     if not snapshot.exists():
-        snapshot.mkdir(parents=True)
+        snapshot.parent.mkdir(parents=True,exist_ok=True)
         raw = subprocess.check_output(['git', 'archive', rev], cwd=root)
-        with tarfile.open(fileobj=io.BytesIO(raw), mode='r:') as t:
-            t.extractall(snapshot)
+        # Publish only a complete snapshot. Concurrent submissions must never
+        # observe a directory whose archive is still being extracted.
+        with tempfile.TemporaryDirectory(prefix=f'.{rev}.',dir=snapshot.parent) as stage:
+            staged=Path(stage)/'source'
+            staged.mkdir()
+            with tarfile.open(fileobj=io.BytesIO(raw), mode='r:') as t:
+                t.extractall(staged)
+            try:
+                staged.rename(snapshot)
+            except OSError:
+                if not snapshot.is_dir():raise
+    if not (snapshot/args.launcher).is_file():
+        raise ValueError('Incomplete source snapshot; refusing submission')
     # Use the launcher from the same snapshot, not the mutable working tree.
     command[2] = str(snapshot/args.launcher)
     out.mkdir(parents=True)

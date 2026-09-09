@@ -10,9 +10,12 @@ scientific gates; `research/PLAN.md` records the deadline plan. The user has
 explicitly authorised framework reconstruction. The new position-only branch
 in `cfm_mol/clamped_fm.py` and `scripts/research/train_clamped_position.py`
 factorises a frozen composition prior from an unaligned conditional geometry
-flow ending at T=0.8. Its initial 1,000-step pilot is finite but is not evidence
-of an energy-training or generation advantage. See
-`notes/factorized_geometry_flow.md` for the altered training target.
+flow. Endpoint-head experiments end at T=0.8; a separately trained residual
+velocity head ends at T=1 and records `position_parameterization=displacement`
+in its checkpoint. Never guess the head semantics or silently reinterpret old
+weights. See `notes/factorized_geometry_flow.md` and
+`notes/displacement_geometry_flow.md` for the respective targets. No molecular
+energy-training advantage has yet been established.
 
 ## Current scientific status
 
