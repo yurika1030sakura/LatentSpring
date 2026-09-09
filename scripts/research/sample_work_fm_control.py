@@ -27,6 +27,7 @@ from molecular_tempered_pilot import sha,write_json
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--work-run',type=Path,required=True);p.add_argument('--out',type=Path,required=True)
+    p.add_argument('--particles',type=int,help='Optional fixed baseline sample count; defaults to source evaluation count')
     p.add_argument('--device',default='cuda');args=p.parse_args()
     source=args.work_run/'results.json';old=json.loads(source.read_text())
     if not old['complete']:raise ValueError('Require a completed source calibration')
@@ -41,10 +42,11 @@ def main():
     model.load_state_dict(state['state_dict'],strict=True);patch_smooth_geometry(model,protocol.get('geometry_softening',0.))
     model=model.to(args.device).float().eval();del state
     condition=old['condition'];n=len(condition['numbers']);dimension=3*(n-1)
-    settings=old['configuration'];batch=settings['batch'];count=settings['eval_particles'];seed=settings['seed']
-    if count%batch:raise ValueError('Evaluation must be divisible by source batch size')
+    settings=old['configuration'];batch=settings['batch'];count=settings['eval_particles'] if args.particles is None else args.particles;seed=settings['seed']
+    if count<1 or count%batch:raise ValueError('Positive evaluation count divisible by source batch size required')
+    model_kT=protocol.get('requested_kT',1.)
     base=graph_from_condition({'atomic_numbers':condition['numbers'],'charge':condition['charge'],
-        'spin_multiplicity':condition['spin_multiplicity'],'requested_kT_eV':settings['kT']},cfg['dataset']['atom_map'],
+        'spin_multiplicity':condition['spin_multiplicity'],'requested_kT_eV':model_kT},cfg['dataset']['atom_map'],
         n_bond_classes=5 if cfg['mol_fm'].get('explicit_aromaticity',False) else 4)
     graph=dgl.batch([base]*batch).to(args.device);nbi,_=get_batch_idxs(graph);uem=get_upper_edge_mask(graph)
     basis=centered_orthonormal_basis(n,device=args.device)
@@ -53,6 +55,7 @@ def main():
     report={'complete':False,'scope':__doc__,'condition':condition,'source_results':str(source.resolve()),
         'source_sha256':sha(source),'checkpoint_sha256':sha(ckpt),'script_sha256':sha(Path(__file__)),
         'reference_geometry_loaded':False,'prior_seed_rule':'900000001 + source_seed * 1009 + batch_index',
+        'model_input_kT_eV':model_kT,'source_target_kT_eV':settings['kT'],
         'source_seed':seed,'particles':count,'prior_std':old['prior_std'],'solver':'midpoint',
         'steps':[16,64],'neural_field_calls_per_sample':[32,128],'samples':[]}
     write_json(output,report);outputs={steps:[] for steps in report['steps']};start=time.perf_counter()

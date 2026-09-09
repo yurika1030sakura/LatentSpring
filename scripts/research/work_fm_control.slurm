@@ -12,6 +12,7 @@ set -euo pipefail
 SOURCE_ROOT="${1:?source required}"
 RUN_ROOT="${2:?output required}"
 WORK_RUN="${3:?completed work calibration required}"
+CONTROL_PARTICLES="${4:-}"
 FLOWMOL_ENV=/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol
 export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH="$SOURCE_ROOT"
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
@@ -20,7 +21,9 @@ export MPLCONFIGDIR="${SLURM_TMPDIR:-/tmp}/bgfm_work_fm_mpl_${SLURM_JOB_ID}"
 export XDG_CACHE_HOME="${SLURM_TMPDIR:-/tmp}/bgfm_work_fm_cache_${SLURM_JOB_ID}"
 mkdir -p "$MPLCONFIGDIR" "$XDG_CACHE_HOME" "$RUN_ROOT"
 cd "$SOURCE_ROOT"
-"$FLOWMOL_ENV/bin/python" -u scripts/research/sample_work_fm_control.py --work-run "$WORK_RUN" --out "$RUN_ROOT/sampling"
+BGFM_SAMPLE_ARGS=()
+if [[ -n "$CONTROL_PARTICLES" ]]; then BGFM_SAMPLE_ARGS+=(--particles "$CONTROL_PARTICLES"); fi
+"$FLOWMOL_ENV/bin/python" -u scripts/research/sample_work_fm_control.py --work-run "$WORK_RUN" --out "$RUN_ROOT/sampling" "${BGFM_SAMPLE_ARGS[@]}"
 exec "$FLOWMOL_ENV/bin/python" -u scripts/research/assess_work_panel.py \
  --samples fm16 "$RUN_ROOT/sampling/fm_midpoint_16_samples.pt" \
  --samples fm64 "$RUN_ROOT/sampling/fm_midpoint_64_samples.pt" \
