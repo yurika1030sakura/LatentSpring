@@ -1,0 +1,243 @@
+{
+  "complete": true,
+  "scope": "Matched-oracle tempered sampling from Gaussian or FM-mixture proposals.\n\nDevelopment comparison with fixed schedules. A separate FM pilot fixes a finite\nGaussian mixture with exact density; this is not the FM model's likelihood.\nRaw electronic-state provenance is unavailable, so the computed spin is declared.\n",
+  "configuration": {
+    "config": "configs/sweep/a1_fm_only_s2.yaml",
+    "checkpoint": "runs/displacement_development_rho01_v2/training/last.ckpt",
+    "oracle": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+    "oracle_python": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python",
+    "out": "runs/symmetry_preflight_v1",
+    "source_rows": [
+      5846
+    ],
+    "seeds": [
+      9031
+    ],
+    "particles": 4,
+    "centers": 4,
+    "stages": 2,
+    "fm_steps": 16,
+    "mixture_std": 0.3,
+    "proposal_std": 0.08,
+    "moves": 1,
+    "resample_threshold": 0.5,
+    "beta_power": 2.0,
+    "max_score_norm": 100.0,
+    "max_permutations": 64,
+    "rotation_tolerance": 1e-10,
+    "kT": 1.0,
+    "restraint_strength": 0.1,
+    "arms": [
+      "rotation_mala",
+      "symmetry_mala"
+    ],
+    "device": "cpu",
+    "oracle_device": "cpu"
+  },
+  "checkpoint_sha256": "704cf7be0763ed466cbd21d8dcb012d47685aff9689db91645a1a95088c23ce9",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "source_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/scripts/research/molecular_tempered_pilot.py": "14ff48d6f888a0ad640999a7995fded51c3096e7ee831eca92925444b1f6c87b",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/tempered_smc.py": "ff43719e192b724f02c154c49dfd834dc986766be6953a55273fc0c8f1273bdd",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/energy_oracle.py": "a3492212822ac03d5c9bf6cdbddcd89bdf002dda25f000b427c8e506c36069bc",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/rotation_mixture.py": "eb636e06219e38617d3abe3df911d46684ff2a10571286bce0e606d3bf5a5058",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/scripts/research/oracle_worker.py": "0069b36a21c15ccdfec16f84067b8616fa7cc2fe6a8c73ada60532f963db30ba"
+  },
+  "research_protocol": {
+    "config": "configs/sweep/a1_fm_only_s2.yaml",
+    "warm_checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/abl/a1_fm_only_s2/lightning_logs/version_30674367/checkpoints/midstep-step=30000.ckpt",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/displacement_development_rho01_v2/training",
+    "steps": 10000,
+    "seed": 9004,
+    "terminal_time": 1.0,
+    "lr": 2e-05,
+    "batch_size": 1,
+    "device": "cuda",
+    "lambda_energy": 0.0,
+    "energy_every": 4,
+    "energy_steps": 16,
+    "energy_cap": 1500.0,
+    "energy_estimator": "replica_product",
+    "common_probes": false,
+    "checkpoint_energy": false,
+    "discrete_adjoint_energy": false,
+    "perturbation_indices": null,
+    "energy_control": "value",
+    "energy_gradient_diagnostics": false,
+    "energy_parents": 1,
+    "geometry_softening": 0.1,
+    "position_parameterization": "displacement",
+    "energy_shard": "/n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/perturbation_train_n30000_s0.pt",
+    "format": "clamped_position_v1",
+    "composition_prior_checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/abl/a1_fm_only_s2/lightning_logs/version_30674367/checkpoints/midstep-step=30000.ckpt",
+    "warm_sha256": "4d5b3a188d81a75c2c4b1170b065a090b3535beae72c9ce196d5877e2dd38ff4",
+    "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+    "data_order_sha256": "6e3ae9f1e76e78f11015d370dc09d1408906eae1778c64ef9f98b1838c94d519",
+    "data_endpoint_time": 1.0,
+    "alignment": false,
+    "history_self_conditioning": false,
+    "steric_retractions": false,
+    "energy_temperature_eV": 1.0,
+    "purpose": "development baseline; not a finished molecular result"
+  },
+  "target": "exp(-(eSEN(x)+restraint_strength/2*||x||^2)/kT) on intrinsic COM-free H",
+  "normalization_assumption": "eSEN bounded below, positive harmonic confinement",
+  "conditions": [
+    {
+      "source_row": 5846,
+      "symbols": [
+        "H",
+        "P",
+        "O",
+        "C",
+        "H",
+        "C",
+        "O",
+        "Mg"
+      ],
+      "charge": 1,
+      "spin_multiplicity": 1,
+      "spin_provenance": "declared minimum electron-parity multiplicity; original OMol state unknown",
+      "source_scope": "legacy validation development condition, not blind test",
+      "fm_center_seconds": 1.4221749149728566,
+      "fm_center_field_evaluations": 128,
+      "center_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/symmetry_preflight_v1/centers_5846.pt",
+      "center_sha256": "ad8d4a444adb70b25bc653819cbe3576b4c11c4f9b46e5ccd396ba886eb4a4c9",
+      "symmetry_templates": {
+        "total_identical_atom_permutations": 8,
+        "used_permutations": 8,
+        "all_permutations_enumerated": true,
+        "reflections_included": true,
+        "template_count": 64,
+        "permutation_seed": 54877
+      }
+    }
+  ],
+  "rows": [
+    {
+      "source_row": 5846,
+      "seed": 9031,
+      "arm": "rotation_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.25,
+          "ess_before_resampling": 1.0384115645736043,
+          "resampled": true,
+          "distinct_initial_ancestors": 1,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 8,
+          "log_normalizer_estimate": 5232.345012030528
+        },
+        {
+          "stage": 2,
+          "beta": 1.0,
+          "ess_before_resampling": 2.7606202099487374,
+          "resampled": false,
+          "distinct_initial_ancestors": 1,
+          "acceptance_fraction": 0.75,
+          "target_evaluations": 12,
+          "log_normalizer_estimate": 20933.433242869432
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 4,
+        "ess": 2.7606202099487374,
+        "ess_fraction": 0.6901550524871843,
+        "maximum_weight": 0.5191549438206519,
+        "distinct_initial_ancestors": 1,
+        "ancestral_ess": 1.0,
+        "log_normalizer_estimate": 20933.433242869432,
+        "target_evaluations": 12,
+        "resampling_events": 1,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.014646305987957705,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 2.280629209586847,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20917.91731136966,
+      "unweighted_mean_energy_eV": -20917.85087446561,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/symmetry_preflight_v1/particles_5846_9031_rotation_mala.pt",
+      "particle_sha256": "bcb34ad28f3afaf05a208c7cfe1b2626c5e9eed28370dcc7a753717f623f14c2",
+      "density_numerics": {
+        "cumulative_max_order": 256,
+        "cumulative_max_final_log_refinement_change": 7.349854058702476e-11,
+        "certified_error_bound": false,
+        "scope": "deterministic quadrature convergence screen; sampling identities concern the exact integral"
+      },
+      "oracle_evaluations": 12,
+      "requested_oracle_evaluations": 12,
+      "seconds": 1.420700664166361
+    },
+    {
+      "source_row": 5846,
+      "seed": 9031,
+      "arm": "symmetry_mala",
+      "complete": true,
+      "history": [
+        {
+          "stage": 1,
+          "beta": 0.25,
+          "ess_before_resampling": 1.2503555022348247,
+          "resampled": true,
+          "distinct_initial_ancestors": 1,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 8,
+          "log_normalizer_estimate": 5230.936656128172
+        },
+        {
+          "stage": 2,
+          "beta": 1.0,
+          "ess_before_resampling": 3.0015886877902074,
+          "resampled": false,
+          "distinct_initial_ancestors": 1,
+          "acceptance_fraction": 1.0,
+          "target_evaluations": 12,
+          "log_normalizer_estimate": 20928.618280924446
+        }
+      ],
+      "success": true,
+      "summary": {
+        "particles": 4,
+        "ess": 3.0015886877902074,
+        "ess_fraction": 0.7503971719475518,
+        "maximum_weight": 0.35953799115844637,
+        "distinct_initial_ancestors": 1,
+        "ancestral_ess": 1.0,
+        "log_normalizer_estimate": 20928.618280924446,
+        "target_evaluations": 12,
+        "resampling_events": 1,
+        "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.017858220531575854,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 1.830346473502456,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -20919.38067411886,
+      "unweighted_mean_energy_eV": -20919.55888954726,
+      "particle_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/symmetry_preflight_v1/particles_5846_9031_symmetry_mala.pt",
+      "particle_sha256": "5d91eb76ff4bdd84a54b18fba6b1a7d062a86064f55983794fee7d747e95d44c",
+      "density_numerics": {
+        "cumulative_max_order": 128,
+        "cumulative_max_final_log_refinement_change": 2.8535396268125623e-11,
+        "certified_error_bound": false,
+        "scope": "deterministic quadrature convergence screen; sampling identities concern the exact integral"
+      },
+      "oracle_evaluations": 12,
+      "requested_oracle_evaluations": 12,
+      "seconds": 1.3838943289592862
+    }
+  ],
+  "source_record": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/symmetry_preflight_v1/results.json",
+  "source_record_sha256": "65afcd73389c5ac182ee72997e2589342d77e386f9d96e612b65e833cb47f500"
+}

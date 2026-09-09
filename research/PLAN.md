@@ -11,6 +11,24 @@ September 20. Submit only claims supported by completed experiments.
 
 ## Scientific hypothesis to test
 
+September 9 reconstruction: the user explicitly authorizes replacing the
+theory, objective and framework. The original grouped-dispersion study below
+is retained as an audited baseline, not an obligatory final paper narrative.
+The current primary test is whether a properly normalized, symmetry-aware
+proposal derived from a frozen FM pilot can support useful tempered correction
+and subsequent FM distillation across molecular conditions without neural-flow
+likelihood integration. AIS/SMC, matrix-Fisher identities, symmetry averaging
+and weighted CFM are established tools, not sufficient novelty by themselves.
+
+Current gates are global coverage/normalizer agreement, surviving diversity,
+accurate electronic-state conditioning and matched oracle/compute performance.
+An endpoint ESS increase after resampling does not pass these gates. The public
+4M raw training archive has now been recovered; exact replay is restoring
+source identities, unclipped charge, spin and original float64 energies.
+Final evaluation must use a frozen, audited split rather than the duplicated
+legacy test file. See `notes/tempered_sampling_protocol.md` and
+`notes/rotation_mixture_protocol.md` for concrete protocols.
+
 Can physically labelled off-policy molecular neighbourhoods improve an
 amortised molecular flow when its position density is defined correctly and
 both numerical integration and stochastic-trace errors are controlled?
