@@ -57,31 +57,50 @@ class TrainablePath:
 
 
 def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,generator,*,
-                           prior_std=1.,checkpoint_steps=False):
+                           prior_std=1.,checkpoint_steps=False,terminal_std=None,max_drift_norm=None):
     """Simulate reparameterized paths and retain complete first-order gradients.
 
     x0 must be an independent draw from the stated isotropic Gaussian.
-    Fixed standard deviation noise_scale*sqrt(dt) is used in each direction.
+    With terminal_std=None, fixed noise_scale*sqrt(dt) is used in both
+    directions (the original Euler control). Otherwise exact Gaussian reference
+    kernels connect geometric standard deviations from prior_std to terminal_std.
+    Their correlation is exp(-noise_scale^2*dt/2). Neural drifts add residual
+    mean shifts. With zero residual, the reference marginal and its reverse
+    conditional are exact at any step count.
     Backward drift is an auxiliary normalized kernel, not physical time reversal.
     Noise is generated once and reused exactly during checkpoint recomputation.
     """
     _states(x0);grid=_schedule(times,'times')
     if not math.isfinite(noise_scale) or noise_scale<=0 or not math.isfinite(prior_std) or prior_std<=0:
         raise ValueError('Positive finite noise and prior scales required')
+    if terminal_std is not None and (not math.isfinite(terminal_std) or terminal_std<=0):raise ValueError('Invalid terminal reference scale')
+    if max_drift_norm is not None and (not math.isfinite(max_drift_norm) or max_drift_norm<=0):raise ValueError('Invalid drift bound')
     log_initial=gaussian_log_density(x0,torch.zeros_like(x0),prior_std)
     x=x0;ratio=x0.new_zeros(len(x0),dtype=torch.float64)
     for left,right in zip(grid,grid[1:]):
         dt=right-left;std=noise_scale*math.sqrt(dt)
+        af=ab=1.;std_forward=std_backward=std
+        if terminal_std is not None:
+            left_scale=prior_std*(terminal_std/prior_std)**left
+            right_scale=prior_std*(terminal_std/prior_std)**right
+            correlation=math.exp(-.5*noise_scale**2*dt)
+            relative_noise=math.sqrt(-math.expm1(-noise_scale**2*dt))
+            af=correlation*right_scale/left_scale;ab=correlation*left_scale/right_scale
+            std_forward=right_scale*relative_noise;std_backward=left_scale*relative_noise
         noise=torch.randn(x.shape,dtype=x.dtype,device=x.device,generator=generator)
-        def step(state,epsilon,left=left,right=right,dt=dt,std=std):
+        def step(state,epsilon,left=left,right=right,dt=dt,af=af,ab=ab,sf=std_forward,sb=std_backward):
             drift=forward_drift(state,left)
             if drift.shape!=state.shape or not torch.isfinite(drift).all():raise ValueError('Invalid forward drift')
-            mean=state+dt*drift
-            terminal=mean+std*epsilon
+            if max_drift_norm is not None:
+                drift=drift*max_drift_norm/torch.sqrt(max_drift_norm**2+drift.square().sum(-1,keepdim=True))
+            mean=af*state+dt*drift
+            terminal=mean+sf*epsilon
             reverse_drift=backward_drift(terminal,right)
             if reverse_drift.shape!=terminal.shape or not torch.isfinite(reverse_drift).all():raise ValueError('Invalid backward drift')
-            reverse_mean=terminal+dt*reverse_drift
-            change=gaussian_log_density(terminal,mean,std)-gaussian_log_density(state,reverse_mean,std)
+            if max_drift_norm is not None:
+                reverse_drift=reverse_drift*max_drift_norm/torch.sqrt(max_drift_norm**2+reverse_drift.square().sum(-1,keepdim=True))
+            reverse_mean=ab*terminal+dt*reverse_drift
+            change=gaussian_log_density(terminal,mean,sf)-gaussian_log_density(state,reverse_mean,sb)
             return terminal,change
         if checkpoint_steps:
             x,increment=checkpoint(step,x,noise,use_reentrant=False)

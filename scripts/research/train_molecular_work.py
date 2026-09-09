@@ -40,11 +40,14 @@ def main():
     p.add_argument('--noise',type=float,default=.2);p.add_argument('--kT',type=float,default=1.)
     p.add_argument('--restraint',type=float,default=.1);p.add_argument('--seed',type=int,default=9051)
     p.add_argument('--mode',choices=['joint','backward_only'],default='joint')
+    p.add_argument('--reference-kernel',choices=['euler','gaussian'],default='gaussian')
+    p.add_argument('--prior-std',type=float,default=1.)
+    p.add_argument('--max-drift-per-sqrt-dimension',type=float,default=20.)
     p.add_argument('--checkpoint-steps',action='store_true');p.add_argument('--device',default='cuda')
     args=p.parse_args()
     if min(args.steps,args.path_steps,args.batch,args.eval_particles)<1 or args.eval_particles%args.batch:
         raise ValueError('Positive counts and evaluation divisible by batch are required')
-    if any(not math.isfinite(v) or v<=0 for v in [args.lr,args.noise,args.kT,args.restraint]):raise ValueError('Invalid scale')
+    if any(not math.isfinite(v) or v<=0 for v in [args.lr,args.noise,args.kT,args.restraint,args.prior_std,args.max_drift_per_sqrt_dimension]):raise ValueError('Invalid scale')
     args.out.mkdir(parents=True,exist_ok=True);output=args.out/'results.json'
     if output.exists():raise FileExistsError(output)
     torch.manual_seed(args.seed)
@@ -73,7 +76,8 @@ def main():
     optimizer=torch.optim.AdamW(parameters,lr=args.lr,weight_decay=0.)
     graph=dgl.batch([base]*args.batch).to(args.device);metadata.attach(graph,[args.source_row]*args.batch,args.kT)
     nbi,_=get_batch_idxs(graph);uem=get_upper_edge_mask(graph)
-    basis=centered_orthonormal_basis(n,device=args.device);prior_std=math.sqrt(args.kT/args.restraint)
+    basis=centered_orthonormal_basis(n,device=args.device);prior_std=args.prior_std
+    terminal_std=math.sqrt(args.kT/args.restraint) if args.reference_kernel=='gaussian' else None
     def drift(model,z,t,sign):
         x=torch.einsum('nk,bkd->bnd',basis,z.reshape(args.batch,n-1,3)).reshape(args.batch*n,3).float()
         # Re-enter deterministic mode in checkpoint recomputation as well.
@@ -96,7 +100,8 @@ def main():
             x0=torch.randn((args.batch,dimension),device=args.device,dtype=torch.float64,generator=g)*prior_std
             path=gaussian_training_path(x0,lambda z,t:drift(forward,z,t,1.),lambda z,t:drift(backward,z,t,-1.),
                 torch.linspace(0,1,args.path_steps+1,dtype=torch.float64),args.noise,g,prior_std=prior_std,
-                checkpoint_steps=args.checkpoint_steps and training)
+                checkpoint_steps=args.checkpoint_steps and training,terminal_std=terminal_std,
+                max_drift_norm=args.max_drift_per_sqrt_dimension*math.sqrt(dimension))
             positions=torch.einsum('nk,bkd->bnd',basis,path.terminal.reshape(args.batch,n-1,3))
             energy,force=oracle.evaluate(positions)
             linked=external_energy(positions,energy,force) if training else energy.to(positions)
@@ -115,6 +120,11 @@ def main():
                 'geometry':geometry_metrics(x,torch.full((len(x),),1/len(x),dtype=torch.float64),numbers),
                 'weighted_geometry':geometry_metrics(x,weights,numbers),'oracle_evaluations':oracle.evaluated-before}
             torch.save({'positions':x,'energy_eV':energy,'work':work,'condition':report['condition']},args.out/f'{label}_samples.pt')
+            if label=='final' and args.mode=='backward_only':
+                initial=torch.load(str(args.out/'initial_samples.pt'),map_location='cpu',weights_only=False)
+                result['frozen_forward_positions_unchanged']=bool(torch.equal(x,initial['positions']))
+                if not result['frozen_forward_positions_unchanged']:
+                    raise RuntimeError('Backward-only control changed the fixed forward sampling law')
             report['evaluations'][label]=result;write_json(output,report);print(json.dumps({'evaluation':label,**result}),flush=True)
         evaluate('initial')
         for step in range(args.steps):

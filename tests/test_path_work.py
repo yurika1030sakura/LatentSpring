@@ -51,3 +51,30 @@ def test_invalid_oracle_does_not_enter_training():
     x=torch.zeros(2,3,3,requires_grad=True)
     with pytest.raises(ValueError,match='Non-finite'):
         external_energy(x,torch.tensor([float('nan'),0]),torch.zeros_like(x))
+
+
+@pytest.mark.parametrize('steps',[1,3,16])
+def test_gaussian_reference_bridge_has_constant_work_for_different_endpoint_widths(steps):
+    g=torch.Generator().manual_seed(173);initial=.8;terminal=math.sqrt(10)
+    x=torch.randn(500,3,dtype=torch.float64,generator=g)*initial
+    path=gaussian_training_path(x,torch_zero,torch_zero,torch.linspace(0,1,steps+1),.4,g,
+        prior_std=initial,terminal_std=terminal)
+    energy=.5*(path.terminal/terminal).square().sum(-1)+3*math.log(terminal*math.sqrt(2*math.pi))
+    torch.testing.assert_close(path.work(energy),torch.zeros(500,dtype=torch.float64),rtol=0,atol=2e-12)
+
+
+def torch_zero(x,t):return torch.zeros_like(x)
+
+
+def test_reference_residual_gradient_and_checkpoint_agreement():
+    a=torch.tensor(.2,dtype=torch.float64,requires_grad=True)
+    def loss(value,checked=False):
+        g=torch.Generator().manual_seed(247);x=torch.randn(80,2,dtype=torch.float64,generator=g)
+        path=gaussian_training_path(x,lambda z,t:value*torch.tanh(z),lambda z,t:-value*torch.tanh(z),
+            [0,.3,.7,1.],.3,g,terminal_std=2.,max_drift_norm=3.,checkpoint_steps=checked)
+        return path.work(.5*path.terminal.square().sum(-1)/4).mean()
+    gradient,=torch.autograd.grad(loss(a),a)
+    finite=(loss(a+1e-5)-loss(a-1e-5))/2e-5
+    torch.testing.assert_close(gradient,finite,rtol=1e-7,atol=1e-9)
+    checked,=torch.autograd.grad(loss(a,True),a)
+    torch.testing.assert_close(gradient,checked,rtol=0,atol=1e-12)
