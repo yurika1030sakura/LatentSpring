@@ -13,6 +13,7 @@ p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('name')
 p.add_argument('--launcher', default='scripts/research/runtime_smoke.slurm')
 p.add_argument('--partition',help='Optional Slurm partition override; launcher resource/time limits still apply')
+p.add_argument('--dependency',help='Optional Slurm dependency, e.g. afterok:JOB1:JOB2')
 p.add_argument('--gpu-hours', type=float, default=1.)
 p.add_argument('--config')
 p.add_argument('--seed', type=int)
@@ -30,6 +31,7 @@ snapshot = root/'runs/source_snapshots'/rev
 out = root/'runs'/args.name
 command = ['sbatch', '--parsable']
 if args.partition is not None:command+=['--partition',args.partition]
+if args.dependency is not None:command+=['--dependency',args.dependency]
 launcher_index=len(command)
 command += [args.launcher, str(snapshot), str(out)]
 if args.config is not None or args.seed is not None:
@@ -67,6 +69,7 @@ else:
         'job_id':job, 'name':args.name, 'source_commit':rev,
         'snapshot':str(snapshot), 'output':str(out),
         'max_gpu_hours':args.gpu_hours, 'launcher':args.launcher, 'partition_override':args.partition,
+        'dependency':args.dependency,
         'config':args.config, 'seed':args.seed,
         'launcher_args':args.launcher_arg,
         'submission_state':'submitted' if submitted.returncode == 0 else 'rejected',

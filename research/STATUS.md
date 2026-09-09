@@ -473,3 +473,14 @@ reference-coordinate dataset. A two-update CPU smoke on development row 167
 with finite gradients and saved parameters. Its four-particle ESS remains about
 one; it is an interface check, not a performance result. Reserved conditions
 remain unqueried. See evidence/official_condition_work_smoke.json.
+
+The actual source reference for condition 5846 passes the same xTB check: strain
+.89014 eV and initial maximum force 2.8724 eV/A, with one contact component and
+no overlap. This does not establish DFT accuracy, but shows the xTB failures are
+not inevitable for this condition/electronic state. The reference is used only
+as an assessment control, never as the initialization for generated positions.
+
+The pure FM control's first submission was rejected by gpu_test's per-user
+submission limit and created no job. Retry 45729734 uses the regular gpu
+partition, the same half-hour limit, and immutable source 9f99c7c. It was PENDING
+for priority at the September 9 20:32 UTC check. Do not relaunch this accepted job.
