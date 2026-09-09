@@ -63,3 +63,10 @@ regular gpu partition, half-hour maximum; PENDING for priority at 20:32 UTC.
 Version v1 was rejected by gpu_test's submit limit and has no job ID. The source
 reference itself passes xTB with strain .89014 eV and no overlap, so poor work
 samples cannot be excused solely by unsupported condition/electronic state.
+
+At 20:34 UTC, 45729734 had started RUNNING. The 500-update independent assessment
+is queued as 45729911 (mean_work_xtb_500_v1), source bf7669a, afterok dependencies
+on 45726541 and 45726651. It compares initial/joint/energy-only samples on the
+same 32 fixed indices, with all 256 geometries per arm entering diagnostics.
+Do not resubmit accepted jobs. If a dependency fails, retain that result and
+inspect the dependency before changing the assessment job.

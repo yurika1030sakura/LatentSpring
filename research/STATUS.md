@@ -484,3 +484,7 @@ The pure FM control's first submission was rejected by gpu_test's per-user
 submission limit and created no job. Retry 45729734 uses the regular gpu
 partition, the same half-hour limit, and immutable source 9f99c7c. It was PENDING
 for priority at the September 9 20:32 UTC check. Do not relaunch this accepted job.
+It started RUNNING by 20:34 UTC. The 500-update independent assessment 45729911
+is queued with afterok dependencies on both training jobs, using source bf7669a
+and the unchanged 32-index xTB protocol. All 256 endpoint geometries per arm
+enter its geometry diagnostics. No result from these pending runs is yet claimed.
