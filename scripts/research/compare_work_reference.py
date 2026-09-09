@@ -22,6 +22,7 @@ def main():
     p.add_argument('--run',type=Path,required=True);p.add_argument('--reference',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--unweighted',action='store_true',help='Compare endpoint moments without a density or normalizer claim')
+    p.add_argument('--stages',nargs='+',choices=['initial','final'],default=['initial','final'])
     args=p.parse_args()
     if args.out.exists():raise FileExistsError(args.out)
     result=args.run/'results.json';reference=args.reference/'reference.json'
@@ -33,7 +34,7 @@ def main():
     kT=training['configuration']['kT'];matching=[r for r in ref['aggregate'] if abs(r['kT_eV']-kT)<1e-12]
     if not matching:raise ValueError('No matching reference temperature')
     target=max(matching,key=lambda r:r['particles_per_scramble']);rows=[];sources={}
-    for stage in ['initial','final']:
+    for stage in args.stages:
         path=args.run/f'{stage}_samples.pt';data=torch.load(str(path),map_location='cpu',weights_only=False)
         x=data['positions'].double().numpy();n=len(x)
         if n<2 or not np.isfinite(x).all():raise ValueError('Invalid endpoint sample panel')
