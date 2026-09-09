@@ -53,7 +53,9 @@ def main():
         'scope':'deterministic source replay, not a chemical identity split certificate'}
     mask=np.zeros(expected,dtype=bool);mask[np.random.default_rng(args.seed).permutation(expected)[:lengths['val']]]=True
     connection=sqlite3.connect(database)
-    connection.execute('PRAGMA journal_mode=WAL');connection.execute('PRAGMA synchronous=FULL')
+    # Laboratory storage is shared across hosts; WAL's shared-memory protocol
+    # is unsuitable for concurrent access there. Use rollback journaling.
+    connection.execute('PRAGMA journal_mode=DELETE');connection.execute('PRAGMA synchronous=FULL')
     connection.execute('CREATE TABLE IF NOT EXISTS metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)')
     connection.execute('CREATE TABLE IF NOT EXISTS records (raw_index INTEGER PRIMARY KEY, accepted_index INTEGER UNIQUE NOT NULL, split TEXT NOT NULL, processed_index INTEGER NOT NULL, source TEXT, reference_source TEXT, data_id TEXT, sid TEXT, charge INTEGER, spin INTEGER, n_atoms INTEGER NOT NULL, energy_eV REAL, UNIQUE(split,processed_index))')
     columns={'raw_indices':np.int64,'energy_float64':np.float64,'total_charge':np.int16,'spin_multiplicity':np.int16,

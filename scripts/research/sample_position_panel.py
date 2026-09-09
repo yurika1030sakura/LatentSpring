@@ -89,19 +89,37 @@ def main():
         model.load_state_dict(state['state_dict'],strict=True);model.to(args.device).float().eval()
         from cfm_mol.smooth_geometry import patch_smooth_geometry
         patch_smooth_geometry(model,(protocol or {}).get('geometry_softening',0.))
+        metadata=None
+        metadata_path=(protocol or {}).get('electronic_metadata')
+        if metadata_path:
+            from ase.data import atomic_numbers
+            from cfm_mol.electronic_metadata import ElectronicMetadata
+            metadata=ElectronicMetadata(metadata_path,'val',[atomic_numbers[s] for s in cfg['dataset']['atom_map']])
+            metadata.verify_processed_file(dataset.processed_data_dir/'val_data_processed.pt')
+            report['spin_metadata_available']=True
+            report['electronic_metadata_progress_sha256']=metadata.progress_sha256
+            for reference in report['references']:
+                source_index=int(metadata.indices[reference['validation_index']])
+                reference['spin']=int(metadata.values['spin_multiplicity'][source_index])
+                reference['charge_recorded']=int(metadata.values['total_charge'][source_index])
+                reference['raw_source_index']=int(metadata.values['raw_indices'][source_index])
+        prior_std=(protocol or {}).get('prior_std',1.)
         arm={'name':name,'checkpoint':str(checkpoint),
             'checkpoint_sha256':hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
             'position_training_steps':state['global_step'] if protocol is not None else 0,
             'geometry_softening':(protocol or {}).get('geometry_softening',0.),
             'position_parameterization':parameterization,
             'position_backbone':(protocol or {}).get('position_backbone','flowmol'),
+            'prior_std':prior_std,
+            'electronic_conditioning':(protocol or {}).get('electronic_conditioning',False),
             'samples':[],'held_fm_losses':[]}
         report['arms'].append(arm)
         for row,(index,base) in enumerate(zip(indices,graphs)):
             g=dgl.batch([base]*args.samples).to(args.device)
+            if metadata is not None:metadata.attach(g,[index]*args.samples,(protocol or {}).get('requested_kT',1.))
             nbi,_=get_batch_idxs(g);uem=get_upper_edge_mask(g)
             generator=torch.Generator().manual_seed(args.seed+100003*index)
-            x0=torch.randn(g.ndata['x_1_true'].shape,generator=generator).to(args.device)
+            x0=torch.randn(g.ndata['x_1_true'].shape,generator=generator).to(args.device)*prior_std
             outputs=[];start=time.monotonic()
             for steps in args.steps:
                 outputs.append(sample_clamped_flow(model,g,nbi,uem,x0=x0,
@@ -122,7 +140,7 @@ def main():
             with torch.no_grad():
                 generator=torch.Generator(device=args.device).manual_seed(args.seed+index)
                 fm=clamped_fm_loss(model,g,nbi,uem,terminal_time=args.terminal_time,generator=generator,
-                    parameterization=parameterization)
+                    parameterization=parameterization,prior_std=prior_std)
             arm['held_fm_losses'].append({'validation_index':index,'loss':float(fm)})
             write_json(args.out/'samples.json',report)
             print(json.dumps({'arm':name,'parent':index,'seconds':time.monotonic()-start}),flush=True)

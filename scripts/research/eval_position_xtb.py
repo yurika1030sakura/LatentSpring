@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Independent GFN2-xTB strain check, with every attempted sample retained.
 
-Archived OMol spin labels are unavailable. This development evaluator declares
-minimum electron-parity spin (UHF 0/1) for both single point and relaxation;
+Source multiplicities are used when supplied. For legacy files without spin,
+this evaluator declares minimum electron-parity spin (UHF 0/1);
 it does not claim the original DFT electronic state. Strain alone does not
 check identity, connectivity, diversity or Boltzmann populations.
 """
@@ -59,14 +59,17 @@ def evaluate(task,binary,out,max_cycles):
     periodic=Chem.GetPeriodicTable()
     symbols=task['symbols'];charge=task['charge_recorded']
     electrons=sum(periodic.GetAtomicNumber(symbol) for symbol in symbols)-charge
-    unpaired=electrons%2
+    multiplicity=task.get('spin')
+    unpaired=electrons%2 if multiplicity is None else int(multiplicity)-1
+    if unpaired<0 or unpaired>electrons or (electrons-unpaired)%2:
+        raise ValueError('Requested electronic state violates electron-count parity')
     key=f"{task['arm']}_{task['validation_index']}_{task['sample_id']}"
     work=out/'details'/key;work.mkdir(parents=True,exist_ok=False)
     xyz=work/'input.xyz'
-    xyz.write_text(str(len(symbols))+'\nminimum parity spin development evaluation\n'+''.join(
+    xyz.write_text(str(len(symbols))+'\nexplicit electronic-state development evaluation\n'+''.join(
         f'{symbol} {x:.12g} {y:.12g} {z:.12g}\n' for symbol,(x,y,z) in zip(symbols,task['positions'])))
     base={k:v for k,v in task.items() if k not in ['positions','symbols']}
-    base.update(n_atoms=len(symbols),uhf_assumed=unpaired,spin_metadata_available=False,success=False)
+    base.update(n_atoms=len(symbols),uhf_assumed=unpaired,spin_metadata_available=multiplicity is not None,success=False)
     start=time.monotonic()
     common=[binary,str(xyz),'--gfn','2','--chrg',str(charge),'--uhf',str(unpaired)]
     sp=invoke(common+['--grad'],work,90,'single_point')
@@ -102,11 +105,11 @@ def main():
     for arm in source['arms']:
         for sample in arm['samples']:
             ref=references[sample['validation_index']]
-            tasks.append(dict(sample,arm=arm['name'],symbols=ref['symbols'],charge_recorded=ref['charge_recorded']))
+            tasks.append(dict(sample,arm=arm['name'],symbols=ref['symbols'],charge_recorded=ref['charge_recorded'],spin=ref.get('spin')))
     report={'claim':'independent GFN2-xTB conditional sample strain development check, single training seed',
         'source_samples':str(args.samples),'source_sha256':hashlib.sha256(args.samples.read_bytes()).hexdigest(),
         'xtb_binary':binary,'xtb_sha256':hashlib.sha256(Path(binary).read_bytes()).hexdigest(),
-        'electronic_state':'stored unclipped charge; declared minimal electron-parity spin, original spin unknown',
+        'electronic_state':'use source multiplicity when provided; otherwise declare minimum electron-parity spin',
         'limitations':['Strain does not establish valid connectivity or improved Boltzmann sampling',
             'Old validation exposure remains','No cherry-picking of failed evaluations'],
         'requested':len(tasks),'rows':[],'complete':False}

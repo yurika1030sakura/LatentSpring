@@ -121,4 +121,8 @@ def prepare_research_backbone(model, protocol):
         patch_radial_reference(model)
     elif backbone!='flowmol':
         raise ValueError(f'Unknown checkpoint position backbone: {backbone}')
+    if protocol.get('electronic_conditioning',False):
+        if backbone!='flowmol':raise ValueError('Electronic conditioning requires the FlowMol backbone')
+        from cfm_mol.electronic_conditioning import patch_electronic_conditioning
+        patch_electronic_conditioning(model)
     return model
