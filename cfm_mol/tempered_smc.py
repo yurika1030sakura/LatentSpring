@@ -63,11 +63,12 @@ class TemperedPopulation:
     history: list[dict]
     target_evaluations: int
     target_log_values: Tensor
+    last_global_proposal: Tensor | None = None
 
     def summary(self) -> dict:
         w=normalized_weights(self.log_weights)
         ancestry_mass=torch.zeros(len(w),dtype=w.dtype,device=w.device).scatter_add_(0,self.ancestors,w)
-        return {'particles':len(w),'ess':float(1/w.square().sum()),
+        result={'particles':len(w),'ess':float(1/w.square().sum()),
             'ess_fraction':float(1/(len(w)*w.square().sum())), 'maximum_weight':float(w.max()),
             'distinct_initial_ancestors':int(torch.unique(self.ancestors).numel()),
             'ancestral_ess':float(1/ancestry_mass.square().sum()),
@@ -75,6 +76,12 @@ class TemperedPopulation:
             'target_evaluations':self.target_evaluations,
             'resampling_events':sum(row['resampled'] for row in self.history),
             'scope':'weighted SMC population; endpoint ESS alone does not measure diversity or independence'}
+        if self.last_global_proposal is not None:
+            observed=self.last_global_proposal[self.last_global_proposal>=0]
+            result.update(distinct_last_accepted_global_proposals=int(torch.unique(observed).numel()),
+                global_replacement_weight_mass=float(w@(self.last_global_proposal>=0).double()),
+                global_proposal_scope='accepted proposal IDs track refresh events, not independent effective samples')
+        return result
 
 
 def _clip_score(score: Tensor, max_norm: float) -> Tensor:
@@ -103,19 +110,26 @@ def tempered_smc(x0: Tensor, initial: Callable[[Tensor], DensityValue],
     density and the support/integrability conditions, standard SMC gives an
     unbiased *normalizer* estimator. Its log and self-normalized expectations
     have finite-particle bias. Repeated descendants are explicitly tracked.
-    threshold=0 disables resampling and gives AIS. No online kernel tuning or
+    'hybrid' alternates an independence-MH proposal from the fixed initial
+    density with local MALA; it requires two moves per stage. 'independence'
+    uses only global proposals. Initial ancestry remains an origin diagnostic,
+    not a measure of decorrelation after MCMC. No online kernel tuning or
     adaptive temperature selection is hidden in this implementation.
     """
     _states(x0);grid=_schedule(betas,'betas')
-    if kernel not in ['mala','rwm']:raise ValueError('Unknown MH kernel')
+    if kernel not in ['mala','rwm','independence','hybrid']:raise ValueError('Unknown MH kernel')
     if not math.isfinite(proposal_std) or proposal_std<=0 or not isinstance(moves_per_stage,int) or moves_per_stage<1:
         raise ValueError('Invalid MH step or move count')
     if not 0<=resample_threshold<=1 or not math.isfinite(max_score_norm) or max_score_norm<=0:
         raise ValueError('Invalid resampling threshold or score cap')
-    x=x0.detach().double().clone();n=len(x);need_score=kernel=='mala'
+    if kernel=='hybrid' and moves_per_stage!=2:raise ValueError('Hybrid requires exactly two moves per stage')
+    if kernel in ['hybrid','independence'] and not callable(getattr(initial,'sample',None)):
+        raise ValueError('Global MH requires a sampler for the exact initial density')
+    x=x0.detach().double().clone();n=len(x);need_score=kernel in ['mala','hybrid']
     a=initial(x).validate(x,need_score);b=target(x).validate(x,need_score)
     logw=x.new_full((n,),-math.log(n));logz=0.;ancestors=torch.arange(n,device=x.device)
     history=[];target_evaluations=n
+    global_ids=torch.full((n,),-1,dtype=torch.long,device=x.device)
     for stage,(previous,beta) in enumerate(zip(grid,grid[1:])):
         proposed_weights=logw+(beta-previous)*(b.log_value.double()-a.log_value.double())
         increment=torch.logsumexp(proposed_weights,0)
@@ -125,24 +139,38 @@ def tempered_smc(x0: Tensor, initial: Callable[[Tensor], DensityValue],
         if resampled:
             indices=torch.multinomial(w,n,replacement=True,generator=generator)
             x=x[indices];a=a.take(indices);b=b.take(indices);ancestors=ancestors[indices]
+            global_ids=global_ids[indices]
             logw=x.new_full((n,),-math.log(n))
-        accept_count=0
-        for _ in range(moves_per_stage):
+        accept_count=0;global_accepted=0;global_attempted=0
+        for move in range(moves_per_stage):
+            global_move=kernel=='independence' or (kernel=='hybrid' and move==0)
             mean=x
-            if need_score:
+            if need_score and not global_move:
                 score=(1-beta)*a.score.double()+beta*b.score.double()
                 mean=x+.5*proposal_std**2*_clip_score(score,max_score_norm)
-            proposed=mean+proposal_std*torch.randn(x.shape,dtype=x.dtype,device=x.device,generator=generator)
+            if global_move:
+                proposed,_=initial.sample(n,generator)
+                if proposed.shape!=x.shape:raise ValueError('Global proposal shape changed')
+                global_attempted+=n
+            else:
+                proposed=mean+proposal_std*torch.randn(x.shape,dtype=x.dtype,device=x.device,generator=generator)
+            _states(proposed)
             pa=initial(proposed).validate(proposed,need_score);pb=target(proposed).validate(proposed,need_score)
             target_evaluations+=n
             reverse=proposed
-            if need_score:
+            if need_score and not global_move:
                 reverse_score=(1-beta)*pa.score.double()+beta*pb.score.double()
                 reverse=proposed+.5*proposal_std**2*_clip_score(reverse_score,max_score_norm)
-            ratio=metropolis_log_acceptance(x,proposed,(1-beta)*a.log_value+beta*b.log_value,
-                (1-beta)*pa.log_value+beta*pb.log_value,mean,reverse,proposal_std)
+            if global_move:
+                ratio=beta*((pb.log_value-pa.log_value)-(b.log_value-a.log_value))
+            else:
+                ratio=metropolis_log_acceptance(x,proposed,(1-beta)*a.log_value+beta*b.log_value,
+                    (1-beta)*pa.log_value+beta*pb.log_value,mean,reverse,proposal_std)
             if not torch.isfinite(ratio).all():raise FloatingPointError('Non-finite MH ratio')
             accept=torch.rand(n,device=x.device,dtype=x.dtype,generator=generator).log()<ratio.clamp_max(0)
+            if global_move:
+                proposed_ids=torch.arange(n,device=x.device)+(stage*moves_per_stage+move)*n
+                global_ids=torch.where(accept,proposed_ids,global_ids);global_accepted+=int(accept.sum())
             x=torch.where(accept[:,None],proposed,x)
             a=DensityValue(torch.where(accept,pa.log_value,a.log_value),
                 None if not need_score else torch.where(accept[:,None],pa.score,a.score))
@@ -153,6 +181,10 @@ def tempered_smc(x0: Tensor, initial: Callable[[Tensor], DensityValue],
              'distinct_initial_ancestors':int(torch.unique(ancestors).numel()),
              'acceptance_fraction':accept_count/(n*moves_per_stage),'target_evaluations':target_evaluations,
              'log_normalizer_estimate':logz}
+        if global_attempted:
+            row['global_acceptance_fraction']=global_accepted/global_attempted
+            row['distinct_last_accepted_global_proposals']=int(torch.unique(global_ids[global_ids>=0]).numel())
         history.append(row)
         if callback is not None:callback(dict(row))
-    return TemperedPopulation(x,logw,logz,ancestors,history,target_evaluations,b.log_value)
+    return TemperedPopulation(x,logw,logz,ancestors,history,target_evaluations,b.log_value,
+        global_ids if kernel in ['independence','hybrid'] else None)

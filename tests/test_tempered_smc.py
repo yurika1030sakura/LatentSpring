@@ -73,3 +73,46 @@ def test_missing_force_is_not_silently_used_as_mala():
     with pytest.raises(ValueError,match='finite score'):
         tempered_smc(torch.zeros(2,1),lambda z:DensityValue(torch.zeros(2)),gaussian,[0,1],
             proposal_std=.2,generator=torch.Generator())
+
+
+@pytest.mark.parametrize('kernel',['independence','hybrid'])
+def test_global_mutation_preserves_normalizer_and_gaussian_moments(kernel):
+    initial=IsotropicGaussianMixture(torch.zeros(1,1,dtype=torch.float64),1.)
+    generator=torch.Generator().manual_seed(904)
+    x,_=initial.sample(16000,generator)
+    result=tempered_smc(x,initial,lambda z:gaussian(z,1.,.8,.7),torch.linspace(0,1,17),
+        proposal_std=.6,generator=generator,kernel=kernel,moves_per_stage=2,resample_threshold=.8)
+    w=normalized_weights(result.log_weights)
+    assert abs(float(w@result.positions[:,0])-1)<.03
+    assert abs(float(w@(result.positions[:,0]-1).square())-.64)<.03
+    assert abs(result.log_normalizer_estimate-.7)<.04
+    assert result.target_evaluations==16000*33
+    assert result.summary()['distinct_last_accepted_global_proposals']>100
+
+
+def test_stationary_independence_kernel_accepts_all_proposals_without_faking_ancestry():
+    initial=IsotropicGaussianMixture(torch.zeros(1,2,dtype=torch.float64),1.)
+    generator=torch.Generator().manual_seed(332)
+    x,_=initial.sample(200,generator)
+    out=tempered_smc(x,initial,initial,[0,.5,1.],proposal_std=.3,generator=generator,kernel='independence')
+    assert all(row['global_acceptance_fraction']==1 for row in out.history)
+    torch.testing.assert_close(out.log_weights,torch.full((200,),-math.log(200),dtype=torch.float64))
+    assert torch.equal(out.ancestors,torch.arange(200))
+    assert out.summary()['distinct_last_accepted_global_proposals']==200
+
+
+def test_hybrid_requires_matched_two_move_protocol():
+    initial=IsotropicGaussianMixture(torch.zeros(1,1,dtype=torch.float64),1.)
+    with pytest.raises(ValueError,match='two moves'):
+        tempered_smc(torch.zeros(2,1),initial,initial,[0,1],proposal_std=.1,generator=torch.Generator(),kernel='hybrid')
+
+
+def test_hybrid_energy_offset_preserves_paths_and_normalized_weights():
+    initial=IsotropicGaussianMixture(torch.zeros(1,2,dtype=torch.float64),1.)
+    x,_=initial.sample(300,torch.Generator().manual_seed(831))
+    kwargs=dict(betas=[0,.1,.3,.6,1.],proposal_std=.4,kernel='hybrid',moves_per_stage=2)
+    a=tempered_smc(x,initial,lambda z:gaussian(z,.7),generator=torch.Generator().manual_seed(19),**kwargs)
+    b=tempered_smc(x,initial,lambda z:gaussian(z,.7,offset=20000),generator=torch.Generator().manual_seed(19),**kwargs)
+    torch.testing.assert_close(a.positions,b.positions,rtol=0,atol=0)
+    torch.testing.assert_close(a.log_weights,b.log_weights,rtol=0,atol=1e-10)
+    assert b.log_normalizer_estimate-a.log_normalizer_estimate==pytest.approx(20000)

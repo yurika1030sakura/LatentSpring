@@ -71,7 +71,7 @@ def main():
     p.add_argument('--kT',type=float,default=1.);p.add_argument('--restraint-strength',type=float,default=.1)
     p.add_argument('--arms',nargs='+',choices=['prior_rwm','prior_mala','mixture_rwm','mixture_mala',
         'rotation_rwm','rotation_mala','symmetry_rwm','symmetry_mala','confinement_mala',
-        'defensive_mixture_mala','defensive_symmetry_mala'],
+        'defensive_mixture_mala','defensive_symmetry_mala','confinement_hybrid','defensive_symmetry_hybrid'],
                    default=['prior_rwm','prior_mala','mixture_rwm','mixture_mala'])
     p.add_argument('--device',default='cpu');p.add_argument('--oracle-device',default='cpu')
     args=p.parse_args()
@@ -163,7 +163,8 @@ def main():
                         energy=-args.kT*result.target_log_values-args.restraint_strength/2*result.positions.square().sum(-1)
                         particle_file=args.out/f'particles_{source_row}_{seed}_{arm}.pt'
                         torch.save({'positions':x,'log_weights':result.log_weights,'ancestors':result.ancestors,
-                            'initial_components':components,'energies_eV':energy,'condition':condition},particle_file)
+                            'initial_components':components,'energies_eV':energy,'condition':condition,
+                            'last_global_proposal':result.last_global_proposal},particle_file)
                         row.update(success=True,summary=result.summary(),geometry=geometry_metrics(x,weights,numbers),
                             weighted_energy_eV=float(weights@energy),unweighted_mean_energy_eV=float(energy.mean()),
                             particle_file=str(particle_file.resolve()),particle_sha256=sha(particle_file))
@@ -173,6 +174,8 @@ def main():
                                 'standard_deviation_A':initial.confinement_std,
                                 'initial_wide_particles':int((components==-1).sum()),
                                 'final_weight_from_wide_ancestors':float(weights@(components[result.ancestors]==-1).double())}
+                            if kernel=='hybrid':
+                                row['defensive_component']['ancestry_scope']='initial chain roots; later global proposals may come from either mixture component'
                         if isinstance(density_component,RotatedGaussianMixture):
                             row['density_numerics']={'cumulative_max_order':density_component.max_observed_order,
                                 'cumulative_max_final_log_refinement_change':density_component.max_observed_refinement_change,
