@@ -67,7 +67,8 @@ def torch_zero(x,t):return torch.zeros_like(x)
 
 
 @pytest.mark.parametrize('checked',[False,True])
-def test_energy_gradient_control_preserves_values_and_backward_gradient(checked):
+@pytest.mark.parametrize('mean_parameterization',['reference','native'])
+def test_energy_gradient_control_preserves_values_and_backward_gradient(checked,mean_parameterization):
     a=torch.tensor(.2,dtype=torch.float64,requires_grad=True)
     b=torch.tensor(-.3,dtype=torch.float64,requires_grad=True)
     def draw(control):
@@ -75,7 +76,7 @@ def test_energy_gradient_control_preserves_values_and_backward_gradient(checked)
         x=torch.randn(40,2,dtype=torch.float64,generator=g)
         return gaussian_training_path(x,lambda z,t:a*torch.tanh(z),lambda z,t:b*torch.tanh(z),
             [0,.2,.6,1.],.4,g,terminal_std=2.,max_drift_norm=3.,
-            checkpoint_steps=checked,forward_energy_only=control)
+            checkpoint_steps=checked,forward_energy_only=control,mean_parameterization=mean_parameterization)
     joint=draw(False);control=draw(True)
     energy=lambda path:.5*((path.terminal-.3)/.8).square().sum(-1)
     joint_loss=joint.work(energy(joint)).mean();control_loss=control.work(energy(control)).mean()
@@ -89,15 +90,29 @@ def test_energy_gradient_control_preserves_values_and_backward_gradient(checked)
     assert abs(float(joint_grad[0]-control_grad[0]))>.01
 
 
-def test_reference_residual_gradient_and_checkpoint_agreement():
+@pytest.mark.parametrize('mean_parameterization',['reference','native'])
+def test_reference_residual_gradient_and_checkpoint_agreement(mean_parameterization):
     a=torch.tensor(.2,dtype=torch.float64,requires_grad=True)
     def loss(value,checked=False):
         g=torch.Generator().manual_seed(247);x=torch.randn(80,2,dtype=torch.float64,generator=g)
         path=gaussian_training_path(x,lambda z,t:value*torch.tanh(z),lambda z,t:-value*torch.tanh(z),
-            [0,.3,.7,1.],.3,g,terminal_std=2.,max_drift_norm=3.,checkpoint_steps=checked)
+            [0,.3,.7,1.],.3,g,terminal_std=2.,max_drift_norm=3.,checkpoint_steps=checked,
+            mean_parameterization=mean_parameterization)
         return path.work(.5*path.terminal.square().sum(-1)/4).mean()
     gradient,=torch.autograd.grad(loss(a),a)
     finite=(loss(a+1e-5)-loss(a-1e-5))/2e-5
     torch.testing.assert_close(gradient,finite,rtol=1e-7,atol=1e-9)
     checked,=torch.autograd.grad(loss(a,True),a)
     torch.testing.assert_close(gradient,checked,rtol=0,atol=1e-12)
+
+
+def test_native_means_cancel_reference_dilation_and_keep_actual_density_factors():
+    from cfm_mol.nonequilibrium import gaussian_log_density
+    g=torch.Generator().manual_seed(448);x=torch.randn(40,2,dtype=torch.float64,generator=g)
+    state=g.get_state();noise=torch.randn(x.shape,dtype=x.dtype,generator=g);g.set_state(state)
+    path=gaussian_training_path(x,lambda z,t:.2*z,lambda z,t:-.3*z,[0,1],.4,g,
+        terminal_std=2.,mean_parameterization='native')
+    relative=math.sqrt(-math.expm1(-.4**2));mean=1.2*x;y=mean+2*relative*noise
+    expected=gaussian_log_density(y,mean,2*relative)-gaussian_log_density(x,.7*y,relative)
+    torch.testing.assert_close(path.terminal,y,rtol=0,atol=1e-14)
+    torch.testing.assert_close(path.log_forward_minus_backward,expected,rtol=0,atol=1e-12)

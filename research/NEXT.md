@@ -44,7 +44,7 @@ just to improve metrics. Electronic-state FM conditioning is a semantic repair,
 not a demonstrated quality gain: both 10k continuations pass 32/32 xTB, with
 median strain 3.94384 eV (global) versus 3.89309 eV (legacy).
 
-186 tests pass. Batched oracle inference passed the serial energy/force check;
+190 tests pass. Batched oracle inference passed the serial energy/force check;
 serial remains the default and potential counts still include every structure.
 The main-text build remains 9/9 pages and is an audit/development draft. These
 engineering checks are not ICLR readiness. Authors and submission belong to the
@@ -70,3 +70,11 @@ on 45726541 and 45726651. It compares initial/joint/energy-only samples on the
 same 32 fixed indices, with all 256 geometries per arm entering diagnostics.
 Do not resubmit accepted jobs. If a dependency fails, retain that result and
 inspect the dependency before changing the assessment job.
+
+FM control 45729734 is now COMPLETED: 29/32 and 30/32 xTB convergence for
+midpoint-16/64, versus 0/32 for bridge initialization and 6/32 after 100 work
+updates. One overlap per 64 FM samples; solver-coordinate drift can still reach
+.66522 A. Initialization damage is now a concrete concern. A native-mean option
+compensates reference expansion before the same residual bound; inspect its
+two-update preflight and independent structure metrics before larger training.
+The 500-update reference-mean comparison remains a required retained control.

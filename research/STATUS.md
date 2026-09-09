@@ -14,7 +14,7 @@ that all scientific checks passed.
 
 ## What is established
 
-- 186 tests pass, including real FlowMol parameter gradients, full-state and
+- 190 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
   dedicated Gaussian/Rademacher probe streams for common/independent controls,
@@ -425,7 +425,7 @@ parameters. Tests compare forward gradients with energy-only autograd and
 backward gradients with the full objective, with/without checkpointing.
 This intentional ablation is not the full mean-work gradient.
 
-The full suite passes 186 tests. Batched oracle inference agrees with serial ASE
+The full suite passes 190 tests. Batched oracle inference agrees with serial ASE
 on 32 generated geometries: maximum energy difference 8.87e-6 eV and force
 component difference 5.04e-4 eV/A. Warm measured times were 75.88 s serial versus
 6.99 s with batch 16 (10.86x in this single timing, not a general speed guarantee).
@@ -488,3 +488,19 @@ It started RUNNING by 20:34 UTC. The 500-update independent assessment 45729911
 is queued with afterok dependencies on both training jobs, using source bf7669a
 and the unchanged 32-index xTB protocol. All 256 endpoint geometries per arm
 enter its geometry diagnostics. No result from these pending runs is yet claimed.
+
+The same-condition FM control 45729734 subsequently completed in 3m31s.
+Midpoint-16/64 xTB convergence is 29/32 and 30/32; successful-only median strain
+is 4.76794/4.67530 eV. Both have one overlapping geometry among 64, versus 8/11
+in the initial/100-update work panels. The maximum 16-to-64 coordinate change
+is .66522 A, so numerical sample convergence remains unproven. No FM density
+or importance weights were evaluated. See evidence/work_fm_control.json.
+
+The comparison identifies damage from stochastic-bridge initialization, rather
+than an inability of the original FM checkpoint to produce useful geometries
+on this condition. A prospective native-mean option now compensates the reference
+linear expansion before bounding the residual. Actual Gaussian transition
+densities, target, noise and electronic state remain specified. Its quality
+requires a new two-update preflight; finite gradients alone are insufficient.
+See notes/mean_work_training_protocol.md. The existing 500-update reference-mean
+controls are retained and continue to their predeclared assessments.

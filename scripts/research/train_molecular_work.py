@@ -44,6 +44,7 @@ def main():
     p.add_argument('--mode',choices=['joint','backward_only','forward_energy_only'],default='joint')
     p.add_argument('--oracle-batch-size',type=int,default=1)
     p.add_argument('--reference-kernel',choices=['euler','gaussian'],default='gaussian')
+    p.add_argument('--mean-parameterization',choices=['reference','native'],default='reference')
     p.add_argument('--prior-std',type=float,default=1.)
     p.add_argument('--max-drift-per-sqrt-dimension',type=float,default=20.)
     p.add_argument('--checkpoint-steps',action='store_true');p.add_argument('--device',default='cuda')
@@ -126,7 +127,8 @@ def main():
                 torch.linspace(0,1,args.path_steps+1,dtype=torch.float64),args.noise,g,prior_std=prior_std,
                 checkpoint_steps=args.checkpoint_steps and training,terminal_std=terminal_std,
                 max_drift_norm=args.max_drift_per_sqrt_dimension*math.sqrt(dimension),
-                forward_energy_only=args.mode=='forward_energy_only' and training)
+                forward_energy_only=args.mode=='forward_energy_only' and training,
+                mean_parameterization=args.mean_parameterization)
             positions=torch.einsum('nk,bkd->bnd',basis,path.terminal.reshape(args.batch,n-1,3))
             energy,force=oracle.evaluate(positions)
             linked=external_energy(positions,energy,force) if training else energy.to(positions)

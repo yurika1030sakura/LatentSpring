@@ -58,7 +58,7 @@ class TrainablePath:
 
 def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,generator,*,
                            prior_std=1.,checkpoint_steps=False,terminal_std=None,max_drift_norm=None,
-                           forward_energy_only=False):
+                           forward_energy_only=False,mean_parameterization='reference'):
     """Simulate reparameterized paths and retain complete first-order gradients.
 
     x0 must be an independent draw from the stated isotropic Gaussian.
@@ -74,8 +74,14 @@ def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,gen
     unchanged, but path-factor gradients only train the backward parameters.
     Forward parameters then receive only terminal-energy gradients. This mode
     is not the full mean-work gradient and requires disjoint parameter sets.
+    With mean_parameterization='native', subtract the reference mean dilation
+    before bounding the residual. Without a bound the forward mean is exactly
+    x+dt*v; with a bound it approximates that mean in the central region while
+    the far-tail residual stays bounded. Noise and evaluated kernel densities
+    are unchanged. This is an initialization choice, not a new work identity.
     """
     _states(x0);grid=_schedule(times,'times')
+    if mean_parameterization not in {'reference','native'}:raise ValueError('Unknown kernel mean parameterization')
     if not math.isfinite(noise_scale) or noise_scale<=0 or not math.isfinite(prior_std) or prior_std<=0:
         raise ValueError('Positive finite noise and prior scales required')
     if terminal_std is not None and (not math.isfinite(terminal_std) or terminal_std<=0):raise ValueError('Invalid terminal reference scale')
@@ -96,6 +102,7 @@ def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,gen
         def step(state,epsilon,left=left,right=right,dt=dt,af=af,ab=ab,sf=std_forward,sb=std_backward):
             drift=forward_drift(state,left)
             if drift.shape!=state.shape or not torch.isfinite(drift).all():raise ValueError('Invalid forward drift')
+            if mean_parameterization=='native':drift=drift+(1.-af)/dt*state
             if max_drift_norm is not None:
                 drift=drift*max_drift_norm/torch.sqrt(max_drift_norm**2+drift.square().sum(-1,keepdim=True))
             mean=af*state+dt*drift
@@ -104,6 +111,7 @@ def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,gen
             reverse_state=state.detach() if forward_energy_only else state
             reverse_drift=backward_drift(reverse_input,right)
             if reverse_drift.shape!=terminal.shape or not torch.isfinite(reverse_drift).all():raise ValueError('Invalid backward drift')
+            if mean_parameterization=='native':reverse_drift=reverse_drift+(1.-ab)/dt*reverse_input
             if max_drift_norm is not None:
                 reverse_drift=reverse_drift*max_drift_norm/torch.sqrt(max_drift_norm**2+reverse_drift.square().sum(-1,keepdim=True))
             reverse_mean=ab*reverse_input+dt*reverse_drift

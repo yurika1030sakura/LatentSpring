@@ -17,6 +17,7 @@ TRAIN_BATCH="${5:-2}"
 EVAL_PARTICLES="${6:-64}"
 ORACLE_BATCH="${7:-1}"
 TRAIN_SEED="${8:-9051}"
+MEAN_PARAMETERIZATION="${9:-reference}"
 BGFM_STORE=/n/holylabs/woo_lab/Lab/yulili/bgfm
 export PYTHONPATH="$SOURCE_ROOT" PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
@@ -32,4 +33,5 @@ exec "$BGFM_STORE/envs/flowmol/bin/python" -u scripts/research/train_molecular_w
  --oracle "$BGFM_STORE/checkpoints/omol25/esen_sm_conserving_all.pt" \
  --oracle-python "$BGFM_STORE/envs/omol25/bin/python" --out "$RUN_ROOT" \
  --mode "$MODE" --steps "$TRAIN_STEPS" --path-steps 16 --batch "$TRAIN_BATCH" \
- --eval-particles "$EVAL_PARTICLES" --oracle-batch-size "$ORACLE_BATCH" --seed "$TRAIN_SEED" --checkpoint-steps
+ --eval-particles "$EVAL_PARTICLES" --oracle-batch-size "$ORACLE_BATCH" --seed "$TRAIN_SEED" \
+ --mean-parameterization "$MEAN_PARAMETERIZATION" --checkpoint-steps

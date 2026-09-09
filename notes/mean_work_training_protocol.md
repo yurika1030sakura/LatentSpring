@@ -110,3 +110,35 @@ charge and spin directly. No reference-coordinate dataset is loaded in that
 branch, and reserved manifests are rejected for training. A two-update CPU
 interface check on the first three-atom development condition (manifest row 167,
 PbCl2 singlet) is not a training-benefit comparison. Its poor ESS is retained.
+
+The same-condition FM control completed: midpoint-16/64 xTB convergence is
+29/32 and 30/32, versus 0/32 for the reference-bridge initialization and 6/32
+after 100 work updates. Successful-only FM median strain is 4.76794/4.67530 eV.
+Each FM panel has one overlap among 64 geometries; the bridge panels have 8/11.
+The maximum FM coordinate change from 16 to 64 steps is .66522 A, so this is not
+a solver-convergence certificate. The control diagnoses initialization damage;
+FM importance weights remain unavailable and these are not Boltzmann results.
+
+This motivates a prospective native-mean parameterization. In the previous
+bridge, inserting the pretrained velocity v into a reference residual gives
+mean a_F*x+dt*v, with a_F containing the reference width expansion. That is not
+the native FM Euler mean. Define the residual instead as
+
+    r_F = v + (1-a_F)*x/dt,
+    r_B = v_B + (1-a_B)*y/dt.
+
+Without residual bounding, the resulting means are exactly x+dt*v and y+dt*v_B.
+With the same smooth bound as before, they approximate native means centrally
+and retain bounded far-tail residuals. Apply the bound to the entire residual,
+including the fixed correction. Keep the same Gaussian noise variances and
+evaluate the actual forward/backward densities. This is a parameterization and
+initialization change using standard kernels, not a new work identity. Zero
+neural output is no longer zero reference residual in native mode.
+
+The first native-mean run is only a two-update calibration: batch two, 16 path
+steps, 64 held-noise evaluation samples, original seed/checkpoint/state, kT=1 eV,
+and restraint .1 eV/A2. Total potential budget is 132 including evaluation.
+Check initial structure quality before longer training. Existing reference-mean
+500-update controls continue unchanged. Tests verify exact unbounded native
+means and density factors, full finite-difference/checkpoint gradients, and the
+energy-only gradient ablation under both mean parameterizations.
