@@ -260,3 +260,27 @@ def test_energy_trace_rng_is_separate_from_fm_rng(common):
     assert torch.equal(before,torch.get_rng_state())
     repeat,_=energy_consistency_loss_per_mol(model,g,nbi,uem,**kwargs)
     assert loss.item()==repeat.item()
+
+
+def test_adaptive_reference_matches_analytic_density_for_each_fixed_probe():
+    from cfm_mol.clamped_reference import log_density_clamped_reference
+    g,nbi,uem=graph_batch()
+    x=g.ndata['x_1_true'].clone()
+    head=LinearHead();model=SimpleNamespace(vector_field=head)
+    result=log_density_clamped_reference(model,g,nbi,uem,rtol=1e-9,atol=1e-11,
+        quadrature_orders=(2,4),n_replicates=3,seed=42)
+    counts=g.batch_num_nodes().to(x)
+    sq=x.new_zeros(2).index_add(0,nbi,x.square().sum(-1))
+    prior=-0.5*sq*math.exp(-2*0.3*0.95)-1.5*(counts-1)*math.log(2*math.pi)
+    generator=torch.Generator().manual_seed(42)
+    expected=[]
+    for _ in range(3):
+        probe=(2*torch.randint(0,2,x.shape,generator=generator)-1).to(x)
+        projected=center_by_graph(probe,nbi,2)
+        trace=x.new_zeros(2).index_add(0,nbi,(probe*projected).sum(-1))*0.3
+        expected.append(prior-0.95*trace)
+    expected=torch.stack(expected)
+    for value in result['estimates'].values():
+        assert torch.allclose(torch.tensor(value['log_q'],dtype=x.dtype),expected,atol=1e-7,rtol=0)
+    assert head.training
+    assert torch.equal(g.ndata['x_1_true'],x)
