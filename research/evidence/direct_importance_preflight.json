@@ -1,0 +1,178 @@
+{
+  "complete": true,
+  "scope": "Equal-oracle direct-IS control for confinement and defensive symmetry proposals.\n\nUses a completed independent FM-center pilot. No MCMC or resampling obscures\nthe importance-weight comparison. Every seed, tail component and failure is\nretained; numerical rotational integration diagnostics remain explicit.\n",
+  "condition": {
+    "source_row": 1137,
+    "symbols": [
+      "Ag",
+      "Br",
+      "Br"
+    ],
+    "charge": 0,
+    "spin_multiplicity": 2,
+    "spin_provenance": "declared minimum electron-parity multiplicity; original OMol state unknown",
+    "source_scope": "legacy validation development condition, not blind test",
+    "fm_center_seconds": 11.461581414798275,
+    "fm_center_field_evaluations": 8192,
+    "center_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_symmetry_1137_v1/centers_1137.pt",
+    "center_sha256": "0f386f6c10b25994ce5281f7e634bd510196a141575658e0d82d21e1b98e7e02",
+    "symmetry_templates": {
+      "total_identical_atom_permutations": 2,
+      "used_permutations": 2,
+      "all_permutations_enumerated": true,
+      "reflections_included": true,
+      "template_count": 128,
+      "permutation_seed": 50168
+    }
+  },
+  "symmetries": {
+    "total_identical_atom_permutations": 2,
+    "used_permutations": 2,
+    "all_permutations_enumerated": true,
+    "reflections_included": true,
+    "template_count": 128,
+    "permutation_seed": 50168
+  },
+  "configuration": {
+    "pilot": "runs/molecular_symmetry_1137_v1",
+    "source_row": 1137,
+    "oracle": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+    "oracle_python": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python",
+    "out": "runs/direct_importance_preflight_v1",
+    "particles": 8,
+    "seeds": [
+      9031
+    ],
+    "batch": 8,
+    "kT": 1.0,
+    "restraint": 0.1,
+    "mixture_std": 0.3,
+    "defensive_fraction": 0.2
+  },
+  "pilot_source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/molecular_symmetry_1137_v1/results.json",
+  "pilot_sha256": "b4902aa4ae002bc2815e9b0a20d7157d8beedecdd6fee2a77601471f252aeb48",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "source_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/scripts/research/direct_importance_panel.py": "92294bf2021da54b8b2b159abd925bf6606198c276a646302e8eb477d07e7211",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/defensive_proposal.py": "98d0b9aea9ffa39e8456a21aed5a8bfa8734661aead0d9180a739adb860b8026",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/rotation_mixture.py": "eb636e06219e38617d3abe3df911d46684ff2a10571286bce0e606d3bf5a5058",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/tempered_smc.py": "ff43719e192b724f02c154c49dfd834dc986766be6953a55273fc0c8f1273bdd",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/energy_oracle.py": "a3492212822ac03d5c9bf6cdbddcd89bdf002dda25f000b427c8e506c36069bc",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/scripts/research/oracle_worker.py": "0069b36a21c15ccdfec16f84067b8616fa7cc2fe6a8c73ada60532f963db30ba"
+  },
+  "rows": [
+    {
+      "seed": 9031,
+      "arm": "confinement",
+      "complete": true,
+      "success": true,
+      "summary": {
+        "particles": 8,
+        "ess": 6.752658790011573,
+        "ess_fraction": 0.8440823487514466,
+        "maximum_weight": 0.19530932588847466,
+        "log_mean_weight": 144091.66498465053
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 5.514652072523955,
+        "weighted_overlap_fraction": 6.3676941768926e-16,
+        "unweighted_overlap_fraction": 0.125,
+        "weighted_radius_gyration_A": 5.108665253530879,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -144079.395022479,
+      "moments": {
+        "minimum_anchor_distance_A": 6.894431724911197,
+        "maximum_anchor_distance_A": 10.90196090042803,
+        "outer_pair_distance_A": 7.606737976029861,
+        "angle_cosine": 0.5319061367285919,
+        "radius_gyration_A": 5.108665253530879
+      },
+      "sample_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/direct_importance_preflight_v1/confinement_9031.pt",
+      "sample_sha256": "7b2a6ae339ac2176cccfb3b50155a6be9f56c52f9e2d3c56dcc135057a65738a",
+      "oracle_evaluations": 8,
+      "seconds": 0.33469657599925995
+    },
+    {
+      "seed": 9031,
+      "arm": "defensive_mixture",
+      "complete": true,
+      "success": true,
+      "summary": {
+        "particles": 8,
+        "ess": 1.731009291942545,
+        "ess_fraction": 0.21637616149281813,
+        "maximum_weight": 0.6982074676455305,
+        "log_mean_weight": 144092.67504416755
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 2.861254816740659,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 4.26566907024543,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -144080.11358004497,
+      "moments": {
+        "minimum_anchor_distance_A": 5.012994736609757,
+        "maximum_anchor_distance_A": 7.777951714160442,
+        "outer_pair_distance_A": 8.781284826995138,
+        "angle_cosine": 0.13471335960208233,
+        "radius_gyration_A": 4.26566907024543
+      },
+      "wide_particle_count": 2,
+      "weight_from_wide_component": 0.9985458586173449,
+      "sample_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/direct_importance_preflight_v1/defensive_mixture_9031.pt",
+      "sample_sha256": "364d566be2a8092aa85e6b378fcd93d75b4dc7f539cb7dfcef33456e4d801712",
+      "oracle_evaluations": 8,
+      "seconds": 0.34847019193693995
+    },
+    {
+      "seed": 9031,
+      "arm": "defensive_symmetry",
+      "complete": true,
+      "success": true,
+      "summary": {
+        "particles": 8,
+        "ess": 1.8130898777005933,
+        "ess_fraction": 0.22663623471257416,
+        "maximum_weight": 0.725368076666607,
+        "log_mean_weight": 144093.3677088691
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 6.562398048029363,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 4.3605022001549365,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_energy_eV": -144081.02086584823,
+      "moments": {
+        "minimum_anchor_distance_A": 3.660349795860872,
+        "maximum_anchor_distance_A": 10.021827171106258,
+        "outer_pair_distance_A": 7.475467233309882,
+        "angle_cosine": 0.7473960132192784,
+        "radius_gyration_A": 4.3605022001549365
+      },
+      "wide_particle_count": 2,
+      "weight_from_wide_component": 0.8694491011569218,
+      "density_numerics": {
+        "cumulative_max_order": 256,
+        "cumulative_max_final_refinement_change": 1.546140993013978e-11,
+        "certified_error_bound": false
+      },
+      "sample_file": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/direct_importance_preflight_v1/defensive_symmetry_9031.pt",
+      "sample_sha256": "33b00a7edd125742af4f1face5e53f8bf689f81c5240104e5af92cc8b0e8ed65",
+      "oracle_evaluations": 8,
+      "seconds": 0.5219175270758569
+    }
+  ],
+  "symmetry_energy_check_max_eV": {
+    "rotation": 1.3457902241498232e-06,
+    "reflection": 1.0894727893173695e-06,
+    "identical_atom_permutation": 1.0147050488740206e-06
+  },
+  "symmetry_check_oracle_calls": 32,
+  "source_record": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/direct_importance_preflight_v1/results.json",
+  "source_record_sha256": "6ebbd802e0655fc90fc5015a28f690b9918df7ab31d56e851bb25785f3d83212"
+}
