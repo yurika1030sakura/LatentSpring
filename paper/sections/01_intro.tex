@@ -1,116 +1,49 @@
-% ============================================================================
-%  01_intro.tex --- Abstract, Sec. 1 Introduction (+ Figure 1).
-%
-%  2026-08-30 REFRAME.  This is a POSITIVE METHOD paper: energy-value
-%  supervision is an effective way to inject local physical ordering into a
-%  bond-free de novo molecular flow.  Calibration and cross-basin mass are
-%  SEPARATE targets, characterised precisely, never the dominant message.
-%
-%  Paragraph order: (P1) the application and the missing capability;
-%  (P2) the method as a minimal, off-policy intervention; (P3) the evidence,
-%  in the order held-out ordering -> retrieval -> matched controls ->
-%  fixed-RMSD -> scope; (P4) three POSITIVE contribution bullets.
-%
-%  STATISTICAL REPORTING POLICY.  No t value, no p value, no "significant" /
-%  "n.s." anywhere in the main text or in any figure.  Descriptive standard
-%  only: arm mean +/- SEM over independent seeds, every seed point drawn,
-%  absolute effect size, seed counts, launched/completed/diverged.
-%
-%  NO RESOLUTION SWEEP ANYWHERE.  The step-count sensitivity analysis was
-%  deleted from the whole document, main text and appendix.  Do not add a
-%  step count to the narrative here or anywhere else.
-%
-%  ATTRIBUTION.  The cession (the log-variance divergence, its cancellation of
-%  Z(c) and off-policy estimation of it are prior work) is made ONCE, in the
-%  related-work subsection Sec. 2.1.  Do not restate it here; bullet 1 points
-%  at Sec. 2 instead.
-% ============================================================================
-
 \begin{abstract}
-De novo 3D molecular generation methods learn distributions over composition and geometry, while
-energy-targeted samplers assume a fixed system or a supplied molecular graph. We introduce
-\emph{energy-value supervision} for the tractable positional density of a bond-free de novo flow:
-flow matching plus one group-wise objective, penalising the variance of
-$\log q_\theta(x \mid c) + E(c,x)/kT$ over local perturbations of a parent geometry, where
-$q_\theta$ is read out by reversing the positional ODE with the discrete labels clamped. The
-partition function cancels within each group, and the same divergence can be estimated off-policy
-under an arbitrary reference measure, so the energy labels come from a transferable universal
-potential and are pre-computed once, with no bond labels and no model rollouts. On a conservative held-out evaluation of $93$ disjoint parents scored by an
-independent GFN2-xTB potential, the method raises the mean within-parent density--energy correlation
-from $0.200$ to $0.369$, top-1 retrieval of the lowest-energy geometry from $20.2\%$ to $29.6\%$ and
-top-3 from $49.5\%$ to $62.4\%$. Across completed runs, a matched six-cell study shows the gain
-requires the correct geometry--energy correspondence: zero-energy and scrambled-energy controls do
-not improve over flow matching. The gain persists on fixed-RMSD shells, ruling out
-radial-distance variation as the sole explanation. An identifiability analysis characterises the objective's scope and identifies
-connected supervision as the missing ingredient for controlling relative basin mass, and raw
-calibration does not improve, indicating that ranking, calibration and global allocation ask for
-distinct interventions.
+Energy values from universal molecular potentials offer an auxiliary training signal for bond-free
+3D generators, but an improvement in a density-based diagnostic need not establish improved sampling.
+We study group-wise log-variance regularisation of a FlowMol3 backbone trained on OMol25.
+The archived implementation improves a local scalar-readout correlation with independent GFN2-xTB
+energies from $0.200$ to $0.369$ on $93$ filtered held-out parents, and top-1 retrieval from
+$20.2\%$ to $29.6\%$. An implementation audit finds that this readout integrates the network's
+endpoint prediction as a velocity and omits trajectory and prior gradients; it is therefore not a
+validated likelihood of the generator. On a fixed-checkpoint, fixed-geometry resolution sweep, the
+value-minus-FM correlation gap decreases from $0.175$ at $12$ steps to $0.042$ at $48$ steps.
+An independent generation-strain evaluation provides no evidence of improved sample quality, and raw
+energy calibration does not improve. We distinguish these observations from the ideal grouped
+objective's identifiability properties, provide a corrected clamped-flow implementation with analytic
+and interface tests, and specify the remaining experiments needed to establish a sampling claim.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:intro}
 
-% --- P1: the application and the missing capability.
-De novo 3D molecular generators create composition and geometry at once
-\citep{edm,geoldm,semlaflow,symphony,flowmol3,zatom1}: they propose which atoms a molecule contains
-and where those atoms sit, which a conformer generator handed a graph does not do. What they lack is
-a way to make the geometries they prefer the geometries a physical potential prefers, and that
-ingredient now exists. Universal machine-learned potentials return an energy $E(c,x)$ of near-DFT
-quality for arbitrary compositions at negligible cost \citep{omol25,esen}, transferring across
-chemical space rather than being fitted per system. Energy-targeted samplers already train tractable
-densities against $e^{-E/kT}$ \citep{noe2019boltzmann,tbg,sbg,arbg,adjointsampling,idem,ewfm}, but
-they assume a fixed system, or a supplied composition or graph, so their machinery does not reach a
-generator that is still choosing what molecule to make. The opportunity is to use energy
-\emph{values} to shape the density a de novo flow already defines; \Cref{sec:related} places both
-literatures against that question, and \Cref{app:related} extends the discussion.
+De novo molecular generators jointly produce atom identities and three-dimensional coordinates
+\citep{edm,geoldm,semlaflow,flowmol3}. Universal molecular potentials such as those trained on OMol25
+\citep{omol25,esen} provide energy labels across diverse compositions. This suggests combining a
+flow-matching data objective with a penalty that encourages the learned log-density to track negative
+energy. The underlying log-variance divergence and its off-policy estimation are established ideas
+\citep{vargrad,nusken2021pathspace,richter2024improvedsampling,sendera2024offpolicy,ldr2026}; our
+question is whether this intervention works reliably inside a mixed discrete--continuous molecular
+flow.
 
-% --- P2: the method as a minimal, off-policy intervention.
-We do this with a single additional term. A continuous normalising flow assigns a tractable
-log-density to any geometry by reversing its own positional ODE and accumulating the divergence
-\citep{ffjord}; we call this the \emph{clamped positional density} $\log q_\theta(x \mid c)$, the
-discrete channels being held at their endpoint labels while the positions evolve. Over $K$ displaced
-geometries of one parent, all sharing a composition $c$, we penalise
-$\Var_k[\log q_\theta(x_k \mid c) + E(c,x_k)/kT]$, which is zero exactly when the density is
-proportional to $e^{-E/kT}$ on that group (\Cref{sec:method}, \Cref{fig:objective}). Centring inside
-a group deletes the unknown normaliser $Z(c)$. Separately, the same divergence can be estimated
-under an arbitrary reference measure, and that is what makes the supervision \emph{off-policy}:
-the objective is an expectation under whatever measure produced the displaced geometries, not under
-the model, so every energy label is computed once, ahead of training, and read from disk like data:
-one extra loss, pre-computed labels, no bond supervision, no rollouts, no reference sampler.
+There are three separate requirements. The scalar used in the energy loss must correspond to a
+specified normalised density; its numerical estimate must be accurate enough for the claimed
+comparison; and improving that comparison must transfer to the generated structures. Grouped
+correlation alone does not check any of these. Even a valid composition-clamped positional density
+need not equal the conditional law of a sampler that also evolves discrete labels, maintains
+self-conditioning history, and applies geometric retractions.
 
-% --- P3: the evidence.
-The intervention works, and we show what in it works. On $93$ held-out parents that the supervision
-pool never contained, with every geometry re-scored by a GFN2-xTB potential that enters no training
-loss, the mean per-parent correlation between $\log q_\theta$ and $-E/kT$ rises from
-$0.200 \pm 0.018$ over five flow-matching seeds to $0.369 \pm 0.023$ over four completed value
-seeds, a gain of $+0.169$ in which all four value seeds exceed all five control seeds. It converts
-into a decision: ranking a parent's displaced geometries by $\log q_\theta$ retrieves the
-lowest-energy one $29.6\%$ of the time against $20.2\%$, with $12.5\%$ at chance. A matched six-cell
-grid then localises the effect, since zeroed energies and energies scrambled within a parent leave
-ordering where flow matching leaves it, so what helps is the correct geometry-to-energy
-correspondence and not the presence of an auxiliary penalty; a control holding displacement
-magnitude fixed keeps the gain, ruling out radial-distance variation as the sole explanation. Finally an
-identifiability analysis says how far the term reaches: it fixes the density--energy relation inside
-a group up to one additive constant per connected component of the group-overlap graph, making group
-connectivity a design variable and relative basin mass something a further objective must supply
-(\Cref{sec:theory}).
+We therefore report the archived results together with an implementation and evidence audit. The
+positive observation is local ordering and retrieval under a fixed legacy readout. Its limitations
+are substantive: an endpoint/velocity mismatch, a frozen-trajectory gradient, solver-sensitive
+contrasts, poor calibration, incomplete training runs, and no demonstrated generation benefit.
+These are unresolved scientific issues, not changes in terminology. Corrected code passes analytic
+normalisation, convergence, parameter-gradient and real FlowMol3 interface tests, but no molecular
+training result in this paper was produced by that corrected path.
 
 \input{figures/fig1_objective_float}
 
-\begin{itemize}\itemsep0pt\parskip0pt\topsep2pt\leftmargin1.2em
-\item \textbf{Method.} Energy-value supervision for de novo molecular flows: a group-wise variance
-  objective, whose divergence form is standard and is credited in \Cref{sec:method}, applied to the
-  clamped positional density of a bond-free generator over an 83-element corpus, with pre-computed
-  values from a transferable potential, no bond labels, no rollouts and no partition function.
-
-\item \textbf{Controlled evidence.} A matched six-cell study and a conservative held-out endpoint
-  under an independent scorer, showing improved local ordering and retrieval and attributing both to
-  the correct geometry--energy pairing rather than to regularisation, the energy multiset alone, or
-  displacement magnitude.
-
-\item \textbf{Characterisation and design guidance.} A result identifying what group-wise value
-  supervision determines --- the local density--energy relation up to one offset per connected
-  component of the overlap graph --- turning the objective's scope into a design criterion: local
-  groups suffice for local ordering, and connected groups or a global term are what basin mass
-  requires (\Cref{sec:theory}).
-\end{itemize}
+The study contributes a reproducible accounting of the archived intervention, a distinction between
+local residual constraints and global mass identification, and a tested implementation for the next
+experiment. It does not establish calibrated Boltzmann sampling, superiority over existing molecular
+generators, or a general advantage of energy values over forces.

@@ -1,0 +1,393 @@
+% Appendix A v4 -- BGFM (Boltzmann-Guided Flow Matching) formulation.
+%
+% Supersedes appendix_A_v3.tex (bond-free physics-drift formulation).
+% Adds the three-term training objective and proves Boltzmann consistency.
+%
+% Theorems 1-5 carry over from v3 (manifold geometry + tangent projection
+% + retracted Euler convergence). New Theorems 6-8 cover the BGFM
+% objective: score formula, force-consistency equivalence, and Boltzmann
+% consistency in the large-lambda limit.
+
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=1in]{geometry}
+\usepackage{mathtools}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{plain}
+
+\newcommand{\M}{\mathcal{M}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\A}{\mathcal{A}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\T}{\mathsf{T}}
+\newcommand{\ster}{\mathrm{ster}}
+\newcommand{\FM}{\mathrm{FM}}
+\newcommand{\force}{\mathrm{force}}
+\newcommand{\energy}{\mathrm{energy}}
+\newcommand{\TV}{\mathrm{TV}}
+\newcommand{\KL}{\mathrm{KL}}
+\newcommand{\BGFM}{\mathrm{BGFM}}
+\newcommand{\Var}{\mathrm{Var}}
+\newcommand{\norm}[1]{\left\|#1\right\|}
+\newcommand{\ip}[2]{\langle #1, #2\rangle}
+
+\title{Appendix A v4: BGFM Proofs \\ \large Boltzmann-Guided Flow Matching: Score, Force, Energy Alignment}
+\author{(iterating -- matches notes/bgfm_method.md)}
+\date{}
+
+\begin{document}
+\maketitle
+
+This appendix extends the v3 formulation (bond-free physics-drift flow
+matching) with the three-term BGFM training objective. We prove that the
+learned density converges to the Boltzmann distribution under a neural
+potential $E$ in the limit of large energy-consistency weight.
+
+Sections 1--3 carry over verbatim from v3 (setup, steric manifold,
+tangent projection/retraction). We focus here on the new BGFM-specific
+content: Sections 4 (score formula), 5 (force consistency), 6 (energy
+consistency), and the main theorem in Section 7.
+
+\section{Recap: setup and notation}
+
+From v3 (condensed). Configurations live in
+$\X = \R^{3N} \times (\Delta^{A-1})^N \times (\Delta^{C-1})^N$, with
+steric-admissible manifold $\M_\ster = \{x : \norm{r_i - r_j}^2 \ge
+d_\mathrm{eff}^2(\tilde a_i, \tilde a_j) \; \forall i \ne j\}$.
+
+A universal neural potential $E : \X \to \R$ supplies the Boltzmann
+reference
+\[
+p_\mathrm{Boltz}(x) := Z^{-1} \exp\!\big(-E(x)/kT\big).
+\]
+At each training point $(x, F)$ where $x \sim p_\text{data}$ and $F(x)
+= -\nabla_r E(x)$ is the DFT force (precomputed offline), the BGFM
+objective enforces three alignments of the model-induced density
+$p_\theta$:
+
+\begin{itemize}
+\item \textbf{FM (data).} $p_\theta$ assigns density to observed data.
+\item \textbf{Force (local gradient).} $\nabla \log p_\theta(x)
+      \approx F(x)/kT$ at data points.
+\item \textbf{Energy (global log-density shape).} $\log p_\theta(x) +
+      E(x)/kT$ is constant across data points.
+\end{itemize}
+
+\section{Score of a flow-matching marginal density (recap + details)}
+
+\begin{lemma}[FM score formula, Gaussian prior]\label{lem:score}
+Let $p_0 = \mathcal{N}(0, \sigma^2 I)$ and let $u^*(x, t) = \E[x_1 - x_0
+\mid x_t = x]$ be the marginal velocity of the linear interpolant
+$x_t = (1 - t) x_0 + t x_1$. For $t \in (0, 1)$, the marginal score is
+\begin{equation}\label{eq:score}
+s^*(x, t) \;:=\; \nabla_x \log p_t(x) \;=\; \frac{t \cdot u^*(x, t) - x}{(1 - t)\, \sigma^2}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+The conditional $p_t(x \mid x_1) = \mathcal{N}(t x_1, (1-t)^2 \sigma^2 I)$
+so $\nabla_x \log p_t(x \mid x_1) = -(x - t x_1) / ((1-t)^2 \sigma^2)$.
+Marginalizing over $x_1$ with the conditional law $p(x_1 \mid x_t = x)$:
+\begin{align*}
+s^*(x, t)
+  &= \E[\nabla_x \log p_t(x \mid x_1) \mid x_t = x] \\
+  &= -(x - t\, \E[x_1 \mid x_t = x]) / ((1-t)^2 \sigma^2).
+\end{align*}
+From $x_t = (1 - t) x_0 + t x_1$, solving for $x_1$:
+$x_1 = (x_t - (1-t) x_0)/t$. Thus
+$\E[x_1 \mid x_t = x] = x + (1-t) \E[-x_0 \mid x_t = x] / t + \cdots$,
+and using $u^*(x, t) = \E[x_1 - x_0 \mid x_t = x]$ together with
+$x = (1-t) \E[x_0 \mid x_t = x] + t \E[x_1 \mid x_t = x]$, we obtain
+$\E[x_1 \mid x_t = x] = x + (1-t) u^*(x, t)$. Substituting:
+\begin{align*}
+s^*(x, t) &= -(x - t(x + (1-t) u^*)) / ((1-t)^2 \sigma^2) \\
+          &= -((1-t) x - t (1-t) u^*) / ((1-t)^2 \sigma^2) \\
+          &= (t u^* - x) / ((1-t) \sigma^2).
+\end{align*}
+\end{proof}
+
+\begin{remark}[Implementation]
+Equation~\eqref{eq:score} is used in \texttt{cfm\_mol.bgfm\_loss.
+score\_from\_fm\_velocity}, evaluated at $t_\text{eval}$ slightly below
+$1$ (default $0.95$) to avoid the $1/(1-t)$ singularity. Unit tests
+against a 1D Gaussian target confirm the formula to numerical precision
+(\texttt{tests/test\_bgfm\_loss.py::test\_score\_from\_fm\_velocity\_one\_d\_gaussian}).
+\end{remark}
+
+\section{Force consistency}
+
+\begin{definition}[Force-consistency loss]
+Given training data $\{(x^{(m)}, F^{(m)})\}_{m=1}^M$ with $F^{(m)}
+= -\nabla_r E(x^{(m)})$, define
+\begin{equation}\label{eq:lforce}
+\mathcal{L}_\force(\theta)
+  = \frac{1}{M} \sum_{m=1}^M
+       \norm{s_\theta(x^{(m)}, t_\mathrm{eval}) - F^{(m)} / kT}^2,
+\end{equation}
+where $s_\theta(\cdot, t) = (t \cdot v_\theta - x)/((1-t)\sigma^2)$ is
+the FM-implied score (Lemma~\ref{lem:score}).
+\end{definition}
+
+\begin{proposition}[Force-consistency $\Leftrightarrow$ local Boltzmann
+score]\label{prop:force-equiv}
+If $\mathcal{L}_\force(\theta) = 0$ (achievable at infinite capacity),
+then for every $x \in \mathrm{supp}(p_\text{data})$,
+\[
+\nabla_x \log p_\theta(x, t_\mathrm{eval}) = -\nabla_x E(x) / kT.
+\]
+In the $t_\mathrm{eval} \to 1$ limit (so $p_\theta(\cdot, 1) = p_\theta$
+is the terminal model distribution), we have
+$\nabla \log p_\theta(x) = -\nabla E(x)/kT$ on data support.
+\end{proposition}
+
+\begin{proof}
+Direct substitution of $\mathcal{L}_\force = 0$ into~\eqref{eq:lforce}
+yields $s_\theta(x, t_\mathrm{eval}) = F(x)/kT = -\nabla E(x)/kT$ at
+each training point, pointwise on support. Continuity of $s_\theta$
+in $t$ extends this to $t \to 1$.
+\end{proof}
+
+\begin{remark}[``Local Boltzmann''
+consistency]\label{rmk:local-boltz}
+Proposition~\ref{prop:force-equiv} gives that $\log p_\theta$ has
+the correct \emph{gradient} matching Boltzmann at every data point.
+This determines $\log p_\theta$ on the data support \emph{up to an
+additive constant}. The energy term (Section 5) fixes this constant.
+\end{remark}
+
+\section{Energy consistency via variance form}
+
+\begin{definition}[Energy-consistency loss]
+Given training data with precomputed DFT energies $\{E^{(m)}\}_{m=1}^M$
+and the model's log-density $\log p_\theta$ (computed via
+change-of-variables, Eq.~5.1 of main text):
+\begin{equation}\label{eq:lenergy}
+\mathcal{L}_\energy(\theta)
+  = \Var_{m \sim \mathrm{Unif}[M]}\!\big[\log p_\theta(x^{(m)}) + E^{(m)}/kT\big].
+\end{equation}
+\end{definition}
+
+\begin{remark}[Why variance, not squared error?]
+The target of the $\log p$ equation is
+$\log p_\theta(x) = -E(x)/kT - \log Z$, where $Z = \int e^{-E/kT} dx$
+is unknown and notoriously hard to estimate. A squared-error loss
+$(\log p_\theta + E/kT + \log Z)^2$ would require learning or
+estimating $\log Z$. The variance formulation~\eqref{eq:lenergy} is
+\emph{invariant under constant shifts}: for any $c \in \R$, $\Var(X + c)
+= \Var(X)$. Thus $\log Z$ is automatically absorbed and we need only
+enforce the \emph{shape} of $\log p_\theta$ to match $-E/kT$.
+\end{remark}
+
+\begin{proposition}[Energy-consistency $\Leftrightarrow$ global
+Boltzmann shape]\label{prop:energy-equiv}
+$\mathcal{L}_\energy(\theta) = 0$ iff there exists $c \in \R$ such that
+$\log p_\theta(x) + E(x)/kT = c$ for all $x \in \mathrm{supp}(p_\text{data})$.
+Equivalently, $p_\theta(x) = e^{-c} \exp(-E(x)/kT)$ on support.
+\end{proposition}
+
+\begin{proof}
+$\Var(X) = 0$ iff $X$ is almost-surely constant. Apply to $X = \log
+p_\theta + E/kT$ evaluated on training samples.
+\end{proof}
+
+\section{Full BGFM objective and Boltzmann consistency}
+
+\begin{definition}[BGFM training objective]
+\begin{equation}\label{eq:bgfm-total}
+\mathcal{L}_\BGFM(\theta)
+  = \mathcal{L}_\FM(\theta)
+  + \lambda_1\, \mathcal{L}_\force(\theta)
+  + \lambda_2\, \mathcal{L}_\energy(\theta),
+\end{equation}
+with weights $\lambda_1, \lambda_2 \ge 0$ scheduled to ramp from $0$
+(warmup) to $\lambda_1^\star, \lambda_2^\star$ (full value) during
+training.
+\end{definition}
+
+\begin{assumption}[BGFM regularity]\label{assum:bgfm}
+\begin{enumerate}
+\item[(B1)] The FM loss achieves $\mathcal{L}_\FM(\theta^*) \le \varepsilon_\FM$
+      at the optimum, ensuring $p_\theta(\cdot, 1)$ covers
+      $\mathrm{supp}(p_\text{data})$.
+\item[(B2)] The model family has sufficient capacity for
+      $v_\theta$ to interpolate $u^*$ and express any Boltzmann density
+      under~$E$.
+\item[(B3)] The neural potential $E$ is $C^1$ with $L_E$-Lipschitz
+      gradient and $E_{\min} := \inf E > -\infty$.
+\end{enumerate}
+\end{assumption}
+
+\begin{theorem}[Boltzmann consistency]\label{thm:boltzmann}
+Under Assumption~\ref{assum:bgfm}, let $\theta^\star(\lambda_2)$
+minimize~\eqref{eq:bgfm-total} with $\lambda_1 > 0$ fixed and
+$\lambda_2 > 0$ growing. Then as $\lambda_2 \to \infty$, the induced
+density satisfies, for every $x \in \mathrm{supp}(p_\text{data})$:
+\[
+p_{\theta^\star(\lambda_2)}(x) \;\longrightarrow\; \frac{\exp(-E(x)/kT)}{Z^\star},
+\qquad Z^\star = \int_{\mathrm{supp}(p_\text{data})} \exp(-E(x')/kT)\, dx'.
+\]
+\end{theorem}
+
+\begin{proof}
+\emph{Step 1 (energy loss forces Boltzmann shape).} As $\lambda_2 \to
+\infty$, minimizing~\eqref{eq:bgfm-total} forces $\mathcal{L}_\energy
+\to 0$. By Proposition~\ref{prop:energy-equiv}, this is equivalent to
+$\log p_{\theta^\star} + E/kT$ being constant on $\mathrm{supp}(p_\text{data})$.
+
+\emph{Step 2 (FM loss pins the support).} By Assumption~(B1),
+$p_{\theta^\star}$ covers $\mathrm{supp}(p_\text{data})$, with error
+$\varepsilon_\FM$ in a suitable metric (e.g., reverse KL).
+
+\emph{Step 3 (normalization).} The constant $c$ in
+Proposition~\ref{prop:energy-equiv} is determined by $\int p_{\theta^\star} = 1$
+on support. Since $p_{\theta^\star}(x) = e^{-c} \exp(-E(x)/kT)$ on
+support, integration gives $e^{-c} = 1/Z^\star$ where $Z^\star$ is as
+stated.
+
+\emph{Step 4 (force loss as consistency check).} Proposition~\ref{prop:force-equiv}
+with $\lambda_1 > 0$ fixed ensures that the local gradient of
+$\log p_{\theta^\star}$ matches $-\nabla E/kT$, which is automatically
+true under Step 1 (by differentiation). Hence $\lambda_1$ is redundant
+in the limit but accelerates convergence at finite $\lambda_2$ by
+providing a parallel, local supervision signal.
+
+Combining: on $\mathrm{supp}(p_\text{data})$, $p_{\theta^\star}(x) =
+\exp(-E(x)/kT)/Z^\star$.
+\end{proof}
+
+\begin{corollary}[Chemistry-agnostic Boltzmann sampling]\label{cor:chem-free-boltz}
+Theorem~\ref{thm:boltzmann} holds for any chemistry covered by $E$'s
+training domain. With $E = E_\text{OMol25}$ (83-element, ωB97M-V
+accuracy), the model's terminal distribution $p_{\theta^\star}$ is
+Boltzmann-aligned across organics, organometallics, radicals, and
+hypervalent species uniformly -- no chemistry-specific valence table,
+bond-order constraint, or rule-based sanitization is required.
+\end{corollary}
+
+\begin{remark}[Why three terms rather than one?]
+In the infinite-capacity, infinite-data limit, the three BGFM terms are
+redundant by the chain of equivalences (FM $\Rightarrow$ support,
+energy $\Rightarrow$ shape, force = gradient of energy). In practice
+each provides a different training signal with different learning
+dynamics:
+
+\begin{itemize}
+\item $\mathcal{L}_\FM$ is a \emph{velocity-field} loss (dense, per-sample,
+      fast). It establishes the model's coverage before energy/force can
+      be meaningfully applied.
+\item $\mathcal{L}_\force$ is a \emph{gradient} loss (per-atom, per-sample,
+      medium speed). It sharpens the local shape without requiring
+      full trajectory integration.
+\item $\mathcal{L}_\energy$ is a \emph{global} loss requiring $\log p_\theta$
+      via trajectory divergence integral (per-graph, per-sample, slow).
+      It constrains the overall density shape but is expensive.
+\end{itemize}
+
+Empirically (Section 6 of main text), dropping any single term degrades
+performance in a characteristic way: without $\mathcal{L}_\FM$ the
+support collapses; without $\mathcal{L}_\force$ the local geometry is
+noisy at the atomic scale; without $\mathcal{L}_\energy$ the global
+Boltzmann shape is not enforced and sample energies have higher
+variance than truth.
+\end{remark}
+
+\section{Convergence rate}
+
+\begin{theorem}[BGFM convergence in TV]\label{thm:bgfm-conv}
+Under Assumptions~\ref{assum:bgfm}, (A1)--(A3) of Appendix A v3, and
+assuming the trained model achieves
+$\mathcal{L}_\FM \le \varepsilon_\FM$, $\mathcal{L}_\force \le
+\varepsilon_\force$, $\mathcal{L}_\energy \le \varepsilon_\energy$,
+the retracted-Euler scheme with step $\Delta t$ yields a sample
+distribution $p_{\theta^\Delta t}$ with
+\[
+\TV(p_{\theta^{\Delta t}}, p_\text{Boltz}^\text{data-support})
+  \le C_1 \Delta t + C_2 \sqrt{\varepsilon_\FM}
+    + C_3 \sqrt{\varepsilon_\force} + C_4 \sqrt{\varepsilon_\energy},
+\]
+where $p_\text{Boltz}^\text{data-support}$ is the Boltzmann distribution
+restricted (normalized) to $\mathrm{supp}(p_\text{data})$, and the
+constants depend on Lipschitz constants and the reach $\tau_0$ of
+$\M_\ster$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The TV bound decomposes into four sources:
+\begin{enumerate}
+\item Euler discretization: $O(\Delta t)$ as in Theorem~7 of v3.
+\item FM support error: $O(\sqrt{\varepsilon_\FM})$ by Pinsker
+      (controls $\TV$ by $\sqrt{\KL}$, which in turn is bounded by FM
+      loss in the straight-line interpolant regime).
+\item Force error: a gradient mismatch perturbs the density shape by
+      integration: $O(\sqrt{\varepsilon_\force})$.
+\item Energy error: direct contribution to the shape: $O(\sqrt{\varepsilon_\energy})$.
+\end{enumerate}
+Triangle inequality over contributions gives the total bound.
+\end{proof}
+
+\begin{corollary}[Sampling rate vs reflected SDE]
+Under regularity, BGFM retracted-Euler achieves $\TV$ discretization
+error $O(\Delta t)$, whereas reflected-SDE schemes (Lou-Ermon,
+Fishman) achieve $O(\sqrt{\Delta t})$. BGFM is thus one order faster
+in the discretization regime.
+\end{corollary}
+
+\section{Relationship to prior work}
+
+\begin{remark}[Relation to Boltzmann Generators]
+Noe et al.~(\textit{Science}, 2019) introduced the idea that a
+generative model can be trained to sample from a known Boltzmann
+distribution by combining (i) a normalizing-flow density estimator
+with (ii) a reweighting (KL) loss. Follow-ups in ML venues
+(K\"ohler 2020 ICML, Midgley 2023 ICLR, Falkner 2022 ICML) refined
+this for molecular systems.
+
+BGFM differs in three ways:
+\begin{enumerate}
+\item \textbf{Flow matching, not normalizing flow.} Flow matching
+      replaces the bijective-transform density estimator with an ODE,
+      yielding $O(\Delta t)$ convergence (vs $O(\sqrt{\Delta t})$ for
+      reflected SDE / NF-based approaches) and simpler training.
+\item \textbf{Universal neural potential.} Prior Boltzmann generators
+      used hand-designed or system-specific potentials (Lennard-Jones,
+      harmonic forces). BGFM uses OMol25, a universal pretrained
+      neural potential, making the framework applicable to any
+      molecular chemistry in a single training.
+\item \textbf{Force + energy combined.} Prior works typically combine
+      NLL with one reweighting term. BGFM combines flow matching, score
+      matching (force), and energy matching simultaneously. Under
+      capacity, the three are redundant (Remark after
+      Theorem~\ref{thm:boltzmann}), but practically they give
+      complementary training signals at distinct scales.
+\end{enumerate}
+\end{remark}
+
+\begin{remark}[Relation to CDD (Cardei NeurIPS 2025)]
+CDD enforces hard combinatorial constraints (e.g., valence) via
+differentiable projection onto a discrete constraint set. BGFM is
+bond-free and does not use discrete combinatorial projection; chemistry
+is instead soft-enforced via the neural potential $E$. The two methods
+target orthogonal axes of the constrained-generation problem; they
+are complementary rather than competing.
+\end{remark}
+
+\bigskip
+\hrule
+\bigskip
+
+\emph{End of Appendix A v4. See notes/bgfm\_method.md for
+implementation details. Formal theorem statements and proof structure
+reviewed against Lipman et al.~2023 (FM), Hyv\"arinen 2005 (score
+matching), and No\'e et al.~2019 (Boltzmann generator).}
+
+\end{document}

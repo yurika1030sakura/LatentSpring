@@ -1,15 +1,3 @@
-% ============================================================================
-%  03_theory.tex --- Sec. 3, from local ordering to connected supervision.
-%  No floats.  ONE short proposition; every full statement and every proof is
-%  in Appendix A.
-%
-%  2026-08-30 REFRAME.  This section is CONSTRUCTIVE: it is a characterisation
-%  of what the objective determines and a DESIGN CRITERION for what it does
-%  not, not a limitation section.  It must still keep every mathematical
-%  qualification (mutual singularity, empirical reading, the (C-1)-parameter
-%  family), and it must end on the design takeaway.
-% ============================================================================
-
 \section{From Local Ordering to Connected Supervision}
 \label{sec:theory}
 
@@ -24,14 +12,13 @@ $U_j \cap U_{j'} \neq \emptyset$ is necessary but far from sufficient (\Cref{def
 
 \begin{proposition}[What zero group-wise variance fixes]
 \label{prop:ident}
-Let the population objective $\sum_j \pi_j \Var_{\rho_j}[w]$ vanish. Then \emph{(i)} $w \equiv b_j$
+For strictly positive group weights $\pi_j$ and finite second moments, let the population objective $\sum_j \pi_j \Var_{\rho_j}[w]$ vanish. Then \emph{(i)} $w \equiv b_j$
 $\rho_j$-almost surely on $U_j$ for a scalar $b_j$: the residual is fixed to one constant per group,
 and no normaliser is needed, since $Z(c)$ enters $w$ only through that constant.
 \emph{(ii)} $b_j = b_{j'}$ along every edge of $\mathcal{G}_c$, so the constants agree within each
-connected component; connectivity is sufficient and, in the identifiability sense, necessary, a
-disconnected graph leaving zero-loss solutions whose constants differ. \emph{(iii)} If the $\rho_j$
+connected component; connectivity is sufficient; in the unrestricted measurable residual class a disconnected graph permits different constants. Continuity or model-class restrictions can impose further relations. \emph{(iii)} If the $\rho_j$
 have positive Lebesgue densities and $\mathcal{G}_c$ has $C \ge 2$ components $U^{(1)},\dots,U^{(C)}$
-carrying all the model's mass, the zero-loss densities form a $(C-1)$-parameter family
+with finite positive restricted partition integrals and carrying all the model's mass, the zero-loss densities form a $(C-1)$-parameter family
 $q_\theta = a_i e^{-E/kT}$ on $U^{(i)}$ with $\sum_i a_i Z^{(i)} = 1$, in which every vector of
 component occupancies in the open simplex is attained: the \emph{relative} mass of separated
 components is not identified.
@@ -46,9 +33,7 @@ identifiability statement.
 \paragraph{What our design supervises.} Each parent contributes exactly one group, and distinct
 parents draw displacements independently from continuous distributions, so with probability one no
 two groups share a sampled point: $\mathcal{G}_c$ is a set of isolated vertices and only part~(i)
-applies (\Cref{cor:basins}). Part~(i) is exactly the property the experiments exercise --- inside
-each sampled cloud the objective pins the relation between $\log q_\theta$ and energy, which is
-local ordering --- and its complement is equally exact, the cloud's offset being free and the
+applies (\Cref{cor:basins}). Part~(i) describes an ideal zero residual, which the experiments do not achieve --- the archived readout is not a validated $\log q_\theta$ --- and its complement is equally exact, the cloud's offset being free and the
 relative probability of distinct basins untouched. Disconnection rests on mutual singularity rather
 than on one group per composition, which our pool does not satisfy: $31\%$ of its parents sit on a
 repeated composition, and those clouds are still disconnected (\Cref{app:l2g,app:data}). Nothing

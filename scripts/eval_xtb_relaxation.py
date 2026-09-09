@@ -181,6 +181,9 @@ def _xtb_relax(work_dir: Path, xyz_path: Path, charge: int,
     E_after = energies[-1] if energies else None
     optimized = work_dir / "xtbopt.xyz"
     relaxed_positions = _read_xyz_positions(optimized)
+    if out.returncode != 0:
+        return {"failure_reason": f"xtb_exit_{out.returncode}",
+                "converged": converged, "steps": steps}
     if E_after is None:
         return {"failure_reason": "no_energy_in_xtb_output",
                 "converged": converged, "steps": steps}
@@ -245,6 +248,7 @@ def _percentile(values: list[float], q: float) -> float:
 
 def summarize(records: list[dict]) -> dict:
     ok = [r for r in records if r.get("failure_reason") is None]
+    converged_ok = [r for r in ok if r.get("converged") is True]
     n = len(records)
     n_ok = len(ok)
     dE = [r["delta_E_kcalmol"] for r in ok if r.get("delta_E_kcalmol") is not None]
@@ -256,6 +260,12 @@ def summarize(records: list[dict]) -> dict:
         "index": "__summary__",
         "n_total": n,
         "n_ok": n_ok,
+        "n_converged": len(converged_ok),
+        "n_unconverged_with_energy": n_ok - len(converged_ok),
+        "converged_fraction_all": len(converged_ok) / n if n else float("nan"),
+        "converged_delta_E_per_atom_median": _percentile(
+            [r["delta_E_kcal_per_atom"] for r in converged_ok
+             if r.get("delta_E_kcal_per_atom") is not None], 50.0),
         # NOTE: ΔE stats below are over the n_dE successfully-relaxed molecules only;
         # read them WITH failure_rate (a model with many xtb failures has a small,
         # self-selected ΔE population). n_dE is reported so the denominator is explicit.

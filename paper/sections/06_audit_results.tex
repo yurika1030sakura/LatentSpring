@@ -1,0 +1,41 @@
+\subsection{Resolution Sensitivity and Generated-Structure Outcomes}
+\label{sec:auditresults}
+
+The resolution comparison in \Cref{tab:auditresolution} holds each checkpoint, stored geometry and
+energy fixed and uses only checkpoints available at all three resolutions: five FM, three value and
+three scrambled seeds. It excludes the reference geometry and applies the archived $93$-parent
+filter. Energies are joined by parent and perturbation identifiers after checking each stored
+original readout against the source record. This construction does not redraw geometries when trace
+estimation consumes a different number of random draws. Trace noise remains: this is not a
+probe-repeat study.
+
+\begin{table}[t]
+\centering\small
+\caption{Legacy readout correlation under solver refinement, mean $\pm$ SEM over the same completed
+checkpoints at each resolution. These are sensitivity measurements, not corrected-CNF results.}
+\label{tab:auditresolution}
+\begin{tabular}{rrrrr}
+\toprule
+Steps & FM ($5$) & Value ($3$) & Scrambled ($3$) & Value--FM \\
+\midrule
+$12$ & $0.222\pm0.009$ & $0.397\pm0.016$ & $0.222\pm0.015$ & $+0.175$ \\
+$24$ & $0.197\pm0.016$ & $0.275\pm0.002$ & $0.203\pm0.017$ & $+0.077$ \\
+$48$ & $0.199\pm0.011$ & $0.241\pm0.003$ & $0.191\pm0.009$ & $+0.042$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The value-minus-FM gap retains approximately $24\%$ of its $12$-step magnitude at $48$ steps;
+the value-minus-scrambled gap falls from $0.176$ to $0.051$. A positive residual gap remains, but
+convergence has not been established, and finer integration of the wrong field cannot fix the
+endpoint/velocity mismatch. These results materially limit the earlier ordering interpretation.
+
+A separate experiment draws $500$ structures per seed, for $5$ FM, $3$ value and $3$ scrambled
+seeds, and evaluates GFN2-xTB relaxation without using the density readout. The mean of each seed's
+median energy decrease per atom is $5.43\pm0.59$, $5.68\pm0.81$, and $5.51\pm0.65$
+kcal/mol/atom, respectively (lower is preferable). This provides no evidence of improved generation.
+Numerical failures occur in $13.0\%$, $11.1\%$, and $12.9\%$ of samples; counting all cases without
+a convergence flag raises the fractions to $43.3\%$, $42.6\%$, and $47.6\%$. Finite final energies
+therefore cannot all be interpreted as local-minimum energies. Similar failure rates do not establish
+absence of selection bias. Per-seed means, medians, convergence counts and source hashes are
+recomputed by \texttt{scripts/audit\_iclr\_evidence.py} from the archived records.

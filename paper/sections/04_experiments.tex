@@ -1,47 +1,3 @@
-% ============================================================================
-%  04_experiments.tex --- Sec. 4, the single Experiments section.
-%
-%  2026-08-30 MERGE PASS.  The former Sec. 4 "Experimental Design" and Sec. 5
-%  "Results" are ONE section now: a setting-and-protocol block (shared setting,
-%  the two tracks, metrics, reporting) runs straight into the three result
-%  subsections, whose titles are unchanged.  Do not re-split them.  The labels
-%  sec:setup / sec:protocol / sec:metrics / sec:experiments all now point at
-%  this one section.  VERIFIED 2026-08-30: only sec:setup is actually cited
-%  (A1_proofs.tex:704, 863); the other three are kept as spare anchors so an
-%  appendix cross-reference written against any of the four still resolves.
-%
-%  Floats: Figure 2 (fig:grid, matched grid, Sec. 4.1), Figure 3 (fig:ordering,
-%  ordering + retrieval + fixed-RMSD, Sec. 4.2), Figure 4 (fig:calibration).
-%
-%  2026-08-30 REFRAME + STATISTICAL REPORTING POLICY.
-%    * ZERO t values, ZERO p values, ZERO "significant"/"n.s." in this file.
-%      Descriptive standard only: arm mean +/- SEM over independently trained
-%      seeds, absolute effect size Delta r, seed counts, and
-%      launched/completed/diverged wherever completion differs by arm.
-%      Applied in BOTH directions: the favourable statistics went too.
-%    * There is NO resolution / step-count sensitivity analysis anywhere in
-%      the paper: it was deleted from main text AND appendix.  Do not
-%      re-introduce a step count into the narrative; the estimator is named
-%      as an ODE integration of the clamped positional flow with Hutchinson
-%      divergence estimation, and its settings live in the app:constants row.
-%    * The adverse seed imputations are NOT printed here; app:eval carries
-%      them and is the actual location of those numbers.
-%
-%  DESIGN IS ORGANISED BY EVIDENCE TRACK, NOT BY CHRONOLOGY.
-%    Track A  matched mechanism grid, 120 parents, six cells.
-%    Track B  the conservative held-out endpoint, 93 parents.
-%
-%  RELOCATED, NOT DELETED: Table 1 -> app:scalediag; the earlier checkpoint
-%  family's provenance and the defective scrambled shard -> app:cells,
-%  app:data; the adverse seed imputations -> app:eval; the launch timelines
-%  and the later cell-D block -> app:p0cells, app:stability;
-%  the generation-quality table -> app:generation;
-%  the normal-mode family -> app:perturb.
-%
-%  Every number below is from the verified list.  Matched-grid means never
-%  absorb the later relaunch seeds.
-% ============================================================================
-
 \section{Experiments}
 \label{sec:setup}
 \label{sec:protocol}
@@ -58,8 +14,8 @@ trial.
 \paragraph{Shared setting.} Every arm trains the bond-free FlowMol3 backbone \citep{flowmol3} on
 OMol25 \citep{omol25} against the OMol25/eSEN teacher \citep{esen} under the settings of
 \Cref{sec:method}, for $30\,000$ optimiser steps at effective batch $16$, approximately $0.12$ data
-epochs. The read-out protocol is fixed and operational: $\log q_\theta$ comes from an ODE integration
-of the clamped positional flow with Hutchinson divergence estimation
+epochs. All results in this section use the legacy readout of \Cref{sec:method:impl}, not the corrected density. The archived protocol is: $\widehat{\ell}_\theta$ comes from raw-head integration
+with Hutchinson divergence estimation
 \citep{ffjord,hutchinson}, and every evaluation energy is a GFN2-xTB single point \citep{gfn2xtb}
 from an evaluator that enters no training loss and shares no parameters or functional form with the
 teacher. Each held-out parent contributes one group of $K = 9$ geometries, its data geometry plus
@@ -70,7 +26,7 @@ a thermal conformer ensemble, measuring no mode occupancy.
 common checkpoint and matched in \emph{every} non-physics setting: optimiser, budget, batch,
 estimator, and shards drawn from the training split alone. The cells are \textbf{A},
 flow matching only; \textbf{B}, the same penalty on shards whose energies are \emph{identically
-zero}, so \eqref{eq:lvalue} degenerates to $\Var_k[\log q_\theta]$ and no energy label enters the
+zero}, so \eqref{eq:lvalue} degenerates to $\Var_k[\widehat{\ell}_\theta]$ and no energy label enters the
 loss; \textbf{C}, energies scrambled within each parent, a $y$-randomisation
 \citep{ruecker2007yrandom} carrying the treatment's own energy multiset and spread; \textbf{D}, true
 energies; \textbf{E}, the gradient baseline of \Cref{sec:forcebaseline} alone; \textbf{F}, both, all
@@ -90,19 +46,18 @@ flow-matching seeds and four completed value seeds enter.
 for the reason the objective is grouped: the per-molecule constant $-\log Z(c)$ would otherwise
 dominate a pooled statistic (\Cref{app:eval}). For parent $m$,
 \begin{equation}
-  r_m = \mathrm{corr}_k\!\left(\log q_\theta(\vx_{m,k}),\, -\tfrac{E_{m,k}}{kT}\right),
+  r_m = \mathrm{corr}_k\!\left(\widehat{\ell}_\theta(\vx_{m,k}),\, -\tfrac{E_{m,k}}{kT}\right),
   \qquad
-  \mathrm{NRV}_m = \frac{\Var_k[\log q_\theta(\vx_{m,k}) + E_{m,k}/kT]}
+  \mathrm{NRV}_m = \frac{\Var_k[\widehat{\ell}_\theta(\vx_{m,k}) + E_{m,k}/kT]}
        {\Var_k[E_{m,k}/kT]} .
   \label{eq:rm}
 \end{equation}\vspace{-6pt}%
 Pearson $r_m$ is invariant under positive affine maps of either variable (\Cref{rem:affine}), so it
-scores the \emph{shape} of $\log q_\theta$ against energy and is blind to calibration.
+scores the \emph{shape} of $\widehat{\ell}_\theta$ against energy and is blind to calibration.
 $\mathrm{NRV}_m$ is invariant to the per-group constant \Cref{prop:ident} leaves free and is
 anchored at both ends: a within-group Boltzmann density scores $0$, a \emph{constant} log-density
-exactly $1$. The identity $\mathrm{NRV}_{\min} = 1 - r_m^2$ is the best any single rescaling could
-reach, and $kT_{\mathrm{eff}}$ is the implied temperature, ideally $1.0$~eV (\Cref{app:scalediag}).
-\emph{Retrieval} asks how often ranking a parent's geometries by $\log q_\theta$ puts the
+exactly $1$. The identity $\mathrm{NRV}_{\min} = 1 - r_m^2$ assumes unrestricted signed rescaling; for positive rescaling and $r_m\leq0$, the infimum is $1$, and $kT_{\mathrm{eff}}$ is the implied temperature, ideally $1.0$~eV (\Cref{app:scalediag}).
+\emph{Retrieval} asks how often ranking a parent's geometries by $\widehat{\ell}_\theta$ puts the
 lowest-energy one first, or in the top three.
 
 \paragraph{Reporting.} We report effect sizes, means and standard errors over independently trained
@@ -169,7 +124,7 @@ agreeing at $0.197 \pm 0.009$ (\Cref{app:p0cells,app:stability}).
 \textbf{Ordering improves well beyond seed spread.} On the conservative held-out endpoint ---
 $93$ parents disjoint from the supervision pool, data geometry dropped, every geometry scored by the
 independent evaluator --- the value term raises the mean per-parent correlation between
-$\log q_\theta$ and $-E/kT$ from $0.200 \pm 0.018$ over five flow-matching seeds to
+$\widehat{\ell}_\theta$ and $-E/kT$ from $0.200 \pm 0.018$ over five flow-matching seeds to
 $0.369 \pm 0.023$ over four completed value seeds, an effect size of $\Delta r = +0.169$
 (\Cref{fig:ordering}a). All four value seeds exceed all five control seeds, so the observed seed
 ranges of the two arms do not overlap. The launch record is $5/5/0$ for flow matching and $5/4/1$
@@ -179,7 +134,7 @@ the population rather than carried by a few parents, value supervision scoring h
 $93$ (\Cref{fig:ordering}b).
 
 \textbf{Retrieval improves, and the gain persists at fixed RMSD.} Ranking a parent's eight
-displaced geometries by $\log q_\theta$ identifies the lowest-energy one $29.6\%$ of
+displaced geometries by $\widehat{\ell}_\theta$ identifies the lowest-energy one $29.6\%$ of
 the time under value supervision against $20.2\%$ for the control, with $12.5\%$ at chance, and
 top-3 rises from $49.5\%$ to $62.4\%$ against $37.5\%$ (\Cref{fig:ordering}c). Retrieval is
 invariant to the per-group constant and to calibration. The gain also persists at fixed RMSD: on a family
@@ -220,10 +175,10 @@ rises from $1.676$ to $2.821$ (\Cref{app:scalediag}).
 the part of the residual that is not energy-aligned, and that part grows enough to push NRV up even
 as the rescaled bound falls; the free constant per group is not the cause, since $\mathrm{NRV}$ is
 invariant to it. Both parts are already what \eqref{eq:lvalue} asks for. Writing
-$\log q_\theta = a\,(-E/kT) + b + \varepsilon$ within a group, with $\varepsilon$ uncorrelated with
+$\widehat{\ell}_\theta = a\,(-E/kT) + b + \varepsilon$ within a group, with $\varepsilon$ uncorrelated with
 $E$ by construction, gives
 \begin{equation}
-  \Var_k\bigl(\log q_\theta + E/kT\bigr) \;=\; (a-1)^2\,\Var_k\bigl(E/kT\bigr) \;+\; \Var_k(\varepsilon),
+  \Var_k\bigl(\widehat{\ell}_\theta + E/kT\bigr) \;=\; (a-1)^2\,\Var_k\bigl(E/kT\bigr) \;+\; \Var_k(\varepsilon),
   \label{eq:scaledecomp}
 \end{equation}
 whose two terms are exactly the magnitude of the response and its energy-unaligned component, and
@@ -237,3 +192,5 @@ degradation in validity, PoseBusters pass rate \citep{posebusters} or uniqueness
 sample size (\Cref{app:generation}).
 
 \input{figures/fig4_calibration}
+
+\input{sections/06_audit_results}

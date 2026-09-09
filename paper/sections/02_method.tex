@@ -1,201 +1,98 @@
-% ============================================================================
-%  02_method.tex --- Sec. 2, Energy-Value Supervision.  No floats.
-%
-%  2026-08-30 REFRAME.  Sec. 2 is the METHOD section of a method paper.
-%  2026-08-30 RELATED-WORK PASS.  A compact related-work subsection was
-%  PROMOTED from Appendix C (sections/A3_related.tex) and is now 2.1, so the
-%  positioning is in the main text where a reviewer will find it.  Sec. 2 now
-%  has five subsections:
-%    2.1  related work: three groups + the intersection sentence   <-- promoted
-%    2.2  the bond-free flow and its clamped positional density
-%    2.3  the group-wise value objective          <-- BOXED, visually dominant
-%    2.4  why the partition function cancels      <-- and why grouping is forced
-%    2.5  a gradient-supervision baseline         <-- comparator, NOT a component
-%
-%  The proposed objective is the only boxed display in the paper.  The force
-%  baseline in 2.5 must never be boxed or otherwise made to compete with it.
-%
-%  ATTRIBUTION IS MADE IN 2.1 AND NOWHERE ELSE.  The log-variance divergence,
-%  the cancellation of Z(c) and off-policy estimation are prior work; 2.4
-%  states the technical consequence and cross-references 2.1 for the credit.
-%  Do NOT restore the citation list in 2.4 -- that would double-credit.
-%
-%  NOTATION.  lambda_E and L_value throughout; the historical code field is
-%  named once, in 2.2.  kT_eff, never T_eff.  log q_theta, never log p_theta.
-%
-%  2026-08-19.  The eps = 1/(2n) SMOOTHED-MARGINAL READING IS WRONG AND HAS
-%  BEEN DELETED (paper/ESTIMATOR_SEMANTICS.md).  Do not reinstate it.
-% ============================================================================
-
-\section{Energy-Value Supervision for De Novo Molecular Flows}
+\section{Grouped Energy Supervision and the Implemented Readout}
 \label{sec:method}
 
-\subsection{Related work: two literatures, and the question between them}
+\subsection{Related work}
 \label{sec:related}
+De novo generators including EDM, GeoLDM, SemlaFlow and FlowMol3
+\citep{edm,geoldm,semlaflow,flowmol3} learn molecular composition and geometry jointly. Conditional
+conformer and energy-targeted samplers address a different, fixed-system problem
+\citep{torsionaldiff,noe2019boltzmann,fab,adjointsampling,idem,ewfm}.
+Adjoint Sampling uses neural energy models across molecular systems
+\citep{adjointsampling}. Log-variance objectives, partition-constant cancellation and off-policy
+reference measures are prior work \citep{vargrad,nusken2021pathspace,richter2024improvedsampling,sendera2024offpolicy}.
+In particular, off-policy log-dispersion regularisation already combines data-based training with
+energy-labelled shape regularisation without additional on-policy samples \citep{ldr2026}.
+We claim neither the divergence nor that combination as new. The question here is its implementation
+and empirical behaviour in a bond-free molecular FlowMol3 model; broader related work is in
+\Cref{app:related}.
 
-\paragraph{De novo 3D molecular generation.} Equivariant diffusion and flow-matching models
-generate positions and types jointly, from EDM and GeoLDM \citep{edm,geoldm} through
-graph-and-geometry hybrids \citep{midi,symphony,semlaflow} to FlowMol3 \citep{flowmol3}, the
-backbone used here, and Zatom-1 \citep{zatom1}, the one published generator trained on the same
-corpus; EBMol \citep{ebmol} learns a scalar energy from data rather than from a physical potential.
-These models are judged on validity, on sample quality, or on an energy the model itself learns, and
-they define the state of the art at the task they set out to do. What such evaluations generally do
-not ask is whether the tractable density the model defines responds to an \emph{external} physical
-energy. That is a different question rather than a shortfall --- it is not the question these papers
-pose --- and we claim superiority over none of them.
-
-\paragraph{Conditional conformer and ensemble models.} Torsional diffusion \citep{torsionaldiff},
-the GEOM conformer literature \citep{geom} and DECAF \citep{decaf} take the molecular graph, or the
-molecular identity, as input and return conformers for it. The composition is supplied rather than
-generated, so the density they define is conditional on a fixed chemical graph. That input is what
-makes theirs a different problem from a de novo generator's, and why their protocols do not transfer
-to one unchanged.
-
-\paragraph{Energy-targeted samplers, and where our objective comes from.} Samplers that target
-$e^{-E/kT}$ directly \citep{noe2019boltzmann,tbg,sbg,arbg,adjointsampling,idem,ewfm} obtain
-equilibrium densities; mass-covering correction by annealed importance sampling \citep{fab}
-addresses the cross-group failure that \Cref{cor:basins} formalises, potential-score matching
-\citep{psm} supervises with the potential's gradient instead of its value, and \citet{idflow} drive
-a predictor--refiner with an \emph{internal, learned} energy instead of an external one. Each takes
-the system, the alphabet or the molecular graph as given: Adjoint Sampling \citep{adjointsampling},
-the closest use of a universal potential as a training signal, trains against an eSEN energy but
-samples conformers of a \emph{given} molecular graph. They therefore solve a stronger sampling
-problem --- equilibrium, not ordering --- on a state space that is narrower and fixed in advance.
-Our value term is inherited from this literature and is not claimed as new:
-$\Var[\log q_\theta + E/kT]$ is the \emph{log-variance divergence} named by \citet{vargrad}, placed
-in a path-space family by \citet{nusken2021pathspace}, given an optimal-control reading by
-\citet{berner2024optimalcontrol} and established for diffusion samplers by
-\citet{richter2024improvedsampling}; that a variance annihilates the normalising constant, and that
-the divergence may be estimated off-policy under an arbitrary reference measure
-\citep{sendera2024offpolicy}, are structural properties of that family, and we claim neither.
-
-\paragraph{The intersection.} Existing de novo generators decide what molecule and what geometry to
-produce, but do not test the tractable density they define against a transferable physical energy;
-energy-targeted samplers test or optimise exactly that relation, but assume the molecular system or
-the graph. This paper works at the intersection, asking what group-wise energy \emph{values} from a
-universal potential do to the density of a generator that is still choosing its molecule. To our
-knowledge the combination studied here --- an external universal potential supervising the
-tractable density of a bond-free de novo flow --- has not been evaluated in this form.
-\Cref{app:related} gives the formal setting and the fuller discussion.
-
-\subsection{The bond-free flow and its clamped positional density}
+\subsection{Backbone and the ideal density}
 \label{sec:method:flow}
+A composition $c$ specifies atom types and total charge, and coordinates lie in the zero-centroid
+subspace $H$ of dimension $3(N-1)$. The backbone is FlowMol3 on OMol25 with no bond supervision
+and at most $200$ atoms. The energy teacher supplies values in eV, with $kT=1$ eV a numerical
+scale. Spin is fixed to a singlet and charge information is restricted by preprocessing; the
+reported energy evaluations concern main-group organic parents.
 
-A molecular state is a pair $(c,x)$: a composition $c$, the element multiset together with the total
-charge, and a centre-of-mass-free conformation $x \in \R^{3N}$. The backbone is FlowMol3
-\citep{flowmol3}, an SE(3)-equivariant conditional flow-matching model
-\citep{lipman2023flowmatching,liu2023rectifiedflow,albergo2023interpolants} with
-$x_t = (1-t)x_0 + t x_1$, $x_0 \sim \mathcal{N}(0,\sigma^2 I)$ at $\sigma = 1$, and
-$\Ls_{\mathrm{FM}}$ the velocity-regression loss; types and charges ride a continuous-time Markov
-chain. \emph{De novo} describes that backbone and its task; every energy measurement here is instead
-conditional on a fixed endpoint composition, types and charges held at their data values whenever
-the teacher is queried. The teacher is the universal neural potential trained on OMol25
-\citep{omol25,esen}: 83 elements, DFT energies and forces, no bond labels, making the generator
-bond-free by necessity, bonds recovered post hoc where an evaluation needs them \citep{xyz2mol}. It
-supplies $E(c,x)$ in eV and $F = -\nabla_x E$, so
-$\pi(x \mid c) = e^{-E(c,x)/kT}/Z(c)$; neither $Z(c)$ nor $\sum_c Z(c)$ is ever formed, and
-$kT = 1.0$~eV is a \emph{numerical} target that keeps $E/kT$ tame, not a physical temperature.
-Queries pass charge only and default to a singlet, so every evaluation below is on main-group
-organic parents (\Cref{ass:charge}).
-
-Because the generator is a continuous normalising flow, its log-density follows from the
-instantaneous change of variables \citep{ffjord}: integrating the field backwards from $x_1$ and
-accumulating the divergence gives
+FlowMol3's position head predicts an endpoint $D_\theta(x,t)$, not a velocity
+\citep{flowmol3}. For the position schedule $\alpha$, the smooth position velocity is
 \begin{equation}
-  \log q_\theta(x_1 \mid c) \;=\; \log p_0(x_0) - \int_0^1 \nabla \!\cdot\, v_\theta(x_t,t)\,\mathrm{d}t ,
-  \label{eq:ffjord}
+ v_\theta(x,t)=\frac{\alpha'(t)}{1-\alpha(t)}\bigl(D_\theta(x,t)-x\bigr).
+ \label{eq:headvelocity}
 \end{equation}
-with the trace estimated by Rademacher--Hutchinson probes \citep{hutchinson}. Throughout,
-$q_\theta(x \mid c)$ is the \emph{clamped positional density}: \eqref{eq:ffjord} integrated with the
-discrete channels, atom types, formal charges and the empty bond tensor, held at their endpoint
-labels for the whole reverse trajectory, only the positions evolving. It costs one reverse solve per
-geometry, is normalised on the centre-of-mass-free subspace by construction, and is the object this
-paper supervises and evaluates. \textbf{It need not equal the joint generator's
-conditional density $p_\theta(x \mid c)$}: the two coincide only if the discrete trajectory is
-determined by its endpoint, and we have not quantified the difference (\Cref{ass:A2}).
+For a deterministic field projected as $v_H(x,t)=P v_\theta(Px,t)$, fixed discrete labels, and an
+interval where the flow is well-defined and invertible, change of variables gives
+\begin{equation}
+ \log q_T(x\mid c)=\log p_0(x_0)-\int_0^T\nabla_H\!\cdot v_H(x_t,t)\,\mathrm{d}t,
+ \qquad x_0=\phi_T^{-1}(x).
+ \label{eq:ffjord}
+\end{equation}
+Here $p_0$ is a normalised Gaussian on $H$. This is an ideal clamped-flow density; it is not the
+joint CTMC sampler's conditional likelihood. History-dependent self-conditioning, guidance and
+nonsmooth retractions require separate treatment.
 
-\subsection{The group-wise value objective}
+\subsection{The grouped objective}
 \label{sec:method:obj}
-
-The intervention constrains the \emph{value} of that log-density rather than its gradient. The
-Boltzmann residual $w(x) = \log q_\theta(x \mid c) + E(c,x)/kT$ is constant exactly where
-$q_\theta(\cdot \mid c) \propto e^{-E(c,\cdot)/kT}$, so asking only that $w$ be \emph{flat} across a
-set of geometries asks for the physics and nothing else. We pre-compute shards of $K$ perturbations
-per parent, each carrying its teacher energy; every step draws $M$ parents and penalises the
-variance of the residual inside each group:
+The BGFM loss family is $\Ls_{\rm FM}+\lambda_1\Ls_{\rm force}+\lambda_2\Ls_{\rm energy}$
+with an optional anchor; the value-only experiments set $\lambda_1=\lambda_3=0$ and
+$\lambda_E=\lambda_2=3\times10^{-5}$. The intended energy objective is
 \begin{equation}
-  \boxed{\;
-  \begin{aligned}
-    \Ls_{\mathrm{ours}} \;&=\; \Ls_{\mathrm{FM}} \;+\; \lambda_E \,\Ls_{\mathrm{value}} ,
-    \qquad
-    \Ls_{\mathrm{value}} \;=\; \frac{1}{M}\sum_{m=1}^{M} \Var_k\bigl( w_{m,k} \bigr) ,
-    \\[1pt]
-    w_{m,k} \;&=\; \log q_\theta(x_{m,k} \mid c_m) \;+\; E_{m,k}/kT .
-  \end{aligned}
-  \;}
-  \label{eq:lvalue}
+ \boxed{\quad\Ls_{\rm ours}=\Ls_{\rm FM}+\lambda_E\Ls_{\rm value},\qquad
+ \Ls_{\rm value}=\frac1M\sum_m\Var_k[\ell_\theta(x_{m,k}\mid c_m)+E_{m,k}/kT].\quad}
+ \label{eq:lvalue}
 \end{equation}
-where $w_{m,k}$ is the residual at the $k$-th geometry of parent $m$, evaluated with that parent's
-own composition $c_m$ and pre-computed teacher energy $E_{m,k}$. We use
-$\lambda_E = 3\times10^{-5}$ (code field: \texttt{lambda\_2}), zero over a flow-matching warm-up and
-then ramped, applied every few steps because each evaluation is a reverse-time solve carrying second
-derivatives (\Cref{app:hyper}). Nothing else changes: same backbone, optimiser and data, no bond
-labels, and the model we report as ours sets $\lambda_1 = 0$ and the anchor weight
-$\lambda_3 = 0$.
+Ideally $\ell_\theta=\log q_T$; the archived runs instead use the scalar
+$\widehat\ell_\theta$ defined below. The labels are pre-computed on $K$ perturbed geometries per
+parent. Parent-specific normalisers cancel because a variance is invariant to additive constants;
+a variance pooled over different compositions would retain their different offsets. This explains
+grouping, but does not identify cross-group mass.
 
-\subsection{Why the partition function cancels, and why grouping is mandatory}
+\subsection{What the archived experiments actually optimise}
 \label{sec:method:cancel}
-
-Three properties of \eqref{eq:lvalue} do the work. First, $\log Z(c)$ enters $w$ as an additive
-constant and a variance annihilates additive constants, so the normaliser cancels within a group and
-is never formed --- the reason values from a transferable potential are usable at all, since $Z(c)$
-changes with every composition. Second, grouping is mandatory rather than convenient, precisely
-because that constant differs across molecules: its spread is set by size and composition rather
-than by deviation from the Boltzmann law, so a variance over a batch of \emph{different} molecules
-would measure the spread of $\log Z$ instead (\Cref{rem:crossbatch}).
-Third, and separately from the cancellation, \eqref{eq:lvalue} is a group-wise estimate, against the
-unnormalised Gibbs weight, of the \emph{log-variance divergence}, which may be estimated under an
-\emph{arbitrary} reference measure. That, and not the cancellation, is what makes the supervision
-off-policy and pre-computed shards valid: no sample need come from the model. The divergence, the
-cancellation of $Z(c)$ inside it, and its off-policy estimation are prior work, credited in
-\Cref{sec:related}. Ours is the deployment: a group-conditioned use of that estimator inside a mixed
-discrete--continuous, bond-free de novo generator, at the price of one free constant per group
-(\Cref{sec:theory}).
-
-\paragraph{Practicalities.}
 \label{sec:method:impl}
-\emph{(i)} $\lambda_E$ was fixed once from a smoke run before any Boltzmann evaluation and never
-tuned against a reported metric; the weight is small, its \emph{contribution} is not.
-\emph{(ii)} $\log q_\theta$ comes from an ODE integration of the clamped positional flow: \eqref{eq:ffjord}
-advanced by explicit Euler steps over the whole of $[0,1]$, its divergence integral taken by the
-midpoint rule on the same interval and its trace by Hutchinson probes \citep{hutchinson}; the
-interval is not truncated, so the discretisation controls numerical error rather than which density
-is meant (\Cref{app:constants}). \emph{(iii)} The reverse-time solve back-propagates second derivatives through a stochastic
-trace, and runs carrying it reach non-finite weights at a rate that runs without it do not ($6$ of
-$20$ against $0$ of $10$ in the matched grid of \Cref{sec:ablation}); a guard aborts on the first
-non-finite parameter, and because divergence is not independent of the objective, \textbf{every
-value-cell mean we report is conditional on completion}, with launched, completed and diverged
-counts beside it. \emph{(iv)} The gradient through $\Ls_{\mathrm{value}}$ is a
-\emph{truncated-adjoint surrogate}: the reverse trajectory is advanced without gradient tracking,
-each state detached from the previous, so gradient flows only through the divergence evaluations; we
-do not differentiate through the solve and do not claim exact likelihood training
-(\Cref{app:asimplemented}).
+The archived estimator takes $u_\theta(x,t)=D_\theta(x,t)$ directly, uses reverse Euler steps
+$x\leftarrow x-\Delta t\,u_\theta(x,t_k)$ at midpoint \emph{times}, and subtracts the accumulated
+ambient divergence from a prior formula with dimension $3(N-1)$. It neither performs
+\eqref{eq:headvelocity} nor projects the differentiated head onto $H$. We call its scalar output
+$\widehat\ell_\theta$. A midpoint time with a start-of-step state is not a second-order midpoint
+solver. Replacing the step count therefore tests the legacy readout's sensitivity, not the
+correctness of its interpretation as a generator likelihood.
 
-\subsection{A gradient-supervision baseline}
+Training additionally detaches each reverse state and the final prior argument. Parameters receive
+gradients only through divergence evaluations, a surrogate that omits the state and prior paths
+(\Cref{app:asimplemented}). Random self-conditioning in training can also change the field between
+calls. No theorem below establishes convergence of this update. Non-finite-loss guards and a
+non-finite-parameter abort are retained; $6/20$ value-containing runs diverged in the matched grid,
+versus $0/10$ without a value term. Reported value-cell means are conditional on completion.
+
+The corrected implementation converts the head with its actual schedule, centers both states and
+differentiated fields, uses deterministic module behaviour, advances state and divergence at
+midpoint stages, and retains the complete parameter-gradient graph. Its default $T=0.95$ explicitly
+defines $q_{0.95}$, not an endpoint likelihood. Analytic and real-interface checks validate the
+implementation; molecular retraining and a convergence study remain necessary.
+
+\subsection{The archived force comparator}
 \label{sec:forcebaseline}
-
-The obvious alternative to values is the potential's gradient, measured separately under the same
-backbone and budget. Flow matching gives the score of its time-$t$ marginal in closed form
-(\Cref{lem:score}), $s_\theta(x_t,t) = [\,t\, v_\theta(x_t,t) - x_t\,]/[(1-t)\,\sigma^2]$, which at
-the Boltzmann optimum equals $F/kT$, so a natural comparator regresses one on the other,
+For an independent Gaussian linear interpolant and its population velocity $v^*$,
+$s^*(x,t)=[tv^*(x,t)-x]/[(1-t)\sigma^2]$. The archived force cells instead substitute the endpoint
+head, giving
 \begin{equation}
-  \Ls_{\mathrm{force}}
-  = \E_{t^{*},(c,x_1)}\Bigl[\, N(c)^{-1} \textstyle\sum_{i}
-  \ell\bigl( s_\theta(x_{t^{*}}, t^{*})_i - \tfrac{F(c,x_1)_i}{kT} \bigr) \Bigr] .
-  \label{eq:score}
-\end{equation}%
-The read-out has a pole at $t = 1$, so we probe only at $t^{*} \in \{0.85, 0.92, 0.97\}$ and average
-a per-atom Huberised, norm-capped error $\ell$ (\Cref{app:constants}). The force target is read at
-the data endpoint $x_1$ while the score is read on the conditional path, so this is a naive
-off-policy endpoint form of force matching, a comparator and not a component of \eqref{eq:lvalue}: the model we report as ours has
-$\lambda_1 = 0$, and results from $\lambda_1 > 0$ are labelled as such (\Cref{sec:ablation}).
+ \widetilde s_\theta(x,t)=\frac{tD_\theta(x,t)-x}{(1-t)\sigma^2},\qquad
+ \Ls_{\rm force}=\E\left[N^{-1}\sum_i\ell\bigl(\widetilde s_{\theta,i}(x_t,t)-F_i(x_1)/kT\bigr)\right].
+ \label{eq:score}
+\end{equation}
+This scales the endpoint-based readout by $(1-t)$ before clipping. The probes
+$t\in\{0.85,0.92,0.97\}$ additionally compare a finite-time path readout with an endpoint force.
+Alignment and retraction alter the independent-Gaussian path assumption. These cells test this
+particular implemented comparator; their failure is not evidence against correctly specified force
+or potential-score matching. \Cref{app:score,app:trap} gives the ideal identity and diagnostics.

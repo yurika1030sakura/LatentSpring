@@ -1,45 +1,18 @@
-"""Boltzmann-Guided Flow Matching (BGFM) loss components.
+"""BGFM force, divergence and grouped-residual building blocks.
 
-Formal derivations in notes/bgfm_method.md (Sections 3-7).
-Theorem statements in notes/appendix_A_v4.tex.
+The loss family is L_FM + lambda_1 L_force + lambda_2 L_energy, with an
+optional anchor. These terms generally have incompatible optima when the
+training distribution is not Boltzmann. No joint-consistency guarantee
+follows from adding the losses or from a universal potential's element list.
 
-BGFM trains a flow-matching model whose induced density satisfies
-p_theta(x) proportional to exp(-E_OMol25(x) / kT) on the data support,
-by combining three training signals:
+The score identity is exact for the population velocity of an independent
+Gaussian linear interpolant. A learned field gives a readout, not necessarily
+the score of its own ODE density; retraction/alignment and finite-time force
+targets require separate justification. Pass VELOCITY, not endpoint positions.
 
-    L_total = L_FM + lambda_1 * L_force + lambda_2 * L_energy
-
-    L_FM     : standard flow-matching velocity MSE (see Lipman 2023)
-    L_force  : model's implied score matches the DFT force field
-    L_energy : model's implied log-density matches -E / kT up to const
-
-The three terms are redundant in the infinite-data infinite-capacity
-limit (by the chain rule: force = grad log p, energy = -log p + const),
-but in practice each gives different learning signals:
-  - L_FM fits the observed density
-  - L_force shapes local gradients (fast signal, every-sample)
-  - L_energy anchors global shape (slow signal, needs trajectory integration)
-
-This module exposes three core functions:
-
-  score_from_fm_velocity(v_theta, x_t, t, prior_std)
-      Closed-form: given FM velocity at time t, compute implied score of
-      the time-t marginal density. Derivation: Section 3.1 of bgfm_method.md.
-
-  divergence_exact_atomwise(v_fn, x)
-      Exact divergence of v w.r.t. atom positions, O(N * 3) backward
-      passes. Faster than Hutchinson for moderate N because of the
-      per-atom block-diagonal structure of GVP-Transformer.
-
-  bgfm_loss(batch, model, lambda_1, lambda_2, kT, t_score, n_steps_trace)
-      Full 3-term loss. Consumes {forces, energies} precomputed in
-      preprocess_omol25.py.
-
-Unit tests (tests/test_bgfm_loss.py) verify:
-  - score_from_fm_velocity on 1D Gaussian toy
-  - divergence_exact_atomwise against finite differences
-  - bgfm_loss has no NaN on small synthetic batch
-  - lambda_* = 0 reduces exactly to vanilla FM loss
+Current derivation/caveats: notes/bgfm_method.md and audit/20260908/REVIEW.md.
+Archived empirical results use the legacy estimator in bgfm_density.py.
+The corrected clamped-flow path is in clamped_density.py.
 """
 from __future__ import annotations
 
@@ -64,7 +37,7 @@ def score_from_fm_velocity(
     For linear interpolant x_t = (1 - t) * x_0 + t * x_1 with Gaussian
     prior x_0 ~ N(0, prior_std^2 * I), the marginal density p_t satisfies
 
-        nabla_x log p_t(x) = - [x - t * E[x_1 | x_t = x]] / [(1 - t) * prior_std^2]
+        nabla_x log p_t(x) = - [x - t * E[x_1 | x_t = x]] / [(1 - t)^2 * prior_std^2]
 
     We recover E[x_1 | x_t = x] from the marginal velocity:
 
@@ -157,15 +130,19 @@ def divergence_exact_atomwise(
     per_atom_div = torch.zeros(N, device=x.device, dtype=x.dtype)
     for i in range(N):
         for c in range(3):
-            cg = (x.requires_grad and (i < N - 1 or c < 2)) if create_graph is None \
+            cg = bool(x.requires_grad) if create_graph is None \
                 else bool(create_graph)
+            if not v[i, c].requires_grad:
+                continue
             grad_ic = torch.autograd.grad(
                 outputs=v[i, c],
                 inputs=x,
                 retain_graph=True,
                 create_graph=cg,
+                allow_unused=True,
             )[0]
-            per_atom_div[i] = per_atom_div[i] + grad_ic[i, c]
+            if grad_ic is not None:
+                per_atom_div[i] = per_atom_div[i] + grad_ic[i, c]
 
     # Sum per-atom -> per-graph
     cumsum = torch.cat([
@@ -212,6 +189,8 @@ def divergence_hutchinson(
     Returns:
         div_v: (B,) per-graph divergence
     """
+    if n_samples < 1:
+        raise ValueError('n_samples must be positive')
     if not x.requires_grad:
         x = x.detach().requires_grad_(True)
     v = v_fn(x)
@@ -230,6 +209,8 @@ def divergence_hutchinson(
     ])
     B = n_atoms_per_graph.shape[0]
     acc = torch.zeros(B, device=x.device, dtype=x.dtype)
+    if not v.requires_grad:
+        return acc
 
     for k in range(n_samples):
         if xi_provider is not None:

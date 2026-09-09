@@ -1,44 +1,15 @@
-% ============================================================================
-%  05_conclusion.tex --- Sec. 5, Conclusion.
-%
-%  2026-08-30 LIMITATIONS-COMPRESSION PASS.  There is NO standalone limitations
-%  heading in the main text any more.  What survives here is THREE sentences,
-%  inside the conclusion, carrying exactly four things and nothing else:
-%    (1) the measured object is a finite-step estimate of the clamped
-%        positional-flow density, not the joint conditional;
-%    (2) value-cell means are conditional on completion;
-%    (3) the objective is local -- relative basin mass is not identified and
-%        raw calibration is not achieved.
-%  The old item on integration step count was DELETED with the rest of the
-%  resolution sweep (main text and appendix); do not re-add it.
-%  EVERYTHING else the old paragraph carried (the surrogate-gradient detail,
-%  the 6-of-20 / 0-of-10 divergence tally, the under-training alternative, the
-%  three named extensions) was APPENDED to app:limitations, not deleted.
-%
-%  NO adverse-imputation values here.  NO t values, NO significance language,
-%  NO step counts of any kind.  The section opens and closes POSITIVE.
-%
-%  \label{sec:limitations} must stay: main.tex's ethics statement and
-%  A1_proofs.tex both \Cref it.
-% ============================================================================
-
-\section{Conclusion}
+\section{Conclusion and Remaining Requirements}
 \label{sec:limitations}
 \label{sec:conclusion}
+Group-wise energy values improve a legacy scalar ordering diagnostic in the archived molecular
+experiments. They have not yet been shown to improve the generator's density or its samples.
+The readout's endpoint/velocity mismatch, incomplete likelihood gradient, solver sensitivity and
+uncalibrated energy response prevent a Boltzmann-sampling claim. The generation-strain experiment
+adds no positive evidence, and many optimisations do not converge.
 
-Energy values from a transferable universal potential are usable supervision
-for a de novo molecular generator. One group-wise variance term, costing pre-computed labels and no
-partition function, raises held-out local density--energy ordering from $0.200$ to $0.369$ and top-1
-retrieval from $20.2\%$ to $29.6\%$ under an independent scorer, and a matched grid places that gain
-in the correct geometry--energy correspondence rather than in an auxiliary penalty.
-
-The same analysis bounds what it buys. What we measure is the clamped
-positional-flow density $q_\theta$, which need not equal the generator's joint conditional
-$p_\theta(x \mid c)$ (\Cref{ass:A2}); the
-objective is also numerically demanding, so every value-cell mean is conditional on completion and
-carries its launched, completed and diverged counts (\Cref{app:stability}). And it is local: inside
-a group the density--energy relation is fixed only up to one constant per connected component and
-our groups are disconnected (\Cref{prop:ident}), so relative basin mass is not identified and raw
-calibration is not achieved (\Cref{app:limitations} has the full inventory). Local ordering,
-calibration and global allocation are three targets rather than one, and we deliver the first with a
-design criterion for the rest --- connect the groups, or add a global term.
+The corrected clamped-flow implementation supplies a testable next experiment. It still requires
+matched training across seeds, exact/probe-repeat and resolution checks, an untouched test set, a
+properly specified force baseline, and generation outcomes reported with all failures. Group-overlap
+theory constrains an ideal residual on the supervised support; it neither repairs an invalid
+likelihood nor predicts performance of the implemented update. These distinctions must be resolved
+before presenting this intervention as a reliable molecular sampling method.

@@ -1,0 +1,50 @@
+{
+  "source_head": "e00597bc461348026ef81ad768f1052bf16801c6",
+  "flowmol_dependency_head": "40b42309da7247013a6254bbf567f3a8ef8d97c7",
+  "python": "3.10.13",
+  "packages": {
+    "torch": "2.2.0",
+    "dgl": "2.0.0+cu121",
+    "numpy": "1.26.3",
+    "pytorch-lightning": "2.1.3",
+    "wandb": "0.16.2",
+    "flowmol": "0.1"
+  },
+  "environment": {
+    "PYTHONNOUSERSITE": "1",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MPLCONFIGDIR": "/tmp/bgfm_mpl"
+  },
+  "pytest": {
+    "exit_code": 0,
+    "passed": 74,
+    "warnings": 4,
+    "seconds": 22.06,
+    "command": "python -m pytest tests/ -q -o cache_dir=/tmp/bgfm_pytest_final"
+  },
+  "revised_paper": {
+    "exit_code": 0,
+    "main_pages": 9,
+    "total_pages": 49,
+    "command": "bash paper/build.sh /tmp/bgfm-paper-final",
+    "pdf_sha256": "4edf73d777e734b588d9baff803cd7f46a304f27d46fffdbf21d48c79dff5121"
+  },
+  "original_paper_new_builder": {
+    "exit_code": 1,
+    "main_pages": 10,
+    "expected_failure": "Main text exceeds the ICLR submission limit"
+  },
+  "checkpoint_smoke": {
+    "exit_code": 0,
+    "report": "checkpoint_smoke.json",
+    "optimizer_updates": 0
+  },
+  "limitations": [
+    "No new molecular training or SLURM submission",
+    "No independent identity-level split audit",
+    "Corrected clamped q_T is not the joint generator likelihood",
+    "Single-parent solver check is not a convergence or molecular-performance claim"
+  ]
+}

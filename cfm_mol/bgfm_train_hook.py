@@ -1,17 +1,11 @@
-"""BGFM training-step patcher for FlowMol3.
+"""Add force, grouped energy and optional anchor terms to FlowMol3 training.
 
-Applies a lightweight monkey-patch to model.training_step that:
-  (1) runs the original FM training step (returns fm_total_loss);
-  (2) does AUXILIARY forward pass(es) on near-end conditional-path states
-      (x_t = (1-alpha_t)x_0 + alpha_t x_1_true, t in t_eval_values);
-  (3) derives the implied score via the FM->score closed-form;
-  (4) computes force consistency loss vs DFT forces stored on the graph;
-  (5) adds (lambda_1 * L_force) to fm_total with warmup/ramp schedule.
-
-Keeps FlowMol3's vector_field unchanged. Re-uses MoleculeDataset's
-`force_1_true` node feature (populated only on BGFM-preprocessed datasets).
-
-For Paper 1 v1: force-only BGFM (L_energy deferred to Week 4 grid).
+The original FM step and parameterisation remain intact. Force supervision
+uses main-batch labels; energy supervision uses separate perturbation shards.
+Legacy raw-head energy readouts are preserved for reproducing archived runs;
+clamped_cnf explicitly selects the corrected, differentiable positional ODE.
+Neither the force-score readout nor grouped energy fitting alone establishes
+Boltzmann sampling of the history-dependent joint CTMC generator.
 """
 from __future__ import annotations
 
@@ -236,6 +230,18 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
     energy_n_hutchinson = int(bgfm_config.get('energy_n_hutchinson', 1))
     energy_every_k_steps = int(bgfm_config.get('energy_every_k_steps', 1))
     energy_enabled = lambda_2 > 0.0
+    density_options = dict(bgfm_config.get('energy_density_options', {'mode': 'legacy'}))
+    density_mode = density_options.get('mode', 'legacy')
+    if density_mode not in {'legacy', 'clamped_cnf'}:
+        raise ValueError('energy_density_options.mode must be legacy or clamped_cnf')
+    if energy_every_k_steps < 1 or energy_n_ode_steps < 1:
+        raise ValueError('Energy stride and ODE steps must be positive')
+    if energy_enabled and density_mode == 'legacy':
+        import warnings
+        warnings.warn('BGFM legacy energy mode integrates the endpoint head as a '
+                      'velocity and uses a frozen-trajectory gradient. This mode '
+                      'reproduces archived experiments, not a validated flow density. '
+                      'See audit/20260908/REVIEW.md.', stacklevel=2)
     # Optional anchor loss (Plan C). Active iff lambda_3 > 0.
     # Adds (log p + E/kT + log_Z_pred(mol))^2 to the energy step, where
     # log_Z_pred is a small invariant aux network. Prevents the trivial-
@@ -354,23 +360,21 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
         # 1. Original FM step (now learning to flow to the shifted target)
         fm_total = original_training_step(g, batch_idx)
 
-        # Skip if BGFM labels not present (e.g., QM9/GEOM pretraining).
-        # LOUD guard: a missing force_1_true silently disables ALL physics losses
-        # (force + on-policy + energy) -> plain FM. This must never pass unnoticed.
-        if 'force_1_true' not in g.ndata:
+        # Missing main-batch forces disable only that supervision branch.
+        # Independent energy shards and on-policy teacher labels remain usable.
+        has_forces = 'force_1_true' in g.ndata
+        if not has_forces and lambda_1 > 0:
             if not getattr(self, '_bgfm_warned_no_forces', False):
                 import warnings
                 warnings.warn(
-                    "BGFM: 'force_1_true' absent from graph ndata -> ALL physics "
-                    "losses SKIPPED, training is plain FM. The dataset must populate "
+                    "BGFM: 'force_1_true' absent from graph ndata -> off-policy force "
+                    "loss SKIPPED. Energy supervision remains active. The dataset must populate "
                     "g.ndata['force_1_true'] (needs 'forces' in the processed .pt).")
                 self._bgfm_warned_no_forces = True
             self.log('train_bgfm_no_force_skip', 1.0, on_step=True, prog_bar=True)
-            return fm_total
 
-        # 2. Auxiliary forward(s) near the data endpoint. Multiple late times make
-        # the oral-frame claim stronger: the learned trajectory is force-aligned
-        # near the data manifold, not only at one endpoint probe.
+        # 2. Auxiliary forward(s) at the configured diagnostic times.
+        # These finite-time force probes require the assumptions in the method note.
         device = g.device
         node_batch_idx, edge_batch_idx = get_batch_idxs(g)
         upper_edge_mask = get_upper_edge_mask(g)
@@ -390,7 +394,9 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
 
         force_terms = []
         cosine_terms = []
-        for t_eval_i in t_eval_values:
+        # Preserve historical force diagnostics when labels exist; energy-only
+        # batches need no force labels and must still reach their energy step.
+        for t_eval_i in (t_eval_values if has_forces else []):
             t = torch.full((g.batch_size,), t_eval_i, device=device, dtype=torch.float32)
             if probe_mode == 'path':
                 g_aux = _build_path_aux_graph(
@@ -448,8 +454,8 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
                 self.log(f'train_L_force_t_{tag}', L_force_i.detach(), on_step=True, prog_bar=False)
                 self.log(f'train_score_force_cos_t_{tag}', cos_i.detach(), on_step=True, prog_bar=False)
 
-        L_force = torch.stack(force_terms).mean()
-        score_force_cos = torch.stack(cosine_terms).mean()
+        L_force = torch.stack(force_terms).mean() if force_terms else fm_total.new_zeros(())
+        score_force_cos = torch.stack(cosine_terms).mean() if cosine_terms else fm_total.new_zeros(())
 
         # 5. Schedule (always computed -- energy block needs it too)
         # Step-based schedule (ported from main, commit dd1f14f). The earlier
@@ -548,50 +554,54 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
         self.log('train_score_force_cos', score_force_cos.detach(), on_step=True, prog_bar=True)
         self.log('train_lambda_1', l1, on_step=True)
 
-        # 7. Energy-consistency (Boltzmann) term. This is the term that makes
-        # "Boltzmann-Guided" literal: force alone only matches the local
-        # gradient (score = F/kT); energy matches the global log-density
-        # shape log p = -E/kT + const.
-        #
-        # Per-molecule perturbation form: we pull a B-parent batch from a
-        # pre-computed perturbation shard (K small geometric perturbations
-        # of each parent with OMol25 energies), compute log p for the B*K
-        # virtual molecules, and take the within-parent variance of
-        # (log p + E/kT). Within-parent isolates the Boltzmann deviation;
-        # the cross-batch variance form (one geometry per molecule) was
-        # off by 1e7 in magnitude because it picked up per-mol log Z spread.
-        # Expensive (FFJORD); applied every energy_every_k_steps.
+        # 7. Grouped energy residual on a separate batch of perturbations.
+        # Parent-specific offsets cancel; geometry-dependent readout errors do
+        # not. Finite grouped fitting does not identify global Boltzmann mass.
+        # The selected density mode determines whether this is the archived
+        # raw-head scalar or the corrected clamped q_T objective.
         if energy_enabled and (batch_idx % energy_every_k_steps == 0):
             pert_loader = self._bgfm_perturbation_loader  # lazily initialized below
             (g_pert, energies_pert, parent_id_pert,
              nbi_pert, uem_pert) = pert_loader.next_batch()
-            if anchor_enabled:
-                # Combined variance + anchor in a single FFJORD pass.
-                from cfm_mol.bgfm_density import energy_consistency_loss_per_mol_with_anchor
-                # Build PARENT-only invariant features (atom type idx + node
-                # batch idx + charges), one copy per parent (NOT per virtual
-                # molecule -- log Z is a property of the parent).
-                parent_atom_idx, parent_nbi, parent_charges = \
-                    pert_loader.parent_invariant_features(g_pert, parent_id_pert)
-                L_energy, L_anchor, energy_diag = \
-                    energy_consistency_loss_per_mol_with_anchor(
+            try:
+                if anchor_enabled:
+                    # Combined variance + anchor in a single FFJORD pass.
+                    from cfm_mol.bgfm_density import energy_consistency_loss_per_mol_with_anchor
+                    # Build PARENT-only invariant features (atom type idx + node
+                    # batch idx + charges), one copy per parent (NOT per virtual
+                    # molecule -- log Z is a property of the parent).
+                    parent_atom_idx, parent_nbi, parent_charges = \
+                        pert_loader.parent_invariant_features(g_pert, parent_id_pert)
+                    L_energy, L_anchor, energy_diag = \
+                        energy_consistency_loss_per_mol_with_anchor(
+                            self, g_pert, nbi_pert, uem_pert,
+                            energies=energies_pert, parent_id=parent_id_pert,
+                            log_z_predictor=self._bgfm_log_z_predictor,
+                            atom_type_idx=parent_atom_idx,
+                            parent_node_batch_idx=parent_nbi,
+                            atom_charges_raw=parent_charges,
+                            kT=kT_step,
+                            n_ode_steps=energy_n_ode_steps,
+                            n_hutchinson=energy_n_hutchinson, prior_std=1.0,
+                            density_options=density_options)
+                else:
+                    from cfm_mol.bgfm_density import energy_consistency_loss_per_mol
+                    L_energy, energy_diag = energy_consistency_loss_per_mol(
                         self, g_pert, nbi_pert, uem_pert,
-                        energies=energies_pert, parent_id=parent_id_pert,
-                        log_z_predictor=self._bgfm_log_z_predictor,
-                        atom_type_idx=parent_atom_idx,
-                        parent_node_batch_idx=parent_nbi,
-                        atom_charges_raw=parent_charges,
-                        kT=kT_step,
+                        energies=energies_pert, parent_id=parent_id_pert, kT=kT_step,
                         n_ode_steps=energy_n_ode_steps,
-                        n_hutchinson=energy_n_hutchinson, prior_std=1.0)
-            else:
-                from cfm_mol.bgfm_density import energy_consistency_loss_per_mol
-                L_energy, energy_diag = energy_consistency_loss_per_mol(
-                    self, g_pert, nbi_pert, uem_pert,
-                    energies=energies_pert, parent_id=parent_id_pert, kT=kT_step,
-                    n_ode_steps=energy_n_ode_steps,
-                    n_hutchinson=energy_n_hutchinson, prior_std=1.0)
-                L_anchor = None
+                        n_hutchinson=energy_n_hutchinson, prior_std=1.0,
+                        density_options=density_options)
+                    L_anchor = None
+            except FloatingPointError:
+                # The corrected solver fails explicitly on non-finite log q.
+                # Route that failure through the existing skip guards, without
+                # retaining a poisoned autograd graph or masking config errors.
+                L_energy = fm_total.new_full((), float('nan')).detach()
+                L_anchor = L_energy if anchor_enabled else None
+                energy_diag = {'logp_mean': 0., 'residual_within_std': 0.,
+                               'n_groups_used': 0}
+                self.log('train_density_nonfinite_skip', 1., on_step=True)
             # Guard on the energy term.
             #
             # NaN guard alone is NOT enough: with a small energy_b_parents the

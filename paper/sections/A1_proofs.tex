@@ -61,6 +61,13 @@ the training objective to the reported metric (\Cref{app:surrogate}); and a clos
 inventory of which statements this paper exercises and which it only states
 (\Cref{app:scope}).
 
+\paragraph{Scope correction from the implementation audit.}
+The normalised $q_\theta$ in this appendix is an ideal mathematical density.
+The archived empirical readout $\widehat\ell_\theta$ is not shown to equal its logarithm:
+it uses the endpoint head without the velocity conversion and does not project the differentiated
+field. In particular, the implementation does not verify Assumptions A2--A3 below.
+All certificates concern the ideal residual and cannot certify the reported checkpoints.
+
 \subsection{Setup, notation and standing assumptions}
 \label{app:setup}
 
@@ -107,7 +114,7 @@ a connected domain.
 
 \begin{assumption}[Which density is reported: the clamped positional-flow density]
 \label{ass:A2}
-The quantity every theorem below is stated for, and every experiment reports as
+The ideal quantity every theorem below is stated for, distinguished from the archived empirical readout, is
 $\log q_\theta(\cdot \mid c)$, is the log-density of the \emph{clamped
 positional flow}: the flow obtained by holding the discrete channels --- atom
 types, formal charges and the empty bond tensor --- at their endpoint labels
@@ -115,10 +122,7 @@ $(a_1, c_1, e_1)$ for the whole reverse trajectory, while only $\vx$ evolves.
 That object is positive on the sampled support and normalised on the
 centre-of-mass-free subspace by construction, being an exact change of variables
 applied to a normalised Gaussian prior \citep{ffjord}, up to the discretisation of
-\Cref{ass:A-disc}. It coincides with the generator's own joint conditional density
-$p_\theta(\cdot \mid c)$ only if the discrete trajectory is determined by its
-endpoint; the generator evolves types and charges through a continuous-time Markov
-chain, so in general the two differ, we have not quantified the difference, and
+\Cref{ass:A-disc}. Equality with the generator's joint conditional density $p_\theta(\cdot\mid c)$ requires a separate argument, including discrete dynamics, self-conditioning and geometric sampling operations. Such equality has not been established, and
 this is recorded as a limitation (\Cref{app:limitations}). The symbol $q_\theta$ is
 used nowhere else in this appendix.
 \end{assumption}
@@ -127,8 +131,7 @@ used nowhere else in this appendix.
 \label{ass:A3}
 $v_\theta$ is invariant to global translation, so the ambient $3N$-dimensional
 trace of its Jacobian equals the intrinsic $3(N-1)$-dimensional one
-(\Cref{app:density}). The centre-of-mass-removed equivariant field of the backbone
-satisfies this. \textbf{Rotations are not quotiented}: the prior log-density uses
+(\Cref{app:density}). This must be enforced in the differentiated field; centering input coordinates alone is insufficient, and the archived call does not enforce it. \textbf{Rotations are not quotiented}: the prior log-density uses
 effective dimension $3(N-1)$, i.e.\ centre-of-mass removal only. We do not claim a
 rotation-quotiented density.
 \end{assumption}
@@ -292,8 +295,7 @@ Two schemes are in play and they must not be conflated. The \emph{state} update 
 explicit Euler with $n$ steps of size $1/n$, which traverses the whole of $[0,1]$
 and carries $O(\Delta t)$ error. The \emph{divergence} integral is approximated by
 the midpoint rule on $[0,1]$: all $n$ nodes are interior to the interval, the
-interval itself is not truncated, and the rule carries $O(\Delta t^{2})$ error and
-is exact for integrands linear in $t$. The half-step offset therefore avoids
+interval itself is not truncated. However the state is a start-of-step approximation, not a midpoint state, so the implemented divergence accumulation is generally only first-order. The time-only constant/linear-divergence checks do not establish second-order accuracy for a state-dependent field. The half-step offset therefore avoids
 evaluating the field at $t = 1$ without moving the endpoint the scheme targets. What
 the estimator targets is $\log q_\theta$ at $t = 1$; there is no
 family of smoothed marginals indexed by the discretisation, and a finer grid estimates
@@ -305,8 +307,7 @@ normalising flow the estimate converges to the closed-form endpoint log-density 
 $n$ grows.
 
 What the finite grid costs is accordingly \emph{numerical discretisation error},
-dominated by the $O(\Delta t)$ Euler state integration rather than by the
-$O(\Delta t^{2})$ quadrature, together with whatever endpoint stiffness the learned
+first-order in both the state and generally the accumulated divergence, together with whatever endpoint stiffness the learned
 field carries.
 
 Two uses of the symbol $\epsilon$ must be kept apart, and neither is a smoothing
@@ -652,7 +653,7 @@ necessary for an edge but far from sufficient.
 
 \begin{theorem}[Local-to-global identifiability]
 \label{thm:l2g}
-Let the population objective $\sum_j \pi_j \Var_{\rho_j}[w]$ vanish, so $w \equiv b_j$
+For strictly positive weights and finite residual second moments, let the population objective $\sum_j \pi_j \Var_{\rho_j}[w]$ vanish, so $w \equiv b_j$
 $\rho_j$-a.s.\ on $U_j$ for each $j$, and let $U_c = \bigcup_j U_j$. Then \emph{(i)}
 $b_j = b_{j'}$ for every edge of $\mathcal{G}_c$, so the constants agree within each connected
 component. Suppose in addition that each $\rho_j$ has a positive Lebesgue density on $U_j$. Then
@@ -671,7 +672,7 @@ $(C-1)$-parameter family carried by positive multipliers $a_i > 0$,
   Z^{(i)} = \int_{U^{(i)}} e^{-E(c,x)/kT}\,\mathrm{d}x ,
   \label{eq:l2g}
 \end{equation}
-in which every vector of occupancies
+in the unrestricted measurable density class (without claiming realisability by a smooth neural flow), in which every vector of occupancies
 $\bigl(q_\theta(U^{(1)} \mid c),\dots,q_\theta(U^{(C)} \mid c)\bigr)
  = (a_1 Z^{(1)},\dots,a_C Z^{(C)})$
 in the open simplex is attained: the \emph{relative} mass of separated basins is not identified.

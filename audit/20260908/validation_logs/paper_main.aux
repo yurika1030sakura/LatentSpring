@@ -1,0 +1,506 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{edm,geoldm,semlaflow,flowmol3}
+\citation{omol25,esen}
+\citation{vargrad,nusken2021pathspace,richter2024improvedsampling,sendera2024offpolicy,ldr2026}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}}
+\newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
+\newlabel{sec:intro@cref}{{[section][1][]1}{[1][1][]1}}
+\citation{edm,geoldm,semlaflow,flowmol3}
+\citation{torsionaldiff,noe2019boltzmann,fab,adjointsampling,idem,ewfm}
+\citation{adjointsampling}
+\citation{vargrad,nusken2021pathspace,richter2024improvedsampling,sendera2024offpolicy}
+\citation{ldr2026}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textbf  {Energy-value supervision without a partition function.} Ideal-objective schematic; no measured quantity appears here. The archived implementation does not realise this density construction (\Cref  {sec:method:impl}). \textbf  {(a)}\nobreakspace  {}With the endpoint discrete labels clamped, reversing the positional ODE defines the \emph  {clamped positional-flow density} $\qopname  \relax o{log}q_\theta (x \mid c)$, which need not equal the joint generator's conditional density. \textbf  {(b)}\nobreakspace  {}A universal neural potential values each of $K$ displaced geometries of one parent. \textbf  {(c)}\nobreakspace  {}The proposed objective is flow matching plus the within-group variance of $\qopname  \relax o{log}q_\theta (x_k \mid c) + E_k/kT$, which vanishes exactly when $\qopname  \relax o{log}q_\theta = -E_k/kT + b$ inside the group: the partition function cancels and the offset $b$ is free. \textbf  {(d)}\nobreakspace  {}Two disconnected groups of the \emph  {same} density keep independent offsets, so the term constrains the local density--energy relation inside each group and leaves their relative mass unidentified; connecting groups so they share one offset is the extension toward global control. Panel detail in \Cref  {app:figdetail}.\relax }}{2}{figure.caption.1}}
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:objective}{{1}{2}{\textbf {Energy-value supervision without a partition function.} Ideal-objective schematic; no measured quantity appears here. The archived implementation does not realise this density construction (\Cref {sec:method:impl}). \textbf {(a)}~With the endpoint discrete labels clamped, reversing the positional ODE defines the \emph {clamped positional-flow density} $\log q_\theta (x \mid c)$, which need not equal the joint generator's conditional density. \textbf {(b)}~A universal neural potential values each of $K$ displaced geometries of one parent. \textbf {(c)}~The proposed objective is flow matching plus the within-group variance of $\log q_\theta (x_k \mid c) + E_k/kT$, which vanishes exactly when $\log q_\theta = -E_k/kT + b$ inside the group: the partition function cancels and the offset $b$ is free. \textbf {(d)}~Two disconnected groups of the \emph {same} density keep independent offsets, so the term constrains the local density--energy relation inside each group and leaves their relative mass unidentified; connecting groups so they share one offset is the extension toward global control. Panel detail in \Cref {app:figdetail}.\relax }{figure.caption.1}{}}
+\newlabel{fig:objective@cref}{{[figure][1][]1}{[1][1][]2}}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Grouped Energy Supervision and the Implemented Readout}{2}{section.2}}
+\newlabel{sec:method}{{2}{2}{Grouped Energy Supervision and the Implemented Readout}{section.2}{}}
+\newlabel{sec:method@cref}{{[section][2][]2}{[1][2][]2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Related work}{2}{subsection.2.1}}
+\newlabel{sec:related}{{2.1}{2}{Related work}{subsection.2.1}{}}
+\newlabel{sec:related@cref}{{[subsection][1][2]2.1}{[1][2][]2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Backbone and the ideal density}{2}{subsection.2.2}}
+\newlabel{sec:method:flow}{{2.2}{2}{Backbone and the ideal density}{subsection.2.2}{}}
+\newlabel{sec:method:flow@cref}{{[subsection][2][2]2.2}{[1][2][]2}}
+\citation{flowmol3}
+\newlabel{eq:headvelocity}{{1}{3}{Backbone and the ideal density}{equation.2.1}{}}
+\newlabel{eq:headvelocity@cref}{{[equation][1][]1}{[1][3][]3}}
+\newlabel{eq:ffjord}{{2}{3}{Backbone and the ideal density}{equation.2.2}{}}
+\newlabel{eq:ffjord@cref}{{[equation][2][]2}{[1][3][]3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3}The grouped objective}{3}{subsection.2.3}}
+\newlabel{sec:method:obj}{{2.3}{3}{The grouped objective}{subsection.2.3}{}}
+\newlabel{sec:method:obj@cref}{{[subsection][3][2]2.3}{[1][3][]3}}
+\newlabel{eq:lvalue}{{3}{3}{The grouped objective}{equation.2.3}{}}
+\newlabel{eq:lvalue@cref}{{[equation][3][]3}{[1][3][]3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4}What the archived experiments actually optimise}{3}{subsection.2.4}}
+\newlabel{sec:method:cancel}{{2.4}{3}{What the archived experiments actually optimise}{subsection.2.4}{}}
+\newlabel{sec:method:cancel@cref}{{[subsection][4][2]2.4}{[1][3][]3}}
+\newlabel{sec:method:impl}{{2.4}{3}{What the archived experiments actually optimise}{subsection.2.4}{}}
+\newlabel{sec:method:impl@cref}{{[subsection][4][2]2.4}{[1][3][]3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.5}The archived force comparator}{3}{subsection.2.5}}
+\newlabel{sec:forcebaseline}{{2.5}{3}{The archived force comparator}{subsection.2.5}{}}
+\newlabel{sec:forcebaseline@cref}{{[subsection][5][2]2.5}{[1][3][]3}}
+\newlabel{eq:score}{{4}{3}{The archived force comparator}{equation.2.4}{}}
+\newlabel{eq:score@cref}{{[equation][4][]4}{[1][3][]3}}
+\citation{flowmol3}
+\citation{omol25}
+\citation{esen}
+\citation{ffjord,hutchinson}
+\citation{gfn2xtb}
+\@writefile{toc}{\contentsline {section}{\numberline {3}From Local Ordering to Connected Supervision}{4}{section.3}}
+\newlabel{sec:theory}{{3}{4}{From Local Ordering to Connected Supervision}{section.3}{}}
+\newlabel{sec:theory@cref}{{[section][3][]3}{[1][4][]4}}
+\newlabel{prop:ident}{{1}{4}{What zero group-wise variance fixes}{proposition.1}{}}
+\newlabel{prop:ident@cref}{{[proposition][1][]1}{[1][4][]4}}
+\@writefile{toc}{\contentsline {paragraph}{What our design supervises.}{4}{section*.2}}
+\@writefile{toc}{\contentsline {paragraph}{The design criterion.}{4}{section*.3}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experiments}{4}{section.4}}
+\newlabel{sec:setup}{{4}{4}{Experiments}{section.4}{}}
+\newlabel{sec:setup@cref}{{[section][4][]4}{[1][4][]4}}
+\newlabel{sec:protocol}{{4}{4}{Experiments}{section.4}{}}
+\newlabel{sec:protocol@cref}{{[section][4][]4}{[1][4][]4}}
+\newlabel{sec:metrics}{{4}{4}{Experiments}{section.4}{}}
+\newlabel{sec:metrics@cref}{{[section][4][]4}{[1][4][]4}}
+\newlabel{sec:experiments}{{4}{4}{Experiments}{section.4}{}}
+\newlabel{sec:experiments@cref}{{[section][4][]4}{[1][4][]4}}
+\citation{ruecker2007yrandom}
+\@writefile{toc}{\contentsline {paragraph}{Shared setting.}{5}{section*.4}}
+\@writefile{toc}{\contentsline {paragraph}{Track A: the matched mechanism grid.}{5}{section*.5}}
+\@writefile{toc}{\contentsline {paragraph}{Track B: the conservative held-out endpoint.}{5}{section*.6}}
+\@writefile{toc}{\contentsline {paragraph}{Metrics.}{5}{section*.7}}
+\newlabel{eq:rm}{{5}{5}{Metrics}{equation.4.5}{}}
+\newlabel{eq:rm@cref}{{[equation][5][]5}{[1][5][]5}}
+\@writefile{toc}{\contentsline {paragraph}{Reporting.}{5}{section*.8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Correct Energy Pairings Drive the Gain}{5}{subsection.4.1}}
+\newlabel{sec:ablation}{{4.1}{5}{Correct Energy Pairings Drive the Gain}{subsection.4.1}{}}
+\newlabel{sec:ablation@cref}{{[subsection][1][4]4.1}{[1][5][]5}}
+\newlabel{sec:negative}{{4.1}{5}{Correct Energy Pairings Drive the Gain}{subsection.4.1}{}}
+\newlabel{sec:negative@cref}{{[subsection][1][4]4.1}{[1][5][]5}}
+\citation{psm,driftingboltzmann}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Archived readout results; likelihood labels in the plots refer to $\setbox \z@ \hbox {\frozen@everymath \@emptytoks \mathsurround \z@ $\textstyle \ell $}\mathaccent "0362{\ell }_\theta $, not a validated generator density. \textbf  {A matched six-cell grid isolates what the energy term contributes.} Population: 120 held-out parents, reference geometry dropped, 8 displaced geometries each, scored by an independent GFN2-xTB evaluator, not the eSEN training teacher. Metric: the per-parent density--energy correlation $r$, per cell as the mean over completed training seeds (whisker: standard error over seeds) with every completed seed drawn, and in (b) as effect sizes: differences of cell means, whiskers the propagated descriptive SEM of the difference rather than a confidence interval. Cells A--F are defined in \Cref  {sec:ablation}; runs launched / completed / diverged are printed under each cell, because completion is objective-dependent. Only the true geometry--energy pairing separates: every completed D seed lies above the shaded band, the observed seed range of A, B and C; the zero-energy and scrambled cells do not, and the gradient baseline falls below. \textbf  {Cells B, D and F lost seeds to divergence} ($\dagger $), so their means are conditional on completion and the D and F unconditional magnitudes are not identified. Panel detail in \Cref  {app:figdetail}.\relax }}{6}{figure.caption.9}}
+\newlabel{fig:grid}{{2}{6}{Archived readout results; likelihood labels in the plots refer to $\widehat \ell _\theta $, not a validated generator density. \textbf {A matched six-cell grid isolates what the energy term contributes.} Population: 120 held-out parents, reference geometry dropped, 8 displaced geometries each, scored by an independent GFN2-xTB evaluator, not the eSEN training teacher. Metric: the per-parent density--energy correlation $r$, per cell as the mean over completed training seeds (whisker: standard error over seeds) with every completed seed drawn, and in (b) as effect sizes: differences of cell means, whiskers the propagated descriptive SEM of the difference rather than a confidence interval. Cells A--F are defined in \Cref {sec:ablation}; runs launched / completed / diverged are printed under each cell, because completion is objective-dependent. Only the true geometry--energy pairing separates: every completed D seed lies above the shaded band, the observed seed range of A, B and C; the zero-energy and scrambled cells do not, and the gradient baseline falls below. \textbf {Cells B, D and F lost seeds to divergence} ($\dagger $), so their means are conditional on completion and the D and F unconditional magnitudes are not identified. Panel detail in \Cref {app:figdetail}.\relax }{figure.caption.9}{}}
+\newlabel{fig:grid@cref}{{[figure][2][]2}{[1][6][]6}}
+\citation{posebusters}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}The Gain Generalises to Held-out Molecules and Retrieval}{7}{subsection.4.2}}
+\newlabel{sec:mainresult}{{4.2}{7}{The Gain Generalises to Held-out Molecules and Retrieval}{subsection.4.2}{}}
+\newlabel{sec:mainresult@cref}{{[subsection][2][4]4.2}{[1][6][]7}}
+\newlabel{sec:main}{{4.2}{7}{The Gain Generalises to Held-out Molecules and Retrieval}{subsection.4.2}{}}
+\newlabel{sec:main@cref}{{[subsection][2][4]4.2}{[1][6][]7}}
+\newlabel{sec:reference}{{4.2}{7}{The Gain Generalises to Held-out Molecules and Retrieval}{subsection.4.2}{}}
+\newlabel{sec:reference@cref}{{[subsection][2][4]4.2}{[1][6][]7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Value Supervision Improves Ordering Before Calibration}{7}{subsection.4.3}}
+\newlabel{sec:scale}{{4.3}{7}{Value Supervision Improves Ordering Before Calibration}{subsection.4.3}{}}
+\newlabel{sec:scale@cref}{{[subsection][3][4]4.3}{[1][7][]7}}
+\newlabel{eq:scaledecomp}{{6}{7}{Value Supervision Improves Ordering Before Calibration}{equation.4.6}{}}
+\newlabel{eq:scaledecomp@cref}{{[equation][6][]6}{[1][7][]7}}
+\newlabel{sec:generation}{{4.3}{7}{Value Supervision Improves Ordering Before Calibration}{equation.4.6}{}}
+\newlabel{sec:generation@cref}{{[subsection][3][4]4.3}{[1][7][]7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Archived readout results; likelihood labels in the plots refer to $\setbox \z@ \hbox {\frozen@everymath \@emptytoks \mathsurround \z@ $\textstyle \ell $}\mathaccent "0362{\ell }_\theta $, not a validated generator density. \textbf  {Energy-value supervision improves local density--energy ordering.} Population for \textbf  {(a)}--\textbf  {(c)}: the 93 held-out parents disjoint from the value term's shard pool, data geometry dropped, up to eight displaced geometries each, scored by GFN2-xTB, an evaluator independent of the eSEN potential that supplied the training energies. The metric is the per-parent correlation between the clamped positional-flow density $\qopname  \relax o{log}q_\theta $ and $-E/kT$. \textbf  {(a)} Every seed of both arms; rules are arm means, bars their standard error over seeds, and the gain is $\Delta r = +0.169$ with all four value seeds above all five control seeds. The value arm is $5/4/1$ launched / completed / diverged, so its mean is conditional on completion. \textbf  {(b)} The shift is spread across the population rather than carried by a few parents. \textbf  {(c)} Ranking a parent's geometries by $\qopname  \relax o{log}q_\theta $ retrieves the lowest-energy one more often; the orange marker is the teacher-evaluator agreement reference (not a ceiling): that evaluator scoring the training teacher, ensemble-specific and re-measured for any other ensemble. \textbf  {(d)} Holding the within-group displacement magnitude constant to numerical precision leaves the gap in place, so distance variation is not sufficient to explain the gain; that family is a separate evaluation round on its own parents with four seeds per arm, and only its arm means are plotted, so the comparison to make is between the two gaps, not between the two levels. Panel detail in \Cref  {app:figdetail}.\relax }}{8}{figure.caption.10}}
+\newlabel{fig:ordering}{{3}{8}{Archived readout results; likelihood labels in the plots refer to $\widehat \ell _\theta $, not a validated generator density. \textbf {Energy-value supervision improves local density--energy ordering.} Population for \textbf {(a)}--\textbf {(c)}: the 93 held-out parents disjoint from the value term's shard pool, data geometry dropped, up to eight displaced geometries each, scored by GFN2-xTB, an evaluator independent of the eSEN potential that supplied the training energies. The metric is the per-parent correlation between the clamped positional-flow density $\log q_\theta $ and $-E/kT$. \textbf {(a)} Every seed of both arms; rules are arm means, bars their standard error over seeds, and the gain is $\Delta r = +0.169$ with all four value seeds above all five control seeds. The value arm is $5/4/1$ launched / completed / diverged, so its mean is conditional on completion. \textbf {(b)} The shift is spread across the population rather than carried by a few parents. \textbf {(c)} Ranking a parent's geometries by $\log q_\theta $ retrieves the lowest-energy one more often; the orange marker is the teacher-evaluator agreement reference (not a ceiling): that evaluator scoring the training teacher, ensemble-specific and re-measured for any other ensemble. \textbf {(d)} Holding the within-group displacement magnitude constant to numerical precision leaves the gap in place, so distance variation is not sufficient to explain the gain; that family is a separate evaluation round on its own parents with four seeds per arm, and only its arm means are plotted, so the comparison to make is between the two gaps, not between the two levels. Panel detail in \Cref {app:figdetail}.\relax }{figure.caption.10}{}}
+\newlabel{fig:ordering@cref}{{[figure][3][]3}{[1][7][]8}}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Legacy readout correlation under solver refinement, mean $\pm $ SEM over the same completed checkpoints at each resolution. These are sensitivity measurements, not corrected-CNF results.\relax }}{8}{table.caption.12}}
+\newlabel{tab:auditresolution}{{1}{8}{Legacy readout correlation under solver refinement, mean $\pm $ SEM over the same completed checkpoints at each resolution. These are sensitivity measurements, not corrected-CNF results.\relax }{table.caption.12}{}}
+\newlabel{tab:auditresolution@cref}{{[table][1][]1}{[1][8][]8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Resolution Sensitivity and Generated-Structure Outcomes}{8}{subsection.4.4}}
+\newlabel{sec:auditresults}{{4.4}{8}{Resolution Sensitivity and Generated-Structure Outcomes}{subsection.4.4}{}}
+\newlabel{sec:auditresults@cref}{{[subsection][4][4]4.4}{[1][7][]8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Archived readout results; likelihood labels in the plots refer to $\setbox \z@ \hbox {\frozen@everymath \@emptytoks \mathsurround \z@ $\textstyle \ell $}\mathaccent "0362{\ell }_\theta $, not a validated generator density. \textbf  {Value supervision improves ordering before calibration.} Same 93 held-out parents as \Cref  {fig:ordering}, reference geometry dropped, GFN2-xTB evaluator; five seeds for the flow-matching control, four for the value arm (open markers; filled marker or rule the arm mean, bar its standard error over seeds). Metrics: ordering $r$ against raw calibration $\mathrm  {NRV} = \mathrm  {Var}(\qopname  \relax o{log}q_\theta + E/kT)/\mathrm  {Var}(E/kT)$ \textbf  {(a)}, the optimally rescaled residual $\mathrm  {NRV}_{\qopname  \relax m{min}}$ \textbf  {(b)}, and the implied $kT_{\mathrm  {eff}}$ \textbf  {(c)}. Three diagnostics move toward the Boltzmann-consistent regime: $r$ rises from $0.200$ to $0.369$, $\mathrm  {NRV}_{\qopname  \relax m{min}}$ falls from $0.825$ to $0.747$, and $kT_{\mathrm  {eff}}$ moves from $8.02$ to $2.34$\nobreakspace  {}eV toward the $kT = 1.0$\nobreakspace  {}eV target. Raw residual variance --- the diagnostic most directly aligned with the objective as displayed --- remains a separate unmet target: NRV rises from $1.402$ to $2.144$, past the $1$ that a constant log-density scores, showing that errors in response magnitude and energy-unaligned variation remain even as ordering improves. The value arm ($5/4/1$ launched / completed / diverged) is conditional on completion. The orange marker is the teacher-evaluator agreement reference (not a ceiling); panel detail and its derivation are in \Cref  {app:figdetail}.\relax }}{9}{figure.caption.11}}
+\newlabel{fig:calibration}{{4}{9}{Archived readout results; likelihood labels in the plots refer to $\widehat \ell _\theta $, not a validated generator density. \textbf {Value supervision improves ordering before calibration.} Same 93 held-out parents as \Cref {fig:ordering}, reference geometry dropped, GFN2-xTB evaluator; five seeds for the flow-matching control, four for the value arm (open markers; filled marker or rule the arm mean, bar its standard error over seeds). Metrics: ordering $r$ against raw calibration $\mathrm {NRV} = \mathrm {Var}(\log q_\theta + E/kT)/\mathrm {Var}(E/kT)$ \textbf {(a)}, the optimally rescaled residual $\mathrm {NRV}_{\min }$ \textbf {(b)}, and the implied $kT_{\mathrm {eff}}$ \textbf {(c)}. Three diagnostics move toward the Boltzmann-consistent regime: $r$ rises from $0.200$ to $0.369$, $\mathrm {NRV}_{\min }$ falls from $0.825$ to $0.747$, and $kT_{\mathrm {eff}}$ moves from $8.02$ to $2.34$~eV toward the $kT = 1.0$~eV target. Raw residual variance --- the diagnostic most directly aligned with the objective as displayed --- remains a separate unmet target: NRV rises from $1.402$ to $2.144$, past the $1$ that a constant log-density scores, showing that errors in response magnitude and energy-unaligned variation remain even as ordering improves. The value arm ($5/4/1$ launched / completed / diverged) is conditional on completion. The orange marker is the teacher-evaluator agreement reference (not a ceiling); panel detail and its derivation are in \Cref {app:figdetail}.\relax }{figure.caption.11}{}}
+\newlabel{fig:calibration@cref}{{[figure][4][]4}{[1][7][]9}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Conclusion and Remaining Requirements}{9}{section.5}}
+\newlabel{sec:limitations}{{5}{9}{Conclusion and Remaining Requirements}{section.5}{}}
+\newlabel{sec:limitations@cref}{{[section][5][]5}{[1][9][]9}}
+\newlabel{sec:conclusion}{{5}{9}{Conclusion and Remaining Requirements}{section.5}{}}
+\newlabel{sec:conclusion@cref}{{[section][5][]5}{[1][9][]9}}
+\newlabel{endofmaintext}{{5}{9}{Conclusion and Remaining Requirements}{section.5}{}}
+\newlabel{endofmaintext@cref}{{[section][5][]5}{[1][9][]9}}
+\bibdata{refs}
+\bibcite{idem}{{1}{2024}{{Akhound-Sadegh et~al.}}{{Akhound-Sadegh, Rector-Brooks, Bose, Mittal, Lemos, Liu, Sendera, Ravanbakhsh, Gidel, Bengio, Malkin, and Tong}}}
+\bibcite{albergo2023interpolants}{{2}{2023}{{Albergo et~al.}}{{Albergo, Boffi, and Vanden-Eijnden}}}
+\bibcite{geom}{{3}{2022}{{Axelrod \& G{\'o}mez-Bombarelli}}{{Axelrod and G{\'o}mez-Bombarelli}}}
+\bibcite{gfn2xtb}{{4}{2019}{{Bannwarth et~al.}}{{Bannwarth, Ehlert, and Grimme}}}
+\bibcite{berner2024optimalcontrol}{{5}{2024}{{Berner et~al.}}{{Berner, Richter, and Ullrich}}}
+\bibcite{posebusters}{{6}{2024}{{Buttenschoen et~al.}}{{Buttenschoen, Morris, and Deane}}}
+\bibcite{symphony}{{7}{2024}{{Daigavane et~al.}}{{Daigavane, Kim, Geiger, and Smidt}}}
+\bibcite{ewfm}{{8}{2025}{{Dern et~al.}}{{Dern, Redl, Pfister, Kollovieh, L{\"u}dke, and G{\"u}nnemann}}}
+\bibcite{flowmol3}{{9}{2025}{{Dunn \& Koes}}{{Dunn and Koes}}}
+\bibcite{esen}{{10}{2025}{{Fu et~al.}}{{}}}
+\bibcite{ffjord}{{11}{2019}{{Grathwohl et~al.}}{{Grathwohl, Chen, Bettencourt, Sutskever, and Duvenaud}}}
+\bibcite{ebmol}{{12}{2026}{{Griesbacher et~al.}}{{Griesbacher, Bogensperger, Habring, and Pock}}}
+\bibcite{psm}{{13}{2025}{{Guo et~al.}}{{Guo, Wang, Liu, Li, Hu, and Zhu}}}
+\bibcite{adjointsampling}{{14}{2025}{{Havens et~al.}}{{}}}
+\bibcite{edm}{{15}{2022}{{Hoogeboom et~al.}}{{Hoogeboom, Satorras, Vignac, and Welling}}}
+\bibcite{driftingboltzmann}{{16}{2026}{{Hu}}{{}}}
+\bibcite{hutchinson}{{17}{1989}{{Hutchinson}}{{}}}
+\bibcite{semlaflow}{{18}{2025}{{Irwin et~al.}}{{Irwin, Tibo, Janet, and Olsson}}}
+\bibcite{torsionaldiff}{{19}{2022}{{Jing et~al.}}{{Jing, Corso, Chang, Barzilay, and Jaakkola}}}
+\bibcite{xyz2mol}{{20}{2015}{{Kim \& Kim}}{{Kim and Kim}}}
+\bibcite{tbg}{{21}{2025}{{Klein \& No{\'e}}}{{Klein and No{\'e}}}}
+\bibcite{omol25}{{22}{2025}{{Levine et~al.}}{{}}}
+\bibcite{lipman2023flowmatching}{{23}{2023}{{Lipman et~al.}}{{Lipman, Chen, Ben-Hamu, Nickel, and Le}}}
+\bibcite{liu2023rectifiedflow}{{24}{2023}{{Liu et~al.}}{{Liu, Gong, and Liu}}}
+\bibcite{fab}{{25}{2023}{{Midgley et~al.}}{{Midgley, Stimper, Simm, Sch{\"o}lkopf, and Hern{\'a}ndez-Lobato}}}
+\bibcite{decaf}{{26}{2026}{{Moqvist et~al.}}{{Moqvist, Beckmann, Irwin, Mercado, and Olsson}}}
+\bibcite{zatom1}{{27}{2026}{{Morehead et~al.}}{{Morehead, Cretu, Panescu, Anand, Weiler, Perez, Blau, Farrell, Bhimji, Jain, Sahasrabuddhe, Lio, Jaakkola, G{\'o}mez-Bombarelli, Ying, Erichson, and Mahoney}}}
+\bibcite{noe2019boltzmann}{{28}{2019}{{No{\'e} et~al.}}{{No{\'e}, Olsson, K{\"o}hler, and Wu}}}
+\bibcite{nusken2021pathspace}{{29}{2021}{{N{\"u}sken \& Richter}}{{N{\"u}sken and Richter}}}
+\bibcite{arbg}{{30}{2026}{{Rehman et~al.}}{{Rehman, Tan, Bengio, Bose, and Tong}}}
+\bibcite{richter2024improvedsampling}{{31}{2024}{{Richter \& Berner}}{{Richter and Berner}}}
+\bibcite{vargrad}{{32}{2020}{{Richter et~al.}}{{Richter, Boustati, N{\"u}sken, Ruiz, and Akyildiz}}}
+\bibcite{ruecker2007yrandom}{{33}{2007}{{R{\"u}cker et~al.}}{{R{\"u}cker, R{\"u}cker, and Meringer}}}
+\bibcite{ldr2026}{{34}{2026}{{Schopmans et~al.}}{{Schopmans, von Klitzing, and Friederich}}}
+\bibcite{sendera2024offpolicy}{{35}{2024}{{Sendera et~al.}}{{Sendera, Kim, Mittal, Lemos, Scimeca, Rector-Brooks, Adam, Bengio, and Malkin}}}
+\bibcite{sbg}{{36}{2025}{{Tan et~al.}}{{}}}
+\bibcite{midi}{{37}{2023}{{Vignac et~al.}}{{Vignac, Osman, Toni, and Frossard}}}
+\bibcite{geoldm}{{38}{2023}{{Xu et~al.}}{{Xu, Powers, Dror, Ermon, and Leskovec}}}
+\bibcite{idflow}{{39}{2025}{{Zhou et~al.}}{{Zhou, Sprague, Viliuga, Tadiello, Elofsson, and Azizpour}}}
+\bibstyle{iclr2027_conference}
+\citation{omol25,esen}
+\citation{lipman2023flowmatching,liu2023rectifiedflow,albergo2023interpolants}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Theory: Assumptions, Estimator, and Proofs}{13}{appendix.A}}
+\newlabel{app:proofs}{{A}{13}{Theory: Assumptions, Estimator, and Proofs}{appendix.A}{}}
+\newlabel{app:proofs@cref}{{[appendix][1][2147483647]A}{[1][13][]13}}
+\@writefile{toc}{\contentsline {paragraph}{Scope correction from the implementation audit.}{13}{section*.17}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Setup, notation and standing assumptions}{13}{subsection.A.1}}
+\newlabel{app:setup}{{A.1}{13}{Setup, notation and standing assumptions}{subsection.A.1}{}}
+\newlabel{app:setup@cref}{{[subappendix][1][2147483647,1]A.1}{[1][13][]13}}
+\newlabel{eq:app-targets}{{7}{13}{Setup, notation and standing assumptions}{equation.A.7}{}}
+\newlabel{eq:app-targets@cref}{{[equation][7][2147483647]7}{[1][13][]13}}
+\citation{ffjord}
+\newlabel{ass:A1}{{1}{14}{Teacher regularity}{assumption.1}{}}
+\newlabel{ass:A1@cref}{{[assumption][1][2147483647]1}{[1][14][]14}}
+\newlabel{ass:A2}{{2}{14}{Which density is reported: the clamped positional-flow density}{assumption.2}{}}
+\newlabel{ass:A2@cref}{{[assumption][2][2147483647]2}{[1][14][]14}}
+\newlabel{ass:A3}{{3}{14}{Translation-invariant velocity field}{assumption.3}{}}
+\newlabel{ass:A3@cref}{{[assumption][3][2147483647]3}{[1][14][]14}}
+\newlabel{ass:A-disc}{{4}{14}{Discretised likelihood}{assumption.4}{}}
+\newlabel{ass:A-disc@cref}{{[assumption][4][2147483647]4}{[1][14][]14}}
+\newlabel{rem:idealresidual}{{1}{14}{What the theory is scoped to, given the implemented gradient}{remark.1}{}}
+\newlabel{rem:idealresidual@cref}{{[remark][1][2147483647]1}{[1][14][]14}}
+\newlabel{ass:rigid}{{5}{14}{Rigid-motion and symmetry factors}{assumption.5}{}}
+\newlabel{ass:rigid@cref}{{[assumption][5][2147483647]5}{[1][14][]14}}
+\newlabel{ass:charge}{{6}{14}{Well-posed conditional energy}{assumption.6}{}}
+\newlabel{ass:charge@cref}{{[assumption][6][2147483647]6}{[1][14][]14}}
+\citation{ffjord}
+\citation{hutchinson}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}The reported log-density: change of variables, trace estimation, and the integration scheme}{15}{subsection.A.2}}
+\newlabel{app:density}{{A.2}{15}{The reported log-density: change of variables, trace estimation, and the integration scheme}{subsection.A.2}{}}
+\newlabel{app:density@cref}{{[subappendix][2][2147483647,1]A.2}{[1][14][]15}}
+\@writefile{toc}{\contentsline {paragraph}{Step 1: the instantaneous change of variables.}{15}{section*.18}}
+\newlabel{eq:app-icv}{{9}{15}{Step 1: the instantaneous change of variables}{equation.A.9}{}}
+\newlabel{eq:app-icv@cref}{{[equation][9][2147483647]9}{[1][15][]15}}
+\newlabel{eq:app-ffjord}{{10}{15}{Step 1: the instantaneous change of variables}{equation.A.10}{}}
+\newlabel{eq:app-ffjord@cref}{{[equation][10][2147483647]10}{[1][15][]15}}
+\@writefile{toc}{\contentsline {paragraph}{Step 2: the trace, and why a stochastic estimator is used.}{15}{section*.19}}
+\newlabel{eq:app-hutch}{{11}{15}{Step 2: the trace, and why a stochastic estimator is used}{equation.A.11}{}}
+\newlabel{eq:app-hutch@cref}{{[equation][11][2147483647]11}{[1][15][]15}}
+\newlabel{eq:app-hutchvar}{{12}{15}{Step 2: the trace, and why a stochastic estimator is used}{equation.A.12}{}}
+\newlabel{eq:app-hutchvar@cref}{{[equation][12][2147483647]12}{[1][15][]15}}
+\@writefile{toc}{\contentsline {paragraph}{Step 3: the integration scheme, and what the discretisation does and does not control.}{16}{section*.20}}
+\newlabel{eq:app-grid}{{13}{16}{Step 3: the integration scheme, and what the discretisation does and does not control}{equation.A.13}{}}
+\newlabel{eq:app-grid@cref}{{[equation][13][2147483647]13}{[1][15][]16}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}The flow-matching score read-out}{16}{subsection.A.3}}
+\newlabel{app:score}{{A.3}{16}{The flow-matching score read-out}{subsection.A.3}{}}
+\newlabel{app:score@cref}{{[subappendix][3][2147483647,1]A.3}{[1][16][]16}}
+\newlabel{lem:score}{{1}{16}{Flow-matching score read-out}{lemma.1}{}}
+\newlabel{lem:score@cref}{{[lemma][1][2147483647]1}{[1][16][]16}}
+\newlabel{eq:app-mixture-score}{{14}{16}{The flow-matching score read-out}{equation.A.14}{}}
+\newlabel{eq:app-mixture-score@cref}{{[equation][14][2147483647]14}{[1][16][]16}}
+\newlabel{eq:app-score}{{15}{16}{The flow-matching score read-out}{equation.A.15}{}}
+\newlabel{eq:app-score@cref}{{[equation][15][2147483647]15}{[1][16][]16}}
+\newlabel{rem:sign}{{2}{16}{Sign}{remark.2}{}}
+\newlabel{rem:sign@cref}{{[remark][2][2147483647]2}{[1][16][]16}}
+\citation{psm,driftingboltzmann}
+\newlabel{rem:readoutdefect}{{3}{17}{The read-out as implemented}{remark.3}{}}
+\newlabel{rem:readoutdefect@cref}{{[remark][3][2147483647]3}{[1][16][]17}}
+\newlabel{rem:app-amplification}{{4}{17}{Amplification at the probe times used}{remark.4}{}}
+\newlabel{rem:app-amplification@cref}{{[remark][4][2147483647]4}{[1][17][]17}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Why the gradient condition is a trapped surrogate}{17}{subsection.A.4}}
+\newlabel{app:trap}{{A.4}{17}{Why the gradient condition is a trapped surrogate}{subsection.A.4}{}}
+\newlabel{app:trap@cref}{{[subappendix][4][2147483647,1]A.4}{[1][17][]17}}
+\newlabel{prop:trap}{{2}{17}{Bias--variance trap: a diagnostic hypothesis}{proposition.2}{}}
+\newlabel{prop:trap@cref}{{[proposition][2][2147483647]2}{[1][17][]17}}
+\newlabel{prop:conflict}{{3}{17}{Objective conflict: a diagnostic hypothesis}{proposition.3}{}}
+\newlabel{prop:conflict@cref}{{[proposition][3][2147483647]3}{[1][17][]17}}
+\newlabel{eq:app-condexp}{{16}{17}{Objective conflict: a diagnostic hypothesis}{equation.A.16}{}}
+\newlabel{eq:app-condexp@cref}{{[equation][16][2147483647]16}{[1][17][]17}}
+\newlabel{eq:app-eps}{{17}{17}{Why the gradient condition is a trapped surrogate}{equation.A.17}{}}
+\newlabel{eq:app-eps@cref}{{[equation][17][2147483647]17}{[1][17][]17}}
+\citation{omol25}
+\citation{vargrad,nusken2021pathspace,richter2024improvedsampling}
+\citation{nusken2021pathspace,sendera2024offpolicy}
+\newlabel{rem:antecedent}{{5}{18}{The antecedent holds for our data, and on-policy variants are outside what we measure}{remark.5}{}}
+\newlabel{rem:antecedent@cref}{{[remark][5][2147483647]5}{[1][18][]18}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.5}The value condition: a partition-function-free certificate}{18}{subsection.A.5}}
+\newlabel{app:certificate}{{A.5}{18}{The value condition: a partition-function-free certificate}{subsection.A.5}{}}
+\newlabel{app:certificate@cref}{{[subappendix][5][2147483647,1]A.5}{[1][18][]18}}
+\newlabel{thm:certificate}{{1}{18}{Zero-variance certificate on a region}{theorem.1}{}}
+\newlabel{thm:certificate@cref}{{[theorem][1][2147483647]1}{[1][18][]18}}
+\newlabel{cor:gauge}{{1}{18}{What the empirical loss identifies}{corollary.1}{}}
+\newlabel{cor:gauge@cref}{{[corollary][1][2147483647]1}{[1][18][]18}}
+\newlabel{rem:logvar}{{6}{18}{Attribution}{remark.6}{}}
+\newlabel{rem:logvar@cref}{{[remark][6][2147483647]6}{[1][18][]18}}
+\newlabel{rem:epscert}{{7}{18}{The certificate is about the exact clamped density; what is formed is its discretisation}{remark.7}{}}
+\newlabel{rem:epscert@cref}{{[remark][7][2147483647]7}{[1][18][]18}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.6}Local-to-global identifiability}{19}{subsection.A.6}}
+\newlabel{app:l2g}{{A.6}{19}{Local-to-global identifiability}{subsection.A.6}{}}
+\newlabel{app:l2g@cref}{{[subappendix][6][2147483647,1]A.6}{[1][19][]19}}
+\newlabel{def:overlap}{{1}{19}{Overlap graph}{definition.1}{}}
+\newlabel{def:overlap@cref}{{[definition][1][2147483647]1}{[1][19][]19}}
+\newlabel{eq:overlap}{{18}{19}{Overlap graph}{equation.A.18}{}}
+\newlabel{eq:overlap@cref}{{[equation][18][2147483647]18}{[1][19][]19}}
+\newlabel{thm:l2g}{{2}{19}{Local-to-global identifiability}{theorem.2}{}}
+\newlabel{thm:l2g@cref}{{[theorem][2][2147483647]2}{[1][19][]19}}
+\newlabel{eq:l2g}{{19}{20}{Local-to-global identifiability}{equation.A.19}{}}
+\newlabel{eq:l2g@cref}{{[equation][19][2147483647]19}{[1][20][]20}}
+\newlabel{cor:basins}{{2}{20}{What our design identifies}{corollary.2}{}}
+\newlabel{cor:basins@cref}{{[corollary][2][2147483647]2}{[1][20][]20}}
+\newlabel{rem:refmeasure}{{8}{20}{Which reference measure is the operative one}{remark.8}{}}
+\newlabel{rem:refmeasure@cref}{{[remark][8][2147483647]8}{[1][20][]20}}
+\newlabel{cor:empirical}{{3}{20}{Empirical corollary: what zero loss certifies at sampled points}{corollary.3}{}}
+\newlabel{cor:empirical@cref}{{[corollary][3][2147483647]3}{[1][20][]20}}
+\newlabel{rem:epsilon}{{9}{22}{The normalisation hypothesis is an idealisation, and what survives without it}{remark.9}{}}
+\newlabel{rem:epsilon@cref}{{[remark][9][2147483647]9}{[1][22][]22}}
+\newlabel{rem:l2g-design}{{10}{22}{What would test the theorem}{remark.10}{}}
+\newlabel{rem:l2g-design@cref}{{[remark][10][2147483647]10}{[1][22][]22}}
+\newlabel{rem:crossbatch}{{11}{22}{Why cross-molecule pooling is broken}{remark.11}{}}
+\newlabel{rem:crossbatch@cref}{{[remark][11][2147483647]11}{[1][22][]22}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.7}Algebraic relation between residual variance and ordering}{22}{subsection.A.7}}
+\newlabel{app:surrogate}{{A.7}{22}{Algebraic relation between residual variance and ordering}{subsection.A.7}{}}
+\newlabel{app:surrogate@cref}{{[subappendix][7][2147483647,1]A.7}{[1][22][]22}}
+\newlabel{prop:surrogate}{{4}{22}{Residual-variance / correlation identity}{proposition.4}{}}
+\newlabel{prop:surrogate@cref}{{[proposition][4][2147483647]4}{[1][22][]22}}
+\newlabel{eq:app-surrogate}{{21}{22}{Algebraic relation between residual variance and ordering}{equation.A.21}{}}
+\newlabel{eq:app-surrogate@cref}{{[equation][21][2147483647]21}{[1][22][]22}}
+\newlabel{rem:nrvtau}{{12}{22}{$\tau ^2$ \emph {is} the normalised residual variance}{remark.12}{}}
+\newlabel{rem:nrvtau@cref}{{[remark][12][2147483647]12}{[1][22][]22}}
+\newlabel{eq:app-nrvtau}{{22}{22}{$\tau ^2$ \emph {is} the normalised residual variance}{equation.A.22}{}}
+\newlabel{eq:app-nrvtau@cref}{{[equation][22][2147483647]22}{[1][22][]22}}
+\newlabel{eq:app-rho}{{23}{23}{$\tau ^2$ \emph {is} the normalised residual variance}{equation.A.23}{}}
+\newlabel{eq:app-rho@cref}{{[equation][23][2147483647]23}{[1][23][]23}}
+\newlabel{rem:affine}{{13}{23}{The correlation certifies shape, not temperature or calibration}{remark.13}{}}
+\newlabel{rem:affine@cref}{{[remark][13][2147483647]13}{[1][23][]23}}
+\newlabel{rem:attenuation}{{14}{23}{Attenuation, and why we do not lean on it}{remark.14}{}}
+\newlabel{rem:attenuation@cref}{{[remark][14][2147483647]14}{[1][23][]23}}
+\citation{vargrad,nusken2021pathspace,richter2024improvedsampling}
+\citation{sendera2024offpolicy}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.8}Scope of the theory}{24}{subsection.A.8}}
+\newlabel{app:scope}{{A.8}{24}{Scope of the theory}{subsection.A.8}{}}
+\newlabel{app:scope@cref}{{[subappendix][8][2147483647,1]A.8}{[1][23][]24}}
+\@writefile{toc}{\contentsline {paragraph}{Not ours.}{24}{section*.21}}
+\@writefile{toc}{\contentsline {paragraph}{Exercised empirically.}{24}{section*.22}}
+\@writefile{toc}{\contentsline {paragraph}{Stated as a diagnostic identity, with its hypothesis contradicted.}{24}{section*.23}}
+\@writefile{toc}{\contentsline {paragraph}{Stated and \emph  {not} tested here.}{24}{section*.24}}
+\@writefile{toc}{\contentsline {paragraph}{Outside the theory altogether.}{24}{section*.25}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Implementation and Experimental Details}{24}{appendix.B}}
+\newlabel{app:details}{{B}{24}{Implementation and Experimental Details}{appendix.B}{}}
+\newlabel{app:details@cref}{{[appendix][2][2147483647]B}{[1][24][]24}}
+\@writefile{toc}{\contentsline {paragraph}{Reading the archived tables after the audit.}{24}{section*.26}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.1}The objectives as implemented}{25}{subsection.B.1}}
+\newlabel{app:asimplemented}{{B.1}{25}{The objectives as implemented}{subsection.B.1}{}}
+\newlabel{app:asimplemented@cref}{{[subappendix][1][2147483647,2]B.1}{[1][24][]25}}
+\@writefile{toc}{\contentsline {paragraph}{Clipping and Huberisation.}{25}{section*.27}}
+\@writefile{toc}{\contentsline {paragraph}{Frozen-trajectory gradient.}{25}{section*.28}}
+\newlabel{eq:valuegrad}{{24}{25}{Frozen-trajectory gradient}{equation.B.24}{}}
+\newlabel{eq:valuegrad@cref}{{[equation][24][2147483647]24}{[1][25][]25}}
+\newlabel{eq:frozenfactor}{{25}{25}{Frozen-trajectory gradient}{equation.B.25}{}}
+\newlabel{eq:frozenfactor@cref}{{[equation][25][2147483647]25}{[1][25][]25}}
+\@writefile{toc}{\contentsline {paragraph}{Which code path is live, and what the reported model is.}{25}{section*.29}}
+\@writefile{toc}{\contentsline {paragraph}{The inactive anchor code path.}{25}{section*.30}}
+\@writefile{lot}{\contentsline {table}{\numberline {A1}{\ignorespaces Constants that are part of the definition of the implemented objectives and of the evaluation protocol. The clipping thresholds are inactive for a converged model but are part of the objective as trained, so they are stated here rather than left to the code. Where two settings are listed, ``earlier round'' names the checkpoint family of \Cref  {app:cells} and ``matched grid'' the family of \Cref  {app:p0cells}; the names are family labels and carry no claim that either configuration achieved numerical stability, which \Cref  {app:stability} reports it did not.\relax }}{26}{table.caption.32}}
+\newlabel{tab:constants}{{A1}{26}{Constants that are part of the definition of the implemented objectives and of the evaluation protocol. The clipping thresholds are inactive for a converged model but are part of the objective as trained, so they are stated here rather than left to the code. Where two settings are listed, ``earlier round'' names the checkpoint family of \Cref {app:cells} and ``matched grid'' the family of \Cref {app:p0cells}; the names are family labels and carry no claim that either configuration achieved numerical stability, which \Cref {app:stability} reports it did not.\relax }{table.caption.32}{}}
+\newlabel{tab:constants@cref}{{[table][1][2147483647]A1}{[1][26][]26}}
+\@writefile{toc}{\contentsline {paragraph}{The value estimator as implemented.}{26}{section*.31}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.2}Hyperparameters and numerical constants}{26}{subsection.B.2}}
+\newlabel{app:hyper}{{B.2}{26}{Hyperparameters and numerical constants}{subsection.B.2}{}}
+\newlabel{app:hyper@cref}{{[subappendix][2][2147483647,2]B.2}{[1][26][]26}}
+\newlabel{app:constants}{{B.2}{26}{Hyperparameters and numerical constants}{subsection.B.2}{}}
+\newlabel{app:constants@cref}{{[subappendix][2][2147483647,2]B.2}{[1][26][]26}}
+\citation{omol25}
+\citation{xyz2mol}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.3}Training scale and hardware}{27}{subsection.B.3}}
+\newlabel{app:hardware}{{B.3}{27}{Training scale and hardware}{subsection.B.3}{}}
+\newlabel{app:hardware@cref}{{[subappendix][3][2147483647,2]B.3}{[1][27][]27}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.4}Data, preprocessing, and the perturbation shards}{27}{subsection.B.4}}
+\newlabel{app:data}{{B.4}{27}{Data, preprocessing, and the perturbation shards}{subsection.B.4}{}}
+\newlabel{app:data@cref}{{[subappendix][4][2147483647,2]B.4}{[1][27][]27}}
+\@writefile{toc}{\contentsline {paragraph}{Composition multiplicity, and why \Cref  {cor:basins} does not rest on it.}{27}{section*.33}}
+\@writefile{toc}{\contentsline {paragraph}{The shard audit.}{27}{section*.34}}
+\citation{ruecker2007yrandom}
+\citation{gfn2xtb}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.5}Evaluation protocol}{28}{subsection.B.5}}
+\newlabel{app:eval}{{B.5}{28}{Evaluation protocol}{subsection.B.5}{}}
+\newlabel{app:eval@cref}{{[subappendix][5][2147483647,2]B.5}{[1][28][]28}}
+\@writefile{toc}{\contentsline {paragraph}{How comparisons are reported.}{28}{section*.35}}
+\newlabel{app:imputation}{{B.5}{29}{Adverse imputation for the unreported run}{section*.36}{}}
+\newlabel{app:imputation@cref}{{[subappendix][5][2147483647,2]B.5}{[1][29][]29}}
+\@writefile{toc}{\contentsline {paragraph}{Adverse imputation for the unreported run.}{29}{section*.36}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.6}Why the gradient baseline underperforms: two diagnostics}{29}{subsection.B.6}}
+\newlabel{app:forcemech}{{B.6}{29}{Why the gradient baseline underperforms: two diagnostics}{subsection.B.6}{}}
+\newlabel{app:forcemech@cref}{{[subappendix][6][2147483647,2]B.6}{[1][29][]29}}
+\@writefile{toc}{\contentsline {paragraph}{Diagnostic 1: the endpoint force is the wrong target at the interpolant.}{29}{section*.37}}
+\citation{psm,driftingboltzmann}
+\@writefile{lot}{\contentsline {table}{\numberline {A2}{\ignorespaces The endpoint force against the force at the interpolant, $192$ held-out molecules, paired across rows: the same ${\bm  {x}}_0$ and the same ${\bm  {x}}_1$ are used at every probe time, so the only configured variable down the table is $t$. Columns are the per-atom mismatch $\delimiter "026B30D F({\bm  {x}}_t)-F({\bm  {x}}_1)\delimiter "026B30D $, the per-atom cosine between the two forces, the mismatch divided by the endpoint force magnitude, and the norm of the parameter gradient of the force loss. The endpoint force itself averages $1.49$\nobreakspace  {}eV/\r A{} over this population. Measured on the shared warm-start flow-matching checkpoint in forward and backward passes only; no training.\relax }}{30}{table.caption.38}}
+\newlabel{tab:forcemismatch}{{A2}{30}{The endpoint force against the force at the interpolant, $192$ held-out molecules, paired across rows: the same $\vx _0$ and the same $\vx _1$ are used at every probe time, so the only configured variable down the table is $t$. Columns are the per-atom mismatch $\|F(\vx _t)-F(\vx _1)\|$, the per-atom cosine between the two forces, the mismatch divided by the endpoint force magnitude, and the norm of the parameter gradient of the force loss. The endpoint force itself averages $1.49$~eV/\AA {} over this population. Measured on the shared warm-start flow-matching checkpoint in forward and backward passes only; no training.\relax }{table.caption.38}{}}
+\newlabel{tab:forcemismatch@cref}{{[table][2][2147483647]A2}{[1][29][]30}}
+\@writefile{toc}{\contentsline {paragraph}{Diagnostic 2: the force update opposes the flow-matching update; the value update does not.}{30}{section*.39}}
+\@writefile{lot}{\contentsline {table}{\numberline {A3}{\ignorespaces Cosine between the flow-matching parameter gradient and each physics parameter gradient, per minibatch, on the shared warm-start flow-matching checkpoint. Forward and backward passes only; no training and no parameter update was applied.\relax }}{30}{table.caption.40}}
+\newlabel{tab:gradcos}{{A3}{30}{Cosine between the flow-matching parameter gradient and each physics parameter gradient, per minibatch, on the shared warm-start flow-matching checkpoint. Forward and backward passes only; no training and no parameter update was applied.\relax }{table.caption.40}{}}
+\newlabel{tab:gradcos@cref}{{[table][3][2147483647]A3}{[1][30][]30}}
+\@writefile{toc}{\contentsline {paragraph}{The reading.}{30}{section*.41}}
+\@writefile{toc}{\contentsline {paragraph}{The score read-out these cells use.}{30}{section*.42}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.7}Calibration diagnostics, per-seed values, and the teacher-evaluator agreement reference}{31}{subsection.B.7}}
+\newlabel{app:scalediag}{{B.7}{31}{Calibration diagnostics, per-seed values, and the teacher-evaluator agreement reference}{subsection.B.7}{}}
+\newlabel{app:scalediag@cref}{{[subappendix][7][2147483647,2]B.7}{[1][31][]31}}
+\@writefile{lot}{\contentsline {table}{\numberline {A4}{\ignorespaces \textbf  {The primary endpoint}: 93 held-out parents disjoint from the value term's shard pool, data geometry dropped, $8$ displaced geometries each, every energy a GFN2-xTB single point from an evaluator independent of the eSEN training teacher. $r$ is the per-parent correlation between $\qopname  \relax o{log}q_\theta $, the clamped positional-flow density, and $-E/kT$, averaged over parents then seeds ($\pm $ SEM over seeds); $\mathrm  {NRV}$ \textup  {\hbox {\mathsurround \z@ \normalfont  (\ignorespaces \ref  {eq:rm}\unskip \@@italiccorr )}} is the median over parents per seed, then the mean over seeds, and is anchored: \textbf  {a constant log-density scores exactly $1$}. $kT_{\mathrm  {eff}}$ ideally equals the $1.0$\nobreakspace  {}eV training target, and retrieval is against $12.5\%$ and $37.5\%$ at chance. The last row is \emph  {not a model} but the teacher's own energies through the identical pipeline, reported for $r$ and retrieval only; it is a reference for what exact reproduction of the teacher would score on this ensemble, not an attainable maximum, and its calibration diagnostics are derived in \Cref  {fig:calibration}. $^{\dagger }$The scrambled row is a defective control, one of its two shards having been left unscrambled and its third seed not configuration-matched, and is superseded by cell C of \Cref  {fig:grid}; a fourth seed of that arm completed but lost its evaluation to a launcher fault and is recovered in \Cref  {app:cells}, where it lowers the arm further. Launch record for the three trained arms (\Cref  {app:cells}): flow matching $5$ prepared / $5$ completed / $0$ diverged, all five scored here, the fifth having been a finite completed checkpoint that was scored under this protocol only later (\Cref  {app:cells}); value $5$ / $4$ / $1$, all four scored; scrambled $7$ / $4$ / $3$, three of them scored. Value entries are therefore conditional on completion (\Cref  {sec:method}).\relax }}{31}{table.caption.43}}
+\newlabel{tab:primary}{{A4}{31}{\textbf {The primary endpoint}: 93 held-out parents disjoint from the value term's shard pool, data geometry dropped, $8$ displaced geometries each, every energy a GFN2-xTB single point from an evaluator independent of the eSEN training teacher. $r$ is the per-parent correlation between $\log q_\theta $, the clamped positional-flow density, and $-E/kT$, averaged over parents then seeds ($\pm $ SEM over seeds); $\mathrm {NRV}$ \eqref {eq:rm} is the median over parents per seed, then the mean over seeds, and is anchored: \textbf {a constant log-density scores exactly $1$}. $kT_{\mathrm {eff}}$ ideally equals the $1.0$~eV training target, and retrieval is against $12.5\%$ and $37.5\%$ at chance. The last row is \emph {not a model} but the teacher's own energies through the identical pipeline, reported for $r$ and retrieval only; it is a reference for what exact reproduction of the teacher would score on this ensemble, not an attainable maximum, and its calibration diagnostics are derived in \Cref {fig:calibration}. $^{\dagger }$The scrambled row is a defective control, one of its two shards having been left unscrambled and its third seed not configuration-matched, and is superseded by cell C of \Cref {fig:grid}; a fourth seed of that arm completed but lost its evaluation to a launcher fault and is recovered in \Cref {app:cells}, where it lowers the arm further. Launch record for the three trained arms (\Cref {app:cells}): flow matching $5$ prepared / $5$ completed / $0$ diverged, all five scored here, the fifth having been a finite completed checkpoint that was scored under this protocol only later (\Cref {app:cells}); value $5$ / $4$ / $1$, all four scored; scrambled $7$ / $4$ / $3$, three of them scored. Value entries are therefore conditional on completion (\Cref {sec:method}).\relax }{table.caption.43}{}}
+\newlabel{tab:primary@cref}{{[table][4][2147483647]A4}{[1][31][]31}}
+\@writefile{toc}{\contentsline {paragraph}{Definitions, and the two identities that make them readable.}{31}{section*.44}}
+\@writefile{toc}{\contentsline {paragraph}{Aggregation, and why we quote medians.}{31}{section*.45}}
+\@writefile{lot}{\contentsline {table}{\numberline {A5}{\ignorespaces Every seed behind \Cref  {tab:primary} and \Cref  {fig:calibration}, on the primary endpoint (93 parents disjoint from the value term's shard pool, data geometry dropped, GFN2-xTB energies). $r$ and the scale ratio are means over parents within a seed; $\mathrm  {NRV}$, $\mathrm  {NRV}_{\qopname  \relax m{min}}$, the slope and $kT_{\mathrm  {eff}}$ are medians over parents within a seed. Arm rows are the mean over seeds with the standard error over seeds. Recomputed for this table from the per-seed blocks of the calibration analysis, restricted to the 93 disjoint parents; the $r$ and $\mathrm  {NRV}$ columns reproduce \Cref  {tab:primary} exactly. Seed numbers are within-arm labels listed in run order and do not pair across arms: the arms were trained independently and nothing here is a paired comparison at the seed level. $^{\ast }$Seed 5 of the flow-matching arm is the later-scored control seed of \Cref  {app:cells}: a checkpoint that completed the full budget with finite weights but carried no score under this protocol until it was scored under it, on the identical parents, displacements and estimator settings.\relax }}{32}{table.caption.46}}
+\newlabel{tab:scaleseeds}{{A5}{32}{Every seed behind \Cref {tab:primary} and \Cref {fig:calibration}, on the primary endpoint (93 parents disjoint from the value term's shard pool, data geometry dropped, GFN2-xTB energies). $r$ and the scale ratio are means over parents within a seed; $\mathrm {NRV}$, $\mathrm {NRV}_{\min }$, the slope and $kT_{\mathrm {eff}}$ are medians over parents within a seed. Arm rows are the mean over seeds with the standard error over seeds. Recomputed for this table from the per-seed blocks of the calibration analysis, restricted to the 93 disjoint parents; the $r$ and $\mathrm {NRV}$ columns reproduce \Cref {tab:primary} exactly. Seed numbers are within-arm labels listed in run order and do not pair across arms: the arms were trained independently and nothing here is a paired comparison at the seed level. $^{\ast }$Seed 5 of the flow-matching arm is the later-scored control seed of \Cref {app:cells}: a checkpoint that completed the full budget with finite weights but carried no score under this protocol until it was scored under it, on the identical parents, displacements and estimator settings.\relax }{table.caption.46}{}}
+\newlabel{tab:scaleseeds@cref}{{[table][5][2147483647]A5}{[1][31][]32}}
+\@writefile{toc}{\contentsline {paragraph}{Sensitivity to the two evaluation corrections.}{32}{section*.47}}
+\@writefile{toc}{\contentsline {paragraph}{The paired per-parent comparisons in full.}{32}{section*.49}}
+\citation{esen}
+\@writefile{lot}{\contentsline {table}{\numberline {A6}{\ignorespaces Sensitivity of every calibration diagnostic to the two evaluation corrections. Block 1 is the primary endpoint and is identical to the arm rows of \Cref  {tab:scaleseeds}; the other three blocks relax one or both corrections. Entries are means over seeds $\pm $ the standard error over seeds, with the same median-over-parents convention. Recomputed for this table from the per-seed blocks of the calibration analysis. A \emph  {constant} log-density scores $\mathrm  {NRV} = 1$ exactly, so no arm in any block is calibrated.\relax }}{33}{table.caption.48}}
+\newlabel{tab:scaleperm}{{A6}{33}{Sensitivity of every calibration diagnostic to the two evaluation corrections. Block 1 is the primary endpoint and is identical to the arm rows of \Cref {tab:scaleseeds}; the other three blocks relax one or both corrections. Entries are means over seeds $\pm $ the standard error over seeds, with the same median-over-parents convention. Recomputed for this table from the per-seed blocks of the calibration analysis. A \emph {constant} log-density scores $\mathrm {NRV} = 1$ exactly, so no arm in any block is calibrated.\relax }{table.caption.48}{}}
+\newlabel{tab:scaleperm@cref}{{[table][6][2147483647]A6}{[1][32][]33}}
+\@writefile{toc}{\contentsline {paragraph}{The retrieval read-out.}{33}{section*.50}}
+\@writefile{lot}{\contentsline {table}{\numberline {A7}{\ignorespaces Retrieval, per seed, on the primary endpoint. Each entry is the fraction of the 93 parents whose lowest-energy displaced geometry is ranked first (top-1) or in the top three (top-3) by $\qopname  \relax o{log}q_\theta $. Chance is $12.5\%$ and $37.5\%$. The teacher row substitutes $-E_{\mathrm  {eSEN}}/kT$ for $\qopname  \relax o{log}q_\theta $ on the identical geometries and is not a model. Seed numbers are within-arm labels and do not pair across arms; seed 5 of the flow-matching arm is the later-scored control seed of \Cref  {app:cells}, and the value arm has four seeds, so its seed-5 cells are empty.\relax }}{33}{table.caption.51}}
+\newlabel{tab:retrieval}{{A7}{33}{Retrieval, per seed, on the primary endpoint. Each entry is the fraction of the 93 parents whose lowest-energy displaced geometry is ranked first (top-1) or in the top three (top-3) by $\log q_\theta $. Chance is $12.5\%$ and $37.5\%$. The teacher row substitutes $-E_{\mathrm {eSEN}}/kT$ for $\log q_\theta $ on the identical geometries and is not a model. Seed numbers are within-arm labels and do not pair across arms; seed 5 of the flow-matching arm is the later-scored control seed of \Cref {app:cells}, and the value arm has four seeds, so its seed-5 cells are empty.\relax }{table.caption.51}{}}
+\newlabel{tab:retrieval@cref}{{[table][7][2147483647]A7}{[1][33][]33}}
+\@writefile{toc}{\contentsline {paragraph}{The teacher-evaluator agreement reference, and why it must be re-measured on any other ensemble.}{33}{section*.52}}
+\@writefile{toc}{\contentsline {paragraph}{The same calibration diagnostics scored with the training teacher.}{34}{section*.53}}
+\@writefile{lot}{\contentsline {table}{\numberline {A8}{\ignorespaces The calibration diagnostics of \Cref  {tab:scaleseeds} recomputed with the training teacher in place of the independent evaluator. Same 93 primary parents, same displaced geometries, same model log-densities, same $kT = 1.0$\nobreakspace  {}eV, same aggregation (median over parents within a seed, then mean over seeds $\pm $ the standard error over seeds; $r$ and $\mathrm  {NRV}_{\qopname  \relax m{min}}$ are means over parents). Only the energy column differs. The GFN2-xTB block is the reported primary endpoint and is reproduced here by the identical code path. $kT_{\mathrm  {eff}}$ ideally equals the $1.0$\nobreakspace  {}eV training target; a constant log-density scores $\mathrm  {NRV} = 1$ exactly, so no arm under either scorer clears that bar.\relax }}{34}{table.caption.54}}
+\newlabel{tab:esencalib}{{A8}{34}{The calibration diagnostics of \Cref {tab:scaleseeds} recomputed with the training teacher in place of the independent evaluator. Same 93 primary parents, same displaced geometries, same model log-densities, same $kT = 1.0$~eV, same aggregation (median over parents within a seed, then mean over seeds $\pm $ the standard error over seeds; $r$ and $\mathrm {NRV}_{\min }$ are means over parents). Only the energy column differs. The GFN2-xTB block is the reported primary endpoint and is reproduced here by the identical code path. $kT_{\mathrm {eff}}$ ideally equals the $1.0$~eV training target; a constant log-density scores $\mathrm {NRV} = 1$ exactly, so no arm under either scorer clears that bar.\relax }{table.caption.54}{}}
+\newlabel{tab:esencalib@cref}{{[table][8][2147483647]A8}{[1][34][]34}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.8}Perturbation families}{34}{subsection.B.8}}
+\newlabel{app:perturb}{{B.8}{34}{Perturbation families}{subsection.B.8}{}}
+\newlabel{app:perturb@cref}{{[subappendix][8][2147483647,2]B.8}{[1][34][]34}}
+\@writefile{toc}{\contentsline {paragraph}{What every reported number uses, and the confound it carries.}{34}{section*.55}}
+\@writefile{toc}{\contentsline {paragraph}{The generators, and which were evaluated.}{35}{section*.56}}
+\@writefile{toc}{\contentsline {paragraph}{Status of the controlled evaluations.}{35}{section*.57}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.9}The matched six-cell grid}{35}{subsection.B.9}}
+\newlabel{app:p0cells}{{B.9}{35}{The matched six-cell grid}{subsection.B.9}{}}
+\newlabel{app:p0cells@cref}{{[subappendix][9][2147483647,2]B.9}{[1][35][]35}}
+\@writefile{toc}{\contentsline {paragraph}{Configuration.}{35}{section*.58}}
+\@writefile{toc}{\contentsline {paragraph}{Results, per seed.}{35}{section*.60}}
+\@writefile{toc}{\contentsline {paragraph}{The six contrasts the grid was built to run.}{35}{section*.62}}
+\@writefile{lot}{\contentsline {table}{\numberline {A9}{\ignorespaces The matched grid: configuration and launch record. All six cells share every hyperparameter listed in the text above; the table gives only what differs. ``Shard'' names the perturbation file the value term reads, all three built from the training split of the same $30\tmspace  +\thinmuskip {.1667em}000$ parents and differing only in the energy column. The three status columns are the launch record of the \emph  {matched five-seed design} --- every seed launched into it is counted and a diverged seed stays in the denominator --- and are themselves a result, discussed below and in \Cref  {app:stability}. Fourteen further runs of the same design were launched afterwards and are reported separately below rather than folded into these counts. Reading a cell by its completions alone would condition on completion, which is not independent of the cell; per-cell and per-seed results are \Cref  {tab:p0seeds} and the two tables must be read together.\relax }}{36}{table.caption.59}}
+\newlabel{tab:p0cells}{{A9}{36}{The matched grid: configuration and launch record. All six cells share every hyperparameter listed in the text above; the table gives only what differs. ``Shard'' names the perturbation file the value term reads, all three built from the training split of the same $30\,000$ parents and differing only in the energy column. The three status columns are the launch record of the \emph {matched five-seed design} --- every seed launched into it is counted and a diverged seed stays in the denominator --- and are themselves a result, discussed below and in \Cref {app:stability}. Fourteen further runs of the same design were launched afterwards and are reported separately below rather than folded into these counts. Reading a cell by its completions alone would condition on completion, which is not independent of the cell; per-cell and per-seed results are \Cref {tab:p0seeds} and the two tables must be read together.\relax }{table.caption.59}{}}
+\newlabel{tab:p0cells@cref}{{[table][9][2147483647]A9}{[1][35][]36}}
+\@writefile{lot}{\contentsline {table}{\numberline {A10}{\ignorespaces The matched grid, per seed and per cell. Mean per-group Pearson $r$ between $\qopname  \relax o{log}q_\theta $ and $-E_{\mathrm  {GFN2\text  {-}xTB}}/kT$, 120 parents, \textbf  {data geometry excluded}. Every cell shares backbone, budget, optimiser, warm start, evaluation protocol and training-split-only perturbation shards; only $\lambda _1$, $\lambda _E$ and the shard's energy column differ. The seed counts here are \emph  {completions}: the launched/completed/diverged record is \Cref  {tab:p0cells} and must be read with this table, since completion is not independent of the cell (limitation (viii)). The means of cells B, D and F are conditional on completion.\relax }}{36}{table.caption.61}}
+\newlabel{tab:p0seeds}{{A10}{36}{The matched grid, per seed and per cell. Mean per-group Pearson $r$ between $\log q_\theta $ and $-E_{\mathrm {GFN2\text {-}xTB}}/kT$, 120 parents, \textbf {data geometry excluded}. Every cell shares backbone, budget, optimiser, warm start, evaluation protocol and training-split-only perturbation shards; only $\lambda _1$, $\lambda _E$ and the shard's energy column differ. The seed counts here are \emph {completions}: the launched/completed/diverged record is \Cref {tab:p0cells} and must be read with this table, since completion is not independent of the cell (limitation (viii)). The means of cells B, D and F are conditional on completion.\relax }{table.caption.61}{}}
+\newlabel{tab:p0seeds@cref}{{[table][10][2147483647]A10}{[1][35][]36}}
+\@writefile{toc}{\contentsline {paragraph}{What the grid says, and what it does not.}{37}{section*.63}}
+\@writefile{toc}{\contentsline {paragraph}{The selection risk the launch record creates.}{37}{section*.64}}
+\@writefile{toc}{\contentsline {paragraph}{The later relaunch block, and what it bounds.}{37}{section*.65}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.10}Provenance and audit of the earlier checkpoint family}{38}{subsection.B.10}}
+\newlabel{app:cells}{{B.10}{38}{Provenance and audit of the earlier checkpoint family}{subsection.B.10}{}}
+\newlabel{app:cells@cref}{{[subappendix][10][2147483647,2]B.10}{[1][38][]38}}
+\@writefile{lot}{\contentsline {table}{\numberline {A11}{\ignorespaces The earlier checkpoint family, and the flags that bound which of its contrasts remain usable. Metric is the mean per-parent Pearson correlation between $\qopname  \relax o{log}q_\theta $ and $-E/kT$ from GFN2-xTB, with the data geometry \emph  {included} and 30 parents per cell --- a different population and a different protocol from every other table in this paper. \textbf  {No number in this table may be compared with any number outside it}: the only admissible comparator for each cell is the same round's own control, named in the last column. Per-seed values recomputed for this table from the round's own per-record evaluation outputs. The four-cell \emph  {contrasts} of this table are superseded by \Cref  {tab:p0seeds}; the round's checkpoints are not, and are re-evaluated on the primary endpoint in \Cref  {tab:primary,tab:scaleseeds}.\relax }}{38}{table.caption.66}}
+\newlabel{tab:cells}{{A11}{38}{The earlier checkpoint family, and the flags that bound which of its contrasts remain usable. Metric is the mean per-parent Pearson correlation between $\log q_\theta $ and $-E/kT$ from GFN2-xTB, with the data geometry \emph {included} and 30 parents per cell --- a different population and a different protocol from every other table in this paper. \textbf {No number in this table may be compared with any number outside it}: the only admissible comparator for each cell is the same round's own control, named in the last column. Per-seed values recomputed for this table from the round's own per-record evaluation outputs. The four-cell \emph {contrasts} of this table are superseded by \Cref {tab:p0seeds}; the round's checkpoints are not, and are re-evaluated on the primary endpoint in \Cref {tab:primary,tab:scaleseeds}.\relax }{table.caption.66}{}}
+\newlabel{tab:cells@cref}{{[table][11][2147483647]A11}{[1][38][]38}}
+\@writefile{toc}{\contentsline {paragraph}{Two recovered evaluations, and what each does to the reported numbers.}{38}{section*.67}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.11}A larger-population replication, and the contamination it carries}{39}{subsection.B.11}}
+\newlabel{app:n240}{{B.11}{39}{A larger-population replication, and the contamination it carries}{subsection.B.11}{}}
+\newlabel{app:n240@cref}{{[subappendix][11][2147483647,2]B.11}{[1][39][]39}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.12}Complete record of evaluations run}{39}{subsection.B.12}}
+\newlabel{app:allevals}{{B.12}{39}{Complete record of evaluations run}{subsection.B.12}{}}
+\newlabel{app:allevals@cref}{{[subappendix][12][2147483647,2]B.12}{[1][39][]39}}
+\@writefile{toc}{\contentsline {paragraph}{Two conventions, and why the two halves of the record cannot be compared.}{40}{section*.68}}
+\@writefile{lot}{\contentsline {table}{\numberline {A12}{\ignorespaces Families whose evaluations are used somewhere in this paper. ``Evals'' counts completed evaluations present in the run store, not launched runs; the launched/completed/ diverged records are \Cref  {tab:p0cells} and \Cref  {sec:mainresult}. The value column aggregates over \emph  {all} completed evaluations of the family, which is a different aggregation from the matched-design means the paper reports: for cells D and F the design means over the matched five-seed block are $+0.421$ and $+0.194$ (\Cref  {tab:p0seeds}), and those, not this column, are what the paper's contrasts use. No contrast is formed from this column. $\dagger $ marks the data-geometry-included convention on $30$ parents (see text).\relax }}{40}{table.caption.69}}
+\newlabel{tab:allevals_used}{{A12}{40}{Families whose evaluations are used somewhere in this paper. ``Evals'' counts completed evaluations present in the run store, not launched runs; the launched/completed/ diverged records are \Cref {tab:p0cells} and \Cref {sec:mainresult}. The value column aggregates over \emph {all} completed evaluations of the family, which is a different aggregation from the matched-design means the paper reports: for cells D and F the design means over the matched five-seed block are $+0.421$ and $+0.194$ (\Cref {tab:p0seeds}), and those, not this column, are what the paper's contrasts use. No contrast is formed from this column. $\dagger $ marks the data-geometry-included convention on $30$ parents (see text).\relax }{table.caption.69}{}}
+\newlabel{tab:allevals_used@cref}{{[table][12][2147483647]A12}{[1][40][]40}}
+\@writefile{toc}{\contentsline {paragraph}{The set-aside families' numbers, recorded so that they are not absent.}{40}{section*.71}}
+\citation{posebusters}
+\citation{edm,geoldm,flowmol3,zatom1,symphony}
+\citation{torsionaldiff,tbg,sbg,arbg,adjointsampling}
+\@writefile{lot}{\contentsline {table}{\numberline {A13}{\ignorespaces Families that completed and are deliberately not used for any claim. Each is named, counted and given its reason, so that no completed evaluation is silently absent. $\dagger $ marks the data-geometry-included convention on $30$ parents, which is not comparable with any other number in this paper.\relax }}{41}{table.caption.70}}
+\newlabel{tab:allevals_setaside}{{A13}{41}{Families that completed and are deliberately not used for any claim. Each is named, counted and given its reason, so that no completed evaluation is silently absent. $\dagger $ marks the data-geometry-included convention on $30$ parents, which is not comparable with any other number in this paper.\relax }{table.caption.70}{}}
+\newlabel{tab:allevals_setaside@cref}{{[table][13][2147483647]A13}{[1][40][]41}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.13}De novo generation quality}{41}{subsection.B.13}}
+\newlabel{app:generation}{{B.13}{41}{De novo generation quality}{subsection.B.13}{}}
+\newlabel{app:generation@cref}{{[subappendix][13][2147483647,2]B.13}{[1][41][]41}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.14}The capability matrix}{41}{subsection.B.14}}
+\newlabel{app:capability}{{B.14}{41}{The capability matrix}{subsection.B.14}{}}
+\newlabel{app:capability@cref}{{[subappendix][14][2147483647,2]B.14}{[1][41][]41}}
+\@writefile{lot}{\contentsline {table}{\numberline {A14}{\ignorespaces Bond-free de novo generation quality on OMol25, in per cent, $n = 100$ samples per model scored with one script. Validity is bond perception plus sanitisation; connectivity is the single-component fraction; PoseBusters is the geometry-check pass rate. At $n = 100$ the binomial standard error is about 5 points per cell, so nothing here is bolded and differences of a few points should not be read as differences. The value row is the arm whose ordering is reported in \Cref  {tab:primary}; the control row is the mean of its two evaluated seeds, whose individual values are given beneath it.\relax }}{42}{table.caption.72}}
+\newlabel{tab:generation}{{A14}{42}{Bond-free de novo generation quality on OMol25, in per cent, $n = 100$ samples per model scored with one script. Validity is bond perception plus sanitisation; connectivity is the single-component fraction; PoseBusters is the geometry-check pass rate. At $n = 100$ the binomial standard error is about 5 points per cell, so nothing here is bolded and differences of a few points should not be read as differences. The value row is the arm whose ordering is reported in \Cref {tab:primary}; the control row is the mean of its two evaluated seeds, whose individual values are given beneath it.\relax }{table.caption.72}{}}
+\newlabel{tab:generation@cref}{{[table][14][2147483647]A14}{[1][41][]42}}
+\@writefile{lot}{\contentsline {table}{\numberline {A15}{\ignorespaces Capability matrix. Entries record what each model class \emph  {can be asked}, not how well it scores; ``n/a'' marks a question that is undefined for that class, ``n.r.'' a capability the authors do not report, ``graph'' a model that is given the molecular graph, and ``FF'' a classical force field as the energy target. The likelihood column records the kind of density a class defines: ``bound'' a variational bound, ``CNF'' a continuous-flow likelihood (exact in continuous time; what any implementation reports is a discretisation, ours included). Methods without a tractable likelihood cannot be given a density--energy measurement at all, so the last column states which question each class can be asked rather than which model is better. The Elements column records the element coverage of each model's training corpus, not a demonstrated evaluation scope: every result in this paper is evaluated on main-group organic parents at the singlet default (\Cref  {ass:charge}).\relax }}{42}{table.caption.73}}
+\newlabel{tab:capability}{{A15}{42}{Capability matrix. Entries record what each model class \emph {can be asked}, not how well it scores; ``n/a'' marks a question that is undefined for that class, ``n.r.'' a capability the authors do not report, ``graph'' a model that is given the molecular graph, and ``FF'' a classical force field as the energy target. The likelihood column records the kind of density a class defines: ``bound'' a variational bound, ``CNF'' a continuous-flow likelihood (exact in continuous time; what any implementation reports is a discretisation, ours included). Methods without a tractable likelihood cannot be given a density--energy measurement at all, so the last column states which question each class can be asked rather than which model is better. The Elements column records the element coverage of each model's training corpus, not a demonstrated evaluation scope: every result in this paper is evaluated on main-group organic parents at the singlet default (\Cref {ass:charge}).\relax }{table.caption.73}{}}
+\newlabel{tab:capability@cref}{{[table][15][2147483647]A15}{[1][42][]42}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.15}Numerical stability of the value objective}{42}{subsection.B.15}}
+\newlabel{app:stability}{{B.15}{42}{Numerical stability of the value objective}{subsection.B.15}{}}
+\newlabel{app:stability@cref}{{[subappendix][15][2147483647,2]B.15}{[1][42][]42}}
+\@writefile{toc}{\contentsline {paragraph}{Diagnosis.}{42}{section*.74}}
+\@writefile{toc}{\contentsline {paragraph}{The three changes, and what they bought.}{42}{section*.75}}
+\@writefile{toc}{\contentsline {paragraph}{Where the instability lives.}{43}{section*.76}}
+\@writefile{toc}{\contentsline {paragraph}{Consequence for every reported mean.}{43}{section*.77}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.16}Inferential statistics, collected for completeness}{43}{subsection.B.16}}
+\newlabel{app:inferential}{{B.16}{43}{Inferential statistics, collected for completeness}{subsection.B.16}{}}
+\newlabel{app:inferential@cref}{{[subappendix][16][2147483647,2]B.16}{[1][43][]43}}
+\@writefile{toc}{\contentsline {paragraph}{Test conventions.}{43}{section*.78}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.17}Limitations, in full}{43}{subsection.B.17}}
+\newlabel{app:limitations}{{B.17}{43}{Limitations, in full}{subsection.B.17}{}}
+\newlabel{app:limitations@cref}{{[subappendix][17][2147483647,2]B.17}{[1][43][]43}}
+\citation{fab}
+\@writefile{lot}{\contentsline {table}{\numberline {A16}{\ignorespaces Every inferential statistic computed for this paper, in one place. Conventions are defined in the text immediately above: \emph  {Welch} is a two-sided unequal-variance $t$ on per-seed arm means, \emph  {perm.} an exact permutation test over seed relabellings, \emph  {Wilcoxon} a two-sided signed-rank test on paired per-parent values ($93$ parents). $\Delta $ is the difference of arm means (or, for the Wilcoxon rows, the median paired shift). Seed counts are completed seeds. This table is a completeness record and nothing in the paper is stated in terms of it; the corresponding descriptive results are in \Cref  {tab:primary,tab:scaleseeds,tab:p0seeds}. No $p$-value is corrected for multiplicity, degrees of freedom are small throughout, and every row involving a value-carrying cell is conditional on completion (\Cref  {app:stability}).\relax }}{44}{table.caption.79}}
+\newlabel{tab:inferential}{{A16}{44}{Every inferential statistic computed for this paper, in one place. Conventions are defined in the text immediately above: \emph {Welch} is a two-sided unequal-variance $t$ on per-seed arm means, \emph {perm.} an exact permutation test over seed relabellings, \emph {Wilcoxon} a two-sided signed-rank test on paired per-parent values ($93$ parents). $\Delta $ is the difference of arm means (or, for the Wilcoxon rows, the median paired shift). Seed counts are completed seeds. This table is a completeness record and nothing in the paper is stated in terms of it; the corresponding descriptive results are in \Cref {tab:primary,tab:scaleseeds,tab:p0seeds}. No $p$-value is corrected for multiplicity, degrees of freedom are small throughout, and every row involving a value-carrying cell is conditional on completion (\Cref {app:stability}).\relax }{table.caption.79}{}}
+\newlabel{tab:inferential@cref}{{[table][16][2147483647]A16}{[1][43][]44}}
+\citation{psm,driftingboltzmann}
+\citation{fab}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.18}Main-text figures: panel construction}{46}{subsection.B.18}}
+\newlabel{app:figdetail}{{B.18}{46}{Main-text figures: panel construction}{subsection.B.18}{}}
+\newlabel{app:figdetail@cref}{{[subappendix][18][2147483647,2]B.18}{[1][46][]46}}
+\@writefile{toc}{\contentsline {paragraph}{\Cref  {fig:objective} (schematic).}{46}{section*.80}}
+\@writefile{toc}{\contentsline {paragraph}{\Cref  {fig:grid} (matched six-cell grid).}{46}{section*.81}}
+\@writefile{toc}{\contentsline {paragraph}{\Cref  {fig:ordering} (ordering and retrieval).}{46}{section*.82}}
+\@writefile{toc}{\contentsline {paragraph}{\Cref  {fig:calibration} (ordering against calibration).}{47}{section*.83}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {B.19}Reproduction}{47}{subsection.B.19}}
+\newlabel{app:repro}{{B.19}{47}{Reproduction}{subsection.B.19}{}}
+\newlabel{app:repro@cref}{{[subappendix][19][2147483647,2]B.19}{[1][47][]47}}
+\@writefile{toc}{\contentsline {paragraph}{Environments.}{47}{section*.84}}
+\@writefile{toc}{\contentsline {paragraph}{Order of operations.}{47}{section*.85}}
+\citation{omol25,esen}
+\citation{xyz2mol}
+\citation{flowmol3}
+\citation{lipman2023flowmatching,liu2023rectifiedflow,albergo2023interpolants}
+\citation{edm,geoldm,midi,symphony,semlaflow,flowmol3,zatom1}
+\citation{ebmol}
+\citation{torsionaldiff,geom,decaf}
+\citation{vargrad,nusken2021pathspace,berner2024optimalcontrol,richter2024improvedsampling}
+\citation{sendera2024offpolicy}
+\citation{fab}
+\citation{idflow}
+\@writefile{toc}{\contentsline {paragraph}{The two routes, and which numbers each one produces.}{48}{section*.86}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Extended Setting and Related Work}{48}{appendix.C}}
+\newlabel{app:related}{{C}{48}{Extended Setting and Related Work}{appendix.C}{}}
+\newlabel{app:related@cref}{{[appendix][3][2147483647]C}{[1][48][]48}}
+\@writefile{toc}{\contentsline {paragraph}{Setting.}{48}{section*.87}}
+\@writefile{toc}{\contentsline {paragraph}{What each group is judged on.}{48}{section*.88}}
+\@writefile{toc}{\contentsline {paragraph}{The conditioning contrast, in full.}{48}{section*.89}}
+\citation{omol25,esen}
+\citation{adjointsampling}
+\citation{psm,driftingboltzmann}
+\@writefile{toc}{\contentsline {paragraph}{Universal neural potentials, values and gradients.}{49}{section*.90}}

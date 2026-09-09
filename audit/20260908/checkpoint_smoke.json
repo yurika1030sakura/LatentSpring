@@ -1,0 +1,95 @@
+{
+  "definition": "memoryless COM-free clamped positional ODE; endpoint head converted with schedule; full-state midpoint",
+  "claim": "execution/numerical diagnostic only, no molecular performance conclusion",
+  "terminal_time": 0.95,
+  "checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/abl/a1_fm_only_s2/lightning_logs/version_30674367/checkpoints/midstep-step=30000.ckpt",
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "parent_index": 3,
+  "n_atoms": 9,
+  "n_hutchinson": 2,
+  "torch": "2.2.0",
+  "checkpoint_sha256": "4d5b3a188d81a75c2c4b1170b065a090b3535beae72c9ce196d5877e2dd38ff4",
+  "gradient_check": {
+    "steps": 2,
+    "diagnostic": "variance of centered log q; no optimizer update",
+    "objective": 41.23508071899414,
+    "parameter_tensors_with_grad": 420,
+    "gradient_l2_norm": 704.7794642978731,
+    "all_gradients_finite": true,
+    "seconds": 1.542215032997774
+  },
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "geometry_sha256": "286d8d3b59a1ab299c38f440bdf5544dd4ef0e0095b129b8915c1a0632739401",
+  "results": [
+    {
+      "steps": 8,
+      "log_q_T": [
+        6.155786514282227,
+        -9.897588729858398,
+        1.0656051635742188
+      ],
+      "centered_log_q_T": [
+        7.047852039337158,
+        -9.005522727966309,
+        1.9576709270477295
+      ],
+      "seconds": 3.5972613740013912
+    },
+    {
+      "steps": 16,
+      "log_q_T": [
+        6.278781890869141,
+        -11.200305938720703,
+        0.1763763427734375
+      ],
+      "centered_log_q_T": [
+        7.860497951507568,
+        -9.618590354919434,
+        1.7580922842025757
+      ],
+      "seconds": 8.005693124003301
+    },
+    {
+      "steps": 32,
+      "log_q_T": [
+        6.366315841674805,
+        -11.999776840209961,
+        -0.16961288452148438
+      ],
+      "centered_log_q_T": [
+        8.300673484802246,
+        -10.06541919708252,
+        1.7647451162338257
+      ],
+      "seconds": 9.83427743500215
+    },
+    {
+      "steps": 64,
+      "log_q_T": [
+        6.225543975830078,
+        -12.363035202026367,
+        -0.3890228271484375
+      ],
+      "centered_log_q_T": [
+        8.40104866027832,
+        -10.187530517578125,
+        1.7864818572998047
+      ],
+      "seconds": 24.58967602300254
+    },
+    {
+      "steps": 128,
+      "log_q_T": [
+        6.224287033081055,
+        -12.515111923217773,
+        -0.4308662414550781
+      ],
+      "centered_log_q_T": [
+        8.464850425720215,
+        -10.274548530578613,
+        1.8096973896026611
+      ],
+      "seconds": 62.88428053299867
+    }
+  ]
+}

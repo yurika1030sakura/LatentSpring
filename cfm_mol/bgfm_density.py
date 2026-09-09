@@ -1,4 +1,15 @@
-"""BGFM energy-consistency: log-density via flow change-of-variables.
+"""BGFM grouped energy residuals and the archived raw-head estimator.
+
+Audit 2026-09-08: ``log_density_via_flow`` historically integrates the
+FlowMol3 endpoint head directly, without converting it to velocity or
+projecting it onto the COM-free subspace. Its output is a legacy surrogate,
+not a validated likelihood of the generative flow. The frozen-trajectory
+gradient also omits state/prior derivatives. Preserve it for reproduction;
+new experiments can explicitly select ``density_options={'mode':
+'clamped_cnf', 'terminal_time': 0.95}``, implemented in clamped_density.py.
+
+The following equations describe the IDEAL target, not an established
+property of the archived implementation or the trained checkpoints.
 
 This module implements the *second* BGFM loss term (lambda_2 * L_energy),
 which is what makes the "Boltzmann" in Boltzmann-Guided Flow Matching real:
@@ -14,11 +25,9 @@ fixed atom types/charges, since E(x) = E(positions | atoms)):
 
 We accumulate the divergence along the reverse trajectory using the
 Hutchinson estimator (cfm_mol.bgfm_loss.divergence_hutchinson). For the
-variance-form energy loss, an exact log-density is not required: a
-batch-consistent biased estimate suffices, because constant offsets and
-consistent bias cancel in Var(log p + E/kT). This lets us use a small
-number of ODE steps (default 10) and 1 Hutchinson sample, keeping the
-cost ~10x the base FM step rather than ~50x.
+variance-form energy loss, only a bias constant WITHIN each group cancels.
+Geometry-dependent solver bias and trace noise do not cancel and can change
+the objective and the arm comparison. Validate both before making claims.
 
 References: Chen et al. 2018 (Neural ODE), Grathwohl et al. 2019 (FFJORD).
 """
@@ -78,7 +87,7 @@ def make_position_velocity_fn(
     upper_edge_mask: torch.Tensor,
     kT: torch.Tensor | None = None,
 ) -> Callable[[torch.Tensor], torch.Tensor]:
-    """Build a position-only velocity closure v(x) = v_theta^x(x, t | a,c,e fixed).
+    """Build the archived raw-position-head closure (NOT CTMC velocity).
 
     The discrete channels (a_t, c_t, e_t) are held at their values already
     set on g_template (data labels). Only x_t varies. Returns a function
@@ -110,7 +119,7 @@ def log_density_via_flow(
     kT: torch.Tensor | None = None,
     xi_fn: Callable[[int, int, torch.Tensor], torch.Tensor] | None = None,
 ) -> torch.Tensor:
-    """Estimate log p_theta(x_1) for the data points in g_aux.
+    """Compute the archived raw-head density surrogate for reproduction.
 
     g_aux must have ndata['x_1_true'] (data positions) and discrete
     channels set to their data labels (a_t = a_1_true, etc.) -- the same
@@ -122,14 +131,11 @@ def log_density_via_flow(
           div = Hutchinson divergence of v_theta^x at (x, t)
           x   <- x - dt * v_theta^x(x, t)       # reverse step
           logp_acc <- logp_acc + dt * div        # accumulate integral
-      log p_theta(x_1) = log p_0(x) + logp_acc   # x is now x_0
+      surrogate(x_1) = log p_0(x) - logp_acc   # x is now prior-side
 
-    Note: integral_0^1 div dt is accumulated as sum(dt * div). The sign
-    works out so log p_1 = log p_0(x_0) - integral, and integral is
-    accumulated with the +dt*div convention while stepping backward
-    (dt > 0 magnitude), giving log p_1 = log p_0(x_0) + logp_acc only if
-    we define div with the reverse-time sign. We use the standard
-    instantaneous change of variables; see unit test for sign validation.
+    The positive-step divergence accumulation is SUBTRACTED. Midpoint time
+    nodes do not make the state or its divergence second-order accurate:
+    this implementation evaluates at the start state, not a midpoint state.
 
     Args (beyond the obvious):
         xi_fn: optional (ode_step, hutch_sample, x) -> probe tensor, forwarded to
@@ -268,7 +274,7 @@ def within_group_variance_loss(
     """
     valid = torch.isfinite(residual)
     if int(valid.sum().item()) < 2:
-        return residual.sum() * 0.0, {
+        return residual[valid].sum() * 0.0, {
             "n_valid": int(valid.sum().item()), "n_groups_used": 0,
             "residual_within_std": 0.0,
         }
@@ -291,7 +297,7 @@ def within_group_variance_loss(
     used_mask = counts >= 2
     n_used = int(used_mask.sum().item())
     if n_used == 0:
-        return residual.sum() * 0.0, {
+        return residual[valid].sum() * 0.0, {
             "n_valid": int(valid.sum().item()), "n_groups_used": 0,
             "residual_within_std": 0.0,
         }
@@ -303,6 +309,21 @@ def within_group_variance_loss(
         "n_groups_used": n_used,
         "residual_within_std": float(group_vars.detach().sqrt().mean().item()),
     }
+
+
+def _energy_density(model, graph, node_batch_idx, upper_edge_mask,
+                    *, density_options=None, **kwargs):
+    options = dict(density_options or {})
+    mode = options.pop('mode', 'legacy')
+    if mode == 'legacy':
+        if options:
+            raise ValueError('Legacy density does not accept corrected solver options')
+        return log_density_via_flow(model, graph, node_batch_idx, upper_edge_mask, **kwargs)
+    if mode != 'clamped_cnf':
+        raise ValueError(f'Unknown energy density mode: {mode}')
+    from cfm_mol.clamped_density import log_density_clamped_flow
+    return log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
+                                    **kwargs, **options)
 
 
 def energy_consistency_loss_per_mol(
@@ -317,6 +338,7 @@ def energy_consistency_loss_per_mol(
     n_hutchinson: int = 1,
     prior_std: float = 1.0,
     kT_tensor: torch.Tensor | None = None,
+    density_options: dict | None = None,
 ) -> tuple[torch.Tensor, dict]:
     """L_energy = mean_m Var_k(log p_theta(x_{m,k}) + E(x_{m,k}) / kT).
 
@@ -342,10 +364,10 @@ def energy_consistency_loss_per_mol(
     Returns:
         (loss, diagnostics_dict)
     """
-    log_p = log_density_via_flow(
+    log_p = _energy_density(
         model, g_pert, node_batch_idx, upper_edge_mask,
         n_ode_steps=n_ode_steps, n_hutchinson=n_hutchinson, prior_std=prior_std,
-        for_training=True, kT=kT_tensor)
+        for_training=True, kT=kT_tensor, density_options=density_options)
     # kT can be a scalar (fixed-T training) or a (B,) tensor per virtual mol
     # (T-conditional training). The variance loss is computed per-parent so we
     # need E/kT to broadcast correctly.
@@ -434,6 +456,7 @@ def energy_consistency_loss_per_mol_with_anchor(
     n_hutchinson: int = 1,
     prior_std: float = 1.0,
     kT_tensor: torch.Tensor | None = None,
+    density_options: dict | None = None,
 ) -> tuple[torch.Tensor, torch.Tensor, dict]:
     """Variance + anchor energy loss in one call (single FFJORD pass).
 
@@ -455,10 +478,10 @@ def energy_consistency_loss_per_mol_with_anchor(
     Returns:
         (L_var, L_anchor, diag) -- two losses + merged diagnostics.
     """
-    log_p = log_density_via_flow(
+    log_p = _energy_density(
         model, g_pert, node_batch_idx, upper_edge_mask,
         n_ode_steps=n_ode_steps, n_hutchinson=n_hutchinson, prior_std=prior_std,
-        for_training=True, kT=kT_tensor)
+        for_training=True, kT=kT_tensor, density_options=density_options)
     # Variable kT support: kT_tensor (M*K,) per virtual mol if T-conditional;
     # else scalar kT.
     kT_div = kT_tensor if kT_tensor is not None else float(kT)
