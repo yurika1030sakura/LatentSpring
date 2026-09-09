@@ -1,5 +1,7 @@
 """Finite-step work weights and an AIS teacher for conditional flow matching.
 
+Each density/drift callback must act independently on each row; a callback
+coupling particles would require joint-cloud weights instead of these weights.
 These are implementations of existing path importance sampling / AIS identities,
 not new estimators. States are [particles, Euclidean coordinates]. Molecular
 callers must use an orthonormal COM-free coordinate system and fix composition,
