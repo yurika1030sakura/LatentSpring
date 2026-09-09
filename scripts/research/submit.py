@@ -14,6 +14,7 @@ p.add_argument('--launcher', default='scripts/research/runtime_smoke.slurm')
 p.add_argument('--gpu-hours', type=float, default=1.)
 p.add_argument('--config')
 p.add_argument('--seed', type=int)
+p.add_argument('--launcher-arg', action='append', default=[])
 p.add_argument('--submit', action='store_true')
 args = p.parse_args()
 root = Path(__file__).resolve().parents[2]
@@ -24,7 +25,10 @@ snapshot = root/'runs/source_snapshots'/rev
 out = root/'runs'/args.name
 command = ['sbatch', '--parsable', args.launcher, str(snapshot), str(out)]
 if args.config is not None or args.seed is not None:
+    if args.launcher_arg:
+        raise ValueError('Use named smoke arguments or explicit launcher arguments, not both')
     command += [args.config or 'configs/research/runtime_smoke.yaml', str(9001 if args.seed is None else args.seed)]
+command += args.launcher_arg
 if not args.submit:
     print(json.dumps({'command':command, 'source_commit':rev}, indent=2))
 else:
@@ -42,7 +46,8 @@ else:
     record = {'at_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'job_id':job, 'name':args.name, 'source_commit':rev,
         'snapshot':str(snapshot), 'output':str(out),
-        'max_gpu_hours':args.gpu_hours, 'launcher':args.launcher, 'config':args.config, 'seed':args.seed}
+        'max_gpu_hours':args.gpu_hours, 'launcher':args.launcher, 'config':args.config, 'seed':args.seed,
+        'launcher_args':args.launcher_arg}
     with (root/'research/jobs.jsonl').open('a') as f:
         f.write(json.dumps(record)+'\n')
     print(json.dumps(record, indent=2))
