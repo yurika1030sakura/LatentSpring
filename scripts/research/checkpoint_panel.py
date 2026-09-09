@@ -36,6 +36,7 @@ def main():
     p.add_argument('--exact-parent-count', type=int, default=1)
     p.add_argument('--terminal-time', type=float, default=0.95)
     p.add_argument('--device', default='cuda')
+    p.add_argument('--composition-split', type=Path)
     args = p.parse_args()
     if args.replicas < 2:
         raise ValueError('At least two replicas needed for noise diagnostics')
@@ -48,6 +49,13 @@ def main():
     loader = PerturbationLoader([args.shard], n_atom_types=model.n_atom_types,
         n_charge_classes=6, n_bond_types=4, b_parents=1, device=args.device,
         max_atoms_per_parent=args.max_atoms, seed=9002)
+    if args.composition_split:
+        split=json.loads(args.composition_split.read_text())
+        held={item['parent_id'] for item in split['perturbation_parents']}
+        loader._eligible_parents=[i for i in loader._eligible_parents if i in held]
+        if len(loader._eligible_parents)<args.parents:
+            raise ValueError('Insufficient composition-disjoint perturbation parents')
+        loader._order=loader._fresh_order();loader._ptr=0
     args.out.mkdir(parents=True, exist_ok=True)
     report = {'claim':'numerical development panel; no held-out or sampling claim',
         'checkpoint':str(args.checkpoint), 'checkpoint_sha256':hashlib.sha256(args.checkpoint.read_bytes()).hexdigest(),
@@ -56,6 +64,9 @@ def main():
         'terminal_time':args.terminal_time, 'replicas':args.replicas,
         'probe_policy':'independent Rademacher replicas, fixed over time and across resolutions',
         'rows':[], 'complete':False}
+    if args.composition_split:
+        report['composition_split_sha256']=hashlib.sha256(args.composition_split.read_bytes()).hexdigest()
+        report['composition_disjoint_development']=True
     for i in range(args.parents):
         graph, energy, pid, nbi, uem = loader.next_batch()
         x = graph.ndata['x_1_true']

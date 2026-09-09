@@ -155,7 +155,7 @@ def test_constant_field_and_graph_model_restoration():
     assert head.training and not head.dropout.training
 
 
-def test_real_ctmc_head_is_endpoint_and_adapter_uses_velocity():
+def test_real_ctmc_head_is_endpoint_and_adapter_uses_velocity(monkeypatch):
     from flowmol.models.ctmc_vector_field import CTMCVectorField
     from flowmol.models.interpolant_scheduler import InterpolantScheduler
     torch.manual_seed(7)
@@ -163,7 +163,8 @@ def test_real_ctmc_head_is_endpoint_and_adapter_uses_velocity():
     vf = CTMCVectorField(n_atom_types=3, canonical_feat_order=['x', 'a', 'c', 'e'],
         interpolant_scheduler=scheduler, n_vec_channels=4, n_hidden_scalars=8,
         n_hidden_edge_feats=8, n_molecule_updates=1, convs_per_update=2,
-        n_message_gvps=1, n_update_gvps=1, n_expansion_gvps=1, rbf_dim=4)
+        n_message_gvps=1, n_update_gvps=1, n_expansion_gvps=1, rbf_dim=4,
+        self_conditioning=True)
     model = SimpleNamespace(vector_field=vf.eval())
     g, nbi, uem = graph_batch((3,), dtype=torch.float32)
     for key in ['a', 'c']:
@@ -194,6 +195,18 @@ def test_real_ctmc_head_is_endpoint_and_adapter_uses_velocity():
     assert grads and all(torch.isfinite(grad).all() for grad in grads)
     assert any(grad.abs().sum() > 0 for grad in grads)
     assert vf.training and torch.equal(g.ndata['x_1_true'], original_x)
+    # eval() still bootstraps a previous endpoint at t=0 in stock FlowMol.
+    # The clamped field must execute just one denoise pass even at the boundary.
+    calls=[]
+    original_denoise=vf.denoise_graph
+    def counted(*args,**kwargs):
+        calls.append(1)
+        return original_denoise(*args,**kwargs)
+    monkeypatch.setattr(vf,'denoise_graph',counted)
+    with deterministic_field(vf):
+        assert not vf.self_conditioning
+        position_velocity(model,g,x,torch.zeros(1),nbi,uem)
+    assert len(calls)==1 and vf.self_conditioning and vf.training
 
 
 def test_trace_replicates_share_one_trajectory_and_use_distinct_probes():

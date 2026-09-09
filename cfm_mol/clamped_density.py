@@ -37,10 +37,18 @@ def deterministic_field(vector_field):
     Calls use no cached previous prediction, defining a memoryless field.
     """
     states = [(module, module.training) for module in vector_field.modules()]
+    # eval() alone still invokes FlowMol's bootstrap self-conditioning exactly
+    # at t=0. Adaptive solvers evaluate that boundary; a memoryless field must
+    # also disable this special branch, then restore the caller's setting.
+    conditioning = getattr(vector_field, 'self_conditioning', None)
     try:
         vector_field.eval()
+        if conditioning is not None:
+            vector_field.self_conditioning = False
         yield
     finally:
+        if conditioning is not None:
+            vector_field.self_conditioning = conditioning
         for module, training in states:
             module.training = training
 

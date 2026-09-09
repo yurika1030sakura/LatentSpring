@@ -3,6 +3,17 @@
 Updated 2026-09-08 after a code, theory and archived-evidence audit. Read
 `audit/20260908/REVIEW.md` before interpreting any result as Boltzmann sampling.
 
+## Active takeover branch
+
+Read `research/STATUS.md` for completed jobs, failures, current experiments and
+scientific gates; `research/PLAN.md` records the deadline plan. The user has
+explicitly authorised framework reconstruction. The new position-only branch
+in `cfm_mol/clamped_fm.py` and `scripts/research/train_clamped_position.py`
+factorises a frozen composition prior from an unaligned conditional geometry
+flow ending at T=0.8. Its initial 1,000-step pilot is finite but is not evidence
+of an energy-training or generation advantage. See
+`notes/factorized_geometry_flow.md` for the altered training target.
+
 ## Current scientific status
 
 The existing experiments show improved local ordering of an archived scalar
@@ -26,7 +37,9 @@ not a production recipe or a reported experiment.
 - Flow matching, bond-free: `total_loss_weights.e = 0` on OMol25.
 - OMol25 primary data, `max_atoms = 200`.
 - Loss family: FM + lambda_1 force + lambda_2 grouped energy (+ lambda_3 anchor).
-- Extend FlowMol3 through runtime patches; do not fork its architecture.
+- Reuse the installed FlowMol3 backbone. The existing joint pipeline remains
+  patch-based; the user-authorised conditional branch may replace its training
+  objective without modifying the shared external installation.
 - Keep `cfm_mol/projection.py` and inactive bond-dependent code for later work.
 - Preserve non-finite-loss guards. Do not infer achieved Boltzmann consistency
   merely from the loss family, infinite capacity, or the potential's coverage.
@@ -80,7 +93,9 @@ Do not merge the environments: flowmol (torch 2.2 + DGL + Lightning) is for
 training/inference; omol25 (torch 2.8 + fairchem) is for preprocessing/oracle
 queries. Never install fairchem into flowmol.
 
-The current workspace's `envs/` and run/data links point into
+The active checkout is `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`.
+Its new runs are stored locally under that laboratory path. Its environments
+and processed-data links point into
 `/n/holylabs/woo_lab/Lab/yulili/bgfm/`. The older ryl_lab tree contains the
 April code and notes; do not assume it is the latest training checkout.
 The repository's storage restriction prohibits writing into home. Stage
