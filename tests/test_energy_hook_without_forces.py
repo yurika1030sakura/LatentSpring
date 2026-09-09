@@ -7,8 +7,9 @@ import pytest
 from cfm_mol.bgfm_train_hook import patch_flowmol_bgfm
 
 
+@pytest.mark.parametrize("has_forces", [False, True])
 @pytest.mark.parametrize("nonfinite_density", [False, True])
-def test_energy_only_hook_reaches_energy_step_without_force_labels(monkeypatch, nonfinite_density):
+def test_energy_only_hook_reaches_energy_step_without_force_labels(monkeypatch, nonfinite_density, has_forces):
     class Model(torch.nn.Module):
         def __init__(self):
             super().__init__()
@@ -23,6 +24,8 @@ def test_energy_only_hook_reaches_energy_step_without_force_labels(monkeypatch, 
         def log(self, name, value, **kwargs):
             self.logged[name] = value
     g = dgl.batch([dgl.graph(([0, 1], [1, 0]), num_nodes=2)])
+    if has_forces:
+        g.ndata['force_1_true'] = torch.zeros(2,3)
     class Loader:
         M, K = 1, 2
         def __init__(self, **kwargs):
@@ -38,7 +41,7 @@ def test_energy_only_hook_reaches_energy_step_without_force_labels(monkeypatch, 
     monkeypatch.setattr('cfm_mol.perturbation_loader.PerturbationLoader', Loader)
     monkeypatch.setattr('cfm_mol.bgfm_density.energy_consistency_loss_per_mol', energy)
     model = Model()
-    patch_flowmol_bgfm(model, {'enabled': True, 'lambda_1': 0., 'lambda_2': 0.5,
+    patch_flowmol_bgfm(model, {'enabled': True, 'lambda_1': 0., 'lambda_2': 0.5, 'force_diagnostics': False,
         'energy_perturbation_shards': ['unused.pt'],
         'energy_density_options': {'mode': 'clamped_cnf', 'terminal_time': 0.95},
         'warmup_frac': 0., 'ramp_frac': 0.})

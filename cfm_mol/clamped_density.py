@@ -177,3 +177,50 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
             raise FloatingPointError("Non-finite clamped-flow density; inspect field and resolution")
         result = logp[0] if n_trace_replicates == 1 else logp
         return result if for_training else result.detach()
+
+
+@torch.no_grad()
+def sample_clamped_flow(model, graph, node_batch_idx, upper_edge_mask, *,
+                        n_ode_steps=128, terminal_time=0.95, prior_std=1.0,
+                        parameterization="endpoint", kT=None, x0=None,
+                        generator=None):
+    """Sample the SAME memoryless COM-free ODE used by the density diagnostic.
+
+    The condition is the graph's fixed discrete composition; no bonds, history
+    self-conditioning, retraction or force guidance is introduced. The output
+    law approaches q_T as the fixed-step solver is refined. Finite-step CNF
+    trace quadrature is not the exact Jacobian of this discrete solver.
+    ``x0`` permits matched-prior comparisons and analytic validation.
+    """
+    if n_ode_steps < 1 or not math.isfinite(terminal_time) or not 0 < terminal_time <= 1:
+        raise ValueError("Require positive steps and terminal_time in (0,1]")
+    if not math.isfinite(prior_std) or prior_std <= 0:
+        raise ValueError("prior_std must be positive and finite")
+    reference = graph.ndata['x_1_true']
+    if reference.dtype in (torch.float16, torch.bfloat16):
+        reference = reference.float()
+    if x0 is None:
+        x = torch.randn(reference.shape, device=reference.device,
+            dtype=reference.dtype, generator=generator)*prior_std
+    else:
+        if x0.shape != reference.shape or not torch.isfinite(x0).all():
+            raise ValueError("x0 must be finite with the graph coordinate shape")
+        x = x0.detach().to(reference).clone()
+    dt = terminal_time/n_ode_steps
+    with graph.local_scope(), deterministic_field(model.vector_field), \
+            torch.autocast(device_type=x.device.type, enabled=False):
+        for key in ('a', 'c'):
+            graph.ndata[f'{key}_t'] = graph.ndata[f'{key}_1_true']
+        graph.edata['e_t'] = graph.edata['e_1_true']
+        x = center_by_graph(x, node_batch_idx, graph.batch_size)
+        for step in range(n_ode_steps):
+            t = x.new_full((graph.batch_size,), (step+0.5)*dt)
+            v = position_velocity(model,graph,x,t,node_batch_idx,upper_edge_mask,
+                parameterization=parameterization,kT=kT)
+            midpoint = x+0.5*dt*v
+            v_mid = position_velocity(model,graph,midpoint,t,node_batch_idx,upper_edge_mask,
+                parameterization=parameterization,kT=kT)
+            x = x+dt*v_mid
+        if not torch.isfinite(x).all():
+            raise FloatingPointError('Non-finite clamped-flow sample')
+    return x

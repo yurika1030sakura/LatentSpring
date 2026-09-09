@@ -9,6 +9,7 @@ from torch import nn
 
 from cfm_mol.clamped_density import (
     center_by_graph, deterministic_field, log_density_clamped_flow, position_velocity,
+    sample_clamped_flow,
 )
 
 
@@ -203,3 +204,22 @@ def test_trace_replicates_share_one_trajectory_and_use_distinct_probes():
     assert seen == [(step, sample) for step in range(3) for sample in range(2)]
     assert not torch.allclose(q[0], q[1])
     assert torch.isfinite(torch.autograd.grad((q[0]*q[1]).mean(), head.a)[0])
+
+
+def test_sampler_and_density_describe_same_analytic_flow():
+    g, nbi, uem = graph_batch()
+    model = SimpleNamespace(vector_field=LinearHead())
+    x0 = g.ndata['x_1_true'].clone()
+    exact = x0*math.exp(0.3*0.95)
+    errors = []
+    for steps in [8, 16, 32]:
+        sample = sample_clamped_flow(model,g,nbi,uem,n_ode_steps=steps,x0=x0)
+        errors.append(float((sample-exact).abs().max()))
+    assert errors[0]/errors[1] > 3.8
+    assert errors[1]/errors[2] > 3.8
+    assert torch.equal(g.ndata['x_1_true'],x0)
+    g.ndata['x_1_true'] = sample
+    logq = log_density_clamped_flow(model,g,nbi,uem,n_ode_steps=32,n_hutchinson=0)
+    counts = g.batch_num_nodes().to(x0)
+    prior = -0.5*x0.new_zeros(2).index_add(0,nbi,x0.square().sum(-1))-1.5*(counts-1)*math.log(2*math.pi)
+    assert torch.allclose(logq,prior-3*(counts-1)*0.3*0.95,atol=2e-5,rtol=0)

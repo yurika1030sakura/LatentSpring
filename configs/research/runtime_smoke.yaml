@@ -4,7 +4,7 @@ training:
   batch_size: 2
   num_workers: 0
   ema_decay: 0
-  max_num_edges: 40000
+  max_num_edges: 2000
   trainer_args:
     max_epochs: 10
     accelerator: gpu
@@ -163,6 +163,7 @@ mol_fm:
   bgfm:
     enabled: true
     lambda_1: 0.0
+    force_diagnostics: false
     lambda_2: 3.0e-05
     kT: 1.0
     t_eval_values:

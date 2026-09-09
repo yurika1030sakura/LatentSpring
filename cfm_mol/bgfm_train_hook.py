@@ -396,7 +396,7 @@ def patch_flowmol_bgfm(model, bgfm_config: dict) -> None:
         cosine_terms = []
         # Preserve historical force diagnostics when labels exist; energy-only
         # batches need no force labels and must still reach their energy step.
-        for t_eval_i in (t_eval_values if has_forces else []):
+        for t_eval_i in (t_eval_values if has_forces and (lambda_1 > 0 or bgfm_config.get("force_diagnostics", True)) else []):
             t = torch.full((g.batch_size,), t_eval_i, device=device, dtype=torch.float32)
             if probe_mode == 'path':
                 g_aux = _build_path_aux_graph(
