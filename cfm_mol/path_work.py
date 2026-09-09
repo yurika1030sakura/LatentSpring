@@ -58,7 +58,7 @@ class TrainablePath:
 
 def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,generator,*,
                            prior_std=1.,checkpoint_steps=False,terminal_std=None,max_drift_norm=None,
-                           forward_energy_only=False,mean_parameterization='reference'):
+                           forward_energy_only=False,mean_parameterization='reference',noise_annealing_power=0.):
     """Simulate reparameterized paths and retain complete first-order gradients.
 
     x0 must be an independent draw from the stated isotropic Gaussian.
@@ -79,9 +79,13 @@ def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,gen
     x+dt*v; with a bound it approximates that mean in the central region while
     the far-tail residual stays bounded. Noise and evaluated kernel densities
     are unchanged. This is an initialization choice, not a new work identity.
+    A positive noise_annealing_power multiplies noise_scale by (1-t_left)^power
+    at each step. Every finite-step variance stays positive. The Gaussian
+    reference/reverse factors use that same actual scale.
     """
     _states(x0);grid=_schedule(times,'times')
     if mean_parameterization not in {'reference','native'}:raise ValueError('Unknown kernel mean parameterization')
+    if not math.isfinite(noise_annealing_power) or noise_annealing_power<0:raise ValueError('Nonnegative finite noise annealing power required')
     if not math.isfinite(noise_scale) or noise_scale<=0 or not math.isfinite(prior_std) or prior_std<=0:
         raise ValueError('Positive finite noise and prior scales required')
     if terminal_std is not None and (not math.isfinite(terminal_std) or terminal_std<=0):raise ValueError('Invalid terminal reference scale')
@@ -89,13 +93,13 @@ def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,gen
     log_initial=gaussian_log_density(x0,torch.zeros_like(x0),prior_std)
     x=x0;ratio=x0.new_zeros(len(x0),dtype=torch.float64)
     for left,right in zip(grid,grid[1:]):
-        dt=right-left;std=noise_scale*math.sqrt(dt)
+        dt=right-left;step_noise=noise_scale*(1-left)**noise_annealing_power;std=step_noise*math.sqrt(dt)
         af=ab=1.;std_forward=std_backward=std
         if terminal_std is not None:
             left_scale=prior_std*(terminal_std/prior_std)**left
             right_scale=prior_std*(terminal_std/prior_std)**right
-            correlation=math.exp(-.5*noise_scale**2*dt)
-            relative_noise=math.sqrt(-math.expm1(-noise_scale**2*dt))
+            correlation=math.exp(-.5*step_noise**2*dt)
+            relative_noise=math.sqrt(-math.expm1(-step_noise**2*dt))
             af=correlation*right_scale/left_scale;ab=correlation*left_scale/right_scale
             std_forward=right_scale*relative_noise;std_backward=left_scale*relative_noise
         noise=torch.randn(x.shape,dtype=x.dtype,device=x.device,generator=generator)

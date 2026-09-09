@@ -22,6 +22,7 @@ from flowmol.data_processing.utils import get_batch_idxs,get_upper_edge_mask
 from cfm_mol.clamped_density import deterministic_field,position_velocity
 from cfm_mol.condition_systems import load_condition,graph_from_condition
 from cfm_mol.electronic_metadata import ElectronicMetadata
+from cfm_mol.electronic_conditioning import neutralize_constant_temperature_input
 from cfm_mol.energy_oracle import EnergyOracle
 from cfm_mol.nonequilibrium import centered_orthonormal_basis,normalized_weights,WeightedPaths
 from cfm_mol.path_work import gaussian_training_path,external_energy
@@ -45,6 +46,8 @@ def main():
     p.add_argument('--oracle-batch-size',type=int,default=1)
     p.add_argument('--reference-kernel',choices=['euler','gaussian'],default='gaussian')
     p.add_argument('--mean-parameterization',choices=['reference','native'],default='reference')
+    p.add_argument('--neutralize-temperature-input',action='store_true')
+    p.add_argument('--noise-annealing-power',type=float,default=0.)
     p.add_argument('--prior-std',type=float,default=1.)
     p.add_argument('--max-drift-per-sqrt-dimension',type=float,default=20.)
     p.add_argument('--checkpoint-steps',action='store_true');p.add_argument('--device',default='cuda')
@@ -88,9 +91,12 @@ def main():
     state=torch.load(str(args.checkpoint),map_location='cpu',weights_only=False);protocol=state.get('research_protocol',{})
     if protocol.get('position_parameterization')!='displacement' or protocol.get('data_endpoint_time')!=1.:
         raise ValueError('This proposal trainer requires the explicit T=1 displacement checkpoint')
+    if args.neutralize_temperature_input and (protocol.get('format')!='electronic_geometry_fm_v1' or not protocol.get('electronic_conditioning') or 'requested_kT' not in protocol):
+        raise ValueError('Temperature initialization requires verified constant-input electronic FM training')
     def load_model():
         value=model_from_config(cfg);prepare_research_backbone(value,protocol)
         value.load_state_dict(state['state_dict'],strict=True);patch_smooth_geometry(value,protocol.get('geometry_softening',0.))
+        if args.neutralize_temperature_input:neutralize_constant_temperature_input(value,float(protocol['requested_kT']))
         return value.to(args.device).float().train()
     forward=load_model();backward=load_model();del state
     if args.mode=='backward_only':
@@ -113,10 +119,12 @@ def main():
     root=Path(__file__).resolve().parents[2]
     report={'complete':False,'scope':__doc__,'configuration':{k:str(v.resolve()) if isinstance(v,Path) else v for k,v in vars(args).items()},
         'checkpoint_sha256':sha(args.checkpoint),'oracle_sha256':sha(args.oracle),'metadata_progress_sha256':metadata.progress_sha256 if metadata else None,
-        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py',root/'scripts/research/oracle_worker.py',root/'cfm_mol/condition_systems.py']},
+        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py',root/'scripts/research/oracle_worker.py',root/'cfm_mol/condition_systems.py',root/'cfm_mol/electronic_conditioning.py']},
         'condition':{**source_condition,
             'numbers':numbers.tolist(),'charge':charge,'spin_multiplicity':spin},
         'energy_zero_eV':energy_zero,'prior_std':prior_std,'evaluations':{},'training':[]}
+    report['temperature_input_initialization']={'neutralized':args.neutralize_temperature_input,
+        'checkpoint_requested_kT':protocol.get('requested_kT'),'new_input_kT_eV':args.kT}
     write_json(output,report);start=time.perf_counter()
     with EnergyOracle(args.oracle_python,root/'scripts/research/oracle_worker.py',args.oracle,numbers=numbers,charge=charge,spin_multiplicity=spin,
                       batch_size=args.oracle_batch_size) as oracle:
@@ -128,7 +136,7 @@ def main():
                 checkpoint_steps=args.checkpoint_steps and training,terminal_std=terminal_std,
                 max_drift_norm=args.max_drift_per_sqrt_dimension*math.sqrt(dimension),
                 forward_energy_only=args.mode=='forward_energy_only' and training,
-                mean_parameterization=args.mean_parameterization)
+                mean_parameterization=args.mean_parameterization,noise_annealing_power=args.noise_annealing_power)
             positions=torch.einsum('nk,bkd->bnd',basis,path.terminal.reshape(args.batch,n-1,3))
             energy,force=oracle.evaluate(positions)
             linked=external_energy(positions,energy,force) if training else energy.to(positions)

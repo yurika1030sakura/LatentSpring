@@ -54,11 +54,12 @@ def test_invalid_oracle_does_not_enter_training():
 
 
 @pytest.mark.parametrize('steps',[1,3,16])
-def test_gaussian_reference_bridge_has_constant_work_for_different_endpoint_widths(steps):
+@pytest.mark.parametrize('power',[0.,.5])
+def test_gaussian_reference_bridge_has_constant_work_for_different_endpoint_widths(steps,power):
     g=torch.Generator().manual_seed(173);initial=.8;terminal=math.sqrt(10)
     x=torch.randn(500,3,dtype=torch.float64,generator=g)*initial
     path=gaussian_training_path(x,torch_zero,torch_zero,torch.linspace(0,1,steps+1),.4,g,
-        prior_std=initial,terminal_std=terminal)
+        prior_std=initial,terminal_std=terminal,noise_annealing_power=power)
     energy=.5*(path.terminal/terminal).square().sum(-1)+3*math.log(terminal*math.sqrt(2*math.pi))
     torch.testing.assert_close(path.work(energy),torch.zeros(500,dtype=torch.float64),rtol=0,atol=2e-12)
 
@@ -68,7 +69,8 @@ def torch_zero(x,t):return torch.zeros_like(x)
 
 @pytest.mark.parametrize('checked',[False,True])
 @pytest.mark.parametrize('mean_parameterization',['reference','native'])
-def test_energy_gradient_control_preserves_values_and_backward_gradient(checked,mean_parameterization):
+@pytest.mark.parametrize('power',[0.,.5])
+def test_energy_gradient_control_preserves_values_and_backward_gradient(checked,mean_parameterization,power):
     a=torch.tensor(.2,dtype=torch.float64,requires_grad=True)
     b=torch.tensor(-.3,dtype=torch.float64,requires_grad=True)
     def draw(control):
@@ -76,7 +78,8 @@ def test_energy_gradient_control_preserves_values_and_backward_gradient(checked,
         x=torch.randn(40,2,dtype=torch.float64,generator=g)
         return gaussian_training_path(x,lambda z,t:a*torch.tanh(z),lambda z,t:b*torch.tanh(z),
             [0,.2,.6,1.],.4,g,terminal_std=2.,max_drift_norm=3.,
-            checkpoint_steps=checked,forward_energy_only=control,mean_parameterization=mean_parameterization)
+            checkpoint_steps=checked,forward_energy_only=control,mean_parameterization=mean_parameterization,
+            noise_annealing_power=power)
     joint=draw(False);control=draw(True)
     energy=lambda path:.5*((path.terminal-.3)/.8).square().sum(-1)
     joint_loss=joint.work(energy(joint)).mean();control_loss=control.work(energy(control)).mean()
@@ -91,13 +94,14 @@ def test_energy_gradient_control_preserves_values_and_backward_gradient(checked,
 
 
 @pytest.mark.parametrize('mean_parameterization',['reference','native'])
-def test_reference_residual_gradient_and_checkpoint_agreement(mean_parameterization):
+@pytest.mark.parametrize('power',[0.,.5])
+def test_reference_residual_gradient_and_checkpoint_agreement(mean_parameterization,power):
     a=torch.tensor(.2,dtype=torch.float64,requires_grad=True)
     def loss(value,checked=False):
         g=torch.Generator().manual_seed(247);x=torch.randn(80,2,dtype=torch.float64,generator=g)
         path=gaussian_training_path(x,lambda z,t:value*torch.tanh(z),lambda z,t:-value*torch.tanh(z),
             [0,.3,.7,1.],.3,g,terminal_std=2.,max_drift_norm=3.,checkpoint_steps=checked,
-            mean_parameterization=mean_parameterization)
+            mean_parameterization=mean_parameterization,noise_annealing_power=power)
         return path.work(.5*path.terminal.square().sum(-1)/4).mean()
     gradient,=torch.autograd.grad(loss(a),a)
     finite=(loss(a+1e-5)-loss(a-1e-5))/2e-5

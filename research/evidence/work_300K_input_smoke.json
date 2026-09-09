@@ -1,0 +1,145 @@
+{
+  "source_result": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work_300K_input_smoke_v1/results.json",
+  "source_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/scripts/research/train_molecular_work.py": "1248eb85eca3f74ec8fc6e649ea380fdc6900a2c7ca1a5354b6ed3009c07801e",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/path_work.py": "014f9f16c03458825a1f488e36fbfec36a95cd7a52459d86a2045edbe25b0e65",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/energy_oracle.py": "87a01e5d0b4c5f1e7f3d938615486504472f5f88de3debab7a5a95551d3a436a",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/scripts/research/oracle_worker.py": "df0413ae2887561c13934c62e4eac8941a5a33efa551ca97d80c319b6d998b51",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/condition_systems.py": "6d421721ade12f787ee38ebd2b62d22fa7c0ba73167e5a339792106ca8284e74",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/cfm_mol/electronic_conditioning.py": "1f52ff23d8ba35ea90966796be733c489e370671d172b856e6025f4f32e8049d"
+  },
+  "complete": true,
+  "scope": "Train a stochastic proposal by mean finite-path work, initialized from FM.\n\nThis is an existing path-space KL/SNF teacher objective. The eventual position\nstudent remains a separately evaluated flow-matching model. Work is shifted by\na fixed source energy for logging; no normalizer is assumed known.\n",
+  "configuration": {
+    "config": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/configs/sweep/a1_fm_only_s2.yaml",
+    "checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/electronic_fm_global_v1/last.ckpt",
+    "metadata": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/raw_metadata_replay_v1",
+    "oracle": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+    "condition_manifest": null,
+    "condition_index": null,
+    "oracle_python": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python3.11",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work_300K_input_smoke_v1",
+    "source_row": 5846,
+    "steps": 2,
+    "path_steps": 16,
+    "batch": 2,
+    "eval_particles": 4,
+    "lr": 1e-05,
+    "noise": 0.2,
+    "kT": 0.025851999786435,
+    "restraint": 0.1,
+    "seed": 9051,
+    "mode": "joint",
+    "oracle_batch_size": 1,
+    "reference_kernel": "gaussian",
+    "mean_parameterization": "native",
+    "neutralize_temperature_input": true,
+    "prior_std": 1.0,
+    "max_drift_per_sqrt_dimension": 20.0,
+    "checkpoint_steps": true,
+    "device": "cpu"
+  },
+  "checkpoint_sha256": "aa25f1c31a7f5d692a8b6a0d1ccb8f564dc82ead95be05c5419f157ba63bbf18",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "metadata_progress_sha256": "bb9016536bf309bd12d923f2de7b2b732c657ac52c4c1df0ee1685d35cf5e750",
+  "condition": {
+    "source_row": 5846,
+    "raw_index": 589712,
+    "reference_geometry_loaded": true,
+    "reference_geometry_used_to_initialize": false,
+    "numbers": [
+      1,
+      15,
+      8,
+      6,
+      1,
+      6,
+      8,
+      12
+    ],
+    "charge": 1,
+    "spin_multiplicity": 1
+  },
+  "energy_zero_eV": -20924.201862654783,
+  "prior_std": 1.0,
+  "evaluations": {
+    "initial": {
+      "mean_shifted_work": 110.24170742418895,
+      "work_std": 89.53908475115026,
+      "mean_energy_eV": -20923.202820840474,
+      "weights": {
+        "particles": 4,
+        "ess": 1.0,
+        "ess_fraction": 0.25,
+        "maximum_weight": 1.0,
+        "log_mean_weight": -31.6347058942838
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.8798067064650311,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 2.0207769714346457,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_geometry": {
+        "weighted_pair_distance_variance_A2": 2.4158535863510546e-21,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 1.8942909033399467,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "oracle_evaluations": 4
+    },
+    "final": {
+      "mean_shifted_work": 96.78480217270054,
+      "work_std": 84.4805268728106,
+      "mean_energy_eV": -20923.42941005422,
+      "weights": {
+        "particles": 4,
+        "ess": 1.0,
+        "ess_fraction": 0.25,
+        "maximum_weight": 1.0,
+        "log_mean_weight": -20.32193630184396
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.8832659796458113,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 2.0252426951877602,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "weighted_geometry": {
+        "weighted_pair_distance_variance_A2": 6.440711453071126e-21,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 1.9013870012641032,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "oracle_evaluations": 4
+    }
+  },
+  "training": [
+    {
+      "step": 1,
+      "mean_shifted_work": 161.99715190164886,
+      "mean_energy_eV": -20922.250748089376,
+      "gradient_norm": 4145.0146484375,
+      "seconds": 47.93065087706782
+    },
+    {
+      "step": 2,
+      "mean_shifted_work": 178.9595790479617,
+      "mean_energy_eV": -20921.986144511036,
+      "gradient_norm": 6857.7529296875,
+      "seconds": 64.6697421988938
+    }
+  ],
+  "temperature_input_initialization": {
+    "neutralized": true,
+    "checkpoint_requested_kT": 1.0,
+    "new_input_kT_eV": 0.025851999786435
+  },
+  "oracle_evaluations": 12,
+  "seconds": 78.69843132188544,
+  "peak_gpu_bytes": null
+}

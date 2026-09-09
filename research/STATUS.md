@@ -16,7 +16,7 @@ that all scientific checks passed.
 
 ## What is established
 
-- 193 tests pass, including real FlowMol parameter gradients, full-state and
+- 208 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
   dedicated Gaussian/Rademacher probe streams for common/independent controls,
@@ -427,7 +427,7 @@ parameters. Tests compare forward gradients with energy-only autograd and
 backward gradients with the full objective, with/without checkpointing.
 This intentional ablation is not the full mean-work gradient.
 
-The full suite passes 193 tests. Batched oracle inference agrees with serial ASE
+The full suite passes 208 tests. Batched oracle inference agrees with serial ASE
 on 32 generated geometries: maximum energy difference 8.87e-6 eV and force
 component difference 5.04e-4 eV/A. Warm measured times were 75.88 s serial versus
 6.99 s with batch 16 (10.86x in this single timing, not a general speed guarantee).
@@ -509,7 +509,7 @@ controls are retained and continue to their predeclared assessments.
 Native-mean preflight 45730876 (source a2f4a7b) was RUNNING at 20:43 UTC, with
 two updates and 132 total potential queries prescribed. Its fixed-index xTB
 assessment 45730934 is queued after successful completion. These outcomes are
-pending. The full suite passes 193 tests after the parameterization change.
+pending. The full suite passes 208 tests after the parameterization change.
 
 Native-mean preflight 45730876 and its xTB assessment 45730934 have now completed.
 Before training, xTB convergence recovers to 30/32, but successful-only median
@@ -544,7 +544,7 @@ their assessment 45732403 is queued after both. Each retains the same 8,512-quer
 budget. A direct MALA baseline from the 64 fixed FM16 samples is now implemented:
 132 moves plus initial queries also totals 8,512 calls. It preserves rejected
 proposals in query counts and does not call finite-time MCMC equilibrated.
-The suite passes 193 tests, including clipped-drift MH Gaussian stationarity and
+The suite passes 208 tests, including clipped-drift MH Gaussian stationarity and
 cached-value consistency. The new rendering script assembles completed results
 with source hashes, failure denominators and explicit missing FM importance ESS.
 
@@ -578,4 +578,41 @@ Keep every 1-eV result. See notes/target_temperature_audit.md and its evidence.
 The 300-K/1000-K diagnostic jobs are 45735846/45735854 (source f4a8a08), both
 RUNNING at September 9 21:23 UTC. Their launchers include independent xTB
 assessment. Native-mean training and its dependent assessment remain active.
-The full suite passes 193 tests, including cold-target Gaussian MALA invariance.
+The full suite passes 208 tests, including cold-target Gaussian MALA invariance.
+
+## Physical-temperature results and terminal-noise resolution
+
+The 300-K/1000-K MALA diagnostics completed in 4m00s/4m07s. Both used 8,512
+queries and the same initial FM geometries. At 300 K, xTB convergence is 31/32,
+median successful strain 2.40954 eV, with 30 paired improvements, 1 worsening and
+1 both-failed. At 1000 K: 30/32, 2.07368 eV, 29 improvements, 2 worsenings and 1
+both-failed. These are improvements from a standard MALA baseline, not a new
+learned-method result or proof of equilibrium populations.
+
+The completed 1-eV native-mean 500-update comparison also remains limited.
+Joint work: ESS 8.671/256, xTB 16/32, median successful strain 15.3193 eV.
+Energy-gradient: ESS 1.352/256, xTB 32/32, median 4.97521 eV. Energy wins all 32
+paired xTB rankings, but has concentrated importance weights. Both are retained
+in evidence/native_mean_500.json; 1-eV generation quality and target accuracy
+must remain distinct questions.
+
+Independent cold-reference coverage has improved. Four new shape-QMC scrambles
+with 4,096 points each give normalizer relative SE 4.18% at 300 K and 1.45% at 1000 K,
+with minimum scramble ESS 116.6/632.2. This is statistical reference evidence,
+not a global convergence certificate. The proposal Jacobian passed a full
+six-variable check and known Gaussian integrals. New queries 16,408; the existing
+12,304-query independent pilot is accounted separately. No learned FM templates
+enter this reference. See evidence/refined_triatomic_reference.json.
+
+A second-order Tweedie identity exposes a fixed terminal-noise restriction.
+The current constant schedule permits exact target log-curvature only up to
+40.050 eV/A2. Finite-force differences at four fixed cold-MALA endpoint indices
+instead give maximum curvature 185--233 eV/A2, stable between h=.01/.003 A.
+This supports a violated necessary local condition; it is not a global Hessian
+certificate. A square-root noise schedule raises the ceiling to 640.050 eV/A2.
+Actual Gaussian factors remain explicit and positive at every finite step.
+See notes/terminal_noise_resolution.md; the identity and scheduling idea are
+established mathematics, not claimed as new. Temperature-input initialization
+now preserves the pretrained constant-input field before learning the new target.
+The full suite passes 208 tests. A real 300-K CPU update check is finite but has
+only 4 evaluation particles and ESS 1; it is not performance evidence.

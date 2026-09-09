@@ -1,0 +1,1559 @@
+{
+  "source_result": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/refined_triatomic_reference_1137_v1/reference.json",
+  "source_sha256": "b9dbd57452d16925b90ce0975d23b6a45424566dd95bdb79ef36e3524e34ee8c",
+  "complete": true,
+  "scope": "Independent defensive shape-QMC reference for the fixed 300/1000-K targets.\n\nPilot centers come from frozen independent Gaussian quadrature, not learned\ngenerator outputs. The new samples are independent of that pilot. Equal-count\nGaussian/shape strata match the explicitly evaluated 50/50 mixture density.\n",
+  "condition": {
+    "numbers": [
+      47,
+      35,
+      35
+    ],
+    "charge": 0,
+    "spin_multiplicity": 2,
+    "source_row": 1137
+  },
+  "configuration": {
+    "pilot": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/triatomic_reference_1137_v1",
+    "metadata": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/raw_metadata_replay_v1",
+    "oracle_python": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python3.11",
+    "oracle": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/refined_triatomic_reference_1137_v1",
+    "power": 11,
+    "scrambles": 4,
+    "batch": 64
+  },
+  "pilot_source_sha256": "481673163e30e5b20b62cb8b33d03c65295e3e6894098c4b347d9a5adf6c3cbf",
+  "pilot_array_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/triatomic_reference_1137_v1/scramble_0.npz": "4094b9084c0d8f0d1a1bb1fbc7173499f47293aadad445c7d9a1c3133e212929",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/triatomic_reference_1137_v1/scramble_1.npz": "e6630a678c19cb605c02371417047ecd479d65d5436b2c53136729508cfc329c",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/triatomic_reference_1137_v1/scramble_2.npz": "aa05677892c8de71a872045389a473afdfda03df22d250cb755219a145870a13",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/triatomic_reference_1137_v1/scramble_3.npz": "89b9aa8d234030b07369e421ca6dab93c8c27837819f01d34958ee80d93784ed"
+  },
+  "pilot_oracle_queries": 12304,
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "metadata_progress_sha256": "bb9016536bf309bd12d923f2de7b2b732c657ac52c4c1df0ee1685d35cf5e750",
+  "script_sha256": "c4b1b089badf87037e5793fb6abdff3085458db32cdfdabd46f7f7e89d75e09a",
+  "proposal_code_sha256": "b054ac5c31af357f20a463a31602a93ff3028122a65cbc537b79a18ef24b844d",
+  "selection": "64 lowest restrained pilot energies, then both outer-atom orders; fixed equal component weights",
+  "pilot_selected_indices": [
+    10845,
+    1869,
+    1229,
+    4844,
+    7488,
+    1717,
+    4564,
+    4244,
+    10269,
+    5287,
+    10773,
+    4884,
+    10325,
+    1349,
+    10669,
+    1045,
+    4532,
+    8008,
+    4820,
+    7656,
+    1069,
+    7936,
+    7992,
+    1405,
+    1573,
+    4716,
+    10381,
+    1517,
+    10453,
+    5052,
+    4563,
+    4492,
+    10501,
+    10594,
+    4212,
+    5096,
+    7584,
+    4380,
+    7856,
+    7256,
+    1125,
+    7704,
+    7807,
+    1089,
+    4172,
+    11318,
+    8160,
+    7264,
+    10493,
+    11114,
+    10693,
+    5068,
+    11021,
+    7432,
+    1085,
+    2021,
+    1565,
+    4808,
+    7352,
+    2414,
+    1493,
+    1810,
+    4676,
+    4787
+  ],
+  "shape_centers": [
+    [
+      0.9148583017621836,
+      0.9685080421650751,
+      0.34025552872695
+    ],
+    [
+      0.9136759170678831,
+      0.9318280005396923,
+      0.22596420438136627
+    ],
+    [
+      0.9002117908285697,
+      0.8480686058934616,
+      -0.5063788431028952
+    ],
+    [
+      0.9153442325265282,
+      0.9711343984860443,
+      0.43693267619583626
+    ],
+    [
+      0.8988266226387073,
+      0.8979776093338625,
+      0.14945798982590466
+    ],
+    [
+      0.9783025887250301,
+      0.9499216833529311,
+      0.473577326093318
+    ],
+    [
+      0.9118439282172525,
+      0.854511757658746,
+      -0.5868996196979808
+    ],
+    [
+      0.8803623611003472,
+      0.8438431525254264,
+      -0.29199972244980116
+    ],
+    [
+      0.9458854936166676,
+      0.9390435045196669,
+      0.18891677008634966
+    ],
+    [
+      0.90648369969375,
+      0.8418229574314093,
+      -0.6562775806906932
+    ],
+    [
+      0.8983974170374689,
+      0.989065468318885,
+      0.27198024336817017
+    ],
+    [
+      0.8952124420259858,
+      0.8981773072871693,
+      0.3325502741919424
+    ],
+    [
+      0.896530863056078,
+      0.9824011006004565,
+      0.446435222098247
+    ],
+    [
+      1.024126150749731,
+      0.9375710391198688,
+      0.3558411313728801
+    ],
+    [
+      1.02307201821616,
+      0.8921898667318168,
+      0.3609814019051225
+    ],
+    [
+      0.9266101145366344,
+      0.9212908905678945,
+      -0.21415825329792645
+    ],
+    [
+      0.8608558109641236,
+      0.8666992341058353,
+      -0.008336010161979001
+    ],
+    [
+      0.9474040718616411,
+      0.8790847984656569,
+      0.007836095134955314
+    ],
+    [
+      0.9062402204112736,
+      0.9649590304012139,
+      0.11836513282864661
+    ],
+    [
+      0.9584636508841189,
+      0.861662739228142,
+      0.30878267741707904
+    ],
+    [
+      0.879393378674005,
+      1.0040666944003809,
+      0.2719654556439662
+    ],
+    [
+      0.8876068326819518,
+      0.9542355836423778,
+      -0.18012235606668442
+    ],
+    [
+      0.9868166073651249,
+      0.8713907303406092,
+      0.4073430440566916
+    ],
+    [
+      0.8345141739789494,
+      0.9309908183023221,
+      -0.1084033822687351
+    ],
+    [
+      0.9894755287397787,
+      0.9589622302746728,
+      0.2309561926548453
+    ],
+    [
+      0.9240773358054105,
+      0.8347947645845264,
+      -0.8584294743900933
+    ],
+    [
+      1.006877615523676,
+      0.8939395036511816,
+      0.4903917393223711
+    ],
+    [
+      0.8624668538753528,
+      0.8453676259405902,
+      0.010227795414872983
+    ],
+    [
+      0.8872509688023202,
+      0.8077434984011317,
+      -0.7246817996841493
+    ],
+    [
+      0.9933001435382887,
+      0.9026449103762886,
+      0.13352393694124526
+    ],
+    [
+      0.9347820460674551,
+      1.0461121812947427,
+      0.5366512396247943
+    ],
+    [
+      0.9696406907890749,
+      1.0318630040743022,
+      0.35771496358160026
+    ],
+    [
+      0.8353431013416912,
+      0.8925154533535488,
+      0.04105074488109331
+    ],
+    [
+      0.9350610646537143,
+      1.011325266342939,
+      0.539135262620943
+    ],
+    [
+      0.8750944304185554,
+      1.0156364010514662,
+      0.20548284641460138
+    ],
+    [
+      1.0961459171739363,
+      0.9229231046059312,
+      0.4772405266310197
+    ],
+    [
+      0.8657948824890825,
+      1.0384500607054632,
+      0.3084514484002225
+    ],
+    [
+      1.028012136336553,
+      0.8601665140844026,
+      0.28810634303367405
+    ],
+    [
+      0.8137872593558008,
+      0.9265712489414002,
+      -0.4472638538243408
+    ],
+    [
+      1.0310560142698635,
+      0.960388231143225,
+      0.2983155387075399
+    ],
+    [
+      1.0105149862949894,
+      0.9433129602833479,
+      0.5550110244145087
+    ],
+    [
+      1.0467637580413474,
+      0.994570000578987,
+      0.42605153630168985
+    ],
+    [
+      0.8905152555386386,
+      1.0099750613979197,
+      0.510651913226126
+    ],
+    [
+      1.0542508933153618,
+      0.880686554271987,
+      0.29852465447904275
+    ],
+    [
+      0.9508760909448655,
+      0.9289581276679499,
+      -0.41352979452316124
+    ],
+    [
+      0.8823380850872884,
+      1.0906053274370668,
+      0.4573607658616955
+    ],
+    [
+      0.8508494268345049,
+      0.8788864584201437,
+      0.21281075989681222
+    ],
+    [
+      0.8629613171282494,
+      0.9672894622939392,
+      -0.5874531768142365
+    ],
+    [
+      0.981168607186675,
+      0.84688451474995,
+      -0.15805895370190223
+    ],
+    [
+      0.9090276120196552,
+      1.0534523573449037,
+      0.5602043672884726
+    ],
+    [
+      0.8127501993107235,
+      0.9065556044624221,
+      -1.6207328981580953
+    ],
+    [
+      0.9616192278907154,
+      0.8306720189567043,
+      0.2932815622131724
+    ],
+    [
+      1.0111923227086332,
+      0.8644023350800915,
+      0.04638795237292207
+    ],
+    [
+      0.9236437570039755,
+      0.9792894661487574,
+      -0.2536636083190627
+    ],
+    [
+      0.825913129728763,
+      0.8043565441340195,
+      -0.5577856752653328
+    ],
+    [
+      1.0069407230057723,
+      0.8404154182999525,
+      0.1818804132357855
+    ],
+    [
+      0.8006323498294993,
+      0.923602187376554,
+      -0.3435950670656492
+    ],
+    [
+      1.0634830250660592,
+      0.847791385414418,
+      0.44449773627504185
+    ],
+    [
+      0.9992785512431153,
+      0.8590690764302887,
+      -0.18653353985802917
+    ],
+    [
+      1.1309252751695558,
+      0.924188454353199,
+      0.46318422584201474
+    ],
+    [
+      0.943560935853769,
+      1.079568433314862,
+      0.31996972456354617
+    ],
+    [
+      0.8554422609973164,
+      1.0583705148555749,
+      0.4989308712955406
+    ],
+    [
+      0.8177535118073155,
+      0.8311934638026971,
+      -0.1461480770139392
+    ],
+    [
+      0.9550772224558491,
+      1.1090582229198225,
+      0.5970579869673507
+    ],
+    [
+      0.9685080421650751,
+      0.9148583017621836,
+      0.34025552872695
+    ],
+    [
+      0.9318280005396923,
+      0.9136759170678831,
+      0.22596420438136627
+    ],
+    [
+      0.8480686058934616,
+      0.9002117908285697,
+      -0.5063788431028952
+    ],
+    [
+      0.9711343984860443,
+      0.9153442325265282,
+      0.43693267619583626
+    ],
+    [
+      0.8979776093338625,
+      0.8988266226387073,
+      0.14945798982590466
+    ],
+    [
+      0.9499216833529311,
+      0.9783025887250301,
+      0.473577326093318
+    ],
+    [
+      0.854511757658746,
+      0.9118439282172525,
+      -0.5868996196979808
+    ],
+    [
+      0.8438431525254264,
+      0.8803623611003472,
+      -0.29199972244980116
+    ],
+    [
+      0.9390435045196669,
+      0.9458854936166676,
+      0.18891677008634966
+    ],
+    [
+      0.8418229574314093,
+      0.90648369969375,
+      -0.6562775806906932
+    ],
+    [
+      0.989065468318885,
+      0.8983974170374689,
+      0.27198024336817017
+    ],
+    [
+      0.8981773072871693,
+      0.8952124420259858,
+      0.3325502741919424
+    ],
+    [
+      0.9824011006004565,
+      0.896530863056078,
+      0.446435222098247
+    ],
+    [
+      0.9375710391198688,
+      1.024126150749731,
+      0.3558411313728801
+    ],
+    [
+      0.8921898667318168,
+      1.02307201821616,
+      0.3609814019051225
+    ],
+    [
+      0.9212908905678945,
+      0.9266101145366344,
+      -0.21415825329792645
+    ],
+    [
+      0.8666992341058353,
+      0.8608558109641236,
+      -0.008336010161979001
+    ],
+    [
+      0.8790847984656569,
+      0.9474040718616411,
+      0.007836095134955314
+    ],
+    [
+      0.9649590304012139,
+      0.9062402204112736,
+      0.11836513282864661
+    ],
+    [
+      0.861662739228142,
+      0.9584636508841189,
+      0.30878267741707904
+    ],
+    [
+      1.0040666944003809,
+      0.879393378674005,
+      0.2719654556439662
+    ],
+    [
+      0.9542355836423778,
+      0.8876068326819518,
+      -0.18012235606668442
+    ],
+    [
+      0.8713907303406092,
+      0.9868166073651249,
+      0.4073430440566916
+    ],
+    [
+      0.9309908183023221,
+      0.8345141739789494,
+      -0.1084033822687351
+    ],
+    [
+      0.9589622302746728,
+      0.9894755287397787,
+      0.2309561926548453
+    ],
+    [
+      0.8347947645845264,
+      0.9240773358054105,
+      -0.8584294743900933
+    ],
+    [
+      0.8939395036511816,
+      1.006877615523676,
+      0.4903917393223711
+    ],
+    [
+      0.8453676259405902,
+      0.8624668538753528,
+      0.010227795414872983
+    ],
+    [
+      0.8077434984011317,
+      0.8872509688023202,
+      -0.7246817996841493
+    ],
+    [
+      0.9026449103762886,
+      0.9933001435382887,
+      0.13352393694124526
+    ],
+    [
+      1.0461121812947427,
+      0.9347820460674551,
+      0.5366512396247943
+    ],
+    [
+      1.0318630040743022,
+      0.9696406907890749,
+      0.35771496358160026
+    ],
+    [
+      0.8925154533535488,
+      0.8353431013416912,
+      0.04105074488109331
+    ],
+    [
+      1.011325266342939,
+      0.9350610646537143,
+      0.539135262620943
+    ],
+    [
+      1.0156364010514662,
+      0.8750944304185554,
+      0.20548284641460138
+    ],
+    [
+      0.9229231046059312,
+      1.0961459171739363,
+      0.4772405266310197
+    ],
+    [
+      1.0384500607054632,
+      0.8657948824890825,
+      0.3084514484002225
+    ],
+    [
+      0.8601665140844026,
+      1.028012136336553,
+      0.28810634303367405
+    ],
+    [
+      0.9265712489414002,
+      0.8137872593558008,
+      -0.4472638538243408
+    ],
+    [
+      0.960388231143225,
+      1.0310560142698635,
+      0.2983155387075399
+    ],
+    [
+      0.9433129602833479,
+      1.0105149862949894,
+      0.5550110244145087
+    ],
+    [
+      0.994570000578987,
+      1.0467637580413474,
+      0.42605153630168985
+    ],
+    [
+      1.0099750613979197,
+      0.8905152555386386,
+      0.510651913226126
+    ],
+    [
+      0.880686554271987,
+      1.0542508933153618,
+      0.29852465447904275
+    ],
+    [
+      0.9289581276679499,
+      0.9508760909448655,
+      -0.41352979452316124
+    ],
+    [
+      1.0906053274370668,
+      0.8823380850872884,
+      0.4573607658616955
+    ],
+    [
+      0.8788864584201437,
+      0.8508494268345049,
+      0.21281075989681222
+    ],
+    [
+      0.9672894622939392,
+      0.8629613171282494,
+      -0.5874531768142365
+    ],
+    [
+      0.84688451474995,
+      0.981168607186675,
+      -0.15805895370190223
+    ],
+    [
+      1.0534523573449037,
+      0.9090276120196552,
+      0.5602043672884726
+    ],
+    [
+      0.9065556044624221,
+      0.8127501993107235,
+      -1.6207328981580953
+    ],
+    [
+      0.8306720189567043,
+      0.9616192278907154,
+      0.2932815622131724
+    ],
+    [
+      0.8644023350800915,
+      1.0111923227086332,
+      0.04638795237292207
+    ],
+    [
+      0.9792894661487574,
+      0.9236437570039755,
+      -0.2536636083190627
+    ],
+    [
+      0.8043565441340195,
+      0.825913129728763,
+      -0.5577856752653328
+    ],
+    [
+      0.8404154182999525,
+      1.0069407230057723,
+      0.1818804132357855
+    ],
+    [
+      0.923602187376554,
+      0.8006323498294993,
+      -0.3435950670656492
+    ],
+    [
+      0.847791385414418,
+      1.0634830250660592,
+      0.44449773627504185
+    ],
+    [
+      0.8590690764302887,
+      0.9992785512431153,
+      -0.18653353985802917
+    ],
+    [
+      0.924188454353199,
+      1.1309252751695558,
+      0.46318422584201474
+    ],
+    [
+      1.079568433314862,
+      0.943560935853769,
+      0.31996972456354617
+    ],
+    [
+      1.0583705148555749,
+      0.8554422609973164,
+      0.4989308712955406
+    ],
+    [
+      0.8311934638026971,
+      0.8177535118073155,
+      -0.1461480770139392
+    ],
+    [
+      1.1090582229198225,
+      0.9550772224558491,
+      0.5970579869673507
+    ]
+  ],
+  "shape_stds": [
+    0.05,
+    0.05,
+    0.5
+  ],
+  "defensive_std_A": 3.1622776601683795,
+  "defensive_weight": 0.5,
+  "restraint_eV_A2": 0.1,
+  "contact_radii_source": "RDKit GetRcovalent",
+  "contact_factor": 1.25,
+  "kT_eV": [
+    0.025851999786435,
+    0.08617333262145
+  ],
+  "rows": [
+    {
+      "scramble": 0,
+      "targets": [
+        {
+          "kT_eV": 0.025851999786435,
+          "resolutions": [
+            {
+              "particles": 512,
+              "log_normalizer_estimate": 5573393.4111497775,
+              "weight_ess": 12.696226284528368,
+              "maximum_weight": 0.16970332916524314,
+              "moments": {
+                "minimum_anchor_distance_A": 2.443804471560147,
+                "maximum_anchor_distance_A": 2.554316404178494,
+                "outer_pair_distance_A": 3.456006679666037,
+                "angle_cosine": -8.416577049644852e-05,
+                "radius_gyration_A": 1.6550896148069245,
+                "multiple_contact_components_probability": 1.4503248202844185e-15
+              }
+            },
+            {
+              "particles": 1024,
+              "log_normalizer_estimate": 5573393.785815712,
+              "weight_ess": 28.88780330969502,
+              "maximum_weight": 0.07107330653587182,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4536649990440047,
+                "maximum_anchor_distance_A": 2.539447359390482,
+                "outer_pair_distance_A": 3.4796140195430385,
+                "angle_cosine": -0.02302171971503423,
+                "radius_gyration_A": 1.6606459750924594,
+                "multiple_contact_components_probability": 4.985628755404337e-16
+              }
+            },
+            {
+              "particles": 2048,
+              "log_normalizer_estimate": 5573393.685940727,
+              "weight_ess": 60.815538989418904,
+              "maximum_weight": 0.03926916617415833,
+              "moments": {
+                "minimum_anchor_distance_A": 2.449309678146972,
+                "maximum_anchor_distance_A": 2.5310975592578258,
+                "outer_pair_distance_A": 3.4964161603680823,
+                "angle_cosine": -0.03527057582735098,
+                "radius_gyration_A": 1.6621061545433355,
+                "multiple_contact_components_probability": 4.382543658021561e-10
+              }
+            },
+            {
+              "particles": 4096,
+              "log_normalizer_estimate": 5573393.754323475,
+              "weight_ess": 124.21249802200622,
+              "maximum_weight": 0.026390600692927334,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4558715698203235,
+                "maximum_anchor_distance_A": 2.53210265528029,
+                "outer_pair_distance_A": 3.496481713703855,
+                "angle_cosine": -0.030513231148039593,
+                "radius_gyration_A": 1.6629805108707039,
+                "multiple_contact_components_probability": 2.046804799941758e-10
+              }
+            }
+          ]
+        },
+        {
+          "kT_eV": 0.08617333262145,
+          "resolutions": [
+            {
+              "particles": 512,
+              "log_normalizer_estimate": 1672021.2715400092,
+              "weight_ess": 81.1754012498688,
+              "maximum_weight": 0.028618393283039417,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4381310788134574,
+                "maximum_anchor_distance_A": 2.6116553781733347,
+                "outer_pair_distance_A": 3.5921913556856033,
+                "angle_cosine": -0.06725861592954231,
+                "radius_gyration_A": 1.6976654007922467,
+                "multiple_contact_components_probability": 0.0002985404555291029
+              }
+            },
+            {
+              "particles": 1024,
+              "log_normalizer_estimate": 1672021.3338295873,
+              "weight_ess": 154.54439596541403,
+              "maximum_weight": 0.01537473367940696,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4410156984231053,
+                "maximum_anchor_distance_A": 2.6038369260712413,
+                "outer_pair_distance_A": 3.575326443220712,
+                "angle_cosine": -0.05974733279289274,
+                "radius_gyration_A": 1.6927783626438129,
+                "multiple_contact_components_probability": 0.00014077410572829025
+              }
+            },
+            {
+              "particles": 2048,
+              "log_normalizer_estimate": 1672021.323759666,
+              "weight_ess": 317.9226085347709,
+              "maximum_weight": 0.007765169093854136,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4410169802854433,
+                "maximum_anchor_distance_A": 2.611755675805566,
+                "outer_pair_distance_A": 3.5522032257223324,
+                "angle_cosine": -0.041711000998156916,
+                "radius_gyration_A": 1.6887664630469676,
+                "multiple_contact_components_probability": 0.0021544891435641457
+              }
+            },
+            {
+              "particles": 4096,
+              "log_normalizer_estimate": 1672021.3434962516,
+              "weight_ess": 632.1749899262282,
+              "maximum_weight": 0.0041187097177990285,
+              "moments": {
+                "minimum_anchor_distance_A": 2.440676017576714,
+                "maximum_anchor_distance_A": 2.6081385224478475,
+                "outer_pair_distance_A": 3.5523377624545946,
+                "angle_cosine": -0.04264846792701821,
+                "radius_gyration_A": 1.6879342048381316,
+                "multiple_contact_components_probability": 0.0012237420060858416
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scramble": 1,
+      "targets": [
+        {
+          "kT_eV": 0.025851999786435,
+          "resolutions": [
+            {
+              "particles": 512,
+              "log_normalizer_estimate": 5573393.908551816,
+              "weight_ess": 17.261367586865443,
+              "maximum_weight": 0.10758386658996556,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4521864911244267,
+                "maximum_anchor_distance_A": 2.5369368693443017,
+                "outer_pair_distance_A": 3.584925051226861,
+                "angle_cosine": -0.09081990568470719,
+                "radius_gyration_A": 1.6855580785308821,
+                "multiple_contact_components_probability": 9.76420937736568e-08
+              }
+            },
+            {
+              "particles": 1024,
+              "log_normalizer_estimate": 5573393.735436943,
+              "weight_ess": 32.8303727934206,
+              "maximum_weight": 0.06849424508601432,
+              "moments": {
+                "minimum_anchor_distance_A": 2.449980586940682,
+                "maximum_anchor_distance_A": 2.5417823234160224,
+                "outer_pair_distance_A": 3.568185199034442,
+                "angle_cosine": -0.07700910824331977,
+                "radius_gyration_A": 1.6816592591520414,
+                "multiple_contact_components_probability": 5.8048564819556964e-08
+              }
+            },
+            {
+              "particles": 2048,
+              "log_normalizer_estimate": 5573393.728946297,
+              "weight_ess": 62.547039036445625,
+              "maximum_weight": 0.03668887976894808,
+              "moments": {
+                "minimum_anchor_distance_A": 2.446561946942304,
+                "maximum_anchor_distance_A": 2.530041488657014,
+                "outer_pair_distance_A": 3.564395836384315,
+                "angle_cosine": -0.07862438517151593,
+                "radius_gyration_A": 1.6778605209300181,
+                "multiple_contact_components_probability": 3.3124049252042e-08
+              }
+            },
+            {
+              "particles": 4096,
+              "log_normalizer_estimate": 5573393.7644338105,
+              "weight_ess": 128.3807302204043,
+              "maximum_weight": 0.02115419491906964,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4541448944362685,
+                "maximum_anchor_distance_A": 2.532530862471267,
+                "outer_pair_distance_A": 3.509252884335023,
+                "angle_cosine": -0.04092231899879918,
+                "radius_gyration_A": 1.6662366404113247,
+                "multiple_contact_components_probability": 1.6246475000553686e-08
+              }
+            }
+          ]
+        },
+        {
+          "kT_eV": 0.08617333262145,
+          "resolutions": [
+            {
+              "particles": 512,
+              "log_normalizer_estimate": 1672021.4371918319,
+              "weight_ess": 81.5489002802886,
+              "maximum_weight": 0.027948408080618933,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4477967438302612,
+                "maximum_anchor_distance_A": 2.6260061570798503,
+                "outer_pair_distance_A": 3.533752850873711,
+                "angle_cosine": -0.02821856477497258,
+                "radius_gyration_A": 1.6886975554363173,
+                "multiple_contact_components_probability": 0.010070668057568427
+              }
+            },
+            {
+              "particles": 1024,
+              "log_normalizer_estimate": 1672021.3951531625,
+              "weight_ess": 165.26479268286474,
+              "maximum_weight": 0.0147621386847003,
+              "moments": {
+                "minimum_anchor_distance_A": 2.443703912399769,
+                "maximum_anchor_distance_A": 2.6156597412831095,
+                "outer_pair_distance_A": 3.5569726005102233,
+                "angle_cosine": -0.04233498909342079,
+                "radius_gyration_A": 1.6908852778427235,
+                "multiple_contact_components_probability": 0.005517313715224807
+              }
+            },
+            {
+              "particles": 2048,
+              "log_normalizer_estimate": 1672021.3668386347,
+              "weight_ess": 326.0251219566711,
+              "maximum_weight": 0.007656939510978265,
+              "moments": {
+                "minimum_anchor_distance_A": 2.441536108080769,
+                "maximum_anchor_distance_A": 2.6118514934018284,
+                "outer_pair_distance_A": 3.5479722933082725,
+                "angle_cosine": -0.03837568871921875,
+                "radius_gyration_A": 1.6875643168084733,
+                "multiple_contact_components_probability": 0.005662336018318704
+              }
+            },
+            {
+              "particles": 4096,
+              "log_normalizer_estimate": 1672021.3783867534,
+              "weight_ess": 652.5128058362543,
+              "maximum_weight": 0.003966175688773946,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4448163199262316,
+                "maximum_anchor_distance_A": 2.611113110650443,
+                "outer_pair_distance_A": 3.5290979990889566,
+                "angle_cosine": -0.027113834681818137,
+                "radius_gyration_A": 1.6836657381284001,
+                "multiple_contact_components_probability": 0.004450172115448523
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scramble": 2,
+      "targets": [
+        {
+          "kT_eV": 0.025851999786435,
+          "resolutions": [
+            {
+              "particles": 512,
+              "log_normalizer_estimate": 5573393.479053498,
+              "weight_ess": 13.389622009444889,
+              "maximum_weight": 0.19683218906087813,
+              "moments": {
+                "minimum_anchor_distance_A": 2.450717747811336,
+                "maximum_anchor_distance_A": 2.5308877174198345,
+                "outer_pair_distance_A": 3.4171237349649726,
+                "angle_cosine": 0.01107143153382708,
+                "radius_gyration_A": 1.6433801973359072,
+                "multiple_contact_components_probability": 5.971425787475876e-17
+              }
+            },
+            {
+              "particles": 1024,
+              "log_normalizer_estimate": 5573393.489057022,
+              "weight_ess": 24.444289641251146,
+              "maximum_weight": 0.09743649472859421,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4608124042156554,
+                "maximum_anchor_distance_A": 2.5499360021818154,
+                "outer_pair_distance_A": 3.41295305871388,
+                "angle_cosine": 0.028200460623243603,
+                "radius_gyration_A": 1.6469283680576734,
+                "multiple_contact_components_probability": 3.3678282971345957e-09
+              }
+            },
+            {
+              "particles": 2048,
+              "log_normalizer_estimate": 5573393.4436739525,
+              "weight_ess": 54.60141407689576,
+              "maximum_weight": 0.0509801692408609,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4478639102919324,
+                "maximum_anchor_distance_A": 2.536719559597611,
+                "outer_pair_distance_A": 3.4868401963172566,
+                "angle_cosine": -0.023273246936777278,
+                "radius_gyration_A": 1.6598623052640122,
+                "multiple_contact_components_probability": 1.7620969479377955e-09
+              }
+            },
+            {
+              "particles": 4096,
+              "log_normalizer_estimate": 5573393.5792602,
+              "weight_ess": 116.57310140849772,
+              "maximum_weight": 0.02764397935772511,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4495474856506494,
+                "maximum_anchor_distance_A": 2.5307226219954706,
+                "outer_pair_distance_A": 3.47723543367212,
+                "angle_cosine": -0.021344162153945086,
+                "radius_gyration_A": 1.6571324030330548,
+                "multiple_contact_components_probability": 1.0905250614964294e-09
+              }
+            }
+          ]
+        },
+        {
+          "kT_eV": 0.08617333262145,
+          "resolutions": [
+            {
+              "particles": 512,
+              "log_normalizer_estimate": 1672021.2965883757,
+              "weight_ess": 84.07492285011041,
+              "maximum_weight": 0.03199510649369473,
+              "moments": {
+                "minimum_anchor_distance_A": 2.42907078133961,
+                "maximum_anchor_distance_A": 2.5945991874400143,
+                "outer_pair_distance_A": 3.5856322371617093,
+                "angle_cosine": -0.07452027282993044,
+                "radius_gyration_A": 1.6918194632245718,
+                "multiple_contact_components_probability": 0.0001305109043084025
+              }
+            },
+            {
+              "particles": 1024,
+              "log_normalizer_estimate": 1672021.2702293224,
+              "weight_ess": 159.80309216498253,
+              "maximum_weight": 0.016424840307833234,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4408949388516237,
+                "maximum_anchor_distance_A": 2.6119813540407986,
+                "outer_pair_distance_A": 3.5510025703477597,
+                "angle_cosine": -0.04031135437801306,
+                "radius_gyration_A": 1.688266282314808,
+                "multiple_contact_components_probability": 0.002428241950628663
+              }
+            },
+            {
+              "particles": 2048,
+              "log_normalizer_estimate": 1672021.2940538432,
+              "weight_ess": 327.22347699139357,
+              "maximum_weight": 0.008038181280542366,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4390020361638456,
+                "maximum_anchor_distance_A": 2.62350824091994,
+                "outer_pair_distance_A": 3.535635801764654,
+                "angle_cosine": -0.029068460877052917,
+                "radius_gyration_A": 1.6866921997073732,
+                "multiple_contact_components_probability": 0.0013676134314105646
+              }
+            },
+            {
+              "particles": 4096,
+              "log_normalizer_estimate": 1672021.3177714802,
+              "weight_ess": 649.9996538130603,
+              "maximum_weight": 0.004304624166362762,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4415974115819963,
+                "maximum_anchor_distance_A": 2.6184650932349576,
+                "outer_pair_distance_A": 3.534523425468075,
+                "angle_cosine": -0.028538343774401426,
+                "radius_gyration_A": 1.6857952109150263,
+                "multiple_contact_components_probability": 0.0028071388801486174
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "scramble": 3,
+      "targets": [
+        {
+          "kT_eV": 0.025851999786435,
+          "resolutions": [
+            {
+              "particles": 512,
+              "log_normalizer_estimate": 5573394.058977702,
+              "weight_ess": 19.618011795058678,
+              "maximum_weight": 0.09823168729917336,
+              "moments": {
+                "minimum_anchor_distance_A": 2.4598910956626963,
+                "maximum_anchor_distance_A": 2.5303949675896256,
+                "outer_pair_distance_A": 3.462783076609056,
+                "angle_cosine": -0.010067567956571245,
+                "radius_gyration_A": 1.6551391566235716,
+                "multiple_contact_components_probability": 3.850246484995005e-17
+              }
+            },
+            {
+              "particles": 1024,
+              "log_normalizer_estimate": 5573393.990644587,
+              "weight_ess": 39.07203415405372,
+              "maximum_weight": 0.06393998428185085,
+              "moments": {
+                "minimum_anchor_distance_A": 2.467648660821303,
+                "maximum_anchor_distance_A": 2.547037885556976,
+                "outer_pair_distance_A": 3.392489590543894,
+                "angle_cosine": 0.03829320600197609,
+                "radius_gyration_A": 1.6431121526294432,
+                "multiple_contact_components_probability": 5.7357556189287e-15
+              }
+            },
+            {
+              "particles": 2048,
+              "log_normalizer_estimate": 5573393.76036831,
+              "weight_ess": 66.96365666623595,
+              "maximum_weight": 0.040844972031836436,
+              "moments": {
+                "minimum_anchor_distance_A": 2.462869046009107,
+                "maximum_anchor_distance_A": 2.548297082581589,
+                "outer_pair_distance_A": 3.4126024119620286,
+                "angle_cosine": 0.026955624768013345,
+                "radius_gyration_A": 1.6470864247744088,
+                "multiple_contact_components_probability": 3.529872095897156e-11
+              }
+            },
+            {
+              "particles": 4096,
+              "log_normalizer_estimate": 5573393.739113037,
+              "weight_ess": 131.55637433071746,
+              "maximum_weight": 0.02650112315974605,
+              "moments": {
+                "minimum_anchor_distance_A": 2.455713926297143,
+                "maximum_anchor_distance_A": 2.5385466442977287,
+                "outer_pair_distance_A": 3.478595945264697,
+                "angle_cosine": -0.01996827093302024,
+                "radius_gyration_A": 1.6601333920236336,
+                "multiple_contact_components_probability": 2.4325110405689603e-11
+              }
+            }
+          ]
+        },
+        {
+          "kT_eV": 0.08617333262145,
+          "resolutions": [
+            {
+              "particles": 512,
+              "log_normalizer_estimate": 1672021.4179900049,
+              "weight_ess": 76.58810655610397,
+              "maximum_weight": 0.029345466807166567,
+              "moments": {
+                "minimum_anchor_distance_A": 2.451220316357964,
+                "maximum_anchor_distance_A": 2.6155845461363256,
+                "outer_pair_distance_A": 3.524198495649989,
+                "angle_cosine": -0.02215738788270984,
+                "radius_gyration_A": 1.6848715475394807,
+                "multiple_contact_components_probability": 0.00010598775230890217
+              }
+            },
+            {
+              "particles": 1024,
+              "log_normalizer_estimate": 1672021.4643533144,
+              "weight_ess": 164.46976727936325,
+              "maximum_weight": 0.014508945233162589,
+              "moments": {
+                "minimum_anchor_distance_A": 2.448756214590719,
+                "maximum_anchor_distance_A": 2.6107544815488772,
+                "outer_pair_distance_A": 3.488449264391875,
+                "angle_cosine": -0.004575298454580171,
+                "radius_gyration_A": 1.6750568586318708,
+                "multiple_contact_components_probability": 0.00019856131230002285
+              }
+            },
+            {
+              "particles": 2048,
+              "log_normalizer_estimate": 1672021.3863089185,
+              "weight_ess": 327.87786868196656,
+              "maximum_weight": 0.008165190345479731,
+              "moments": {
+                "minimum_anchor_distance_A": 2.444431340542981,
+                "maximum_anchor_distance_A": 2.613065634919601,
+                "outer_pair_distance_A": 3.5085713192195827,
+                "angle_cosine": -0.014306248978167582,
+                "radius_gyration_A": 1.6791029909717383,
+                "multiple_contact_components_probability": 0.002262748174299516
+              }
+            },
+            {
+              "particles": 4096,
+              "log_normalizer_estimate": 1672021.3770631407,
+              "weight_ess": 656.2758089133292,
+              "maximum_weight": 0.004120516977895767,
+              "moments": {
+                "minimum_anchor_distance_A": 2.442107795755747,
+                "maximum_anchor_distance_A": 2.6136549476837634,
+                "outer_pair_distance_A": 3.5256382775005846,
+                "angle_cosine": -0.025402808165198396,
+                "radius_gyration_A": 1.682968773040002,
+                "multiple_contact_components_probability": 0.0016030402755543788
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "convergence_certified": false,
+  "limitations": [
+    "Four-scramble uncertainty cannot exclude commonly missed modes.",
+    "Pilot construction cost is separate and explicitly retained.",
+    "Both temperatures reuse the same new points and have correlated estimates.",
+    "Contact graphs use distance heuristics, not chemical bond labels."
+  ],
+  "oracle_validation": {
+    "max_serial_batch_energy_error_eV": 1.3244280125945807e-06,
+    "max_serial_batch_force_error_eV_A": 7.68899917602539e-06,
+    "max_rotation_energy_error_eV": 8.117349352687597e-07
+  },
+  "new_oracle_queries": 16408,
+  "aggregate": [
+    {
+      "kT_eV": 0.025851999786435,
+      "particles_per_scramble": 512,
+      "log_of_mean_normalizer_estimate": 5573393.7522701975,
+      "relative_se_across_scrambles": 0.1576245157848842,
+      "minimum_scramble_ess": 12.696226284528368,
+      "log_normalizer_range": 0.6478279242292047,
+      "moments": {
+        "minimum_anchor_distance_A": {
+          "mean": 2.4530347716087784,
+          "delta_method_se": 0.003341301968710949
+        },
+        "maximum_anchor_distance_A": {
+          "mean": 2.536652704922172,
+          "delta_method_se": 0.00455873005563314
+        },
+        "outer_pair_distance_A": {
+          "mean": 3.4885934884910537,
+          "delta_method_se": 0.03808905188697197
+        },
+        "angle_cosine": {
+          "mean": -0.027874779556663676,
+          "delta_method_se": 0.024613867048208095
+        },
+        "radius_gyration_A": {
+          "mean": 1.6617845327076965,
+          "delta_method_se": 0.009455566529891716
+        },
+        "multiple_contact_components_probability": {
+          "mean": 2.8539695871585565e-08,
+          "delta_method_se": 2.7256159496516106e-08
+        }
+      }
+    },
+    {
+      "kT_eV": 0.025851999786435,
+      "particles_per_scramble": 1024,
+      "log_of_mean_normalizer_estimate": 5573393.765972011,
+      "relative_se_across_scrambles": 0.10135440039638115,
+      "minimum_scramble_ess": 24.444289641251146,
+      "log_normalizer_range": 0.5015875650569797,
+      "moments": {
+        "minimum_anchor_distance_A": {
+          "mean": 2.458502823791257,
+          "delta_method_se": 0.0043478094966533124
+        },
+        "maximum_anchor_distance_A": {
+          "mean": 2.5443771240184683,
+          "delta_method_se": 0.0022449326867563816
+        },
+        "outer_pair_distance_A": {
+          "mean": 3.4611886212572442,
+          "delta_method_se": 0.040679042469494074
+        },
+        "angle_cosine": {
+          "mean": -0.007214307801842138,
+          "delta_method_se": 0.0270944443249485
+        },
+        "radius_gyration_A": {
+          "mean": 1.6576537115495786,
+          "delta_method_se": 0.008892744258211788
+        },
+        "multiple_contact_components_probability": {
+          "mean": 1.471401467025477e-08,
+          "delta_method_se": 1.4157478839857122e-08
+        }
+      }
+    },
+    {
+      "kT_eV": 0.025851999786435,
+      "particles_per_scramble": 2048,
+      "log_of_mean_normalizer_estimate": 5573393.662174999,
+      "relative_se_across_scrambles": 0.06740212006726293,
+      "minimum_scramble_ess": 54.60141407689576,
+      "log_normalizer_range": 0.316694357432425,
+      "moments": {
+        "minimum_anchor_distance_A": {
+          "mean": 2.4520244052606235,
+          "delta_method_se": 0.004042874361950564
+        },
+        "maximum_anchor_distance_A": {
+          "mean": 2.5366884685984337,
+          "delta_method_se": 0.004539435093530488
+        },
+        "outer_pair_distance_A": {
+          "mean": 3.4895451606542394,
+          "delta_method_se": 0.03374185920708983
+        },
+        "angle_cosine": {
+          "mean": -0.027285189369477124,
+          "delta_method_se": 0.023576173369055688
+        },
+        "radius_gyration_A": {
+          "mean": 1.6617235001127655,
+          "delta_method_se": 0.006835768885627632
+        },
+        "multiple_contact_components_probability": {
+          "mean": 9.328817253645057e-09,
+          "delta_method_se": 8.524935625411574e-09
+        }
+      }
+    },
+    {
+      "kT_eV": 0.025851999786435,
+      "particles_per_scramble": 4096,
+      "log_of_mean_normalizer_estimate": 5573393.712060385,
+      "relative_se_across_scrambles": 0.04180514014174918,
+      "minimum_scramble_ess": 116.57310140849772,
+      "log_normalizer_range": 0.18517361022531986,
+      "moments": {
+        "minimum_anchor_distance_A": {
+          "mean": 2.4539917935656335,
+          "delta_method_se": 0.0013585082102635145
+        },
+        "maximum_anchor_distance_A": {
+          "mean": 2.533568533918523,
+          "delta_method_se": 0.0017297245802959497
+        },
+        "outer_pair_distance_A": {
+          "mean": 3.491038919292871,
+          "delta_method_se": 0.007692790814795858
+        },
+        "angle_cosine": {
+          "mean": -0.02853969338001046,
+          "delta_method_se": 0.004930791936911164
+        },
+        "radius_gyration_A": {
+          "mean": 1.6618268056965355,
+          "delta_method_se": 0.0018922369430359038
+        },
+        "multiple_contact_components_probability": {
+          "mean": 4.5783625990386005e-09,
+          "delta_method_se": 4.11516804399749e-09
+        }
+      }
+    },
+    {
+      "kT_eV": 0.08617333262145,
+      "particles_per_scramble": 512,
+      "log_of_mean_normalizer_estimate": 1672021.3584614368,
+      "relative_se_across_scrambles": 0.041835224341630055,
+      "minimum_scramble_ess": 76.58810655610397,
+      "log_normalizer_range": 0.1656518226955086,
+      "moments": {
+        "minimum_anchor_distance_A": {
+          "mean": 2.4420892751151224,
+          "delta_method_se": 0.004957901385425883
+        },
+        "maximum_anchor_distance_A": {
+          "mean": 2.612571278000287,
+          "delta_method_se": 0.006503910764143421
+        },
+        "outer_pair_distance_A": {
+          "mean": 3.5568028017487565,
+          "delta_method_se": 0.0173355548002019
+        },
+        "angle_cosine": {
+          "mean": -0.04643873839635357,
+          "delta_method_se": 0.013272151485797086
+        },
+        "radius_gyration_A": {
+          "mean": 1.690471351521731,
+          "delta_method_se": 0.0026474380398989043
+        },
+        "multiple_contact_components_probability": {
+          "mean": 0.0028511096153827414,
+          "delta_method_se": 0.002606324872052003
+        }
+      }
+    },
+    {
+      "kT_eV": 0.08617333262145,
+      "particles_per_scramble": 1024,
+      "log_of_mean_normalizer_estimate": 1672021.368484098,
+      "relative_se_across_scrambles": 0.04160494197115588,
+      "minimum_scramble_ess": 154.54439596541403,
+      "log_normalizer_range": 0.19412399199791253,
+      "moments": {
+        "minimum_anchor_distance_A": {
+          "mean": 2.443808383696291,
+          "delta_method_se": 0.0019130552715558428
+        },
+        "maximum_anchor_distance_A": {
+          "mean": 2.6106214716744565,
+          "delta_method_se": 0.002436928718275879
+        },
+        "outer_pair_distance_A": {
+          "mean": 3.54119748356876,
+          "delta_method_se": 0.019997302569748795
+        },
+        "angle_cosine": {
+          "mean": -0.03569151866834752,
+          "delta_method_se": 0.012168529575716071
+        },
+        "radius_gyration_A": {
+          "mean": 1.6863937035109942,
+          "delta_method_se": 0.004261091417924278
+        },
+        "multiple_contact_components_probability": {
+          "mean": 0.0020554889486575573,
+          "delta_method_se": 0.0013023237527499034
+        }
+      }
+    },
+    {
+      "kT_eV": 0.08617333262145,
+      "particles_per_scramble": 2048,
+      "log_of_mean_normalizer_estimate": 1672021.3433902892,
+      "relative_se_across_scrambles": 0.020779074817102228,
+      "minimum_scramble_ess": 317.9226085347709,
+      "log_normalizer_range": 0.09225507522933185,
+      "moments": {
+        "minimum_anchor_distance_A": {
+          "mean": 2.441561377280112,
+          "delta_method_se": 0.0011252897205819262
+        },
+        "maximum_anchor_distance_A": {
+          "mean": 2.6149187512891237,
+          "delta_method_se": 0.002739653553836083
+        },
+        "outer_pair_distance_A": {
+          "mean": 3.535791603391436,
+          "delta_method_se": 0.010090591515001088
+        },
+        "angle_cosine": {
+          "mean": -0.030697272512509696,
+          "delta_method_se": 0.006282054595514567
+        },
+        "radius_gyration_A": {
+          "mean": 1.685443382664057,
+          "delta_method_se": 0.002246270292232819
+        },
+        "multiple_contact_components_probability": {
+          "mean": 0.002893259732556019,
+          "delta_method_se": 0.0009618896877679868
+        }
+      }
+    },
+    {
+      "kT_eV": 0.08617333262145,
+      "particles_per_scramble": 4096,
+      "log_of_mean_normalizer_estimate": 1672021.3544970753,
+      "relative_se_across_scrambles": 0.014506863965933285,
+      "minimum_scramble_ess": 632.1749899262282,
+      "log_normalizer_range": 0.06061527319252491,
+      "moments": {
+        "minimum_anchor_distance_A": {
+          "mean": 2.442324274566438,
+          "delta_method_se": 0.0008996197491960672
+        },
+        "maximum_anchor_distance_A": {
+          "mean": 2.612799280233395,
+          "delta_method_se": 0.002137488549564818
+        },
+        "outer_pair_distance_A": {
+          "mean": 3.535267152902895,
+          "delta_method_se": 0.005933624730567126
+        },
+        "angle_cosine": {
+          "mean": -0.030860770080004936,
+          "delta_method_se": 0.003945767642023281
+        },
+        "radius_gyration_A": {
+          "mean": 1.6850561333891292,
+          "delta_method_se": 0.0011253377918948267
+        },
+        "multiple_contact_components_probability": {
+          "mean": 0.0025284149912729874,
+          "delta_method_se": 0.0007363794754929665
+        }
+      }
+    }
+  ],
+  "seconds": 122.05782243900467
+}

@@ -179,3 +179,17 @@ xTB. Finite-time MCMC from FM is not assumed equilibrated, and its endpoint
 density, normalizer and importance ESS remain unknown. Acceptance alone is not
 a convergence or mode-coverage criterion. This is a strong direct-sampling
 baseline, not a teacher certified for distillation.
+
+For physical-temperature training, preserve the initial pretrained field instead
+of extrapolating an untrained constant-temperature feature. The electronic FM
+checkpoint records a constant requested-kT input. Fold its first-layer log-kT
+contribution into the bias, then zero that input column, leaving it trainable.
+The initial field is then unchanged when the new target kT is supplied. Tests
+verify this at several kT values and confirm subsequent temperature-channel
+gradients. Both forward/backward networks receive the same transformation.
+A real 300-K two-update CPU check completes with finite parameters; its tiny
+four-particle evaluation has ESS1 and is not a performance result.
+
+The primary physical target for the next learning comparison is300 K with the
+same explicit .1-eV/A2 restraint. See notes/terminal_noise_resolution.md for the
+fixed/square-root-noise controls and the independently testable AgBr2 condition.

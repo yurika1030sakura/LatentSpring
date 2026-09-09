@@ -5,7 +5,7 @@ import torch
 from torch import nn
 
 from test_clamped_density import graph_batch
-from cfm_mol.electronic_conditioning import attach_electronic_state,patch_electronic_conditioning
+from cfm_mol.electronic_conditioning import attach_electronic_state,patch_electronic_conditioning,neutralize_constant_temperature_input
 
 
 class SmallField(nn.Module):
@@ -68,3 +68,17 @@ def test_bad_spin_parity_and_nonconstant_node_metadata_are_rejected():
     g.ndata['electronic_state'][1,0]+=1
     with pytest.raises(ValueError,match='constant within'):
         model.vector_field(g,torch.ones(2,dtype=torch.float64),nbi)
+
+
+def test_temperature_reset_preserves_trained_field_and_keeps_channel_trainable():
+    g,nbi,uem,model=prepared();t=torch.full((2,),.4,dtype=torch.float64)
+    with torch.no_grad():model.vector_field.electronic_embedding[-1].weight.normal_()
+    attach_electronic_state(g,[4,0],[1,1],.7,atomic_numbers=torch.ones(16,dtype=torch.long))
+    expected=model.vector_field(g,t,nbi)['x'].detach()
+    neutralize_constant_temperature_input(model,.7)
+    for kT in [.025851999786435,.08617333262145,1.,2.]:
+        attach_electronic_state(g,[4,0],[1,1],kT,atomic_numbers=torch.ones(16,dtype=torch.long))
+        actual=model.vector_field(g,t,nbi)['x']
+        torch.testing.assert_close(actual,expected,rtol=1e-12,atol=1e-12)
+    actual.square().sum().backward()
+    assert model.vector_field.electronic_embedding[0].weight.grad[:,2].abs().sum()>0

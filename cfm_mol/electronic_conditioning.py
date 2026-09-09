@@ -7,9 +7,29 @@ must record this protocol and reapply the patch before state_dict loading.
 No original electronic state is inferred when metadata is missing.
 """
 import types
+import math
 
 import torch
 from torch import nn
+
+
+@torch.no_grad()
+def neutralize_constant_temperature_input(model,reference_kT):
+    """Preserve the field at its trained constant input for any initial new kT.
+
+    Fold the old log-kT contribution into the first embedding bias and zero
+    that input column. All parameters remain trainable. Use only when the
+    checkpoint protocol establishes constant temperature-feature training;
+    this is not a claim of pretrained thermodynamic temperature dependence.
+    """
+    if not math.isfinite(reference_kT) or reference_kT<=0:raise ValueError('Positive trained reference kT required')
+    embedding=getattr(model.vector_field,'electronic_embedding',None)
+    if not isinstance(embedding,nn.Sequential) or not isinstance(embedding[0],nn.Linear):
+        raise ValueError('Explicit electronic embedding is required')
+    first=embedding[0]
+    if first.in_features!=5 or first.bias is None:raise ValueError('Unexpected electronic embedding layout')
+    first.bias.add_(first.weight[:,2]*math.log(reference_kT))
+    first.weight[:,2].zero_()
 
 
 def attach_electronic_state(graph,charges,spins,kT_eV,*,atomic_numbers=None):
