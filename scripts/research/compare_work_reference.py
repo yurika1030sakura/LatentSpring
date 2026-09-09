@@ -20,7 +20,9 @@ from molecular_tempered_pilot import sha,write_json
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--run',type=Path,required=True);p.add_argument('--reference',type=Path,required=True)
-    p.add_argument('--out',type=Path,required=True);args=p.parse_args()
+    p.add_argument('--out',type=Path,required=True)
+    p.add_argument('--unweighted',action='store_true',help='Compare endpoint moments without a density or normalizer claim')
+    args=p.parse_args()
     if args.out.exists():raise FileExistsError(args.out)
     result=args.run/'results.json';reference=args.reference/'reference.json'
     training=json.loads(result.read_text());ref=json.loads(reference.read_text())
@@ -33,30 +35,36 @@ def main():
     target=max(matching,key=lambda r:r['particles_per_scramble']);rows=[];sources={}
     for stage in ['initial','final']:
         path=args.run/f'{stage}_samples.pt';data=torch.load(str(path),map_location='cpu',weights_only=False)
-        work=data['work'].double().numpy();x=data['positions'].double().numpy();n=len(work)
-        if n<2 or work.shape!=(n,) or not np.isfinite(work).all():raise ValueError('Invalid work sample panel')
-        log_mean=float(logsumexp(-work)-math.log(n));weight=np.exp(-work+work.min());weight/=weight.sum()
-        ess=float(1/(weight@weight));logz=log_mean-training['energy_zero_eV']/kT
+        x=data['positions'].double().numpy();n=len(x)
+        if n<2 or not np.isfinite(x).all():raise ValueError('Invalid endpoint sample panel')
+        if args.unweighted:
+            weight=np.full(n,1./n);ess=None;logz=None
+        else:
+            work=data['work'].double().numpy()
+            if work.shape!=(n,) or not np.isfinite(work).all():raise ValueError('Invalid work sample panel')
+            log_mean=float(logsumexp(-work)-math.log(n));weight=np.exp(-work+work.min());weight/=weight.sum()
+            ess=float(1/(weight@weight));logz=log_mean-training['energy_zero_eV']/kT
         moments={}
         for name,value in invariant_observables(x).items():
             estimate=float(weight@value);reference_moment=target['moments'][name]
-            se=math.sqrt(n/(n-1)*float(np.sum((weight*(value-estimate))**2))) if ess>=10 else None
-            moments[name]={'unweighted_mean':float(np.mean(value)),'weighted_mean':estimate,
+            se=math.sqrt(n/(n-1)*float(np.sum((weight*(value-estimate))**2))) if args.unweighted or ess>=10 else None
+            moments[name]={'unweighted_mean':float(np.mean(value)),'weighted_mean':None if args.unweighted else estimate,
                 'reference_mean':reference_moment['mean'],'difference':estimate-reference_moment['mean'],
-                'empirical_delta_se_if_ess_at_least_10':se,'reference_delta_se':reference_moment['delta_method_se']}
-        rows.append({'stage':stage,'particles':n,'ess':ess,'maximum_weight':float(weight.max()),
+                'empirical_estimate_se':se,'reference_delta_se':reference_moment['delta_method_se']}
+        rows.append({'stage':stage,'particles':n,'ess':ess,'maximum_weight':None if args.unweighted else float(weight.max()),
+            'error_scope':'unweighted endpoint sampling variation; excludes initialization bias' if args.unweighted else 'self-normalized IS delta error, suppressed if ESS < 10',
             'log_normalizer_estimate':logz,'reference_log_normalizer':target['log_of_mean_normalizer_estimate'],
-            'log_normalizer_difference':logz-target['log_of_mean_normalizer_estimate'],
-            'empirical_normalizer_relative_se':math.sqrt(max(0,(n/ess-1)/(n-1))),
+            'log_normalizer_difference':None if args.unweighted else logz-target['log_of_mean_normalizer_estimate'],
+            'empirical_normalizer_relative_se':None if args.unweighted else math.sqrt(max(0,(n/ess-1)/(n-1))),
             'reference_normalizer_relative_se':target['relative_se_across_scrambles'],'moments':moments})
         sources[str(path.resolve())]=sha(path)
-    report={'complete':True,'scope':__doc__,'condition':training['condition'],'kT_eV':kT,'rows':rows,
+    report={'complete':True,'scope':__doc__,'unweighted_mode':args.unweighted,'condition':training['condition'],'kT_eV':kT,'rows':rows,
         'source_results_sha256':sha(result),'source_reference_sha256':sha(reference),'sample_sources':sources,
         'reference_convergence_certified':ref['convergence_certified'],
         'limitations':['No low-ESS delta error is presented as a confidence interval.',
             'Reference errors use only four independent scrambles.',
             'Matching a few moments or a normalizer does not prove full distributional accuracy.',
-            'One training seed is not replication.']}
+            'One training seed is not replication.','Unweighted finite-time MCMC moments are not assumed to be at equilibrium.']}
     args.out.parent.mkdir(parents=True,exist_ok=True);write_json(args.out,report)
     print(json.dumps([{k:v for k,v in row.items() if k!='moments'} for row in rows],indent=2),flush=True)
 
