@@ -39,3 +39,13 @@ metadata and checkpoint hashes are checked. The same new points evaluate both
 resolution levels, between-scramble errors, weights and invariant moments.
 Four-scramble agreement is statistical evidence, not a rigorous convergence
 certificate or proof against a basin missed by all proposals.
+
+The first four-scramble reference is complete, with normalizer relative SE4.18%
+at300 K and1.45% at1000 K. The next prespecified refinement uses power12 and
+eight scrambles, preserving all existing points and the same fixed proposal.
+Nested coordinates must reproduce bitwise; cached arrays must reproduce their
+published normalizers before energies are reused. Existing arrays lacked stored
+output checksums, so this limitation is recorded; newly written arrays have
+explicit SHA256 checksums. The extension reuses16,384 quadrature queries and
+adds49,152 quadrature queries plus24 fresh consistency checks. Results from both
+resolutions remain available; agreement does not by itself certify unseen modes.

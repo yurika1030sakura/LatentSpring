@@ -31,6 +31,7 @@ def main():
     p.add_argument('--oracle-python',type=Path,required=True);p.add_argument('--oracle',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True);p.add_argument('--power',type=int,default=11)
     p.add_argument('--scrambles',type=int,default=4);p.add_argument('--batch',type=int,default=64)
+    p.add_argument('--reuse-reference',type=Path,help='Reuse an exact nested prefix from a completed reference')
     args=p.parse_args()
     if args.power<5 or args.scrambles<2 or args.batch<1:raise ValueError('Invalid reference counts')
     output=args.out/'reference.json'
@@ -53,6 +54,18 @@ def main():
     centers=to_shape_coordinates(x[selected]);centers=np.concatenate([centers,centers[:,[1,0,2]]])
     local=TriatomicShapeMixture(centers,(.05,.05,.5));defensive_std=math.sqrt(1./restraint)
     temperatures=[.025851999786435,.08617333262145]
+    reused=None
+    if args.reuse_reference:
+        reused=json.loads((args.reuse_reference/'reference.json').read_text())
+        if not reused['complete'] or reused['oracle_sha256']!=old['oracle_sha256']:
+            raise ValueError('Incomplete or different-potential reuse source')
+        if reused['configuration']['power']>args.power or reused['configuration']['scrambles']>args.scrambles:
+            raise ValueError('Reference extension cannot discard existing points or scrambles')
+        if (reused['pilot_source_sha256']!=sha(source) or reused['shape_centers']!=centers.tolist()
+                or reused['shape_stds']!=local.stds.tolist() or reused['defensive_std_A']!=defensive_std
+                or reused['defensive_weight']!=.5 or reused['kT_eV']!=temperatures
+                or reused['restraint_eV_A2']!=restraint):
+            raise ValueError('Reference proposal/target changed; cannot reuse its prefix')
     root=Path(__file__).resolve().parents[2];args.out.mkdir(parents=True,exist_ok=True)
     report={'complete':False,'scope':__doc__,'condition':{'numbers':numbers,'charge':charge,'spin_multiplicity':spin,'source_row':old['source_row']},
         'configuration':{k:str(v.resolve()) if isinstance(v,Path) else v for k,v in vars(args).items()},
@@ -64,7 +77,9 @@ def main():
         'defensive_std_A':defensive_std,'defensive_weight':.5,'restraint_eV_A2':restraint,
         'contact_radii_source':'RDKit GetRcovalent','contact_factor':1.25,
         'kT_eV':temperatures,'rows':[],'convergence_certified':False,
-        'limitations':['Four-scramble uncertainty cannot exclude commonly missed modes.',
+        'reused_quadrature_queries':0,'output_array_sha256':{},'reuse_sources':{},
+        'reuse_reference_sha256':sha(args.reuse_reference/'reference.json') if args.reuse_reference else None,
+        'limitations':['Between-scramble uncertainty cannot exclude commonly missed modes.',
             'Pilot construction cost is separate and explicitly retained.',
             'Both temperatures reuse the same new points and have correlated estimates.',
             'Contact graphs use distance heuristics, not chemical bond labels.']}
@@ -84,13 +99,33 @@ def main():
         i,j=np.triu_indices(3,k=1);table=Chem.GetPeriodicTable();radii=np.array([table.GetRcovalent(z) for z in numbers])
         for repeat in range(args.scrambles):
             sets=[gaussian_triatomic_shapes(args.power,defensive_std,29081+1009*repeat),local.sample(args.power,39081+1009*repeat)]
+            cached=None;prefix=0
+            if reused is not None and repeat<len(reused['rows']):
+                cached_path=args.reuse_reference/f'scramble_{repeat}.npz';cached=np.load(cached_path)
+                prefix=cached['energy_eV'].shape[1]
+                if cached['energy_eV'].shape!=(2,prefix) or cached['positions'].shape!=(2,prefix,3,3) or not np.isfinite(cached['energy_eV']).all():
+                    raise ValueError('Invalid cached reference array')
+                if any(not np.array_equal(cached['positions'][i],sets[i][:prefix]) for i in range(2)):
+                    raise ValueError('Reference coordinates are not an exact nested prefix')
+                cached_hash=sha(cached_path)
+                expected_hash=reused.get('output_array_sha256',{}).get(cached_path.name)
+                if expected_hash is not None and expected_hash!=cached_hash:raise ValueError('Cached array hash changed')
+                old_x=cached['positions'].reshape(-1,3,3);old_e=cached['energy_eV'].reshape(-1)
+                for kT,target in zip(temperatures,reused['rows'][repeat]['targets']):
+                    old_logw=-(old_e+restraint/2*(old_x*old_x).sum((1,2)))/kT-defensive_shape_log_density(old_x,local,defensive_std)
+                    if abs(float(logsumexp(old_logw)-math.log(len(old_x)))-target['resolutions'][-1]['log_normalizer_estimate'])>1e-8:
+                        raise ValueError('Cached arrays do not reproduce their published reference normalizer')
+                report['reuse_sources'][str(cached_path.resolve())]={'sha256':cached_hash,'prefix_per_stratum':prefix,
+                    'original_hash_available':expected_hash is not None,'coordinates_and_normalizer_verified':True}
+                report['reused_quadrature_queries']+=2*prefix
             values=[]
-            for positions in sets:
-                pieces=[]
-                for begin in range(0,len(positions),args.batch):
+            for component,positions in enumerate(sets):
+                pieces=[cached['energy_eV'][component].copy()] if cached is not None else []
+                for begin in range(prefix,len(positions),args.batch):
                     energy,_=oracle.evaluate(positions[begin:begin+args.batch]);pieces.append(energy.numpy())
                 values.append(np.concatenate(pieces))
             np.savez_compressed(args.out/f'scramble_{repeat}.npz',positions=np.stack(sets),energy_eV=np.stack(values))
+            report['output_array_sha256'][f'scramble_{repeat}.npz']=sha(args.out/f'scramble_{repeat}.npz')
             row={'scramble':repeat,'targets':[]}
             for kT in temperatures:
                 resolutions=[]
