@@ -107,3 +107,14 @@ stochastic work after equally budgeted reverse refitting. Intermediate stabilize
 weights do not establish calibration. This study and its prior-art limitations
 are specified in notes/forward_mass_update_candidate.md; no positive student
 result is claimed before completion.
+
+
+Completed student update: all three empirical weighted/unweighted CFM students
+failed the full-target ESS gate after equally budgeted reverse fitting (ESS near
+1/256). The frozen-pool recipe is stopped. Every xTB panel converged32/32, which
+makes the separation between relaxation success and statistical information
+particularly clear. It does not establish full chemical validity. Independent
+ODE integration convergence is also unresolved for some paths. Full evidence:
+evidence/forward_work_students_comparison_v1.json. Preferred future contribution
+remains an AI learning method with physical accounting and demonstrated mass
+allocation benefits; see NOVELTY_DECISION.md. No such contribution is established.

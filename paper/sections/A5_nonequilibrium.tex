@@ -218,3 +218,61 @@ converge for 32/32 attempts, with median strains 0.494, 0.529 and 0.140 eV.
 The matched HMC control gives 32/32 and 0.561 eV, with correlated retained draws.
 Thus longer training improves some geometry statistics but does not establish
 calibrated sampling or a total-compute advantage.
+
+\paragraph{Completed covariance and empirical-student controls.}
+On the same eight-atom condition, learned pair precision, fixed geometric
+precision and a trace-matched isotropic control each use 500 updates and
+8,512 potential queries. Their path ESS values are 1.130, 1.230 and 1.000 of
+256. Successful xTB strain medians are 0.776, 1.010 and 0.881 eV, with
+32/32, 31/32 and 32/32 convergences. These do not establish a covariance-learning
+advantage. Separately, holding the 1,500-update annealed forward model fixed
+and refitting its backward mean for 500 updates on 2,048 cached paths leaves
+ESS near one on 256 independent endpoints, both before and after fitting
+per-step scalar variances. This tests one reverse family, not all possible
+auxiliary conditionals.
+
+We next export 4,096 independent paths from that frozen forward model using
+the refitted reverse model. Their raw ESS is only 2.625. Three empirical CFM
+students use uniform weights, affine weights $(1-\eta)/N+\eta w_i$, or
+power-tempered weights. The last two have training ESS $N/2$ by construction,
+with $\eta=0.025324$ and power exponent $0.073005$. This stabilization changes
+the training target; it does not make the full Boltzmann teacher calibrated.
+Importance-weighted CFM itself is established prior work \citep{ewfm}.
+
+Each student starts from the same forward checkpoint and trains for 1,000
+updates, batch 64, at learning rate $10^{-5}$, using independent Gaussian
+starts and generated teacher endpoints. Each arm, including an unchanged
+source control, then receives 2,048 fresh reverse-training paths and 500
+backward-only updates. Full-target work is evaluated on 256 separate paths;
+these heldout endpoints never enter fitting. A distinct midpoint ODE sampler
+is assessed separately. The results below retain all attempted relaxations.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Arm & Stochastic path ESS/256 & ODE strain (eV) & Stochastic strain (eV)\\
+\midrule
+Source & 1.11954 & 0.62413 & 0.62054\\
+Uniform CFM & 1.00006 & 0.68058 & 0.58203\\
+Affine CFM & 1.00000 & 0.69270 & 0.67821\\
+Power CFM & 1.00628 & 0.57412 & 0.60809\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+All eight xTB panels converge on 32/32 attempts; strain entries are medians.
+This geometry result coexists with severe statistical weight collapse. The
+stochastic students' 90th-percentile strains are 4.985, 5.667 and 3.508 eV,
+against source 0.789 eV, so a small median improvement is not a uniform quality
+gain. All three students fail the prespecified ESS threshold of 16/256;
+we stop extending this frozen-pool recipe. The campaign adds 4,096 teacher,
+128 smoke and 2,048 assessment potential queries, besides inherited training
+and reverse-fitting costs. It uses one condition and one training seed.
+
+ODE and stochastic outputs are different distributions. Midpoint 32/64-step
+checks show occasional large discrepancies (source maximum atom displacement
+1.886 Angstrom), so these ODE panels are explicitly finite-resolution outputs,
+not a numerical convergence certificate. Neither their relaxation success nor
+the stochastic path ESS establishes unweighted Boltzmann sampling. Complete
+provenance, costs, failures and the stop decision are retained in
+\texttt{research/evidence/forward\_work\_students\_comparison\_v1.json}.

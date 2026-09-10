@@ -1,0 +1,678 @@
+{
+  "complete": true,
+  "scope": "Join every prespecified empirical-CFM arm and retain the stop decision.",
+  "arms": [
+    {
+      "arm": "source",
+      "new_oracle_evaluations": 512,
+      "forward_updates": 0,
+      "seconds": 137.61995469895191,
+      "ode_step_check": {
+        "coordinate_rms_A": 0.04209234795405176,
+        "maximum_atom_displacement_A": 1.8862157187163484,
+        "paired_paths": 256
+      },
+      "ode_projection": {
+        "mean_pair_marginal_w1_A": 0.046437395438257104,
+        "maximum_pair_marginal_w1_A": 0.10848777192935816
+      },
+      "stochastic_projection": {
+        "mean_pair_marginal_w1_A": 0.03274567704876049,
+        "maximum_pair_marginal_w1_A": 0.08568385849740318
+      },
+      "mean_energy_eV": {
+        "ode64": -20928.469015642353,
+        "stochastic16": -20928.477906739467
+      },
+      "full_target_evaluations": {
+        "before_reverse_refit": {
+          "weights": {
+            "particles": 256,
+            "ess": 1.1356030591392017,
+            "ess_fraction": 0.0044359494497625065,
+            "maximum_weight": 0.9371016141758779,
+            "log_mean_weight": 113.52907686844226
+          },
+          "mean_work": -83.24712494457994,
+          "work_std": 28.970528426093654,
+          "variance_ratios": [
+            1.3189671317928993,
+            1.3344552922128419,
+            1.2960535781563391,
+            1.255984016150958,
+            1.2184453381099207,
+            1.1915294629863442,
+            1.1855550256722809,
+            1.1944389688834658,
+            1.193883380652837,
+            1.2142280711169846,
+            1.227517594776328,
+            1.249681735384841,
+            1.2775157914698556,
+            1.2777652650375737,
+            1.3721930218219003,
+            1.4561013103597211
+          ]
+        },
+        "after_reverse_refit": {
+          "weights": {
+            "particles": 256,
+            "ess": 1.1195361038927178,
+            "ess_fraction": 0.004373187905830929,
+            "maximum_weight": 0.9441649984375191,
+            "log_mean_weight": 113.03280565108716
+          },
+          "mean_work": -83.41249279077545,
+          "work_std": 29.28788378471084,
+          "variance_ratios": [
+            1.3098576778060806,
+            1.3213740984669178,
+            1.2883307246513194,
+            1.2474796443337215,
+            1.2093299553725079,
+            1.1817573420292444,
+            1.1760149366687327,
+            1.1834346024100781,
+            1.1857997561903095,
+            1.2044232089441733,
+            1.2221518061542365,
+            1.24600008395787,
+            1.273557224405637,
+            1.2765076658980943,
+            1.3667551286139727,
+            1.449284387406525
+          ]
+        }
+      },
+      "xtb": {
+        "ode": {
+          "arm": "source_ode",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.4411298807856895,
+            "median": 0.6241278785325335,
+            "q90": 0.8423638801373614
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 2.221072175344997,
+            "median": 3.1377864675759035,
+            "q90": 4.727970360261345
+          },
+          "force_values_present": 32
+        },
+        "stochastic": {
+          "arm": "source_stochastic",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.43338066453510465,
+            "median": 0.620536914272833,
+            "q90": 0.7889160900172214
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 2.247881663863714,
+            "median": 3.413809135218858,
+            "q90": 5.232182672775818
+          },
+          "force_values_present": 32
+        }
+      },
+      "overlap": {
+        "ode": {
+          "count": 0,
+          "attempted": 256
+        },
+        "stochastic": {
+          "count": 0,
+          "attempted": 256
+        }
+      }
+    },
+    {
+      "arm": "uniform",
+      "new_oracle_evaluations": 512,
+      "forward_updates": 1000,
+      "seconds": 228.60959185101092,
+      "ode_step_check": {
+        "coordinate_rms_A": 0.0071321811047389844,
+        "maximum_atom_displacement_A": 0.1432064466235619,
+        "paired_paths": 256
+      },
+      "ode_projection": {
+        "mean_pair_marginal_w1_A": 0.041686676558578585,
+        "maximum_pair_marginal_w1_A": 0.08411893170032099
+      },
+      "stochastic_projection": {
+        "mean_pair_marginal_w1_A": 0.04918625809067848,
+        "maximum_pair_marginal_w1_A": 0.10166024554922404
+      },
+      "mean_energy_eV": {
+        "ode64": -20928.160803118706,
+        "stochastic16": -20927.754100846043
+      },
+      "full_target_evaluations": {
+        "before_reverse_refit": {
+          "weights": {
+            "particles": 256,
+            "ess": 1.0000000000001452,
+            "ess_fraction": 0.003906250000000567,
+            "maximum_weight": 0.9999999999999274,
+            "log_mean_weight": -159.14137794112935
+          },
+          "mean_work": 460.0900407550074,
+          "work_std": 170.26656587517863,
+          "variance_ratios": [
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9
+          ]
+        },
+        "after_reverse_refit": {
+          "weights": {
+            "particles": 256,
+            "ess": 1.0000551988468018,
+            "ess_fraction": 0.00390646562049532,
+            "maximum_weight": 0.9999724014372838,
+            "log_mean_weight": 98.46028195579913
+          },
+          "mean_work": -16.47556898117451,
+          "work_std": 97.4700377997405,
+          "variance_ratios": [
+            1.0434988921271002,
+            1.041429804024523,
+            1.0339214281769409,
+            1.0408248337995807,
+            1.042642849278801,
+            1.038122150528703,
+            1.052769538019728,
+            1.063994916511975,
+            1.100658372758483,
+            1.1656046492825394,
+            1.252310281597382,
+            1.3523941377642124,
+            1.5073306106348734,
+            1.7414372302155297,
+            1.9,
+            1.9
+          ]
+        }
+      },
+      "xtb": {
+        "ode": {
+          "arm": "uniform_ode",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.44804938228791114,
+            "median": 0.680575763301249,
+            "q90": 1.3287684123340855
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 1.6221347447294976,
+            "median": 3.114671296535559,
+            "q90": 6.310917631288395
+          },
+          "force_values_present": 32
+        },
+        "stochastic": {
+          "arm": "uniform_stochastic",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.36075235867298827,
+            "median": 0.5820299139876113,
+            "q90": 4.985210694938153
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 1.424895893051667,
+            "median": 2.524926280054118,
+            "q90": 7.978057960138472
+          },
+          "force_values_present": 32
+        }
+      },
+      "overlap": {
+        "ode": {
+          "count": 0,
+          "attempted": 256
+        },
+        "stochastic": {
+          "count": 2,
+          "attempted": 256
+        }
+      }
+    },
+    {
+      "arm": "linear",
+      "new_oracle_evaluations": 512,
+      "forward_updates": 1000,
+      "seconds": 234.77776222210377,
+      "ode_step_check": {
+        "coordinate_rms_A": 0.022468827175112845,
+        "maximum_atom_displacement_A": 0.9592238885568138,
+        "paired_paths": 256
+      },
+      "ode_projection": {
+        "mean_pair_marginal_w1_A": 0.05277841385651054,
+        "maximum_pair_marginal_w1_A": 0.08684902290717891
+      },
+      "stochastic_projection": {
+        "mean_pair_marginal_w1_A": 0.05602756514770539,
+        "maximum_pair_marginal_w1_A": 0.14177270115505541
+      },
+      "mean_energy_eV": {
+        "ode64": -20928.018160948588,
+        "stochastic16": -20927.332233410118
+      },
+      "full_target_evaluations": {
+        "before_reverse_refit": {
+          "weights": {
+            "particles": 256,
+            "ess": 1.0000000473492618,
+            "ess_fraction": 0.003906250184958054,
+            "maximum_weight": 0.9999999763253696,
+            "log_mean_weight": -181.61336790861867
+          },
+          "mean_work": 493.6699025540982,
+          "work_std": 191.36890499027635,
+          "variance_ratios": [
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9
+          ]
+        },
+        "after_reverse_refit": {
+          "weights": {
+            "particles": 256,
+            "ess": 1.0000024272575352,
+            "ess_fraction": 0.003906259481474747,
+            "maximum_weight": 0.9999987863731731,
+            "log_mean_weight": 99.48929989908562
+          },
+          "mean_work": -5.3559559935763605,
+          "work_std": 119.16111885588633,
+          "variance_ratios": [
+            1.0432172052469073,
+            1.0406301223631589,
+            1.0314789384015166,
+            1.038007910230188,
+            1.0392928957717678,
+            1.0339284722475774,
+            1.0473944479571375,
+            1.0573634004509416,
+            1.0900257225839105,
+            1.1537262180065169,
+            1.238220341337632,
+            1.342097465769034,
+            1.505294337486242,
+            1.7495991927101628,
+            1.9,
+            1.9
+          ]
+        }
+      },
+      "xtb": {
+        "ode": {
+          "arm": "linear_ode",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.4655134994063019,
+            "median": 0.6927045213058136,
+            "q90": 1.5194507449606771
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 1.7554527635256527,
+            "median": 3.3969585155703035,
+            "q90": 7.940353641858608
+          },
+          "force_values_present": 32
+        },
+        "stochastic": {
+          "arm": "linear_stochastic",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.4097083027091003,
+            "median": 0.6782094087033954,
+            "q90": 5.66731498274187
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 1.5227817923766545,
+            "median": 2.6804055474723683,
+            "q90": 8.33367994755543
+          },
+          "force_values_present": 32
+        }
+      },
+      "overlap": {
+        "ode": {
+          "count": 1,
+          "attempted": 256
+        },
+        "stochastic": {
+          "count": 3,
+          "attempted": 256
+        }
+      }
+    },
+    {
+      "arm": "power",
+      "new_oracle_evaluations": 512,
+      "forward_updates": 1000,
+      "seconds": 234.7152587948367,
+      "ode_step_check": {
+        "coordinate_rms_A": 0.01762258695509175,
+        "maximum_atom_displacement_A": 0.6502075271561576,
+        "paired_paths": 256
+      },
+      "ode_projection": {
+        "mean_pair_marginal_w1_A": 0.05132036078288617,
+        "maximum_pair_marginal_w1_A": 0.10485216689327197
+      },
+      "stochastic_projection": {
+        "mean_pair_marginal_w1_A": 0.05906530157402272,
+        "maximum_pair_marginal_w1_A": 0.13641202079822767
+      },
+      "mean_energy_eV": {
+        "ode64": -20928.171099396724,
+        "stochastic16": -20927.253549000106
+      },
+      "full_target_evaluations": {
+        "before_reverse_refit": {
+          "weights": {
+            "particles": 256,
+            "ess": 1.0000000000000009,
+            "ess_fraction": 0.0039062500000000035,
+            "maximum_weight": 0.9999999999999996,
+            "log_mean_weight": -193.96465518232569
+          },
+          "mean_work": 580.8069595336872,
+          "work_std": 255.45628783733198,
+          "variance_ratios": [
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9,
+            1.9
+          ]
+        },
+        "after_reverse_refit": {
+          "weights": {
+            "particles": 256,
+            "ess": 1.0062831452485768,
+            "ess_fraction": 0.003930793536127253,
+            "maximum_weight": 0.9968702467071858,
+            "log_mean_weight": 93.11366373363605
+          },
+          "mean_work": 17.17394227061583,
+          "work_std": 161.86544205086224,
+          "variance_ratios": [
+            1.043125368913501,
+            1.041706041359903,
+            1.0328005370711748,
+            1.0371473134785825,
+            1.0419103186731766,
+            1.0326418882666006,
+            1.0485666056996306,
+            1.0693281768192966,
+            1.1227826545169797,
+            1.1992352878156542,
+            1.3007024709310724,
+            1.4121739467283494,
+            1.5876104703780036,
+            1.8574740150372857,
+            1.9,
+            1.9
+          ]
+        }
+      },
+      "xtb": {
+        "ode": {
+          "arm": "power_ode",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.3731377488966302,
+            "median": 0.5741159888651453,
+            "q90": 1.0759998118005172
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 2.0094365128168943,
+            "median": 2.959909338647183,
+            "q90": 5.399242439692689
+          },
+          "force_values_present": 32
+        },
+        "stochastic": {
+          "arm": "power_stochastic",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.3522686074595981,
+            "median": 0.6080882947224779,
+            "q90": 3.5084664644865775
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 1.5449664384890769,
+            "median": 3.056137707641885,
+            "q90": 19.911448607208285
+          },
+          "force_values_present": 32
+        }
+      },
+      "overlap": {
+        "ode": {
+          "count": 0,
+          "attempted": 256
+        },
+        "stochastic": {
+          "count": 7,
+          "attempted": 256
+        }
+      }
+    }
+  ],
+  "sources": [
+    {
+      "arm": "source",
+      "result": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_student_source_v1/results.json",
+      "sha256": "eae1a63461130f396202aeff9fee867205d07c0575e1b1f5b6c9d69d49f94ec1"
+    },
+    {
+      "arm": "uniform",
+      "result": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_student_uniform_v1/results.json",
+      "sha256": "78d1046cb45052ce7c38143adf485c7ac10802718202856df1f0dba17b8369ce"
+    },
+    {
+      "arm": "linear",
+      "result": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_student_linear_v2/results.json",
+      "sha256": "5e6dfeada4b1b5fd62ad087e7b0ff66d0107f9c0c751d1e540e77f12121dcd0c"
+    },
+    {
+      "arm": "power",
+      "result": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_student_power_v2/results.json",
+      "sha256": "85ba1f65a30f7bf0252191037b2cec267c725c053299f73fab7dd4a9699ba07d"
+    }
+  ],
+  "assessment_sha256": "8d2025bdf0fec5a1d417bd98558ef36adadbbdca7793747f7b568e7acb1358fb",
+  "controls": {
+    "condition": {
+      "source_row": 5846,
+      "raw_index": 589712,
+      "reference_geometry_loaded": true,
+      "reference_geometry_used_to_initialize": false,
+      "numbers": [
+        1,
+        15,
+        8,
+        6,
+        1,
+        6,
+        8,
+        12
+      ],
+      "charge": 1,
+      "spin_multiplicity": 1
+    },
+    "teacher_sha256": "08eb136f1df0b2fe36b3f044b95b41d6a3d93214aaca48faa995aba29296283e",
+    "source_checkpoint_sha256": "694a680c4172a355e2a4e899486647f751702bea2dafad93364bf8b60a7b14b5",
+    "backward_initialization_sha256": "2e177d8a587ea827eb2877c38050859e1ce904c58c123ed1c2f8c2d4fa5aa384",
+    "source_recipe": {
+      "config": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/4b4c6155fbee03d0143009a2cc4353e6bb2f63f9/configs/sweep/a1_fm_only_s2.yaml",
+      "checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/electronic_fm_global_v1/last.ckpt",
+      "resume_work_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_v1",
+      "metadata": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/raw_metadata_replay_v1",
+      "oracle": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+      "condition_manifest": null,
+      "condition_index": null,
+      "oracle_python": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python3.11",
+      "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+      "source_row": 5846,
+      "steps": 1500,
+      "path_steps": 16,
+      "batch": 16,
+      "eval_particles": 256,
+      "lr": 1e-05,
+      "noise": 0.2,
+      "kT": 0.025851999786435,
+      "restraint": 0.1,
+      "seed": 9051,
+      "gradient_diagnostics": 0,
+      "objective": "mean_work",
+      "mode": "joint",
+      "oracle_batch_size": 16,
+      "reference_kernel": "gaussian",
+      "mean_parameterization": "native",
+      "neutralize_temperature_input": true,
+      "noise_annealing_power": 0.5,
+      "prior_std": 1.0,
+      "max_drift_per_sqrt_dimension": 20.0,
+      "checkpoint_steps": true,
+      "device": "cuda"
+    },
+    "research_protocol": {
+      "config": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/54861d06788b49755fc1853c629bb94154a0051e/configs/sweep/a1_fm_only_s2.yaml",
+      "warm_checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/displacement_development_rho01_v2/training/last.ckpt",
+      "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/electronic_fm_global_v1",
+      "steps": 10000,
+      "seed": 9041,
+      "terminal_time": 1.0,
+      "lr": 2e-05,
+      "batch_size": 1,
+      "device": "cuda",
+      "lambda_energy": 0.0,
+      "energy_every": 4,
+      "energy_steps": 16,
+      "energy_cap": 1500.0,
+      "energy_estimator": "replica_product",
+      "common_probes": false,
+      "checkpoint_energy": false,
+      "discrete_adjoint_energy": false,
+      "perturbation_indices": null,
+      "energy_control": "value",
+      "energy_gradient_diagnostics": false,
+      "energy_parents": 1,
+      "geometry_softening": 0.1,
+      "position_parameterization": "displacement",
+      "energy_shard": "/n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/perturbation_train_n30000_s0.pt",
+      "format": "electronic_geometry_fm_v1",
+      "composition_prior_checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/abl/a1_fm_only_s2/lightning_logs/version_30674367/checkpoints/midstep-step=30000.ckpt",
+      "warm_sha256": "704cf7be0763ed466cbd21d8dcb012d47685aff9689db91645a1a95088c23ce9",
+      "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+      "data_order_sha256": "3c752cb59488ed5975c4c498823da2d858da1f7bb4354522003671f4db36edb3",
+      "data_endpoint_time": 1.0,
+      "alignment": false,
+      "history_self_conditioning": false,
+      "steric_retractions": false,
+      "energy_temperature_eV": 1.0,
+      "purpose": "Matched FM continuation with verified global charge/spin or legacy features.\n\nThis is an empirical-data FM baseline, not Boltzmann training. Requested kT is\na model condition for future teacher training, not a temperature label inferred\nfor the OMol corpus. Warm starts reset AdamW; optimizer state is saved explicitly.\n",
+      "metadata": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/raw_metadata_replay_v1",
+      "global_state": 1,
+      "prior_std": 1.0,
+      "requested_kT": 1.0,
+      "electronic_conditioning": true,
+      "electronic_metadata": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/raw_metadata_replay_v1",
+      "metadata_progress_sha256": "bb9016536bf309bd12d923f2de7b2b732c657ac52c4c1df0ee1685d35cf5e750",
+      "script_sha256": "01a6a759b001e193be1450665bdffbe0526c9173cdc7fdf1bf34af4bf91ec90e"
+    },
+    "seeds": {
+      "teacher_selection": 9085,
+      "training_noise": 10009104,
+      "ode": 9086,
+      "reverse_training": 9087,
+      "stochastic_evaluation": 9088,
+      "reverse_minibatches": 9089
+    },
+    "configuration": {
+      "teacher": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_teacher_5846_v1",
+      "steps": 1000,
+      "batch": 64,
+      "eval_paths": 256,
+      "refit_paths": 2048,
+      "refit_steps": 500,
+      "lr": 1e-05,
+      "seed": 9085,
+      "device": "cuda"
+    }
+  },
+  "predeclared_stop": {
+    "threshold": "every student ESS<16 of256 after reverse refit",
+    "triggered": true,
+    "action": "do not extend this frozen-pool recipe"
+  },
+  "costs": {
+    "new_student_and_source_oracle_queries": 2048,
+    "teacher_oracle_queries": 4096,
+    "inherited_forward_run_queries": 25024,
+    "inherited_backward_refit_queries": 256,
+    "student_smoke_queries": 128,
+    "xtb_attempts": 256,
+    "accounting_note": "Historical method development and earlier smokes are additional; shared costs are not charged four times."
+  },
+  "limitations": [
+    "One development condition and one training seed; no broad or replicated advantage.",
+    "Stochastic work ESS does not certify unweighted ODE statistics or global mode coverage.",
+    "Intermediate teacher ESS is not full-target ESS.",
+    "No independent eight-atom target normalizer; no calibrated logZ claim.",
+    "No validated AI novelty or submission readiness follows from this screen."
+  ]
+}

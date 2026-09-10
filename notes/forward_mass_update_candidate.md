@@ -125,3 +125,30 @@ Preservation requires (v-1)h(u)+(1-u)h(v)=(v-u)h(1); hence the secant slopes
 through1 agree for every u,v and h is affine. This is a Jensen-equality
 characterization, not a new mathematical identity. It explains why fixed-point
 preservation alone cannot promise effective training in heavy-tailed cases.
+
+
+Additional novelty boundary: Liu et al., UAI2026, Score-Regularized Joint
+Sampling with Importance Weights for Flow Matching, studies non-IID samples
+from a flow model, score-based diversity regularization, and marginal residual
+velocity models for importance weighting. This is relevant to learned particle
+interactions/weight estimation; its reported target is the flow model's
+generative distribution, not automatically our molecular energy target. Do not
+claim joint diversity-plus-weight learning as unexplored on the basis of our
+current narrow screen. Source: https://proceedings.mlr.press/v337/liu26c.html .
+
+
+Peng and Gao, Flow perturbation to accelerate Boltzmann sampling (Nature
+Communications2025), is a particularly relevant additional baseline. It adds
+small noise to a full flow map and its reverse, evaluates explicit Gaussian
+path factors, learns backward noise scales, and performs partial latent/noise
+Metropolis updates. Its preprint states the noise-induced work-variance problem
+explicitly. A future proposal to shorten paths, learn noise scales, or use
+latent Metropolis correction must be compared against this work, not presented
+as new by itself. The Chignolin experiment uses equilibrium training data,
+which differs from our energy-adaptation setting. Sources:
+https://www.nature.com/articles/s41467-025-62039-8 and
+https://arxiv.org/html/2407.10666v2 (method details here refer to the preprint).
+
+Our current ODE resolution discrepancies mean that a tiny-noise full-map
+perturbation implementation would first need forward/reverse numerical checks;
+we have not implemented or reproduced this baseline yet.
