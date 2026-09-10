@@ -16,6 +16,7 @@ from cfm_mol.entropy_source import load_entropy_source
 from cfm_mol.linear_entropy_adapter import LinearEntropyAdapter, endpoint_kl_change
 from cfm_mol.nonequilibrium import centered_orthonormal_basis
 from cfm_mol.path_work import external_energy
+from cfm_mol.parity_refinement import evaluate_even_potential, randomize_inversion
 from cfm_mol.species_coupling_adapter import SpeciesCouplingAdapter
 from molecular_tempered_pilot import sha, write_json
 
@@ -44,6 +45,7 @@ def main():
     p.add_argument('--kind', choices=['convex', 'affine', 'typed'], required=True)
     p.add_argument('--replica', type=int, choices=[0, 1], default=0)
     p.add_argument('--engineering-smoke', action='store_true')
+    p.add_argument('--parity-target', action='store_true', help='Explicit inversion-mixture source and even potential target')
     p.add_argument('--steps', type=int, default=1000)
     p.add_argument('--eval-count', type=int, default=512)
     p.add_argument('--device', default='cuda')
@@ -79,6 +81,8 @@ def main():
     adapter = adapter.to(args.device).double()
     optimizer = torch.optim.AdamW(adapter.parameters(), lr=lr_start, weight_decay=0.)
     selection = torch.Generator().manual_seed(selection_seed)
+    orientation_seed = 9205+args.replica
+    orientation = torch.Generator().manual_seed(orientation_seed)
     # This constant is from generated-source energies, never the reference
     # energy carried in condition metadata. It changes neither forces nor KL.
     energy_zero = float(data['training']['energy_eV'].median())
@@ -103,6 +107,25 @@ def main():
             'Source production and shared pretraining costs remain additional to adapter query counts.',
             'Every source condition and failed optimization remains part of the development denominator.',
             'Two neural initializations use matched parent pools and streams; row SEM is conditional on the trained model.']}
+    if args.parity_target:
+        refinement_protocol = root/'research/evidence/parity_training_protocol_v1.json'
+        target_protocol = json.loads(refinement_protocol.read_text())
+        if (not target_protocol['frozen'] or target_protocol['raw_oracle_sha256'] != source['oracle_sha256']
+                or target_protocol['source_protocol_sha256'] != data['source_protocol_sha256']
+                or target_protocol['kT_eV'] != kT or target_protocol['restraint_eV_A2'] != restraint):
+            raise ValueError('Inversion source/target protocol differs')
+        required = {'source_kind': 'finite_fm_gaussian_inversion_mixture', 'target_kind': 'inversion_energy_average',
+            'steps': 1000, 'independent_parents_per_update': 16, 'raw_oracle_evaluations_per_update': 16,
+            'evaluation_parents': 512, 'raw_oracle_evaluations_per_evaluation_parent': 2,
+            'oracle_evaluations_per_production_arm': 18048, 'orientation_seed_base': 9205,
+            'evaluation_sign_seed_base': 9207, 'source_inversion_probability': .5}
+        if any(target_protocol.get(key) != value for key, value in required.items()) or args.kind not in target_protocol['methods']:
+            raise ValueError('Frozen inversion training recipe differs from the implementation')
+        report.update(source_kind='finite_fm_gaussian_inversion_mixture',
+            target_kind='inversion_energy_average', refinement_protocol_sha256=sha(refinement_protocol),
+            training_energy_estimator='raw_potential_on_independently_inverted_parents',
+            orientation_seed=orientation_seed, evaluation_sign_seed=9207+args.condition_index)
+        report['limitations'].append('Transport KL compares the fixed augmented source with its equivariant refinement; the separate source-mixture gain is not estimated.')
     if args.kind == 'typed':
         report['maximum_pair_weight'] = .25
     else:
@@ -115,8 +138,13 @@ def main():
     with EnergyOracle(Path(recipe['oracle_python']), root/'scripts/research/oracle_worker.py', oracle_path,
             numbers=condition['numbers'], charge=condition['charge'],
             spin_multiplicity=condition['spin_multiplicity'], batch_size=16) as oracle, record_failure(oracle, report, output):
-        initial_energy, _ = oracle.evaluate_chunked(x_eval)
-        error = float((initial_energy-data['development']['energy_eV'][:args.eval_count]).abs().max())
+        if args.parity_target:
+            initial_energy, _, components = evaluate_even_potential(oracle, x_eval)
+            replay_energy = components['raw_energy_eV']
+        else:
+            initial_energy, _ = oracle.evaluate_chunked(x_eval)
+            replay_energy = initial_energy
+        error = float((replay_energy-data['development']['energy_eV'][:args.eval_count]).abs().max())
         report['base_energy_replay_max_error_eV'] = error
         if error > .001:
             raise ValueError('Cached source and current physical energies differ')
@@ -126,13 +154,18 @@ def main():
                 group['lr'] = lr
             indices = torch.randint(len(x_train), (16,), generator=selection)
             x = x_train[indices].to(args.device)
+            if args.parity_target:
+                x, input_signs = randomize_inversion(x, generator=orientation)
             optimizer.zero_grad(set_to_none=True)
             y, volume = adapter(x)
             energy, force = oracle.evaluate(y.detach())
             if step == 0:
-                error = float((energy-data['training']['energy_eV'][indices]).abs().max())
+                torch.testing.assert_close(y.detach(), x, atol=1e-10, rtol=1e-10)
+                mask = input_signs.cpu() == 1 if args.parity_target else torch.ones(16, dtype=torch.bool)
+                error = float((energy[mask]-data['training']['energy_eV'][indices][mask]).abs().max()) if mask.any() else None
+                report['identity_unflipped_energy_replay_count'] = int(mask.sum())
                 report['identity_training_energy_replay_max_error_eV'] = error
-                if error > .001:
+                if error is not None and error > .001:
                     raise ValueError('Identity adapter does not replay the source energy')
             potential = external_energy(y, energy, force)+restraint/2*y.square().sum((1, 2))
             loss = ((potential-energy_zero)/kT-volume).mean()
@@ -177,24 +210,38 @@ def main():
                 raise RuntimeError('Complete trained intrinsic determinant failed')
             errors.append(error)
         report['trained_full_jacobian_errors'] = errors
-        final_energy, _ = oracle.evaluate_chunked(y)
+        if args.parity_target:
+            final_energy, _, _ = evaluate_even_potential(oracle, y)
+        else:
+            final_energy, _ = oracle.evaluate_chunked(y)
         change = endpoint_kl_change(initial_energy, final_energy, x_eval, y, kT=kT, restraint=restraint, log_volume=volume)
         report['oracle_evaluations'] = oracle.evaluated
-    if report['oracle_evaluations'] != 16*args.steps+2*args.eval_count:
+    expected_queries = 16*args.steps+(4 if args.parity_target else 2)*args.eval_count
+    if report['oracle_evaluations'] != expected_queries:
         raise RuntimeError('Matched oracle-query budget differs')
     report.update(paired_endpoint_kl_change=summarize(change),
         paired_endpoint_kl_change_per_internal_dof=summarize(change/(3*(len(condition['numbers'])-1))),
         mean_energy_eV={'base': float(initial_energy.mean()), 'adapted': float(final_energy.mean())},
         log_volume={'mean': float(volume.mean()), 'std': float(volume.std()), 'min': float(volume.min()), 'max': float(volume.max())},
         maximum_COM_error_A=float(y.mean(1).abs().max()))
-    torch.save({'positions': x_eval, 'energy_eV': initial_energy, 'condition': condition,
-        'sample_ids': data['development']['sample_ids'][:args.eval_count]}, args.out/'base_samples.pt')
-    torch.save({'positions': y, 'energy_eV': final_energy, 'condition': condition,
+    base_lineage, adapted_lineage = {}, {}
+    stored_base, stored_y = x_eval, y
+    if args.parity_target:
+        stored_base, signs = randomize_inversion(x_eval,
+            generator=torch.Generator().manual_seed(report['evaluation_sign_seed']))
+        stored_y = y*signs[:, None, None]
+        base_lineage = {'unflipped_positions': x_eval, 'inversion_signs': signs}
+        adapted_lineage = {'unflipped_positions': y, 'inversion_signs': signs}
+    torch.save({'positions': stored_base, 'energy_eV': initial_energy, 'condition': condition,
+        'sample_ids': data['development']['sample_ids'][:args.eval_count], **base_lineage}, args.out/'base_samples.pt')
+    torch.save({'positions': stored_y, 'energy_eV': final_energy, 'condition': condition,
         'paired_endpoint_kl_change': change, 'log_volume': volume,
-        'sample_ids': data['development']['sample_ids'][:args.eval_count]}, args.out/'adapted_samples.pt')
+        'sample_ids': data['development']['sample_ids'][:args.eval_count], **adapted_lineage}, args.out/'adapted_samples.pt')
     state = {'state_dict': adapter.state_dict(), 'optimizer_state_dict': optimizer.state_dict(), 'kind': kind,
         'condition': condition, 'source_checkpoint_sha256': data['source_checkpoint_sha256'],
-        'source_kind': data['source_kind'], 'source_protocol_sha256': data['source_protocol_sha256']}
+        'source_kind': report['source_kind'], 'source_protocol_sha256': data['source_protocol_sha256']}
+    if args.parity_target:
+        state.update(target_kind=report['target_kind'], refinement_protocol_sha256=report['refinement_protocol_sha256'])
     if args.kind != 'typed':
         state['adapter_configuration'] = adapter.configuration
     torch.save(state, args.out/'adapter.ckpt')
@@ -206,8 +253,8 @@ def main():
     try:
         loaded, _, _ = load_entropy_adapter(args.out, args.device)
         with torch.no_grad():
-            replay, replay_volume = loaded(x_eval[:16].to(args.device))
-        torch.testing.assert_close(replay.cpu(), y[:16], atol=1e-9, rtol=1e-9)
+            replay, replay_volume = loaded(stored_base[:16].to(args.device))
+        torch.testing.assert_close(replay.cpu(), stored_y[:16], atol=1e-9, rtol=1e-9)
         torch.testing.assert_close(replay_volume.expand(16).cpu() if replay_volume.ndim == 0 else replay_volume.cpu(),
             volume[:16], atol=1e-9, rtol=1e-9)
     except Exception:

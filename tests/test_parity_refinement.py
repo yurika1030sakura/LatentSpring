@@ -85,3 +85,19 @@ def test_uniform_auxiliary_sign_work_correction():
     torch.testing.assert_close(actual, joint)
     with pytest.raises(ValueError):
         parity_work_change(raw_work, raw_energy, even_energy, kT=-1.)
+
+
+def test_random_orientation_raw_gradient_is_unbiased_for_even_target():
+    x = torch.tensor([[1.2, -.4, .3], [-.7, .1, .2]], dtype=torch.float64)
+    bias = torch.tensor([[.3, .2, -.6], [-.2, .7, .1]], dtype=torch.float64)
+    theta = torch.tensor(.2, dtype=torch.float64, requires_grad=True)
+    losses = []
+    for sign in [-1., 1.]:
+        y = theta.exp()*sign*x
+        losses.append((.5*y.square()+bias*y).sum()-6*theta)
+    average = .5*(losses[0]+losses[1])
+    projected = .5*(theta.exp()*x).square().sum()-6*theta
+    a, = torch.autograd.grad(average, theta, retain_graph=True)
+    b, = torch.autograd.grad(projected, theta)
+    torch.testing.assert_close(average, projected, atol=1e-12, rtol=1e-12)
+    torch.testing.assert_close(a, b, atol=1e-12, rtol=1e-12)

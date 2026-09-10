@@ -18,7 +18,34 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
-## Current full-campaign release and manuscript reconstruction
+## Current priority: parity-consistent source and target
+
+Real oracle audit45899596 completes256 queries. Four fixed geometries in each
+of8 conditions expose raw eSEN mirror differences up to .0533--.2262 eV per
+condition. Rotation/permutation differences stay below5.73e-6/3.58e-6 eV.
+The h=.001-A force checks pass, while h=.0003 fails on conditions3,6,7;
+a larger numerical ladder is needed. Do not call the force interface broken
+from the small-step discrepancy alone.
+
+An O(3)-equivariant adapter does NOT itself imply an invariant output law.
+The actual FlowMol source has n_cp_feats=4 and cross-product features; source
+parity invariance is not guaranteed. This distinction is essential. Raw-target
+KL results remain mathematically scoped to their declared raw experiments.
+
+Pending training45892106/45892107 is HELD before execution. Source45889306
+continues; its raw coordinates/energies remain useful. The explicit repair
+candidate is q0_plus=(q0+inversion#q0)/2 and E_plus=(E(x)+E(-x))/2, with
+F_plus=(F(x)-F(-x))/2. This is a versioned source/target change, not a silent
+reinterpretation. Exact volume accounting applies to T acting on q0_plus;
+source mixing has a separate nonnegative entropy/KL contribution.
+
+The projection/source-sign/work helpers and analytic non-invariant-source tests
+are implemented;293 tests pass. Real projected-oracle checks and a fixed-model
+N8 re-score are submitted. Their outcomes are pending. No learned odd-energy
+control variate or repaired broad training has been implemented yet. Read
+notes/parity_refinement_candidate.md and NEXT for exact theory and live handles.
+
+## Earlier checkpoint: full-campaign release and manuscript reconstruction
 
 The generic finite-FM-plus-noise refinement trainer is implemented.289 tests
 pass, including semantic source corruption and bounded-oracle accounting. The

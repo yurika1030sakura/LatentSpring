@@ -14,6 +14,7 @@ p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--source-root', type=Path, required=True)
 p.add_argument('--out', type=Path, required=True)
 p.add_argument('--engineering-smoke', action='store_true')
+p.add_argument('--parity-target', action='store_true')
 p.add_argument('--condition-index', type=int)
 args = p.parse_args()
 if not args.engineering_smoke and args.condition_index is None:
@@ -28,6 +29,7 @@ args.out.mkdir(parents=True, exist_ok=True)
 root = Path(__file__).resolve().parents[2]
 replicas = [0] if args.engineering_smoke else [0, 1]
 report = {'complete': False, 'scope': __doc__, 'engineering_only': args.engineering_smoke,
+    'parity_target': args.parity_target,
     'source_root': str(args.source_root.resolve()), 'condition_indices': list(indices),
     'methods': ['convex', 'affine', 'typed'], 'replicas': replicas,
     'expected_arms': len(indices)*len(replicas)*3, 'rows': [],
@@ -46,6 +48,8 @@ for index in indices:
                 '--out', str(directory), '--kind', kind, '--replica', str(replica)]
             if args.engineering_smoke:
                 command += ['--engineering-smoke', '--steps', '2', '--eval-count', '16']
+            if args.parity_target:
+                command += ['--parity-target']
             with (args.out/f'{name}.log').open('w') as log:
                 result = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT)
             path = directory/'results.json'

@@ -21,10 +21,16 @@ def load_entropy_adapter(directory, device='cpu'):
     if state['source_checkpoint_sha256'] != report['source_checkpoint_sha256'] or state['condition'] != report['condition']:
         raise ValueError('Checkpoint condition or base generator differs from report')
     if 'source_kind' in state or 'source_kind' in report:
-        if (state.get('source_kind') != 'finite_fm_gaussian' or state.get('source_kind') != report.get('source_kind')
+        if (state.get('source_kind') not in ['finite_fm_gaussian', 'finite_fm_gaussian_inversion_mixture']
+                or state.get('source_kind') != report.get('source_kind')
                 or state.get('source_protocol_sha256') != report.get('source_protocol_sha256')
                 or not state.get('source_protocol_sha256')):
             raise ValueError('Finite source-law checkpoint provenance differs')
+        if state['source_kind'] == 'finite_fm_gaussian_inversion_mixture':
+            if (state.get('target_kind') != 'inversion_energy_average' or state['target_kind'] != report.get('target_kind')
+                    or not state.get('refinement_protocol_sha256')
+                    or state['refinement_protocol_sha256'] != report.get('refinement_protocol_sha256')):
+                raise ValueError('Inversion source/target checkpoint provenance differs')
     kind = state['kind']
     if kind != report['kind']:
         raise ValueError('Checkpoint and report architecture differ')

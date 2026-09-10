@@ -4,8 +4,45 @@ Full ICLR goal remains active and unachieved. This goal turn is PROGRESS:
 implemented generic broad-condition training, passed24 real-interface cases,
 repaired a verified bulk-oracle timeout, released the complete matched campaign,
 replayed both neural-context ablations and rewrote the primary manuscript around
-our current method.289 tests pass. No broad calibrated sampler or ICLR-ready
+our current method.293 tests pass. No broad calibrated sampler or ICLR-ready
 contribution is established. Do not mark complete from code or format checks.
+
+CRITICAL NEW FINDING: raw eSEN is not inversion invariant on the32 checked
+geometries. Per-condition mirror differences reach .0533--.2262 eV, while proper
+rotation/permutation errors are ~1e-6 eV. The source FlowMol config ALSO uses
+n_cp_feats=4 and cross products, so DO NOT assume q0 is O(3)-invariant merely
+because our adapter is. Raw-target relative-KL results remain raw-target results.
+Read notes/parity_refinement_candidate.md before continuing.
+
+Immediate actions:
+-45892106 and45892107 were HELD before execution for source/target review.
+ Do not unhold their immutable raw-target scripts under a new interpretation.
+-45889306 source production continues: coordinates and raw energies remain
+ useful inputs/components for a new protocol. Re-query the SAME handle.
+-Projected-potential audit even_oracle_contract_v1 and old-N8 re-score
+ parity_refinement_rescore_v1 are submitted; obtain their job IDs from jobs.jsonl.
+ The first uses a larger FD ladder; the second adds inverted energies to all
+ seven stored2048-parent arms. Inspect terminal results and preserve all failures.
+-Source/target repair implementation: parity_refinement.py. Set
+ q0_plus=(q0+inversion#q0)/2 and E_plus=(E(x)+E(-x))/2; forces are
+ (F(x)-F(-x))/2. Inference uses one independent recorded sign per parent.
+ Exact transport-KL change compares T#q0_plus to q0_plus; its even bracket can
+ be evaluated on original parents. The separate source augmentation gain is
+ JS(q0,inversion#q0) in[0,log2], not zero entropy change.
+-Old explicit works can be re-scored with a specified uniform-sign auxiliary:
+ W_plus=W_raw+(E_plus-E_raw)/kT. Uniform proposal/target sign factors cancel;
+ this does not require the original source or reverse path to be parity invariant.
+-293 tests pass, including4 new symmetry-mixture/force/work tests and explicit
+ inversion tests for both neural families. Real molecular projection is not yet
+ qualified. Do not claim the parity issue explains the entire ESS failure.
+-Freeze a NEW broad training source/target and matched physical-query recipe
+ after these checks. Raw one-query gradients are unbiased for E_plus only with
+ properly randomized source inversion. Paired gradients need both orientations
+ and half as many parents at the same oracle budget. Independent evaluation
+ uses exact E_plus. No learned odd-energy control variate exists yet; it is a
+ prospective idea only if measured gradient variance supports it.
+
+Earlier campaign map (partially superseded by the parity review):
 
 1. Re-query the SAME active campaign handles before acting:
    -45889306 species_breadth_source_full_v2: regular GPU,4-hour cap, all eight

@@ -1,0 +1,28 @@
+{
+  "frozen": true,
+  "version": 1,
+  "source_kind": "finite_fm_gaussian_inversion_mixture",
+  "target_kind": "inversion_energy_average",
+  "raw_oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "source_protocol_sha256": "36de049f1264d5d7865ef1c370e12ce2f24331d09b1fb9864f23bdd56a33c70b",
+  "kT_eV": 0.025851999786435,
+  "restraint_eV_A2": 0.1,
+  "source_inversion_probability": 0.5,
+  "training_energy_estimator": "raw_potential_on_independently_inverted_parents",
+  "steps": 1000,
+  "independent_parents_per_update": 16,
+  "raw_oracle_evaluations_per_update": 16,
+  "evaluation_parents": 512,
+  "raw_oracle_evaluations_per_evaluation_parent": 2,
+  "oracle_evaluations_per_production_arm": 18048,
+  "orientation_seed_base": 9205,
+  "evaluation_sign_seed_base": 9207,
+  "methods": [
+    "convex",
+    "affine",
+    "typed"
+  ],
+  "refinement_kl_baseline": "fixed inversion-mixture source",
+  "source_mixture_gain_separately_unestimated": true,
+  "scope": "Present full composition/electronic-state coordinate target; no fixed absolute-stereoisomer restriction."
+}

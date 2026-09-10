@@ -21,6 +21,13 @@ Do not assert that the original source distribution is reflection invariant.
 Non-equivariance of a pointwise source map also does not by itself prove a
 distributional symmetry defect. Existing numerical claims must keep this scope.
 
+Three-atom reference checks cannot reveal this general parity defect: after
+removing translation, all three positions lie in a plane. Reflection can then
+be represented by a proper rotation combined with reflection in that fixed
+plane. A rotation-invariant potential therefore agrees on those reflected
+configurations automatically. Their earlier calibration is not a parity audit
+for larger, nonplanar molecules.
+
 For an inversion-equivariant bijection T and inversion R=-I,
 T#(R#q)=R#(T#q). Consequently any invariant-under-bijection f-divergence between
 q and its inverted law is unchanged by T. Such an adapter cannot manufacture
@@ -91,3 +98,23 @@ a valid new weighted experiment, not retrospective calibration of the old one.
 
 The parity issue alone has not been shown to explain ESS~1/2048. Preserve all
 older failures and require new calibration evidence. Full ICLR goal remains open.
+
+## Completed repair checks and frozen next training recipe
+
+Projected-potential audit45906924 passes all8 conditions,640 raw queries,
+using FD steps .003/.0015/.001 A. The corrected force sign and symmetry are
+checked on the same source rows. Re-score45906933 completes14336 inverted
+energy queries on the fixed N8 models. Under q0_plus/E_plus, convex-minus-affine
+is-.013366+/-.002517 and-.012610+/-.002150 nat on2048 parents; convex-minus-typed
+is-.048981+/-.017293 and-.038923+/-.016395. The small signal survives, but every
+path ESS remains about1/2048. Thus this repair does NOT solve the observed N8
+importance-sampling collapse.
+
+The new parity_training_protocol_v1.json fixes an unbiased unpaired recipe:
+1000 updates,16 independently inverted parents per update, one RAW potential
+query per parent. Expected raw energy equals E_plus because source augmentation
+and the equivariant adapter make the output law even. Actual metric evaluation
+queries both orientations. Cost18048 per full arm (16000 training+2048 evaluation),
+96 per2-update/16-parent engineering arm. An independent sign stream and saved
+evaluation signs define the source law explicitly. No learned odd control
+variate is used in this initial corrected recipe.
