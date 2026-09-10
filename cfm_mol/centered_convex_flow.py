@@ -82,3 +82,23 @@ def centered_convex_inverse(y, raw_weights, directions, offsets, raw_scale, raw_
                 return x, {'iterations': iteration+1, 'maximum_residual': residual}
         x = updated
     raise RuntimeError('Centered inverse did not meet its declared residual tolerance')
+
+
+@torch.no_grad()
+def convex_point_inverse(y, raw_weights, directions, offsets, raw_scale, raw_radial, *, tolerance=1e-10, max_iterations=64, **options):
+    """No-grad contraction inverse without a centroid constraint."""
+    if not math.isfinite(tolerance) or tolerance <= 0 or max_iterations < 1:
+        raise ValueError('Invalid inverse tolerance/limit')
+    context = (raw_weights, directions, offsets, raw_scale, raw_radial)
+    scale = torch.exp(.25*torch.tanh(raw_scale))[:, None, None]
+    x = y/scale
+    for iteration in range(max_iterations):
+        mapped, _, _ = convex_point_map(x, *context, **options)
+        updated = (y-(mapped-scale*x))/scale
+        if float((updated-x).abs().max()) <= tolerance:
+            reconstructed, _, _ = convex_point_map(updated, *context, **options)
+            residual = float((reconstructed-y).abs().max())
+            if residual <= tolerance:
+                return updated, {'iterations': iteration+1, 'maximum_residual': residual}
+        x = updated
+    raise RuntimeError('Point inverse did not meet its declared residual tolerance')
