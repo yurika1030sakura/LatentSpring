@@ -72,9 +72,47 @@ The unchanged HMC recipe is also submitted for eight atoms as 45761145, without
 an unavailable normalizer reference. Latest paper build passes at 9 main pages;
 this remains a scientific development/audit draft, not submission ready.
 
+## September 10 UTC completed controls and next execution
+
+All AgBr2 controls and their two 4096-path streams completed. Fixed joint:
+combined ESS 886.45/8192, log-normalizer difference -.03239 nat. Annealed
+energy-gradient control: ESS 13.72/8192, difference -5.06827 nat. The energy
+ablation collapses here; fixed noise remains competitive with annealing.
+Evidence: work300_all_triatomic_controls_v1.json, reproducible with
+scripts/research/combine_work_evaluations.py. No HMC superiority claim follows.
+
+Eight-atom LV 45760898 and xTB 45761719 completed and failed scientifically:
+ESS 1/256, overlap 99.22%, xTB 25/32, successful median strain 316.30 eV versus
+initial 32/32 and 4.405 eV. Frozen gradient diagnostic 45762271 completed with
+256 oracle calls; scale-corrected forward covariance trace is about 37.6 times
+the pathwise estimator's. Backward objectives differ, so variance is not a
+uniquely established failure mechanism. NeurIPS 2025 arXiv:2506.10982 is direct
+prior work. Evidence: work300_5846_lv_failure_and_gradient_v1.json.
+
+Resume smoke 45763215 passed: max coordinate discrepancy 3.74e-7 A, work 1.80e-4
+nat, original AdamW restored at step 500, temperature reset not repeated. Runs
+45763360/45763361/45763362 continue fixed-joint/annealed-joint/energy to 1500
+updates using source 4b4c615. Each adds 16,512 queries, cumulative 25,024.
+The matched HMC run is 45763216. Three-arm xTB assessment 45764564 waits on successful completion. No continuation performance result is available yet.
+
+HMC-SMC reference pilot 45764408 uses source 73cee25, Gaussian starts, 32
+particles, 128 fixed stages and eight leapfrog steps per stage. Budget 32,832
+including terminal cache checks. It must pass the prespecified AgBr2 screen
+against v2 quadrature before a larger-condition pilot; no converged reference
+or new method is claimed. Protocol: notes/hmc_smc_reference_protocol.md.
+
+HMC 25,024-query run 45763216 completed: xTB 32/32, median strain .56135 eV,
+acceptance .9630. This remains a finite-chain control with eight independent
+starts. HMC-SMC AgBr2 pilot 45764408 completed but failed its prespecified
+normalizer screen: ESS 23.14/32, five ancestors (weighted ancestry ESS 1.326),
+log-normalizer discrepancy +.71340 nat versus the .25 gate. Maximum Ag-Br
+mean error .00945 A passes the geometric screen. Numerical cache check passes
+at 8.80e-5 reduced-energy unit. Do not promote it as an eight-atom reference;
+a single population does not identify persistent bias. Evidence: hmc_smc_reference_1137_screen_v1.json.
+
 ## What is established
 
-- 217 tests pass, including real FlowMol parameter gradients, full-state and
+- 222 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
   dedicated Gaussian/Rademacher probe streams for common/independent controls,

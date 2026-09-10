@@ -194,7 +194,22 @@ wall time or independent sample counts.
 
 On the eight-atom condition, three cold training arms improve relaxed geometry
 but retain ESS approximately one out of 256. This failure remains unresolved.
-A fixed-observation log-variance path loss, following the established framework
-of \citet{richter2024improvedsampling}, has passed real-FlowMol value and gradient
-checks and a two-update molecular execution test. Its molecular performance is
-not established, and the objective itself is not a new contribution.
+The fixed-noise AgBr2 joint control, evaluated with the same two fresh streams,
+attains ESS 886.45/8,192 and log-normalizer difference $-0.03239$ nat; the
+annealed energy-gradient control gives ESS 13.72/8,192 and difference $-5.06827$
+nat. Thus the energy-gradient ablation collapses in this condition, whereas
+these results do not establish an advantage of noise annealing over fixed noise.
+Both controls use one training seed, and additional inference cost is separate.
+
+A fixed-observation log-variance path loss from the established framework of
+\citet{richter2024improvedsampling} passes implementation checks but fails after
+500 eight-atom updates: final ESS is 1/256, the overlap heuristic is 99.22\%,
+and xTB converges for 25/32 attempts with successful median strain 316.30 eV,
+versus initial 32/32 and 4.405 eV. A frozen 16-batch diagnostic measures about
+37.6 times greater forward gradient covariance trace after correcting the
+population scale, relative to the pathwise mean-work estimator. This does not
+identify a unique cause of failure: the backward objectives differ as well.
+The distinction between joint log-variance and reverse-KL updates is already
+studied by \citet{sanokowski2025rethinking}. We retain this failed recipe and
+make no new-objective claim. Longer matched mean-work/HMC experiments are
+pending; their outcomes are not represented by the execution checks.

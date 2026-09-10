@@ -54,3 +54,15 @@ This is a path-space KL / stochastic-normalizing-flow objective, also existing
 prior work. It could train the forward and auxiliary backward proposals rather
 than relying on fixed backward drift or hand-constructed templates. It has not
 been implemented or shown useful in this project; do not report it as a result.
+
+
+## Diffusion-bridge loss comparison, checked September 10, 2026
+
+Sanokowski et al., Rethinking Losses for Diffusion Bridge Samplers, NeurIPS 2025,
+https://arxiv.org/abs/2506.10982, is direct prior art for comparing on-policy LV
+and reverse-KL training with learnable forward/backward processes. Our
+forward-only score/pathwise expectation relation does not equate joint training
+objectives. Choosing lower-variance gradients or distinguishing these objectives
+is not sufficient novelty. The completed eight-atom LV failure and frozen
+molecular gradient-noise measurement are local evidence, not a new general
+critique of diffusion bridges.

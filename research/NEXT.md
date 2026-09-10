@@ -1,36 +1,43 @@
 # Next research decision
 
-The ICLR objective is active and unachieved. 217 tests pass. Use STATUS for the
-full result history and failures. Latest new source ba5cc0d; all job source hashes
-are recorded in jobs.jsonl. Do not resubmit live jobs.
+Goal remains active and unachieved. Latest scientific status: September 10 UTC.
+222 tests pass; latest manuscript build has 9 main pages, no unresolved references.
+No broad calibrated molecular benefit or ICLR-ready contribution is established.
 
-1. Inspect eight-atom fixed-observation log-variance training 45760898, output
-   logvariance_300K_5846_500_v1, source 331238b. It uses 500 updates, B16, K16,
-   native mean, noise power .5, kT .025851999786435, seed 9051; 256 before/after
-   evaluations and 8,512 total oracle calls. Both production smokes passed,
-   including mixed-time likelihood/gradient agreement; performance unproven.
-   Compare to completed same-target joint and energy arms, retaining their ESS~1.
-   xTB assessment 45761719 waits on afterok:45760898 and retains all 32 attempts.
-2. Inspect eight-atom HMC 45761145 (hmc_300K_5846_v1). Same 8,512 queries and
-   unchanged AgBr2 HMC recipe; no eight-atom normalizer reference. Keep eight
-   chain clusters, all initial starts and all relaxation failures visible.
-3. AgBr2 fixed-joint 45750959 and energy-only 45750966 remain live. Their paired
-   4096-path evaluations for seed 9065: 45759434/45759436; second independent
-   stream 9067: 45760430/45760432. These depend on successful training completion.
-   Inspect all controls before concluding noise annealing or entropy benefits.
-4. All three annealed-joint seeds and both independent evaluation streams have
-   completed. Combined ESS 802.65/823.79/640.28 of 8192, log-normalizer differences
-   -.05450/-.03472/-.06264 nat, empirical relative errors 3.35/3.30/3.79% plus
-   shared reference 1.82%. Preserve individual streams; never select closest to
-   reference. No advantage over HMC or broad calibrated sampling is established.
-5. New eight-condition development FM/xTB panel completed: 512 generated attempts
-   plus eight references, FM64 xTB 239/256. No physics training on this panel yet;
-   reserved 722 conditions untouched. Resolve the eight-atom failure before scale-up.
+1. Live continuations to 1500 total steps (start from 500; optimizer and global
+   RNG step restored, no second temperature reset):
+   - 45763360 work300_fixed_joint_5846_1500_v1
+   - 45763361 work300_annealed_joint_5846_1500_v1
+   - 45763362 work300_annealed_energy_5846_1500_v1
+   Source 4b4c615. Each adds 16,512 queries, cumulative 25,024 including earlier
+   8,512. Assess final ESS, energy, work variance and geometry only when complete.
+   xTB 45764564 depends on all three and retains 32 attempts per arm.
+   If a run fails, preserve failure and assess completed arms separately.
+2. Matched 25,024-query HMC 45763216 completed: xTB 32/32, median strain .56135
+   eV. Eight chains supply 64 correlated draws; no normalizer/mixing certificate.
+3. HMC-SMC reference 45764408 failed its predeclared AgBr2 screen: log Z error
+   +.7134 nat versus .25 threshold, despite ESS 23.14/32 and distance error .00945 A.
+   Five ancestors have weighted ancestry ESS 1.326. Do not declare this a reference
+   or extend it directly to eight atoms. Any redesign requires a new explicit
+   protocol; do not relax the existing gate. Source 73cee25, 32,832 oracle calls.
+4. Completed 500-step log-variance recipe fails: ESS 1/256, overlap 99.22%, xTB
+   25/32, median successful strain 316.30 eV. Preserve it; no scale-up. Frozen
+   gradient diagnostic 45762271 measured 37.6-fold forward covariance trace
+   increase after population-scale correction. Backward objectives also differ;
+   a unique failure mechanism is not established. NeurIPS 2025 arXiv:2506.10982
+   already distinguishes LV and reverse-KL bridge training.
+5. All AgBr2 five arms and two independent evaluation streams completed. Joint
+   annealed seeds have ESS 802.65/823.79/640.28 per8192; fixed joint 886.45;
+   energy-gradient-only 13.72. Their log-Z differences are -.05450/-.03472/-.06264,
+   -.03239 and -5.06827 nat. No annealing advantage over fixed noise is established.
+   Reproduce using combine_work_evaluations.py and input paths in
+   research/evidence/work300_all_triatomic_controls_v1.json. Keep both streams.
+6. New eight-condition development FM/xTB baseline is complete, all 512 generated
+   attempts plus eight references retained; FM64 xTB 239/256. Physics-training
+   outcomes on this panel remain untested. Reserved 722 conditions untouched.
+   Resolve larger-condition sampling before expanding or making transfer claims.
 
-Log-variance path training is established prior art, not new theory. Its observation
-measure is fresh current-forward paths held fixed within each gradient update;
-no replay or endpoint force gradient. The old mean-work objective remains default.
-Target is eSEN plus an explicit COM restraint, not an unconfined DFT ensemble.
-Last paper build: nine main pages, no undefined references/citations. Scientific
-submission readiness false. Author/submission tasks remain with the user.
-Never write home, alter shared FlowMol or restart live jobs to shorten waiting.
+Current source/data/target invariants remain in CLAUDE.md. Never write home or
+modify shared FlowMol. Every submission uses a committed immutable snapshot.
+Do not restart live jobs or equate engineering PASS with scientific qualification.
+Authors and submission remain with the user. Keep all failures and old outputs.

@@ -1,0 +1,68 @@
+{
+  "complete": true,
+  "sampling": {
+    "configuration": {
+      "kernel": "hmc",
+      "kT": 0.025851999786435,
+      "restraint": 0.1,
+      "chains": 8,
+      "seed": 9061,
+      "force_updates": 3127
+    },
+    "collection_force_updates": [
+      1783,
+      1975,
+      2167,
+      2359,
+      2551,
+      2743,
+      2935,
+      3127
+    ],
+    "oracle_evaluations": 25024,
+    "summary": {
+      "trajectories": 98,
+      "leapfrog_steps": 3127,
+      "target_evaluations": 25024,
+      "accepted_per_chain": [
+        94,
+        88,
+        94,
+        96,
+        97,
+        94,
+        96,
+        96
+      ],
+      "acceptance_fraction": 0.9630102040816326,
+      "endpoint_density": "unknown; finite trajectories do not certify equilibrium"
+    },
+    "seconds": 618.8288680170008
+  },
+  "xtb_summaries": [
+    {
+      "arm": "hmc",
+      "attempted": 32,
+      "converged": 32,
+      "strain_eV_success_only": {
+        "q10": 0.3353454612195321,
+        "median": 0.5613494435732491,
+        "q90": 1.2518143438948586
+      },
+      "initial_max_force_norm_eV_A": {
+        "q10": 1.706164567863777,
+        "median": 3.0240240934948543,
+        "q90": 4.200814475117125
+      },
+      "force_values_present": 32
+    }
+  ],
+  "source_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/hmc_300K_5846_25024_v1/sampling/results.json": "11e019232bd3d936be7edb548ba47d099f39acb2e80b8dc0242b0e8522cecf17",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/hmc_300K_5846_25024_v1/xtb/assessment.json": "4a9f16a7a897a1b64113afc69ec3ddf91ddb861ba6fd3f4a39a491cf1a627007"
+  },
+  "limitations": [
+    "Eight independent initial chains; eight correlated retained samples per chain.",
+    "No convergence, marginal density or normalizer certificate."
+  ]
+}

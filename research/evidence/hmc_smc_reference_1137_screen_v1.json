@@ -1,0 +1,56 @@
+{
+  "complete": true,
+  "source_sha256": "987787c85b0840ebfacfe6bf92b4040a0f811cbf8d864d5c512d2165c84efc36",
+  "summary": {
+    "particles": 32,
+    "ess": 23.143723207002672,
+    "ess_fraction": 0.7232413502188335,
+    "maximum_weight": 0.082918799055892,
+    "distinct_initial_ancestors": 5,
+    "ancestral_ess": 1.3263904247575513,
+    "log_normalizer_estimate": -10.607876452308513,
+    "target_evaluations": 32800,
+    "resampling_events": 3,
+    "scope": "weighted SMC population; endpoint ESS alone does not measure diversity or independence"
+  },
+  "reference_comparison": {
+    "log_normalizer_difference": 0.71339943818748,
+    "reference_relative_se": 0.0181953392607852,
+    "moments": {
+      "minimum_anchor_distance_A": {
+        "smc_estimate": 2.4521684271924817,
+        "reference_mean": 2.456511025482787
+      },
+      "maximum_anchor_distance_A": {
+        "smc_estimate": 2.5462208115277547,
+        "reference_mean": 2.536769933300376
+      },
+      "outer_pair_distance_A": {
+        "smc_estimate": 3.591133820684544,
+        "reference_mean": 3.4679816701537334
+      },
+      "angle_cosine": {
+        "smc_estimate": -0.08651588233045925,
+        "reference_mean": -0.011916767953686614
+      },
+      "radius_gyration_A": {
+        "smc_estimate": 1.688104716322019,
+        "reference_mean": 1.6572393624630293
+      }
+    },
+    "source_sha256": "8a647b9c541763a7fa05acba6c7ea413f89769dcac45cd690bbb4ff19f51eb2d"
+  },
+  "prespecified_screen": {
+    "ess_at_least_8": true,
+    "at_least_4_initial_ancestors": true,
+    "normalizer_error_below_025": false,
+    "maximum_distance_error_below_01A": true
+  },
+  "screen_passed": false,
+  "decision": "Fails the prespecified normalizer screen. Do not promote to an eight-atom reference.",
+  "limitations": [
+    "A single population discrepancy does not estimate persistent bias.",
+    "Five surviving ancestors still have weighted ancestral ESS only about 1.33.",
+    "This does not invalidate the exact SMC identity or certify mixing."
+  ]
+}
