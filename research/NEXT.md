@@ -15,8 +15,8 @@ established; never mark the full objective complete from these component results
    tolerance was relaxed. Evidence: species_source_replay_audit_v1.json and
    species_breadth_source_qualification_v2.json. The complete suite passes277 tests.
 2. Full source production is submitted as45885669, species_breadth_source_full_v1,
-   regular GPU,4-hour cap, all eight conditions sequentially. It was PENDING for
-   priority when this note was written. Re-query this SAME job; do not restart.
+   regular GPU,4-hour cap, all eight conditions sequentially. It is RUNNING as of
+   September10 18:49 UTC. Re-query this SAME job; do not restart.
    Produce4096 training+512 development rows per condition, seed9182,batch64.
    The source is global FM64 plus .025-A COM Gaussian noise, with frozen v2
    hashes/runtime. Preserve pretrained1-eV input versus physical300-K target.
@@ -60,7 +60,7 @@ established; never mark the full objective complete from these component results
    pretraining and source production remain additional. Full replay evidence:
    research/evidence/species_entropy_replication_v1.json.
 7. The complete architecture and two-seed result are now in the development
-   appendix. Build: runs/verification/paper_20260910_species_replication/main.pdf.
+   appendix. Build: runs/verification/paper_20260910_species_replication_final/main.pdf.
    Main text remains an audit draft; rewrite it around a qualified contribution
    once evidence supports one. Strong baselines, broad independently selected
    conditions, reliable distribution checks and a reproducible final package
