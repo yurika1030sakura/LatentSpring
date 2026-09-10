@@ -144,10 +144,21 @@ def fit_stein_correction(score, vectors, divergences, *, base_tail_precision, ri
     residual = score_moments(score, vectors, divergences).double()
     flat = vectors.detach().double().flatten(2)
     gram = torch.einsum('bpd,bqd->pq', flat, flat)/len(flat)
+    return fit_stein_moments(gram, residual.mean(0), base_tail_precision=base_tail_precision, ridge=ridge)
+
+
+def fit_stein_moments(gram, residual, *, base_tail_precision, ridge=.01):
+    """The same constrained solve from streamed or antithetic moment estimates."""
+    if gram.ndim != 2 or gram.shape[0] != gram.shape[1] or residual.shape != (len(gram),):
+        raise ValueError('Invalid Stein moment shapes')
+    if not all(torch.isfinite(v).all() for v in [gram, residual]) or not torch.allclose(gram, gram.T, atol=1e-9, rtol=1e-9):
+        raise ValueError('Finite symmetric Gram matrix required')
+    if not math.isfinite(base_tail_precision) or base_tail_precision <= 0 or not math.isfinite(ridge) or ridge < 0:
+        raise ValueError('Invalid tail precision or ridge')
     scales = gram.diagonal().clamp_min(1e-20).sqrt()
     normalized = gram/scales[:, None]/scales[None, :]
     system = normalized+ridge*torch.eye(len(scales), dtype=gram.dtype, device=gram.device)
-    rhs = residual.mean(0)/scales
+    rhs = residual/scales
     unit = torch.linalg.solve(system, rhs)
     lower = -.5*base_tail_precision*scales[0]
     active = bool(unit[0] < lower)
