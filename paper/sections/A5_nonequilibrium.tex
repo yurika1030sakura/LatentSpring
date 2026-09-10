@@ -113,7 +113,7 @@ A first real-model pilot freezes the smoothed displacement FM checkpoint and
 uses 32 Gaussian paths with 32 steps, noise scale $0.1$, and auxiliary backward
 drift $-v$. The fixed eight-atom validation condition (processed row 5846) has
 recorded charge $+1$ and declared singlet multiplicity; original spin metadata
-is unavailable. All 32 eSEN evaluations are finite. The declared target is
+was unavailable at the time of that first pilot. All 32 eSEN evaluations are finite. The declared target is
 restrained, $U=E_{\rm eSEN}+0.05\sum_i\|x_i\|^2$ in eV, with $kT=1$ eV.
 The resulting ESS is only $1.655/32$ and one endpoint carries $72.87\%$ of the
 weight. This establishes executable two-environment inference, while exposing
@@ -151,3 +151,46 @@ Gaussian reference proposal. The harder eight-atom system remains strongly
 weight-degenerate. Neither corrected theory nor these implementation checks
 establish improved molecular generation or converged sampling on the broader
 system panel.
+
+\paragraph{Physical-temperature development and stronger controls.}
+The preceding $kT=1$ eV target corresponds to approximately $11{,}604.5$ K;
+its extended configurations should not be interpreted as ambient-temperature
+sampling failure solely from compactness diagnostics. Subsequent experiments
+fix $kT=0.025852$ eV (300 K) and retain the explicit restraint
+$U=E_{\rm eSEN}+0.05\sum_i\|x_i\|^2$. They target this approximate potential
+and labelled COM-free coordinate measure, not an unconfined DFT ensemble.
+An independent shape-mixture reference for AgBr2 uses eight randomized-Sobol
+scrambles of 8,192 points each, with an estimated normalizer relative standard
+error of $1.82\%$. Its pilot uses independent Gaussian quadrature, not learned
+proposal samples. Refinement reuses 16,384 verified prefix evaluations and adds
+49,176 potential evaluations including symmetry and batching checks.
+
+Three separately trained Gaussian-path proposals use 500 updates, batch 16,
+16 transitions and the same 8,512-query training/evaluation protocol. Their
+noise amplitude decreases as $(1-t)^{1/2}$. An additional fresh evaluation of
+4,096 paths per proposal yields ESS 581.18, 654.38 and 353.98, with
+$\log\widehat Z-\log\widehat Z_{\rm ref}=-0.08614,-0.05316,-0.12530$ nat.
+Estimated relative standard errors are $3.84\%,3.58\%,5.08\%$, in addition to
+reference error. The three arms share evaluation random numbers; their error
+agreement is not independent replication. All three estimates are low relative
+to the reference, and a second evaluation stream is required before interpreting
+this as a persistent bias. Finite weight moments cannot reveal entirely missed
+tails. These checks therefore do not certify calibration.
+
+Equal-query MALA and HMC controls choose eight random FM starts and retain
+eight correlated draws per chain after longer trajectories. Both spend 8,512
+potential queries including rejected proposals; uncertainty is clustered by
+chain and excludes unknown initialization bias. The maximum Ag--Br distance
+is 3.826 A for MALA and 2.558 A for HMC, against reference 2.537 A.
+Independent xTB relaxations converge for 27/32 and 32/32 respectively, with
+successful-only median strains 0.487 and 0.649 eV. HMC is thus a materially
+stronger control than the earlier short MALA run; no learned-method superiority
+is established. Equal potential-query counts do not equate backbone calls,
+wall time or independent sample counts.
+
+On the eight-atom condition, three cold training arms improve relaxed geometry
+but retain ESS approximately one out of 256. This failure remains unresolved.
+A fixed-observation log-variance path loss, following the established framework
+of \citet{richter2024improvedsampling}, has passed real-FlowMol value and gradient
+checks and a two-update molecular execution test. Its molecular performance is
+not established, and the objective itself is not a new contribution.

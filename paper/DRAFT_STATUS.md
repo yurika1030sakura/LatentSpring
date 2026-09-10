@@ -1,3 +1,11 @@
+> **Current status, September 10, 2026 UTC:** this file below is historical.
+> `../research/STATUS.md` and `../research/NEXT.md` govern the active ICLR 2027
+> reconstruction. The last verified main text is 9 pages, not the historical
+> 20-page draft described below. Scientific submission readiness remains false.
+> The current evidence includes failed larger-molecule sampling, three-seed
+> AgBr2 development, independent reference uncertainty and stronger HMC controls.
+> This is a development/audit manuscript; the old scalar readout is not a density.
+
 # DRAFT_STATUS.md — BGFM / ICLR 2026 manuscript
 
 > **§000000 (2026-08-10, P0-grid results + powered resolution) is the current state**, as amended by

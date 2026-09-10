@@ -68,3 +68,17 @@ stream, batch 64, for the same three proposals and both training controls. Keep
 all first-stream results. Reference v2 stays fixed. This adds 20,480 evaluation
 queries and no training; assess between-stream variability, without selecting
 the stream nearest the reference or interpreting nested prefixes as replicates.
+
+## Eight-atom matched HMC control
+
+The batch-16 log-variance execution gate passed with peak GPU allocation 4.44 GiB
+and maximum path-work discrepancy 2.24e-4 nat. The 500-update, batch-16 run
+45760898 starts from the same FM checkpoint and uses seed 9051, 256 before/after
+paths and 8,512 total oracle queries, matching the earlier joint/energy runs.
+Its two-update predecessors are execution gates and provide no efficiency claim.
+
+Extend the prespecified AgBr2 HMC recipe unchanged to the original eight-atom
+case, using work_fm_control_5846_v2 FM16 starts. Keep the same random selection,
+noise seed, 8,512-query budget, collection times and xTB indices. No independent
+eight-atom normalizer reference exists; omit that comparison explicitly. This
+control evaluates geometry and finite-chain behavior, not equilibrium truth.
