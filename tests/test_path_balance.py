@@ -33,3 +33,19 @@ def test_balance_is_invariant_to_same_condition_energy_offset():
     original=log_variance_balance(values);shifted=log_variance_balance(values+1e5)
     torch.testing.assert_close(original,shifted,rtol=0,atol=0)
     torch.testing.assert_close(torch.autograd.grad(original,values)[0],torch.autograd.grad(shifted,values)[0],rtol=0,atol=0)
+
+
+def test_backward_only_factors_match_joint_scoring_and_width_likelihood():
+    from cfm_mol.path_balance import fixed_backward_residuals,backward_log_probability
+    generator=torch.Generator().manual_seed(9081);states=torch.randn(7,4,3,dtype=torch.float64,generator=generator)
+    a=torch.tensor(.2,dtype=torch.float64,requires_grad=True)
+    drift=lambda z,t:a*z+t[:,None]*.03
+    settings=dict(terminal_std=.7,max_drift_norm=3.,mean_parameterization='native',noise_annealing_power=.5)
+    _,_,joint=fixed_path_log_factors(states,drift,drift,[0.,.2,.6,1.],.2,**settings)
+    residual,norm=fixed_backward_residuals(states,drift,[0.,.2,.6,1.],.2,**settings)
+    separate=backward_log_probability(residual,norm,3)
+    torch.testing.assert_close(separate,joint,rtol=1e-12,atol=1e-10)
+    torch.testing.assert_close(torch.autograd.grad(separate.mean(),a)[0],torch.autograd.grad(joint.mean(),a)[0],rtol=1e-12,atol=1e-10)
+    ratios=torch.tensor([.5,1.,1.9],dtype=torch.float64)
+    expected=separate+(.5*residual*(1-1/ratios)-1.5*ratios.log()).sum(-1)
+    torch.testing.assert_close(backward_log_probability(residual,norm,3,ratios),expected)
