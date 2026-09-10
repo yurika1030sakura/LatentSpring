@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -J bgfm-linear-adapter
+#SBATCH -J bgfm-species-replica
 #SBATCH -A ryl_lab
 #SBATCH -p gpu_test
 #SBATCH --gres=gpu:1
@@ -20,9 +20,6 @@ export MPLCONFIGDIR="${SLURM_TMPDIR:-/tmp}/bgfm_score_mpl_${SLURM_JOB_ID}"
 export XDG_CACHE_HOME="${SLURM_TMPDIR:-/tmp}/bgfm_score_cache_${SLURM_JOB_ID}"
 mkdir -p "$RUN_ROOT" "$MPLCONFIGDIR" "$XDG_CACHE_HOME"
 cd "$SOURCE_ROOT"
-KIND="${3:?typed or scalar required}"
-STEPS="${4:-200}"
-EVAL_COUNT="${5:-256}"
-SELECTION_SEED="${6:-9141}"
-exec "$BGFM_STORE/envs/flowmol/bin/python" -u scripts/research/train_linear_entropy_adapter.py \
- --runs-root "$LAB_RUNS" --out "$RUN_ROOT" --kind "$KIND" --steps "$STEPS" --eval-count "$EVAL_COUNT" --selection-seed "$SELECTION_SEED"
+exec "$BGFM_STORE/envs/flowmol/bin/python" -u scripts/research/confirm_species_entropy_adapter.py \
+ --runs-root "$LAB_RUNS" --base-run "$LAB_RUNS/species_entropy_adapter_confirmation_v1/base" --out "$RUN_ROOT" \
+ --nonlinear-run species_entropy_adapter_1000_s9162 --linear-run linear_entropy_adapter_typed_1000_s9142

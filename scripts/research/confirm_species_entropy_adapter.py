@@ -20,7 +20,9 @@ def summarize(x):return {'mean': float(x.mean()), 'sem': float(x.std()/len(x)**.
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--runs-root',type=Path,required=True);p.add_argument('--base-run',type=Path,required=True)
-    p.add_argument('--out',type=Path,required=True);p.add_argument('--device',default='cuda');args=p.parse_args()
+    p.add_argument('--out',type=Path,required=True);p.add_argument('--device',default='cuda')
+    p.add_argument('--nonlinear-run',default='species_entropy_adapter_1000_v1')
+    p.add_argument('--linear-run',default='linear_entropy_adapter_typed_1000_v1');args=p.parse_args()
     output=args.out/'results.json'
     if output.exists():raise FileExistsError(output)
     args.out.mkdir(parents=True,exist_ok=True);start=time.perf_counter()
@@ -40,7 +42,7 @@ def main():
     if sha(oracle_path)!=old['oracle_sha256']:raise ValueError('Physical oracle changed')
     with EnergyOracle(Path(recipe['oracle_python']),root/'scripts/research/oracle_worker.py',oracle_path,
         numbers=condition['numbers'],charge=condition['charge'],spin_multiplicity=condition['spin_multiplicity'],batch_size=16) as oracle,torch.no_grad():
-        for label,name in [('linear','linear_entropy_adapter_typed_1000_v1'),('nonlinear','species_entropy_adapter_1000_v1')]:
+        for label,name in [('linear',args.linear_run),('nonlinear',args.nonlinear_run)]:
             model,trained,digest=load_entropy_adapter(args.runs_root/name,args.device)
             if trained['source_checkpoint_sha256']!=old['trained_checkpoint_sha256'] or trained['condition']!=condition or trained['oracle_sha256']!=old['oracle_sha256']:
                 raise ValueError('Adapter and source differ')

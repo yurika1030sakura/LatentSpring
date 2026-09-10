@@ -78,3 +78,20 @@ weights and failures. This is one-condition/one-training-seed confirmation only.
 The original source reverse model is used for fresh weights, so do not pool
 with the development auxiliary's ESS. No parameter or selection changes follow
 from this panel until all outcomes have been recorded.
+
+
+## First confirmation and training replica
+
+The fresh2048-sample evaluation gives nonlinear DeltaKL=-.17451+/-.02808 SEM,
+linear=-.12558+/-.01829, and paired nonlinear-minus-linear=-.04892+/-.01732.
+Importance ESS remains approximately1/2048 for both, so no calibration or broad
+sampling efficiency is claimed. The difference needs training replication.
+
+Repeat the fixed1000-step recipes with nonlinear initialization9162 and sample
+selection9142, and typed-linear sample selection9142. Every other setting and
+16512-query budget is unchanged. Evaluate the frozen pair on the same stored
+2048 base samples, with common energies/random numbers explicitly acknowledged.
+This tests training-seed variation; it is not a new independent evaluation
+stream. New transformed-energy queries total4096; base energies are reused.
+Retain both seeds regardless of outcome. Broader conditions and a stronger
+coupling-flow baseline remain required before any ICLR contribution claim.

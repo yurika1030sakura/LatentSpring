@@ -24,6 +24,7 @@ def main():
     p.add_argument('--batch', type=int, default=16)
     p.add_argument('--eval-count', type=int, default=256)
     p.add_argument('--device', default='cuda')
+    p.add_argument('--selection-seed', type=int, default=9141)
     args = p.parse_args()
     if min(args.steps, args.batch) < 1 or not 2 <= args.eval_count <= 256:
         raise ValueError('Invalid experiment counts')
@@ -53,13 +54,13 @@ def main():
     if max(float(x_train.mean(1).abs().max()), float(x_eval.mean(1).abs().max())) > 1e-8:raise ValueError('Require COM-free source samples')
     adapter = LinearEntropyAdapter(condition['numbers'], kind=args.kind).to(args.device)
     optimizer = torch.optim.AdamW(adapter.parameters(), lr=.01, weight_decay=0.)
-    selection = torch.Generator().manual_seed(9141)
+    selection = torch.Generator().manual_seed(args.selection_seed)
     report = {'complete': False, 'scope': __doc__, 'kind': args.kind,
         'configuration': {k: str(v.resolve()) if isinstance(v, Path) else v for k, v in vars(args).items()},
         'condition': condition, 'source_checkpoint_sha256': checkpoint_sha, 'training_sha256': sha(train_path),
         'evaluation_sha256': sha(eval_path), 'oracle_sha256': source['oracle_sha256'],
         'kT_eV': recipe['kT'], 'restraint_eV_A2': recipe['restraint'], 'steps': args.steps, 'batch': args.batch,
-        'seed': 9141, 'lr_start': .01, 'lr_end': .0001, 'lr_schedule': 'cosine', 'parameters': adapter.raw_weights.numel(), 'maximum_pair_weight': .25,
+        'seed': args.selection_seed, 'lr_start': .01, 'lr_end': .0001, 'lr_schedule': 'cosine', 'parameters': adapter.raw_weights.numel(), 'maximum_pair_weight': .25,
         'history': [], 'limitations': ['A known exact-entropy normalizing-flow refinement baseline, not a novelty claim.',
             'The pretrained base generator is frozen; no unqualified score critic is used.',
             'Independent paired energy-minus-log-volume changes estimate marginal reverse-KL change, not absolute KL.',
