@@ -110,6 +110,32 @@ mean error .00945 A passes the geometric screen. Numerical cache check passes
 at 8.80e-5 reduced-energy unit. Do not promote it as an eight-atom reference;
 a single population does not identify persistent bias. Evidence: hmc_smc_reference_1137_screen_v1.json.
 
+## Independent reference and compute checks, September 10 UTC
+
+All four 32-particle HMC-SMC populations completed. Log-normalizer discrepancies
+are +.71340, -1.84187, +.80471, +.89871 nat. Their pooled normalizer ratio to QMC
+is 1.723 with descriptive SE .528 (relative 30.7%); no passing seed is selected
+and this is not a certified reference. Evidence: hmc_smc_reference_four_seeds_v1.json.
+
+Direct product Gauss-Legendre integration over labelled r01,r02 in [2,3.2] A and
+cosine in [-1,1] provides a separate same-box check of the volume factors. Orders
+20/32 differ from restricted QMC by +.04961/+.005303 nat; the Gaussian-volume
+analytic test passes. This does not support a factor-of-two volume error.
+Order 48, job 45770866, is live; the finite box does not certify the full target.
+
+Actual allocation/query ledger: completed_work_compute_ledger_v1.json. Same
+8,512-query eight-atom mean-work runs use about 48 GPU allocation minutes,
+versus HMC about four CPU allocation minutes, with different output statistics.
+MIG/full-device labels are retained and not equated. No total-compute advantage
+is claimed. The shared upstream model-training costs are not reconstructed.
+
+A Gaussian location-mixture population-ESS ceiling is derived in
+notes/gaussian_terminal_noise_ess.md and checked against direct density integrals.
+This uses standard Gaussian/convexity identities; no novelty claim is made.
+Positive-curvature local surrogates give fixed-noise ceilings .29--.38, but these
+are NOT bounds on the non-Gaussian molecular target. The two new standalone
+quadrature/noise-limit tests pass in addition to the last 222-test full suite.
+
 ## What is established
 
 - 222 tests pass, including real FlowMol parameter gradients, full-state and

@@ -1,7 +1,8 @@
 # Next research decision
 
 Goal remains active and unachieved. Latest scientific status: September 10 UTC.
-222 tests pass; latest manuscript build has 9 main pages, no unresolved references.
+Last full suite: 222 tests pass; two new quadrature/noise-limit tests also pass.
+Latest manuscript build has 9 main pages, no unresolved references.
 No broad calibrated molecular benefit or ICLR-ready contribution is established.
 
 1. Live continuations to 1500 total steps (start from 500; optimizer and global
@@ -15,7 +16,12 @@ No broad calibrated molecular benefit or ICLR-ready contribution is established.
    If a run fails, preserve failure and assess completed arms separately.
 2. Matched 25,024-query HMC 45763216 completed: xTB 32/32, median strain .56135
    eV. Eight chains supply 64 correlated draws; no normalizer/mixing certificate.
-3. HMC-SMC reference 45764408 failed its predeclared AgBr2 screen: log Z error
+3. Independent box integral order 48 is live as 45770866. Orders 20/32 of
+   completed 45767649 differ from same-box QMC by +.04961/+.005303 nat. Inspect
+   order stability before refining numerical claims; finite box is not full target.
+   All four HMC-SMC seeds completed with pooled Z/reference 1.723, descriptive
+   SE .528. None is selected for promotion.
+   HMC-SMC reference 45764408 failed its predeclared AgBr2 screen: log Z error
    +.7134 nat versus .25 threshold, despite ESS 23.14/32 and distance error .00945 A.
    Five ancestors have weighted ancestry ESS 1.326. Do not declare this a reference
    or extend it directly to eight atoms. Any redesign requires a new explicit
@@ -41,3 +47,8 @@ Current source/data/target invariants remain in CLAUDE.md. Never write home or
 modify shared FlowMol. Every submission uses a committed immutable snapshot.
 Do not restart live jobs or equate engineering PASS with scientific qualification.
 Authors and submission remain with the user. Keep all failures and old outputs.
+
+The actual compute ledger and Gaussian surrogate limit are in STATUS. Neither
+matched oracle queries nor local harmonic calculations establish molecular
+sampling efficiency. Do not add architectures while the live continuations
+and independent reference check can resolve the current decisions.
