@@ -79,3 +79,23 @@ translation/rotation/reflection/permutation covariance, collision regularity,
 trace matching, coordinate gradients, Gaussian density against an independent
 API, sampled covariance, scalar-kernel recovery and covariance/mean parameter
 gradients with checkpoint recomputation and finite differences.
+
+## Execution gates passed and bounded comparison
+
+The B2 gate (45779357) completed 132 oracle queries with finite training; the
+precision head's initially zero final weights changed (maximum magnitude .0020).
+B16 gate 45780203 completed 160 queries, peak GPU allocation .443 GiB. Frozen
+loader 45780207 exactly reproduced positions and matched work within .000116
+nat at the original batch/stream. These are execution gates, not quality gains.
+
+Freeze the first comparison at 500 updates, B16, K16, 256 before/after paths,
+seed 9051, 300 K, native means, scalar noise .2 with power zero, strength 32.
+Use learned/fixed/trace precision arms and identical source FM weights. Each
+arm spends 8,512 oracle queries. Verify that learned and fixed initial samples
+agree, since both start with the same pair weights. Retain all xTB attempts.
+An atomwise anisotropic-noise comparator and a larger-condition scaling study
+would additionally be needed before a final novelty/superiority claim.
+
+At fixed local connectivity, the current 1/N factor can weaken pair contributions
+as molecule size grows. This prototype has no demonstrated scaling benefit;
+do not hide that limitation or silently change normalization between runs.

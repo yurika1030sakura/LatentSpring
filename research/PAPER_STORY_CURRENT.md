@@ -76,3 +76,15 @@ compute comparison. Current repairs and small-system results supply parts of
 this chain. They do not justify writing the remaining parts as completed work.
 
 See STATUS.md, NEXT.md and the immutable evidence files for quantitative results.
+
+
+## Concrete candidate under evaluation
+
+The first new candidate learns bounded pairwise elastic precision terms, producing
+correlated Gaussian perturbations in the COM-free geometry space with exact
+sampling/log-density factors. It is tested against frozen geometric precision
+and an isotropic covariance matched in total variance at the same input. These
+controls ask whether learning and directional correlation add value beyond
+preconditioning or reduced noise alone. The kernel and gradient checks pass;
+molecular benefit and novelty remain unestablished. AniDS, Chroma and elastic
+network models are relevant prior art. See notes/pair_precision_candidate.md.
