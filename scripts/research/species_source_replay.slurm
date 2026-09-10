@@ -20,8 +20,10 @@ export MPLCONFIGDIR="${SLURM_TMPDIR:-/tmp}/bgfm_replay_mpl_${SLURM_JOB_ID}"
 export XDG_CACHE_HOME="${SLURM_TMPDIR:-/tmp}/bgfm_replay_cache_${SLURM_JOB_ID}"
 mkdir -p "$RUN_ROOT" "$MPLCONFIGDIR" "$XDG_CACHE_HOME"
 cd "$SOURCE_ROOT"
+EXTRA=()
+if [[ "${3:-}" == deterministic ]]; then EXTRA=(--deterministic-runtime); fi
 exec "$BGFM_STORE/envs/flowmol/bin/python" -u scripts/research/prepare_species_breadth_source.py \
  --config configs/sweep/a1_fm_only_s2.yaml --checkpoint "$LAB_RUNS/electronic_fm_global_v1/last.ckpt" \
  --manifest research/evidence/development_panel_v1.json --out "$RUN_ROOT" --condition-index 0 --replay-diagnostic \
  --oracle "$BGFM_STORE/checkpoints/omol25/esen_sm_conserving_all.pt" \
- --oracle-python "$BGFM_STORE/envs/omol25/bin/python"
+ --oracle-python "$BGFM_STORE/envs/omol25/bin/python" "${EXTRA[@]}"

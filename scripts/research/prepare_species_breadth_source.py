@@ -2,6 +2,7 @@
 """Frozen finite-FM plus COM-Gaussian sources for every prescribed development condition."""
 import argparse
 import json
+import os
 from pathlib import Path
 import time
 
@@ -29,8 +30,12 @@ def main():
     p.add_argument('--seed', type=int, default=9181)
     p.add_argument('--condition-index', type=int)
     p.add_argument('--replay-diagnostic', action='store_true', help='Record prefix differences then stop without source qualification')
+    p.add_argument('--deterministic-runtime', action='store_true')
     p.add_argument('--device', default='cuda')
     args = p.parse_args()
+    if args.deterministic_runtime:
+        os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':4096:8'
+        torch.use_deterministic_algorithms(True)
     if min(args.train_count, args.eval_count, args.batch) < 1 or any(n % args.batch for n in [args.train_count, args.eval_count]):
         raise ValueError('Positive divisible stream counts required')
     output = args.out/'panel.json'
@@ -76,6 +81,7 @@ def main():
         'checkpoint_sha256': sha(args.checkpoint), 'manifest_sha256': sha(args.manifest),
         'config_sha256': sha(args.config), 'oracle_sha256': sha(args.oracle),
         'configuration': {k: str(v.resolve()) if isinstance(v, Path) else v for k, v in vars(args).items()},
+        'deterministic_runtime': args.deterministic_runtime,
         'model_input_kT_eV': protocol['requested_kT'], 'physical_target_kT_eV': .025851999786435,
         'restraint_eV_A2': .1, 'source_terminal_noise_std_A': .025,
         'source_sampler': '64-step midpoint displacement FM at T=1 plus independent COM Gaussian noise',
