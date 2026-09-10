@@ -1,0 +1,106 @@
+{
+  "complete": true,
+  "scope": "Evaluate a fixed affine-context control, reusing the frozen convex comparison.",
+  "condition": {
+    "source_row": 5846,
+    "raw_index": 589712,
+    "reference_geometry_loaded": true,
+    "reference_geometry_used_to_initialize": false,
+    "numbers": [
+      1,
+      15,
+      8,
+      6,
+      1,
+      6,
+      8,
+      12
+    ],
+    "charge": 1,
+    "spin_multiplicity": 1
+  },
+  "base_sha256": "1ed25e74832d8c22a1a79dcb5b68b1181afab09db6b0627712eed367d9f9e5c0",
+  "affine_checkpoint_sha256": "d5ca070333b80ee7f647e69211d96497cae258662e58b240d9b1756daaede284",
+  "affine_training_results_sha256": "b30da76cb92eebbb058ba39c7e854bee86419c159a867032296f6357a7f98108",
+  "convex_results_sha256": "db7af30351498e0cddd64035b274edca8b7d219f63a39c379ecaf656df5faaf3",
+  "convex_samples_sha256": "b6f227e987ad09a3f909d668e47167f5e05c463d135b7e44ec1e883a43634b54",
+  "source_checkpoint_sha256": "694a680c4172a355e2a4e899486647f751702bea2dafad93364bf8b60a7b14b5",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "kT_eV": 0.025851999786435,
+  "restraint_eV_A2": 0.1,
+  "affine_run": "species_affine_adapter_1000_s9162",
+  "convex_confirmation": "species_entropy_adapter_replica_confirmation_v1",
+  "limitations": [
+    "One condition and one training pair on a reused2048-row panel; this is mechanism development.",
+    "Both families have nonlinear geometry-conditioned full maps; only the active point transform is ablated.",
+    "Row SEM does not measure training-seed uncertainty. No calibrated sampling or general novelty claim."
+  ],
+  "affine_delta_kl": {
+    "mean": -0.15405497941343949,
+    "sem": 0.026545765807641578,
+    "samples": 2048
+  },
+  "convex_delta_kl": {
+    "mean": -0.1666436443819627,
+    "sem": 0.027475054604302496,
+    "samples": 2048
+  },
+  "convex_minus_affine": {
+    "mean": -0.012588664968523223,
+    "sem": 0.0021489757508294646,
+    "samples": 2048
+  },
+  "affine_inverse_check": {
+    "maximum_residual": 5.551115123125783e-16,
+    "volume_cancellation_error": 2.220446049250313e-16,
+    "layers": [
+      {
+        "iterations": 0,
+        "maximum_residual": 8.881784197001252e-16,
+        "method": "linear_solve"
+      },
+      {
+        "iterations": 0,
+        "maximum_residual": 2.220446049250313e-16,
+        "method": "linear_solve"
+      },
+      {
+        "iterations": 0,
+        "maximum_residual": 4.440892098500626e-16,
+        "method": "linear_solve"
+      },
+      {
+        "iterations": 0,
+        "maximum_residual": 1.1102230246251565e-16,
+        "method": "linear_solve"
+      },
+      {
+        "iterations": 0,
+        "maximum_residual": 2.220446049250313e-16,
+        "method": "linear_solve"
+      },
+      {
+        "iterations": 0,
+        "maximum_residual": 2.220446049250313e-16,
+        "method": "linear_solve"
+      },
+      {
+        "iterations": 0,
+        "maximum_residual": 4.440892098500626e-16,
+        "method": "linear_solve"
+      }
+    ]
+  },
+  "affine_weights": {
+    "particles": 2048,
+    "ess": 1.0014323541952017,
+    "ess_fraction": 0.0004889806416968758,
+    "maximum_weight": 0.9992845351856796,
+    "log_mean_weight": 115.44954722716056
+  },
+  "new_oracle_queries": 2048,
+  "reused_base_energy_rows": 2048,
+  "reused_convex_energy_rows": 2048,
+  "samples_sha256": "7d2f32bb829fc5cd595236fee7d95803794e210793131e1726eae5c6f61fa34c",
+  "seconds": 58.74741586018354
+}
