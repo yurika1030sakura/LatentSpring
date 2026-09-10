@@ -223,7 +223,10 @@ def main():
         'four_stein_moments_within_three_sem': stein_pass, 'passed': dsm_pass and stein_pass,
         'scope': 'Necessary frozen-critic gate only; a pass does not establish global score accuracy or molecular sampling benefit.'}
     torch.save({'critic_state_dict': critic.state_dict(), 'condition': condition, 'terminal_noise_std': sigma,
-        'source_checkpoint_sha256': checkpoint_sha}, args.out/'critic.ckpt')
+        'source_checkpoint_sha256': checkpoint_sha, 'optimizer_state_dict': optimizer.state_dict(),
+        'selection_rng_state': selection.get_state(), 'noise_rng_state': noise.get_state(),
+        'training_steps': args.steps, 'training_objective': args.objective,
+        'training_pool_sha256': sha(train_path)}, args.out/'critic.ckpt')
     torch.save({'positions': positions, 'intrinsic': y_all, 'epsilon': evaluation_noise, 'score_arms': score_arms,
         'losses': losses, 'stein_rows': probes, 'condition': condition}, args.out/'heldout.pt')
     torch.save({'training': train_means, 'heldout': test_means}, args.out/'parent_means.pt')

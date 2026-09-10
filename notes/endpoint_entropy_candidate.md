@@ -140,3 +140,19 @@ there are no energy-oracle queries. Keep the same four Stein probes and paired
 DSM thresholds; do not loosen them after seeing the higher-precision result.
 Both runs must pass before an actor pilot. A failure blocks that pilot under
 this critic recipe, not all entropy-learning methods.
+
+
+## First confirmation failed; fixed longer-training comparison
+
+Both500-step confirmations failed. Selected seed9101 has radial3 residual
+.19303+/-.04194 SEM; seed9103 fails dilation and radial2. No actor update is
+released. To test incomplete optimization at fixed representation, run exactly
+3000 updates from the original initialization for antithetic and grouped-IID,
+each at seeds9101 and9103. All four receive the same128-point budget per update,
+learning rate, clipping and parent data. These are new3000-update runs, not
+unrecorded continuations; all earlier500-step costs remain additional.
+The8192-parent panel is now development data used during this diagnostic chain.
+Any subsequent promotion requires a newly generated independent panel, with
+16384 parents and a predeclared seed9117 (final noise9118), after choosing a
+candidate on development evidence. Keep all four final outcomes, no best-epoch
+selection. Stop these recipes if they still fail; do not weaken the gate.

@@ -18,7 +18,38 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
-## Current follow-up: frozen proposal score qualification
+## Latest: score confirmation failed; actor remains frozen
+
+The selected antithetic critic and its independent seed both fail the fresh8192
+parent confirmation (45817604/45817720). Seed9101 fails radial3 at4.60 SEM;
+seed9103 fails dilation and radial2. This overturns the initial2048-row pass as
+a reliable qualification result. All evidence is preserved and no actor update
+has occurred.248 tests pass.
+
+A fixed3000-step comparison will test optimization sufficiency with the same
+architecture: antithetic and grouped-IID at seeds9101 and9103, same per-update
+score-point budget, no energy queries. Existing8192 rows are development data;
+any later candidate requires a new16384-parent confirmation before promotion.
+This remains standard score-estimation research with no validated AI novelty.
+
+## Earlier score-critic screen and independent confirmation
+
+All500-update frozen-critic controls completed without energy queries or forward
+updates. Only antithetic noise passes the first necessary2048-parent gate:
+paired DSM improves over zero/Gaussian controls and all four Stein moments are
+within3 SEM. Raw, scaled IID, grouped IID and mean-control-variate alternatives
+fail at least one Stein moment. All arms and gradient-scaling/clipping limits
+are retained in evidence/proposal_score_controls_v1.json. This is an auxiliary
+score result on a frozen generator, not improved molecular sampling or novelty.
+
+Fresh8192-parent confirmation45817604 is submitted, seed9107 and final-noise
+seed9108. An independent critic seed9103 will use the same new parent/noise panel
+only after the first job completes. The gate remains unchanged. Both must pass
+before any molecular actor update. None has been made. All previous failures,
+including the global Gaussian innovation recipe and empirical CFM students,
+remain part of the evidence.
+
+## Earlier frozen proposal score protocol
 
 The global innovation diagnostic45815623 completed in5m11s (32 oracle queries,
 plus4 smoke queries). Sequential ESS1.915/32; global metric0/.01/.1/1 ESS1.012/

@@ -1,0 +1,190 @@
+{
+  "complete": true,
+  "scope": "Qualify a frozen molecular proposal score before any endpoint-entropy actor update.",
+  "configuration": {
+    "source_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+    "training_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_teacher_5846_v1",
+    "heldout_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/backward_refit_5846_v1",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_validation_v1",
+    "steps": 0,
+    "objective": "antithetic",
+    "batch": 128,
+    "seed": 9101,
+    "device": "cuda",
+    "critic_checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_antithetic_v1/critic.ckpt",
+    "fresh_heldout_parents": 8192,
+    "heldout_seed": 9107,
+    "heldout_means": null,
+    "evaluation_seed": 9108
+  },
+  "condition": {
+    "source_row": 5846,
+    "raw_index": 589712,
+    "reference_geometry_loaded": true,
+    "reference_geometry_used_to_initialize": false,
+    "numbers": [
+      1,
+      15,
+      8,
+      6,
+      1,
+      6,
+      8,
+      12
+    ],
+    "charge": 1,
+    "spin_multiplicity": 1
+  },
+  "source_checkpoint_sha256": "694a680c4172a355e2a4e899486647f751702bea2dafad93364bf8b60a7b14b5",
+  "training_pool_sha256": "08eb136f1df0b2fe36b3f044b95b41d6a3d93214aaca48faa995aba29296283e",
+  "heldout_pool_sha256": "7952103b0d1ee02e8b549a6ee8abe3e98fe49336c40528be9e4e50e65ac22f2c",
+  "training_parent_seed": 9084,
+  "heldout_parent_seed": 9107,
+  "train_parents": 4096,
+  "heldout_parents": 8192,
+  "terminal_noise_std": 0.0063553594759831,
+  "gaussian_baseline_precision": 0.6974120826792121,
+  "new_oracle_evaluations": 0,
+  "forward_model_updates": 0,
+  "critic_initialization_sha256": "26fe72fbe167b09ea1d456d00611cdeacb64ee7112d0785ea010c2b8ef0ac45a",
+  "evaluation_seed": 9108,
+  "critic_parameters": 20162,
+  "score_point_evaluations_per_update": 128,
+  "independent_parents_per_update": 64,
+  "clipped_updates": 0,
+  "maximum_preclip_gradient_norm": 0.0,
+  "history": [],
+  "limitations": [
+    "Frozen proposal only: no molecular actor or generated-distribution update.",
+    "Fresh final noise is reused across controls; parent means are independent between training and assessment.",
+    "The finite training mixture differs from the population proposal; independent heldout parents detect some overfitting.",
+    "Denoising and four Stein moments are necessary checks, not a complete score or calibration certificate.",
+    "Standard invariant energy network and score-distillation tools are not claimed novel."
+  ],
+  "heldout_dsm": {
+    "zero": {
+      "mean": 0.9996357440308052,
+      "sem": 0.003412070543937092,
+      "count": 8192,
+      "within_three_sem_of_zero": false
+    },
+    "gaussian": {
+      "mean": 0.9996167760537396,
+      "sem": 0.0034120462201094833,
+      "count": 8192,
+      "within_three_sem_of_zero": false
+    },
+    "learned": {
+      "mean": 0.9794642735490453,
+      "sem": 0.0033600926375036296,
+      "count": 8192,
+      "within_three_sem_of_zero": false
+    }
+  },
+  "paired_dsm_difference": {
+    "zero": {
+      "mean": -0.020171470481759955,
+      "sem": 0.0006730316480920063,
+      "count": 8192,
+      "within_three_sem_of_zero": false
+    },
+    "gaussian": {
+      "mean": -0.02015250250469417,
+      "sem": 0.0006731823243467487,
+      "count": 8192,
+      "within_three_sem_of_zero": false
+    }
+  },
+  "stein": {
+    "zero": {
+      "dilation": {
+        "mean": 1.0,
+        "sem": 0.0,
+        "count": 8192,
+        "within_three_sem_of_zero": false
+      },
+      "radial_1": {
+        "mean": -0.6948524233279068,
+        "sem": 0.0005339226860291422,
+        "count": 8192,
+        "within_three_sem_of_zero": false
+      },
+      "radial_2": {
+        "mean": -0.24296156456817825,
+        "sem": 0.002128203975850384,
+        "count": 8192,
+        "within_three_sem_of_zero": false
+      },
+      "radial_3": {
+        "mean": 0.005886014272384787,
+        "sem": 0.005645502929891486,
+        "count": 8192,
+        "within_three_sem_of_zero": true
+      }
+    },
+    "gaussian": {
+      "dilation": {
+        "mean": -0.0013960647078295795,
+        "sem": 0.0011500124530429646,
+        "count": 8192,
+        "within_three_sem_of_zero": true
+      },
+      "radial_1": {
+        "mean": -0.43161737568343406,
+        "sem": 0.000800009517298276,
+        "count": 8192,
+        "within_three_sem_of_zero": false
+      },
+      "radial_2": {
+        "mean": 0.19890713158224782,
+        "sem": 0.002634798872483524,
+        "count": 8192,
+        "within_three_sem_of_zero": false
+      },
+      "radial_3": {
+        "mean": 0.16432196275770533,
+        "sem": 0.005879331095504249,
+        "count": 8192,
+        "within_three_sem_of_zero": false
+      }
+    },
+    "learned": {
+      "dilation": {
+        "mean": 0.060085695798452285,
+        "sem": 0.06334705274447389,
+        "count": 8192,
+        "within_three_sem_of_zero": true
+      },
+      "radial_1": {
+        "mean": -0.08231716962678808,
+        "sem": 0.04463658107266869,
+        "count": 8192,
+        "within_three_sem_of_zero": true
+      },
+      "radial_2": {
+        "mean": 0.027603416456331985,
+        "sem": 0.04383297704835092,
+        "count": 8192,
+        "within_three_sem_of_zero": true
+      },
+      "radial_3": {
+        "mean": 0.19302891339970152,
+        "sem": 0.04194051261428779,
+        "count": 8192,
+        "within_three_sem_of_zero": false
+      }
+    }
+  },
+  "qualification_gate": {
+    "paired_dsm_improvement_over_both_controls": true,
+    "four_stein_moments_within_three_sem": false,
+    "passed": false,
+    "scope": "Necessary frozen-critic gate only; a pass does not establish global score accuracy or molecular sampling benefit."
+  },
+  "seconds": 68.49339159601368,
+  "artifacts": {
+    "critic.ckpt": "26fe72fbe167b09ea1d456d00611cdeacb64ee7112d0785ea010c2b8ef0ac45a",
+    "heldout.pt": "d6941c84841627fcd1223971c8e2148ec65ebc045ad90929a1311b56a629c5ef",
+    "parent_means.pt": "9263eb0b6b05f1b0f3c87b0d3245a807d3527ebe43208b71fc3482cb8bb9471f"
+  }
+}
