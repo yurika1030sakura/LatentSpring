@@ -121,7 +121,10 @@ Direct product Gauss-Legendre integration over labelled r01,r02 in [2,3.2] A and
 cosine in [-1,1] provides a separate same-box check of the volume factors. Orders
 20/32 differ from restricted QMC by +.04961/+.005303 nat; the Gaussian-volume
 analytic test passes. This does not support a factor-of-two volume error.
-Order 48, job 45770866, is live; the finite box does not certify the full target.
+Order 48, job 45770866, completed: difference to QMC +.007148 nat and
+32-to-48 change +.001845 nat. All three orders use 151,360 new queries.
+Evidence: triatomic_box_crosscheck_v1.json. The finite box does not certify
+the full target.
 
 Actual allocation/query ledger: completed_work_compute_ledger_v1.json. Same
 8,512-query eight-atom mean-work runs use about 48 GPU allocation minutes,

@@ -29,3 +29,10 @@ volume error, but the order change is still measurable. Freeze one additional
 order 48 (110,592 new queries) with exactly the same domain, potential and QMC
 comparison; retain both prior orders. Do not reinterpret this as a full-domain
 normalizer certificate.
+
+
+Order 48 completed with difference +.007148 nat to restricted QMC; the 32-to-48
+change is +.001845 nat. This is consistent with the QMC relative SE of 1.82% and
+does not support a factor-of-two volume discrepancy. All three orders cost
+151,360 new oracle queries. Neither agreement nor the finite box certifies the
+full target or resolves the high variance of four small HMC-SMC populations.

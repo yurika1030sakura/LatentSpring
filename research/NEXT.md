@@ -16,16 +16,13 @@ No broad calibrated molecular benefit or ICLR-ready contribution is established.
    If a run fails, preserve failure and assess completed arms separately.
 2. Matched 25,024-query HMC 45763216 completed: xTB 32/32, median strain .56135
    eV. Eight chains supply 64 correlated draws; no normalizer/mixing certificate.
-3. Independent box integral order 48 is live as 45770866. Orders 20/32 of
-   completed 45767649 differ from same-box QMC by +.04961/+.005303 nat. Inspect
-   order stability before refining numerical claims; finite box is not full target.
-   All four HMC-SMC seeds completed with pooled Z/reference 1.723, descriptive
-   SE .528. None is selected for promotion.
-   HMC-SMC reference 45764408 failed its predeclared AgBr2 screen: log Z error
-   +.7134 nat versus .25 threshold, despite ESS 23.14/32 and distance error .00945 A.
-   Five ancestors have weighted ancestry ESS 1.326. Do not declare this a reference
-   or extend it directly to eight atoms. Any redesign requires a new explicit
-   protocol; do not relax the existing gate. Source 73cee25, 32,832 oracle calls.
+3. Independent direct same-box integration is complete: jobs 45767649 and
+   45770866, orders 20/32/48, 151,360 new queries. Order 48 differs from order 32
+   by .001845 nat and from original QMC by .007148 nat (QMC relative SE 1.82%).
+   It supports the original volume factors in this finite box; do not declare
+   full-domain convergence. All four HMC-SMC seeds completed with pooled
+   Z/reference 1.723, descriptive SE .528. The original failed screen stands;
+   no passing seed or eight-atom reference is selected.
 4. Completed 500-step log-variance recipe fails: ESS 1/256, overlap 99.22%, xTB
    25/32, median successful strain 316.30 eV. Preserve it; no scale-up. Frozen
    gradient diagnostic 45762271 measured 37.6-fold forward covariance trace

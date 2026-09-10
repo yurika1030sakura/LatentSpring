@@ -1,0 +1,52 @@
+{
+  "complete": true,
+  "scope": "Independent direct same-box volume/normalizer cross-check, retaining all cubature orders.",
+  "radial_box_A": [
+    2.0,
+    3.2
+  ],
+  "cosine_box": [
+    -1.0,
+    1.0
+  ],
+  "qmc_box_log_normalizer": 5573393.754432085,
+  "qmc_box_relative_se": 0.018195293943071317,
+  "rows": [
+    {
+      "order": 20,
+      "queries": 8000,
+      "log_normalizer_box": 5573393.804042723,
+      "difference_to_qmc_box": 0.049610638059675694,
+      "output_sha256": "4e8a2d9cac12d3b5454f46c05f3adb01755a4da20deaee9a0af76a0e67e61512",
+      "seconds": 52.725067351995676
+    },
+    {
+      "order": 32,
+      "queries": 32768,
+      "log_normalizer_box": 5573393.759735207,
+      "difference_to_qmc_box": 0.005303122103214264,
+      "output_sha256": "5d1ba109db897e656ceeac82c885ecf6f0586727addc48b14960c1dc0a8cd990",
+      "seconds": 234.62454856599652
+    },
+    {
+      "order": 48,
+      "queries": 110592,
+      "log_normalizer_box": 5573393.761579849,
+      "difference_to_qmc_box": 0.007147763855755329,
+      "output_sha256": "bccecab6ce21b6e9fde8714ff159f9cf3046f57abd8862030ec63449be890d6d",
+      "seconds": 630.7156899460024
+    }
+  ],
+  "order32_to48_change_nat": 0.0018446417525410652,
+  "total_oracle_queries": 151360,
+  "source_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/triatomic_box_reference_1137_v1/results.json": "184e1f7cd1e14633bbfe05ae43b39c0d3520e99881f1101829044f766215b82e",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/triatomic_box_reference_1137_order48_v1/results.json": "bda9797815e05b31fafcf3cb2d44ef898dc08dc6206a9abf07480cb78c22f424"
+  },
+  "limitations": [
+    "This is a finite-domain integral, not a proof of total normalization or global target coverage.",
+    "Order agreement is not a rigorous numerical-error bound.",
+    "The result does not support a factor-of-two volume error in the original shape-QMC reference.",
+    "It does not certify HMC-SMC or learned-sampler convergence."
+  ]
+}
