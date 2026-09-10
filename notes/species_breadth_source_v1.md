@@ -46,8 +46,10 @@ model. Retain every condition-level failure and do not replace failed rows.
 
 After engineering qualification, produce4096 training and512 development rows
 per condition using base seed9182 and batch64. Neither stream is used for
-independent final confirmation. Each condition's producer runs separately under
-a bounded allocation, keeping the full eight-condition denominator. Costs:
+independent final confirmation. The producer retains separate condition records under a bounded allocation,
+keeping the full eight-condition denominator. The full-panel launcher uses one
+regular-GPU allocation capped at4 hours; it is released only after8/8 engineering
+qualification, with all condition records retained on failure. Costs:
 4608 endpoint oracle queries per condition;128 FM field calls per geometry,
 with training/screen/confirmation costs additionally accounted.
 
