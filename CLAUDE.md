@@ -60,6 +60,12 @@ still approximately1/2048. No calibrated sampler or novel-method contribution
 is established. Read `research/evidence/species_entropy_replication_v1.json`
 and `notes/species_coupling_execution_v1.md` before further development.
 The base must stay frozen for the unknown-source-entropy cancellation to hold.
+The stronger same-neural-context affine control is implemented in
+`cfm_mol/affine_species_adapter.py`; its full map remains nonlinear through
+context. Read `notes/species_affine_ablation_v1.md` and NEXT for live jobs.
+The eight-condition source engineering screen now passes deterministic replay;
+full source generation and a generic broad-condition trainer remain separate
+steps. These new FM64-plus-noise sources have no evaluated path weights.
 
 ## Locked project decisions
 

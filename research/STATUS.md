@@ -18,6 +18,28 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
+## Current broader-source and mechanism checks
+
+The stronger affine-context ablation is implemented with the same neural
+conditioner and parameter count as the convex candidate; only active-coordinate
+maps are linearized. The full conditioned map remains nonlinear.277 tests pass,
+including14 full-model checks across both families. Its64-query real smoke
+45884688 and strict checkpoint-loader replay pass. Main1000-step45884844
+completes16512 queries: development DeltaKL=-.21483+/-.06354; convex-minus-affine
+=-.02008+/-.00628 nat. This is a development result awaiting shared-panel
+confirmation. Replica45885671 is running, and the main confirmation is submitted.
+See notes/species_affine_ablation_v1.md; no active-nonlinearity benefit is promoted yet.
+
+All eight broader source conditions pass the revised engineering screen45884687:
+512 finite physical queries, distinct stream seeds and exact repeated prefixes.
+The original screen45883666 failed a1e-7-A replay gate before querying energies.
+Matched diagnostics show1.43e-6-A GPU replay variation without input/RNG changes,
+and exact replay after deterministic runtime settings. The gate was retained.
+Every original failure is preserved, and the runtime protocol is versioned as v2.
+Full all-eight source production45885669 is submitted on regular GPU with a
+4-hour cap. Its4096+512 rows per condition are not yet complete. No broad adapter
+has trained on them and no source distribution is declared calibrated.
+
 ## Current species-coupling execution and training replication
 
 The invariant conditioner and complete nonlinear species coupling adapter are

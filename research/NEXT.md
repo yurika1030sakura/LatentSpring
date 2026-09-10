@@ -2,39 +2,50 @@
 
 Goal active and unachieved. This goal turn: progress. The complete nonlinear
 species adapter has two matched training pairs and a replay-verified shared-panel
-confirmation. The paper appendix is updated and builds at9 main pages.270 tests
+confirmation. The paper appendix is updated and builds at9 main pages.277 tests
 passed for the complete method. No broad calibrated sampler or ICLR novelty is
 established; never mark the full objective complete from these component results.
 
-1. Finish the all-eight-condition source engineering screen45883666,
-   runs/species_breadth_source_smoke_v1, source740859f. Re-query the SAME job;
-   do not restart it based on this note's stale running status. Require8/8
-   terminal condition records,512 finite energy/force queries, disjoint stream
-   seeds, COM and prefix replay checks. Preserve every failure. Protocol:
-   notes/species_breadth_source_v1.md and its frozen source-hash JSON.
-2. After qualification, produce4096 training+512 development rows for EACH
-   of the eight prescribed conditions, seed9182, batch64. The new source is
-   frozen global FM64 plus .025-A COM Gaussian noise; it differs from the old
-   condition5846 source. Preserve the pretrained1-eV neural input and the
-   physical300-K target distinction. Do not invent path weights for this source.
-   Every source/target hash is frozen. Reserved722 conditions remain untouched.
-3. Implement a generic exact-entropy trainer for these audited source files.
-   The current train_species_entropy_adapter.py intentionally remains tied to
-   the old condition5846 work-source provenance. New training needs an explicit
-   source kind; no fake inherited work or silent reuse of the old condition.
-   Compare the fixed nonlinear and typed-linear1000-step recipes at batch16,
-   two independent training streams. Record all eight conditions and every
-   failure, all model/oracle costs and separate geometry/diversity checks.
-4. Add a stronger architecture ablation before calling the nonlinear-point
-   mechanism established: retain the same invariant conditioner, group split
-   and coupling schedule, but replace each active point map F(u) with its
-   affine tangent F(0)+DF(0)u. DF(0) remains SPD, exact group volume becomes
-   (n_g-1)logdet DF(0), and centroid volume logdet DF(0). The full conditioned
-   composition is still nonlinear; this separates neural context from active
-   point nonlinearity. It is a prospective control, NOT implemented or tested.
-   Check full intrinsic Jacobians/gradients/inverse with every context dependency,
-   then match seeds, budgets, data and schedules. EACF or another qualified
-   external equivariant-flow baseline plus matched HMC is still required.
+1. The all-eight-condition deterministic source screen45884687 is COMPLETE:
+   8/8 condition records,512 finite energy/force queries, distinct stream seeds,
+   zero COM violations and exact repeated-prefix coordinates. The original
+   screen45883666 failed all replay gates before querying energies; retain it.
+   Diagnostics45884130/45884322 isolate a1.43e-6-A repeated GPU difference,
+   unchanged input/RNG, then exact replay with deterministic arithmetic. No
+   tolerance was relaxed. Evidence: species_source_replay_audit_v1.json and
+   species_breadth_source_qualification_v2.json. The complete suite passes277 tests.
+2. Full source production is submitted as45885669, species_breadth_source_full_v1,
+   regular GPU,4-hour cap, all eight conditions sequentially. It was PENDING for
+   priority when this note was written. Re-query this SAME job; do not restart.
+   Produce4096 training+512 development rows per condition, seed9182,batch64.
+   The source is global FM64 plus .025-A COM Gaussian noise, with frozen v2
+   hashes/runtime. Preserve pretrained1-eV input versus physical300-K target.
+   No path importance weights exist for this source. Retain complete earlier
+   condition records if a later one fails or times out. Reserved722 untouched.
+3. Implement a generic exact-entropy trainer for these new source records.
+   Existing train_species_entropy_adapter.py intentionally retains the old
+   condition5846 source contract. New training needs an explicit source kind;
+   no fabricated inherited work or silent condition substitution. Compare fixed
+   convex/affine-context/typed-linear recipes on every prescribed condition,
+   with source, model and oracle costs, geometry/diversity and failure denominators.
+   This broad trainer is NOT yet implemented or launched.
+4. The stronger AFFINE-CONTEXT control IS implemented, with the same19365 neural
+   parameters and full context dependencies. Only each active F(u) is replaced
+   by F(0)+DF(0)u; the conditioned whole map remains nonlinear. Fourteen tests
+   cover both families, including full Jacobians/inverse/gradients/200 atoms.
+   Smoke45884688 completes64 queries and trained reconstruction/volume checks.
+   Loader replay matches its real saved coordinates and volumes.
+   Main1000-step control45884844 completed16512 queries: development DeltaKL
+   -.21483+/-.06354; convex-minus-affine -.02008+/-.00628 nat on256 rows.
+   This requires confirmation. Replica45885671 is RUNNING; preserve it.
+   Main confirmation species_affine_confirmation_v1 is submitted; obtain its
+   job ID from jobs.jsonl and check completion. It reuses stored convex/base
+   energies and adds only2048 affine queries. Do not repeat prior energy queries.
+   After replica completion submit confirm_species_affine.slurm with arguments
+   species_affine_adapter_1000_s9162 and species_entropy_adapter_replica_confirmation_v1.
+   Preserve both seeds regardless of outcome. If the affine-context model matches
+   convex, do not attribute the earlier typed-control gain to active nonlinearity.
+   EACF/another qualified external flow control and matched HMC remain required.
 5. Current molecular evidence is a SMALL relative-KL result only. Two pairs on
    the shared2048-row panel yield nonlinear-minus-typed -.04892+/-.01732 and
    -.03882+/-.01642 nat (row SEM). They share parent pools and evaluation noise;
