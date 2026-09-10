@@ -1,0 +1,337 @@
+\begin{abstract}
+Energy refinement of a pretrained molecular generator requires accounting for
+changes in its distribution, although its marginal density and score may be
+unavailable. We study a frozen-generator construction that learns a separate
+invertible map using physical energy and exact changes in log volume. The
+candidate architecture decomposes Cartesian coordinates into element-group
+internal displacements and element-centroid differences. Invariant neural
+contexts condition nonlinear point maps whose centered Jacobian determinants
+require only three-dimensional matrix factorizations. Standard change of
+variables gives an estimable relative endpoint-KL objective without the source
+entropy or target normalizer. On one eight-atom development condition, two
+training streams show small improvements over typed-linear and matched
+neural-context affine controls. The latter differences are
+$-0.0133\pm0.0025$ and $-0.0126\pm0.0021$ nat on shared confirmation samples.
+Path importance weights remain severely concentrated. A broader eight-condition
+comparison is specified and launched, but its performance results and external
+flow comparisons are not yet available. We therefore present an implemented
+method candidate and its limitations, without claiming calibrated Boltzmann
+sampling or an established novel-method advantage.
+\end{abstract}
+
+\section{Introduction}
+Molecular generators can propose three-dimensional configurations without
+running an equilibrium simulation. Flow matching offers a flexible way to
+learn such generators \citep{lipman2023flowmatching,flowmol3}. Adapting their
+outputs to a specified energy target, however, requires more than lowering
+potential energy: concentrating a distribution also changes its entropy.
+An implicit generator need not expose the marginal density or score of its
+actual sampling procedure. An inaccurate surrogate for either quantity can
+change the objective while retaining a plausible energy narrative.
+
+We investigate a modular alternative. Keep the source generator fixed and learn
+an invertible map of its outputs. The entropy change then depends on the map's
+Jacobian, while the unknown source entropy is constant. This is established
+normalizing-flow and Boltzmann-generator reasoning \citep{noe2019boltzmann}.
+The architectural question is how to obtain useful, symmetry-preserving molecular
+refinement with tractable volume accounting and without an additional
+marginal-density approximation.
+
+Our candidate uses atomic-number groups to define conditional coordinate
+updates. An invariant message network predicts parameters of a strongly monotone
+point map. Centering these point updates preserves each group's centroid, with
+an explicit correction to the volume on the constrained space. Additional
+centroid-pair updates move element groups relative to one another. The method
+acts directly on Cartesian coordinates and requires no supervised bond labels.
+The setting is conditional refinement given composition, charge and spin, using
+OMol25 as the primary data source \citep{omol25}.
+
+The current contribution is an implemented construction and a controlled
+development study. We provide a constrained-volume derivation, actual interface
+and gradient checks, two training replicas and a matched architectural ablation.
+These establish numerical consistency and a small relative-KL signal on one
+condition. They do not establish a calibrated general sampler, broad
+generalization or sufficient novelty for a completed method paper. The broader
+comparison and remaining scientific gates are stated explicitly below.
+
+\paragraph{Relation to prior methods.}
+Equivariant finite flows and augmented coupling flows already provide
+symmetry-preserving invertible models \citep{bose2021equivariantfinite,midgley2023eacf}.
+Convex-potential and residual flows supply related invertibility principles
+\citep{huang2020convex,chen2019residual}. Our candidate distinction is the
+element-group decomposition and nonlinear centered point transformation;
+equivariance, the KL objective and the linear-algebra identities themselves
+are not new claims. External performance comparison remains necessary.
+
+\section{Conditional source and physical target}
+For fixed atomic numbers $z_1,\ldots,z_n$, charge $Q$ and spin multiplicity $S$,
+let
+\[
+ H=\{x\in\mathbb R^{n\times3}:\textstyle\sum_i x_i=0\},
+ \qquad d=3(n-1).
+\]
+The measure on $H$ is induced by an orthonormal basis. The centroid uses atom
+counts, matching this declared measure; it is not a mass-weighted dynamical
+coordinate. Coordinates retain atom labels, and the construction is equivariant
+under joint permutations of coordinates and element identities.
+
+The target is
+\begin{equation}
+ \pi(x)=Z^{-1}\exp[-U(x)/(kT)],\qquad
+ U(x)=E_{\mathrm{eSEN}}(x;z,Q,S)+\frac{\kappa}{2}\sum_i\|x_i\|^2.
+ \label{eq:refine-target}
+\end{equation}
+The reported cold-target studies use $kT=0.025851999786435$ eV and
+$\kappa=0.1$ eV/$\mathrm{\mathring A}^2$. The learned potential, confinement
+and electronic state are part of the target. This is not an unconfined
+experimental or direct-DFT ensemble. Artificial flow time is not molecular
+dynamics time, and an energy histogram also depends on the density of states.
+
+The source $q_0$ is frozen throughout adapter training. We require samples,
+but neither a source-density evaluator nor an estimated source score. The
+one-condition study uses a previously trained finite Gaussian-path generator.
+The new broader study uses a different source: a fixed 64-step molecular FM
+map followed by independent COM-Gaussian noise of standard deviation 0.025
+$\mathrm{\mathring A}$. This source uses a separately trained displacement
+head with fixed atom identities and electronic state; history-dependent
+self-conditioning and steric retractions do not enter this map.
+Its original 1-eV neural temperature input remains
+fixed and is distinct from the 300-K physical target. No reference coordinates
+initialize either source. Comparisons must identify the source law explicitly
+rather than pool these different experiments.
+
+\begin{assumption}[Scope of the entropy identity]
+The target normalizer is finite, $q_0$ has a density on $H$, and the entropies
+and energy expectations in the stated KL differences are finite. The learned
+map is an orientation-preserving diffeomorphism of $H$.
+\label{ass:refinement}
+\end{assumption}
+Positive terminal Gaussian noise ensures a positive source density for the
+broader construction; it does not by itself certify target integrability or
+distributional calibration.
+
+\section{Neural couplings on element groups}
+For each atomic-number group $g$, write $n_g$ for its size,
+$\mu_g=n_g^{-1}\sum_{i\in g}x_i$ and $u_i=x_i-\mu_g$. The coordinate space
+splits into group-internal subspaces and a centroid space satisfying
+$\sum_g n_g\mu_g=0$.
+
+\paragraph{Contexts held fixed by a layer.}
+For an internal-group update, replace the active group's coordinates by
+$\mu_g$ when constructing the neural context. For a centroid-pair update
+on groups $g,h$, preserve their internal displacements but replace both
+centroids by $m=(n_g\mu_g+n_h\mu_h)/(n_g+n_h)$. All other coordinates remain
+available. These contexts are independent of the active internal displacement
+or active centroid difference. Thus the layer is triangular in active/passive
+coordinates. Context derivatives are retained when differentiating the full
+model; triangularity does not justify detaching them during training.
+
+The shared conditioner has two invariant message-passing blocks, hidden width 32,
+24 radial features, element and role embeddings, and inputs for charge, spin,
+log target temperature and layer mode. Scalar outputs parameterize the point
+map; relative context vectors supply equivariant directions and a bounded
+centroid shift. Final heads are zero-initialized, giving exact identity.
+Neither dropout nor batch-coupled normalization is used.
+
+\paragraph{Bounded nonlinear point map.}
+With fixed context, define
+\begin{equation}
+ F(u)=\lambda u+\sum_{j=1}^{M}a_j\operatorname{sigmoid}(b_j^\top u+c_j)b_j
+       +a_r\frac{u}{\sqrt{\ell^2+\|u\|^2}}.
+ \label{eq:point-map}
+\end{equation}
+Use $\lambda=\exp[0.25\tanh(s)]$, $\|b_j\|\leq1/\ell$,
+$|a_j|\leq2\beta\lambda\ell^2/M$ and
+$|a_r|\leq\beta\lambda\ell/2$, with $\beta = 0.25$.
+These bounds imply $\|DF-\lambda I\|\leq\beta\lambda$.
+Although individual coefficients can be signed, the total potential whose
+gradient is $F$ remains strongly convex. On an internal group, use
+\begin{equation}
+ T_i(u)=F(u_i)-\frac1{n_g}\sum_{j\in g}F(u_j).
+ \label{eq:centered-map}
+\end{equation}
+
+\begin{proposition}[Constrained volume and reconstruction]
+Let $A_i=DF(u_i)$ and let $H_g$ be the zero-sum group subspace. The map in
+\eqref{eq:centered-map} is invertible on $H_g$, with
+\begin{equation}
+ \log\det_{H_g}DT
+ =\sum_{i\in g}\log\det A_i+
+   \log\det\!\left(\frac1{n_g}\sum_{i\in g}A_i^{-1}\right).
+ \label{eq:centered-volume}
+\end{equation}
+The iteration $u^{+}=\lambda^{-1}[y-P_g(F(u)-\lambda u)]$ contracts by at
+most $\beta$, where $P_g$ removes the group mean.
+\label{prop:centered-volume}
+\end{proposition}
+The last determinant in \eqref{eq:centered-volume} is essential: multiplying
+ambient point determinants alone gives the wrong constrained volume.
+Only $3\times3$ matrix factorizations are required for this identity. The
+conditioner still uses complete-graph interactions, so this is not a claim of
+linear overall network complexity. Appendix \ref{app:refinement-proofs}
+derives the result using standard Schur-complement and contraction arguments.
+The numerical inverse is used for reconstruction checks; forward training
+does not differentiate through the inverse iteration.
+
+\paragraph{Centroid motion and composition.}
+For active $\delta=\mu_g-\mu_h$, apply $\delta'=F(\delta)+t$ and set
+\[
+ \mu_g'=m+\frac{n_h}{n_g+n_h}\delta',\qquad
+ \mu_h'=m-\frac{n_g}{n_g+n_h}\delta'.
+\]
+The shift $t$ is equivariant and bounded by 0.1 $\mathrm{\mathring A}$.
+Internal displacements stay fixed, total COM is preserved, and the layer's
+log volume is $\log\det DF(\delta)$. The fixed count-dependent coordinate
+change cancels in the determinant. A sweep applies internal-group updates
+for groups of size at least two, followed by adjacent element-centroid pairs
+in atomic-number order. This avoids sorting by coordinates or arbitrary atom IDs.
+The eight-atom model has seven layers and 19,365 parameters. Small or homogeneous
+contexts restrict angular expressivity; the construction is not claimed universal.
+
+\section{Training with exact entropy change}
+\begin{proposition}[Relative endpoint KL]
+Under Assumption \ref{ass:refinement},
+\begin{equation}
+ \KL(T_\#q_0\Vert\pi)-\KL(q_0\Vert\pi)
+ =\mathbb E_{x\sim q_0}\left[
+   \frac{U(Tx)-U(x)}{kT}-\log\det_H DT(x)\right].
+ \label{eq:relative-kl}
+\end{equation}
+\label{prop:relative-kl}
+\end{proposition}
+This is a standard change-of-variables identity. It motivates minimizing
+\begin{equation}
+ \mathcal L(\theta)=\mathbb E_{q_0}\left[
+     U(T_\theta x)/(kT)-\log\det_H DT_\theta(x)\right].
+ \label{eq:refinement-loss}
+\end{equation}
+Physical forces supply the gradient of the energy term through the complete
+forward map. The volume term is differentiated analytically through the
+implementation. The unknown source entropy and target normalizer cancel;
+neither an estimated score nor an approximate CNF trace is substituted.
+Unfreezing the source would change its entropy and invalidate this objective
+as a complete gradient for the combined generator.
+
+When a source has valid explicit path work $W$, carrying its auxiliary
+variables through the endpoint inverse gives
+$W'=W+[U(Tx)-U(x)]/(kT)-\log\det_HDT(x)$. The conditional auxiliary gap then
+stays fixed. This supports exact work increments in the one-condition study,
+but neither the identity nor a mean improvement guarantees useful importance
+weights. No such path density has been evaluated for the broader FM-plus-noise
+source, and no importance ESS is assigned to it.
+
+\paragraph{Matched controls.}
+The typed-linear control uses $T(x)=\exp(K)x$,
+$K=[W-\operatorname{diag}(W\mathbf1)]/n$, with symmetric type-pair weights
+bounded by 0.25; its intrinsic log volume is $3\operatorname{tr}K$.
+The stronger affine-context control retains the complete neural conditioner
+and replaces each active point map by $F(0)+DF(0)u$. Its full conditioned
+composition remains nonlinear. Centering cancels $F(0)$ in internal layers,
+whose log volume becomes $(n_g-1)\log\det DF(0)$; centroid-pair layers retain
+the offset. This ablation isolates the active point transformation under the
+fixed training recipe, rather than conflating it with neural context capacity.
+
+\section{Completed evidence and broader experiment}
+\paragraph{Numerical qualification.}
+The full-model checks use nonzero parameters and include complete intrinsic
+Jacobians, context invariance, inverse composition, identity initialization,
+joint coordinate/element permutation, O(3) equivariance, independent batch
+evaluation and parameter finite differences. Reconstruction is exercised up
+to 200 atoms. Fourteen model tests cover both neural families. The complete
+repository suite currently passes 289 tests, including source-contract corruption
+and oracle-accounting checks. These are implementation checks, not evidence
+of molecular sampling quality. Trained checkpoints also undergo inverse,
+dense-Jacobian and public-loader replay checks.
+
+\paragraph{One-condition training replication.}
+The completed study conditions on $\mathrm{C_2H_2MgO_2P}$, charge $+1$ and
+singlet multiplicity, on the labelled eight-atom space. Every arm receives
+the same 4,096 training parents, 1,000 updates and batch 16. Each training run
+uses 16,512 physical queries, including 256-row base and adapted development
+evaluation. Neural models use a cosine learning rate from $0.001$ to $0.00001$;
+the 13-parameter typed-linear control uses $0.01$ to $0.0001$.
+The two neural families have identical parameter counts, initialization and
+learning-rate schedules within a matched training pair. A second pair changes
+neural initialization and minibatch-selection seeds. There is no best-checkpoint
+selection. The preceding 200-step screen showed no clear convex advantage over
+typed linear ($-0.0236\pm0.0258$ nat) and remains in the development record.
+
+\begin{table}[t]
+\centering
+\caption{Paired relative-KL changes on the shared 2,048-row confirmation panel.
+Means $\pm$ row SEM in nats; these errors condition on each trained model.}
+\label{tab:refinement-results}
+\begin{tabular}{lrr}
+\toprule
+Quantity & Training pair 1 & Training pair 2\\
+\midrule
+Typed-linear $\Delta\KL$ & $-0.12558\pm0.01829$ & $-0.12782\pm0.01896$\\
+Affine-context $\Delta\KL$ & $-0.16118\pm0.02692$ & $-0.15405\pm0.02655$\\
+Convex $\Delta\KL$ & $-0.17451\pm0.02808$ & $-0.16664\pm0.02748$\\
+Convex minus typed & $-0.04892\pm0.01732$ & $-0.03882\pm0.01642$\\
+Convex minus affine & $-0.01332\pm0.00252$ & $-0.01259\pm0.00215$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both pairs retain a small convex advantage over the same-neural-context
+control (Table \ref{tab:refinement-results}). Confirmation rows were freshly
+generated for the initial convex/typed comparison and reused for training
+replication and the later mechanistic ablation. They are now development
+evidence. The two pairs share training parents and evaluation noise; their
+rows must not be pooled as 4,096 independent observations, and row SEM is not
+uncertainty across training seeds.
+
+\paragraph{The retained sampling limitation.}
+The base path ESS is 1.0039/2,048. Convex ESS is 1.0028 and 1.0016; typed-linear
+ESS is 1.0036 and 1.0033. The second affine-context model has ESS 1.0014.
+Thus the relative-KL signal does not repair this importance-sampling failure.
+Low path ESS alone also does not identify the absolute endpoint KL, because
+it includes the conditional auxiliary mismatch. Global probability calibration
+remains unestablished.
+
+Independent GFN2-xTB optimization converges for all 32 fixed attempts in the
+base, typed and convex arms. Base/typed/convex median strains are
+0.6205/0.5981/0.5934 eV for pair 1 and 0.6205/0.5980/0.5913 for pair 2.
+These success-only medians accompany all attempt counts; they do not establish
+significant geometry superiority, full chemical validity or correct mode
+populations. Affine-context geometry assessment is a separate pending comparison.
+The convex branch, its controls, screens and confirmations use 80,064 new oracle
+queries and 320 xTB optimization attempts. The affine branch adds 37,184 oracle
+queries. Source generation, inherited pretraining and earlier failed method
+branches are additional costs.
+
+\paragraph{Prespecified broader study: performance pending.}
+An outcome-independent development manifest contains eight conditions with
+9--20 atoms, including charged and open-shell cases and metal-containing
+compositions. Every condition is retained. Source production targets 4,096
+training and 512 development rows per condition. Complete energy replay, inverse,
+Jacobian and checkpoint checks passed for all 24 condition/family smoke arms,
+using 1,536 physical queries. These short checks have no performance standing.
+
+The production design uses all three model families and two training streams
+per condition, yielding 48 planned trained arms. Each arm receives 1,000 updates,
+batch 16, and 17,024 physical queries: 16,000 training plus 512 base and 512 adapted
+development evaluations. The planned adapter total is 817,152 queries; source
+production has a separate planned budget of 36,864. One source-production attempt timed
+out on a bulk RPC and was stopped, with an attempted-query bound of 0--8,192
+and no qualified output. Its records are retained. The replacement bounds
+requests and persists intermediate coordinates and scored chunks.
+Complete broader performance results are not yet available. The reserved 722
+conditions remain untouched.
+
+\section{Limitations and remaining scientific gates}
+The construction provides an exact relative-entropy accounting route, not an
+absolute source-density estimator or a guarantee of molecular validity.
+The base stays fixed; support and mode-coverage weaknesses can remain despite
+local improvement. The element decomposition restricts homogeneous and
+passive-context-poor systems. The energy target is a confined learned potential,
+so results do not directly transfer to an experimental equilibrium ensemble.
+
+External equivariant-flow and matched-sampling baselines are still required.
+An augmented baseline's joint-KL upper bound must not be ranked as an exact
+physical marginal KL. Physical-coordinate distribution diagnostics, credible
+independent references, geometry/diversity checks and complete computation are
+needed alongside any objective comparison. Strong broad gains, probability
+calibration and method novelty remain open. This draft records the implemented
+candidate and completed evidence while leaving those requirements explicit.

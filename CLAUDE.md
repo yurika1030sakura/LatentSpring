@@ -5,6 +5,13 @@ Updated 2026-09-10 after code, theory, archived-evidence and research diagnostic
 
 ## Active takeover branch
 
+The primary manuscript is now `paper/main.tex` with
+`sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
+exact-entropy refinement candidate. It is explicitly a development draft.
+`paper/legacy_audit.tex` preserves the historical audit entrypoint. The build
+script accepts an optional second entrypoint argument. Do not confuse either
+formatting pass with scientific submission readiness.
+
 Read `research/STATUS.md` for completed jobs, failures, current experiments and
 scientific gates; `research/PLAN.md` records the deadline plan. The user has
 explicitly authorised framework reconstruction. The new position-only branch

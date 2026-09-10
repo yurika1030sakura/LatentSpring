@@ -1,76 +1,73 @@
 # Next research decision
 
-Goal active and unachieved. This goal turn: progress. The complete nonlinear
-species adapter has two matched training pairs and a replay-verified shared-panel
-confirmation. The paper appendix is updated and builds at9 main pages.277 tests
-passed for the complete method. No broad calibrated sampler or ICLR novelty is
-established; never mark the full objective complete from these component results.
+Full ICLR goal remains active and unachieved. This goal turn is PROGRESS:
+implemented generic broad-condition training, passed24 real-interface cases,
+repaired a verified bulk-oracle timeout, released the complete matched campaign,
+replayed both neural-context ablations and rewrote the primary manuscript around
+our current method.289 tests pass. No broad calibrated sampler or ICLR-ready
+contribution is established. Do not mark complete from code or format checks.
 
-1. The all-eight-condition deterministic source screen45884687 is COMPLETE:
-   8/8 condition records,512 finite energy/force queries, distinct stream seeds,
-   zero COM violations and exact repeated-prefix coordinates. The original
-   screen45883666 failed all replay gates before querying energies; retain it.
-   Diagnostics45884130/45884322 isolate a1.43e-6-A repeated GPU difference,
-   unchanged input/RNG, then exact replay with deterministic arithmetic. No
-   tolerance was relaxed. Evidence: species_source_replay_audit_v1.json and
-   species_breadth_source_qualification_v2.json. The complete suite passes277 tests.
-2. Full source production is submitted as45885669, species_breadth_source_full_v1,
-   regular GPU,4-hour cap, all eight conditions sequentially. It is RUNNING as of
-   September10 18:49 UTC. Re-query this SAME job; do not restart.
-   Produce4096 training+512 development rows per condition, seed9182,batch64.
-   The source is global FM64 plus .025-A COM Gaussian noise, with frozen v2
-   hashes/runtime. Preserve pretrained1-eV input versus physical300-K target.
-   No path importance weights exist for this source. Retain complete earlier
-   condition records if a later one fails or times out. Reserved722 untouched.
-3. Implement a generic exact-entropy trainer for these new source records.
-   Existing train_species_entropy_adapter.py intentionally retains the old
-   condition5846 source contract. New training needs an explicit source kind;
-   no fabricated inherited work or silent condition substitution. Compare fixed
-   convex/affine-context/typed-linear recipes on every prescribed condition,
-   with source, model and oracle costs, geometry/diversity and failure denominators.
-   This broad trainer is NOT yet implemented or launched.
-4. The stronger AFFINE-CONTEXT control IS implemented, with the same19365 neural
-   parameters and full context dependencies. Only each active F(u) is replaced
-   by F(0)+DF(0)u; the conditioned whole map remains nonlinear. Fourteen tests
-   cover both families, including full Jacobians/inverse/gradients/200 atoms.
-   Smoke45884688 completes64 queries and trained reconstruction/volume checks.
-   Loader replay matches its real saved coordinates and volumes.
-   Main1000-step control45884844 completed16512 queries: development DeltaKL
-   -.21483+/-.06354; convex-minus-affine -.02008+/-.00628 nat on256 rows.
-   Main confirmation45885801 is now COMPLETE: convex-minus-affine
-   -.01332+/-.00252 nat on2048 shared rows, a small first-seed advantage.
-   It reuses stored convex/base energies and adds only2048 affine queries.
-   Evidence: species_affine_confirmation_v1.json. Replica45885671 is RUNNING;
-   preserve it and do not repeat prior energy queries.
-   After replica completion submit confirm_species_affine.slurm with arguments
-   species_affine_adapter_1000_s9162 and species_entropy_adapter_replica_confirmation_v1.
-   Preserve both seeds regardless of outcome. If the affine-context model matches
-   convex, do not attribute the earlier typed-control gain to active nonlinearity.
-   EACF/another qualified external flow control and matched HMC remain required.
-5. Current molecular evidence is a SMALL relative-KL result only. Two pairs on
-   the shared2048-row panel yield nonlinear-minus-typed -.04892+/-.01732 and
-   -.03882+/-.01642 nat (row SEM). They share parent pools and evaluation noise;
-   do not pool as4096 independent observations or call SEM seed uncertainty.
-   Every path ESS is about1/2048. Preserve all failed score/CNF/work/covariance/
-   empirical-CFM/global-auxiliary recipes. Do not release an unqualified critic.
-6. Retain all current geometry denominators:320 nonlinear-branch xTB attempts,
-   every arm32/32 convergence; small median strain differences do not establish
-   geometry superiority. New branch oracle cost80064 includes smoke,200-step
-   screen,four1000-step training arms and confirmations. Prior linear screens,
-   pretraining and source production remain additional. Full replay evidence:
-   research/evidence/species_entropy_replication_v1.json.
-7. The complete architecture and two-seed result are now in the development
-   appendix. Build: runs/verification/paper_20260910_species_replication_final/main.pdf.
-   Main text remains an audit draft; rewrite it around a qualified contribution
-   once evidence supports one. Strong baselines, broad independently selected
-   conditions, reliable distribution checks and a reproducible final package
-   remain required for the original ICLR objective.
+1. Re-query the SAME active campaign handles before acting:
+   -45889306 species_breadth_source_full_v2: regular GPU,4-hour cap, all eight
+    conditions sequentially. Source0 is complete; later conditions are ongoing.
+   -45892106 broad_entropy_condition_00_v1: six trained arms for condition0;
+    was PENDING for priority at the last check. Do not duplicate it.
+   -45892107 broad_entropy_conditions_1_7_v1: array1--7, concurrency2, afterok
+    dependency on45889306,4 hours per task. Validate source records inside each
+    task; scheduler completion alone does not qualify a condition.
+   Each full condition has4096 source-training and512 development rows. Keep
+   every source failure and arm failure. The source has no evaluated path weights.
+2. The generic trainer IS implemented: train_broad_entropy_adapter.py reads
+   entropy_source.py's strict finite_fm_gaussian contract. It compares convex,
+   same-neural-context affine and typed-linear at1000 steps/B16, with init9161/
+   9162 and selection9141/9142. Each arm17024 physical queries;48 arms planned,
+   total817152, plus36864 source queries and other costs. Report actual finished
+   costs separately from budgets. Tests include corrupt electronic state, stream
+   seeds, COM, energy values, invented weights, target and runtime metadata.
+3. Aggregate completed production arms with source/target hashes, paired512-row
+   KL changes, per-internal-DOF values and all failures. Parent directories:
+   runs/broad_entropy_condition_00_v1/condition_00_METHOD_sREPLICA;
+   runs/broad_entropy_conditions_1_7_v1/condition_XX/condition_XX_METHOD_sREPLICA.
+   Methods convex/affine/typed, replicas0/1. Do not pool seeds as independent
+   sample rows. Add independent geometry/diversity/xTB assessment, retaining all
+   denominators. assess_work_panel.py already supports absent work, but its
+   validation_index fallback must explicitly use the new manifest identity
+   before multi-condition aggregation. Broad performance is not available yet.
+4. Both old N8 affine-context comparisons are now complete and replay-verified.
+   Convex-minus-affine on the shared2048-row panel is-.01332+/-.00252 and
+   -.01259+/-.00215 nat. This is a small one-condition, two-stream component
+   advantage. Path ESS remains about1/2048. Evidence:
+   species_affine_replication_audit_v1.json, with all coords/volumes/work replayed.
+   Its affine-only xTB launcher is affine_context_assessment.slurm; inspect
+   jobs.jsonl to see whether submitted, and reuse existing convex xTB rows
+   when comparing so previous energy/relaxation calls are not silently repeated.
+5. Source45885669(v1) was CANCELLED at14m12s after a4096-row CPU oracle RPC
+   exceeded its60-second reply limit; neither started condition qualified.
+   Preserve source_timeout_v1 evidence: actual attempted count0--8192, not zero
+   physical cost. Replacement uses evaluate_chunked(max_request=32), persistent
+   coordinate/scored chunks, and acknowledged/requested counters. Real check
+   45888793 reproduced64 cached energies each on conditions0/7 exactly, with
+   32-row calls taking1.14--4.15s. Full24-arm smoke45888794 passes1536 queries.
+6. External EACF baseline source is cloned, unmodified, at
+   /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/external/eacf_20260910,
+   commit beafab1b1ccd2b770572daeef1cf15f3fe199c21 (MIT). No runtime/environment
+   has been installed or model qualified. Read notes/eacf_comparison_contract.md
+   and eacf_upstream_inventory_v1.json. Upstream used Python3.10/JAX0.4.13 and
+   CPU Torch; keep any new environment separate from FlowMol and fairchem.
+   EACF energy experiments use FAB; simply comparing its joint-KL bound with our
+   marginal-KL change is invalid. Strong external flow and matched HMC controls,
+   reliable independent distribution references and full compute remain required.
+7. The PRIMARY manuscript has been rebuilt around exact-entropy refinement:
+   paper/main.tex, sections/M1_refinement.tex and M2_refinement_proofs.tex.
+   Latest build: runs/verification/paper_20260910_refinement_v4/main.pdf.
+   Main text5/9 pages; broader/external evidence remains explicitly incomplete.
+   Original audit entrypoint is paper/legacy_audit.tex; its sections and old
+   PDFs are preserved. build.sh accepts an optional second entrypoint argument.
+   Do not return to appending all new work only to the old audit appendix.
+   Update the new main text once experiments and scientific gates justify it.
 
-Completed main/replica training45877754/45877755/45881142/45881186;
-confirmation45879960/45882659; xTB45881191/45882661. Both trained replica maps
-pass inverse/complete-Jacobian checks. All2048 fresh rows replay from all four
-checkpoints with matching coordinates, volumes and work increments.
-
-Never write home, modify shared FlowMol or merge the two environments. Commit
-before submit.py snapshots source. Keep the original charge/spin, bond-free
-OMol25, max_atoms200 and immutable historical evidence.
+Reserved722 outcomes remain untouched. Keep all score/CNF/work/covariance/CFM/
+auxiliary failures. Preserve original charge/spin, bond-free OMol25, max_atoms200,
+immutable source snapshots and the two existing environments. Never write home
+or alter shared FlowMol. Final independent evaluation and an author-ready
+reproducible package remain required for the full objective.

@@ -9,8 +9,8 @@ unresolved scientific gates.
 Authors and submission accounts are outside the user's requested execution.
 
 Current manuscript direction and claim boundaries: `PAPER_STORY_CURRENT.md`.
-The existing PDF main text is still an audit/development draft, not a completed
-new-method paper.
+The primary PDF is now a method-development draft for the implemented refinement;
+broad performance and external baselines remain incomplete.
 
 Active checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
 `iclr2027-research`. Frozen original audit: `../audits/bgfm_20260908`.
@@ -18,7 +18,43 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
-## Current broader-source and mechanism checks
+## Current full-campaign release and manuscript reconstruction
+
+The generic finite-FM-plus-noise refinement trainer is implemented.289 tests
+pass, including semantic source corruption and bounded-oracle accounting. The
+complete8-condition/3-family engineering screen45888794 passes24/24 arms and
+1536 physical queries, with inverse/full-Jacobian/loader replay. These are
+engineering outcomes, not broad performance evidence.
+
+Source producer45885669 timed out on a4096-structure CPU oracle request and was
+cancelled after14m12s. Its incomplete records are preserved and its attempted
+physical-query count is bounded0--8192; zero acknowledged replies was not zero
+compute. The replacement uses32-row requests and persists intermediate
+coordinates/energies. Real first/last-condition replay45888793 passes128 queries
+with exact cached energies. Replacement producer45889306 is running; condition0
+has completed4096 training+512 development rows.
+
+Full training is submitted as45892106(condition0) and45892107(array1--7, two
+concurrent tasks after source production). Each condition includes all three
+families and both training streams, with17024 queries per arm.48 arms and817152
+adapter queries are planned; do not report those budgets as finished compute.
+All source/pretraining and assessment costs remain additional.
+
+Both N8 same-neural-context ablations now survive shared-panel confirmation:
+convex-minus-affine-.01332+/-.00252 and-.01259+/-.00215 nat. CPU replay verifies
+coordinates, volumes and work increments for all2048 rows of each control.
+This remains a small one-condition component advantage with ESS about1/2048.
+See evidence/species_affine_replication_audit_v1.json.
+
+The new primary manuscript now describes the actual refinement construction,
+exact-volume/entropy proofs, completed controls and pending scientific gates.
+It is no longer the old scalar-ordering audit as the primary text. Main5/9
+pages; no submission-readiness claim. The historical audit remains available
+through legacy_audit.tex and its original source/PDF records. Official EACF
+source has been pinned for a stronger external comparison; no EACF runtime or
+performance result exists yet. Read NEXT for live handles and follow-up work.
+
+## Earlier checkpoint: initial broader-source and mechanism checks
 
 The stronger affine-context ablation is implemented with the same neural
 conditioner and parameter count as the convex candidate; only active-coordinate
@@ -42,7 +78,7 @@ Full all-eight source production45885669 is submitted on regular GPU with a
 4-hour cap. Its4096+512 rows per condition are not yet complete. No broad adapter
 has trained on them and no source distribution is declared calibrated.
 
-## Current species-coupling execution and training replication
+## Earlier checkpoint: species-coupling execution and training replication
 
 The invariant conditioner and complete nonlinear species coupling adapter are
 implemented. Seven full-model tests cover intrinsic Jacobians including context

@@ -1,22 +1,27 @@
 #!/bin/bash
 # Compile in /tmp by default; fail on compilation, citation or page-limit errors.
-# Usage: bash paper/build.sh [build-directory]
+# Usage: bash paper/build.sh [build-directory] [main.tex|legacy_audit.tex]
 set -euo pipefail
 SOURCE_DIR="$(cd "$(dirname "$0")" && pwd)"
 BUILD_DIR="${1:-${BGFM_PAPER_BUILD_DIR:-/tmp/bgfm-paper-build}}"
+SOURCE_TEX="${2:-main.tex}"
+if [[ ! "$SOURCE_TEX" =~ ^[A-Za-z0-9_-]+\.tex$ || ! -f "$SOURCE_DIR/$SOURCE_TEX" ]]; then
+  echo "Expected an existing manuscript entrypoint basename" >&2
+  exit 2
+fi
 mkdir -p "$BUILD_DIR"
 BUILD_DIR="$(cd "$BUILD_DIR" && pwd)"
 for tool in pdflatex bibtex python; do
   command -v "$tool" >/dev/null || { echo "Missing tool: $tool" >&2; exit 127; }
 done
 cd "$SOURCE_DIR"
-pdflatex -interaction=nonstopmode -halt-on-error -output-directory="$BUILD_DIR" main.tex > "$BUILD_DIR/pass1.log"
+pdflatex -interaction=nonstopmode -halt-on-error -jobname=main -output-directory="$BUILD_DIR" "$SOURCE_TEX" > "$BUILD_DIR/pass1.log"
 (
   cd "$BUILD_DIR"
   BIBINPUTS="$SOURCE_DIR:" BSTINPUTS="$SOURCE_DIR:" bibtex main > bibtex.log
 )
 for pass in 2 3; do
-  pdflatex -interaction=nonstopmode -halt-on-error -output-directory="$BUILD_DIR" main.tex > "$BUILD_DIR/pass${pass}.log"
+  pdflatex -interaction=nonstopmode -halt-on-error -jobname=main -output-directory="$BUILD_DIR" "$SOURCE_TEX" > "$BUILD_DIR/pass${pass}.log"
 done
 python - "$BUILD_DIR" <<'CHECK'
 import re,sys

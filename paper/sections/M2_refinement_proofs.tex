@@ -1,0 +1,99 @@
+\section{Constrained volume and entropy identities}
+\label{app:refinement-proofs}
+
+\paragraph{Point-map derivative bound.}
+Writing $s_j=\operatorname{sigmoid}(b_j^\top u+c_j)$, differentiation gives
+\[
+ DF(u)=\lambda I+\sum_j a_j s_j(1-s_j)b_jb_j^\top
+ +a_r\left(\frac{I}{\sqrt{\ell^2+\|u\|^2}}
+ -\frac{uu^\top}{(\ell^2+\|u\|^2)^{3/2}}\right).
+\]
+The sigmoid derivative is at most $1/4$. The norm bounds give at most
+$\beta\lambda/2$ for the summed sigmoid term. The radial matrix is positive
+semidefinite with norm at most $1/\ell$, giving the same bound for its signed
+contribution. All eigenvalues of $DF$ therefore lie between
+$(1-\beta)\lambda$ and $(1+\beta)\lambda$. This establishes strong convexity
+of the total potential, even with signed component coefficients.
+
+\paragraph{Proof of Proposition \ref{prop:centered-volume}.}
+The restriction of $\sum_i\Phi(u_i)$ to $H_g$, where $\nabla\Phi=F$, is strongly
+convex. Its constrained gradient is $P_gF(u)$ and is globally invertible.
+Alternatively, writing $F(u)=\lambda u+G(u)$, the residual map $G$ has Lipschitz
+constant at most $\beta\lambda$. Projection has operator norm one, so
+$u\mapsto\lambda^{-1}[y-P_gG(u)]$ is a contraction on $H_g$. Its unique fixed
+point reconstructs the preimage for every $y\in H_g$.
+
+For the determinant, let $D=\operatorname{diag}(A_1,\ldots,A_{n_g})$,
+let $B$ be an orthonormal basis of $H_g$, and let
+$C=\mathbf1_{n_g}\otimes I_3/\sqrt{n_g}$ span the translation complement.
+The concatenation $[B,C]$ is orthogonal and the constrained derivative is
+$B^\top DB$. The Schur-complement identity and block inversion give
+\[
+ \det(B^\top DB)=\det(D)\det(C^\top D^{-1}C)
+ =\prod_i\det(A_i)\det\left(\frac1{n_g}\sum_iA_i^{-1}\right).
+\]
+All factors are positive. This proves \eqref{eq:centered-volume}.
+
+\paragraph{Full-layer and symmetry accounting.}
+In internal/passive coordinates, each layer keeps the passive coordinates
+fixed and changes only the active coordinates. Its full Jacobian is therefore
+block triangular. Cross-context derivatives enter gradients of the complete
+map, but do not change its block-diagonal determinant. Centroid-pair coordinate
+changes are fixed linear conjugations, so their count-dependent volume factors
+cancel. Composition adds the layer log volumes. Group definitions, centering
+and schedules commute with joint coordinate/element permutations. Invariant
+scalar coefficients and equivariant context vectors make the point maps and
+centroid shifts commute with orthogonal spatial transformations. Numerical
+checks include every context dependency and independent batch rows, rather
+than only a frozen-context partial Jacobian.
+
+\paragraph{Uniform volume bound for a sweep.}
+Active derivative eigenvalues have the same lower and upper bounds on each
+constrained block. The sum of active dimensions in one sweep is
+$3\sum_g(n_g-1)+3(G-1)=3(n-1)=d$. Thus
+\[
+ d[-0.25+\log(1-\beta)]\leq\log\det_HDT
+ \leq d[0.25+\log(1+\beta)].
+\]
+For multiple sweeps these bounds add. This is a stability property of the
+bounded parameterization, not a coverage or expressivity guarantee.
+
+\paragraph{Proof of Proposition \ref{prop:relative-kl}.}
+On the declared measure, $q_T(Tx)=q_0(x)/\det_HDT(x)$. Substitution in
+$\KL(q_T\Vert\pi)=\mathbb E_{q_T}[\log q_T+U/(kT)+\log Z]$ and subtraction
+of the corresponding source expression yield \eqref{eq:relative-kl}.
+The assumptions ensure that subtraction involves well-defined finite
+quantities. The entropy identity is
+$h(q_T)-h(q_0)=\mathbb E_{q_0}\log\det_HDT$.
+Per-sample volume is exact for the specified map; its expectation is estimated
+from samples and carries statistical uncertainty.
+
+\paragraph{Why an augmented-objective comparison needs care.}
+For an augmented map with source $q_0(x)r(a\mid x)$ and target
+$\pi(x)r(a\mid x)$, the initial conditional KL gap is zero. The standard
+chain rule implies $\Delta\KL_{\rm joint}=\Delta\KL_x+\mathrm{Gap}_{\rm final}$,
+where the last term is nonnegative. A negative joint change certifies a
+marginal improvement, but ordering it against an exact marginal change does
+not in general order the physical marginal errors. EACF explicitly discusses
+the corresponding joint/marginal objectives \citep{midgley2023eacf}.
+This distinction is retained in the external-baseline comparison plan.
+
+\section{Evidence and failure inventory}
+Source and checkpoint replay audits are stored in
+\texttt{species\_entropy\_replication\_v1.json} and
+\texttt{species\_affine\_replication\_audit\_v1.json}.
+The broader contracts are implemented by \texttt{entropy\_source.py} and
+\texttt{train\_broad\_entropy\_adapter.py}. The 24-arm engineering ledger is
+\texttt{broad\_entropy\_smoke\_v1.json}. These are development artifacts,
+not submission-readiness certificates.
+
+The earlier density audit found that an archived scalar integrated an endpoint
+head as a velocity and froze the trajectory in its gradient. Its ordering
+statistics are not reused here as density or generation evidence. The
+corrected CNF route remains numerically unresolved. Finite-work, covariance,
+auxiliary-refitting and empirical-CFM studies retained severe eight-atom
+weight degeneracy. Estimated-score refinements failed independent qualification
+and were not released as molecular actor updates. The complete historical audit
+remains in a separate manuscript entrypoint and versioned records, including
+rejected jobs and failed confirmations. Those failures are not replaced by
+the present small positive development result.

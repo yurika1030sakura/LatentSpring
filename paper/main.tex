@@ -1,232 +1,38 @@
-% ============================================================================
-%  main.tex --- "Energy-Value Supervision for De Novo Molecular Flows:
-%                Local Density Ordering Without Partition Functions"
-%
-%  Structure (after the 2026-08-19 compression pass):
-%    Sec. 1  Introduction                       sections/01_intro.tex
-%    Sec. 2  Energy-value supervision (2.1-2.4)  sections/02_method.tex
-%    Sec. 3  From local ordering to connected supervision  sections/03_theory.tex
-%    Sec. 4  Experiments (setting, protocol, results)  sections/04_experiments.tex
-%    Sec. 5  Conclusion (limitations folded in) sections/05_conclusion.tex
-%    App. A  Theory: assumptions, estimator, proofs   sections/A1_proofs.tex
-%    App. B  Implementation and experimental details sections/A2_details.tex
-%    App. C  Extended setting and related work        sections/A3_related.tex
-%
-%  Floats in the main text: exactly four figures, no table.
-%    Figure 1  figures/fig1_objective_float.tex   (TikZ, Sec. 1)
-%    Figure 2  figures/fig3_grid.tex              (matched grid, Sec. 4.1)
-%    Figure 3  figures/fig2_ordering.tex          (ordering/retrieval, Sec. 4.2)
-%    Figure 4  figures/fig4_calibration.tex       (calibration, Sec. 4.3)
-%  The old Table 1 (tab:primary) now lives in App. B.7, caption intact.
-%  No \resizebox anywhere.  Do not add a float without removing one.
-%
-%  Page budget: \label{endofmaintext} must land on page 9 or earlier.
-%  Check with:  bash build.sh   (it prints MAIN TEXT PAGES from main.aux).
-% ============================================================================
-
-\documentclass{article} % ICLR uses plain article + the conference .sty
-
-% --- REQUIRED: the conference style + Times. Do NOT add options.
-%     iclr2027_conference.{sty,bst,bib}, math_commands.tex, natbib.sty and
-%     fancyhdr.sty are the OFFICIAL ICLR 2027 author kit, taken unmodified from
-%     media.iclr.cc/Conferences/ICLR2027/iclr-2027-style-files.zip on 2026-08-30.
-%     Do not edit them.
+% Current method-development manuscript; historical entrypoint: legacy_audit.tex.
+\documentclass{article}
 \usepackage{iclr2027_conference,times}
-% NOTE: the .sty already does \RequirePackage{natbib} and \setcitestyle{...}.
-% Never write \usepackage[...]{natbib} yourself -> "Option clash for natbib".
-
-% --- Math. amsmath must be loaded before math_commands.tex is \input.
-\usepackage{amsmath,amssymb,amsthm}
-\let\amseqref\eqref            % save amsmath's \eqref -> "(3)"
-\input{math_commands.tex}      % \va \mA \E \R \Ls \Var \KL ...
-\let\eqref\amseqref            % math_commands clobbers \eqref; undo.
-
-\usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{array}
-\usepackage{xcolor}
-\usepackage{subcaption}        % unused directly, but it pulls in caption,
-                               % which sets caption typography document-wide.
-\usepackage{microtype}
-\usepackage{tikz}              % required by figures/fig1_objective.tex
-
-% --- Float typography.  Margins, body font and leading are untouched; only the
-%     caption size and the space around floats are set, which is normal
-%     practice and is what makes five floats fit inside the page budget.
-\captionsetup{font=footnotesize,skip=3pt}
-\setlength{\textfloatsep}{6pt plus 2pt minus 2pt}
-\setlength{\floatsep}{5pt plus 2pt minus 2pt}
-\setlength{\intextsep}{5pt plus 2pt minus 2pt}
-\setlength{\abovedisplayskip}{5pt plus 2pt minus 2pt}
-\setlength{\belowdisplayskip}{5pt plus 2pt minus 2pt}
-\setlength{\abovedisplayshortskip}{3pt plus 2pt}
-\setlength{\belowdisplayshortskip}{4pt plus 2pt}
-
-% --- hyperref late; colorlinks is what real ICLR papers use.
-\usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=green!45!black,
-            urlcolor=blue!70!black]{hyperref}
+\usepackage{amsmath,amssymb,amsthm,graphicx,booktabs,array,microtype,xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=green!45!black,urlcolor=blue!70!black]{hyperref}
 \usepackage{url}
-\usepackage{cleveref}          % must come after hyperref.
-
-% --- Theorem environments (independent counters, running in document order).
-%       MAIN TEXT (sections/03_theory.tex): prop:ident only.
-%       APPENDIX A (statement and proof in sections/A1_proofs.tex):
-%         lem:score, thm:certificate, cor:gauge, def:overlap, thm:l2g,
-%         cor:basins, cor:empirical, prop:trap, prop:conflict,
-%         prop:surrogate
-%       (the force-gauge aside lem:forcegauge / thm:gauge was deleted in the
-%        2026-08-29 appendix-compression pass; do not re-add it.)
-%     Cite these through \Cref{<label>}, never by number.
-\theoremstyle{plain}
-\newtheorem{theorem}{Theorem}
-\newtheorem{lemma}{Lemma}
 \newtheorem{proposition}{Proposition}
-\newtheorem{corollary}{Corollary}
-\theoremstyle{definition}
 \newtheorem{assumption}{Assumption}
-\newtheorem{definition}{Definition}
-\theoremstyle{remark}
-\newtheorem{remark}{Remark}
-
-% --- Title.  Alternatives recorded in REVISION_LOG.md; switching is a
-%     single edit here and requires no change to the body text.
-\title{Energy-Value Regularisation in Molecular Flows:\\
-       Local Ordering and Estimator Sensitivity}
-
-% ANONYMITY: leave \author untouched for submission.  With \iclrfinalcopy
-% commented out the .sty prints "Anonymous authors / Paper under double-blind
-% review" and ignores \author.  No names, institutions, repository URLs,
-% cluster names or funders anywhere in the body or in a title footnote.
+\newcommand{\KL}{\operatorname{KL}}
+\title{Refining Molecular Generators with Exact Entropy Changes}
 \author{Anonymous}
-
-%\iclrfinalcopy   % UNCOMMENT ONLY for the camera-ready version.
-
 \begin{document}
-\maketitle   % also installs the "Under review ... at ICLR 2027" running head.
-
-% --- Abstract, Sec. 1 Introduction, Figure 1.
-\input{sections/01_intro}
-
-% --- Sec. 2 Energy-value supervision for de novo molecular flows.
-\input{sections/02_method}
-
-% --- Sec. 3 From local ordering to connected supervision.
-\input{sections/03_theory}
-
-% --- Sec. 4 Experiments: setting, protocol, metrics, then the three result
-%     subsections.  Figures 2-4.  (The former Sec. 4/Sec. 5 split was merged on
-%     2026-08-30; do not re-split it.)
-\input{sections/04_experiments}
-
-% --- Sec. 5 Conclusion, with the compressed limitations folded in.
-\input{sections/05_conclusion}
-
-% --- Optional, unnumbered.  Keep commented until camera-ready: funding
-%     acknowledgements go here and nowhere else.
-%\subsubsection*{Author Contributions}
-%\subsubsection*{Acknowledgments}
-
-% --- main text ends here.  The three statements below sit after it and are
-%     off the 9-page budget, so the label that build.sh measures precedes them.
+\maketitle
+\begin{center}
+\textbf{Development draft: broad experiments and external baselines remain incomplete.}
+\end{center}
+\input{sections/M1_refinement}
 \label{endofmaintext}
 
-% ===========================================================================
-%  FRONT-MATTER STATEMENTS.  These sit after the main text and are off the
-%  9-page budget.  Unnumbered \subsubsection* blocks, per the template.
-% ===========================================================================
-
-\subsubsection*{Statement on the use of large language models}
-
-Generative AI tools were used throughout the preparation of this work. They assisted
-with software implementation and debugging, plotting, construction of the
-result inventory, literature organisation, manuscript structuring and language
-editing, and they provided feedback on experimental design and interpretation and help
-in drafting the mathematical exposition. The authors selected the research questions
-and the final methodology, executed or supervised every experiment, inspected the
-per-run records, are responsible for verifying the final reported numbers, mathematical statements,
-citations and AI-assisted text. This working revision includes an implementation audit;
-it does not assert that all historical claims have been independently certified. The authors take responsibility for the complete manuscript and for the
-accompanying artifacts.
-
 \subsubsection*{Reproducibility statement}
+Reported maps have source, potential and checkpoint hashes. Independent scripts
+reconstruct saved coordinates, intrinsic log volumes and paired work increments.
+The FlowMol and physical-potential environments remain separate. Source generation,
+training, evaluation, failed requests and geometry-optimization costs are recorded
+separately. The broader experiment retains every prescribed condition and failed
+optimization. Commands and the final reproducibility package still require
+consolidation before submission; this draft does not certify submission readiness.
 
-\emph{What the paper specifies.} The objective is stated in full in \Cref{sec:method}
-(\eqref{eq:ffjord}, \eqref{eq:lvalue}), and the gradient actually taken through it --- a
-frozen-trajectory surrogate rather than differentiation through the solve --- is written out in
-\Cref{app:asimplemented}. The standing assumptions and the complete proofs behind
-\Cref{prop:ident}, in particular \Cref{thm:l2g} and \Cref{cor:basins}, are in \Cref{app:proofs}.
-The backbone, optimiser, schedule, objective weights, warm-up and ramp, clipping thresholds, probe
-times and estimator settings are tabulated in \Cref{app:hyper,app:constants}; the training scale and
-hardware are in \Cref{app:hardware}; data preprocessing and the construction of the perturbation
-shards, including which shards each arm reads, are in \Cref{app:data}. The evaluation protocol, the
-independent scorer, the primary-endpoint construction and the aggregation rules are in
-\Cref{app:eval,app:scalediag}, which also state the reporting policy --- effect sizes, arm means with
-standard errors over independently trained seeds, and every seed-level result --- and which give the
-adverse imputation for the one unreported run. The inferential statistics computed
-during the analysis are collected once, for completeness and in one place, in
-\Cref{app:inferential}. The complete launch record, including every run that diverged, every run that
-completed without being scored, and the later seeds launched outside the matched design, is in
-\Cref{app:p0cells,app:cells,app:stability}, and \Cref{app:allevals} inventories every evaluation we
-ran, scored or not. \Cref{app:figdetail} states how each main-text figure panel was constructed from
-those records.
-
-\emph{What the displayed commands do and do not reproduce.} \Cref{app:repro} gives the two
-environments, why they are separate, and the ordered command sequence. That sequence is exact for
-one of the paper's two families of numbers and not for the other, and we state the difference
-plainly. The matched six-cell grid of \Cref{sec:ablation} --- and hence \Cref{fig:grid} and the
-per-seed tables of \Cref{app:p0cells} --- follows from the commands as displayed: perturbation
-shards drawn from the training split alone, $M = 8$ parents per value step, value-loss cap $1500$.
-The primary held-out endpoint of \Cref{sec:mainresult,sec:scale} does \emph{not}: those checkpoints
-come from an earlier family trained under the archived configurations described in
-\Cref{app:cells}, whose shard list also contains a validation-split shard, with $M = 4$ parents per
-value step and a value-loss cap of $3000$, evaluated on $120$ parents and then restricted by the
-disjoint-parent filter to the $93$ reported. Reproducing that endpoint therefore means training from
-those archived configurations rather than from the matched-grid ones; running the displayed training
-commands and applying the endpoint analysis would reproduce the protocol but not the checkpoints.
-\Cref{app:cells} records that family's configuration defects and states which of its contrasts
-survive the corrections and which are superseded by the matched grid.
-
-\emph{Two caveats a re-runner should expect.} Diverged runs are recorded rather than re-rolled, and
-because divergence is objective-dependent, every value-cell mean is reported conditional on
-completion with its launched, completed and diverged counts beside it (\Cref{app:stability});
-a re-run at a different seed set should expect a different completion pattern. The archived main-text comparisons use the legacy scalar readout, which the audit finds is not a
-validated likelihood: it integrates an endpoint head as a velocity and freezes the numerical
-trajectory in its gradient. The corrected $q_T$ coordinate flow is a separately defined sampler,
-trained and diagnosed only in the development experiments of \Cref{app:newdevelopment}.
-Numbers from these implementations must not be pooled or described as one likelihood protocol.
-
-\subsubsection*{Ethics statement}
-
-This work trains a generative model of small molecules against a
-publicly released quantum-chemistry corpus and a publicly released neural
-potential, and evaluates it with an open-source semi-empirical method; no human
-subjects, personal data or human annotation are involved. De novo molecular
-generators carry a dual-use risk in common with the rest of this literature, in
-that a method for proposing molecules with desired properties could in
-principle be directed at harmful ones. The models reported here are trained for
-approximately $0.12$ epochs, are not conditioned on any biological or
-toxicological objective, and generate chemically valid structures at a rate
-well below what a practical design pipeline would require, so we judge the
-incremental risk of this particular study to be low. The scientific claims are
-deliberately bounded: we report a local ordering result, report calibration and
-global mass allocation as separate and unmet targets, and \Cref{sec:limitations}
-states what the paper does not establish.
+\subsubsection*{Statement on AI assistance}
+AI assistance contributed to method design, mathematical exposition, implementation,
+experiment orchestration, analysis and writing. Final human-author verification
+and submission remain outstanding.
 
 \bibliography{refs}
 \bibliographystyle{iclr2027_conference}
-
-% ===========================================================================
 \appendix
-% Restart the float counters in the appendix and prefix them with the section
-% letter, so appendix floats print as "Table A1", "Figure A1", ...
-\setcounter{table}{0}
-\setcounter{figure}{0}
-\renewcommand{\thetable}{A\arabic{table}}
-\renewcommand{\thefigure}{A\arabic{figure}}
-\input{sections/A1_proofs}
-\input{sections/A2_details}
-\input{sections/A3_related}
-\input{sections/A4_development}
-\input{sections/A5_nonequilibrium}
-
+\input{sections/M2_refinement_proofs}
 \end{document}
