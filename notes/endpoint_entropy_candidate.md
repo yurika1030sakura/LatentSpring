@@ -124,3 +124,19 @@ For a linear Gaussian critic the mean-control gradient removes the leading
 1/sigma noise term; its equality of expectation and variance reduction pass a
 known-answer test. This remains a standard-mechanism control, not molecular proof.
 A scientific actor update still requires the frozen score qualification gate.
+
+
+## Independent confirmation after the first screen
+
+Only the antithetic500-step seed9101 passed the first necessary gate. Before any
+actor update, generate8192 completely new conditional means from the unchanged
+forward sampler (standard innovation inputs, seed9107, batch64). Assess the
+frozen selected critic with independent final noise seed9108. Train a second
+antithetic critic from fresh initialization/noise seed9103, same500-step budget,
+and assess on the identical new8192 rows. The evaluation stream is shared for
+comparison; training seeds are independent. Reuse the hashed fresh mean pool
+rather than regenerate it. No old heldout parents enter this confirmation and
+there are no energy-oracle queries. Keep the same four Stein probes and paired
+DSM thresholds; do not loosen them after seeing the higher-precision result.
+Both runs must pass before an actor pilot. A failure blocks that pilot under
+this critic recipe, not all entropy-learning methods.
