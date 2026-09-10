@@ -1,0 +1,194 @@
+{
+  "complete": true,
+  "scope": "Train a nonlinear species-coupling refinement with exact per-sample volume.",
+  "kind": "species_convex",
+  "configuration": {
+    "runs_root": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/species_entropy_adapter_smoke_v1",
+    "sweeps": 1,
+    "init_seed": 9161,
+    "selection_seed": 9141,
+    "steps": 2,
+    "batch": 16,
+    "eval_count": 16,
+    "device": "cuda"
+  },
+  "condition": {
+    "source_row": 5846,
+    "raw_index": 589712,
+    "reference_geometry_loaded": true,
+    "reference_geometry_used_to_initialize": false,
+    "numbers": [
+      1,
+      15,
+      8,
+      6,
+      1,
+      6,
+      8,
+      12
+    ],
+    "charge": 1,
+    "spin_multiplicity": 1
+  },
+  "source_checkpoint_sha256": "694a680c4172a355e2a4e899486647f751702bea2dafad93364bf8b60a7b14b5",
+  "training_sha256": "08eb136f1df0b2fe36b3f044b95b41d6a3d93214aaca48faa995aba29296283e",
+  "evaluation_sha256": "dc6215d07101b2539423bf8c3d9f71e82950223a41266effdf645d8cfd476782",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "kT_eV": 0.025851999786435,
+  "restraint_eV_A2": 0.1,
+  "steps": 2,
+  "batch": 16,
+  "init_seed": 9161,
+  "selection_seed": 9141,
+  "lr_start": 0.001,
+  "lr_end": 1e-05,
+  "lr_schedule": "cosine",
+  "parameters": 19365,
+  "adapter_configuration": {
+    "sweeps": 1,
+    "hidden": 32,
+    "radial": 24,
+    "charge": 1,
+    "spin_multiplicity": 1,
+    "kT": 0.025851999786435
+  },
+  "coupling_layers": [
+    [
+      "internal",
+      1,
+      null
+    ],
+    [
+      "internal",
+      6,
+      null
+    ],
+    [
+      "internal",
+      8,
+      null
+    ],
+    [
+      "centroid",
+      1,
+      6
+    ],
+    [
+      "centroid",
+      6,
+      8
+    ],
+    [
+      "centroid",
+      8,
+      12
+    ],
+    [
+      "centroid",
+      12,
+      15
+    ]
+  ],
+  "pointwise_contraction_bound": 0.25,
+  "history": [
+    {
+      "step": 1,
+      "training_objective": -111.2342363829777,
+      "mean_log_volume": 0.0,
+      "log_volume_std": 0.0,
+      "gradient_norm": 79.80675831049716,
+      "lr": 0.001,
+      "seconds": 10.308256299933419
+    }
+  ],
+  "limitations": [
+    "A prospective nonlinear species coupling architecture; performance and novelty require independent evidence.",
+    "The pretrained base generator is frozen; no unqualified score critic is used.",
+    "Independent paired energy-minus-log-volume changes estimate marginal reverse-KL change, not absolute KL.",
+    "One condition and one adapter-training seed; no broad or replicated sampling claim.",
+    "Inherited base-generator and sample-production costs remain additional.",
+    "Importance weights may still degenerate even when the mean endpoint KL improves."
+  ],
+  "base_energy_replay_max_error_eV": 1.2389900803100318e-06,
+  "identity_training_energy_replay_max_error_eV": 1.5166915545705706e-06,
+  "trained_inverse_check": {
+    "position_error_A": 1.3766765505351941e-14,
+    "maximum_residual": 1.354472090042691e-14,
+    "volume_cancellation_error": 2.220446049250313e-16,
+    "layers": [
+      {
+        "iterations": 4,
+        "maximum_residual": 1.5765166949677223e-14
+      },
+      {
+        "iterations": 5,
+        "maximum_residual": 2.220446049250313e-16
+      },
+      {
+        "iterations": 5,
+        "maximum_residual": 1.1102230246251565e-16
+      },
+      {
+        "iterations": 5,
+        "maximum_residual": 2.220446049250313e-16
+      },
+      {
+        "iterations": 5,
+        "maximum_residual": 2.220446049250313e-16
+      },
+      {
+        "iterations": 5,
+        "maximum_residual": 2.220446049250313e-16
+      },
+      {
+        "iterations": 4,
+        "maximum_residual": 1.3433698597964394e-14
+      }
+    ]
+  },
+  "trained_full_jacobian_errors": [
+    6.106226635438361e-16,
+    6.38378239159465e-16
+  ],
+  "oracle_evaluations": 64,
+  "paired_endpoint_kl_change": {
+    "mean": 0.743290192758123,
+    "sem": 0.38382234802594467,
+    "samples": 16,
+    "scope": "Expected energy-minus-exact-log-volume difference equals marginal KL change under stated fixed-target assumptions."
+  },
+  "weights": {
+    "base": {
+      "particles": 16,
+      "ess": 1.003653210218646,
+      "ess_fraction": 0.06272832563866537,
+      "maximum_weight": 0.998176741488949,
+      "log_mean_weight": 110.9551883021239
+    },
+    "adapted": {
+      "particles": 16,
+      "ess": 1.0022233453455478,
+      "ess_fraction": 0.06263895908409674,
+      "maximum_weight": 0.9988895619373819,
+      "log_mean_weight": 111.46759023039623
+    }
+  },
+  "mean_energy_eV": {
+    "base": -20928.653093591485,
+    "adapted": -20928.623735003912
+  },
+  "log_volume": {
+    "mean": -0.13318836230781725,
+    "std": 0.000510093829316189,
+    "min": -0.13388191859114312,
+    "max": -0.1320728136894342
+  },
+  "maximum_COM_error_A": 2.1510571102112408e-16,
+  "seconds": 14.20093531999737,
+  "artifacts": {
+    "base_samples.pt": "989247bedc504448ee0aad94e11702ddd5ec150f050af7c0c37417e979b48038",
+    "adapted_samples.pt": "d66d88a447481a30bc0056d605a2444b222cdb5a4287f2a91181bd6ae14ab77c",
+    "adapter.ckpt": "e06cf237ffd2626acba5c620d68f22eec1e7658777f48f1a7e7e5fd1cf81711c"
+  }
+}
