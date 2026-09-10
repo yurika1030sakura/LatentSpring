@@ -30,7 +30,10 @@ with exact log-volume and freshly checked energies. Keep importance ESS separate
 from mean marginal-KL change. Initial/final energy queries use the same worker.
 
 Prespecified runs: typed and scalar,200 AdamW updates, batch16, lr .01, clip10,
-selection seed9141, identity initialization. Each uses3200 training+512 assessment
+selection seed9141, identity initialization. Before full-run submission, fix a
+cosine learning-rate decay from .01 to .0001 across the200 updates to reduce
+late minibatch fluctuations in this stiff low-dimensional fit. The two-update
+engineering smoke used constant .01 and is not performance evidence. Each uses3200 training+512 assessment
 oracle queries=3712. All inherited base-training/data costs remain additional.
 A2-update16-assessment smoke costs64 queries before these runs. Retain all cases,
 energy-replay checks, maps, exact volumes, paired KL changes, weights and failures.

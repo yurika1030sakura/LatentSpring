@@ -1,0 +1,108 @@
+{
+  "complete": true,
+  "scope": "Exact-volume linear refinement of a frozen implicit molecular generator.",
+  "kind": "typed",
+  "configuration": {
+    "runs_root": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/linear_entropy_adapter_smoke_v1",
+    "kind": "typed",
+    "steps": 2,
+    "batch": 16,
+    "eval_count": 16,
+    "device": "cuda"
+  },
+  "condition": {
+    "source_row": 5846,
+    "raw_index": 589712,
+    "reference_geometry_loaded": true,
+    "reference_geometry_used_to_initialize": false,
+    "numbers": [
+      1,
+      15,
+      8,
+      6,
+      1,
+      6,
+      8,
+      12
+    ],
+    "charge": 1,
+    "spin_multiplicity": 1
+  },
+  "source_checkpoint_sha256": "694a680c4172a355e2a4e899486647f751702bea2dafad93364bf8b60a7b14b5",
+  "training_sha256": "08eb136f1df0b2fe36b3f044b95b41d6a3d93214aaca48faa995aba29296283e",
+  "evaluation_sha256": "dc6215d07101b2539423bf8c3d9f71e82950223a41266effdf645d8cfd476782",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "kT_eV": 0.025851999786435,
+  "restraint_eV_A2": 0.1,
+  "steps": 2,
+  "batch": 16,
+  "seed": 9141,
+  "lr": 0.01,
+  "parameters": 13,
+  "maximum_pair_weight": 0.25,
+  "history": [
+    {
+      "step": 1,
+      "training_objective": -111.2342363829777,
+      "log_volume": 0.0,
+      "gradient_norm": 13.283915856806626,
+      "seconds": 16.080925330985337
+    }
+  ],
+  "limitations": [
+    "A known exact-entropy normalizing-flow refinement baseline, not a novelty claim.",
+    "The pretrained base generator is frozen; no unqualified score critic is used.",
+    "Independent paired energy-minus-log-volume changes estimate marginal reverse-KL change, not absolute KL.",
+    "One condition and one adapter-training seed; no broad or replicated sampling claim.",
+    "Inherited base-generator and sample-production costs remain additional.",
+    "Importance weights may still degenerate even when the mean endpoint KL improves."
+  ],
+  "base_energy_replay_max_error_eV": 1.2389900803100318e-06,
+  "identity_training_energy_replay_max_error_eV": 1.5166915545705706e-06,
+  "oracle_evaluations": 64,
+  "paired_endpoint_kl_change": {
+    "mean": 0.1400795242769025,
+    "sem": 0.15326373008852248,
+    "samples": 16,
+    "scope": "Expected energy-minus-exact-log-volume difference equals marginal KL change under stated fixed-target assumptions."
+  },
+  "weights": {
+    "base": {
+      "particles": 16,
+      "ess": 1.003653210218646,
+      "ess_fraction": 0.06272832563866537,
+      "maximum_weight": 0.998176741488949,
+      "log_mean_weight": 110.9551883021239
+    },
+    "adapted": {
+      "particles": 16,
+      "ess": 1.004695188182315,
+      "ess_fraction": 0.06279344926139468,
+      "maximum_weight": 0.9976579332445673,
+      "log_mean_weight": 110.41382849499418
+    }
+  },
+  "mean_energy_eV": {
+    "base": -20928.653093591485,
+    "adapted": -20928.649761288314
+  },
+  "log_volume": -0.016313019459961338,
+  "transform_eigenvalues": [
+    0.9972517331221972,
+    0.9974118531097141,
+    0.9977530855439,
+    0.9995611100345015,
+    0.9996020708085115,
+    1.0,
+    1.0004305527253468,
+    1.002565140617947
+  ],
+  "maximum_COM_error_A": 2.5326962749261384e-16,
+  "seconds": 17.728449556045234,
+  "artifacts": {
+    "base_samples.pt": "989247bedc504448ee0aad94e11702ddd5ec150f050af7c0c37417e979b48038",
+    "adapted_samples.pt": "4e042d9b7d30bac03678e65cfce95b82ef7ebafb19a0e5e675fe5840f0ccaa39",
+    "adapter.ckpt": "8d4f05976722e8665dd97b026f21462e1079d4f0e005e8bb76d68539e4574068"
+  }
+}

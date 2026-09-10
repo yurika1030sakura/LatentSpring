@@ -59,7 +59,7 @@ def main():
         'condition': condition, 'source_checkpoint_sha256': checkpoint_sha, 'training_sha256': sha(train_path),
         'evaluation_sha256': sha(eval_path), 'oracle_sha256': source['oracle_sha256'],
         'kT_eV': recipe['kT'], 'restraint_eV_A2': recipe['restraint'], 'steps': args.steps, 'batch': args.batch,
-        'seed': 9141, 'lr': .01, 'parameters': adapter.raw_weights.numel(), 'maximum_pair_weight': .25,
+        'seed': 9141, 'lr_start': .01, 'lr_end': .0001, 'lr_schedule': 'cosine', 'parameters': adapter.raw_weights.numel(), 'maximum_pair_weight': .25,
         'history': [], 'limitations': ['A known exact-entropy normalizing-flow refinement baseline, not a novelty claim.',
             'The pretrained base generator is frozen; no unqualified score critic is used.',
             'Independent paired energy-minus-log-volume changes estimate marginal reverse-KL change, not absolute KL.',
@@ -76,6 +76,8 @@ def main():
         if initial_error > .001:raise ValueError('Cached and current base energies disagree')
         report['base_energy_replay_max_error_eV'] = initial_error
         for step in range(args.steps):
+            learning_rate = .0001+.5*(.01-.0001)*(1+math.cos(math.pi*step/max(1,args.steps-1)))
+            for group in optimizer.param_groups:group['lr'] = learning_rate
             indices = torch.randint(len(x_train), (args.batch,), generator=selection)
             x = x_train[indices].to(args.device)
             optimizer.zero_grad(set_to_none=True)
@@ -92,7 +94,7 @@ def main():
             optimizer.step()
             if step == 0 or (step+1) % 20 == 0:
                 row = {'step': step+1, 'training_objective': float(loss.detach()), 'log_volume': float(logdet.detach()),
-                    'gradient_norm': float(gradient), 'seconds': time.perf_counter()-start}
+                    'gradient_norm': float(gradient), 'lr': learning_rate, 'seconds': time.perf_counter()-start}
                 report['history'].append(row); write_json(output, report); print(json.dumps(row), flush=True)
         with torch.no_grad():
             final_positions, logdet = adapter(x_eval.to(args.device))
