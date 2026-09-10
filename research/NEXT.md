@@ -5,11 +5,16 @@ are complete; no general sampling gain or validated AI novelty is established.
 The persisted goal tracker is paused; user has explicitly requested continued
 work in the current turn. No external blocker has been identified.
 
-1. Finish and audit the independent4096-path forward teacher export, seed9084.
+1. Completed independent4096-path forward teacher export45811812, seed9084.
+   Raw ESS2.625/4096; stabilized ESS2048 is a training control only.
    Source is annealed-joint1500 on condition5846, independently refitted backward
    model. Keep full path weights and all oracle/source costs. A low raw ESS is
    a limitation, never concealed by reporting stabilized training ESS instead.
-2. Implement the prespecified uniform/linear/power CFM student comparison with
+2. CFM student code and real-GPU smoke45812206 pass.237 tests pass.
+   Source45812380 and uniform45812384 are running. Linear/power initial submits
+   were rejected by gpu_test two-job QOS; preserve rejected v1 directories and
+   submit v2 after slots release. No dependent audit submitted yet.
+   The prespecified uniform/linear/power CFM student comparison uses
    identical initialization, training budget and fresh independent Gaussian
    starts. Evaluate the full original target on independent generated paths;
    measure projection/sampler mismatch rather than assuming it vanishes.

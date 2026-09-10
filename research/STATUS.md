@@ -49,6 +49,13 @@ a resolution warning, not a numerical convergence certificate. Production
 separates training-selection and Gaussian RNG seeds explicitly. The smoke is
 engineering validation only; its low ESS is retained.
 
+Four-arm screen: source45812380 and uniform45812384 running from1548e1f.
+Linear/power v1 submissions were rejected by gpu_test QOSMaxSubmitJobPerUserLimit;
+their submission-only directories remain intact. Planned v2 retries change only
+the output name. Every arm uses the same1000-step student recipe (source0) and
+same500-step reverse refit. Independent256-attempt total xTB assessment and a
+provenance-checked stop-decision join are prepared.
+
 Earlier timestamped scheduler entries below are historical, not live state.
 
 ## September 10 UTC checkpoint
