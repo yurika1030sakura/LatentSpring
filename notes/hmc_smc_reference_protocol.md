@@ -30,3 +30,14 @@ require ESS>=8, at least four initial ancestors, |delta log Z|<.25 and maximum
 Ag-Br mean distance error <.1 A before a larger-condition pilot. This screen is
 not a confidence interval or proof of convergence. Do not relax it after seeing
 the first result; repeated independent populations would still be required.
+
+## Replication of the failed 32-particle pilot
+
+The first population (9069) failed the normalizer screen: delta log Z +.71340,
+ESS 23.14/32, five ancestors but weighted ancestry ESS 1.326. Keep its failed
+screen unchanged. Before changing particle count, schedule or target, freeze
+three further seeds 9070, 9071, 9072 with the identical recipe. Retain all four
+populations; pool normalizers on the linear scale and assess between-population
+variation. This adds 98,496 oracle queries. It is a diagnostic of repeatability,
+not permission to waive the original gate or declare an eight-atom reference.
+No single best seed will be selected for promotion.
