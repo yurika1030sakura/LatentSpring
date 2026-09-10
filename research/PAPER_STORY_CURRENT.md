@@ -95,3 +95,15 @@ not solve weight degeneration. The learned module is near isotropic on the
 checked terminal geometries and does not establish a new beneficial mechanism.
 The candidate is retained as negative evidence; the paper still lacks a validated
 AI method contribution. See pair_precision_full_comparison_v1.json in evidence.
+
+
+## Current diagnostic intervention
+
+Frozen-forward reverse fitting also failed to resolve eight-atom degeneracy.
+A fresh4096-path pool has raw ESS2.625. The next bounded study compares uniform,
+linear-mixture and power-weighted empirical CFM projection with a source control.
+It separately checks ODE projection, integration error, and independent full-target
+stochastic work after equally budgeted reverse refitting. Intermediate stabilized
+weights do not establish calibration. This study and its prior-art limitations
+are specified in notes/forward_mass_update_candidate.md; no positive student
+result is claimed before completion.

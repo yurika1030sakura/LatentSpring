@@ -117,7 +117,7 @@ def main():
         'source_checkpoint_sha256': sha(source_checkpoint), 'backward_initialization_sha256': sha(reverse_checkpoint),
         'teacher_sha256': sha(teacher_path), 'teacher_results_sha256': sha(args.teacher/'results.json'),
         'teacher_controls': control_report, 'temperature_reset_reapplied': False, 'history': [],
-        'seeds': {'training': args.seed, 'ode': args.seed+1, 'reverse_training': args.seed+2,
+        'seeds': {'teacher_selection': args.seed, 'training_noise': args.seed+10000019, 'ode': args.seed+1, 'reverse_training': args.seed+2,
                   'stochastic_evaluation': args.seed+3, 'reverse_minibatches': args.seed+4},
         'limitations': ['The finite weighted teacher has no established target calibration.',
             'ODE and stochastic kernels need not have the same endpoint law.',
@@ -128,7 +128,7 @@ def main():
     parameters = [v for v in forward.parameters() if v.requires_grad]
     optimizer = torch.optim.AdamW(parameters, lr=args.lr, weight_decay=0.)
     selector = torch.Generator().manual_seed(args.seed)
-    noise = torch.Generator(device=args.device).manual_seed(args.seed)
+    noise = torch.Generator(device=args.device).manual_seed(args.seed+10000019)
     for step in range(0 if args.arm == 'source' else args.steps):
         indices = torch.multinomial(target_weights, args.batch, replacement=True, generator=selector)
         x1 = targets[indices].to(args.device)

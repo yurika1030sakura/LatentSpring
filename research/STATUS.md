@@ -41,7 +41,13 @@ is .073005. Both stabilized ESS values are2048 by construction; neither makes
 the teacher accurate at the full target. The raw concentration limits learning
 from this pool and is retained in evidence/forward_work_teacher_5846_v1.json.
 The full test suite passes237 tests. A bounded three-student/source comparison
-with a predeclared stop gate is implemented, pending its real-GPU smoke.
+with a predeclared stop gate is implemented. GPU smoke45812206 completed with
+128 oracle queries, finite forward/reverse updates, independently rescored
+forward densities within7.9e-5 nat and unchanged forward weights during reverse
+refitting. Paired midpoint32/64 has RMS .0131 A and worst atom .2018 A; this is
+a resolution warning, not a numerical convergence certificate. Production
+separates training-selection and Gaussian RNG seeds explicitly. The smoke is
+engineering validation only; its low ESS is retained.
 
 Earlier timestamped scheduler entries below are historical, not live state.
 

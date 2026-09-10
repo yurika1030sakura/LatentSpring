@@ -64,7 +64,9 @@ AdamW updates at1e-5 with batch64, zero weight decay and gradient clipping1.
 Sample endpoints from the frozen global4096 weights; do not renormalize within
 minibatches. Use an independent intrinsic Gaussian prior with the original
 standard deviation and a uniform linear interpolation time. Regress the actual
-displacement velocity against x1-x0. Training seed9085 is shared across arms.
+displacement velocity against x1-x0. Teacher selection seed9085 and Gaussian/time seed10009104 are shared across arms
+but separate from each other. The engineering smoke used same numeric seed
+for CPU selection and CUDA Gaussian/time generators; production separates them.
 No reference coordinates, alignment, augmentation or score conversion is used.
 This is projection onto an empirical target, with no finite-pool bias guarantee.
 
@@ -92,3 +94,34 @@ this frozen-pool recipe if full-target ESS remains below16/256 in every student,
 or if geometry deteriorates materially. An ESS above that threshold would only
 permit larger independent evaluation, not certify calibration or ICLR novelty.
 Retain all arms, errors, failed denominators and costs.
+
+## Direct prior-art audit (September10)
+
+EWFM v2, Sections3.1--3.3 and AppendixC.4, already covers importance-weighted
+conditional FM, iterative proposal refinement, physical temperature annealing
+and percentile clipping of weights. Our uniform/linear/power screen is not a
+faithful EWFM baseline implementation. Any eventual method claim needs such a
+baseline, including density cost and its stated clipping protocol.
+Source: https://arxiv.org/html/2509.03726v2 .
+
+Markovian FM, Section3 and Algorithm1, already combines local MCMC and learned
+flow proposals with online FM and ESS-controlled physical annealing. Its
+local-optimum result does not establish global target coverage. Physical
+annealing of endpoint targets must not be confused with raising noisy latent
+path weights to a power. Source:
+https://proceedings.neurips.cc/paper_files/paper/2024/file/bcd11db0b26d8fc2266b91d3ff982ed1-Paper-Conference.pdf .
+
+The distinction under test here is the conditional-overlap distortion caused by
+nonlinear transformations of auxiliary path weights. The affine identity and
+closed-form empirical ESS step are elementary; neither is asserted novel.
+
+A further limitation follows directly: for a fixed eta>0, affine damping does
+not make an infinite population second moment finite, because
+E[(1-eta+eta*a)^2] contains eta^2 E[a^2]. Also, among pointwise weight maps h
+that preserve a correct endpoint for every possible auxiliary conditional,
+only affine maps can do so universally. To see this, let one endpoint have
+a=1 and another have a two-point distribution a=u<1 or a=v>1 with mean1.
+Preservation requires (v-1)h(u)+(1-u)h(v)=(v-u)h(1); hence the secant slopes
+through1 agree for every u,v and h is affine. This is a Jensen-equality
+characterization, not a new mathematical identity. It explains why fixed-point
+preservation alone cannot promise effective training in heavy-tailed cases.
