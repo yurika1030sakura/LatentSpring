@@ -32,6 +32,14 @@ Jacobian agreement on two trained geometries, inverse on up to32 rows and public
 checkpoint-loader replay. Passing code checks is not sampling qualification.
 The source contract has semantic-corruption tests, beyond checking file hashes.
 
+The full24-arm screen45888794 now passes with1536 acknowledged queries and no
+missing arms. Full production is released under a4-hour-per-condition cap:
+condition0 can start from its completed immutable source row; conditions1--7
+are queued as an array with at most two running tasks after source production.
+Each task retains all six prescribed arms. Across eight conditions, the planned
+adapter-query count is817152, plus36864 source queries and separately recorded
+engineering/assessment/pretraining costs. These are planned budgets, not results.
+
 Production runs use one condition per bounded allocation, with all six trained
 arms and every failure retained. A completed selected source row may be used
 while later source conditions are still running; the complete eight-condition
@@ -60,3 +68,7 @@ batch's acknowledged/requested counters are recorded. This changes orchestration
 not the frozen source or target. Bounded-RPC unit tests cover values/order,
 successful accounting and unacknowledged timeout cost. A real first/last-condition
 128-query check must pass before releasing the replacement full producer.
+
+The real check45888793 passed: both64-row panels replay cached energies exactly;
+32-structure RPCs take1.14--4.15 seconds. Replacement producer45889306 is running
+with the same frozen source law and target and persistent scored chunks.

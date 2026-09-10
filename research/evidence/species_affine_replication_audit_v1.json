@@ -1,0 +1,90 @@
+{
+  "complete": true,
+  "scope": "Replay both same-neural-context ablations on their shared confirmation panel.",
+  "condition": {
+    "source_row": 5846,
+    "raw_index": 589712,
+    "reference_geometry_loaded": true,
+    "reference_geometry_used_to_initialize": false,
+    "numbers": [
+      1,
+      15,
+      8,
+      6,
+      1,
+      6,
+      8,
+      12
+    ],
+    "charge": 1,
+    "spin_multiplicity": 1
+  },
+  "base_sha256": "1ed25e74832d8c22a1a79dcb5b68b1181afab09db6b0627712eed367d9f9e5c0",
+  "rows": [
+    {
+      "training_run": "species_affine_adapter_1000_v1",
+      "confirmation_run": "species_affine_confirmation_v1",
+      "training_sha256": "7715d6048bbdc0fb8d4ba930c6f347cf6954a91566e733b39608f8f2dd9ff28f",
+      "confirmation_sha256": "d828eb3257258e7db7f7c1897e3670d3398db4851c327058cb89761f53373206",
+      "checkpoint_sha256": "ec92a25e2aef204543e2c75664591595619c5fc90acf7f8bd4b2d752bb20cca8",
+      "replay_max_error_A": 8.881784197001252e-16,
+      "affine_delta_kl": {
+        "mean": -0.16118205859460008,
+        "sem": 0.026915602877756965,
+        "samples": 2048
+      },
+      "convex_minus_affine": {
+        "mean": -0.013322969441040493,
+        "sem": 0.0025176365391825655,
+        "samples": 2048
+      },
+      "affine_path_weights": {
+        "particles": 2048,
+        "ess": 1.0024041622003403,
+        "ess_fraction": 0.0004894551573243849,
+        "maximum_weight": 0.9987999050426744,
+        "log_mean_weight": 115.01054324298553
+      },
+      "training_queries": 16512,
+      "confirmation_queries": 2048,
+      "training_seconds": 443.082899259869
+    },
+    {
+      "training_run": "species_affine_adapter_1000_s9162",
+      "confirmation_run": "species_affine_replica_confirmation_v1",
+      "training_sha256": "b30da76cb92eebbb058ba39c7e854bee86419c159a867032296f6357a7f98108",
+      "confirmation_sha256": "8c8b14e6391e88ba3c9b55b77a3fe8a2954b6b8fb620dcf612a567cf0fe0cc01",
+      "checkpoint_sha256": "d5ca070333b80ee7f647e69211d96497cae258662e58b240d9b1756daaede284",
+      "replay_max_error_A": 8.881784197001252e-16,
+      "affine_delta_kl": {
+        "mean": -0.15405497941343949,
+        "sem": 0.026545765807641578,
+        "samples": 2048
+      },
+      "convex_minus_affine": {
+        "mean": -0.012588664968523223,
+        "sem": 0.0021489757508294655,
+        "samples": 2048
+      },
+      "affine_path_weights": {
+        "particles": 2048,
+        "ess": 1.0014323541952017,
+        "ess_fraction": 0.0004889806416968758,
+        "maximum_weight": 0.9992845351856796,
+        "log_mean_weight": 115.44954722716056
+      },
+      "training_queries": 16512,
+      "confirmation_queries": 2048,
+      "training_seconds": 449.08347233501263
+    }
+  ],
+  "replay_verified": true,
+  "new_affine_branch_queries_including_smoke": 37184,
+  "limitations": [
+    "One molecular condition, two training streams and shared2048-row evaluation; not4096 independent rows.",
+    "Row SEM conditions on a trained model; this does not measure training-seed uncertainty.",
+    "This ablation compares active point nonlinearity with its affine tangent while retaining the same neural context.",
+    "The small difference does not establish broad performance, calibration or ICLR novelty.",
+    "Existing source, convex/typed training, failed branches and independent assessment cost additional compute."
+  ]
+}

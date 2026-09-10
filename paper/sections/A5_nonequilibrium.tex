@@ -540,3 +540,27 @@ new oracle queries, plus320 xTB optimization attempts. Earlier linear screens,
 base pretraining and source production remain additional. The replication
 audit replays every confirmation coordinate, volume and work increment from
 the frozen checkpoints and preserves all budgets and failure denominators.
+
+\paragraph{Ablating active nonlinearity with the same neural context.}
+The13-parameter typed-linear baseline does not isolate the benefit of the
+nonlinear point transform from that of its19,365-parameter conditioner.
+We therefore retain the exact same neural parameters, group splits, coupling
+schedule, initialization and learning-rate schedule, and replace each active
+point map by its tangent $F(0)+DF(0)u$. The full conditioned composition remains
+nonlinear. For internal-group updates, centering cancels $F(0)$ and the
+log volume is $(n_g-1)\log\det DF(0)$; centroid-pair updates retain the offset
+and use $\log\det DF(0)$. A linear solve gives the active-coordinate inverse.
+Both families pass complete-context Jacobian, inverse and gradient checks.
+
+Both fixed1,000-update affine controls use16,512 queries, matching their
+convex partners. On the shared2,048-row confirmation, affine-context
+$\Delta\mathrm{KL}$ is $-0.16118\pm0.02692$ and $-0.15405\pm0.02655$ nat.
+The paired convex-minus-affine differences are respectively
+$-0.01332\pm0.00252$ and $-0.01259\pm0.00215$ nat (row SEM).
+Thus a smaller active-map benefit has the same sign in both training pairs
+under this fixed recipe. These are one-condition comparisons with shared
+evaluation noise, not independent cross-molecule confirmation. The second
+affine model still has path ESS1.0014/2,048. The point-map ablation does not
+resolve weight degeneracy or establish superiority to external flow methods.
+Both affine confirmations reuse stored base and convex energies; their own
+training, smoke and confirmation cost37,184 additional oracle queries.
