@@ -78,6 +78,47 @@ not in general order the physical marginal errors. EACF explicitly discusses
 the corresponding joint/marginal objectives \citep{midgley2023eacf}.
 This distinction is retained in the external-baseline comparison plan.
 
+\section{Candidate inversion-consistent repair}
+\label{app:parity-repair}
+Let $R=-I$ on the COM-free coordinate space and set
+\[
+ q_0^+=\tfrac12(q_0+R_\#q_0),\qquad
+ E_+(x)=\tfrac12[E_{\rm raw}(x)+E_{\rm raw}(-x)].
+\]
+The projected force is
+$F_+(x)=[F_{\rm raw}(x)-F_{\rm raw}(-x)]/2$; the minus sign follows from
+the coordinate inversion. This construction applies to the present full
+composition/electronic-state target, which has no fixed absolute-stereoisomer
+restriction or fixed chiral external environment.
+
+For an inversion-equivariant bijection $T$, the augmented output is
+$T_\#q_0^+$, obtained by drawing one independent inversion sign per original
+parent. The deterministic entropy identity compares this law with $q_0^+$,
+not with the unsymmetrized source. Its bracket
+$[U_+(Tx)-U_+(x)]/(kT)-\log\det DT(x)$ is even, so its expectation can also
+be evaluated using original $q_0$ parents. The source-mixture entropy need
+not be evaluated. Source symmetrization contributes a separate nonnegative
+KL decrease toward an even target:
+\[
+ \KL(q_0\Vert\pi_+)-\KL(q_0^+\Vert\pi_+)
+ =\KL(q_0\Vert q_0^+)=\mathrm{JS}(q_0,R_\#q_0)\in[0,\log2].
+\]
+The equality follows because $\log(q_0^+/\pi_+)$ is even. The transport
+change alone is thus an upper bound on the total KL change from raw $q_0$.
+This standard averaging argument must not be confused with assigning zero
+entropy change to a stochastic mixture operation.
+
+For an explicit original path with endpoint $y$, draw a uniform sign $a$ and
+output $x=R^a y$. Choose target auxiliary
+$\tfrac12 r_{\rm orig}(\mathrm{path}\mid R^a x)$. The proposal has the same
+sign factor, which cancels in its importance ratio, giving
+\[
+ W_+=W_{\rm raw}+[E_+(y)-E_{\rm raw}(y)]/(kT).
+\]
+This does not require the original source or reverse path to be inversion
+invariant. It defines a new weighted experiment. Its numerical and molecular
+qualification remain separate from the original results.
+
 \section{Evidence and failure inventory}
 Source and checkpoint replay audits are stored in
 \texttt{species\_entropy\_replication\_v1.json} and

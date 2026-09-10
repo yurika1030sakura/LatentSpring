@@ -13,8 +13,8 @@ training streams show small improvements over typed-linear and matched
 neural-context affine controls. The latter differences are
 $-0.0133\pm0.0025$ and $-0.0126\pm0.0021$ nat on shared confirmation samples.
 Path importance weights remain severely concentrated. A broader eight-condition
-comparison is specified and launched, but its performance results and external
-flow comparisons are not yet available. We therefore present an implemented
+comparison is specified; production training is held after detecting a target
+symmetry issue, and external flow comparisons are not yet available. We present an implemented
 method candidate and its limitations, without claiming calibrated Boltzmann
 sampling or an established novel-method advantage.
 \end{abstract}
@@ -319,6 +319,26 @@ and no qualified output. Its records are retained. The replacement bounds
 requests and persists intermediate coordinates and scored chunks.
 Complete broader performance results are not yet available. The reserved 722
 conditions remain untouched.
+
+\paragraph{New source/target symmetry audit.}
+On four fixed source geometries in each broader condition, raw eSEN energy
+differences under mirror reflection reach 0.0533--0.2262 eV per condition.
+Proper-rotation and joint-permutation errors are below $5.73\times10^{-6}$
+and $3.58\times10^{-6}$ eV. These 256-query checks expose a material inversion
+defect in the declared learned potential. The source backbone also uses
+cross-product vector features and is not guaranteed inversion equivariant.
+An O(3)-equivariant adapter alone therefore does not establish an invariant
+output distribution. The completed table concerns the original raw target;
+it is not retrospectively assigned to a symmetrized potential.
+
+Pending broader training is held while an explicit repair is qualified:
+average the raw energy at $x$ and $-x$, and use the fixed source mixture
+$(q_0+(-I)_\#q_0)/2$. This changes both the source and target definitions.
+The candidate projection and its entropy accounting are stated in
+Appendix \ref{app:parity-repair}; molecular outcomes under this repaired
+protocol remain pending. At finite-difference step $10^{-3}$
+$\mathrm{\mathring A}$ the sampled force checks pass their declared tolerance;
+smaller-step discrepancies require an additional numerical ladder.
 
 \section{Limitations and remaining scientific gates}
 The construction provides an exact relative-entropy accounting route, not an
