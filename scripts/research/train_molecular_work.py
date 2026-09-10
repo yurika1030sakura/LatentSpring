@@ -31,6 +31,7 @@ from cfm_mol.path_work import gaussian_training_path,external_energy
 from cfm_mol.path_balance import fixed_path_log_factors,log_variance_balance
 from cfm_mol.molecular_path_drift import MolecularPathDrift
 from cfm_mol.work_resume import validate_resume_recipe,restore_work_optimizer
+from cfm_mol.pair_precision import LearnedPairPrecision
 from cfm_mol.radial_reference import prepare_research_backbone
 from cfm_mol.smooth_geometry import patch_smooth_geometry
 from molecular_tempered_pilot import sha,write_json,geometry_metrics
@@ -48,6 +49,9 @@ def main():
     p.add_argument('--eval-particles',type=int,default=64);p.add_argument('--lr',type=float,default=1e-5)
     p.add_argument('--noise',type=float,default=.2);p.add_argument('--kT',type=float,default=1.)
     p.add_argument('--restraint',type=float,default=.1);p.add_argument('--seed',type=int,default=9051)
+    p.add_argument('--precision-kind',choices=['none','learned','fixed','trace'],default='none')
+    p.add_argument('--precision-strength',type=float,default=32.)
+    p.add_argument('--precision-lr',type=float,default=1e-3)
     p.add_argument('--gradient-diagnostics',type=int,default=0,help='Freeze weights and compare paired gradient estimators for this many independent batches')
     p.add_argument('--objective',choices=['mean_work','log_variance'],default='mean_work')
     p.add_argument('--mode',choices=['joint','backward_only','forward_energy_only'],default='joint')
@@ -69,6 +73,10 @@ def main():
         raise ValueError('Gradient diagnostics require joint mode and batch >= 2')
     if args.objective=='log_variance' and (args.mode!='joint' or args.batch<2):
         raise ValueError('Fixed-path log variance requires joint training and batch >= 2')
+    if args.precision_kind!='none' and (args.mode!='joint' or args.objective!='mean_work' or args.gradient_diagnostics):
+        raise ValueError('Pair precision currently requires joint mean-work training')
+    if not math.isfinite(args.precision_strength) or args.precision_strength<0 or not math.isfinite(args.precision_lr) or args.precision_lr<=0:
+        raise ValueError('Invalid precision hyperparameters')
     args.out.mkdir(parents=True,exist_ok=True);output=args.out/'results.json'
     if output.exists():raise FileExistsError(output)
     torch.manual_seed(args.seed)
@@ -126,8 +134,16 @@ def main():
     forward=load_model('forward');backward=load_model('backward');del state
     if args.mode=='backward_only':
         for parameter in forward.parameters():parameter.requires_grad_(False)
-    parameters=[v for model in [forward,backward] for v in model.parameters() if v.requires_grad]
-    optimizer=torch.optim.AdamW(parameters,lr=args.lr,weight_decay=0.)
+    precision_model=None
+    if args.precision_kind!='none':
+        precision_model=LearnedPairPrecision(mode=args.precision_kind,strength=args.precision_strength).double().to(args.device)
+        if resume_state is not None:precision_model.load_state_dict(resume_state['precision_state_dict'],strict=True)
+    field_parameters=[v for model in [forward,backward] for v in model.parameters() if v.requires_grad]
+    precision_parameters=[] if precision_model is None else [v for v in precision_model.parameters() if v.requires_grad]
+    parameters=field_parameters+precision_parameters
+    groups=[{'params':field_parameters,'lr':args.lr}]
+    if precision_parameters:groups.append({'params':precision_parameters,'lr':args.precision_lr})
+    optimizer=torch.optim.AdamW(groups,lr=args.lr,weight_decay=0.)
     if resume_state is not None:restore_work_optimizer(optimizer,resume_state['optimizer_state_dict'],start_step)
     del resume_state
     graph=dgl.batch([base]*args.batch).to(args.device)
@@ -147,10 +163,14 @@ def main():
             graph.edata['e_t']=graph.edata['e_1_true']
             v=position_velocity(model,graph,x,x.new_full((args.batch,),t),nbi,uem,parameterization='displacement')
         return sign*torch.einsum('nk,bnd->bkd',basis,v.double().reshape(args.batch,n,3)).reshape_as(z)
+    def precision(z,t):
+        x=torch.einsum('nk,bkd->bnd',basis,z.reshape(len(z),n-1,3))
+        return precision_model(x,t,numbers,charge,spin,args.kT)
+    precision_options={} if precision_model is None else {'forward_precision':precision,'backward_precision':precision}
     root=Path(__file__).resolve().parents[2]
     report={'complete':False,'scope':__doc__,'configuration':{k:str(v.resolve()) if isinstance(v,Path) else v for k,v in vars(args).items()},
         'checkpoint_sha256':sha(args.checkpoint),'oracle_sha256':sha(args.oracle),'metadata_progress_sha256':metadata.progress_sha256 if metadata else None,
-        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py',root/'scripts/research/oracle_worker.py',root/'cfm_mol/condition_systems.py',root/'cfm_mol/electronic_conditioning.py',root/'cfm_mol/path_balance.py',root/'cfm_mol/molecular_path_drift.py',root/'cfm_mol/gradient_diagnostics.py',root/'cfm_mol/work_resume.py']},
+        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py',root/'scripts/research/oracle_worker.py',root/'cfm_mol/condition_systems.py',root/'cfm_mol/electronic_conditioning.py',root/'cfm_mol/path_balance.py',root/'cfm_mol/molecular_path_drift.py',root/'cfm_mol/gradient_diagnostics.py',root/'cfm_mol/work_resume.py',root/'cfm_mol/pair_precision.py',root/'cfm_mol/matrix_gaussian.py']},
         'condition':{**source_condition,
             'numbers':numbers.tolist(),'charge':charge,'spin_multiplicity':spin},
         'energy_zero_eV':energy_zero,'prior_std':prior_std,'evaluations':{},'training':[]}
@@ -158,6 +178,9 @@ def main():
         'checkpoint_requested_kT':protocol.get('requested_kT'),'new_input_kT_eV':args.kT,
         'applied_in_this_run':args.neutralize_temperature_input and resumed is None}
     report['training_start_step']=start_step
+    report['precision_protocol']={'kind':args.precision_kind,'strength':args.precision_strength,
+        'softening_A':.1,'length_scale_A':2.,'trainable_parameters':sum(v.numel() for v in precision_parameters),
+        'scope':'bounded pair precision; exact discrete Gaussian factors; molecular benefit unproven'}
     if resumed is not None:
         report['resume']={'run':str(args.resume_work_run.resolve()),'source_results_sha256':sha(args.resume_work_run/'results.json'),
             'source_checkpoint_sha256':sha(args.resume_work_run/'last.ckpt'),'optimizer_restored':True,
@@ -176,7 +199,7 @@ def main():
                 checkpoint_steps=args.checkpoint_steps and training,terminal_std=terminal_std,
                 max_drift_norm=args.max_drift_per_sqrt_dimension*math.sqrt(dimension),
                 forward_energy_only=args.mode=='forward_energy_only' and training,
-                mean_parameterization=args.mean_parameterization,noise_annealing_power=args.noise_annealing_power,retain_states=retain_states)
+                mean_parameterization=args.mean_parameterization,noise_annealing_power=args.noise_annealing_power,retain_states=retain_states,**precision_options)
             positions=torch.einsum('nk,bkd->bnd',basis,path.terminal.reshape(args.batch,n-1,3))
             energy,force=oracle.evaluate(positions)
             linked=external_energy(positions,energy,force) if training else energy.to(positions)
@@ -267,6 +290,7 @@ def main():
         if not all(torch.isfinite(p).all() for p in parameters):raise FloatingPointError('Non-finite proposal parameters')
         evaluate('final')
         torch.save({'forward_state_dict':forward.state_dict(),'backward_state_dict':backward.state_dict(),
+            'precision_state_dict':None if precision_model is None else precision_model.state_dict(),
             'optimizer_state_dict':optimizer.state_dict(),'research_protocol':protocol,'proposal_protocol':report['configuration'],
             'global_step':args.steps,'prior_std':prior_std},args.out/'last.ckpt')
         report.update(complete=True,oracle_evaluations=oracle.evaluated,

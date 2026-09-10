@@ -25,6 +25,8 @@ BGFM_NOISE_ANNEALING="${13:-0.0}"
 BGFM_WORK_OBJECTIVE="${14:-mean_work}"
 BGFM_GRADIENT_DIAGNOSTICS="${15:-0}"
 BGFM_RESUME_RUN="${16:-}"
+BGFM_PRECISION_KIND="${17:-none}"
+BGFM_PRECISION_STRENGTH="${18:-32}"
 BGFM_STORE=/n/holylabs/woo_lab/Lab/yulili/bgfm
 export PYTHONPATH="$SOURCE_ROOT" PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2
@@ -47,7 +49,7 @@ exec "$BGFM_STORE/envs/flowmol/bin/python" -u scripts/research/train_molecular_w
  --metadata /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/raw_metadata_replay_v1 \
  --oracle "$BGFM_STORE/checkpoints/omol25/esen_sm_conserving_all.pt" \
  --oracle-python "$BGFM_STORE/envs/omol25/bin/python" --out "$RUN_ROOT" \
- --gradient-diagnostics "$BGFM_GRADIENT_DIAGNOSTICS" --objective "$BGFM_WORK_OBJECTIVE" --mode "$MODE" --steps "$TRAIN_STEPS" --path-steps 16 --batch "$TRAIN_BATCH" \
+ --precision-kind "$BGFM_PRECISION_KIND" --precision-strength "$BGFM_PRECISION_STRENGTH" --gradient-diagnostics "$BGFM_GRADIENT_DIAGNOSTICS" --objective "$BGFM_WORK_OBJECTIVE" --mode "$MODE" --steps "$TRAIN_STEPS" --path-steps 16 --batch "$TRAIN_BATCH" \
  --eval-particles "$EVAL_PARTICLES" --oracle-batch-size "$ORACLE_BATCH" --seed "$TRAIN_SEED" \
  --mean-parameterization "$MEAN_PARAMETERIZATION" --kT "$BGFM_TARGET_KT" --source-row "$BGFM_SOURCE_ROW" \
  --noise-annealing-power "$BGFM_NOISE_ANNEALING" \

@@ -13,6 +13,7 @@ from torch.autograd.function import once_differentiable
 from torch.utils.checkpoint import checkpoint
 
 from cfm_mol.nonequilibrium import _states,_schedule,gaussian_log_density
+from cfm_mol.matrix_gaussian import precision_cholesky,gaussian_precision_sample,gaussian_precision_log_density
 
 
 class ExternalEnergy(torch.autograd.Function):
@@ -71,14 +72,19 @@ def gaussian_reference_step(left,right,noise_scale,prior_std,terminal_std,noise_
 
 def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,generator,*,
                            prior_std=1.,checkpoint_steps=False,terminal_std=None,max_drift_norm=None,
-                           forward_energy_only=False,mean_parameterization='reference',noise_annealing_power=0.,retain_states=False):
+                           forward_energy_only=False,mean_parameterization='reference',noise_annealing_power=0.,retain_states=False,
+                           forward_precision=None,backward_precision=None):
     """Simulate reparameterized paths and retain complete first-order gradients.
 
     x0 must be an independent draw from the stated isotropic Gaussian.
     With terminal_std=None, fixed noise_scale*sqrt(dt) is used in both
     directions (the original Euler control). Otherwise exact Gaussian reference
     kernels connect geometric standard deviations from prior_std to terminal_std.
-    Their correlation is exp(-noise_scale^2*dt/2). Neural drifts add residual
+    Optional precision callbacks replace scalar covariances by std^2 P^-1
+    using fully normalized Gaussian factors. State-dependent P does not retain
+    the Gaussian-reference reversibility property; the finite-path identity
+    still applies. Both covariance and mean path derivatives are retained.
+    Their scalar reference correlation is exp(-noise_scale^2*dt/2). Neural drifts add residual
     mean shifts. With zero residual, the reference marginal and its reverse
     conditional are exact at any step count.
     Backward drift is an auxiliary normalized kernel, not physical time reversal.
@@ -97,6 +103,7 @@ def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,gen
     reference/reverse factors use that same actual scale.
     """
     _states(x0);grid=_schedule(times,'times')
+    if (forward_precision is None)!=(backward_precision is None):raise ValueError('Supply both precision callbacks or neither')
     if mean_parameterization not in {'reference','native'}:raise ValueError('Unknown kernel mean parameterization')
     if not math.isfinite(noise_annealing_power) or noise_annealing_power<0:raise ValueError('Nonnegative finite noise annealing power required')
     if not math.isfinite(noise_scale) or noise_scale<=0 or not math.isfinite(prior_std) or prior_std<=0:
@@ -116,7 +123,8 @@ def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,gen
             if max_drift_norm is not None:
                 drift=drift*max_drift_norm/torch.sqrt(max_drift_norm**2+drift.square().sum(-1,keepdim=True))
             mean=af*state+dt*drift
-            terminal=mean+sf*epsilon
+            forward_cholesky=None if forward_precision is None else precision_cholesky(forward_precision(state,left))
+            terminal=mean+sf*epsilon if forward_cholesky is None else gaussian_precision_sample(mean,forward_cholesky,sf,epsilon)
             reverse_input=terminal.detach() if forward_energy_only else terminal
             reverse_state=state.detach() if forward_energy_only else state
             reverse_drift=backward_drift(reverse_input,right)
@@ -125,9 +133,11 @@ def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,gen
             if max_drift_norm is not None:
                 reverse_drift=reverse_drift*max_drift_norm/torch.sqrt(max_drift_norm**2+reverse_drift.square().sum(-1,keepdim=True))
             reverse_mean=ab*reverse_input+dt*reverse_drift
-            log_forward=gaussian_log_density(terminal,mean,sf)
+            log_forward=gaussian_log_density(terminal,mean,sf) if forward_cholesky is None else gaussian_precision_log_density(terminal,mean,forward_cholesky,sf)
             if forward_energy_only:log_forward=log_forward.detach()
-            change=log_forward-gaussian_log_density(reverse_state,reverse_mean,sb)
+            backward_cholesky=None if backward_precision is None else precision_cholesky(backward_precision(reverse_input,right))
+            log_backward=gaussian_log_density(reverse_state,reverse_mean,sb) if backward_cholesky is None else gaussian_precision_log_density(reverse_state,reverse_mean,backward_cholesky,sb)
+            change=log_forward-log_backward
             return terminal,change
         if checkpoint_steps:
             x,increment=checkpoint(step,x,noise,use_reentrant=False)

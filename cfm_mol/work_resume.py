@@ -2,9 +2,10 @@
 
 INVARIANTS=('mode','batch','path_steps','lr','noise','kT','restraint','seed',
     'reference_kernel','mean_parameterization','neutralize_temperature_input',
-    'noise_annealing_power','prior_std','max_drift_per_sqrt_dimension')
+    'noise_annealing_power','prior_std','max_drift_per_sqrt_dimension','precision_kind','precision_strength','precision_lr')
 DEFAULTS={'objective':'mean_work','gradient_diagnostics':0,'noise_annealing_power':0.,
-    'mean_parameterization':'reference','neutralize_temperature_input':False}
+    'mean_parameterization':'reference','neutralize_temperature_input':False,
+    'precision_kind':'none','precision_strength':32.,'precision_lr':1e-3}
 
 
 def validate_resume_recipe(report,checkpoint,requested):

@@ -17,7 +17,7 @@ def test_continuation_accepts_old_mean_work_recipe_but_rejects_changed_physics_o
     old=recipe();source={'complete':True,'configuration':old};state={'proposal_protocol':deepcopy(old),'global_step':500}
     requested={**old,'steps':1500,'objective':'mean_work'}
     assert validate_resume_recipe(source,state,requested)==500
-    for key,value in [('kT',1.),('mode','forward_energy_only'),('objective','log_variance'),('seed',9052),('batch',32)]:
+    for key,value in [('kT',1.),('mode','forward_energy_only'),('objective','log_variance'),('seed',9052),('batch',32),('precision_kind','learned'),('precision_strength',8.)]:
         with pytest.raises(ValueError,match=key):validate_resume_recipe(source,state,{**requested,key:value})
     with pytest.raises(ValueError,match='total steps'):validate_resume_recipe(source,state,old)
     with pytest.raises(ValueError,match='diagnostic'):

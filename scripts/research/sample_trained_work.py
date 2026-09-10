@@ -18,6 +18,7 @@ from cfm_mol.nonequilibrium import centered_orthonormal_basis,WeightedPaths,norm
 from cfm_mol.path_work import gaussian_training_path
 from cfm_mol.radial_reference import prepare_research_backbone
 from cfm_mol.smooth_geometry import patch_smooth_geometry
+from cfm_mol.pair_precision import LearnedPairPrecision
 from molecular_tempered_pilot import sha,write_json,geometry_metrics
 
 
@@ -43,7 +44,12 @@ def main():
         model=model_from_config(cfg);prepare_research_backbone(model,protocol)
         model.load_state_dict(state[key],strict=True);patch_smooth_geometry(model,protocol.get('geometry_softening',0.))
         return model.to(args.device).float().eval()
-    forward=load_model('forward_state_dict');backward=load_model('backward_state_dict');del state
+    forward=load_model('forward_state_dict');backward=load_model('backward_state_dict')
+    precision_model=None
+    if recipe.get('precision_kind','none')!='none':
+        precision_model=LearnedPairPrecision(mode=recipe['precision_kind'],strength=recipe['precision_strength']).double().to(args.device).eval()
+        precision_model.load_state_dict(state['precision_state_dict'],strict=True)
+    del state
     # The temperature reset, if used, is already baked into these trained
     # weights. Applying it a second time would silently change the proposal.
     condition=old['condition'];numbers=condition['numbers'];n=len(numbers);dimension=3*(n-1)
@@ -58,6 +64,10 @@ def main():
             graph.edata['e_t']=graph.edata['e_1_true']
             value=position_velocity(model,graph,x,x.new_full((args.batch,),t),nbi,uem,parameterization='displacement')
         return sign*torch.einsum('nk,bnd->bkd',basis,value.double().reshape(args.batch,n,3)).reshape_as(z)
+    def precision(z,t):
+        x=torch.einsum('nk,bkd->bnd',basis,z.reshape(len(z),n-1,3))
+        return precision_model(x,t,numbers,condition['charge'],condition['spin_multiplicity'],recipe['kT'])
+    precision_options={} if precision_model is None else {'forward_precision':precision,'backward_precision':precision}
     args.out.mkdir(parents=True,exist_ok=True);output=args.out/'results.json'
     if output.exists():raise FileExistsError(output)
     root=Path(__file__).resolve().parents[2];oracle_path=Path(recipe['oracle'])
@@ -82,7 +92,7 @@ def main():
             path=gaussian_training_path(x0,lambda z,t:drift(forward,z,t,1.),lambda z,t:drift(backward,z,t,-1.),
                 torch.linspace(0,1,recipe['path_steps']+1,dtype=torch.float64),recipe['noise'],generator,
                 prior_std=old['prior_std'],terminal_std=terminal_std,max_drift_norm=recipe['max_drift_per_sqrt_dimension']*math.sqrt(dimension),
-                mean_parameterization=recipe.get('mean_parameterization','reference'),noise_annealing_power=recipe.get('noise_annealing_power',0.))
+                mean_parameterization=recipe.get('mean_parameterization','reference'),noise_annealing_power=recipe.get('noise_annealing_power',0.),**precision_options)
             x=torch.einsum('nk,bkd->bnd',basis,path.terminal.reshape(args.batch,n-1,3));energy,_=oracle.evaluate(x)
             reduced=(energy.to(x)-old['energy_zero_eV']+recipe['restraint']/2*x.square().sum((1,2)))/recipe['kT']
             positions.append(x.cpu());energies.append(energy);works.append(path.work(reduced).cpu())
