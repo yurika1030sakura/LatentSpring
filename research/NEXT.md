@@ -37,10 +37,11 @@ established; never mark the full objective complete from these component results
    Loader replay matches its real saved coordinates and volumes.
    Main1000-step control45884844 completed16512 queries: development DeltaKL
    -.21483+/-.06354; convex-minus-affine -.02008+/-.00628 nat on256 rows.
-   This requires confirmation. Replica45885671 is RUNNING; preserve it.
-   Main confirmation species_affine_confirmation_v1 is submitted; obtain its
-   job ID from jobs.jsonl and check completion. It reuses stored convex/base
-   energies and adds only2048 affine queries. Do not repeat prior energy queries.
+   Main confirmation45885801 is now COMPLETE: convex-minus-affine
+   -.01332+/-.00252 nat on2048 shared rows, a small first-seed advantage.
+   It reuses stored convex/base energies and adds only2048 affine queries.
+   Evidence: species_affine_confirmation_v1.json. Replica45885671 is RUNNING;
+   preserve it and do not repeat prior energy queries.
    After replica completion submit confirm_species_affine.slurm with arguments
    species_affine_adapter_1000_s9162 and species_entropy_adapter_replica_confirmation_v1.
    Preserve both seeds regardless of outcome. If the affine-context model matches

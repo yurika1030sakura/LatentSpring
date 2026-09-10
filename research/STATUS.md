@@ -26,9 +26,11 @@ maps are linearized. The full conditioned map remains nonlinear.277 tests pass,
 including14 full-model checks across both families. Its64-query real smoke
 45884688 and strict checkpoint-loader replay pass. Main1000-step45884844
 completes16512 queries: development DeltaKL=-.21483+/-.06354; convex-minus-affine
-=-.02008+/-.00628 nat. This is a development result awaiting shared-panel
-confirmation. Replica45885671 is running, and the main confirmation is submitted.
-See notes/species_affine_ablation_v1.md; no active-nonlinearity benefit is promoted yet.
+=-.02008+/-.00628 nat. Confirmation45885801 gives convex-minus-affine
+=-.01332+/-.00252 nat on2048 shared rows, with2048 new oracle queries and
+stored base/convex energies reused. This is a small first-seed advantage over
+the same-neural-context control. Replica45885671 remains running; no broad
+mechanism or novelty claim follows. See species_affine_confirmation_v1.json.
 
 All eight broader source conditions pass the revised engineering screen45884687:
 512 finite physical queries, distinct stream seeds and exact repeated prefixes.

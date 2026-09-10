@@ -37,3 +37,10 @@ and investigate the shared molecular decomposition on the full development panel
 If the candidate wins, assess uncertainty and broader replication before any
 mechanism claim. Either result still requires strong EACF/sampling baselines and
 does not repair the existing ESS~1/2048 failure by itself.
+
+First training pair completed: affine development DeltaKL=-.21483+/-.06354;
+convex-minus-affine=-.02008+/-.00628. On the stored2048-row confirmation,
+convex-minus-affine=-.01332+/-.00252 nat, with2048 additional physical queries
+and zero repeated base/convex energy calls. This supports a small active-map
+benefit for the first training pair; the prespecified replica is still running.
+Do not call this a replicated mechanism or a sampling-calibration result.
