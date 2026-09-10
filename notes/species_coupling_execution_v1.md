@@ -64,3 +64,17 @@ or best-checkpoint selection. If the nonlinear model does not improve over the
 matched typed control, do not extend the same recipe merely because training
 loss declines. Global mode-weight learning remains an unresolved possibility,
 not a failure mechanism already proved by the current data.
+
+
+## Fresh comparison after the1000-update run
+
+The nonlinear1000-step development DeltaKL is-.23491+/-.06397 SEM, versus
+-.16686+/-.05381 for matched typed linear. Their paired difference is
+-.06805+/-.03022, a small nominal advantage requiring confirmation. Freeze both
+checkpoints; generate2048 new base samples with seed9169 and evaluate both maps
+on the identical rows. Total confirmation cost6144 oracle calls (base and two
+maps). Verify fresh nonlinear inverse and volume cancellation; keep all work
+weights and failures. This is one-condition/one-training-seed confirmation only.
+The original source reverse model is used for fresh weights, so do not pool
+with the development auxiliary's ESS. No parameter or selection changes follow
+from this panel until all outcomes have been recorded.

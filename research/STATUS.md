@@ -18,7 +18,27 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
-## Latest checkpoint: exact-entropy refinement and nonlinear primitive
+## Current species-coupling execution
+
+The invariant conditioner and complete species coupling adapter are implemented.
+Seven full-model tests cover nonzero-parameter full intrinsic Jacobians including
+context dependencies, inverse, batch independence, O(3), atom/element permutation,
+identity, parameter gradients and200-atom reconstruction.270 tests pass.
+
+Real-oracle smoke45870699 completed64 queries; trained inverse error1.4e-14 A
+and full determinant discrepancies below7e-16 nat. The200-step run45871371
+completed3712 queries: development DeltaKL=-.18129+/-.05689 SEM, versus typed
+linear paired difference-.02358+/-.02579. No clear nonlinear advantage yet.
+Its refinement displacement is not exactly linear, but only .00230 A RMS.
+
+A fixed1000-update nonlinear/typed-linear comparison is RUNNING as45877754/
+45877755, each16512 queries. Both start from identity under their stated cosine
+schedules. The200-step geometry submission v1 was rejected for an expired
+Slurm dependency; preserve it and submit v2 without that dependency after
+verifying the source completed. No geometry result is claimed until assessment.
+The full ICLR objective remains open; no novelty or broad calibration claim.
+
+## Previous checkpoint: exact-entropy refinement and nonlinear primitive
 
 The learned-feature score-calibration experiment completed (45849360). Its33
 learned features beat random33-feature and typed105-feature controls in paired
