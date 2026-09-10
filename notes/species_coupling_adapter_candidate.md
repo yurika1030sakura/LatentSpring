@@ -1,7 +1,8 @@
 # Prospective nonlinear exact-volume species coupling adapter
 
-This is the next architecture design to test, not an implemented or validated
-method. The exact-entropy linear baseline has a small development KL decrease
+This is the next architecture design to test. A nonlinear centered primitive
+is now implemented and unit-tested; the full molecular coupling model is not
+implemented or validated. The exact-entropy linear baseline has a small development KL decrease
 but leaves ESS~1/256. More flexible invertible transport can change the generator
 without requiring an unqualified marginal score estimator.
 
@@ -80,3 +81,52 @@ and coefficient bounds. Then run a bounded real-oracle smoke with replay checks,
 followed by matched linear/scalar controls and independent geometry/distribution
 assessment. No test, allocation or molecular outcome for this nonlinear design
 has occurred yet. The ICLR objective remains open.
+
+
+## Preferred nonlinear primitive now implemented
+
+The common3-by-3 A-only internal layer above is a baseline: it preserves
+within-type affine invariants and is too restrictive for large element groups.
+The implemented alternative is cfm_mol/centered_convex_flow.py. With context
+held fixed, use a pointwise gradient map
+F(u)=lambda*u+sum_j a_j sigmoid(b_j dot u+c_j)b_j+a_r*u/sqrt(ell^2+||u||^2).
+Normalize ||b_j||<=1/ell, set |a_j|<=2*beta*lambda*ell^2/M and
+|a_r|<=beta*lambda*ell/2, with beta=.25. The softplus and radial terms each
+consume half the derivative budget, giving ||DF-lambda I||<=beta*lambda.
+lambda=exp(.25*tanh(raw_scale)); zero amplitudes and scale give exact identity.
+The total potential is strongly convex despite the bounded signed coefficients.
+
+On a group zero-sum subspace, T_i(u)=F(u_i)-mean_j F(u_j). Let A_i=DF(u_i).
+The exact volume is
+ logdet_H DT=sum_i logdet(A_i)+logdet(mean_i A_i^-1).
+This follows from the Schur complement of the3-dimensional translation
+subspace. It accounts explicitly for centering; simply multiplying the ambient
+block determinants is wrong. Only3-by-3 matrices need factorization.
+
+The inverse iteration u_next=(y-P(F(u)-lambda*u))/lambda is a global contraction
+with factor<=beta. The implemented no-grad inverse checks a declared residual
+and rejects non-convergence; it is for reconstruction, not a differentiable
+likelihood API. No inverse is needed for forward energy-minus-log-volume
+training. Five tests cover full intrinsic Jacobian agreement, parameter finite
+differences through the map and determinant, symmetry, identity and inverse at
+up to200 points. These are engineering/theory checks, not molecular performance.
+
+Next implement the invariant context conditioner and species-group wrappers.
+For internal groups, use this centered map. For centroid-pair3-vectors, use the
+uncentered pointwise map and its3-by-3 determinant, plus a bounded equivariant
+context shift if needed. Test complete context dependencies, global COM and
+inverse composition before any molecular training. Do not claim universality:
+with little passive context, angular expressivity remains limited even though
+the added radial term is nonlinear. Keep those cases in assessment.
+
+Contractive residual flows, convex-potential flows and Schur-complement
+identities are prior art. The potential research distinction is the molecular
+conditioning/decomposition and tractable constrained volume, which still needs
+novelty review and controlled performance against equivariant coupling baselines.
+
+
+Additional primary prior art for this primitive:
+Convex Potential Flows, https://arxiv.org/abs/2012.05942 ;
+Residual Flows for Invertible Generative Modeling, https://arxiv.org/abs/1906.02735 .
+The contraction proof and Schur-complement identity are established mathematics.
+No molecular training of the nonlinear primitive has been performed.

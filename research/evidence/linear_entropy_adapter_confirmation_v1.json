@@ -1,0 +1,84 @@
+{
+  "complete": true,
+  "scope": "Fresh shared-base confirmation of fixed linear entropy adapters.",
+  "condition": {
+    "source_row": 5846,
+    "raw_index": 589712,
+    "reference_geometry_loaded": true,
+    "reference_geometry_used_to_initialize": false,
+    "numbers": [
+      1,
+      15,
+      8,
+      6,
+      1,
+      6,
+      8,
+      12
+    ],
+    "charge": 1,
+    "spin_multiplicity": 1
+  },
+  "base_sha256": "dcadc4cd17bb2ad73d79d74a7f6ed6ac8b4d97b452eba28b1096fc2c11e42499",
+  "base_results_sha256": "6299d83e6bb6dcac230c3bef510a47bfaf447d36a5554d867025ea0a8fc5d145",
+  "source_checkpoint_sha256": "694a680c4172a355e2a4e899486647f751702bea2dafad93364bf8b60a7b14b5",
+  "particles": 1024,
+  "seed": 9147,
+  "arms": {
+    "typed": {
+      "paired_endpoint_kl_change": {
+        "mean": -0.10193041577629056,
+        "sem": 0.027185450644060995,
+        "samples": 1024
+      },
+      "weights": {
+        "particles": 1024,
+        "ess": 2.2453713785443994,
+        "ess_fraction": 0.002192745486859765,
+        "maximum_weight": 0.6014487783233503,
+        "log_mean_weight": 110.4117686101134
+      },
+      "adapter_sha256": "5b8cd2547d21c57debbdc8cf3ec32fdf90cb9b3046fb929933bf602a3405323d",
+      "samples_sha256": "ab414d7be3e01e42245882f0d10f9eaa853244d0f5ff625a80cf558563fb6a2d",
+      "log_volume": -0.054754166412984605
+    },
+    "scalar": {
+      "paired_endpoint_kl_change": {
+        "mean": -0.06355501462694678,
+        "sem": 0.018085318111945407,
+        "samples": 1024
+      },
+      "weights": {
+        "particles": 1024,
+        "ess": 1.751879185837092,
+        "ess_fraction": 0.001710819517419035,
+        "maximum_weight": 0.7365926999376644,
+        "log_mean_weight": 110.4303524894506
+      },
+      "adapter_sha256": "ff1be8f8b8f675cb49f0026357a6bb11555fb2400d748749456231db316aff58",
+      "samples_sha256": "14dfce12c98283bf2476f7d43c6b9d3695312add65a577c13d5d8c3df1b5348f",
+      "log_volume": -0.05557263368381933
+    }
+  },
+  "limitations": [
+    "One condition and one trained adapter seed; this confirms evaluation, not training replication.",
+    "KL changes are relative to the same fixed base; absolute KL and target coverage are unknown.",
+    "Fresh path weights use the original trained reverse model, not the separately refitted development auxiliary.",
+    "The adapters are established exact-volume refinement controls, not validated AI novelty."
+  ],
+  "new_adapter_oracle_queries": 2048,
+  "typed_minus_scalar_endpoint_kl": {
+    "mean": -0.03837540114934378,
+    "sem": 0.017379182951271534,
+    "samples": 1024
+  },
+  "base_weights": {
+    "particles": 1024,
+    "ess": 1.8435359368503186,
+    "ess_fraction": 0.0018003280633303892,
+    "maximum_weight": 0.7118138705511446,
+    "log_mean_weight": 110.4778874771515
+  },
+  "total_confirmation_oracle_queries": 3072,
+  "seconds": 56.927509027998894
+}

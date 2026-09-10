@@ -76,3 +76,20 @@ is qualified. This is a partial component result, not a full method contribution
 See notes/stein_calibrated_entropy_candidate.md and score_calibration_audit_v1.json.
 The next unimplemented candidate is correction in learned invariant feature
 directions, with independent validation and direct Stein-estimation baselines.
+
+
+## Exact-entropy refinement direction
+
+A separate invertible linear adapter now demonstrates a small relative-KL
+improvement on a fresh1024-sample panel, without estimating the base score:
+typed -.10193+/-.02719 nat, scalar -.06356+/-.01809. This is one trained seed and
+one condition, with poor remaining path ESS. The work/volume accounting is exact
+for the stated finite map; the objective is established normalizing-flow theory.
+
+The next architectural candidate is nonlinear species coupling with exact
+COM-constrained volume. Its centered convex point-map primitive is implemented
+and unit-tested; neural contexts and complete molecular couplings remain to be
+implemented. This design seeks more flexible refinement while avoiding the
+failed score-estimation dependency. EACF, equivariant finite flows, convex
+potential flows and residual flows are direct prior art. No novelty or nonlinear
+sampling result is claimed. See notes/species_coupling_adapter_candidate.md.

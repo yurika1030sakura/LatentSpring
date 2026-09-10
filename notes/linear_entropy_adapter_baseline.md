@@ -65,3 +65,15 @@ The fresh loader uses the original trained backward model rather than the later
 refitted development auxiliary; compare weights within the fresh panel only.
 KL differences do not depend on that auxiliary choice. This is evaluation
 confirmation, not replication of adapter training or a broad sampling claim.
+
+
+## Fresh confirmation completed
+
+Job45855978 completed with3072 new oracle queries. On1024 fresh base samples,
+typed DeltaKL=-.10193+/-.02719 SEM, scalar=-.06356+/-.01809, and paired
+typed-minus-scalar=-.03838+/-.01738. This confirms a small refinement signal
+for the fixed trained maps, not independent training-seed replication.
+Fresh within-panel path ESS is base1.8435, typed2.2454, scalar1.7519 of1024:
+importance efficiency remains poor. Do not compare those numbers directly with
+the development ESS from a different reverse auxiliary. All results are retained
+in research/evidence/linear_entropy_adapter_confirmation_v1.json.

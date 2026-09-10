@@ -18,7 +18,36 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
-## Latest completed candidate: calibration improves partial score risk only
+## Latest checkpoint: exact-entropy refinement and nonlinear primitive
+
+The learned-feature score-calibration experiment completed (45849360). Its33
+learned features beat random33-feature and typed105-feature controls in paired
+DSM for both seeds, but only4/14 and6/14 moment checks pass. It remains
+unqualified for score-based actor updates. Evidence: neural_head_calibration_v1.
+
+A separate exact-volume refinement baseline uses no estimated score. Typed and
+scalar adapters completed200 steps at3712 queries each (45850990/45850994), with
+64-query smoke45850658 retained. Development paired endpoint-KL changes are
+-.15771+/-.05996 and-.06145+/-.03858 SEM. xTB45851844 completes96 attempts:
+base/typed/scalar all32/32, median strains .62054/.60120/.61312 eV. CPU replay
+verifies maps, determinants and work changes in linear_entropy_adapter_comparison_v1.
+
+Fresh confirmation45855978 adds3072 oracle calls. On1024 new base samples,
+typed DeltaKL=-.10193+/-.02719, scalar=-.06356+/-.01809, and typed-minus-scalar
+=-.03838+/-.01738 (mean+/-SEM). This is a small relative endpoint-KL improvement
+for one condition and one adapter-training seed, using established flow methods.
+Fresh ESS is1.8435/2.2454/1.7519 of1024 for base/typed/scalar; calibration and
+sampling efficiency remain unresolved. No broad HMC superiority or AI novelty.
+
+A nonlinear centered convex-flow primitive is implemented, with exact COM-volume
+correction, a globally contractive reconstruction inverse, and full intrinsic
+Jacobian/parameter-gradient tests through200-point cases.263 tests pass. Its
+invariant neural conditioner and species coupling wrappers are not implemented;
+no nonlinear molecular training result exists. Next design is specified in
+notes/species_coupling_adapter_candidate.md, with direct prior art and limitations.
+All latest jobs have completed; no external blocker or goal completion.
+
+## Earlier completed candidate: calibration improves partial score risk only
 
 Residual score calibration is implemented and independently evaluated. Fresh
 panel45820074 (16384 new parents), smoke45820248 and audit45820530 completed.

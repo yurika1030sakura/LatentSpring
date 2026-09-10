@@ -58,3 +58,12 @@ actor or sampling benefit is established. Its quadratic projection theorem is
 standard finite-feature score matching, with direct Li/Turner and Shi et al.
 prior art. Any eventual contribution must go beyond that identity. A richer
 learned-feature calibration is a prospective next design, not a completed result.
+
+
+Latest route: an exact-entropy linear refinement baseline has a small fresh-panel
+marginal-KL decrease. This established method supplies a control, not novelty.
+The current architecture to develop is nonlinear species coupling using a
+centered convex point-map primitive with exact constrained volume. The primitive
+has263-suite coverage but no full neural conditioner, coupling wrapper or
+molecular training result. Review EACF, equivariant finite/convex/residual flows
+before claiming any distinction. Full sampling improvements remain required.
