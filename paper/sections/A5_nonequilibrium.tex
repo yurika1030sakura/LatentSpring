@@ -172,10 +172,14 @@ noise amplitude decreases as $(1-t)^{1/2}$. An additional fresh evaluation of
 $\log\widehat Z-\log\widehat Z_{\rm ref}=-0.08614,-0.05316,-0.12530$ nat.
 Estimated relative standard errors are $3.84\%,3.58\%,5.08\%$, in addition to
 reference error. The three arms share evaluation random numbers; their error
-agreement is not independent replication. All three estimates are low relative
-to the reference, and a second evaluation stream is required before interpreting
-this as a persistent bias. Finite weight moments cannot reveal entirely missed
-tails. These checks therefore do not certify calibration.
+agreement is not independent replication. A second predeclared independent
+stream of 4,096 paths gives differences $-0.02384,-0.01661,-0.00368$ nat.
+Combining both streams, without selecting either, yields ESS 802.65, 823.79,
+640.28 out of 8,192 and differences $-0.05450,-0.03472,-0.06264$ nat.
+Combined empirical relative errors are $3.35\%,3.30\%,3.79\%$, with the shared
+$1.82\%$ reference error still additional. The first-stream discrepancy is thus
+not sufficient evidence of persistent bias. Finite weight moments cannot reveal
+entirely missed tails, so these checks do not certify calibration.
 
 Equal-query MALA and HMC controls choose eight random FM starts and retain
 eight correlated draws per chain after longer trajectories. Both spend 8,512

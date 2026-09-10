@@ -1,4 +1,4 @@
-# Active research status — September 9, 2026
+# Active research status — September 10, 2026 UTC
 
 **Not yet submission ready.** The project now has a specified conditional
 sampler, full density gradients and independent generation checks. No repeatable molecular advantage against matched strong baselines has yet
@@ -55,6 +55,22 @@ xTB 27/32, successful median .48722 eV. Retained MCMC draws remain correlated.
 No superiority over HMC is established. A stale four-scramble prose limitation in
 the saved comparisons is corrected in new code; the actual v2 reference has eight
 scrambles and was used numerically. Historical outputs are preserved.
+
+Second predeclared stream (9067) completed for all three annealed-joint seeds:
+log-normalizer differences -0.02384, -0.01661, -0.00368 nat. Combining both streams
+without selection gives ESS 802.65, 823.79, 640.28 of 8,192, log differences
+-0.05450, -0.03472, -0.06264 and empirical relative SE 3.35%, 3.30%, 3.79%.
+Shared reference error 1.82% remains additional. The first-stream offset is not
+sufficient evidence of persistent bias. Full evidence: work300_two_fresh_streams_v1.json.
+
+Real FlowMol observed-path batch values and gradients pass against independent
+calls. Molecular log-variance smokes 45760184 (B2) and 45760450 (B16) completed;
+B16 peak allocation 4.44 GiB, maximum score/sampler work difference 2.24e-4 nat.
+500-update matched eight-atom run 45760898 is live; no performance result yet.
+Its xTB assessment 45761719 is queued after successful training completion.
+The unchanged HMC recipe is also submitted for eight atoms as 45761145, without
+an unavailable normalizer reference. Latest paper build passes at 9 main pages;
+this remains a scientific development/audit draft, not submission ready.
 
 ## What is established
 
