@@ -4,7 +4,7 @@ Working title: **Learning Molecular Geometry Distributions with Nonequilibrium W
 This is a provisional research direction. The existing main text remains an
 inherited-method audit, with later development experiments in the appendix.
 It is not a qualified ICLR method paper. The latest build has9 main pages at
-runs/verification/paper_20260910_exact_entropy/main.pdf; scientific readiness is false.
+runs/verification/paper_20260910_species_replication/main.pdf; scientific readiness is false.
 
 ## Scientific question and actual scope
 

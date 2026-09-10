@@ -28,6 +28,7 @@ def main():
     p.add_argument('--batch', type=int, default=16)
     p.add_argument('--seed', type=int, default=9181)
     p.add_argument('--condition-index', type=int)
+    p.add_argument('--replay-diagnostic', action='store_true', help='Record prefix differences then stop without source qualification')
     p.add_argument('--device', default='cuda')
     args = p.parse_args()
     if min(args.train_count, args.eval_count, args.batch) < 1 or any(n % args.batch for n in [args.train_count, args.eval_count]):
@@ -117,16 +118,28 @@ def main():
                         generator = torch.Generator(device=args.device).manual_seed(seed)
                         z = torch.randn((args.batch, n-1, 3), generator=generator, device=args.device, dtype=torch.float64)
                         x0 = (torch.einsum('nk,bkd->bnd', basis, z)*protocol['prior_std']).reshape(args.batch*n,3).float()
+                        if stream_index == 0 and batch_index == 0:
+                            cpu_rng = torch.get_rng_state().clone()
+                            cuda_rng = torch.cuda.get_rng_state().clone() if args.device == 'cuda' else None
+                            original_x0 = x0.clone()
                         x = sample_clamped_flow(model, graph, nbi, uem, x0=x0,
                             n_ode_steps=64, terminal_time=1., parameterization='displacement')
                         if stream_index == 0 and batch_index == 0:
                             replay = sample_clamped_flow(model, graph, nbi, uem, x0=x0,
                                 n_ode_steps=64, terminal_time=1., parameterization='displacement')
                             error = float((replay-x).abs().max())
-                            if error > 1e-7:
-                                raise RuntimeError('Frozen sampler prefix replay failed')
                             detail['prefix_replay_max_error_A'] = error
+                            detail['prefix_replay_rms_error_A'] = float((replay-x).square().mean().sqrt())
+                            detail['prefix_input_changed'] = not torch.equal(original_x0, x0)
+                            detail['prefix_cpu_rng_changed'] = not torch.equal(cpu_rng, torch.get_rng_state())
+                            detail['prefix_cuda_rng_changed'] = cuda_rng is not None and not torch.equal(cuda_rng, torch.cuda.get_rng_state())
                             detail['additional_replay_neural_field_calls'] = 128*args.batch
+                            write_json(directory/'results.json', detail)
+                            if args.replay_diagnostic:
+                                torch.save({'first': x.cpu(), 'replay': replay.cpu(), 'initial': x0.cpu()}, directory/'replay_diagnostic.pt')
+                                raise RuntimeError('Diagnostic-only prefix recorded; no source qualified')
+                            if error > 1e-7 or any(detail[k] for k in ['prefix_input_changed', 'prefix_cpu_rng_changed', 'prefix_cuda_rng_changed']):
+                                raise RuntimeError(f'Frozen sampler prefix replay failed: maximum error {error:.9g} A')
                         x = x.reshape(args.batch, n, 3).double()
                         x = x-x.mean(1, keepdim=True)
                         noise = torch.randn((args.batch, n-1, 3), generator=generator, device=args.device, dtype=torch.float64)
