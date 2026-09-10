@@ -93,7 +93,9 @@ Resume smoke 45763215 passed: max coordinate discrepancy 3.74e-7 A, work 1.80e-4
 nat, original AdamW restored at step 500, temperature reset not repeated. Runs
 45763360/45763361/45763362 continue fixed-joint/annealed-joint/energy to 1500
 updates using source 4b4c615. Each adds 16,512 queries, cumulative 25,024.
-The matched HMC run is 45763216. Three-arm xTB assessment 45764564 waits on successful completion. No continuation performance result is available yet.
+The matched HMC run is 45763216. Three-arm xTB assessment 45764564 waits on successful completion.
+Comparison audit 45775349 then verifies completed parent/continuation hashes,
+update and query budgets, target equality, and all xTB denominators. No continuation performance result is available yet.
 
 HMC-SMC reference pilot 45764408 uses source 73cee25, Gaussian starts, 32
 particles, 128 fixed stages and eight leapfrog steps per stage. Budget 32,832

@@ -13,6 +13,10 @@ No broad calibrated molecular benefit or ICLR-ready contribution is established.
    Source 4b4c615. Each adds 16,512 queries, cumulative 25,024 including earlier
    8,512. Assess final ESS, energy, work variance and geometry only when complete.
    xTB 45764564 depends on all three and retains 32 attempts per arm.
+   Automatic comparison 45775349 waits on the xTB assessment, source 8c10dfb.
+   It checks resume provenance, 1000 added updates, matched 25,024-query totals,
+   every relaxation denominator and work/energy decomposition. Inspect its
+   comparison.json before interpreting the final arms.
    If a run fails, preserve failure and assess completed arms separately.
 2. Matched 25,024-query HMC 45763216 completed: xTB 32/32, median strain .56135
    eV. Eight chains supply 64 correlated draws; no normalizer/mixing certificate.
