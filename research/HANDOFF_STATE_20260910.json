@@ -1,0 +1,100 @@
+{
+  "recorded_at_utc": "2026-09-10T22:40:22.784719+00:00",
+  "active_checkout": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027",
+  "branch": "iclr2027-research",
+  "base_commit_before_handoff": "654e4bb616009f5cdb0eb1f44e375525a65c54ae",
+  "handoff_scope": "Core candidate continuation and remaining scientific validation; no external agent has been launched.",
+  "core_candidate_implemented": true,
+  "scientific_submission_ready": false,
+  "full_research_goal_achieved": false,
+  "production_snapshot_commit": "41516838cc13da4ffce9097404f95e3193422640",
+  "production_submissions": [
+    {
+      "at_utc": "2026-09-10T22:01:52.304889+00:00",
+      "job_id": "45914819",
+      "name": "parity_entropy_condition_00_v1",
+      "source_commit": "41516838cc13da4ffce9097404f95e3193422640",
+      "snapshot": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/41516838cc13da4ffce9097404f95e3193422640",
+      "output": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/parity_entropy_condition_00_v1",
+      "max_gpu_hours": 4.0,
+      "launcher": "scripts/research/parity_entropy_condition.slurm",
+      "partition_override": null,
+      "dependency": null,
+      "config": null,
+      "seed": null,
+      "launcher_args": [
+        "0"
+      ],
+      "submission_state": "submitted",
+      "submission_error": null
+    },
+    {
+      "at_utc": "2026-09-10T22:01:55.010825+00:00",
+      "job_id": "45914826",
+      "name": "parity_entropy_conditions_1_7_v1",
+      "source_commit": "41516838cc13da4ffce9097404f95e3193422640",
+      "snapshot": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/41516838cc13da4ffce9097404f95e3193422640",
+      "output": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/parity_entropy_conditions_1_7_v1",
+      "max_gpu_hours": 28.0,
+      "launcher": "scripts/research/parity_entropy_array.slurm",
+      "partition_override": null,
+      "dependency": null,
+      "config": null,
+      "seed": null,
+      "launcher_args": [],
+      "submission_state": "submitted",
+      "submission_error": null
+    }
+  ],
+  "slurm_snapshot": [
+    "45914819|PENDING|0:00|(Priority)",
+    "45914826_[1-7]|PENDING|0:00|(None)"
+  ],
+  "array_task_7": {
+    "job_id": "45916325",
+    "array_job_id": "45914826_7",
+    "time_limit_hours": 6,
+    "array_concurrency": 2
+  },
+  "cancelled_raw_target_jobs_do_not_resume": [
+    "45892106",
+    "45892107"
+  ],
+  "planned_production_arms": 48,
+  "planned_raw_queries_per_arm": 18048,
+  "planned_adapter_raw_queries": 866304,
+  "source_pool_raw_queries_completed": 36864,
+  "source_root": "runs/species_breadth_source_full_v2",
+  "production_arm_results_found": [],
+  "production_audit_semantics": "Missing terminal ledger means unresolved. Re-query Slurm; planned costs are not actual costs.",
+  "verification": {
+    "pre_handoff_full_suite_passed": 294,
+    "assessment_focused_tests_passed": 3,
+    "engineering_replay_completed_arms": 24,
+    "engineering_replay_failed_arms": 0
+  },
+  "external_runtime_evidence": "research/evidence/eacf_runtime_install_v1.json",
+  "installer_running": false,
+  "reserved_conditions": 722,
+  "reserved_method_outcomes_queried": false,
+  "next_work": [
+    "Complete and audit corrected48-arm production",
+    "Implement broad geometry/diversity/xTB orchestration and aggregation",
+    "Qualify EACF/FAB and matching HMC with E_plus and full costs",
+    "Establish meaningful replicated gains and credible distribution checks",
+    "Freeze final protocol before reserved outcomes",
+    "Finalize evidence-supported novelty, manuscript and extracted reproduction"
+  ],
+  "evidence_sha256": {
+    "research/evidence/parity_training_protocol_v1.json": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+    "research/evidence/parity_smoke_replay_audit_v2.json": "8d0d9dee8fd94000b77108631b850b070d26f68142e65717a23df25f69fcbee3",
+    "research/evidence/parity_refinement_rescore_v1.json": "c6ee36d7aa924c32fbb699513cb0857049459742854668f8255adc5c8c967582",
+    "research/evidence/even_oracle_contract_v1.json": "935212dcfd98d26c4b00f54dbc3cb6eb828b7d80924cd495266699f5709dc8e9",
+    "research/evidence/broad_source_complete_v2.json": "b94380081435da4b00c9b902000b26077fee82cec6c2373e73b97d6c255314be",
+    "research/evidence/eacf_runtime_install_v1.json": "8a1e4f26a2917d93ed330a852b8dff4b2471d9f4a364f387824ca9224d1fd382",
+    "scripts/research/compare_parity_campaign.py": "2e3300b672907c85fc9e82cb74926f2b0f4d0ff84f82fa6550acde989639c5d5",
+    "scripts/research/assess_work_panel.py": "498b07500de071b74a69b4438f7aee68bfaecc83e2b6938f6a0c7b96dbb34539",
+    "runs/verification/parity_training_full_tests.log": "935a99dacea43024adf70f92a98295c499c838feadfd5337bde68d3ee93f9cfc",
+    "runs/verification/paper_20260910_parity_final/main.pdf": "a72cba80f274b8bcaae07dc51686d60208e9c9af6be318765f7ae732bc5397c9"
+  }
+}

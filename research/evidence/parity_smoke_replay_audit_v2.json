@@ -1,0 +1,1329 @@
+{
+  "complete": true,
+  "scope": "Audit every prespecified corrected-target training arm and paired contrast.",
+  "protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "expected_conditions": 8,
+  "expected_arms": 24,
+  "conditions": [
+    {
+      "index": 0,
+      "arms": [
+        {
+          "kind": "convex",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_00_convex_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -5.798121960215329,
+            "sem": 1.824554711938635,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.2147452577857529,
+            "sem": 0.06757610044217166,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 15.007415862055495,
+          "parameters": 19365,
+          "results_sha256": "6867ae98b24329ab816c9046428e622f63ec5d25d947b5a2b9374a101fca7204",
+          "checkpoint_sha256": "a80771b1483a0a51d3a31d95cc87b91df3111a1e5464ab5800cc4842daa3eae6",
+          "replay_max_error_A": 8.881784197001252e-16,
+          "maximum_COM_error_A": 1.7763568394002506e-16
+        },
+        {
+          "kind": "affine",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_00_affine_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -7.123288564031709,
+            "sem": 2.1184569123796932,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.2638255023715448,
+            "sem": 0.07846136712517382,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 11.90692509803921,
+          "parameters": 19365,
+          "results_sha256": "855f9561227217f308fc35c951a572addc3a9b975e51157d38980257e1f94d26",
+          "checkpoint_sha256": "dec86c6b4ef07437036fdca28036e255786bce4b2cb1db7d4d22bcf3f86a7c07",
+          "replay_max_error_A": 1.1102230246251565e-15,
+          "maximum_COM_error_A": 1.7763568394002506e-16
+        },
+        {
+          "kind": "typed",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_00_typed_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -2.9998538725747266,
+            "sem": 0.9692873049836752,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.11110569898424913,
+            "sem": 0.0358995298142102,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 11.264136285055429,
+          "parameters": 8,
+          "results_sha256": "2354996deba5a8cdf749dd1cd24d9609200ff303c575c11c9b7f54efc82f2dbb",
+          "checkpoint_sha256": "cd0cec16e5b7042070869aca5b02f6a5c42e089f3fc92886f78d00e25c95f5bd",
+          "replay_max_error_A": 0.0,
+          "maximum_COM_error_A": 1.7763568394002506e-16
+        }
+      ],
+      "paired": {
+        "convex_minus_affine_s0": {
+          "delta_kl": {
+            "mean": 1.3251666038163799,
+            "sem": 0.37042681358203317,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": 0.049080244585791855,
+            "sem": 0.013719511614149377,
+            "independent_parents": 16
+          }
+        },
+        "convex_minus_typed_s0": {
+          "delta_kl": {
+            "mean": -2.7982680876406025,
+            "sem": 1.4418080736479224,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.10363955880150377,
+            "sem": 0.05340029902399713,
+            "independent_parents": 16
+          }
+        }
+      },
+      "condition": {
+        "raw_index": 2203988,
+        "source": "orbnet_denali/orbnet_small_can_00095_25832ac1121a870e8e14b070adb580fc35e0e6a94b3f9000de25f89289cc78d9_1548060_0_1/orca.tar.zst",
+        "reference_source": null,
+        "data_id": "orbnet_denali",
+        "n_atoms": 10,
+        "atomic_numbers": [
+          6,
+          16,
+          9,
+          9,
+          9,
+          9,
+          9,
+          1,
+          1,
+          1
+        ],
+        "charge": 0,
+        "spin_multiplicity": 1,
+        "energy_eV": -25506.962665013136,
+        "composition_hex": "0300000000010000050000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "partition": "new_development",
+        "stratum": [
+          "new_development",
+          "2-12",
+          "orbnet_denali",
+          "neutral",
+          "singlet"
+        ],
+        "selection_rank": 364261897999277261,
+        "candidate_index": 194,
+        "panel_stratum": [
+          2,
+          12,
+          "neutral",
+          "singlet"
+        ],
+        "manifest_sha256": "cd0cff7c0b3422e1ae560b41c346d1753e5ebfc1ad7629387998911bd87f24ad",
+        "manifest_index": 0,
+        "manifest_role": "new_development",
+        "requested_kT_eV": 1.0,
+        "numbers": [
+          6,
+          16,
+          9,
+          9,
+          9,
+          9,
+          9,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "index": 1,
+      "arms": [
+        {
+          "kind": "convex",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_01_convex_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -10.282653476393943,
+            "sem": 2.346678500320324,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.3115955598907255,
+            "sem": 0.07111146970667649,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 15.006235701031983,
+          "parameters": 19365,
+          "results_sha256": "e60936db8049ee24edc3f189929b647247d9205b1c981e6a3044db35f9b43d78",
+          "checkpoint_sha256": "900c6336a4e24d251851231791d275c3426622f1fd6b39e455eac553aff10fc4",
+          "replay_max_error_A": 4.440892098500626e-16,
+          "maximum_COM_error_A": 2.220446049250313e-16
+        },
+        {
+          "kind": "affine",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_01_affine_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -12.45464892993275,
+            "sem": 2.8976587269887872,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.3774136039373561,
+            "sem": 0.08780784021178145,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 15.032917920034379,
+          "parameters": 19365,
+          "results_sha256": "530d6175a253dcdc8557f69681b20b6471a7411d591c1b1b0fc91031383ed812",
+          "checkpoint_sha256": "8d789074318036bdd1168f38c2d08d247be1eb5f0bd26a3eaa4886ad1aad508f",
+          "replay_max_error_A": 4.440892098500626e-16,
+          "maximum_COM_error_A": 1.4802973661668753e-16
+        },
+        {
+          "kind": "typed",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_01_typed_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -3.900240509897728,
+            "sem": 0.9100588859164728,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.11818910636053724,
+            "sem": 0.027577541997468865,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 11.975929780164734,
+          "parameters": 15,
+          "results_sha256": "707989a3f19a24073ed75e7179beaac9be12eb2bf6dc19a38d95ea9ef698f627",
+          "checkpoint_sha256": "c7f469c879791225ada1f019c15ba0775244436d1418690012455091119adf67",
+          "replay_max_error_A": 1.3877787807814457e-17,
+          "maximum_COM_error_A": 2.0354088784794536e-16
+        }
+      ],
+      "paired": {
+        "convex_minus_affine_s0": {
+          "delta_kl": {
+            "mean": 2.171995453538808,
+            "sem": 0.5767354660221068,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": 0.06581804404663055,
+            "sem": 0.017476832303700205,
+            "independent_parents": 16
+          }
+        },
+        "convex_minus_typed_s0": {
+          "delta_kl": {
+            "mean": -6.382412966496214,
+            "sem": 1.6679534564930052,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.1934064535301883,
+            "sem": 0.050544044136151677,
+            "independent_parents": 16
+          }
+        }
+      },
+      "condition": {
+        "raw_index": 1156537,
+        "source": "ani1xbb/aniBB_012_193448_0_3/orca.tar.zst",
+        "reference_source": null,
+        "data_id": "reactivity",
+        "n_atoms": 12,
+        "atomic_numbers": [
+          6,
+          6,
+          7,
+          7,
+          7,
+          8,
+          8,
+          16,
+          16,
+          1,
+          1,
+          1
+        ],
+        "charge": 0,
+        "spin_multiplicity": 3,
+        "energy_eV": -32350.578643171546,
+        "composition_hex": "0300000000020302000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "partition": "new_development",
+        "stratum": [
+          "new_development",
+          "2-12",
+          "reactivity",
+          "neutral",
+          "open_shell"
+        ],
+        "selection_rank": 890524544696090750,
+        "candidate_index": 224,
+        "panel_stratum": [
+          2,
+          12,
+          "neutral",
+          "open_shell"
+        ],
+        "manifest_sha256": "cd0cff7c0b3422e1ae560b41c346d1753e5ebfc1ad7629387998911bd87f24ad",
+        "manifest_index": 1,
+        "manifest_role": "new_development",
+        "requested_kT_eV": 1.0,
+        "numbers": [
+          6,
+          6,
+          7,
+          7,
+          7,
+          8,
+          8,
+          16,
+          16,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "index": 2,
+      "arms": [
+        {
+          "kind": "convex",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_02_convex_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": 0.07545476247326494,
+            "sem": 1.3368990985010571,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": 0.0031439484363860494,
+            "sem": 0.05570412910421071,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 11.326398809906095,
+          "parameters": 19365,
+          "results_sha256": "f795fbba20201e420e17b1f1caf96aaf51dad4cd96894a86f07e6cc0f68c4860",
+          "checkpoint_sha256": "0eb7b8d3c7f52814b19ec4101bf382389c59a5715c43fdaeae0eb6643956088f",
+          "replay_max_error_A": 2.220446049250313e-16,
+          "maximum_COM_error_A": 1.9737298215558337e-16
+        },
+        {
+          "kind": "affine",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_02_affine_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": 0.2935143674490428,
+            "sem": 1.6997483834981795,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": 0.012229765310376794,
+            "sem": 0.07082284931242414,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 11.165440496057272,
+          "parameters": 19365,
+          "results_sha256": "6098542913953e7684961c73761b5153087c92722d05764b47192edd93e572ea",
+          "checkpoint_sha256": "6d6fc5b8ed6d7c4b48793b6a1961e890c3e0e89735342ec95cb7a295798a041b",
+          "replay_max_error_A": 8.881784197001252e-16,
+          "maximum_COM_error_A": 1.9737298215558337e-16
+        },
+        {
+          "kind": "typed",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_02_typed_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -0.8888186153997777,
+            "sem": 0.42341227144038984,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.03703410897499074,
+            "sem": 0.01764217797668291,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 11.174179263180122,
+          "parameters": 5,
+          "results_sha256": "1c10c3d4495d2f4953553b2a6141a6b4e5cc19cc620c1294aa12f68f5f3ac063",
+          "checkpoint_sha256": "6a1f4017c57a600c887e7db11d8510fb30905000b46eeddfb34e6bca6cee1f39",
+          "replay_max_error_A": 2.7755575615628914e-17,
+          "maximum_COM_error_A": 2.4671622769447924e-16
+        }
+      ],
+      "paired": {
+        "convex_minus_affine_s0": {
+          "delta_kl": {
+            "mean": -0.21805960497577784,
+            "sem": 0.39183484850638867,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.009085816873990744,
+            "sem": 0.016326452021099527,
+            "independent_parents": 16
+          }
+        },
+        "convex_minus_typed_s0": {
+          "delta_kl": {
+            "mean": 0.9642733778730426,
+            "sem": 1.1007741351398048,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": 0.04017805741137678,
+            "sem": 0.04586558896415854,
+            "independent_parents": 16
+          }
+        }
+      },
+      "condition": {
+        "raw_index": 777066,
+        "source": "omol/electrolytes/outputs_unsolvated_120424/tetrahydroaluminate_mol1146_-1_1/step2/orca.tar.zst",
+        "reference_source": null,
+        "data_id": "elytes",
+        "n_atoms": 9,
+        "atomic_numbers": [
+          6,
+          6,
+          13,
+          6,
+          6,
+          1,
+          1,
+          1,
+          1
+        ],
+        "charge": -1,
+        "spin_multiplicity": 1,
+        "energy_eV": -10807.703159172546,
+        "composition_hex": "0400000000040000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "partition": "new_development",
+        "stratum": [
+          "new_development",
+          "2-12",
+          "elytes",
+          "charged",
+          "singlet"
+        ],
+        "selection_rank": 73531846037994894,
+        "candidate_index": 147,
+        "panel_stratum": [
+          2,
+          12,
+          "charged",
+          "singlet"
+        ],
+        "manifest_sha256": "cd0cff7c0b3422e1ae560b41c346d1753e5ebfc1ad7629387998911bd87f24ad",
+        "manifest_index": 2,
+        "manifest_role": "new_development",
+        "requested_kT_eV": 1.0,
+        "numbers": [
+          6,
+          6,
+          13,
+          6,
+          6,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "index": 3,
+      "arms": [
+        {
+          "kind": "convex",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_03_convex_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -26.547183495261052,
+            "sem": 5.201269354562952,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.8044601059170015,
+            "sem": 0.157614222865544,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 14.394563724054024,
+          "parameters": 19365,
+          "results_sha256": "8b5f0604ad91c3ddb1169066ed9332db28e5237cbf128c471d9e847fd710bd16",
+          "checkpoint_sha256": "5c43b1b918eb255a25f3020772b2587449e5a0e1dfeafb6a4b815839dcd7cbde",
+          "replay_max_error_A": 4.440892098500626e-16,
+          "maximum_COM_error_A": 1.4802973661668753e-16
+        },
+        {
+          "kind": "affine",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_03_affine_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -31.9304128892579,
+            "sem": 6.337618992894688,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.9675882693714516,
+            "sem": 0.19204906039074812,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 13.77615281008184,
+          "parameters": 19365,
+          "results_sha256": "6713bfde4baae58e378a78c3d276474606169038ca2bc51e3a1f1f20b45ffa2f",
+          "checkpoint_sha256": "bfbf45f94149e685df7b1f2cf8ad3caedca0518dfad027ad73d53c1513200247",
+          "replay_max_error_A": 4.440892098500626e-16,
+          "maximum_COM_error_A": 2.0354088784794536e-16
+        },
+        {
+          "kind": "typed",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_03_typed_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -9.021529996383343,
+            "sem": 1.7071719953131497,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.27337969686010133,
+            "sem": 0.05173248470645908,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 11.895911609055474,
+          "parameters": 14,
+          "results_sha256": "1bad6f03204128f844cb7d6150dd8777d4f9ccd03cd71f59b0301a3aef27d5ab",
+          "checkpoint_sha256": "1d2ec8b2e904b6328a0397cf91f50c31d9870a19bfe9012bdbbc4f3b2d8d5db4",
+          "replay_max_error_A": 8.673617379884035e-19,
+          "maximum_COM_error_A": 2.220446049250313e-16
+        }
+      ],
+      "paired": {
+        "convex_minus_affine_s0": {
+          "delta_kl": {
+            "mean": 5.383229393996853,
+            "sem": 1.1666749902604654,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": 0.16312816345445008,
+            "sem": 0.03535378758365047,
+            "independent_parents": 16
+          }
+        },
+        "convex_minus_typed_s0": {
+          "delta_kl": {
+            "mean": -17.525653498877706,
+            "sem": 3.58612443327003,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.5310804090569001,
+            "sem": 0.10867043737181908,
+            "independent_parents": 16
+          }
+        }
+      },
+      "condition": {
+        "raw_index": 63270,
+        "source": "mo_hydrides/2231_3_2_4/orca.tar.zst",
+        "reference_source": null,
+        "data_id": "metal_complexes",
+        "n_atoms": 12,
+        "atomic_numbers": [
+          75,
+          17,
+          6,
+          17,
+          1,
+          1,
+          7,
+          6,
+          7,
+          6,
+          7,
+          1
+        ],
+        "charge": 2,
+        "spin_multiplicity": 4,
+        "energy_eV": -34776.624955158775,
+        "composition_hex": "0300000000030300000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000000000",
+        "partition": "new_development",
+        "stratum": [
+          "new_development",
+          "2-12",
+          "metal_complexes",
+          "charged",
+          "open_shell"
+        ],
+        "selection_rank": 441407886174935456,
+        "candidate_index": 169,
+        "panel_stratum": [
+          2,
+          12,
+          "charged",
+          "open_shell"
+        ],
+        "manifest_sha256": "cd0cff7c0b3422e1ae560b41c346d1753e5ebfc1ad7629387998911bd87f24ad",
+        "manifest_index": 3,
+        "manifest_role": "new_development",
+        "requested_kT_eV": 1.0,
+        "numbers": [
+          75,
+          17,
+          6,
+          17,
+          1,
+          1,
+          7,
+          6,
+          7,
+          6,
+          7,
+          1
+        ]
+      }
+    },
+    {
+      "index": 4,
+      "arms": [
+        {
+          "kind": "convex",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_04_convex_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": 3.9102101532463927,
+            "sem": 1.7301775367485637,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": 0.08146271152596653,
+            "sem": 0.03604536534892841,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 18.81418666895479,
+          "parameters": 19365,
+          "results_sha256": "50bdf4ad25c76447ddcc8d8690a747dfbd61362a25455187de70437be8a57e59",
+          "checkpoint_sha256": "7d94286a369d5171ceaf89ce31cdaf395062eccf1207121e6de16cdef4d09a22",
+          "replay_max_error_A": 6.661338147750939e-16,
+          "maximum_COM_error_A": 1.5673736818237505e-16
+        },
+        {
+          "kind": "affine",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_04_affine_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": 5.900461829162817,
+            "sem": 2.39453424672132,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": 0.1229262881075587,
+            "sem": 0.049886130140027504,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 17.881453295936808,
+          "parameters": 19365,
+          "results_sha256": "f221f7ff918f992f072bc7e7cdb2649c6a1c272f1f4534c53d2d850c93f0f9f5",
+          "checkpoint_sha256": "0241deabf8454e75a76079ad1c2d97e04af040729a7b46717cd40fbf11ebcfed",
+          "replay_max_error_A": 8.881784197001252e-16,
+          "maximum_COM_error_A": 1.5673736818237505e-16
+        },
+        {
+          "kind": "typed",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_04_typed_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -0.4451206206257753,
+            "sem": 1.1993757283778004,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.009273346263036986,
+            "sem": 0.024986994341204175,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 15.611522247083485,
+          "parameters": 12,
+          "results_sha256": "fd232117409e63123c9fdd7fd3d99cc157858a6ffc1840c1dd6caf56aa8c4591",
+          "checkpoint_sha256": "3d7d0e2ef13230fb842754d4b152280a2c267658fbfa5ac7fb1754cee14cd454",
+          "replay_max_error_A": 1.1102230246251565e-16,
+          "maximum_COM_error_A": 2.0898315757650005e-16
+        }
+      ],
+      "paired": {
+        "convex_minus_affine_s0": {
+          "delta_kl": {
+            "mean": -1.990251675916424,
+            "sem": 0.7015241677229583,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.04146357658159217,
+            "sem": 0.014615086827561633,
+            "independent_parents": 16
+          }
+        },
+        "convex_minus_typed_s0": {
+          "delta_kl": {
+            "mean": 4.3553307738721685,
+            "sem": 1.8341286811634407,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": 0.09073605778900351,
+            "sem": 0.038211014190905015,
+            "independent_parents": 16
+          }
+        }
+      },
+      "condition": {
+        "raw_index": 1662145,
+        "source": "ani1xbb/aniBB_017_280718_0_1/orca.tar.zst",
+        "reference_source": null,
+        "data_id": "reactivity",
+        "n_atoms": 17,
+        "atomic_numbers": [
+          6,
+          6,
+          6,
+          6,
+          8,
+          15,
+          17,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "charge": 0,
+        "spin_multiplicity": 1,
+        "energy_eV": -28168.79169861443,
+        "composition_hex": "0a00000000040001000000000000010001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "partition": "new_development",
+        "stratum": [
+          "new_development",
+          "13-24",
+          "reactivity",
+          "neutral",
+          "singlet"
+        ],
+        "selection_rank": 1611566248103239,
+        "candidate_index": 120,
+        "panel_stratum": [
+          13,
+          24,
+          "neutral",
+          "singlet"
+        ],
+        "manifest_sha256": "cd0cff7c0b3422e1ae560b41c346d1753e5ebfc1ad7629387998911bd87f24ad",
+        "manifest_index": 4,
+        "manifest_role": "new_development",
+        "requested_kT_eV": 1.0,
+        "numbers": [
+          6,
+          6,
+          6,
+          6,
+          8,
+          15,
+          17,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "index": 5,
+      "arms": [
+        {
+          "kind": "convex",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_05_convex_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -6.104476500641032,
+            "sem": 2.9985395717420165,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.11969561765962806,
+            "sem": 0.05879489356356894,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 19.823221747064963,
+          "parameters": 19365,
+          "results_sha256": "705b48b46b645bd41dac52cda1fbeeba65b23e420783dc23dc75c8298889efd8",
+          "checkpoint_sha256": "54817792992575b86e495564405af2e65deacccb966259f596b3144329cc8548",
+          "replay_max_error_A": 8.881784197001252e-16,
+          "maximum_COM_error_A": 1.7270135938613546e-16
+        },
+        {
+          "kind": "affine",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_05_affine_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -6.837887081557302,
+            "sem": 3.7253794175646697,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.13407621728543728,
+            "sem": 0.07304665524636607,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 18.955879462882876,
+          "parameters": 19365,
+          "results_sha256": "a4099b91007faaf3f6549ff2617f0cd94f10793f73fda02cf835129535187504",
+          "checkpoint_sha256": "473267f42b6cc67e8b6fca12d66f60a229ec60e840f8b3cea7ea1246d7173ebe",
+          "replay_max_error_A": 8.881784197001252e-16,
+          "maximum_COM_error_A": 1.7270135938613546e-16
+        },
+        {
+          "kind": "typed",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_05_typed_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -2.0223139904982577,
+            "sem": 0.7524244961850932,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.03965321549996583,
+            "sem": 0.014753421493825357,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 16.83401726698503,
+          "parameters": 9,
+          "results_sha256": "ad47c3133c2492ea3221b7e9ff9eb98e851d60985df0db41fd727997aa5a2e78",
+          "checkpoint_sha256": "9df48180710181f40615f154afd106aa4b98c7ae0b2e8defcf911686fa7ca95a",
+          "replay_max_error_A": 2.168404344971009e-19,
+          "maximum_COM_error_A": 1.9737298215558337e-16
+        }
+      ],
+      "paired": {
+        "convex_minus_affine_s0": {
+          "delta_kl": {
+            "mean": 0.7334105809162688,
+            "sem": 0.7409468459599522,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": 0.01438059962580919,
+            "sem": 0.014528369528626513,
+            "independent_parents": 16
+          }
+        },
+        "convex_minus_typed_s0": {
+          "delta_kl": {
+            "mean": -4.082162510142775,
+            "sem": 2.756061800449282,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.08004240215966224,
+            "sem": 0.054040427459789826,
+            "independent_parents": 16
+          }
+        }
+      },
+      "condition": {
+        "raw_index": 465321,
+        "source": "electrolytes_reactivity/130957_8_0_2/orca.tar.zst",
+        "reference_source": null,
+        "data_id": "elytes",
+        "n_atoms": 18,
+        "atomic_numbers": [
+          6,
+          6,
+          6,
+          8,
+          1,
+          6,
+          1,
+          1,
+          1,
+          6,
+          1,
+          1,
+          6,
+          1,
+          1,
+          7,
+          8,
+          8
+        ],
+        "charge": 0,
+        "spin_multiplicity": 2,
+        "energy_eV": -13978.578905303364,
+        "composition_hex": "0800000000060103000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "partition": "new_development",
+        "stratum": [
+          "new_development",
+          "13-24",
+          "elytes",
+          "neutral",
+          "open_shell"
+        ],
+        "selection_rank": 770743471967018794,
+        "candidate_index": 29,
+        "panel_stratum": [
+          13,
+          24,
+          "neutral",
+          "open_shell"
+        ],
+        "manifest_sha256": "cd0cff7c0b3422e1ae560b41c346d1753e5ebfc1ad7629387998911bd87f24ad",
+        "manifest_index": 5,
+        "manifest_role": "new_development",
+        "requested_kT_eV": 1.0,
+        "numbers": [
+          6,
+          6,
+          6,
+          8,
+          1,
+          6,
+          1,
+          1,
+          1,
+          6,
+          1,
+          1,
+          6,
+          1,
+          1,
+          7,
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "index": 6,
+      "arms": [
+        {
+          "kind": "convex",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_06_convex_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -1.5287826679189926,
+            "sem": 0.8672583537821076,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.03919955558766647,
+            "sem": 0.022237393686720706,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 16.7358141138684,
+          "parameters": 19365,
+          "results_sha256": "da98031fce860690126f7f7824cb201e741cdade29c5626887e1dbd78b71b526",
+          "checkpoint_sha256": "3a73eaebce03d18a325e2321ac3b68bb0ad106f22e2aa02853fbfbb4631b408a",
+          "replay_max_error_A": 8.881784197001252e-16,
+          "maximum_COM_error_A": 1.5860328923216522e-16
+        },
+        {
+          "kind": "affine",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_06_affine_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -1.9464561969018037,
+            "sem": 1.2017891171561075,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.04990913325389241,
+            "sem": 0.030815105568105322,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 15.99680682295002,
+          "parameters": 19365,
+          "results_sha256": "4c71f42335598fedf06ede8a43535f377d22f7d26914acb2d00e4101e26c1fc9",
+          "checkpoint_sha256": "d6b69019f58493b08e21a56f0dafd5688e51a4dbf9df6ed2fd66f397b6c0cb42",
+          "replay_max_error_A": 8.881784197001252e-16,
+          "maximum_COM_error_A": 1.308477136165363e-16
+        },
+        {
+          "kind": "typed",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_06_typed_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": 0.03557423652051367,
+            "sem": 0.5686633704264356,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": 0.0009121599107824025,
+            "sem": 0.014581112062216297,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 12.856634911848232,
+          "parameters": 14,
+          "results_sha256": "539a2b76b8d888375892a89afba50953cdbdce62300a97a85ee66ca63ad7af23",
+          "checkpoint_sha256": "ff7a26b67eae3306cbe9ce187b36538101da0146bfe378cdac770b74549e4806",
+          "replay_max_error_A": 1.1102230246251565e-16,
+          "maximum_COM_error_A": 1.9032394707859825e-16
+        }
+      ],
+      "paired": {
+        "convex_minus_affine_s0": {
+          "delta_kl": {
+            "mean": 0.41767352898281157,
+            "sem": 0.3586921250422423,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": 0.010709577666225939,
+            "sem": 0.009197233975442112,
+            "independent_parents": 16
+          }
+        },
+        "convex_minus_typed_s0": {
+          "delta_kl": {
+            "mean": -1.5643569044395063,
+            "sem": 0.9267023248911074,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.04011171549844887,
+            "sem": 0.023761598074130957,
+            "independent_parents": 16
+          }
+        }
+      },
+      "condition": {
+        "raw_index": 1801399,
+        "source": "ani1xbb/aniBB_014_756519_1_1/orca.tar.zst",
+        "reference_source": null,
+        "data_id": "reactivity",
+        "n_atoms": 14,
+        "atomic_numbers": [
+          6,
+          6,
+          7,
+          7,
+          8,
+          8,
+          16,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "charge": 1,
+        "spin_multiplicity": 1,
+        "energy_eV": -20085.71062456043,
+        "composition_hex": "0700000000020202000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "partition": "new_development",
+        "stratum": [
+          "new_development",
+          "13-24",
+          "reactivity",
+          "charged",
+          "singlet"
+        ],
+        "selection_rank": 11883368113220692,
+        "candidate_index": 109,
+        "panel_stratum": [
+          13,
+          24,
+          "charged",
+          "singlet"
+        ],
+        "manifest_sha256": "cd0cff7c0b3422e1ae560b41c346d1753e5ebfc1ad7629387998911bd87f24ad",
+        "manifest_index": 6,
+        "manifest_role": "new_development",
+        "requested_kT_eV": 1.0,
+        "numbers": [
+          6,
+          6,
+          7,
+          7,
+          8,
+          8,
+          16,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "index": 7,
+      "arms": [
+        {
+          "kind": "convex",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_07_convex_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -5.946248694811498,
+            "sem": 2.9266815360751,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.1043201525405526,
+            "sem": 0.051345290106580704,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 22.267256936058402,
+          "parameters": 19365,
+          "results_sha256": "94c5a90db363fa906de1bf922b5d4025882b8bd0c4bac434337b762184f82272",
+          "checkpoint_sha256": "903efa9dd3b0a5b8f9fe74c8c5879f8f598996b2e96a32b26fbc94a0244a18b2",
+          "replay_max_error_A": 8.881784197001252e-16,
+          "maximum_COM_error_A": 1.7763568394002506e-16
+        },
+        {
+          "kind": "affine",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_07_affine_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -6.224869912909538,
+            "sem": 3.961219207882211,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.10920824408613222,
+            "sem": 0.06949507382249492,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 20.99544279789552,
+          "parameters": 19365,
+          "results_sha256": "6e460064dc38d89b6ac264d04de9e9df8e26db6f04915e517c7b281b5d917f77",
+          "checkpoint_sha256": "d5703845ec688f1fd95917323cf20802ac8aabb071e28d4116a3b0535e0cd9da",
+          "replay_max_error_A": 1.7763568394002505e-15,
+          "maximum_COM_error_A": 2.220446049250313e-16
+        },
+        {
+          "kind": "typed",
+          "replica": 0,
+          "run": "runs/parity_entropy_smoke_v1/condition_07_typed_s0",
+          "state": "complete",
+          "delta_kl": {
+            "mean": -2.2045860231240835,
+            "sem": 1.1971311288325222,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.038676947774106726,
+            "sem": 0.021002300505833724,
+            "independent_parents": 16
+          },
+          "oracle_evaluations": 96,
+          "seconds": 18.31422923388891,
+          "parameters": 13,
+          "results_sha256": "999b5700ac5dee54e14671c61d3d729353c2a87519c03d3a76f3df7f5424a7d9",
+          "checkpoint_sha256": "9fe1f9632aac021b82d7fcd4af5f2e90eb5ac58c07f7fe30ae52b365690c09b5",
+          "replay_max_error_A": 2.168404344971009e-19,
+          "maximum_COM_error_A": 3.552713678800501e-16
+        }
+      ],
+      "paired": {
+        "convex_minus_affine_s0": {
+          "delta_kl": {
+            "mean": 0.27862121809803975,
+            "sem": 1.0726497146716485,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": 0.004888091545579642,
+            "sem": 0.018818416046871032,
+            "independent_parents": 16
+          }
+        },
+        "convex_minus_typed_s0": {
+          "delta_kl": {
+            "mean": -3.741662671687414,
+            "sem": 2.1072368524267935,
+            "independent_parents": 16
+          },
+          "delta_kl_per_internal_dof": {
+            "mean": -0.06564320476644586,
+            "sem": 0.03696906758643498,
+            "independent_parents": 16
+          }
+        }
+      },
+      "condition": {
+        "raw_index": 2508177,
+        "source": "tm_react/MOR1_Pt2_Charge2_UHF2_swaplig_1_newlig_CCNO3_step8_2_3/orca.tar.zst",
+        "reference_source": null,
+        "data_id": "metal_complexes",
+        "n_atoms": 20,
+        "atomic_numbers": [
+          8,
+          6,
+          78,
+          8,
+          6,
+          6,
+          8,
+          6,
+          8,
+          6,
+          8,
+          6,
+          6,
+          7,
+          8,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        "charge": 2,
+        "spin_multiplicity": 3,
+        "energy_eV": -24340.520971190283,
+        "composition_hex": "0500000000070106000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010000000000",
+        "partition": "new_development",
+        "stratum": [
+          "new_development",
+          "13-24",
+          "metal_complexes",
+          "charged",
+          "open_shell"
+        ],
+        "selection_rank": 163009081677517224,
+        "candidate_index": 53,
+        "panel_stratum": [
+          13,
+          24,
+          "charged",
+          "open_shell"
+        ],
+        "manifest_sha256": "cd0cff7c0b3422e1ae560b41c346d1753e5ebfc1ad7629387998911bd87f24ad",
+        "manifest_index": 7,
+        "manifest_role": "new_development",
+        "requested_kT_eV": 1.0,
+        "numbers": [
+          8,
+          6,
+          78,
+          8,
+          6,
+          6,
+          8,
+          6,
+          8,
+          6,
+          8,
+          6,
+          6,
+          7,
+          8,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    }
+  ],
+  "engineering_only": true,
+  "all_arms_terminal": true,
+  "scientific_submission_ready": false,
+  "limitations": [
+    "Completion describes this audit, not scientific readiness.",
+    "Missing terminal ledger entries are unresolved; inspect live Slurm to distinguish pending, running or interrupted work.",
+    "Each512-row paired contrast conditions on trained maps; rows are shared across seeds.",
+    "No absolute density, importance ESS or calibrated population claim is available for this source.",
+    "Source generation, failed branches, pretraining and independent assessments cost additional compute."
+  ],
+  "completed_arms": 24,
+  "failed_arms": 0,
+  "unresolved_arms": 0,
+  "acknowledged_queries_in_completed_arms": 2304,
+  "acknowledged_queries_in_failed_arms_known": 0,
+  "failed_query_accounting_incomplete": false
+}

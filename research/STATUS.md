@@ -20,6 +20,14 @@ that all scientific checks passed.
 
 ## Latest corrected campaign release
 
+Claude handoff is available in `../CLAUDE_HANDOFF.md` with a timestamped
+`HANDOFF_STATE_20260910.json`. Both production allocations remain queued at
+handoff. The new comparison script replays24/24 corrected engineering arms;
+the geometry assessor now checks shared-parent/manifest identities. Separate
+EACF dependencies and core imports pass, but model/GPU/energy-bridge/baseline
+qualification remains outstanding. Historical installation inventory remains
+preserved; see `evidence/eacf_runtime_install_v1.json` for the new runtime state.
+
 Current corrected jobs:45914819(condition0) and45914826(array1--7,concurrency2),
 currently queued. Task7 has a6-hour cap based on measured20-atom oracle cost;
 other conditions retain4 hours. Scientific query counts are unchanged.

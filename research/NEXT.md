@@ -1,5 +1,9 @@
 # Next research decision
 
+Claude continuation: start with `../CLAUDE_HANDOFF.md` and
+`HANDOFF_STATE_20260910.json`. The handoff contains executable audit/assessment
+commands, recovery rules and claim boundaries. It does not complete the ICLR goal.
+
 Full ICLR goal remains ACTIVE and unachieved. Previous goal turn: PROGRESS.
 We implemented exact-volume refinement, diagnosed/repaired a material source/
 target symmetry issue, completed physical and end-to-end qualification, rewrote
@@ -79,19 +83,25 @@ own separately justified estimator. No learned odd-energy control variate exists
  runs/parity_entropy_conditions_1_7_v1/condition_XX/condition_XX_METHOD_sR.
  METHOD convex/affine/typed; R0/1. Use completed immutable prefixes while other
  arms run. Verify source/target/refinement hashes and actual query counts.
-2. Implement broad comparison and independent geometry/diversity/xTB aggregation.
+2. Broad comparison is now implemented in compare_parity_campaign.py and passes
+ all24 real engineering-arm replays (parity_smoke_replay_audit_v2.json). Run it
+ on completed immutable production arms, retaining unresolved/failed outcomes.
+ Independent geometry/diversity/xTB orchestration and aggregation remain to do.
  Pair the same512 parents, separate training streams, and report per-internal-DOF
  as well as absolute changes. Do not invent importance weights for this new
  source or pool replicated rows as independent samples. assess_work_panel.py
- supports absent work; its validation_index fallback needs the explicit manifest
- identity before aggregating different conditions. Keep all failure denominators.
+ now supports strict shared-parent contracts and explicit manifest identities;
+ its assessment/geometry focused tests pass3/3. Keep all failure denominators.
 3. Strong external EACF/FAB and matched-HMC comparisons remain required. Upstream
  EACF is cloned unmodified at
  /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/external/eacf_20260910,
- commit beafab1b1ccd2b770572daeef1cf15f3fe199c21 (MIT). Runtime NOT installed.
- Upstream stack: Python3.10/JAX0.4.13, CPU Torch; create a separate environment,
- never alter existing FlowMol/fairchem environments. Read the comparison contract
- and upstream inventory; joint-KL bounds are not exact marginal errors.
+ commit beafab1b1ccd2b770572daeef1cf15f3fe199c21 (MIT). Dependencies are installed
+ in external/eacf_env_20260910; core imports and pip check pass. No model,
+ energy bridge, GPU runtime or baseline is qualified. The resolved jaxlib is
+ 0.4.13+cuda12.cudnn89 despite the historical CPU install-log name. FAB-JAX and
+ Torch remain absent from this separate environment. Never alter FlowMol/fairchem.
+ Read evidence/eacf_runtime_install_v1.json and the comparison contract;
+ joint-KL bounds are not exact marginal errors. Installer has finished.
 4. An odd learned energy control variate is only a prospective variance-reduction
  idea. Exact oddness guarantees zero mean under the corrected invariant law,
  independently of critic accuracy, but poor fits can increase variance. Pursue

@@ -45,9 +45,12 @@ Path ESS remains approximately1/2048; calibrated sampling is not established.
 Prior geometry panels converge32/32 per arm, with small median strain changes;
 this is not full chemical validity or mode coverage.
 
-All24 broader engineering cases pass with1536 queries, and289 repository tests
-pass. Full8-condition/3-family/2-stream production is submitted, with outputs
-still incomplete. Reserved722 conditions remain untouched. No HMC or external
+Corrected24-arm engineering passes with2304 raw queries, and294 repository tests
+pass. The new comparison script also replays all24 saved corrected cases. The
+earlier raw engineering panel had1536 queries and remains separate evidence.
+Full8-condition/3-family/2-stream corrected production is submitted as
+45914819/45914826, with outputs still incomplete. Reserved722 conditions remain
+untouched. No HMC or external
 coupling-flow superiority is established. The source timeout, failed score actors,
 CNF, work, covariance, empirical-CFM and auxiliary experiments remain retained.
 
@@ -65,7 +68,9 @@ Conditional3D configurations do not qualify unconditional composition generation
 
 External EACF source is pinned and its joint/marginal objective distinction is
 recorded in notes/eacf_comparison_contract.md. Its implementation is not yet a
-qualified baseline here. The final contribution needs meaningful replicated
+qualified baseline here; isolated dependencies/core imports pass, but model and
+energy-bridge qualification remain outstanding. See CLAUDE_HANDOFF.md at the
+repository root for the execution runbook. The final contribution needs meaningful replicated
 cross-condition gains, full geometry/diversity/failure reporting, credible
 independent distribution checks, matched total compute and reproducibility.
 The main text now has space for that evidence; pending results must not be filled

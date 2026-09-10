@@ -1,0 +1,58 @@
+{
+  "recorded_at_utc": "2026-09-10T22:40:22.784719+00:00",
+  "scope": "Dependency installation and core import checks only; no baseline qualification",
+  "local_source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/external/eacf_20260910",
+  "source_commit": "beafab1b1ccd2b770572daeef1cf15f3fe199c21",
+  "source_clean": true,
+  "environment": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/external/eacf_env_20260910",
+  "installation_finished": true,
+  "pip_check": "No broken requirements found.",
+  "core_import_check_passed": true,
+  "core_imports": [
+    "jax",
+    "haiku",
+    "chex",
+    "distrax",
+    "e3nn_jax",
+    "mdtraj"
+  ],
+  "core_import_check_environment": {
+    "JAX_PLATFORMS": "cpu",
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2"
+  },
+  "core_import_check_provenance": "Direct handoff-session Python invocation exited 0; no model/device operation was requested.",
+  "versions": {
+    "jax": "0.4.13",
+    "jaxlib": "0.4.13+cuda12.cudnn89",
+    "dm-haiku": "0.0.10",
+    "chex": "0.1.8",
+    "distrax": "0.1.4",
+    "e3nn-jax": "0.17.2",
+    "mdtraj": "1.9.9",
+    "flax": "0.7.2",
+    "optax": "0.1.7",
+    "numpy": "1.24.4",
+    "scipy": "1.10.1"
+  },
+  "package_freeze": "runs/verification/eacf_environment_handoff_freeze.txt",
+  "package_freeze_sha256": "4739d5e60cd2018a179bc5ce79a60341ded626d7c0a17b62e976ffab51f6cc12",
+  "install_log": "runs/verification/eacf_cpu_install_v4.log",
+  "install_log_sha256": "9088a15b0259941f9470a8a16094c02220aae636e12f17aca38facc050afb3ad",
+  "model_runtime_qualified": false,
+  "gpu_runtime_qualified": false,
+  "energy_bridge_qualified": false,
+  "external_baseline_qualified": false,
+  "torch_installed": false,
+  "fab_jax_installed": false,
+  "retained_failed_install_logs": [
+    "runs/verification/eacf_cpu_install_v1.log",
+    "runs/verification/eacf_cpu_install_v2.log",
+    "runs/verification/eacf_cpu_install_v3.log"
+  ],
+  "limitations": [
+    "The resolved jaxlib wheel includes CUDA12/cudnn89; the historical CPU install-log name is not its actual build.",
+    "Chex0.1.8 is yanked for outdated requirements.txt; dependency checks are not model qualification.",
+    "No model test, force bridge, FAB training, GPU execution or molecular benchmark has run in this environment."
+  ]
+}

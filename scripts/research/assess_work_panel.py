@@ -18,6 +18,7 @@ import shutil
 import numpy as np
 import torch
 from rdkit import Chem
+from scipy.spatial.distance import pdist
 
 from cfm_mol.geometry_diagnostics import distance_profile,profile_rms,contact_summary
 from cfm_mol.nonequilibrium import normalized_weights,WeightedPaths
@@ -57,6 +58,7 @@ def main():
     p.add_argument('--out',type=Path,required=True);p.add_argument('--xtb-count',type=int,default=32)
     p.add_argument('--seed',type=int,default=9059);p.add_argument('--workers',type=int,default=4)
     p.add_argument('--max-cycles',type=int,default=200)
+    p.add_argument('--require-shared-parents',action='store_true')
     args=p.parse_args();binary=shutil.which('xtb')
     if binary is None:raise FileNotFoundError('xtb binary not found')
     names=[name for name,_ in args.samples]
@@ -68,11 +70,22 @@ def main():
     table=Chem.GetPeriodicTable();condition=None;count=None;tasks=[];geometry=[];sources=[]
     for name,file in args.samples:
         path=Path(file);parent=path.parent/'results.json'
-        if not json.loads(parent.read_text())['complete']:raise ValueError('Require completed source training')
+        trained=json.loads(parent.read_text())
+        if not trained['complete']:raise ValueError('Require completed source training')
         data=torch.load(str(path),map_location='cpu',weights_only=False)
-        if condition is None:condition=data['condition']
+        if condition is None:
+            condition=data['condition']
+            identity_namespace='development_manifest' if 'manifest_index' in condition else 'legacy_source_row'
+            identity_index=condition.get('manifest_index',condition.get('source_row',0))
+            if args.require_shared_parents:
+                parent_contract={k:trained[k] for k in ['source_results_sha256','evaluation_sha256','refinement_protocol_sha256']}
+                parent_ids=data['sample_ids']
         if any(data['condition'][key]!=condition[key] for key in ['numbers','charge','spin_multiplicity']):
             raise ValueError('Matched panel physical conditions differ')
+        if args.require_shared_parents:
+            if (any(trained.get(k)!=value for k,value in parent_contract.items())
+                    or data.get('sample_ids')!=parent_ids or data['condition']!=condition):
+                raise ValueError('Matched geometry panels must share exact parent/source/target identities')
         x=data['positions'].double();numbers=condition['numbers'];n=len(numbers)
         if x.ndim!=3 or x.shape[1:]!=(n,3) or not torch.isfinite(x).all():raise ValueError('Invalid saved geometry')
         if count is None:count=len(x)
@@ -86,19 +99,19 @@ def main():
         radii=[table.GetRcovalent(int(z)) for z in numbers]
         contacts=[contact_summary(item.numpy(),radii) for item in x]
         profiles=[distance_profile(item.numpy(),numbers) for item in x]
-        pair_distances=[profile_rms(a,b) for a,b in itertools.combinations(profiles,2)]
         profile_vectors=np.asarray([np.concatenate([profile[k] for k in sorted(profile)]) for profile in profiles])
+        pair_distances=pdist(profile_vectors)/np.sqrt(profile_vectors.shape[1])
         mean=np.sum(weights[:,None]*profile_vectors,axis=0) if weights is not None else None
         geometry.append({'arm':name,'particles':count,'contact_rows':contacts,
             'overlap_count':sum(row['overlap_pairs']>0 for row in contacts),
             'multiple_contact_components_count':sum(row['contact_components']>1 for row in contacts),
             'contact_components':quantiles([row['contact_components'] for row in contacts]),
-            'pair_distance_profile_rms_A':quantiles(pair_distances),
+            'pair_distance_profile_rms_A':quantiles(pair_distances.tolist()),
             'weighted_profile_variance_A2':float(np.sum(weights[:,None]*(profile_vectors-mean)**2)/profile_vectors.shape[1]) if weights is not None else None,
             'weights':WeightedPaths(x,-work.double(),{}).summary() if work is not None else None,
             'weight_scope':'finite-path importance weights' if weights is not None else 'unavailable: no proposal density was evaluated'})
         for index in selected:
-            tasks.append({'arm':name,'validation_index':condition.get('source_row',0),'sample_id':index,
+            tasks.append({'arm':name,'validation_index':identity_index,'sample_id':index,
                 'positions':x[index].tolist(),'symbols':[table.GetElementSymbol(int(z)) for z in numbers],
                 'charge_recorded':condition['charge'],'spin':condition['spin_multiplicity'],
                 **({'sample_cluster_id':int(clusters[index])} if clusters is not None else {})})
@@ -106,6 +119,8 @@ def main():
             'results_sha256':hashlib.sha256(parent.read_bytes()).hexdigest(),
             'sample_cluster_ids':None if clusters is None else torch.as_tensor(clusters).tolist()})
     report={'complete':False,'scope':__doc__,'condition':condition,'sources':sources,'geometry':geometry,
+        'identity_namespace':identity_namespace,'identity_index':identity_index,
+        'shared_parent_contract_verified':args.require_shared_parents,
         'source_sha256':{str(path):hashlib.sha256(path.read_bytes()).hexdigest() for path in
             [Path(__file__).resolve(),Path(__file__).with_name('eval_position_xtb.py').resolve()]},
         'xtb_subset_indices':selected,'subset_seed':args.seed,'requested_xtb':len(tasks),'xtb_rows':[],

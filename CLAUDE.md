@@ -5,6 +5,13 @@ Updated 2026-09-10 after code, theory, archived-evidence and research diagnostic
 
 ## Active takeover branch
 
+**Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md` and
+`research/HANDOFF_STATE_20260910.json` first. They record the current method,
+live job handles, exact next commands and remaining scientific gates. The core
+candidate is ready for continuation; the paper is not submission ready.
+Historical checkpoints below and in STATUS must not replace live scheduler
+verification. `research/NEXT.md` is the current action list.
+
 The primary manuscript is now `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
 exact-entropy refinement candidate. It is explicitly a development draft.
@@ -57,22 +64,25 @@ frozen calibration component has been tested; it does not qualify an actor
 update or establish novelty. See `notes/stein_calibrated_entropy_candidate.md`.
 
 The current exact-entropy refinement route freezes the FlowMol FM base and
-learns a separate invertible adapter. Linear typed/scalar controls show small
-fresh-panel relative-KL decreases but poor remaining path ESS. The nonlinear
-species-coupling model, invariant neural conditioner and exact centered volume
-are implemented and tested. Two matched1000-step training pairs improve over
-typed linear by .04892+/-.01732 and .03882+/-.01642 nat on shared2048 fresh
-evaluation rows. This is a small one-condition relative-KL gain, with path ESS
-still approximately1/2048. No calibrated sampler or novel-method contribution
-is established. Read `research/evidence/species_entropy_replication_v1.json`
-and `notes/species_coupling_execution_v1.md` before further development.
-The base must stay frozen for the unknown-source-entropy cancellation to hold.
-The stronger same-neural-context affine control is implemented in
-`cfm_mol/affine_species_adapter.py`; its full map remains nonlinear through
-context. Read `notes/species_affine_ablation_v1.md` and NEXT for live jobs.
-The eight-condition source engineering screen now passes deterministic replay;
-full source generation and a generic broad-condition trainer remain separate
-steps. These new FM64-plus-noise sources have no evaluated path weights.
+learns a separate invertible adapter. The nonlinear species-coupling model,
+invariant conditioner, exact centered volume and same-context affine/typed
+controls are implemented. The actual source has cross-product features and is
+not guaranteed O(3)-invariant. Current production uses an inversion-mixture
+source and inversion-averaged potential; read the frozen parity protocol before
+training or evaluating. The force average has a MINUS sign on the inverted force.
+The quadratic target coefficient is 0.05, implemented as restraint/2 with
+restraint_eV_A2=0.1. The one-query raw-energy training estimator is valid for a
+linear expectation, not inside importance weights or MH acceptance.
+
+The projected N8 re-score retains small convex-minus-affine changes of
+-.013366+/-.002517 and -.012610+/-.002150 nat on shared2048 parents. Path ESS
+remains approximately1/2048; no calibrated sampler or established ICLR novelty
+follows. Keep the base frozen for unknown-source-entropy cancellation. The affine
+control's full conditioned map remains nonlinear. Full eight-condition source
+generation and the generic trainer are complete; corrected48-arm production
+is submitted as45914819/45914826. These new FM64-plus-noise sources have no
+evaluated path weights. Read NEXT and the handoff for current qualification,
+external baseline environment status and remaining experiments.
 
 ## Locked project decisions
 
