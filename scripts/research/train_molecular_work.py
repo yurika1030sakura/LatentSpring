@@ -46,6 +46,7 @@ def main():
     p.add_argument('--eval-particles',type=int,default=64);p.add_argument('--lr',type=float,default=1e-5)
     p.add_argument('--noise',type=float,default=.2);p.add_argument('--kT',type=float,default=1.)
     p.add_argument('--restraint',type=float,default=.1);p.add_argument('--seed',type=int,default=9051)
+    p.add_argument('--gradient-diagnostics',type=int,default=0,help='Freeze weights and compare paired gradient estimators for this many independent batches')
     p.add_argument('--objective',choices=['mean_work','log_variance'],default='mean_work')
     p.add_argument('--mode',choices=['joint','backward_only','forward_energy_only'],default='joint')
     p.add_argument('--oracle-batch-size',type=int,default=1)
@@ -62,6 +63,8 @@ def main():
     if any(not math.isfinite(v) or v<=0 for v in [args.lr,args.noise,args.kT,args.restraint,args.prior_std,args.max_drift_per_sqrt_dimension]):raise ValueError('Invalid scale')
     if (args.condition_manifest is None)!=(args.condition_index is None):raise ValueError('Condition manifest and index must be specified together')
     if args.condition_manifest is None and args.metadata is None:raise ValueError('Legacy rows require verified electronic metadata')
+    if args.gradient_diagnostics<0 or (args.gradient_diagnostics and (args.mode!='joint' or args.batch<2)):
+        raise ValueError('Gradient diagnostics require joint mode and batch >= 2')
     if args.objective=='log_variance' and (args.mode!='joint' or args.batch<2):
         raise ValueError('Fixed-path log variance requires joint training and batch >= 2')
     args.out.mkdir(parents=True,exist_ok=True);output=args.out/'results.json'
@@ -113,7 +116,7 @@ def main():
     graph=dgl.batch([base]*args.batch).to(args.device)
     if metadata is not None:metadata.attach(graph,[args.source_row]*args.batch,args.kT)
     nbi,_=get_batch_idxs(graph);uem=get_upper_edge_mask(graph)
-    if args.objective=='log_variance':
+    if args.objective=='log_variance' or args.gradient_diagnostics:
         conditioned=dgl.unbatch(graph)[0]
         observed_forward=MolecularPathDrift(forward,conditioned)
         observed_backward=MolecularPathDrift(backward,conditioned,sign=-1.)
@@ -130,7 +133,7 @@ def main():
     root=Path(__file__).resolve().parents[2]
     report={'complete':False,'scope':__doc__,'configuration':{k:str(v.resolve()) if isinstance(v,Path) else v for k,v in vars(args).items()},
         'checkpoint_sha256':sha(args.checkpoint),'oracle_sha256':sha(args.oracle),'metadata_progress_sha256':metadata.progress_sha256 if metadata else None,
-        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py',root/'scripts/research/oracle_worker.py',root/'cfm_mol/condition_systems.py',root/'cfm_mol/electronic_conditioning.py',root/'cfm_mol/path_balance.py',root/'cfm_mol/molecular_path_drift.py']},
+        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py',root/'scripts/research/oracle_worker.py',root/'cfm_mol/condition_systems.py',root/'cfm_mol/electronic_conditioning.py',root/'cfm_mol/path_balance.py',root/'cfm_mol/molecular_path_drift.py',root/'cfm_mol/gradient_diagnostics.py']},
         'condition':{**source_condition,
             'numbers':numbers.tolist(),'charge':charge,'spin_multiplicity':spin},
         'energy_zero_eV':energy_zero,'prior_std':prior_std,'evaluations':{},'training':[]}
@@ -175,6 +178,37 @@ def main():
                 if not result['frozen_forward_positions_unchanged']:
                     raise RuntimeError('Backward-only control changed the fixed forward sampling law')
             report['evaluations'][label]=result;write_json(output,report);print(json.dumps({'evaluation':label,**result}),flush=True)
+        if args.gradient_diagnostics:
+            from cfm_mol.gradient_diagnostics import summarize_paired_gradients
+            collections={key:[] for key in ['pathwise_forward','fixed_score_forward','pathwise_backward','fixed_score_backward']}
+            records=[];forward_parameters=[p for p in forward.parameters() if p.requires_grad]
+            split=len(forward_parameters)
+            def flatten(values,params):
+                return torch.cat([(torch.zeros_like(p) if g is None else g).detach().reshape(-1).float().cpu() for g,p in zip(values,params)])
+            for batch in range(args.gradient_diagnostics):
+                work,_,energy,states,reduced=draw(700000007+args.seed*1009+batch,True,True)
+                mean_gradient=torch.autograd.grad(work.mean(),parameters,allow_unused=True)
+                initial,factor_f,factor_b=fixed_path_log_factors(states,observed_forward,observed_backward,
+                    torch.linspace(0,1,args.path_steps+1,dtype=torch.float64),args.noise,
+                    prior_std=prior_std,terminal_std=terminal_std,
+                    max_drift_norm=args.max_drift_per_sqrt_dimension*math.sqrt(dimension),
+                    mean_parameterization=args.mean_parameterization,noise_annealing_power=args.noise_annealing_power)
+                observed=reduced.detach()+initial+factor_f-factor_b
+                discrepancy=float((observed.detach()-work.detach()).abs().max())
+                if discrepancy>.05:raise RuntimeError('Paired observed-path work mismatch')
+                score_gradient=torch.autograd.grad(log_variance_balance(observed),parameters,allow_unused=True)
+                for prefix,gradients in [('pathwise',mean_gradient),('fixed_score',score_gradient)]:
+                    collections[prefix+'_forward'].append(flatten(gradients[:split],parameters[:split]))
+                    collections[prefix+'_backward'].append(flatten(gradients[split:],parameters[split:]))
+                row={'batch':batch,'mean_work':float(work.detach().mean()),'fixed_path_work_max_difference':discrepancy,
+                    'seconds':time.perf_counter()-start}
+                records.append(row);print(json.dumps(row),flush=True)
+            report['gradient_diagnostics']=summarize_paired_gradients(collections,args.batch)
+            report['gradient_diagnostics']['batches']=records
+            report['gradient_diagnostics']['weights_updated']=False
+            report.update(complete=True,oracle_evaluations=oracle.evaluated,seconds=time.perf_counter()-start)
+            write_json(output,report)
+            return
         evaluate('initial')
         for step in range(args.steps):
             optimizer.zero_grad(set_to_none=True)
