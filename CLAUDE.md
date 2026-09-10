@@ -51,10 +51,14 @@ update or establish novelty. See `notes/stein_calibrated_entropy_candidate.md`.
 
 The current exact-entropy refinement route freezes the FlowMol FM base and
 learns a separate invertible adapter. Linear typed/scalar controls show small
-fresh-panel relative-KL decreases but poor remaining path ESS. A nonlinear
-centered convex-map primitive is implemented and tested; neural conditioning
-and species-group couplings remain unimplemented. Read
-`notes/species_coupling_adapter_candidate.md` before further development.
+fresh-panel relative-KL decreases but poor remaining path ESS. The nonlinear
+species-coupling model, invariant neural conditioner and exact centered volume
+are implemented and tested. Two matched1000-step training pairs improve over
+typed linear by .04892+/-.01732 and .03882+/-.01642 nat on shared2048 fresh
+evaluation rows. This is a small one-condition relative-KL gain, with path ESS
+still approximately1/2048. No calibrated sampler or novel-method contribution
+is established. Read `research/evidence/species_entropy_replication_v1.json`
+and `notes/species_coupling_execution_v1.md` before further development.
 The base must stay frozen for the unknown-source-entropy cancellation to hold.
 
 ## Locked project decisions

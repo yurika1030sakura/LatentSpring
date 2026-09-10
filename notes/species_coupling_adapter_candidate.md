@@ -1,10 +1,13 @@
 # Prospective nonlinear exact-volume species coupling adapter
 
-This is the next architecture design to test. A nonlinear centered primitive
-is now implemented and unit-tested; the full molecular coupling model is not
-implemented or validated. The exact-entropy linear baseline has a small development KL decrease
-but leaves ESS~1/256. More flexible invertible transport can change the generator
-without requiring an unqualified marginal score estimator.
+The complete nonlinear primitive, invariant conditioner and molecular coupling
+model are implemented. Two training seeds have small confirmed relative-KL
+advantages over matched typed-linear controls, but leave path ESS~1/2048 on
+one condition. See species_coupling_execution_v1.md and the versioned replication
+audit. The linear A-only construction below records the original design scaffold;
+the nonlinear primitive later in this note is the implemented internal map.
+More flexible invertible transport changes the generator without requiring an
+unqualified marginal score estimator. Novelty and broad usefulness remain open.
 
 ## Decomposition and triangular updates
 
@@ -79,8 +82,8 @@ permutation and O(3) equivariance, full intrinsic Jacobian/log-volume, parameter
 finite differences, identity initialization, singleton/homogeneous edge cases,
 and coefficient bounds. Then run a bounded real-oracle smoke with replay checks,
 followed by matched linear/scalar controls and independent geometry/distribution
-assessment. No test, allocation or molecular outcome for this nonlinear design
-has occurred yet. The ICLR objective remains open.
+assessment. These implementation checks and the first molecular replication are
+now complete; they do not establish broad calibration. The ICLR objective remains open.
 
 
 ## Preferred nonlinear primitive now implemented
@@ -111,8 +114,8 @@ training. Five tests cover full intrinsic Jacobian agreement, parameter finite
 differences through the map and determinant, symmetry, identity and inverse at
 up to200 points. These are engineering/theory checks, not molecular performance.
 
-Next implement the invariant context conditioner and species-group wrappers.
-For internal groups, use this centered map. For centroid-pair3-vectors, use the
+The implemented invariant context conditioner and species-group wrappers use
+this centered map for internal groups. For centroid-pair3-vectors, they use the
 uncentered pointwise map and its3-by-3 determinant, plus a bounded equivariant
 context shift if needed. Test complete context dependencies, global COM and
 inverse composition before any molecular training. Do not claim universality:
@@ -129,7 +132,7 @@ Additional primary prior art for this primitive:
 Convex Potential Flows, https://arxiv.org/abs/2012.05942 ;
 Residual Flows for Invertible Generative Modeling, https://arxiv.org/abs/1906.02735 .
 The contraction proof and Schur-complement identity are established mathematics.
-No molecular training of the nonlinear primitive has been performed.
+The completed training and its limited results are recorded in the execution protocol.
 
 
 Training restriction: keep every base FlowMol parameter frozen for the exact-
@@ -140,7 +143,7 @@ Record base-conditioning temperature separately from the physical target if
 those differ; never reset trained base-temperature weights during loading.
 
 
-Implementation checks for the upcoming conditioner must also compare batched
+Implementation checks for the conditioner also compare batched
 and separate calls; batch-coupled normalization would invalidate per-molecule
 volume accounting. Use no stochastic conditioner branch when evaluating the map
 and its volume. Keep all context projections in the differentiated graph when

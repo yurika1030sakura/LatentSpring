@@ -1,0 +1,530 @@
+{
+  "complete": true,
+  "scope": "Replay both trained adapter pairs and retain their shared-panel confirmation.",
+  "pairs": {
+    "main": {
+      "arms": {
+        "nonlinear": {
+          "oracle_evaluations": 16512,
+          "seconds": 451.86520152399316,
+          "parameters": 19365,
+          "lr_start": 0.001,
+          "lr_end": 1e-05,
+          "run": "species_entropy_adapter_1000_v1",
+          "checkpoint_sha256": "c7f9a93c0e203ab4bd0cd9b6bf90d332e63ece8eec48dbb809233844811841ed",
+          "replay_max_error_A": 8.881784197001252e-16,
+          "development_delta_kl": {
+            "mean": -0.2349080904324237,
+            "sem": 0.06397043409843044,
+            "samples": 256
+          },
+          "confirmation_delta_kl": {
+            "mean": -0.17450502803564055,
+            "sem": 0.028078252515785856,
+            "samples": 2048
+          },
+          "confirmation_weights": {
+            "particles": 2048,
+            "ess": 1.002813600555645,
+            "ess_fraction": 0.000489655078396311,
+            "maximum_weight": 0.9985959163427878,
+            "log_mean_weight": 114.85679605136535
+          },
+          "training_results_sha256": "87f780f5e02179987d1174a492d882509f04f08fbb3e160f2f547bb90a64d3ce"
+        },
+        "linear": {
+          "oracle_evaluations": 16512,
+          "seconds": 391.7758853721898,
+          "parameters": 13,
+          "lr_start": 0.01,
+          "lr_end": 0.0001,
+          "run": "linear_entropy_adapter_typed_1000_v1",
+          "checkpoint_sha256": "03b2fa65dce6b0bb2219edb8353667c3ad35f862a49899b7a01b0468fc7cc2ca",
+          "replay_max_error_A": 0.0,
+          "development_delta_kl": {
+            "mean": -0.16686238560462613,
+            "sem": 0.053812509549402504,
+            "samples": 256
+          },
+          "confirmation_delta_kl": {
+            "mean": -0.12558014997742956,
+            "sem": 0.01828719311726682,
+            "samples": 2048
+          },
+          "confirmation_weights": {
+            "particles": 2048,
+            "ess": 1.0035647082045756,
+            "ess_fraction": 0.0004900218301780154,
+            "maximum_weight": 0.9982219494519137,
+            "log_mean_weight": 114.49022722218231
+          },
+          "training_results_sha256": "c1c335decb5c8f738eeae7b92882f1a9c0a44aea74a6c1f49cf36e6b88a8e72e"
+        }
+      },
+      "confirmation_results_sha256": "d8e1b679580c86e40fc6b946f67abbf5bd0f724897faf51610628d3b14a62b27",
+      "training_sha256": "08eb136f1df0b2fe36b3f044b95b41d6a3d93214aaca48faa995aba29296283e",
+      "evaluation_sha256": "dc6215d07101b2539423bf8c3d9f71e82950223a41266effdf645d8cfd476782",
+      "neural_init_seed": 9161,
+      "selection_seed": 9141,
+      "development_nonlinear_minus_linear": {
+        "mean": -0.06804570482779751,
+        "sem": 0.030221820986476817,
+        "samples": 256
+      },
+      "confirmation_nonlinear_minus_linear": {
+        "mean": -0.048924878058211,
+        "sem": 0.017321549703021723,
+        "samples": 2048
+      }
+    },
+    "replica": {
+      "arms": {
+        "nonlinear": {
+          "oracle_evaluations": 16512,
+          "seconds": 436.62734723999165,
+          "parameters": 19365,
+          "lr_start": 0.001,
+          "lr_end": 1e-05,
+          "run": "species_entropy_adapter_1000_s9162",
+          "checkpoint_sha256": "ba2e0694a74a170c9b987bd130197d7ee64073854de01d643e33c07420c536ad",
+          "replay_max_error_A": 8.881784197001252e-16,
+          "development_delta_kl": {
+            "mean": -0.18953156768393722,
+            "sem": 0.06665380546188254,
+            "samples": 256
+          },
+          "confirmation_delta_kl": {
+            "mean": -0.1666436443819627,
+            "sem": 0.027475054604302496,
+            "samples": 2048
+          },
+          "confirmation_weights": {
+            "particles": 2048,
+            "ess": 1.0016427099170704,
+            "ess_fraction": 0.0004890833544516945,
+            "maximum_weight": 0.9991795810575739,
+            "log_mean_weight": 115.31921804655495
+          },
+          "training_results_sha256": "d3e35e7a6066f81f848e45ab7bc0662cac7076866fae2b7efa324ea670a52e89"
+        },
+        "linear": {
+          "oracle_evaluations": 16512,
+          "seconds": 378.85224269796163,
+          "parameters": 13,
+          "lr_start": 0.01,
+          "lr_end": 0.0001,
+          "run": "linear_entropy_adapter_typed_1000_s9142",
+          "checkpoint_sha256": "8c00af500faaacee651827f9eef35b2514e53cdbf0dbfaa1b5e97c2cbff5baba",
+          "replay_max_error_A": 0.0,
+          "development_delta_kl": {
+            "mean": -0.14283304870926072,
+            "sem": 0.05670799087931832,
+            "samples": 256
+          },
+          "confirmation_delta_kl": {
+            "mean": -0.12782136782413772,
+            "sem": 0.018963266269023504,
+            "samples": 2048
+          },
+          "confirmation_weights": {
+            "particles": 2048,
+            "ess": 1.0032752863734902,
+            "ess_fraction": 0.0004898805109245557,
+            "maximum_weight": 0.9983660005398995,
+            "log_mean_weight": 114.5142211180652
+          },
+          "training_results_sha256": "a744b699e655f4ab15656823d1b8868baab018ce61849155d90811d95bf50d05"
+        }
+      },
+      "confirmation_results_sha256": "db7af30351498e0cddd64035b274edca8b7d219f63a39c379ecaf656df5faaf3",
+      "training_sha256": "08eb136f1df0b2fe36b3f044b95b41d6a3d93214aaca48faa995aba29296283e",
+      "evaluation_sha256": "dc6215d07101b2539423bf8c3d9f71e82950223a41266effdf645d8cfd476782",
+      "neural_init_seed": 9162,
+      "selection_seed": 9142,
+      "development_nonlinear_minus_linear": {
+        "mean": -0.04669851897467656,
+        "sem": 0.029913648433062642,
+        "samples": 256
+      },
+      "confirmation_nonlinear_minus_linear": {
+        "mean": -0.038822276557824956,
+        "sem": 0.016423607945758464,
+        "samples": 2048
+      }
+    }
+  },
+  "base_sha256": "1ed25e74832d8c22a1a79dcb5b68b1181afab09db6b0627712eed367d9f9e5c0",
+  "condition": {
+    "source_row": 5846,
+    "raw_index": 589712,
+    "reference_geometry_loaded": true,
+    "reference_geometry_used_to_initialize": false,
+    "numbers": [
+      1,
+      15,
+      8,
+      6,
+      1,
+      6,
+      8,
+      12
+    ],
+    "charge": 1,
+    "spin_multiplicity": 1
+  },
+  "source_checkpoint_sha256": "694a680c4172a355e2a4e899486647f751702bea2dafad93364bf8b60a7b14b5",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "kT_eV": 0.025851999786435,
+  "restraint_eV_A2": 0.1,
+  "fresh_base_weights": {
+    "particles": 2048,
+    "ess": 1.0038887873996127,
+    "ess_fraction": 0.0004901800719724672,
+    "maximum_weight": 0.9980606129026255,
+    "log_mean_weight": 114.40688868389176
+  },
+  "xtb": {
+    "steps200": {
+      "run": "species_entropy_adapter_200_xtb_v2",
+      "sha256": "d7a3b845130d25808f458b84259231da1419e937d09b11fa6826dbda52494b40",
+      "summaries": [
+        {
+          "arm": "base",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.43338066453510465,
+            "median": 0.620536914272833,
+            "q90": 0.7889160900172214
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 2.247881663863714,
+            "median": 3.413809135218858,
+            "q90": 5.232182672775818
+          },
+          "force_values_present": 32
+        },
+        {
+          "arm": "scalar",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.43753204896525516,
+            "median": 0.6131188099280678,
+            "q90": 0.7889327409039766
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 2.1599701405425384,
+            "median": 3.462358817823519,
+            "q90": 5.280311030480372
+          },
+          "force_values_present": 32
+        },
+        {
+          "arm": "typed",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.42529908113665443,
+            "median": 0.6012018490135347,
+            "q90": 0.7893371036654344
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 2.042236975335897,
+            "median": 3.42613686853965,
+            "q90": 5.183205965420791
+          },
+          "force_values_present": 32
+        },
+        {
+          "arm": "nonlinear",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.4374518294556765,
+            "median": 0.598156236717216,
+            "q90": 0.7755090752905744
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 2.072553852519011,
+            "median": 3.3390202968725937,
+            "q90": 5.150717808750709
+          },
+          "force_values_present": 32
+        }
+      ],
+      "paired": [
+        {
+          "before": "base",
+          "after": "scalar",
+          "attempted_pairs": 32,
+          "better": 20,
+          "worse": 12,
+          "tie": 0,
+          "both_failed": 0,
+          "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+        },
+        {
+          "before": "base",
+          "after": "typed",
+          "attempted_pairs": 32,
+          "better": 20,
+          "worse": 12,
+          "tie": 0,
+          "both_failed": 0,
+          "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+        },
+        {
+          "before": "base",
+          "after": "nonlinear",
+          "attempted_pairs": 32,
+          "better": 25,
+          "worse": 7,
+          "tie": 0,
+          "both_failed": 0,
+          "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+        },
+        {
+          "before": "scalar",
+          "after": "typed",
+          "attempted_pairs": 32,
+          "better": 24,
+          "worse": 8,
+          "tie": 0,
+          "both_failed": 0,
+          "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+        },
+        {
+          "before": "scalar",
+          "after": "nonlinear",
+          "attempted_pairs": 32,
+          "better": 24,
+          "worse": 8,
+          "tie": 0,
+          "both_failed": 0,
+          "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+        },
+        {
+          "before": "typed",
+          "after": "nonlinear",
+          "attempted_pairs": 32,
+          "better": 16,
+          "worse": 16,
+          "tie": 0,
+          "both_failed": 0,
+          "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+        }
+      ]
+    },
+    "main1000": {
+      "run": "species_entropy_adapter_1000_xtb_v1",
+      "sha256": "d7ca82e9bf8fdbc6063fc2f9d8011a6d082657f802751e8f29c902d00419af14",
+      "summaries": [
+        {
+          "arm": "base",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.43338066453510465,
+            "median": 0.620536914272833,
+            "q90": 0.7889160900172214
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 2.247881663863714,
+            "median": 3.413809135218858,
+            "q90": 5.232182672775818
+          },
+          "force_values_present": 32
+        },
+        {
+          "arm": "typed",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.42698930495356535,
+            "median": 0.5980603375063254,
+            "q90": 0.7778027587495387
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 2.1009989144729757,
+            "median": 3.450863822448258,
+            "q90": 5.24819734451195
+          },
+          "force_values_present": 32
+        },
+        {
+          "arm": "nonlinear",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.4305010173569883,
+            "median": 0.5934146168808923,
+            "q90": 0.7829186863141445
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 2.0134933684860608,
+            "median": 3.5091726227518523,
+            "q90": 5.222879510100643
+          },
+          "force_values_present": 32
+        }
+      ],
+      "paired": [
+        {
+          "before": "base",
+          "after": "typed",
+          "attempted_pairs": 32,
+          "better": 25,
+          "worse": 7,
+          "tie": 0,
+          "both_failed": 0,
+          "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+        },
+        {
+          "before": "base",
+          "after": "nonlinear",
+          "attempted_pairs": 32,
+          "better": 23,
+          "worse": 9,
+          "tie": 0,
+          "both_failed": 0,
+          "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+        },
+        {
+          "before": "typed",
+          "after": "nonlinear",
+          "attempted_pairs": 32,
+          "better": 14,
+          "worse": 18,
+          "tie": 0,
+          "both_failed": 0,
+          "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+        }
+      ]
+    },
+    "replica1000": {
+      "run": "species_entropy_adapter_replica_xtb_v1",
+      "sha256": "269326865805706387cb1e3d2315cc2ff261fdf3982154fe15ee9c471934d85a",
+      "summaries": [
+        {
+          "arm": "base",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.43338066453510465,
+            "median": 0.620536914272833,
+            "q90": 0.7889160900172214
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 2.247881663863714,
+            "median": 3.413809135218858,
+            "q90": 5.232182672775818
+          },
+          "force_values_present": 32
+        },
+        {
+          "arm": "nonlinear",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.4297531444909907,
+            "median": 0.5913238943328452,
+            "q90": 0.7756184512509379
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 2.014604093091681,
+            "median": 3.4501955929581656,
+            "q90": 5.1722815289244215
+          },
+          "force_values_present": 32
+        },
+        {
+          "arm": "typed",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.42509186514317887,
+            "median": 0.5980106443312252,
+            "q90": 0.7756236498474038
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 2.0615122181170666,
+            "median": 3.4491081430537758,
+            "q90": 5.2355815419196245
+          },
+          "force_values_present": 32
+        }
+      ],
+      "paired": [
+        {
+          "before": "base",
+          "after": "nonlinear",
+          "attempted_pairs": 32,
+          "better": 23,
+          "worse": 9,
+          "tie": 0,
+          "both_failed": 0,
+          "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+        },
+        {
+          "before": "base",
+          "after": "typed",
+          "attempted_pairs": 32,
+          "better": 26,
+          "worse": 6,
+          "tie": 0,
+          "both_failed": 0,
+          "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+        },
+        {
+          "before": "nonlinear",
+          "after": "typed",
+          "attempted_pairs": 32,
+          "better": 17,
+          "worse": 15,
+          "tie": 0,
+          "both_failed": 0,
+          "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+        }
+      ]
+    }
+  },
+  "development_screens": {
+    "species_entropy_adapter_smoke_v1": {
+      "oracle_evaluations": 64,
+      "paired_endpoint_kl_change": {
+        "mean": 0.743290192758123,
+        "sem": 0.38382234802594467,
+        "samples": 16,
+        "scope": "Expected energy-minus-exact-log-volume difference equals marginal KL change under stated fixed-target assumptions."
+      },
+      "results_sha256": "83391c9300a1872aed7e41d772ca4d8b699b3fa2a974e9112b71a743d573201c"
+    },
+    "species_entropy_adapter_200_v1": {
+      "oracle_evaluations": 3712,
+      "paired_endpoint_kl_change": {
+        "mean": -0.18128804470896748,
+        "sem": 0.056890791991245256,
+        "samples": 256,
+        "scope": "Expected energy-minus-exact-log-volume difference equals marginal KL change under stated fixed-target assumptions."
+      },
+      "results_sha256": "08db206a142456e0a81c6f573056959c1402bc81da39df7139965d574ae10c30"
+    }
+  },
+  "replay_verified": true,
+  "sampling_calibrated": false,
+  "method_novelty_established": false,
+  "limitations": [
+    "One eight-atom condition; two independently selected training streams and neural initializations.",
+    "Both pairs use the same4096 training parent pool,256 development rows and2048 confirmation rows.",
+    "SEM is across evaluation rows conditional on a trained model; it is not uncertainty across training seeds.",
+    "No pooled independent-sample count across seeds: evaluation noise is shared.",
+    "Linear has13 parameters and lr .01 to .0001; nonlinear has19365 parameters and lr .001 to .00001.",
+    "Oracle budgets are matched, while wall times and network computation differ.",
+    "Small relative endpoint-KL gains do not certify target populations or effective importance sampling.",
+    "xTB relaxation success is not full chemical validity; no strong coupling-flow/HMC superiority is established.",
+    "Base pretraining, source training, sample generation and earlier failed method branches cost additional compute."
+  ],
+  "new_species_branch_oracle_queries": 80064,
+  "new_species_branch_xtb_attempts": 320
+}

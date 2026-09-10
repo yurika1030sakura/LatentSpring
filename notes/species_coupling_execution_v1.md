@@ -95,3 +95,28 @@ This tests training-seed variation; it is not a new independent evaluation
 stream. New transformed-energy queries total4096; base energies are reused.
 Retain both seeds regardless of outcome. Broader conditions and a stronger
 coupling-flow baseline remain required before any ICLR contribution claim.
+
+## Completed training replication
+
+Both recipes completed. Replica nonlinear/linear development DeltaKL is
+-.18953+/-.06665 / -.14283+/-.05671 SEM. Shared2048-row confirmation gives
+-.16664+/-.02748 / -.12782+/-.01896; paired difference-.03882+/-.01642 nat.
+The first pair's difference remains-.04892+/-.01732. These are two training
+seeds on one condition with a common training pool and common evaluation rows;
+do not pool them as4096 independent observations or interpret row SEM as
+training-seed uncertainty. Replica ESS is1.00164/1.00328 of2048, so the sampling
+efficiency failure remains.
+
+All three xTB panels are complete:200-step four-arm128 attempts,1000-step
+main three-arm96, and replica three-arm96. Every arm converges32/32. Main
+base/linear/nonlinear median strain is .62054/.59806/.59341 eV; replica is
+.62054/.59801/.59132. Small median differences do not establish statistically
+supported geometry superiority or full chemical validity.
+
+The strict CPU audit replays both checkpoint pairs on all2048 confirmation
+rows, including coordinates, exact log volumes, energy differences and work
+increments. It verifies source/target hashes and every xTB denominator.
+Evidence: research/evidence/species_entropy_replication_v1.json. New oracle
+cost for this nonlinear branch, its matched1000-step controls, smoke and
+confirmations is80064 queries. Earlier linear screens and all inherited
+pretraining/source-generation costs remain additional. No HMC advantage claim.

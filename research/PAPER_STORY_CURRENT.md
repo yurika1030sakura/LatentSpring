@@ -74,8 +74,8 @@ score error for both neural seeds and beats a calibrated Gaussian baseline.
 However, strong unfitted radial/angular violations remain; no generator update
 is qualified. This is a partial component result, not a full method contribution.
 See notes/stein_calibrated_entropy_candidate.md and score_calibration_audit_v1.json.
-The next unimplemented candidate is correction in learned invariant feature
-directions, with independent validation and direct Stein-estimation baselines.
+The subsequent learned-feature correction also improved measured DSM but failed
+moment qualification. No score-based actor was released; this recipe is stopped.
 
 
 ## Exact-entropy refinement direction
@@ -86,10 +86,28 @@ typed -.10193+/-.02719 nat, scalar -.06356+/-.01809. This is one trained seed an
 one condition, with poor remaining path ESS. The work/volume accounting is exact
 for the stated finite map; the objective is established normalizing-flow theory.
 
-The next architectural candidate is nonlinear species coupling with exact
-COM-constrained volume. Its centered convex point-map primitive is implemented
-and unit-tested; neural contexts and complete molecular couplings remain to be
-implemented. This design seeks more flexible refinement while avoiding the
-failed score-estimation dependency. EACF, equivariant finite flows, convex
-potential flows and residual flows are direct prior art. No novelty or nonlinear
-sampling result is claimed. See notes/species_coupling_adapter_candidate.md.
+The complete nonlinear species-coupling adapter is now implemented, including
+invariant neural contexts, internal-element-group maps and element-centroid
+couplings. Each layer has exact constrained volume and a checked inverse.
+It learns geometry-dependent nonlinear transformations from physical forces
+and exact entropy change, while the FlowMol base stays frozen.
+
+On one eight-atom condition, two1000-step training pairs show small advantages
+over matched typed-linear controls: -.04892+/-.01732 and-.03882+/-.01642 nat
+on the shared2048-row fresh evaluation panel. This is training replication
+with common parent pools and evaluation noise. All arms remain path-weight
+degenerate, ESS about1/2048. The new code is an implemented method candidate;
+these data do not qualify a general Boltzmann sampler or establish AI novelty.
+
+The candidate contribution to investigate is symmetry-preserving molecular
+refinement with inexpensive exact COM-volume accounting and geometry-dependent
+neural expressivity. EACF, equivariant finite flows, convex potential flows and
+residual flows are direct prior art. The KL and determinant identities are not
+new. Strong coupling-flow controls, more molecular conditions and full cost
+comparisons are required before presenting a distinct ICLR contribution.
+
+The development appendix now includes the complete architecture, assumptions,
+replicated outcomes and retained ESS failure. The main text remains an audit
+and must be rewritten around a qualified contribution when the evidence warrants
+it. See notes/species_coupling_execution_v1.md and
+research/evidence/species_entropy_replication_v1.json.

@@ -449,5 +449,94 @@ converge on 32/32 in all three arms, with base/typed/scalar median strains
 assessment uses the original reverse model, so its ESS is not directly pooled
 with earlier refitted-auxiliary results. The confirmation costs 3,072 additional
 oracle queries; inherited base-training and sample-production costs remain
-additional. Nonlinear adapters require their own complete implementation,
-inversion/volume checks and molecular experiments before further claims.
+additional. The subsequent nonlinear experiment is reported below.
+
+\paragraph{Implemented nonlinear species couplings.}
+We implement a separate adapter that partitions the labelled COM-free space
+into element-group internal displacements and element-centroid differences.
+For an internal update, the conditioner replaces every active-group coordinate
+with its centroid. For a centroid-pair update, it replaces both group centroids
+with their count-weighted common centroid while retaining internal displacements.
+Thus the context is constant along the active coordinates. A shared invariant
+two-layer message network (width32,24 radial features) produces scalar coefficients
+and equivariant directions from this context, with element/role embeddings and
+charge, spin and target-temperature inputs. No dropout or batch normalization
+couples different samples. Context derivatives are retained in the full map.
+
+With fixed context, the point map is
+\[
+ F(u)=\lambda u+\sum_{j=1}^{M}a_j\operatorname{sigmoid}(b_j^\top u+c_j)b_j
+       +a_r\frac{u}{\sqrt{\ell^2+\|u\|^2}}.
+\]
+The parameterization enforces $\lambda=\exp[.25\tanh(s)]$,
+$\|b_j\|\leq1/\ell$, $|a_j|\leq2\beta\lambda\ell^2/M$,
+and $|a_r|\leq\beta\lambda\ell/2$, with $\beta=.25$.
+Consequently $\|DF-\lambda I\|\leq\beta\lambda$ and $DF$ is positive definite.
+For a group of $n$ atoms with zero-sum internal coordinates, use
+$T_i(u)=F(u_i)-n^{-1}\sum_jF(u_j)$. Writing $A_i=DF(u_i)$, its exact
+intrinsic log volume is
+\[
+ \log\det_H DT=\sum_i\log\det A_i+
+       \log\det\!\left(\frac1n\sum_i A_i^{-1}\right).
+\]
+The second term is the translation-subspace Schur complement; omitting it
+gives the wrong volume. Only $3\times3$ matrices need factorization.
+The centered residual fixed-point inverse contracts by at most $\beta$.
+Centroid-pair layers apply the uncentered point map plus a bounded equivariant
+shift; opposite count-weighted centroid movements preserve total COM.
+Their determinant is the ordinary three-dimensional determinant. This is
+a reconstruction inverse; training differentiates the forward map and exact
+volume without differentiating the iterative inverse.
+
+The molecular composition uses internal-group layers followed by adjacent
+element-centroid pairs in atomic-number order. It has seven layers and19,365
+parameters for the eight-atom condition. Zero final heads initialize identity.
+Complete intrinsic Jacobians, inverse composition, O(3) and joint atom/element
+equivariance, parameter finite differences and independent batch evaluation
+are checked, including a200-atom reconstruction test. Passive-context-poor or
+homogeneous systems restrict angular expressivity; no universality is claimed.
+
+Equivariant coupling flows \citep{midgley2023eacf,bose2021equivariantfinite},
+strongly convex gradient maps \citep{huang2020convex}, and contractive residual
+flows \citep{chen2019residual} are direct prior art. The constrained-volume
+identity and relative-KL objective are established mathematics. Whether this
+particular molecular decomposition provides a useful architectural contribution
+requires comparison against strong equivariant-flow baselines.
+
+\paragraph{Matched budgets and training replication.}
+After a200-update screen showed no clear nonlinear advantage
+($-0.0236\pm0.0258$ nat versus typed linear), we fixed1,000 updates with
+batch16 and4,096 common training parents. Each arm uses16,512 oracle queries.
+The nonlinear cosine learning rate is .001 to .00001; the13-parameter linear
+control uses .01 to .0001. Oracle budgets match, but parameter counts, learning
+rates and network costs differ. Both start at identity, with no best-checkpoint
+selection. A second pair uses a new minibatch stream and neural initialization.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Training pair & Linear $\Delta\mathrm{KL}$ & Nonlinear $\Delta\mathrm{KL}$ & Nonlinear minus linear\\
+\midrule
+1 & $-0.1256\pm0.0183$ & $-0.1745\pm0.0281$ & $-0.0489\pm0.0173$\\
+2 & $-0.1278\pm0.0190$ & $-0.1666\pm0.0275$ & $-0.0388\pm0.0164$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Entries are paired means $\pm$ SEM on the same2,048 fresh base samples.
+The two training pairs share the source parent pool and evaluation rows;
+SEM quantifies evaluation uncertainty conditional on each trained model,
+not uncertainty across training seeds. The small nonlinear advantage has the
+same sign in both pairs. However, path ESS is1.0039/2,048 for the base,
+1.0036/1.0033 for the two linear maps and1.0028/1.0016 for the nonlinear maps.
+Severe weight degeneracy remains. These results do not establish calibrated
+target sampling, broad generalization or superiority to HMC.
+
+All32 fixed xTB attempts converge in each arm. Base/linear/nonlinear median
+strain is0.6205/0.5981/0.5934 eV for pair1 and0.6205/0.5980/0.5913 for pair2;
+these medians do not establish geometry superiority or full chemical validity.
+The nonlinear branch, matched controls, smoke and confirmations total80,064
+new oracle queries, plus320 independent xTB attempts. Earlier linear screens,
+base pretraining and source production remain additional. The replication
+audit replays every confirmation coordinate, volume and work increment from
+the frozen checkpoints and preserves all budgets and failure denominators.

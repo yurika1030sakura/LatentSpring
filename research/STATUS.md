@@ -18,25 +18,40 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
-## Current species-coupling execution
+## Current species-coupling execution and training replication
 
-The invariant conditioner and complete species coupling adapter are implemented.
-Seven full-model tests cover nonzero-parameter full intrinsic Jacobians including
-context dependencies, inverse, batch independence, O(3), atom/element permutation,
+The invariant conditioner and complete nonlinear species coupling adapter are
+implemented. Seven full-model tests cover intrinsic Jacobians including context
+terms, inverse, independent batch rows, O(3), joint atom/element permutation,
 identity, parameter gradients and200-atom reconstruction.270 tests pass.
 
-Real-oracle smoke45870699 completed64 queries; trained inverse error1.4e-14 A
-and full determinant discrepancies below7e-16 nat. The200-step run45871371
-completed3712 queries: development DeltaKL=-.18129+/-.05689 SEM, versus typed
-linear paired difference-.02358+/-.02579. No clear nonlinear advantage yet.
-Its refinement displacement is not exactly linear, but only .00230 A RMS.
+Both1000-step training pairs and their confirmation/xTB assessments are complete:
+main45877754/45877755, confirmation45879960, xTB45881191;
+replicas45881142/45881186, confirmation45882659, xTB45882661.
+Each training arm uses16512 oracle queries and the same4096 parent pool.
+On a shared2048-row fresh base panel, nonlinear-minus-linear DeltaKL is
+-.04892+/-.01732 and-.03882+/-.01642 nat (mean+/-row SEM). The second pair uses
+new initialization/minibatch seeds, but evaluation noise is shared. Do not pool
+these as4096 independent rows or mistake SEM for training-seed uncertainty.
 
-A fixed1000-update nonlinear/typed-linear comparison is RUNNING as45877754/
-45877755, each16512 queries. Both start from identity under their stated cosine
-schedules. The200-step geometry submission v1 was rejected for an expired
-Slurm dependency; preserve it and submit v2 without that dependency after
-verifying the source completed. No geometry result is claimed until assessment.
-The full ICLR objective remains open; no novelty or broad calibration claim.
+Nonlinear DeltaKL versus base is-.17451+/-.02808 and-.16664+/-.02748;
+linear is-.12558+/-.01829 and-.12782+/-.01896. This is a small replicated
+relative-KL advantage on one condition. Path ESS remains approximately1/2048
+for every arm. Sampling calibration and an ICLR-level advantage remain open.
+
+All32 xTB attempts converge in each arm. Main base/linear/nonlinear median
+strains are .62054/.59806/.59341 eV; replica .62054/.59801/.59132. No
+statistically qualified geometry superiority or complete chemical-validity claim.
+The200-step four-arm assessment also completes128/128; its v1 submission was
+rejected for an expired dependency and v2 completed as45878497. Retain both.
+
+Strict CPU replay verifies every confirmation coordinate, log volume and work
+increment, trained checkpoint/target hashes, matched parent pools and all xTB
+failure denominators. Evidence: evidence/species_entropy_replication_v1.json.
+This nonlinear branch,1000-step matched controls, smoke and confirmations use
+80064 new oracle queries and320 xTB attempts. Earlier linear screens and all
+source/pretraining costs remain additional. The200-step screen showed no clear
+nonlinear advantage and remains recorded. Current NEXT gives the breadth gate.
 
 ## Previous checkpoint: exact-entropy refinement and nonlinear primitive
 
