@@ -18,6 +18,25 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
+## Latest: frozen-forward diagnosis completed; controlled forward update next
+
+Backward refit45802060 completed: 2048 fixed training paths, 500 backward-only
+updates, 256 independent heldout oracle queries. The complete forward state and
+heldout coordinates were unchanged. Before/after mean refitting, with original
+and fitted scalar widths, heldout ESS remains1.0001--1.0016 of256. This rules out
+this particular reverse-refit repair, not all possible reverse models. Source
+and comparison hashes, all four arms and costs are preserved in
+`evidence/backward_refit_5846_v1.json`. The smaller smoke45801586 is retained.
+
+A prospective forward weighted-FM study is specified in
+`notes/forward_mass_update_candidate.md`. The first step exports4096 independent
+paths with complete densities and energies. Uniform, linear-mixture and
+power-tempered empirical teacher weights will be compared. Stabilization is an
+intermediate training objective, not target calibration. Weighting, tempering,
+and flow matching already have direct prior art; novelty remains unestablished.
+
+Earlier timestamped scheduler entries below are historical, not live state.
+
 ## September 10 UTC checkpoint
 
 Three AgBr2 annealed-joint training seeds have completed: ESS 44.080, 51.204,
