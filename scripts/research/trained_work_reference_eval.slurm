@@ -29,6 +29,8 @@ BGFM_STREAM_ARGS=()
 if [[ "$BGFM_SOURCE_STREAM" == 1 ]]; then BGFM_STREAM_ARGS+=(--source-evaluation-stream); fi
 "$FLOWMOL_ENV/bin/python" -u scripts/research/sample_trained_work.py --run "$TRAINING" --out "$RUN_ROOT/sampling" \
  --particles "$BGFM_EVAL_PARTICLES" --batch "$BGFM_EVAL_BATCH" --seed "$BGFM_EVAL_SEED" "${BGFM_STREAM_ARGS[@]}"
+if [[ "$BGFM_REFERENCE" != none ]]; then
 exec "$FLOWMOL_ENV/bin/python" -u scripts/research/compare_work_reference.py --run "$RUN_ROOT/sampling" \
  --reference "$BGFM_REFERENCE" \
  --out "$RUN_ROOT/normalizer.json" --stages final
+fi
