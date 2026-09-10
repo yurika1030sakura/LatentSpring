@@ -11,6 +11,7 @@ import torch
 from cfm_mol.energy_oracle import EnergyOracle
 from cfm_mol.linear_entropy_adapter import endpoint_kl_change
 from cfm_mol.species_coupling_adapter import SpeciesCouplingAdapter
+from cfm_mol.affine_species_adapter import AffineSpeciesCouplingAdapter
 from cfm_mol.nonequilibrium import WeightedPaths, centered_orthonormal_basis
 from cfm_mol.path_work import external_energy
 from molecular_tempered_pilot import sha, write_json
@@ -21,6 +22,7 @@ def main():
     p.add_argument('--runs-root', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--sweeps', type=int, default=1)
+    p.add_argument('--point-map', choices=['convex', 'affine'], default='convex')
     p.add_argument('--init-seed', type=int, default=9161)
     p.add_argument('--selection-seed', type=int, default=9141)
     p.add_argument('--steps', type=int, default=200)
@@ -55,11 +57,13 @@ def main():
     x_train = train['positions'].double(); x_eval = evaluation['positions'][:args.eval_count].double()
     if max(float(x_train.mean(1).abs().max()), float(x_eval.mean(1).abs().max())) > 1e-8:raise ValueError('Require COM-free source samples')
     torch.manual_seed(args.init_seed)
-    adapter = SpeciesCouplingAdapter(condition['numbers'], charge=condition['charge'],
+    model_class = SpeciesCouplingAdapter if args.point_map == 'convex' else AffineSpeciesCouplingAdapter
+    kind = 'species_'+args.point_map
+    adapter = model_class(condition['numbers'], charge=condition['charge'],
         spin_multiplicity=condition['spin_multiplicity'], kT=recipe['kT'], sweeps=args.sweeps).to(args.device).double()
     optimizer = torch.optim.AdamW(adapter.parameters(), lr=.001, weight_decay=0.)
     selection = torch.Generator().manual_seed(args.selection_seed)
-    report = {'complete': False, 'scope': __doc__, 'kind': 'species_convex',
+    report = {'complete': False, 'scope': __doc__, 'kind': kind,
         'configuration': {k: str(v.resolve()) if isinstance(v, Path) else v for k, v in vars(args).items()},
         'condition': condition, 'source_checkpoint_sha256': checkpoint_sha, 'training_sha256': sha(train_path),
         'evaluation_sha256': sha(eval_path), 'oracle_sha256': source['oracle_sha256'],
@@ -142,7 +146,7 @@ def main():
     torch.save({'positions': x_eval, 'energy_eV': initial_energy, 'work': base_work, 'condition': condition}, args.out/'base_samples.pt')
     torch.save({'positions': final_positions, 'energy_eV': final_energy, 'work': final_work,
         'paired_endpoint_kl_change': change, 'log_volume': volume, 'condition': condition}, args.out/'adapted_samples.pt')
-    torch.save({'state_dict': adapter.state_dict(), 'optimizer_state_dict': optimizer.state_dict(), 'kind': 'species_convex', 'adapter_configuration': adapter.configuration,
+    torch.save({'state_dict': adapter.state_dict(), 'optimizer_state_dict': optimizer.state_dict(), 'kind': kind, 'adapter_configuration': adapter.configuration,
         'condition': condition, 'source_checkpoint_sha256': checkpoint_sha}, args.out/'adapter.ckpt')
     report.update(complete=True, seconds=time.perf_counter()-start,
         artifacts={name: sha(args.out/name) for name in ['base_samples.pt', 'adapted_samples.pt', 'adapter.ckpt']})

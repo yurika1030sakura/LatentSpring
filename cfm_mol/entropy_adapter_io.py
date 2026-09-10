@@ -7,6 +7,7 @@ import torch
 
 from cfm_mol.linear_entropy_adapter import LinearEntropyAdapter
 from cfm_mol.species_coupling_adapter import SpeciesCouplingAdapter
+from cfm_mol.affine_species_adapter import AffineSpeciesCouplingAdapter
 
 
 def load_entropy_adapter(directory, device='cpu'):
@@ -20,13 +21,16 @@ def load_entropy_adapter(directory, device='cpu'):
     if state['source_checkpoint_sha256'] != report['source_checkpoint_sha256'] or state['condition'] != report['condition']:
         raise ValueError('Checkpoint condition or base generator differs from report')
     kind = state['kind']
-    if kind == 'species_convex':
+    if kind != report['kind']:
+        raise ValueError('Checkpoint and report architecture differ')
+    if kind in ['species_convex', 'species_affine']:
         config = state['adapter_configuration']
         if (config != report['adapter_configuration'] or config['kT'] != report['kT_eV']
                 or config['charge'] != report['condition']['charge']
                 or config['spin_multiplicity'] != report['condition']['spin_multiplicity']):
             raise ValueError('Species-adapter configuration differs')
-        model = SpeciesCouplingAdapter(state['condition']['numbers'], **config)
+        model_class = SpeciesCouplingAdapter if kind == 'species_convex' else AffineSpeciesCouplingAdapter
+        model = model_class(state['condition']['numbers'], **config)
     elif kind in ['typed', 'scalar']:
         model = LinearEntropyAdapter(state['condition']['numbers'], kind=kind, maximum_weight=report['maximum_pair_weight'])
     else:

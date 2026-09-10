@@ -24,6 +24,7 @@ STEPS="${3:-200}"
 EVAL_COUNT="${4:-256}"
 INIT_SEED="${5:-9161}"
 SELECTION_SEED="${6:-9141}"
+POINT_MAP="${7:-convex}"
 exec "$BGFM_STORE/envs/flowmol/bin/python" -u scripts/research/train_species_entropy_adapter.py \
  --runs-root "$LAB_RUNS" --out "$RUN_ROOT" --steps "$STEPS" --eval-count "$EVAL_COUNT" \
- --init-seed "$INIT_SEED" --selection-seed "$SELECTION_SEED"
+ --init-seed "$INIT_SEED" --selection-seed "$SELECTION_SEED" --point-map "$POINT_MAP"

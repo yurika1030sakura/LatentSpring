@@ -45,7 +45,8 @@ def main():
     if not manifest['complete'] or manifest['role'] != 'new_development' or len(manifest['rows']) != 8:
         raise ValueError('Require prescribed eight-condition development manifest')
     root = Path(__file__).resolve().parents[2]
-    frozen_path = root/'research/evidence/species_breadth_source_protocol_v1.json'
+    frozen_path = root/('research/evidence/species_breadth_source_protocol_v2.json' if args.deterministic_runtime
+        else 'research/evidence/species_breadth_source_protocol_v1.json')
     frozen = json.loads(frozen_path.read_text())
     if not frozen['frozen'] or frozen['reserved_outcomes_allowed']:
         raise ValueError('Invalid source protocol')

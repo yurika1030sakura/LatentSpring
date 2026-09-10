@@ -1,5 +1,17 @@
 # Frozen broad-development source protocol
 
+Runtime amendment(v2): the first all-eight prefix screen failed its1e-7-A
+replay gate before any oracle queries. A matched first-condition diagnostic
+measured1.430511e-6 A maximum difference(RMS2.056732e-7), with unchanged input
+and CPU/CUDA RNG states. Enabling torch.use_deterministic_algorithms(True) and
+CUBLAS_WORKSPACE_CONFIG=:4096:8 produced exact prefix replay. This supports a
+GPU arithmetic explanation for the checked prefix; it is not a global numerical
+certificate. Preserve both diagnostics and all eight original failures.
+The producer now uses frozen species_breadth_source_protocol_v2.json and requires
+the same replay gate for every condition; the gate was not relaxed. Full
+production still requires the new complete engineering screen. Primary runtime
+reference: https://docs.pytorch.org/docs/stable/notes/randomness.html .
+
 This extends the species-adapter investigation beyond condition5846 without
 selecting new molecules from method outcomes. Use every row of the existing
 research/evidence/development_panel_v1.json in manifest order. Reserved722

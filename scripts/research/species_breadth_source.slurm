@@ -25,6 +25,7 @@ if [[ $# -ge 3 ]]; then
   EXTRA=(--condition-index "$3" --train-count 4096 --eval-count 512 --batch 64 --seed 9182)
 fi
 exec "$BGFM_STORE/envs/flowmol/bin/python" -u scripts/research/prepare_species_breadth_source.py \
+ --deterministic-runtime \
  --config configs/sweep/a1_fm_only_s2.yaml --checkpoint "$LAB_RUNS/electronic_fm_global_v1/last.ckpt" \
  --manifest research/evidence/development_panel_v1.json --out "$RUN_ROOT" \
  --oracle "$BGFM_STORE/checkpoints/omol25/esen_sm_conserving_all.pt" \
