@@ -1,6 +1,7 @@
 > **Current status, September 10, 2026 UTC:** this file below is historical.
 > `../research/STATUS.md` and `../research/NEXT.md` govern the active ICLR 2027
-> reconstruction. The last verified main text is 9 pages, not the historical
+> reconstruction. `../research/PAPER_STORY_CURRENT.md` defines the provisional
+> new paper direction and the claims that remain unproven. The last verified main text is 9 pages, not the historical
 > 20-page draft described below. Scientific submission readiness remains false.
 > The current evidence includes failed larger-molecule sampling, three-seed
 > AgBr2 development, independent reference uncertainty and stronger HMC controls.

@@ -8,6 +8,10 @@ likelihood integration, but sampling coverage and target suitability remain
 unresolved scientific gates.
 Authors and submission accounts are outside the user's requested execution.
 
+Current manuscript direction and claim boundaries: `PAPER_STORY_CURRENT.md`.
+The existing PDF main text is still an audit/development draft, not a completed
+new-method paper.
+
 Active checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
 `iclr2027-research`. Frozen original audit: `../audits/bgfm_20260908`.
 Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
