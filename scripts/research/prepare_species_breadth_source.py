@@ -119,7 +119,10 @@ def main():
                 numbers=condition['numbers'], charge=condition['charge'],
                 spin_multiplicity=condition['spin_multiplicity'], batch_size=16) as oracle, torch.no_grad():
                 for stream_index, (label, count) in enumerate([('training', args.train_count), ('development', args.eval_count)]):
-                    samples, seeds = [], []
+                    samples, seeds, energies = [], [], []
+                    maximum_force = 0.
+                    chunk_dir = directory/label
+                    chunk_dir.mkdir(exist_ok=False)
                     for batch_index in range(count//args.batch):
                         seed = 1000000000*args.seed+100003*condition['candidate_index']+100000003*stream_index+batch_index
                         generator = torch.Generator(device=args.device).manual_seed(seed)
@@ -153,12 +156,23 @@ def main():
                         x = x+.025*torch.einsum('nk,bkd->bnd', basis, noise)
                         if not torch.isfinite(x).all() or float(x.mean(1).abs().max()) > 1e-8:
                             raise FloatingPointError('Invalid source coordinates')
+                        # Persist expensive source coordinates before physical
+                        # evaluation. A failed RPC must not erase the source.
+                        coordinate_path = chunk_dir/f'positions_{batch_index:05d}.pt'
+                        torch.save({'positions': x.cpu(), 'condition': condition, 'seed': seed,
+                            'sample_ids': list(range(batch_index*args.batch, (batch_index+1)*args.batch))}, coordinate_path)
+                        energy, force = oracle.evaluate_chunked(x)
+                        torch.save({'energy_eV': energy, 'force_eV_A': force,
+                            'positions_sha256': sha(coordinate_path)}, chunk_dir/f'energies_{batch_index:05d}.pt')
+                        maximum_force = max(maximum_force, float(force.norm(dim=-1).max()))
+                        energies.append(energy)
                         samples.append(x.cpu())
                         seeds.append(seed)
+                        detail['oracle_evaluations_so_far'] = oracle.evaluated
+                        detail['oracle_requested_evaluations_so_far'] = oracle.requested_evaluations
+                        write_json(directory/'results.json', detail)
                     x = torch.cat(samples)
-                    energy, force = oracle.evaluate(x)
-                    if not torch.isfinite(energy).all() or not torch.isfinite(force).all():
-                        raise FloatingPointError('Nonfinite physical oracle output')
+                    energy = torch.cat(energies)
                     data = {'positions': x, 'energy_eV': energy, 'condition': condition,
                         'sample_ids': list(range(count)), 'stream': label, 'batch_seeds': seeds}
                     file = directory/f'{label}_samples.pt'
@@ -166,14 +180,16 @@ def main():
                     detail['artifacts'][file.name] = sha(file)
                     detail['streams'][label] = {'samples': count, 'batch_seeds': seeds,
                         'neural_field_calls_per_sample': 128, 'max_COM_error_A': float(x.mean(1).abs().max()),
-                        'maximum_force_norm_eV_A': float(force.norm(dim=-1).max()),
+                        'maximum_force_norm_eV_A': maximum_force,
                         'energy_eV': {'min': float(energy.min()), 'median': float(energy.median()), 'max': float(energy.max())}}
                     write_json(directory/'results.json', detail)
                 detail.update(complete=True, oracle_evaluations=oracle.evaluated)
                 write_json(directory/'results.json', detail)
                 row.update(success=True, results_sha256=sha(directory/'results.json'), oracle_evaluations=oracle.evaluated)
         except Exception as exc:
-            row.update(error=f'{type(exc).__name__}: {exc}', oracle_evaluations=0 if oracle is None else oracle.evaluated)
+            row.update(error=f'{type(exc).__name__}: {exc}', oracle_evaluations=0 if oracle is None else oracle.evaluated,
+                oracle_requested_evaluations=0 if oracle is None else oracle.requested_evaluations,
+                query_accounting_exact=oracle is not None and oracle.evaluated == oracle.requested_evaluations)
             write_json(directory/'failure.json', row)
         report['rows'].append(row)
         write_json(output, report)

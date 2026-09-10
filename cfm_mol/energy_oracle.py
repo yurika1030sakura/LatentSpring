@@ -68,5 +68,23 @@ class EnergyOracle:
             if self.process.stdout is not None:self.process.stdout.close()
         if hasattr(self,'stderr'):self.stderr.close()
 
+    def evaluate_chunked(self, positions, *, max_request=32):
+        """Bound each synchronous RPC while preserving sample order and query counts.
+
+        The worker's internal physical batch size is unchanged. On failure,
+        requested_evaluations counts submitted structures, while evaluated only
+        counts acknowledged worker attempts; never treat their gap as zero cost.
+        """
+        positions = torch.as_tensor(positions).detach().cpu().double()
+        if not isinstance(max_request, int) or max_request < 1 or positions.ndim != 3 or len(positions) < 1:
+            raise ValueError('Positive oracle request bound and nonempty molecular batch required')
+        if not torch.isfinite(positions).all():
+            raise ValueError('Invalid oracle positions')
+        energies, forces = [], []
+        for begin in range(0, len(positions), max_request):
+            energy, force = self.evaluate(positions[begin:begin+max_request])
+            energies.append(energy); forces.append(force)
+        return torch.cat(energies), torch.cat(forces)
+
     def __enter__(self):return self
     def __exit__(self,*exc):self.close()
