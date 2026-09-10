@@ -18,6 +18,45 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
+## Latest completed candidate: calibration improves partial score risk only
+
+Residual score calibration is implemented and independently evaluated. Fresh
+panel45820074 (16384 new parents), smoke45820248 and audit45820530 completed.
+The two neural seeds have heldout Stein risk-change estimates -.1567+/-.0334
+and-.8920+/-.0740 per coordinate (mean+/-SEM), and both beat an identically
+calibrated Gaussian in paired DSM. This is a limited positive score-estimation
+result. It is not improved molecular sampling or an established AI contribution.
+
+Both seeds pass4/4 fitted moment checks on new samples, but only2/10 and4/10
+unfitted checks. Violations reach20.72 and13.23 SEM. Neither critic qualifies
+for an actor update. All coefficients, tail constraints, risks and failures are
+preserved in evidence/score_calibration_audit_v1.json.253 tests pass; no new
+oracle query or generator update was used. No current job remains active.
+The updated manuscript builds with9 main pages at
+runs/verification/paper_20260910_calibration/main.pdf; scientific readiness is false.
+
+The complete candidate learning loop is specified in
+notes/stein_calibrated_entropy_candidate.md; only its frozen calibration layer
+has been implemented and tested. Stein projection and the population guarantee
+are established mathematics. Any ICLR contribution still requires a distinct
+learning intervention with replicated full-sampling benefits.
+
+## Earlier residual score calibration protocol
+
+A concrete conservative score-calibration layer is implemented, with a
+population projection argument and explicit finite-sample limitations. It uses
+existing Stein/score-matching principles, not a claimed new identity. The first
+fixed molecular test fits four calibration features on the existing8192-parent
+development panel and evaluates16384 new parents (seed9117, noise9118), including
+unfitted radial, size and angular probes and a calibrated Gaussian ablation.
+Two frozen neural-critic seeds are retained. No molecular actor update occurs.
+
+Five new mathematical/symmetry/Hessian tests pass; the full suite passes253.
+Fresh panel45820074 completed without oracle queries; calibration smoke45820248
+completed with16 assessment rows and cannot qualify the method. The full audit
+is submitted. See notes/stein_calibrated_entropy_candidate.md for the complete
+candidate learning loop and the frozen-component experimental boundary.
+
 ## Latest completed checkpoint: all score qualifications failed
 
 Both3000-update antithetic and grouped-IID runs completed at seeds9101/9103.

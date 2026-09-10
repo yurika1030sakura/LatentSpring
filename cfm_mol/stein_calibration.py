@@ -46,7 +46,7 @@ def radial_score_features(x, centers=(1., 2., 3.), width=.5, *, include_scale=Tr
 
 
 def size_score_features(x, scales=(3., 5.)):
-    """Novel assessment directions from exp(-||Px||^2/(2 a^2))."""
+    """Unfitted assessment directions from exp(-||Px||^2/(2 a^2))."""
     centered = x-x.mean(1, keepdim=True)
     squared = centered.square().sum((1, 2))
     a = x.new_tensor(scales)

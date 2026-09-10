@@ -43,6 +43,12 @@ seeds; no molecular actor was updated. The global innovation Gaussian auxiliary
 also failed its bounded screen. Do not repeat these recipes or promote their
 small-panel passes. Read `research/NEXT.md` and `research/NOVELTY_DECISION.md`.
 
+The newer `cfm_mol/stein_calibration.py` adds conservative residual score
+calibration. Its fixed four-feature version reduces estimated score risk on an
+independent16384-parent panel but fails unfitted radial/angular checks. Only the
+frozen calibration component has been tested; it does not qualify an actor
+update or establish novelty. See `notes/stein_calibrated_entropy_candidate.md`.
+
 ## Locked project decisions
 
 - Flow matching, bond-free: `total_loss_weights.e = 0` on OMol25.

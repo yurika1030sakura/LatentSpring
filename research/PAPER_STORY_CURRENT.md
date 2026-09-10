@@ -4,7 +4,7 @@ Working title: **Learning Molecular Geometry Distributions with Nonequilibrium W
 This is a provisional research direction. The existing main text remains an
 inherited-method audit, with later development experiments in the appendix.
 It is not a qualified ICLR method paper. The latest build has9 main pages at
-runs/verification/paper_20260910_score/main.pdf; scientific readiness is false.
+runs/verification/paper_20260910_calibration/main.pdf; scientific readiness is false.
 
 ## Scientific question and actual scope
 
@@ -62,3 +62,17 @@ multiple independently selected molecular conditions and training seeds, credibl
 distribution checks, and total-compute comparisons. The reserved722 conditions
 remain untouched. Use STATUS.md, NEXT.md and the complete evidence artifacts;
 never replace failed confirmations with the earlier selected passing screen.
+
+
+## Current concrete method candidate
+
+Residual-calibrated endpoint-entropy learning is now specified, and its frozen
+calibration component is implemented. A constrained Stein projection preserves
+symmetry and normalizability and has a standard population risk-reduction
+property. In16384 independent samples, it improves a measurable component of
+score error for both neural seeds and beats a calibrated Gaussian baseline.
+However, strong unfitted radial/angular violations remain; no generator update
+is qualified. This is a partial component result, not a full method contribution.
+See notes/stein_calibrated_entropy_candidate.md and score_calibration_audit_v1.json.
+The next unimplemented candidate is correction in learned invariant feature
+directions, with independent validation and direct Stein-estimation baselines.

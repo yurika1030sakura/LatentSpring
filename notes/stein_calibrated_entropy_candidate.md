@@ -37,6 +37,28 @@ and the positive quadratic tail ensure it remains normalizable on COM-free H.
 Rotation/translation/permutation symmetries are preserved. The density of this
 critic is not substituted for the actual generator density.
 
+## Complete learning-loop specification
+
+For each declared composition/charge/spin and each generator update, freeze the
+current actual Gaussian-path generator q_theta. Use separate samples for neural
+critic fitting, residual calibration and qualification; an update minibatch is
+also independent of those fits. Train the critic using actual terminal-noise
+pairs, obtain the constrained calibration, then use the corrected score in
+endpoint_kl_surrogate with target score (force_eSEN-kappa*x)/kT in the same COM
+basis. Hold critic and calibration parameters fixed during the actor gradient.
+After changing the generator, its proposal score must be refreshed and checked;
+a stale critic is not accepted as the score of the new q. Final assessment uses
+independent generation and the actual path weights, with geometry and compute
+reported separately. The conditional composition prior is not changed.
+
+Only the frozen calibration component is implemented and evaluated in this
+experiment. The molecular actor loop has not been run or qualified. A projected
+risk decrease tightens a Cauchy-Schwarz upper bound on actor-gradient bias when
+the generator Jacobian has a finite second moment; it does not imply that each
+realized finite actor update decreases the true KL. This standard inequality is
+not an additional novelty claim. The full method must earn its claim through
+actual controlled generation experiments.
+
 ## Direct prior art
 
 Stein gradient estimation and score matching from implicit samples are established:
@@ -73,3 +95,32 @@ A necessary gate requires both corrected neural seeds to improve relative risk
 and beat the calibrated Gaussian in paired DSM by2 SEM, and to place every
 fitted and unseen moment within3 SEM. Even a pass permits only a bounded actor
 experiment, not an ICLR/calibration claim. Failures remain in the denominator.
+
+
+## Completed version1 result
+
+Fresh-panel job45820074, engineering smoke45820248 and full audit45820530 all
+completed.253 tests pass. On16384 new samples, both calibrated neural seeds
+show negative heldout Stein estimates of Fisher-risk change per coordinate:
+-.15672+/-.03340 and-.89205+/-.07398 (mean+/-SEM). Paired denoising-risk estimates
+are noisier: -.01314+/-.18617 and-1.63841+/-.46858. The two estimators concern
+the same expected risk difference; neither is a global score certificate.
+Both neural versions beat the identically calibrated Gaussian baseline in DSM.
+
+All4 fitted moments pass for both seeds, but only2/10 and4/10 unfitted moments
+pass. Remaining violations reach20.72 and13.23 SEM, including angle probes.
+Therefore no molecular actor update is released. The correction improves a
+measurable component of score error, but the fixed four-direction version is
+insufficient. Full result: research/evidence/score_calibration_audit_v1.json.
+No energy-oracle query or forward-model update was needed for this experiment.
+
+A prospective next variant would calibrate in learned invariant feature
+directions, rather than the fixed four directions. That variant is not yet
+implemented or evaluated. In particular, refitting the linear head of a frozen
+invariant energy network is a concrete way to test representation versus
+optimization error through a richer convex score-matching problem. Its prior
+art must be checked and its validation directions kept separate from fitting.
+Do not append the failed assessment probes to the fit and then call their
+training fit a validation success. The16384 panel is an independent result for
+version1; after using its outcomes to design a new variant, it becomes development
+data for that variant, which needs new independent confirmation.

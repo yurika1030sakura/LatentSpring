@@ -348,3 +348,43 @@ residuals divided by their standard errors; colors saturate at 15. No molecular
 generator update or validated AI novelty follows from these experiments.}
 \label{fig:scorequalification}
 \end{figure}
+
+\paragraph{Conservative residual score calibration: partial improvement.}
+We implement a subsequent, explicitly limited calibration candidate.
+For a fixed proposal score estimate $s_0$, conservative fields
+$f_j=\nabla\psi_j$ and a valid Stein identity under the actual generator law $q$,
+define $G_{ij}=\mathbb E_q[f_i^Tf_j]$ and
+$r_j=\mathbb E_q[s_0^Tf_j+\nabla\cdot f_j]$.
+The correction $s_c=s_0-\sum_jc_jf_j$ has Fisher-risk change
+\[
+\mathbb E_q\|s_c-s_q\|^2-\mathbb E_q\|s_0-s_q\|^2
+=c^TGc-2c^Tr.
+\]
+This is a standard finite-feature score-matching projection, related to
+established Stein score estimation \citep{li2018stein,shi2018spectral}; it is
+not claimed as a new identity. At population moments, constrained ridge
+minimization with zero correction feasible cannot increase this risk. With
+$\psi_0=\|x\|^2/2$ and bounded radial potentials, the constraint
+$c_0\geq-\kappa_0/2$ retains a positive quadratic tail and hence a normalizable
+critic. Finite estimated moments need separate validation; the calibrated
+critic density is not substituted for the generator density.
+
+We fit four directions (scale and radial centers 1, 2, 3 Angstrom, width 0.5)
+on the existing 8,192-parent development panel, with ridge 0.01 after feature
+RMS scaling. Assessment uses 16,384 newly generated parents, with independent
+parent/noise seeds 9117/9118. Both frozen neural seeds are retained, along with
+a Gaussian-base-plus-identical-calibration ablation. On this new panel,
+the Stein estimates of risk change per coordinate are
+$-0.1567\pm0.0334$ and $-0.8920\pm0.0740$ (mean $\pm$ SEM).
+Both calibrated neural scores beat the calibrated Gaussian in paired denoising
+loss. These are limited score-estimation improvements, not molecular sampling
+improvements or a validated novel learning algorithm.
+
+Both seeds pass all four fitted moment checks on new samples, but only 2/10
+and 4/10 additional, unfitted checks pass. Those checks use six shifted radial
+centers with width 0.35, two size functions and two symmetric triangle-angle
+functions, with exact divergence checks. Failures reach 20.72 and 13.23 SEM.
+Thus the four-direction correction leaves substantial errors and does not
+qualify either critic for an actor update. All data, coefficients, tail
+constraints and fitted/unfitted diagnostics are preserved in
+\texttt{research/evidence/score\_calibration\_audit\_v1.json}.

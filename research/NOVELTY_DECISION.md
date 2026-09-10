@@ -49,3 +49,12 @@ VSD/DMD and denoising/variance-reduction principles. No molecular actor update
 or novel-method performance result exists. The antithetic small-panel pass did
 not survive independent confirmation; it cannot be used as positive evidence
 for paper readiness. Current complete record: score_qualification_complete_v1.
+
+
+Current concrete candidate: residual-calibrated endpoint-entropy learning. Its
+four-direction frozen calibration layer has a replicated partial score-risk
+improvement on16384 new samples, but fails unfitted radial/angle checks. No
+actor or sampling benefit is established. Its quadratic projection theorem is
+standard finite-feature score matching, with direct Li/Turner and Shi et al.
+prior art. Any eventual contribution must go beyond that identity. A richer
+learned-feature calibration is a prospective next design, not a completed result.
