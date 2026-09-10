@@ -14,9 +14,51 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
+## September 10 UTC checkpoint
+
+Three AgBr2 annealed-joint training seeds have completed: ESS 44.080, 51.204,
+20.884 of 256. Against independent reference v2 their log-normalizer differences
+are -0.05161, -0.15170, +0.15809 nat; empirical relative SEs are 13.73%, 12.52%,
+21.01%. This supports further evaluation, not a replicated superiority claim.
+Reference v2 uses eight scrambles of 8192 points, reuses 16,384 verified prefix
+queries, and adds 49,176 oracle evaluations including checks. Its 300 K relative
+SE is 1.82%; both reference versions and all seeds are retained.
+
+Frozen-loader validation 45751790 completed and reproduced original paths
+(max position difference 1.48e-7 A, work difference 9.35e-5). Fresh 4096-path
+comparisons are submitted for seeds 9051/9052/9053: 45759407, 45759409, 45759411.
+Fixed-joint and energy-only training 45750959/45750966 remains running, with
+4096-path evaluations 45759434/45759436 depending on their successful completion.
+Each new evaluation uses reference v2, batch 64, seed 9065 and separate cost.
+
+Pure AgBr2 FM and short MALA controls completed. Short MALA still gives farthest
+Ag-Br distance about 4.49 A versus reference about 2.54 A; it is not equilibrated.
+Longer MALA 45759386 and HMC 45759394 have been submitted with 8,512 queries each
+and chain-clustered uncertainty. Protocol: notes/long_chain_and_balance_protocol.md.
+All seven new jobs use source ae63de3; do not resubmit live jobs.
+
+New development baseline and xTB assessment completed (45747806/45749290), with
+all 512 generated attempts plus eight references recorded. FM64 converges on
+239/256 attempted relaxations; all eight references converge. No new-panel
+physics-training result or reserved-condition method outcome exists yet.
+The eight-atom ESS failure remains unresolved. Its joint-work fluctuations are
+dominated by terminal reduced-energy spread, not only reverse-kernel error.
+
+The first three fresh 4096-path evaluations have returned: ESS 581.18, 654.38,
+353.98 for seeds 9051/9052/9053, with log-normalizer differences -0.08614, -0.05316,
+-0.12530 nat (relative SE 3.84%, 3.58%, 5.08%, plus reference 1.82%). All estimates
+are low relative to reference; this is not a calibration certificate. Evaluation
+noise seed is shared across arms. Evidence: work300_large_eval_and_mcmc_v1.json.
+Long HMC agrees more closely with reference distances (maximum Ag-Br 2.558 versus
+2.537 A); xTB 32/32, median strain .64889 eV. Long MALA maximum distance is 3.826 A,
+xTB 27/32, successful median .48722 eV. Retained MCMC draws remain correlated.
+No superiority over HMC is established. A stale four-scramble prose limitation in
+the saved comparisons is corrected in new code; the actual v2 reference has eight
+scrambles and was used numerically. Historical outputs are preserved.
+
 ## What is established
 
-- 209 tests pass, including real FlowMol parameter gradients, full-state and
+- 217 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
   dedicated Gaussian/Rademacher probe streams for common/independent controls,

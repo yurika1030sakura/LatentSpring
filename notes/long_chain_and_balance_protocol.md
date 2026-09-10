@@ -35,3 +35,25 @@ Real FlowMol time-batch/gradient agreement is required before molecular use.
 
 Validation: 216 tests pass, including HMC target-moment preservation under clipped
 kicks, exact query counts, cluster uncertainty and fixed-path score gradients.
+
+## Real-interface gate and molecular log-variance pilot
+
+The real electronically conditioned CTMCVectorField test now passes: six distinct
+times including both endpoints yield matching independent versus batched outputs
+and parameter gradients; full observed-path factors also match. Self-conditioning,
+model modes and graph features are restored. Complete suite: 217 tests.
+
+The optional `--objective log_variance` branch draws fresh current-forward paths
+without gradients, evaluates their terminal energies once, then differentiates
+variance of U/kT + log q0 + log K - log L with states and energies fixed. No replay,
+resampling, reference positions, endpoint force gradients or normalizer fitting is
+used. Each step checks observed-path versus sampler work within 0.05 nat (mixed
+float32 backbone / float64 factors); failures abort. Record all errors. This is
+a discrete normalized-kernel baseline motivated by Richter and Berner (ICLR 2024),
+not their exact continuous-time implementation and not a new loss. See
+https://arxiv.org/abs/2307.01198, Section 2.3, for the fixed-reference measure.
+
+First production gate: eight-atom row 5846, 300 K, native mean, annealing exponent
+0.5, two updates, batch two, 16 transitions, 64 evaluation particles before and
+after, seed 9066. The 132-query run verifies execution only. A matched 500-update
+pilot is conditional on finite gradients, factor agreement and feasible memory.

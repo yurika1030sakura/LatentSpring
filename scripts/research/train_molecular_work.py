@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Train a stochastic proposal by mean finite-path work, initialized from FM.
+"""Train an FM-initialized stochastic proposal with existing path-space objectives.
 
-This is an existing path-space KL/SNF teacher objective. The eventual position
+Mean work uses pathwise KL/SNF gradients; log variance scores detached fresh
+paths and holds their observation measure fixed within each update. Both are
+prior-art teacher objectives. The eventual position
 student remains a separately evaluated flow-matching model. Work is shifted by
 a fixed source energy for logging; no normalizer is assumed known.
 """
@@ -26,6 +28,8 @@ from cfm_mol.electronic_conditioning import neutralize_constant_temperature_inpu
 from cfm_mol.energy_oracle import EnergyOracle
 from cfm_mol.nonequilibrium import centered_orthonormal_basis,normalized_weights,WeightedPaths
 from cfm_mol.path_work import gaussian_training_path,external_energy
+from cfm_mol.path_balance import fixed_path_log_factors,log_variance_balance
+from cfm_mol.molecular_path_drift import MolecularPathDrift
 from cfm_mol.radial_reference import prepare_research_backbone
 from cfm_mol.smooth_geometry import patch_smooth_geometry
 from molecular_tempered_pilot import sha,write_json,geometry_metrics
@@ -42,6 +46,7 @@ def main():
     p.add_argument('--eval-particles',type=int,default=64);p.add_argument('--lr',type=float,default=1e-5)
     p.add_argument('--noise',type=float,default=.2);p.add_argument('--kT',type=float,default=1.)
     p.add_argument('--restraint',type=float,default=.1);p.add_argument('--seed',type=int,default=9051)
+    p.add_argument('--objective',choices=['mean_work','log_variance'],default='mean_work')
     p.add_argument('--mode',choices=['joint','backward_only','forward_energy_only'],default='joint')
     p.add_argument('--oracle-batch-size',type=int,default=1)
     p.add_argument('--reference-kernel',choices=['euler','gaussian'],default='gaussian')
@@ -57,6 +62,8 @@ def main():
     if any(not math.isfinite(v) or v<=0 for v in [args.lr,args.noise,args.kT,args.restraint,args.prior_std,args.max_drift_per_sqrt_dimension]):raise ValueError('Invalid scale')
     if (args.condition_manifest is None)!=(args.condition_index is None):raise ValueError('Condition manifest and index must be specified together')
     if args.condition_manifest is None and args.metadata is None:raise ValueError('Legacy rows require verified electronic metadata')
+    if args.objective=='log_variance' and (args.mode!='joint' or args.batch<2):
+        raise ValueError('Fixed-path log variance requires joint training and batch >= 2')
     args.out.mkdir(parents=True,exist_ok=True);output=args.out/'results.json'
     if output.exists():raise FileExistsError(output)
     torch.manual_seed(args.seed)
@@ -106,6 +113,10 @@ def main():
     graph=dgl.batch([base]*args.batch).to(args.device)
     if metadata is not None:metadata.attach(graph,[args.source_row]*args.batch,args.kT)
     nbi,_=get_batch_idxs(graph);uem=get_upper_edge_mask(graph)
+    if args.objective=='log_variance':
+        conditioned=dgl.unbatch(graph)[0]
+        observed_forward=MolecularPathDrift(forward,conditioned)
+        observed_backward=MolecularPathDrift(backward,conditioned,sign=-1.)
     basis=centered_orthonormal_basis(n,device=args.device);prior_std=args.prior_std
     terminal_std=math.sqrt(args.kT/args.restraint) if args.reference_kernel=='gaussian' else None
     def drift(model,z,t,sign):
@@ -119,16 +130,19 @@ def main():
     root=Path(__file__).resolve().parents[2]
     report={'complete':False,'scope':__doc__,'configuration':{k:str(v.resolve()) if isinstance(v,Path) else v for k,v in vars(args).items()},
         'checkpoint_sha256':sha(args.checkpoint),'oracle_sha256':sha(args.oracle),'metadata_progress_sha256':metadata.progress_sha256 if metadata else None,
-        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py',root/'scripts/research/oracle_worker.py',root/'cfm_mol/condition_systems.py',root/'cfm_mol/electronic_conditioning.py']},
+        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py',root/'scripts/research/oracle_worker.py',root/'cfm_mol/condition_systems.py',root/'cfm_mol/electronic_conditioning.py',root/'cfm_mol/path_balance.py',root/'cfm_mol/molecular_path_drift.py']},
         'condition':{**source_condition,
             'numbers':numbers.tolist(),'charge':charge,'spin_multiplicity':spin},
         'energy_zero_eV':energy_zero,'prior_std':prior_std,'evaluations':{},'training':[]}
     report['temperature_input_initialization']={'neutralized':args.neutralize_temperature_input,
         'checkpoint_requested_kT':protocol.get('requested_kT'),'new_input_kT_eV':args.kT}
+    report['objective_protocol']={'name':args.objective,'observation_measure':
+        'fresh current-forward paths, detached and fixed within each gradient update' if args.objective=='log_variance' else 'reparameterized current-forward paths',
+        'replay':False,'per_condition':True,'novel_objective_claim':False}
     write_json(output,report);start=time.perf_counter()
     with EnergyOracle(args.oracle_python,root/'scripts/research/oracle_worker.py',args.oracle,numbers=numbers,charge=charge,spin_multiplicity=spin,
                       batch_size=args.oracle_batch_size) as oracle:
-        def draw(seed,training):
+        def draw(seed,training,retain_states=False):
             g=torch.Generator(device=args.device).manual_seed(seed)
             x0=torch.randn((args.batch,dimension),device=args.device,dtype=torch.float64,generator=g)*prior_std
             path=gaussian_training_path(x0,lambda z,t:drift(forward,z,t,1.),lambda z,t:drift(backward,z,t,-1.),
@@ -136,17 +150,17 @@ def main():
                 checkpoint_steps=args.checkpoint_steps and training,terminal_std=terminal_std,
                 max_drift_norm=args.max_drift_per_sqrt_dimension*math.sqrt(dimension),
                 forward_energy_only=args.mode=='forward_energy_only' and training,
-                mean_parameterization=args.mean_parameterization,noise_annealing_power=args.noise_annealing_power)
+                mean_parameterization=args.mean_parameterization,noise_annealing_power=args.noise_annealing_power,retain_states=retain_states)
             positions=torch.einsum('nk,bkd->bnd',basis,path.terminal.reshape(args.batch,n-1,3))
             energy,force=oracle.evaluate(positions)
             linked=external_energy(positions,energy,force) if training else energy.to(positions)
             reduced=(linked-energy_zero+args.restraint/2*positions.square().sum((1,2)))/args.kT
-            return path.work(reduced),positions,energy
+            return path.work(reduced),positions,energy,path.states,reduced
         def evaluate(label):
             before=oracle.evaluated;works=[];positions=[];energies=[]
             with torch.no_grad():
                 for batch in range(args.eval_particles//args.batch):
-                    w,x,e=draw(900000001+args.seed*1009+batch,False)
+                    w,x,e,_,_=draw(900000001+args.seed*1009+batch,False)
                     works.append(w.cpu());positions.append(x.cpu());energies.append(e)
             work=torch.cat(works);x=torch.cat(positions);energy=torch.cat(energies)
             weights=normalized_weights(-work)
@@ -164,10 +178,25 @@ def main():
         evaluate('initial')
         for step in range(args.steps):
             optimizer.zero_grad(set_to_none=True)
-            work,_,energy=draw(500000003+args.seed*1009+step,True);loss=work.mean();loss.backward()
+            if args.objective=='log_variance':
+                with torch.no_grad():
+                    sampled_work,_,energy,states,reduced=draw(500000003+args.seed*1009+step,False,True)
+                initial,factor_f,factor_b=fixed_path_log_factors(states,observed_forward,observed_backward,
+                    torch.linspace(0,1,args.path_steps+1,dtype=torch.float64),args.noise,
+                    prior_std=prior_std,terminal_std=terminal_std,
+                    max_drift_norm=args.max_drift_per_sqrt_dimension*math.sqrt(dimension),
+                    mean_parameterization=args.mean_parameterization,noise_annealing_power=args.noise_annealing_power)
+                work=reduced.detach()+initial+factor_f-factor_b
+                discrepancy=float((work.detach()-sampled_work).abs().max())
+                if discrepancy>.05:raise RuntimeError(f'Observed path factors disagree with sampler: {discrepancy}')
+                loss=log_variance_balance(work)
+            else:
+                work,_,energy,_,_=draw(500000003+args.seed*1009+step,True);loss=work.mean()
+            loss.backward()
             norm=torch.nn.utils.clip_grad_norm_(parameters,1.,error_if_nonfinite=True);optimizer.step()
-            row={'step':step+1,'mean_shifted_work':float(loss.detach()),'mean_energy_eV':float(energy.mean()),
+            row={'step':step+1,'mean_shifted_work':float(work.detach().mean()),'training_loss':float(loss.detach()),'mean_energy_eV':float(energy.mean()),
                  'gradient_norm':float(norm),'seconds':time.perf_counter()-start}
+            if args.objective=='log_variance':row['fixed_path_work_max_difference']=discrepancy
             report['training'].append(row)
             if (step+1)%10==0 or step==0:write_json(output,report);print(json.dumps(row),flush=True)
         if not all(torch.isfinite(p).all() for p in parameters):raise FloatingPointError('Non-finite proposal parameters')

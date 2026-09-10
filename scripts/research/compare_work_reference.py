@@ -71,7 +71,7 @@ def main():
         'source_results_sha256':sha(result),'source_reference_sha256':sha(reference),'sample_sources':sources,
         'reference_convergence_certified':ref['convergence_certified'],
         'limitations':['No low-ESS delta error is presented as a confidence interval.',
-            'Reference errors use only four independent scrambles.',
+            'Reference errors are estimated across the independent scrambles recorded in the reference.',
             'Matching a few moments or a normalizer does not prove full distributional accuracy.',
             'One training seed is not replication.','Unweighted finite-time MCMC moments are not assumed to be at equilibrium.']}
     args.out.parent.mkdir(parents=True,exist_ok=True);write_json(args.out,report)
