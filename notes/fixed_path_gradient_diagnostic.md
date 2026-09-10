@@ -32,3 +32,33 @@ or target modification. Report forward and backward means, trace covariance,
 mean-gradient RMS standard error, and forward scaled-mean direction agreement.
 Budget: 256 oracle queries. This finite diagnostic can identify large observed
 variance, but cannot prove equality or estimate asymptotic SNR precisely.
+
+## Completed diagnostic and decision
+
+The 256-query molecular diagnostic completed without updating weights. Forward
+trace gradient covariance is 6.6804e7 for pathwise mean work and 8.8353e9 for
+fixed-score log variance. After division by the required 1.875 squared, the
+latter is about 37.6 times larger. Sixteen batches give noisy mean directions
+(cosine .492); this is a descriptive variance measurement, not proof of an
+estimator bias. Backward mean-gradient norms are 2178 and 157762 respectively,
+but these differentiate different objectives.
+
+The completed 500-update LV experiment fails: final mean work 5811.40, ESS 1/256,
+99.22% overlap heuristic; xTB 25/32 converge, successful-only median strain
+316.30 eV versus initial 32/32 and 4.405 eV. Do not scale up this recipe.
+
+Sanokowski et al., Rethinking Losses for Diffusion Bridge Samplers, NeurIPS 2025,
+https://arxiv.org/abs/2506.10982, is directly relevant prior work. It distinguishes
+on-policy LV and reverse-KL updates when both drift directions are learned and
+studies score-function reverse-KL alternatives. The forward-only equality above
+does not make the joint LV and KL objectives equivalent. No novelty is claimed
+for that distinction or for selecting a reparameterization estimator.
+
+The earlier 500-update mean-work runs still descend over the final 100 updates.
+A continuation to 1500 total updates will test training duration before another
+objective change. Continue all three earlier fixed-joint / annealed-joint /
+annealed-energy arms from step 500, preserving their original optimizer, seed,
+target and noise schedule. The fresh run adds 1000*16 + 2*256 = 16,512 oracle
+queries; cumulative cost is 25,024 including the original 8,512. A matched HMC
+control uses eight starts and 3,127 force updates per chain, also 25,024 queries.
+Report continuation execution smokes separately from training costs.

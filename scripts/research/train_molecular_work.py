@@ -30,6 +30,7 @@ from cfm_mol.nonequilibrium import centered_orthonormal_basis,normalized_weights
 from cfm_mol.path_work import gaussian_training_path,external_energy
 from cfm_mol.path_balance import fixed_path_log_factors,log_variance_balance
 from cfm_mol.molecular_path_drift import MolecularPathDrift
+from cfm_mol.work_resume import validate_resume_recipe,restore_work_optimizer
 from cfm_mol.radial_reference import prepare_research_backbone
 from cfm_mol.smooth_geometry import patch_smooth_geometry
 from molecular_tempered_pilot import sha,write_json,geometry_metrics
@@ -38,6 +39,7 @@ from molecular_tempered_pilot import sha,write_json,geometry_metrics
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--config',type=Path,required=True);p.add_argument('--checkpoint',type=Path,required=True)
+    p.add_argument('--resume-work-run',type=Path,help='Completed run to continue; --steps specifies the new total update count')
     p.add_argument('--metadata',type=Path);p.add_argument('--oracle',type=Path,required=True)
     p.add_argument('--condition-manifest',type=Path);p.add_argument('--condition-index',type=int)
     p.add_argument('--oracle-python',type=Path,required=True);p.add_argument('--out',type=Path,required=True)
@@ -103,16 +105,31 @@ def main():
         raise ValueError('This proposal trainer requires the explicit T=1 displacement checkpoint')
     if args.neutralize_temperature_input and (protocol.get('format')!='electronic_geometry_fm_v1' or not protocol.get('electronic_conditioning') or 'requested_kT' not in protocol):
         raise ValueError('Temperature initialization requires verified constant-input electronic FM training')
-    def load_model():
+    resumed=None;resume_state=None;start_step=0
+    if args.resume_work_run is not None:
+        resumed=json.loads((args.resume_work_run/'results.json').read_text())
+        resume_state=torch.load(str(args.resume_work_run/'last.ckpt'),map_location='cpu',weights_only=False)
+        start_step=validate_resume_recipe(resumed,resume_state,vars(args))
+        if resume_state['research_protocol']!=protocol:raise ValueError('Resume changes backbone architecture protocol')
+        if resumed['checkpoint_sha256']!=sha(args.checkpoint) or resumed['oracle_sha256']!=sha(args.oracle):
+            raise ValueError('Resume changes source FM checkpoint or potential')
+        if sha(Path(resumed['configuration']['config']))!=sha(args.config):raise ValueError('Resume changes architecture config')
+        expected={'numbers':numbers.tolist(),'charge':charge,'spin_multiplicity':spin,'raw_index':source_condition['raw_index']}
+        if any(resumed['condition'].get(k)!=v for k,v in expected.items()):raise ValueError('Resume changes molecular condition')
+        if resumed['energy_zero_eV']!=energy_zero:raise ValueError('Resume changes logging energy offset')
+        if resumed.get('metadata_progress_sha256')!=(metadata.progress_sha256 if metadata else None):raise ValueError('Resume changes verified metadata')
+    def load_model(branch):
         value=model_from_config(cfg);prepare_research_backbone(value,protocol)
-        value.load_state_dict(state['state_dict'],strict=True);patch_smooth_geometry(value,protocol.get('geometry_softening',0.))
-        if args.neutralize_temperature_input:neutralize_constant_temperature_input(value,float(protocol['requested_kT']))
+        value.load_state_dict(state['state_dict'] if resume_state is None else resume_state[branch+'_state_dict'],strict=True);patch_smooth_geometry(value,protocol.get('geometry_softening',0.))
+        if args.neutralize_temperature_input and resume_state is None:neutralize_constant_temperature_input(value,float(protocol['requested_kT']))
         return value.to(args.device).float().train()
-    forward=load_model();backward=load_model();del state
+    forward=load_model('forward');backward=load_model('backward');del state
     if args.mode=='backward_only':
         for parameter in forward.parameters():parameter.requires_grad_(False)
     parameters=[v for model in [forward,backward] for v in model.parameters() if v.requires_grad]
     optimizer=torch.optim.AdamW(parameters,lr=args.lr,weight_decay=0.)
+    if resume_state is not None:restore_work_optimizer(optimizer,resume_state['optimizer_state_dict'],start_step)
+    del resume_state
     graph=dgl.batch([base]*args.batch).to(args.device)
     if metadata is not None:metadata.attach(graph,[args.source_row]*args.batch,args.kT)
     nbi,_=get_batch_idxs(graph);uem=get_upper_edge_mask(graph)
@@ -133,12 +150,18 @@ def main():
     root=Path(__file__).resolve().parents[2]
     report={'complete':False,'scope':__doc__,'configuration':{k:str(v.resolve()) if isinstance(v,Path) else v for k,v in vars(args).items()},
         'checkpoint_sha256':sha(args.checkpoint),'oracle_sha256':sha(args.oracle),'metadata_progress_sha256':metadata.progress_sha256 if metadata else None,
-        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py',root/'scripts/research/oracle_worker.py',root/'cfm_mol/condition_systems.py',root/'cfm_mol/electronic_conditioning.py',root/'cfm_mol/path_balance.py',root/'cfm_mol/molecular_path_drift.py',root/'cfm_mol/gradient_diagnostics.py']},
+        'source_sha256':{str(path):sha(path) for path in [Path(__file__).resolve(),root/'cfm_mol/path_work.py',root/'cfm_mol/energy_oracle.py',root/'scripts/research/oracle_worker.py',root/'cfm_mol/condition_systems.py',root/'cfm_mol/electronic_conditioning.py',root/'cfm_mol/path_balance.py',root/'cfm_mol/molecular_path_drift.py',root/'cfm_mol/gradient_diagnostics.py',root/'cfm_mol/work_resume.py']},
         'condition':{**source_condition,
             'numbers':numbers.tolist(),'charge':charge,'spin_multiplicity':spin},
         'energy_zero_eV':energy_zero,'prior_std':prior_std,'evaluations':{},'training':[]}
     report['temperature_input_initialization']={'neutralized':args.neutralize_temperature_input,
-        'checkpoint_requested_kT':protocol.get('requested_kT'),'new_input_kT_eV':args.kT}
+        'checkpoint_requested_kT':protocol.get('requested_kT'),'new_input_kT_eV':args.kT,
+        'applied_in_this_run':args.neutralize_temperature_input and resumed is None}
+    report['training_start_step']=start_step
+    if resumed is not None:
+        report['resume']={'run':str(args.resume_work_run.resolve()),'source_results_sha256':sha(args.resume_work_run/'results.json'),
+            'source_checkpoint_sha256':sha(args.resume_work_run/'last.ckpt'),'optimizer_restored':True,
+            'source_cumulative_oracle_evaluations':resumed.get('cumulative_oracle_evaluations',resumed['oracle_evaluations'])}
     report['objective_protocol']={'name':args.objective,'observation_measure':
         'fresh current-forward paths, detached and fixed within each gradient update' if args.objective=='log_variance' else 'reparameterized current-forward paths',
         'replay':False,'per_condition':True,'novel_objective_claim':False}
@@ -172,6 +195,14 @@ def main():
                 'geometry':geometry_metrics(x,torch.full((len(x),),1/len(x),dtype=torch.float64),numbers),
                 'weighted_geometry':geometry_metrics(x,weights,numbers),'oracle_evaluations':oracle.evaluated-before}
             torch.save({'positions':x,'energy_eV':energy,'work':work,'condition':report['condition']},args.out/f'{label}_samples.pt')
+            if label=='initial' and resumed is not None:
+                previous=torch.load(str(args.resume_work_run/'final_samples.pt'),map_location='cpu',weights_only=False)
+                count=min(len(x),len(previous['positions']))
+                comparison={'particles':count,'max_position_error_A':float((x[:count]-previous['positions'][:count]).abs().max()),
+                    'max_work_error':float((work[:count]-previous['work'][:count]).abs().max())}
+                report['resume_source_stream_comparison']=comparison;write_json(output,report)
+                if comparison['max_position_error_A']>1e-4 or comparison['max_work_error']>.02:
+                    raise ValueError('Resumed trained proposal failed source-stream reproduction')
             if label=='final' and args.mode=='backward_only':
                 initial=torch.load(str(args.out/'initial_samples.pt'),map_location='cpu',weights_only=False)
                 result['frozen_forward_positions_unchanged']=bool(torch.equal(x,initial['positions']))
@@ -210,7 +241,7 @@ def main():
             write_json(output,report)
             return
         evaluate('initial')
-        for step in range(args.steps):
+        for step in range(start_step,args.steps):
             optimizer.zero_grad(set_to_none=True)
             if args.objective=='log_variance':
                 with torch.no_grad():
@@ -238,7 +269,9 @@ def main():
         torch.save({'forward_state_dict':forward.state_dict(),'backward_state_dict':backward.state_dict(),
             'optimizer_state_dict':optimizer.state_dict(),'research_protocol':protocol,'proposal_protocol':report['configuration'],
             'global_step':args.steps,'prior_std':prior_std},args.out/'last.ckpt')
-        report.update(complete=True,oracle_evaluations=oracle.evaluated,seconds=time.perf_counter()-start,
+        report.update(complete=True,oracle_evaluations=oracle.evaluated,
+            cumulative_oracle_evaluations=oracle.evaluated+(resumed.get('cumulative_oracle_evaluations',resumed['oracle_evaluations']) if resumed else 0),
+            seconds=time.perf_counter()-start,
             peak_gpu_bytes=torch.cuda.max_memory_allocated() if str(args.device).startswith('cuda') else None)
         write_json(output,report)
 
