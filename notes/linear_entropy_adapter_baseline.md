@@ -48,3 +48,20 @@ The256 assessment samples are independent of adapter training, but belong to an
 existing development panel. A positive result still needs fresh confirmation.
 This is intentionally a strong simple refinement control before interpreting
 more complicated score-based actor updates as useful.
+
+
+## Prespecified fresh confirmation
+
+The typed200-step development result is DeltaKL=-.15771+/-.05996 SEM;
+scalar=-.06145+/-.03858; paired typed-minus-scalar=-.09626+/-.03809. ESS remains
+near1.12/256. All3 xTB arms converge32/32; strain medians base/typed/scalar are
+.62054/.60120/.61312 eV. This is a small unreplicated development signal.
+
+Confirm both frozen adapters on1024 newly generated base paths, seed9147,
+batch64, with the existing qualified frozen work loader. Query base, typed and
+scalar energies on all rows:3072 total new oracle calls. No adapter parameters
+or hyperparameters are changed. Preserve paired KL differences and all weights.
+The fresh loader uses the original trained backward model rather than the later
+refitted development auxiliary; compare weights within the fresh panel only.
+KL differences do not depend on that auxiliary choice. This is evaluation
+confirmation, not replication of adapter training or a broad sampling claim.

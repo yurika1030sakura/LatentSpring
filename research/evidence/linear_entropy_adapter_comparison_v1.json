@@ -1,0 +1,182 @@
+{
+  "complete": true,
+  "scope": "Verify exact-volume refinement artifacts and join every development control.",
+  "sources": {
+    "typed": {
+      "results_sha256": "720be7a3227a3f0bb28ce2db9c6a60dfdaa48571d32c25bad048855b7193b690",
+      "samples_sha256": "209e4ba6a2dcc9874cdbe3b058dcbcf0c16f5745356b03aaa7066ec04546d6dc"
+    },
+    "scalar": {
+      "results_sha256": "118b8adf2b61031514cfa29ff5769e0498abe2d844e1f6d2e9ce37010af2097a",
+      "samples_sha256": "fac556082da0d1979aeff13782fbca3158039dbafa44a78a5a7e9a39d1aec57a"
+    }
+  },
+  "assessment_sha256": "65536b31ccef615c26f606c5e433f177f9b5e7830c1c3c375cf0fde3038be80f",
+  "condition": {
+    "source_row": 5846,
+    "raw_index": 589712,
+    "reference_geometry_loaded": true,
+    "reference_geometry_used_to_initialize": false,
+    "numbers": [
+      1,
+      15,
+      8,
+      6,
+      1,
+      6,
+      8,
+      12
+    ],
+    "charge": 1,
+    "spin_multiplicity": 1
+  },
+  "arms": {
+    "typed": {
+      "paired_endpoint_kl_change": {
+        "mean": -0.157710635049676,
+        "sem": 0.05995539678720989,
+        "samples": 256,
+        "scope": "Expected energy-minus-exact-log-volume difference equals marginal KL change under stated fixed-target assumptions."
+      },
+      "weights": {
+        "base": {
+          "particles": 256,
+          "ess": 1.119536979453645,
+          "ess_fraction": 0.0043731913259908006,
+          "maximum_weight": 0.9441646321378613,
+          "log_mean_weight": 113.03278042332654
+        },
+        "adapted": {
+          "particles": 256,
+          "ess": 1.1197676263524277,
+          "ess_fraction": 0.0043740922904391705,
+          "maximum_weight": 0.9440501225567379,
+          "log_mean_weight": 113.0006987588893
+        }
+      },
+      "mean_energy_eV": {
+        "base": -20928.47790676141,
+        "adapted": -20928.476235083996
+      },
+      "log_volume": -0.054754166412984605,
+      "transform_eigenvalues": [
+        0.993921733151074,
+        0.9946394845276331,
+        0.9956116888268177,
+        0.9964319740762982,
+        0.9979156869291094,
+        0.9985375016014592,
+        1.0000000000000002,
+        1.0047540570851947
+      ],
+      "oracle_evaluations": 3712,
+      "seconds": 94.17392444005236
+    },
+    "scalar": {
+      "paired_endpoint_kl_change": {
+        "mean": -0.061450131733643415,
+        "sem": 0.038582641053376464,
+        "samples": 256,
+        "scope": "Expected energy-minus-exact-log-volume difference equals marginal KL change under stated fixed-target assumptions."
+      },
+      "weights": {
+        "base": {
+          "particles": 256,
+          "ess": 1.119536979453645,
+          "ess_fraction": 0.0043731913259908006,
+          "maximum_weight": 0.9441646321378613,
+          "log_mean_weight": 113.03278042332654
+        },
+        "adapted": {
+          "particles": 256,
+          "ess": 1.121664336289039,
+          "ess_fraction": 0.004381501313629059,
+          "maximum_weight": 0.943471428712982,
+          "log_mean_weight": 112.99820716982268
+        }
+      },
+      "mean_energy_eV": {
+        "base": -20928.47790676141,
+        "adapted": -20928.473000753158
+      },
+      "log_volume": -0.05557263368381933,
+      "transform_eigenvalues": [
+        0.9973571825175441,
+        0.9973571825175445,
+        0.9973571825175446,
+        0.9973571825175446,
+        0.9973571825175447,
+        0.9973571825175447,
+        0.9973571825175458,
+        1.0000000000000004
+      ],
+      "oracle_evaluations": 3712,
+      "seconds": 91.69643757399172
+    }
+  },
+  "typed_minus_scalar_endpoint_kl": {
+    "mean": -0.09626050331603256,
+    "sem": 0.03809246618362501,
+    "samples": 256
+  },
+  "xtb": [
+    {
+      "arm": "base",
+      "attempted": 32,
+      "converged": 32,
+      "strain_eV_success_only": {
+        "q10": 0.43338066453510465,
+        "median": 0.620536914272833,
+        "q90": 0.7889160900172214
+      },
+      "initial_max_force_norm_eV_A": {
+        "q10": 2.247881663863714,
+        "median": 3.413809135218858,
+        "q90": 5.232182672775818
+      },
+      "force_values_present": 32
+    },
+    {
+      "arm": "typed",
+      "attempted": 32,
+      "converged": 32,
+      "strain_eV_success_only": {
+        "q10": 0.42529908113665443,
+        "median": 0.6012018490135347,
+        "q90": 0.7893371036654344
+      },
+      "initial_max_force_norm_eV_A": {
+        "q10": 2.042236975335897,
+        "median": 3.42613686853965,
+        "q90": 5.183205965420791
+      },
+      "force_values_present": 32
+    },
+    {
+      "arm": "scalar",
+      "attempted": 32,
+      "converged": 32,
+      "strain_eV_success_only": {
+        "q10": 0.43753204896525516,
+        "median": 0.6131188099280678,
+        "q90": 0.7889327409039766
+      },
+      "initial_max_force_norm_eV_A": {
+        "q10": 2.1599701405425384,
+        "median": 3.462358817823519,
+        "q90": 5.280311030480372
+      },
+      "force_values_present": 32
+    }
+  ],
+  "new_queries_including_smoke": 7488,
+  "replay_verified": true,
+  "sampling_calibrated": false,
+  "method_novelty_established": false,
+  "limitations": [
+    "One condition and one adapter seed, on an existing development evaluation panel.",
+    "Negative mean change estimates relative endpoint KL improvement, not absolute closeness to the target.",
+    "Path importance weights remain degenerate; xTB convergence is not complete chemical validity.",
+    "Inherited source-training and sample-generation costs are additional; no matched-HMC superiority claim."
+  ]
+}
