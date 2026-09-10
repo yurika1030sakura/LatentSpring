@@ -1,120 +1,64 @@
-# Current paper direction — September 10, 2026 UTC
+# Current paper direction — September10,2026
 
 Working title: **Learning Molecular Geometry Distributions with Nonequilibrium Work**.
-This is a research direction, not a validated new-method claim. The existing PDF
-main text remains an audit/development manuscript about the inherited local
-readout. New sampling results are in its development appendix. A final ICLR
-method manuscript still needs a defensible contribution and stronger evidence.
+This is a provisional research direction. The existing main text remains an
+inherited-method audit, with later development experiments in the appendix.
+It is not a qualified ICLR method paper. The latest build has9 main pages at
+runs/verification/paper_20260910_score/main.pdf; scientific readiness is false.
 
-## Main question
+## Scientific question and actual scope
 
-Can a pretrained molecular flow be adapted to generate geometrically useful
-configurations with quantitatively checked probabilities under a specified
-energy-based target, at a useful cost relative to strong sampling baselines?
-Lower energy, successful geometry relaxation, and correct probability mass are
-separate outcomes. An energy minimizer can produce a narrow, low-energy cloud
-while representing the target distribution poorly.
+Can a pretrained molecular flow generate useful conditional3D configurations
+with quantitatively reliable probabilities under a specified energy target,
+at a useful total cost relative to strong sampling methods? Geometry, energy,
+and probability mass are separate requirements.
 
-## Actual method and scope
+Condition on atomic identities/composition, charge and spin. The target on the
+labelled COM-free coordinate space is proportional to exp[-U/(kT)], with
+U=E_eSEN+.05 sum_i||x_i||^2, at the stated temperature. The restraint and ML
+potential are part of the target; this is not an unconfined experimental or
+DFT ensemble. Artificial flow time is not molecular-dynamics time. An energy
+histogram includes density-of-states effects, not just exp(-E/kT).
 
-Condition on atom identities/composition, total charge and spin multiplicity.
-The repaired position-only FlowMol backbone supplies the starting geometry
-model. The active physics branch trains forward and auxiliary backward Gaussian
-path kernels using mean generalized work and exact discrete path factors.
-External eSEN energies and forces provide the physical signal; COM-free
-orthonormal coordinates and the actual sampling kernel define the measure.
-The eventual distilled flow-matching student has not been qualified.
+The implemented Gaussian-path branch has explicit forward/backward factors.
+Known nonequilibrium importance identities do not establish finite-sample
+coverage. Corrected CNF density remains numerically unresolved. The later
+endpoint-entropy gradient is implemented and verified on analytic examples,
+but its molecular proposal-score estimators have not qualified; no molecular
+actor update has occurred under this prototype.
 
-The target is p(x|c) proportional to exp[-U(x,c)/(kT)] on the zero-centroid
-coordinate space, where U=E_eSEN + .05 sum_i ||x_i||^2 in eV. The added restraint
-is part of the target. This is not an unconfined gas-phase or experimentally
-validated DFT ensemble. The artificial path time is not molecular-dynamics time.
+## What the evidence supports
 
-Current positive distribution checks concern **importance-weighted outputs**.
-They do not prove that raw, equally weighted neural outputs already follow the
-target. Reweighting needs sufficient coverage and finite-sample efficiency;
-resampling alone does not create independent information. Also, a histogram
-of total energy is proportional to its density of states times exp(-U/kT), not
-to exp(-U/kT) alone. The bare eSEN-energy histogram additionally reflects the
-restraint and the available configurations at that energy.
-
-## What is and is not supported
-
-| Claim | Current evidence |
+| Question | Current finding |
 |---|---|
-| Conditional 3D coordinate generation | Implemented and exercised with original charge/spin, including eight new development conditions. |
-| Geometrically useful output | Some generated panels have high xTB convergence and improved strain; convergence is not full chemical validity, connectedness, bonding correctness or synthesizability. |
-| Calibrated small-system statistics | AgBr2 has three trained seeds, two fresh streams each, and independent quadrature plus a direct same-box cross-check; weighted statistics have support within stated uncertainty, without a global convergence certificate. |
-| Broad Boltzmann sampling | Not established. The completed eight-atom 500- and 1500-step arms remain strongly weight-degenerate. |
-| Noise annealing advantage | Not established: fixed-noise AgBr2 joint control is competitive. |
-| Superiority over HMC | Not established. Matched-query HMC is a substantive control and uses much less allocation time in the completed small runs. |
-| Fully unconditional generation of new composition/charge/spin and geometry | Not qualified by the current conditional experiments. |
-| Fast unweighted distilled FM generator with target statistics | Not established. |
+| Conditional3D generation | Implemented with audited electronic metadata and exercised on a frozen eight-condition development panel. |
+| Geometric utility | Some panels have high xTB convergence and lower strain. Relaxation success is not complete chemical validity, correct bonding, connectedness or synthesizability. |
+| Distribution checks | Repeated weighted AgBr2 statistics have an independent numerical reference and same-box cubature check; this is only three atoms, with finite uncertainty and no global coverage certificate. |
+| General Boltzmann sampling | Not established. Eight-atom work, covariance and empirical-CFM variants remain weight-degenerate. |
+| Global auxiliary repair | A normalized innovation-coordinate Gaussian diagnostic preserves endpoints but fails its32-path screen. |
+| Endpoint-entropy learning | Scalar mechanism works; the molecular critic's initial small-panel pass fails larger independent confirmation, a second seed, and longer matched training. |
+| Unweighted target samples | Not qualified. Reweighting/resampling does not create independent information or certify raw outputs. |
+| HMC superiority | Not established. Budget8512-query HMC and25024-query HMC must not be conflated; retained MCMC samples are correlated. |
+| Fully unconditional new composition/charge/spin generation | Not qualified by these conditional experiments. |
 
-## AI novelty position
+## Contribution boundary and next research decision
 
-Reusing FlowMol, adding energy supervision, invoking Jarzynski/AFM ideas,
-training forward/backward stochastic kernels, or correcting path weights are
-not sufficient novelty. SNF already combines trainable transport and stochastic
-blocks with importance weights: https://arxiv.org/abs/2002.06707.
-FEAT develops neural nonequilibrium free-energy estimators with learned
-transport: https://arxiv.org/abs/2504.11516. Energy-weighted flow matching is
-also established: https://arxiv.org/abs/2509.03726.
+Reusing FlowMol, invoking AFM/Jarzynski, adding energy losses, Gaussian path
+weights, annealing, importance-weighted CFM, global Gaussian conditioning or
+score-difference updates does not by itself establish novelty. Relevant direct
+prior work includes SNF, FEAT, EWFM, MFM, flow perturbation, VSD/DMD and NDSM
+control variates. See the primary-source audit in
+notes/forward_mass_update_candidate.md and notes/endpoint_entropy_candidate.md.
 
-The possible contribution lies in a learning/sampling algorithm that resolves
-the measured stiffness, optimization and weight-degeneracy problems for
-conditional molecular geometry, with predictable and replicated gains in
-calibration and compute. The Gaussian noise/ESS limit is a quantitative
-analysis tool, not yet a sufficient standalone contribution. A new algorithm
-and causal ablations supporting that contribution have not been established.
+The preferred contribution remains a learning intervention that resolves a
+measured probability-mass or inference-error problem, with a clear mechanism
+and replicated benefits. The latest score failures require separating finite
+parent-pool effects, optimization noise and score-representation error before
+another recipe is promoted. The closed recipes are stopped; no unreliable
+critic should update the molecular generator.
 
-If the eventual evidence supports a method paper, its narrative should link:
-(1) a precisely measured failure of existing approaches; (2) a distinct,
-principled learning intervention; (3) calibrated distributional and geometric
-benefits across independently selected molecular conditions; and (4) a fair
-compute comparison. Current repairs and small-system results supply parts of
-this chain. They do not justify writing the remaining parts as completed work.
-
-See STATUS.md, NEXT.md and the immutable evidence files for quantitative results.
-
-
-## Concrete candidate under evaluation
-
-The first new candidate learns bounded pairwise elastic precision terms, producing
-correlated Gaussian perturbations in the COM-free geometry space with exact
-sampling/log-density factors. It is tested against frozen geometric precision
-and an isotropic covariance matched in total variance at the same input. These
-controls ask whether learning and directional correlation add value beyond
-preconditioning or reduced noise alone. The kernel and gradient checks pass;
-molecular benefit and novelty remain unestablished. AniDS, Chroma and elastic
-network models are relevant prior art. See notes/pair_precision_candidate.md.
-
-
-Completed update: the first learned/fixed/trace pair-precision comparison did
-not solve weight degeneration. The learned module is near isotropic on the
-checked terminal geometries and does not establish a new beneficial mechanism.
-The candidate is retained as negative evidence; the paper still lacks a validated
-AI method contribution. See pair_precision_full_comparison_v1.json in evidence.
-
-
-## Current diagnostic intervention
-
-Frozen-forward reverse fitting also failed to resolve eight-atom degeneracy.
-A fresh4096-path pool has raw ESS2.625. The next bounded study compares uniform,
-linear-mixture and power-weighted empirical CFM projection with a source control.
-It separately checks ODE projection, integration error, and independent full-target
-stochastic work after equally budgeted reverse refitting. Intermediate stabilized
-weights do not establish calibration. This study and its prior-art limitations
-are specified in notes/forward_mass_update_candidate.md; no positive student
-result is claimed before completion.
-
-
-Completed student update: all three empirical weighted/unweighted CFM students
-failed the full-target ESS gate after equally budgeted reverse fitting (ESS near
-1/256). The frozen-pool recipe is stopped. Every xTB panel converged32/32, which
-makes the separation between relaxation success and statistical information
-particularly clear. It does not establish full chemical validity. Independent
-ODE integration convergence is also unresolved for some paths. Full evidence:
-evidence/forward_work_students_comparison_v1.json. Preferred future contribution
-remains an AI learning method with physical accounting and demonstrated mass
-allocation benefits; see NOVELTY_DECISION.md. No such contribution is established.
+An ICLR claim still requires a defensible contribution, numerical consistency,
+multiple independently selected molecular conditions and training seeds, credible
+distribution checks, and total-compute comparisons. The reserved722 conditions
+remain untouched. Use STATUS.md, NEXT.md and the complete evidence artifacts;
+never replace failed confirmations with the earlier selected passing screen.

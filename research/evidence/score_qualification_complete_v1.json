@@ -1,0 +1,895 @@
+{
+  "complete": true,
+  "scope": "Preserve complete frozen-score outcomes and the failed confirmation decision.",
+  "common": {
+    "condition": {
+      "source_row": 5846,
+      "raw_index": 589712,
+      "reference_geometry_loaded": true,
+      "reference_geometry_used_to_initialize": false,
+      "numbers": [
+        1,
+        15,
+        8,
+        6,
+        1,
+        6,
+        8,
+        12
+      ],
+      "charge": 1,
+      "spin_multiplicity": 1
+    },
+    "source_checkpoint_sha256": "694a680c4172a355e2a4e899486647f751702bea2dafad93364bf8b60a7b14b5",
+    "training_pool_sha256": "08eb136f1df0b2fe36b3f044b95b41d6a3d93214aaca48faa995aba29296283e",
+    "terminal_noise_std": 0.0063553594759831
+  },
+  "rows": [
+    {
+      "label": "raw500",
+      "stage": "screen",
+      "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_5846_v1/results.json",
+      "source_sha256": "03802077e8ee96ca1417d5b07d3de9b522fdd6889e2094527f18fc8cd1428c18",
+      "configuration": {
+        "source_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+        "training_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_teacher_5846_v1",
+        "heldout_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/backward_refit_5846_v1",
+        "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_5846_v1",
+        "steps": 500,
+        "batch": 128,
+        "seed": 9101,
+        "device": "cuda"
+      },
+      "updates_in_this_run": 500,
+      "training_parents": 4096,
+      "assessment_parents": 2048,
+      "assessment_parent_seed": 9081,
+      "seconds": 8.702953635016456,
+      "paired_dsm_difference": {
+        "zero": {
+          "mean": -0.021434490373616506,
+          "sem": 0.0013732891460729966,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "gaussian": {
+          "mean": -0.021331434545781604,
+          "sem": 0.0013727667275856977,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "stein": {
+        "dilation": {
+          "mean": 0.7757191743120718,
+          "sem": 0.12773957509542483,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "radial_1": {
+          "mean": -0.6739124707971471,
+          "sem": 0.08777844231618451,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "radial_2": {
+          "mean": -0.06478652877283932,
+          "sem": 0.08086609362333803,
+          "count": 2048,
+          "within_three_sem_of_zero": true
+        },
+        "radial_3": {
+          "mean": -0.18940471203085849,
+          "sem": 0.08372360963690954,
+          "count": 2048,
+          "within_three_sem_of_zero": true
+        }
+      },
+      "absolute_stein_z": {
+        "dilation": 6.072661301187115,
+        "radial_1": 7.6774257211088806,
+        "radial_2": 0.8011581352575916,
+        "radial_3": 2.262261658954554
+      },
+      "qualification_gate": {
+        "paired_dsm_improvement_over_both_controls": true,
+        "four_stein_moments_within_three_sem": false,
+        "passed": false,
+        "scope": "Necessary frozen-critic gate only; a pass does not establish global score accuracy or molecular sampling benefit."
+      },
+      "clipped_updates": null
+    },
+    {
+      "label": "scaled_iid500",
+      "stage": "screen",
+      "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_scaled_iid_v1/results.json",
+      "source_sha256": "688d28d632f2c44b685d3160b3a226a64c0a600aa3d4476bb41f0c105830b09b",
+      "configuration": {
+        "source_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+        "training_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_teacher_5846_v1",
+        "heldout_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/backward_refit_5846_v1",
+        "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_scaled_iid_v1",
+        "steps": 500,
+        "objective": "scaled_iid",
+        "batch": 128,
+        "seed": 9101,
+        "device": "cuda"
+      },
+      "updates_in_this_run": 500,
+      "training_parents": 4096,
+      "assessment_parents": 2048,
+      "assessment_parent_seed": 9081,
+      "seconds": 8.982435158919543,
+      "paired_dsm_difference": {
+        "zero": {
+          "mean": -0.02110591787744372,
+          "sem": 0.0014787030666067384,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "gaussian": {
+          "mean": -0.02100286204944748,
+          "sem": 0.0014819683590423154,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "stein": {
+        "dilation": {
+          "mean": 2.9945520637300778,
+          "sem": 0.1451519361154839,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "radial_1": {
+          "mean": -1.0582296616515277,
+          "sem": 0.10056380921887448,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "radial_2": {
+          "mean": -1.4959791446868866,
+          "sem": 0.08358780694433404,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "radial_3": {
+          "mean": -0.912826092711706,
+          "sem": 0.08562668394289451,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "absolute_stein_z": {
+        "dilation": 20.630465868175474,
+        "radial_1": 10.522967157581697,
+        "radial_2": 17.89709766740436,
+        "radial_3": 10.660533033376383
+      },
+      "qualification_gate": {
+        "paired_dsm_improvement_over_both_controls": true,
+        "four_stein_moments_within_three_sem": false,
+        "passed": false,
+        "scope": "Necessary frozen-critic gate only; a pass does not establish global score accuracy or molecular sampling benefit."
+      },
+      "clipped_updates": 435
+    },
+    {
+      "label": "grouped_iid500",
+      "stage": "screen",
+      "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_grouped_iid_v1/results.json",
+      "source_sha256": "6168f42742c20d089a5e4852b75cc34be27bd3fe3b40130391d903c8542a1fd1",
+      "configuration": {
+        "source_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+        "training_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_teacher_5846_v1",
+        "heldout_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/backward_refit_5846_v1",
+        "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_grouped_iid_v1",
+        "steps": 500,
+        "objective": "grouped_iid",
+        "batch": 128,
+        "seed": 9101,
+        "device": "cuda"
+      },
+      "updates_in_this_run": 500,
+      "training_parents": 4096,
+      "assessment_parents": 2048,
+      "assessment_parent_seed": 9081,
+      "seconds": 8.824465653859079,
+      "paired_dsm_difference": {
+        "zero": {
+          "mean": -0.020303429847158234,
+          "sem": 0.0012285561860242208,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "gaussian": {
+          "mean": -0.020200374019340724,
+          "sem": 0.0012350232349593719,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "stein": {
+        "dilation": {
+          "mean": 3.84760895024415,
+          "sem": 0.1116465863709078,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "radial_1": {
+          "mean": -1.8024577451009662,
+          "sem": 0.0734072916599756,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "radial_2": {
+          "mean": -0.6994882558948463,
+          "sem": 0.06971186842400756,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "radial_3": {
+          "mean": -0.382130684993514,
+          "sem": 0.07357186366667658,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "absolute_stein_z": {
+        "dilation": 34.46239670473917,
+        "radial_1": 24.55420577903889,
+        "radial_2": 10.03399093595309,
+        "radial_3": 5.1939785938383825
+      },
+      "qualification_gate": {
+        "paired_dsm_improvement_over_both_controls": true,
+        "four_stein_moments_within_three_sem": false,
+        "passed": false,
+        "scope": "Necessary frozen-critic gate only; a pass does not establish global score accuracy or molecular sampling benefit."
+      },
+      "clipped_updates": 439
+    },
+    {
+      "label": "antithetic500",
+      "stage": "screen",
+      "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_antithetic_v1/results.json",
+      "source_sha256": "9f5c3a4c990787383f15ee78958663bc4687a4126da86960d5f5a39a52eceb05",
+      "configuration": {
+        "source_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+        "training_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_teacher_5846_v1",
+        "heldout_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/backward_refit_5846_v1",
+        "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_antithetic_v1",
+        "steps": 500,
+        "objective": "antithetic",
+        "batch": 128,
+        "seed": 9101,
+        "device": "cuda"
+      },
+      "updates_in_this_run": 500,
+      "training_parents": 4096,
+      "assessment_parents": 2048,
+      "assessment_parent_seed": 9081,
+      "seconds": 9.068628320004791,
+      "paired_dsm_difference": {
+        "zero": {
+          "mean": -0.023083507135129036,
+          "sem": 0.001369224263178366,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "gaussian": {
+          "mean": -0.022980451307252694,
+          "sem": 0.0013670005488979902,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "stein": {
+        "dilation": {
+          "mean": -0.07137852591907956,
+          "sem": 0.12455631860565582,
+          "count": 2048,
+          "within_three_sem_of_zero": true
+        },
+        "radial_1": {
+          "mean": -0.05629198242399448,
+          "sem": 0.08747333449752466,
+          "count": 2048,
+          "within_three_sem_of_zero": true
+        },
+        "radial_2": {
+          "mean": 0.14930060932610462,
+          "sem": 0.08380120288665395,
+          "count": 2048,
+          "within_three_sem_of_zero": true
+        },
+        "radial_3": {
+          "mean": 0.15117277362432857,
+          "sem": 0.08293045278954468,
+          "count": 2048,
+          "within_three_sem_of_zero": true
+        }
+      },
+      "absolute_stein_z": {
+        "dilation": 0.5730622638668643,
+        "radial_1": 0.6435330577867412,
+        "radial_2": 1.7816046092803997,
+        "radial_3": 1.8228861478420317
+      },
+      "qualification_gate": {
+        "paired_dsm_improvement_over_both_controls": true,
+        "four_stein_moments_within_three_sem": true,
+        "passed": true,
+        "scope": "Necessary frozen-critic gate only; a pass does not establish global score accuracy or molecular sampling benefit."
+      },
+      "clipped_updates": 461
+    },
+    {
+      "label": "mean_cv500",
+      "stage": "screen",
+      "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_mean_cv_v1/results.json",
+      "source_sha256": "c82fede1f62709f6606fd6b4683a20e7ab7b813eb7889011e3597ee7f5e3363b",
+      "configuration": {
+        "source_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+        "training_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_teacher_5846_v1",
+        "heldout_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/backward_refit_5846_v1",
+        "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_mean_cv_v1",
+        "steps": 500,
+        "objective": "mean_cv",
+        "batch": 128,
+        "seed": 9101,
+        "device": "cuda"
+      },
+      "updates_in_this_run": 500,
+      "training_parents": 4096,
+      "assessment_parents": 2048,
+      "assessment_parent_seed": 9081,
+      "seconds": 9.12639594101347,
+      "paired_dsm_difference": {
+        "zero": {
+          "mean": -0.02270198206001954,
+          "sem": 0.001463914336574697,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "gaussian": {
+          "mean": -0.022598926232218375,
+          "sem": 0.0014622220180734663,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "stein": {
+        "dilation": {
+          "mean": 0.18059474089484956,
+          "sem": 0.14003368357688833,
+          "count": 2048,
+          "within_three_sem_of_zero": true
+        },
+        "radial_1": {
+          "mean": -0.4555883385226889,
+          "sem": 0.09188512217366292,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        },
+        "radial_2": {
+          "mean": 0.11195199514285682,
+          "sem": 0.09191186009476254,
+          "count": 2048,
+          "within_three_sem_of_zero": true
+        },
+        "radial_3": {
+          "mean": 0.5847406200542757,
+          "sem": 0.09081739985215363,
+          "count": 2048,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "absolute_stein_z": {
+        "dilation": 1.2896521485538897,
+        "radial_1": 4.958238371404967,
+        "radial_2": 1.2180364430382824,
+        "radial_3": 6.438640844223744
+      },
+      "qualification_gate": {
+        "paired_dsm_improvement_over_both_controls": true,
+        "four_stein_moments_within_three_sem": false,
+        "passed": false,
+        "scope": "Necessary frozen-critic gate only; a pass does not establish global score accuracy or molecular sampling benefit."
+      },
+      "clipped_updates": 461
+    },
+    {
+      "label": "anti500 seed9101",
+      "stage": "confirmation",
+      "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_validation_v1/results.json",
+      "source_sha256": "2ab08ed84659486f37ecf8bb7d060b90d0f2fad468bd2b16b36f88f5a1a496e8",
+      "configuration": {
+        "source_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+        "training_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_teacher_5846_v1",
+        "heldout_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/backward_refit_5846_v1",
+        "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_validation_v1",
+        "steps": 0,
+        "objective": "antithetic",
+        "batch": 128,
+        "seed": 9101,
+        "device": "cuda",
+        "critic_checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_antithetic_v1/critic.ckpt",
+        "fresh_heldout_parents": 8192,
+        "heldout_seed": 9107,
+        "heldout_means": null,
+        "evaluation_seed": 9108
+      },
+      "updates_in_this_run": 0,
+      "training_parents": 4096,
+      "assessment_parents": 8192,
+      "assessment_parent_seed": 9107,
+      "seconds": 68.49339159601368,
+      "paired_dsm_difference": {
+        "zero": {
+          "mean": -0.020171470481759955,
+          "sem": 0.0006730316480920063,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "gaussian": {
+          "mean": -0.02015250250469417,
+          "sem": 0.0006731823243467487,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "stein": {
+        "dilation": {
+          "mean": 0.060085695798452285,
+          "sem": 0.06334705274447389,
+          "count": 8192,
+          "within_three_sem_of_zero": true
+        },
+        "radial_1": {
+          "mean": -0.08231716962678808,
+          "sem": 0.04463658107266869,
+          "count": 8192,
+          "within_three_sem_of_zero": true
+        },
+        "radial_2": {
+          "mean": 0.027603416456331985,
+          "sem": 0.04383297704835092,
+          "count": 8192,
+          "within_three_sem_of_zero": true
+        },
+        "radial_3": {
+          "mean": 0.19302891339970152,
+          "sem": 0.04194051261428779,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "absolute_stein_z": {
+        "dilation": 0.9485160428982056,
+        "radial_1": 1.8441638595208514,
+        "radial_2": 0.629740855289921,
+        "radial_3": 4.602445257999607
+      },
+      "qualification_gate": {
+        "paired_dsm_improvement_over_both_controls": true,
+        "four_stein_moments_within_three_sem": false,
+        "passed": false,
+        "scope": "Necessary frozen-critic gate only; a pass does not establish global score accuracy or molecular sampling benefit."
+      },
+      "clipped_updates": 0
+    },
+    {
+      "label": "anti500 seed9103",
+      "stage": "confirmation",
+      "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_replica_v1/results.json",
+      "source_sha256": "1599ca6be83d6ca05b4f4b93709e5690ac83ab3028abf4d2a6dd924e942078cd",
+      "configuration": {
+        "source_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+        "training_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_teacher_5846_v1",
+        "heldout_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/backward_refit_5846_v1",
+        "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_replica_v1",
+        "steps": 500,
+        "objective": "antithetic",
+        "batch": 128,
+        "seed": 9103,
+        "device": "cuda",
+        "critic_checkpoint": null,
+        "fresh_heldout_parents": 0,
+        "heldout_seed": 9107,
+        "heldout_means": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_validation_v1/fresh_means.pt",
+        "evaluation_seed": 9108
+      },
+      "updates_in_this_run": 500,
+      "training_parents": 4096,
+      "assessment_parents": 8192,
+      "assessment_parent_seed": 9107,
+      "seconds": 8.07917141309008,
+      "paired_dsm_difference": {
+        "zero": {
+          "mean": -0.0195780368779541,
+          "sem": 0.0006553103761766793,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "gaussian": {
+          "mean": -0.019559068900888245,
+          "sem": 0.0006560635799893669,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "stein": {
+        "dilation": {
+          "mean": 0.6986225563707393,
+          "sem": 0.06402118328053383,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "radial_1": {
+          "mean": 0.02000938774715329,
+          "sem": 0.04409503588909866,
+          "count": 8192,
+          "within_three_sem_of_zero": true
+        },
+        "radial_2": {
+          "mean": -0.4847086940545339,
+          "sem": 0.04094975490431444,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "radial_3": {
+          "mean": 0.018398813065824814,
+          "sem": 0.039708072981793095,
+          "count": 8192,
+          "within_three_sem_of_zero": true
+        }
+      },
+      "absolute_stein_z": {
+        "dilation": 10.912365572961244,
+        "radial_1": 0.4537786928550859,
+        "radial_2": 11.836668990745663,
+        "radial_3": 0.4633519504777031
+      },
+      "qualification_gate": {
+        "paired_dsm_improvement_over_both_controls": true,
+        "four_stein_moments_within_three_sem": false,
+        "passed": false,
+        "scope": "Necessary frozen-critic gate only; a pass does not establish global score accuracy or molecular sampling benefit."
+      },
+      "clipped_updates": 460
+    },
+    {
+      "label": "antithetic3000 seed9101",
+      "stage": "longer_training",
+      "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_antithetic_3000_s9101/results.json",
+      "source_sha256": "20d60b408d2a60c2101fee221cabdbcf09c290eb35849f08d38ec4137ef8c0d3",
+      "configuration": {
+        "source_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+        "training_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_teacher_5846_v1",
+        "heldout_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/backward_refit_5846_v1",
+        "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_antithetic_3000_s9101",
+        "steps": 3000,
+        "objective": "antithetic",
+        "batch": 128,
+        "seed": 9101,
+        "device": "cuda",
+        "critic_checkpoint": null,
+        "fresh_heldout_parents": 0,
+        "heldout_seed": 9107,
+        "heldout_means": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_validation_v1/fresh_means.pt",
+        "evaluation_seed": 9108
+      },
+      "updates_in_this_run": 3000,
+      "training_parents": 4096,
+      "assessment_parents": 8192,
+      "assessment_parent_seed": 9107,
+      "seconds": 30.457896542036906,
+      "paired_dsm_difference": {
+        "zero": {
+          "mean": -0.021453940497919072,
+          "sem": 0.000709218557079236,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "gaussian": {
+          "mean": -0.02143497252085349,
+          "sem": 0.0007094530639644489,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "stein": {
+        "dilation": {
+          "mean": 0.004669462763625655,
+          "sem": 0.06671108817012515,
+          "count": 8192,
+          "within_three_sem_of_zero": true
+        },
+        "radial_1": {
+          "mean": 0.3427670624104315,
+          "sem": 0.045516654909289966,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "radial_2": {
+          "mean": 0.1462958252695803,
+          "sem": 0.04368733027830014,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "radial_3": {
+          "mean": -0.8006750621233634,
+          "sem": 0.04302643392222381,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "absolute_stein_z": {
+        "dilation": 0.06999530200613267,
+        "radial_1": 7.53058552069635,
+        "radial_2": 3.3487014275680433,
+        "radial_3": 18.608910595999976
+      },
+      "qualification_gate": {
+        "paired_dsm_improvement_over_both_controls": true,
+        "four_stein_moments_within_three_sem": false,
+        "passed": false,
+        "scope": "Necessary frozen-critic gate only; a pass does not establish global score accuracy or molecular sampling benefit."
+      },
+      "clipped_updates": 2961
+    },
+    {
+      "label": "antithetic3000 seed9103",
+      "stage": "longer_training",
+      "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_antithetic_3000_s9103/results.json",
+      "source_sha256": "59bc1c27acd461fcc6a489cfc29f6fbe64efd1663a4274eba5ce89b59cc8d5a3",
+      "configuration": {
+        "source_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+        "training_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_teacher_5846_v1",
+        "heldout_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/backward_refit_5846_v1",
+        "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_antithetic_3000_s9103",
+        "steps": 3000,
+        "objective": "antithetic",
+        "batch": 128,
+        "seed": 9103,
+        "device": "cuda",
+        "critic_checkpoint": null,
+        "fresh_heldout_parents": 0,
+        "heldout_seed": 9107,
+        "heldout_means": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_validation_v1/fresh_means.pt",
+        "evaluation_seed": 9108
+      },
+      "updates_in_this_run": 3000,
+      "training_parents": 4096,
+      "assessment_parents": 8192,
+      "assessment_parent_seed": 9107,
+      "seconds": 29.90120469313115,
+      "paired_dsm_difference": {
+        "zero": {
+          "mean": -0.021576725109360678,
+          "sem": 0.0007026055806265308,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "gaussian": {
+          "mean": -0.02155775713229499,
+          "sem": 0.0007035484480520785,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "stein": {
+        "dilation": {
+          "mean": 0.8397857596825757,
+          "sem": 0.06527294628066262,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "radial_1": {
+          "mean": -0.3352463419786153,
+          "sem": 0.04663000403809508,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "radial_2": {
+          "mean": -0.09359136340837079,
+          "sem": 0.04087205244144659,
+          "count": 8192,
+          "within_three_sem_of_zero": true
+        },
+        "radial_3": {
+          "mean": 0.023923286195846903,
+          "sem": 0.041744112297606654,
+          "count": 8192,
+          "within_three_sem_of_zero": true
+        }
+      },
+      "absolute_stein_z": {
+        "dilation": 12.865755378524499,
+        "radial_1": 7.189498454787411,
+        "radial_2": 2.289862089564747,
+        "radial_3": 0.5730936622939881
+      },
+      "qualification_gate": {
+        "paired_dsm_improvement_over_both_controls": true,
+        "four_stein_moments_within_three_sem": false,
+        "passed": false,
+        "scope": "Necessary frozen-critic gate only; a pass does not establish global score accuracy or molecular sampling benefit."
+      },
+      "clipped_updates": 2960
+    },
+    {
+      "label": "grouped3000 seed9101",
+      "stage": "longer_training",
+      "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_grouped_3000_s9101/results.json",
+      "source_sha256": "58a7fc05cd96d556e2e7d75150fa4ba6810b336da5c1923f1df009d64e761c7c",
+      "configuration": {
+        "source_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+        "training_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_teacher_5846_v1",
+        "heldout_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/backward_refit_5846_v1",
+        "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_grouped_3000_s9101",
+        "steps": 3000,
+        "objective": "grouped_iid",
+        "batch": 128,
+        "seed": 9101,
+        "device": "cuda",
+        "critic_checkpoint": null,
+        "fresh_heldout_parents": 0,
+        "heldout_seed": 9107,
+        "heldout_means": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_validation_v1/fresh_means.pt",
+        "evaluation_seed": 9108
+      },
+      "updates_in_this_run": 3000,
+      "training_parents": 4096,
+      "assessment_parents": 8192,
+      "assessment_parent_seed": 9107,
+      "seconds": 30.26386546296999,
+      "paired_dsm_difference": {
+        "zero": {
+          "mean": -0.02066804007263813,
+          "sem": 0.0007184970028055169,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "gaussian": {
+          "mean": -0.02064907209557251,
+          "sem": 0.0007171919814021416,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "stein": {
+        "dilation": {
+          "mean": -1.7696335310905569,
+          "sem": 0.06755350345889582,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "radial_1": {
+          "mean": 0.37249733311122424,
+          "sem": 0.04554078525172883,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "radial_2": {
+          "mean": 0.34342942165577706,
+          "sem": 0.04435080896935382,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "radial_3": {
+          "mean": 1.03347826920443,
+          "sem": 0.04539344602297477,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "absolute_stein_z": {
+        "dilation": 26.196028932345797,
+        "radial_1": 8.17942270982434,
+        "radial_2": 7.743475928321511,
+        "radial_3": 22.767125207488334
+      },
+      "qualification_gate": {
+        "paired_dsm_improvement_over_both_controls": true,
+        "four_stein_moments_within_three_sem": false,
+        "passed": false,
+        "scope": "Necessary frozen-critic gate only; a pass does not establish global score accuracy or molecular sampling benefit."
+      },
+      "clipped_updates": 2939
+    },
+    {
+      "label": "grouped3000 seed9103",
+      "stage": "longer_training",
+      "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_grouped_3000_s9103/results.json",
+      "source_sha256": "041c1ebfe80fb4b351d6fb0971a12f489be2be3afb6c2672e7dd1f19a803fe79",
+      "configuration": {
+        "source_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+        "training_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/forward_work_teacher_5846_v1",
+        "heldout_pool": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/backward_refit_5846_v1",
+        "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_grouped_3000_s9103",
+        "steps": 3000,
+        "objective": "grouped_iid",
+        "batch": 128,
+        "seed": 9103,
+        "device": "cuda",
+        "critic_checkpoint": null,
+        "fresh_heldout_parents": 0,
+        "heldout_seed": 9107,
+        "heldout_means": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/proposal_score_validation_v1/fresh_means.pt",
+        "evaluation_seed": 9108
+      },
+      "updates_in_this_run": 3000,
+      "training_parents": 4096,
+      "assessment_parents": 8192,
+      "assessment_parent_seed": 9107,
+      "seconds": 30.25322523387149,
+      "paired_dsm_difference": {
+        "zero": {
+          "mean": -0.01998118345866328,
+          "sem": 0.000696736503677095,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "gaussian": {
+          "mean": -0.019962215481597725,
+          "sem": 0.000695632693626303,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "stein": {
+        "dilation": {
+          "mean": -1.3892005293695364,
+          "sem": 0.06868677053104429,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "radial_1": {
+          "mean": 0.6796409366208189,
+          "sem": 0.04839952017384213,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "radial_2": {
+          "mean": 1.3576659724476972,
+          "sem": 0.04265751386574477,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        },
+        "radial_3": {
+          "mean": -0.8067398907881576,
+          "sem": 0.04154041893610604,
+          "count": 8192,
+          "within_three_sem_of_zero": false
+        }
+      },
+      "absolute_stein_z": {
+        "dilation": 20.22515425647594,
+        "radial_1": 14.042307324115493,
+        "radial_2": 31.827123744732404,
+        "radial_3": 19.420600741389165
+      },
+      "qualification_gate": {
+        "paired_dsm_improvement_over_both_controls": true,
+        "four_stein_moments_within_three_sem": false,
+        "passed": false,
+        "scope": "Necessary frozen-critic gate only; a pass does not establish global score accuracy or molecular sampling benefit."
+      },
+      "clipped_updates": 2939
+    }
+  ],
+  "both_confirmations_pass": false,
+  "any_longer_training_pass": false,
+  "molecular_actor_updated": false,
+  "molecular_sampling_advantage_established": false,
+  "scientific_submission_ready": false,
+  "limitations": [
+    "One molecular condition; no distributional actor result.",
+    "The8192-parent panel was an independent confirmation, then became development data for the longer-training comparison.",
+    "Finite Stein moments and denoising loss are necessary checks, not a global score certificate.",
+    "Initial screening passes must not be selected in place of the failed larger confirmations.",
+    "All recipes use established score/variance-reduction components; AI novelty remains unestablished."
+  ]
+}

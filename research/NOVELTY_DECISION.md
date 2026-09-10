@@ -40,3 +40,12 @@ Primary prior art and exact scopes are recorded in
 notes/forward_mass_update_candidate.md. The novelty assessment remains open.
 The project is not scientifically submission ready; no acceptance probability
 or broad target-calibration claim is justified by current evidence.
+
+
+Latest outcome: empirical CFM is stopped. Global innovation Gaussian inference
+and the frozen molecular score-critic recipes also failed their prescribed
+checks. The endpoint-gradient scalar prototype is valid but uses established
+VSD/DMD and denoising/variance-reduction principles. No molecular actor update
+or novel-method performance result exists. The antithetic small-panel pass did
+not survive independent confirmation; it cannot be used as positive evidence
+for paper readiness. Current complete record: score_qualification_complete_v1.

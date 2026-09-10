@@ -1,43 +1,39 @@
 # Next research decision
 
-Scientific goal unachieved. Current teacher/student/assessment jobs all completed;
-no BGFM job from this screen remains active.237 tests pass. The current PDF
-remains an audit/development manuscript, not a qualified new-method submission.
+Scientific goal unachieved. All current BGFM jobs in this diagnostic chain are
+complete.248 tests pass. No molecular actor update or new sampling advantage.
+The paper is an audit/development draft, not a qualified ICLR method submission.
 
-1. New follow-up: frozen-proposal score qualification. The global innovation
-   Gaussian diagnostic45815623 failed: no global arm ESS>=4/32 or above the
-   sequential control. Stop the four-iteration Gaussian recipe; do not infer
-   that every inverse/posterior family has failed. The endpoint-entropy toy
-   passes five fitted linear-critic seeds; it is not molecular evidence.
-   Qualify scripts/research/fit_proposal_score.py via2-step smoke, then500-step
-   frozen score training and heldout DSM plus four Stein probes. No actor update
-   before the necessary score gate. Protocol notes/endpoint_entropy_candidate.md.
-2. The empirical CFM study failed its predeclared gate: all three students
-   ESS~1/256 after matched reverse fitting. Do not extend this frozen pool.
-   All8 xTB panels converge32/32, but statistics remain degenerate and tails
-   often worsen. Keep evidence/forward_work_students_comparison_v1.json.
-2. Preferred contribution direction is AI learning constrained by known physics,
-   not a claimed new physical law. First improve the reliability of information
-   about target mass or the actual learned transport. Merely stabilizing a
-   2.625-ESS teacher into2048-ESS training weights does not supply that information.
-   Read NOVELTY_DECISION.md and the prior-art audit in
-   notes/forward_mass_update_candidate.md before another algorithm proposal.
-3. Any full-flow perturbation or learned reverse-noise idea must compare with
-   Peng/Gao Nature Communications2025 (arXiv2407.10666). This important direct
-   baseline is not yet reproduced. Numerical forward/reverse map errors must
-   be checked before using a tiny-noise kernel. Existing ODE32/64 differences
-   do not certify convergence; no endpoint density can be claimed from them.
-4. A next algorithm needs a concrete predicted mechanism, a known-answer
-   experiment including auxiliary-model mismatch, exact real-interface checks,
-   and matched strong baselines before molecular scaling. No claim of novelty
-   follows just from additional loss terms, model size or a successful toy.
-5. AgBr2 repeated weighted checks and independent cubature remain three-atom
-   evidence only. Eight-condition development baseline is ready; candidate
-   physics outcomes and reserved722-condition outcomes are untested.
+1. The global innovation Gaussian approximation failed (ESS~1/32 versus
+   sequential1.915). Stop the four-iteration recipe. Its modes did not fully
+   converge; no conclusion about every global posterior family is justified.
+2. Endpoint-entropy code and scalar mechanism checks work, but the neural
+   molecular proposal score is unqualified. Antithetic DSM passed the small
+   screen, then failed8192-parent confirmation and independent training-seed
+   checks. Antithetic/grouped-IID3000-step runs also fail in both seeds. Preserve
+   every result in evidence/score_qualification_complete_v1.json and its figure.
+   Do not update the generator with these critics or simply extend these recipes.
+3. Before another critic recipe, distinguish finite-parent-mixture error from
+   optimization noise and representation error. Training used4096 cached means
+   with fresh small Gaussian noise, so a decreasing DSM objective is insufficient
+   evidence for the population proposal score. Compare training and independent
+   parent diagnostics before choosing fresh-parent training or architectural
+   reconstruction. Keep the actual final-noise semantics and COM measure.
+4. Any later qualified candidate needs fresh independent confirmation; the8192
+   panel is now development data. The conditional16384-parent panel (seed9117,
+   final noise9118) was not run because the necessary gate failed. No scientific
+   result should be attributed to it. Reserved722 conditions remain untouched.
+5. AI-method contribution remains the preferred direction, constrained by known
+   physics. VSD/DMD, NDSM control variates, Gaussian conditioning, flow perturbation,
+   EWFM/MFM and the earlier work identities are direct prior art. Read
+   notes/endpoint_entropy_candidate.md and NOVELTY_DECISION.md before claiming
+   a new mechanism. A working toy or numerical check does not establish novelty.
 
-Completed screen jobs: teacher45811812; smoke45812206; source45812380;
-uniform45812384; linear45812690; power45812788; assessment45812870. Linear/power
-v1 submissions were QOS-rejected and preserved; v2 retries used unchanged code.
-All previous covariance, LV, SMC, density and1500-step work failures remain.
-Keep immutable snapshots, original charge/spin, bond-free OMol25 and max_atoms200.
-Never write home or alter shared FlowMol/environment installations.
+Latest jobs: innovation smoke45815303/full45815623; score smoke45816475/raw45816643;
+scaled IID45816927/mean CV45816929/grouped IID45817091/antithetic45817094;
+confirmation45817604/replica45817720;3000-step runs45818127/45818129/45818343/45818344.
+All completed. Previous covariance, LV, SMC, density,1500-step work and empirical
+CFM failures remain retained. AgBr2 checks are three-atom evidence only; the new
+eight-condition development baseline is ready but candidate outcomes untested.
+Never write home, alter shared FlowMol or merge environments. Keep original
+charge/spin, bond-free OMol25 and max_atoms200. No completion or external impasse.

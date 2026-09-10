@@ -1,6 +1,6 @@
 # BGFM project guide
 
-Updated 2026-09-08 after a code, theory and archived-evidence audit. Read
+Updated 2026-09-10 after code, theory, archived-evidence and research diagnostics. Read
 `audit/20260908/REVIEW.md` before interpreting any result as Boltzmann sampling.
 
 ## Active takeover branch
@@ -34,6 +34,14 @@ sampler's conditional or endpoint density. No archived molecular performance
 number came from this corrected path. It needs new training and convergence
 validation. `configs/audit/omol25_clamped_cnf_smoke.yaml` is a smoke template,
 not a production recipe or a reported experiment.
+
+The later endpoint-entropy prototype in `cfm_mol/endpoint_entropy.py` uses an
+actual-terminal-noise proposal score, with VSD/DMD and denoising prior art. It
+is a gradient prototype, not a completed molecular method. The invariant
+proposal-score critic failed independent qualification and both longer-training
+seeds; no molecular actor was updated. The global innovation Gaussian auxiliary
+also failed its bounded screen. Do not repeat these recipes or promote their
+small-panel passes. Read `research/NEXT.md` and `research/NOVELTY_DECISION.md`.
 
 ## Locked project decisions
 

@@ -18,7 +18,26 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
-## Latest: score confirmation failed; actor remains frozen
+## Latest completed checkpoint: all score qualifications failed
+
+Both3000-update antithetic and grouped-IID runs completed at seeds9101/9103.
+Their maximum absolute Stein residual/SEM values are18.61/12.87 and26.20/31.83;
+all exceed3. The fixed longer-training recipes are stopped. The proposed16384
+parent promotion panel is not generated because no candidate qualifies.
+No molecular actor update has occurred, and no ICLR-level method advantage or
+novelty has been established.248 tests pass. The updated paper builds with9 main
+pages at runs/verification/paper_20260910_score/main.pdf; formatting passes,
+scientific readiness remains false. All jobs in this diagnostic chain
+are complete; there is no external blocker.
+
+Complete aggregation and figure: evidence/score_qualification_complete_v1.json,
+.pdf and.png. Reproduce with scripts/research/summarize_score_qualification.py.
+The updated manuscript development appendix includes the negative global
+innovation result, scalar entropy mechanism, initial score-screen pass, failed
+independent confirmation and all four longer-training failures. Initial passes
+must not replace the failed confirmations in summaries.
+
+## Earlier score confirmation and longer-training protocol
 
 The selected antithetic critic and its independent seed both fail the fresh8192
 parent confirmation (45817604/45817720). Seed9101 fails radial3 at4.60 SEM;

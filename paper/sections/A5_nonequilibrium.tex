@@ -276,3 +276,75 @@ not a numerical convergence certificate. Neither their relaxation success nor
 the stochastic path ESS establishes unweighted Boltzmann sampling. Complete
 provenance, costs, failures and the stop decision are retained in
 \texttt{research/evidence/forward\_work\_students\_comparison\_v1.json}.
+
+\paragraph{Global auxiliary and endpoint-score diagnostics.}
+Reparameterizing the original 16-transition sampler in its independent Gaussian
+innovations gives $x=F(z)+s\epsilon$, with $z\in\mathbb R^{336}$ and
+$x\in\mathbb R^{21}$ for the eight-atom condition. The map $F$ returns the
+original last conditional mean. A triangular change of variables preserves the
+forward path measure and every endpoint. We compare the sequential auxiliary
+with normalized global Gaussians of precision $I+\gamma J^TJ/s^2$, where $J$
+is the Jacobian of $F$ at a four-iteration Gauss--Newton approximate posterior
+mode and $\gamma\in\{0,0.01,0.1,1\}$. Initialization depends on the endpoint
+only, never on its generating noise. A 32-path screen gives sequential ESS
+1.915 and global ESS 1.012, 1.001, 1.000 and 1.000. Mode residuals remain large
+on some paths. This failed approximation is not a result about all converged
+or non-Gaussian auxiliary inference methods. It costs 32 new energy evaluations,
+besides four engineering-smoke evaluations; coordinates and model weights
+remain unchanged.
+
+The standard relative-entropy chain rule separates an endpoint error and an
+auxiliary approximation gap:
+\[
+\mathrm{KL}(Q_\theta\Vert\pi L_\phi)
+=\mathrm{KL}(q_\theta\Vert\pi)
++\mathbb E_{q_\theta(x)}\mathrm{KL}(Q_\theta(z\mid x)\Vert L_\phi(z\mid x)).
+\]
+We therefore implement a separate endpoint-gradient prototype. Under the usual
+differentiation assumptions and with the true proposal score, its update is
+$\mathbb E[(s_{q_\theta}(x)-s_\pi(x))^T\partial_\theta x]$; the score vectors
+are held fixed during differentiation. Score-difference generator updates
+are prior work, including \citet{yin2024dmd}. For an actual last Gaussian
+innovation, denoising regression estimates the score of that very endpoint
+sampler, without interpreting an arbitrary FM velocity as a score.
+
+A scalar known-answer check separates these objectives: for
+$x=az+0.2\epsilon$, target variance $0.25$ and an independent fixed reverse
+auxiliary, joint-KL training collapses to variance $0.04$. Five fitted linear
+score-critic seeds reach variances $0.24818$--$0.25142$, whereas a stale critic
+again collapses. This elementary mechanism example does not identify the cause
+of the molecular failures or establish a new objective.
+
+Before allowing any molecular generator update, we fit a small invariant energy
+critic on 4,096 frozen-proposal conditional means with fresh final innovations.
+Two-layer message passing uses actual element, charge, spin and temperature
+conditions. The initial independent assessment uses 2,048 different parent paths.
+We retain raw DSM, scaled IID, grouped IID, antithetic and mean-control-variate
+training, all with 500 updates and matched score-point evaluation counts.
+Control variates for small-noise DSM are already established
+\citep{birrell2025ndsm}. Only the antithetic arm initially passes both a paired
+denoising-loss comparison and four necessary Stein-moment checks.
+
+That initial pass fails independent confirmation on 8,192 newly generated
+parents: the selected critic's largest standardized Stein residual is 4.60,
+above the prespecified threshold 3; a second training seed reaches 11.84.
+Longer 3,000-update antithetic runs reach 18.61 and 12.87; matched grouped-IID
+runs reach 26.20 and 31.83. This panel becomes development data after the first
+confirmation. All four longer runs fail. We consequently make no molecular
+actor update and no sampling-improvement claim. These score experiments require
+no new energy-oracle evaluations, but their neural computation is retained in
+the run records. Neither denoising improvement nor a small-panel pass is a
+complete score-accuracy certificate.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{../research/evidence/score_qualification_complete_v1.pdf}
+\caption{Endpoint-entropy development diagnostics. Left: an analytic scalar
+mechanism check, with ranges across five seeds; it is not molecular evidence.
+Right: every larger molecular score qualification fails at least one necessary
+Stein-moment check. The 8,192-parent panel is used first for independent
+confirmation and subsequently for development. Numeric entries are absolute
+residuals divided by their standard errors; colors saturate at 15. No molecular
+generator update or validated AI novelty follows from these experiments.}
+\label{fig:scorequalification}
+\end{figure}
