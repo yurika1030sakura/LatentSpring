@@ -16,6 +16,7 @@ BGFM_EVAL_PARTICLES="${4:-4096}"
 BGFM_EVAL_BATCH="${5:-64}"
 BGFM_SOURCE_STREAM="${6:-0}"
 BGFM_REFERENCE="${7:-/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/refined_triatomic_reference_1137_v1}"
+BGFM_EVAL_SEED="${8:-9065}"
 FLOWMOL_ENV=/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol
 export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH="$SOURCE_ROOT"
 export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2
@@ -27,7 +28,7 @@ cd "$SOURCE_ROOT"
 BGFM_STREAM_ARGS=()
 if [[ "$BGFM_SOURCE_STREAM" == 1 ]]; then BGFM_STREAM_ARGS+=(--source-evaluation-stream); fi
 "$FLOWMOL_ENV/bin/python" -u scripts/research/sample_trained_work.py --run "$TRAINING" --out "$RUN_ROOT/sampling" \
- --particles "$BGFM_EVAL_PARTICLES" --batch "$BGFM_EVAL_BATCH" --seed 9065 "${BGFM_STREAM_ARGS[@]}"
+ --particles "$BGFM_EVAL_PARTICLES" --batch "$BGFM_EVAL_BATCH" --seed "$BGFM_EVAL_SEED" "${BGFM_STREAM_ARGS[@]}"
 exec "$FLOWMOL_ENV/bin/python" -u scripts/research/compare_work_reference.py --run "$RUN_ROOT/sampling" \
  --reference "$BGFM_REFERENCE" \
  --out "$RUN_ROOT/normalizer.json" --stages final

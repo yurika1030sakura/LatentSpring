@@ -1,0 +1,114 @@
+{
+  "complete": true,
+  "scope": "Descriptive finite-work tail and common-noise diagnostics. No new oracle queries.",
+  "rows": [
+    {
+      "arm": "annealed_joint_1137",
+      "prefix_comparison": [
+        {
+          "n": 256,
+          "log_normalizer_difference": 0.04212023979346738
+        },
+        {
+          "n": 512,
+          "log_normalizer_difference": -0.05492160880155347
+        },
+        {
+          "n": 1024,
+          "log_normalizer_difference": -0.17731731192280525
+        },
+        {
+          "n": 2048,
+          "log_normalizer_difference": -0.08638086788646804
+        },
+        {
+          "n": 4096,
+          "log_normalizer_difference": -0.08614305127412081
+        }
+      ],
+      "top_1pct_weight_mass": 0.1810679314086516
+    },
+    {
+      "arm": "annealed_joint_1137_s9052",
+      "prefix_comparison": [
+        {
+          "n": 256,
+          "log_normalizer_difference": 0.029987077124684416
+        },
+        {
+          "n": 512,
+          "log_normalizer_difference": -0.01539509056068581
+        },
+        {
+          "n": 1024,
+          "log_normalizer_difference": -0.13454763914055173
+        },
+        {
+          "n": 2048,
+          "log_normalizer_difference": -0.11336163706375973
+        },
+        {
+          "n": 4096,
+          "log_normalizer_difference": -0.053163133561611176
+        }
+      ],
+      "top_1pct_weight_mass": 0.1708646950994859
+    },
+    {
+      "arm": "annealed_joint_1137_s9053",
+      "prefix_comparison": [
+        {
+          "n": 256,
+          "log_normalizer_difference": -0.22770363394197968
+        },
+        {
+          "n": 512,
+          "log_normalizer_difference": -0.32522848817340866
+        },
+        {
+          "n": 1024,
+          "log_normalizer_difference": -0.31586189199265696
+        },
+        {
+          "n": 2048,
+          "log_normalizer_difference": -0.20716962956390683
+        },
+        {
+          "n": 4096,
+          "log_normalizer_difference": -0.12530087027698755
+        }
+      ],
+      "top_1pct_weight_mass": 0.24114722360359517
+    }
+  ],
+  "common_noise_normalizer_influence_correlation": [
+    [
+      1.0,
+      0.6717160953345038,
+      0.3978375765934966
+    ],
+    [
+      0.6717160953345038,
+      0.9999999999999998,
+      0.5196815882454185
+    ],
+    [
+      0.3978375765934966,
+      0.5196815882454185,
+      1.0
+    ]
+  ],
+  "sources_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_eval4096_annealed_joint_1137_v1/sampling/final_samples.pt": "b1c6a7e9bcbd4f5e4c79efc612d116088a3e6f23d32c5781affcf0e289e42c76",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_eval4096_annealed_joint_1137_v1/normalizer.json": "d53c2945df6e321ef20d4359a1f165f1dfa931daaa082d17267a6fc84079d8d5",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_eval4096_annealed_joint_1137_s9052_v1/sampling/final_samples.pt": "100eb03b4919ac9e45a944b4e38a440697adae5075381ffe222a24041a13d498",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_eval4096_annealed_joint_1137_s9052_v1/normalizer.json": "5dc2046acd70b0d7116a0a3224c8ac73bcf1bf76c37728a0b163a52fd1ebfcbb",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_eval4096_annealed_joint_1137_s9053_v1/sampling/final_samples.pt": "cde6a06458c99b34165d3de69961bca7d1c9a6a14e735910ad89164297bb9543",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_eval4096_annealed_joint_1137_s9053_v1/normalizer.json": "330a6f564b866847ff107706f61cff6732a95f66f4fcb6cca668342232d1faaf"
+  },
+  "limitations": [
+    "Prefix values are nested, not independent replications.",
+    "Positive pairwise influence correlation reduces evidence from agreement of normalizer errors across training seeds.",
+    "Empirical weight moments cannot detect tails missing from every path."
+  ]
+}

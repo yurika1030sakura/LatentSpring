@@ -57,3 +57,14 @@ First production gate: eight-atom row 5846, 300 K, native mean, annealing expone
 0.5, two updates, batch two, 16 transitions, 64 evaluation particles before and
 after, seed 9066. The 132-query run verifies execution only. A matched 500-update
 pilot is conditional on finite gradients, factor agreement and feasible memory.
+
+## Prespecified second evaluation stream
+
+The first 4096-path stream yielded low normalizer estimates for all three trained
+seeds, with paired weight influence correlations 0.40--0.67 and 17--24% of mass
+in the largest 1% of weights. These correlated estimates do not independently
+confirm a common bias. Before new draws, freeze seed 9067 as a second 4096-path
+stream, batch 64, for the same three proposals and both training controls. Keep
+all first-stream results. Reference v2 stays fixed. This adds 20,480 evaluation
+queries and no training; assess between-stream variability, without selecting
+the stream nearest the reference or interpreting nested prefixes as replicates.
