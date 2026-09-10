@@ -35,6 +35,14 @@ power-tempered empirical teacher weights will be compared. Stabilization is an
 intermediate training objective, not target calibration. Weighting, tempering,
 and flow matching already have direct prior art; novelty remains unestablished.
 
+Teacher export45811812 completed with4096 new oracle queries: raw ESS2.625/4096.
+Linear damping retains target fraction .025324; the matched-ESS power exponent
+is .073005. Both stabilized ESS values are2048 by construction; neither makes
+the teacher accurate at the full target. The raw concentration limits learning
+from this pool and is retained in evidence/forward_work_teacher_5846_v1.json.
+The full test suite passes237 tests. A bounded three-student/source comparison
+with a predeclared stop gate is implemented, pending its real-GPU smoke.
+
 Earlier timestamped scheduler entries below are historical, not live state.
 
 ## September 10 UTC checkpoint

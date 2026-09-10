@@ -55,3 +55,40 @@ controls with shared initialization and training budget, independent Gaussian
 starts, and fresh evaluation at the original full target. Do not claim the
 stabilized teacher itself is a calibrated Boltzmann ensemble. A dedicated novelty
 review and successful molecular/compute comparisons would still be required.
+
+## Student protocol fixed before molecular outcomes
+
+Source plus three independently fitted arms: uniform, linear and power.
+All three students start from exactly the source forward checkpoint, run1000
+AdamW updates at1e-5 with batch64, zero weight decay and gradient clipping1.
+Sample endpoints from the frozen global4096 weights; do not renormalize within
+minibatches. Use an independent intrinsic Gaussian prior with the original
+standard deviation and a uniform linear interpolation time. Regress the actual
+displacement velocity against x1-x0. Training seed9085 is shared across arms.
+No reference coordinates, alignment, augmentation or score conversion is used.
+This is projection onto an empirical target, with no finite-pool bias guarantee.
+
+Evaluate256 new ODE paths with midpoint32 and64, sharing initial Gaussian draws
+(seed9086). Report paired integration discrepancy and partial pair-marginal W1
+to each arm's own empirical teacher; these are projection diagnostics only.
+Query energies for64-step outputs. Separately generate256 Gaussian16-step paths
+(seed9088) and score their full work at the original target. They are a different
+sampler; an ODE improvement cannot be transferred to these weights by assumption.
+
+Refit each arm's auxiliary reverse model identically:2048 independent fresh paths
+(seed9087),500 updates at1e-5, batch16, selection seed9089, frozen forward state.
+Fit time-dependent scalar variance on training paths within[.25,1.9]. Report
+both before/after reverse-refit full-target work on the same256 heldout paths.
+Heldout paths/energies never enter reverse fitting. Source control gets this
+same evaluation/refit budget without forward updates. Each arm costs512 new
+oracle calls plus explicit model evaluation/training costs. The teacher costs
+4096 queries, prior source25024, and prior full reverse diagnosis256; earlier
+smokes and historical method development remain additional, not hidden.
+
+An end-to-end2-update smoke with128 reverse-training and64 evaluation paths
+precedes these runs. Its128 oracle calls are engineering cost, not performance.
+A single1000-update comparison is a screen, not replicated superiority. Stop
+this frozen-pool recipe if full-target ESS remains below16/256 in every student,
+or if geometry deteriorates materially. An ESS above that threshold would only
+permit larger independent evaluation, not certify calibration or ICLR novelty.
+Retain all arms, errors, failed denominators and costs.
