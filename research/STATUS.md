@@ -23,7 +23,7 @@ that all scientific checks passed.
 Current corrected jobs:45914819(condition0) and45914826(array1--7,concurrency2),
 currently queued. Task7 has a6-hour cap based on measured20-atom oracle cost;
 other conditions retain4 hours. Scientific query counts are unchanged.
-Current manuscript: runs/verification/paper_20260910_parity_release/main.pdf,
+Current manuscript: runs/verification/paper_20260910_parity_final/main.pdf,
 6 main pages, with explicit raw/projected source-target distinctions.
 
 

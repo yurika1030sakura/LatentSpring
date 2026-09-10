@@ -99,7 +99,7 @@ own separately justified estimator. No learned odd-energy control variate exists
  It is not the failed proposal-score actor and is not implemented.
 5. Main manuscript now lives in paper/main.tex plus M1_refinement.tex and
  M2_refinement_proofs.tex, including parity repair and completed raw/projected
- controls. Latest build: runs/verification/paper_20260910_parity_release/main.pdf (6 main pages). Historical
+ controls. Latest build: runs/verification/paper_20260910_parity_final/main.pdf (6 main pages). Historical
  audit is paper/legacy_audit.tex; build.sh accepts it as a second argument.
  Continue updating the NEW main text rather than only the old appendix.
 
