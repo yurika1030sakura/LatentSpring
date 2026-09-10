@@ -1,0 +1,284 @@
+{
+  "complete": true,
+  "scope": "Train a nonlinear species-coupling refinement with exact per-sample volume.",
+  "kind": "species_convex",
+  "configuration": {
+    "runs_root": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/species_entropy_adapter_200_v1",
+    "sweeps": 1,
+    "init_seed": 9161,
+    "selection_seed": 9141,
+    "steps": 200,
+    "batch": 16,
+    "eval_count": 256,
+    "device": "cuda"
+  },
+  "condition": {
+    "source_row": 5846,
+    "raw_index": 589712,
+    "reference_geometry_loaded": true,
+    "reference_geometry_used_to_initialize": false,
+    "numbers": [
+      1,
+      15,
+      8,
+      6,
+      1,
+      6,
+      8,
+      12
+    ],
+    "charge": 1,
+    "spin_multiplicity": 1
+  },
+  "source_checkpoint_sha256": "694a680c4172a355e2a4e899486647f751702bea2dafad93364bf8b60a7b14b5",
+  "training_sha256": "08eb136f1df0b2fe36b3f044b95b41d6a3d93214aaca48faa995aba29296283e",
+  "evaluation_sha256": "dc6215d07101b2539423bf8c3d9f71e82950223a41266effdf645d8cfd476782",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "kT_eV": 0.025851999786435,
+  "restraint_eV_A2": 0.1,
+  "steps": 200,
+  "batch": 16,
+  "init_seed": 9161,
+  "selection_seed": 9141,
+  "lr_start": 0.001,
+  "lr_end": 1e-05,
+  "lr_schedule": "cosine",
+  "parameters": 19365,
+  "adapter_configuration": {
+    "sweeps": 1,
+    "hidden": 32,
+    "radial": 24,
+    "charge": 1,
+    "spin_multiplicity": 1,
+    "kT": 0.025851999786435
+  },
+  "coupling_layers": [
+    [
+      "internal",
+      1,
+      null
+    ],
+    [
+      "internal",
+      6,
+      null
+    ],
+    [
+      "internal",
+      8,
+      null
+    ],
+    [
+      "centroid",
+      1,
+      6
+    ],
+    [
+      "centroid",
+      6,
+      8
+    ],
+    [
+      "centroid",
+      8,
+      12
+    ],
+    [
+      "centroid",
+      12,
+      15
+    ]
+  ],
+  "pointwise_contraction_bound": 0.25,
+  "history": [
+    {
+      "step": 1,
+      "training_objective": -111.23423364582149,
+      "mean_log_volume": 0.0,
+      "log_volume_std": 0.0,
+      "gradient_norm": 79.80675902133952,
+      "lr": 0.001,
+      "seconds": 21.082218766910955
+    },
+    {
+      "step": 20,
+      "training_objective": -110.8887884484088,
+      "mean_log_volume": -0.06294588038760296,
+      "log_volume_std": 0.000665086261413055,
+      "gradient_norm": 20.476900506007592,
+      "lr": 0.0009778987210000215,
+      "seconds": 28.976678104139864
+    },
+    {
+      "step": 40,
+      "training_objective": -110.07965490959455,
+      "mean_log_volume": -0.05583933128038751,
+      "log_volume_std": 0.0012611479501499223,
+      "gradient_norm": 26.42133120771201,
+      "lr": 0.0009091059821001276,
+      "seconds": 37.293078681919724
+    },
+    {
+      "step": 60,
+      "training_objective": -112.49489802615973,
+      "mean_log_volume": -0.03533874705541197,
+      "log_volume_std": 0.0007048379010556917,
+      "gradient_norm": 31.089194027186522,
+      "lr": 0.0008003612967029838,
+      "seconds": 45.68374725594185
+    },
+    {
+      "step": 80,
+      "training_objective": -114.79785497216615,
+      "mean_log_volume": -0.01745726097106052,
+      "log_volume_std": 0.0006048076240769728,
+      "gradient_norm": 41.65848962517286,
+      "lr": 0.0006624157104384229,
+      "seconds": 54.09778224211186
+    },
+    {
+      "step": 100,
+      "training_objective": -93.8282240496784,
+      "mean_log_volume": -0.009479857875877334,
+      "log_volume_std": 0.0010109136277039537,
+      "gradient_norm": 14.578681426882639,
+      "lr": 0.000508907216620308,
+      "seconds": 62.37360804993659
+    },
+    {
+      "step": 120,
+      "training_objective": -107.01908581743396,
+      "mean_log_volume": -0.024603152585750396,
+      "log_volume_std": 0.0007052765979882801,
+      "gradient_norm": 23.509731743707924,
+      "lr": 0.00035501243574809807,
+      "seconds": 70.71867186692543
+    },
+    {
+      "step": 140,
+      "training_objective": -108.94041749797937,
+      "mean_log_volume": -0.08414550288291905,
+      "log_volume_std": 0.0008650766219452165,
+      "gradient_norm": 23.27891401988692,
+      "lr": 0.0002159461785990535,
+      "seconds": 79.16627156198956
+    },
+    {
+      "step": 160,
+      "training_objective": -114.27047633748725,
+      "mean_log_volume": -0.03731036362200313,
+      "log_volume_std": 0.0008466848674754425,
+      "gradient_norm": 8.273592195198946,
+      "lr": 0.00010545723363781731,
+      "seconds": 87.52224257192574
+    },
+    {
+      "step": 180,
+      "training_objective": -113.01683392796619,
+      "mean_log_volume": -0.038349648220704365,
+      "log_volume_std": 0.0005811041265857601,
+      "gradient_norm": 23.10334691903182,
+      "lr": 3.4469092753047516e-05,
+      "seconds": 95.79562977305613
+    },
+    {
+      "step": 200,
+      "training_objective": -113.81174655635914,
+      "mean_log_volume": -0.038528461396606914,
+      "log_volume_std": 0.00036688891284031945,
+      "gradient_norm": 31.30859862645363,
+      "lr": 1e-05,
+      "seconds": 104.07595386309549
+    }
+  ],
+  "limitations": [
+    "A prospective nonlinear species coupling architecture; performance and novelty require independent evidence.",
+    "The pretrained base generator is frozen; no unqualified score critic is used.",
+    "Independent paired energy-minus-log-volume changes estimate marginal reverse-KL change, not absolute KL.",
+    "One condition and one adapter-training seed; no broad or replicated sampling claim.",
+    "Inherited base-generator and sample-production costs remain additional.",
+    "Importance weights may still degenerate even when the mean endpoint KL improves."
+  ],
+  "base_energy_replay_max_error_eV": 2.4352520995307714e-06,
+  "identity_training_energy_replay_max_error_eV": 1.2389864423312247e-06,
+  "trained_inverse_check": {
+    "position_error_A": 1.509903313490213e-14,
+    "maximum_residual": 1.509903313490213e-14,
+    "volume_cancellation_error": 6.730727086790012e-16,
+    "layers": [
+      {
+        "iterations": 4,
+        "maximum_residual": 1.4432899320127035e-14
+      },
+      {
+        "iterations": 5,
+        "maximum_residual": 8.104628079763643e-15
+      },
+      {
+        "iterations": 5,
+        "maximum_residual": 5.329070518200751e-15
+      },
+      {
+        "iterations": 5,
+        "maximum_residual": 1.1156006674006846e-14
+      },
+      {
+        "iterations": 4,
+        "maximum_residual": 1.9984014443252818e-15
+      },
+      {
+        "iterations": 4,
+        "maximum_residual": 1.3655743202889425e-14
+      },
+      {
+        "iterations": 5,
+        "maximum_residual": 6.661338147750939e-16
+      }
+    ]
+  },
+  "trained_full_jacobian_errors": [
+    1.942890293094024e-16,
+    7.424616477180734e-16
+  ],
+  "oracle_evaluations": 3712,
+  "paired_endpoint_kl_change": {
+    "mean": -0.18128804470896748,
+    "sem": 0.056890791991245256,
+    "samples": 256,
+    "scope": "Expected energy-minus-exact-log-volume difference equals marginal KL change under stated fixed-target assumptions."
+  },
+  "weights": {
+    "base": {
+      "particles": 256,
+      "ess": 1.119536979453645,
+      "ess_fraction": 0.0043731913259908006,
+      "maximum_weight": 0.9441646321378613,
+      "log_mean_weight": 113.03278042332654
+    },
+    "adapted": {
+      "particles": 256,
+      "ess": 1.0930461194736596,
+      "ess_fraction": 0.004269711404193983,
+      "maximum_weight": 0.9559839931627376,
+      "log_mean_weight": 113.1886849497436
+    }
+  },
+  "mean_energy_eV": {
+    "base": -20928.47790676141,
+    "adapted": -20928.47971970678
+  },
+  "log_volume": {
+    "mean": -0.038174223927120915,
+    "std": 0.0006501477156173995,
+    "min": -0.04010257983243656,
+    "max": -0.03399807554807644
+  },
+  "maximum_COM_error_A": 2.480654570646834e-16,
+  "seconds": 112.1917735140305,
+  "artifacts": {
+    "base_samples.pt": "1b2970c0843c1d52a43c098819f93022f1d69bfc4e2f8906e2e6dce2d260ee81",
+    "adapted_samples.pt": "52549296443f3a9b314b0f93ecae3e3e940c55d126758c7ac16c65f2c440d056",
+    "adapter.ckpt": "33bc593411b497b44f6c92dc5274dc21c6d2806fbc818a7d410cad5da9281164"
+  }
+}

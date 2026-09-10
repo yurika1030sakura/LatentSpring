@@ -42,3 +42,25 @@ novelty. Fresh confirmation/training replicas and broader conditions remain requ
 
 This is an architecture candidate. Equivariant coupling/convex/residual flows and
 normalizing-flow energy objectives are direct prior art, not claimed new identities.
+
+
+## Fixed larger-budget comparison after the200-step screen
+
+The200-step model passes trained inverse and full intrinsic determinant checks.
+Its development DeltaKL is-.18129+/-.05689 SEM; paired difference versus typed
+linear is-.02358+/-.02579, so no clear nonlinear advantage is established.
+A best-COM-linear approximation fitted to256 training rows leaves about39% of
+the adapter displacement norm on256 separate rows; the model is not exactly
+linear, but its total displacement RMS is only .00230 A. This is diagnostic,
+not a calibrated-performance result.
+
+Run a fixed1000-update comparison: nonlinear seed9161/selection9141 and typed
+linear selection9141. Both use batch16, the same4096 source-training rows and
+256 development rows, and16512 oracle queries each. Start from identity, not a
+claimed continuation of the shorter cosine schedule. Keep each architecture's
+already stated learning-rate endpoints, with cosine decay across1000 updates.
+Record all compute and the different parameterizations. No hyperparameter sweep
+or best-checkpoint selection. If the nonlinear model does not improve over the
+matched typed control, do not extend the same recipe merely because training
+loss declines. Global mode-weight learning remains an unresolved possibility,
+not a failure mechanism already proved by the current data.
