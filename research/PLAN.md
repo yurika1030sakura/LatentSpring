@@ -9,6 +9,31 @@ Source: https://iclr.cc/Conferences/2027/AuthorGuidelines (checked September 8).
 Target an internal evidence decision by September 15 and a full draft by
 September 20. Submit only claims supported by completed experiments.
 
+## Current decision sequence — September 10 UTC
+
+The original method narrative is provisional. No repeatable larger-molecule
+sampling advantage or defensible new contribution is established. Source data
+and original electronic-state recovery are complete; 722 reserved conditions
+remain untouched. Numerical/engineering repairs are not the novelty claim.
+
+- Finish the three live 500-to-1500-step eight-atom continuations and their
+  25,024-query HMC comparison. Report all outcomes and extra evaluation cost.
+- The first 32-particle HMC-SMC calibration failed. Replicate its fixed recipe
+  at seeds 9070--9072 before attributing the discrepancy to variance or redesigning
+  a reference. Retain the failed 9069 screen and do not select a passing seed.
+- Require larger-condition calibration and a useful compute/quality tradeoff
+  before broad development-panel training. Effective sample size alone does
+  not certify missing-mode coverage or independent samples.
+- Only after a reproducible development benefit and a literature-supported
+  contribution are identified should the final evaluation protocol be frozen
+  and reserved conditions queried. Statistical and methodological uncertainty
+  remain separate from manuscript formatting.
+
+The compute ledger records actual Slurm allocation types, including MIG, and
+completed potential queries. Equal query counts are not equal wall-clock or
+hardware costs. Pretraining costs shared by the compared methods are explicit
+upstream dependencies, not silently credited as free work.
+
 ## Scientific hypothesis to test
 
 September 9 reconstruction: the user explicitly authorizes replacing the
@@ -23,7 +48,7 @@ and weighted CFM are established tools, not sufficient novelty by themselves.
 Current gates are global coverage/normalizer agreement, surviving diversity,
 accurate electronic-state conditioning and matched oracle/compute performance.
 An endpoint ESS increase after resampling does not pass these gates. The public
-4M raw training archive has now been recovered; exact replay is restoring
+4M raw training archive has now been recovered; exact replay has restored
 source identities, unclipped charge, spin and original float64 energies.
 Final evaluation must use a frozen, audited split rather than the duplicated
 legacy test file. See `notes/tempered_sampling_protocol.md` and
