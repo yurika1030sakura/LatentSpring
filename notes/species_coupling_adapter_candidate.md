@@ -130,3 +130,19 @@ Convex Potential Flows, https://arxiv.org/abs/2012.05942 ;
 Residual Flows for Invertible Generative Modeling, https://arxiv.org/abs/1906.02735 .
 The contraction proof and Schur-complement identity are established mathematics.
 No molecular training of the nonlinear primitive has been performed.
+
+
+Training restriction: keep every base FlowMol parameter frozen for the exact-
+entropy refinement objective. Unfreezing the base would change its unknown
+entropy and invalidate the stated cancellation. Later distillation into a new
+FM generator is a separate objective and requires its own sampling validation.
+Record base-conditioning temperature separately from the physical target if
+those differ; never reset trained base-temperature weights during loading.
+
+
+Implementation checks for the upcoming conditioner must also compare batched
+and separate calls; batch-coupled normalization would invalidate per-molecule
+volume accounting. Use no stochastic conditioner branch when evaluating the map
+and its volume. Keep all context projections in the differentiated graph when
+checking the full Jacobian; their active-coordinate independence is a structural
+property to verify, not a reason to detach arbitrary input dependencies.

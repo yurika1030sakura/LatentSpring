@@ -49,6 +49,14 @@ independent16384-parent panel but fails unfitted radial/angular checks. Only the
 frozen calibration component has been tested; it does not qualify an actor
 update or establish novelty. See `notes/stein_calibrated_entropy_candidate.md`.
 
+The current exact-entropy refinement route freezes the FlowMol FM base and
+learns a separate invertible adapter. Linear typed/scalar controls show small
+fresh-panel relative-KL decreases but poor remaining path ESS. A nonlinear
+centered convex-map primitive is implemented and tested; neural conditioning
+and species-group couplings remain unimplemented. Read
+`notes/species_coupling_adapter_candidate.md` before further development.
+The base must stay frozen for the unknown-source-entropy cancellation to hold.
+
 ## Locked project decisions
 
 - Flow matching, bond-free: `total_loss_weights.e = 0` on OMol25.

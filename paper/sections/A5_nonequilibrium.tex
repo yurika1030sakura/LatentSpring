@@ -388,3 +388,66 @@ Thus the four-direction correction leaves substantial errors and does not
 qualify either critic for an actor update. All data, coefficients, tail
 constraints and fitted/unfitted diagnostics are preserved in
 \texttt{research/evidence/score\_calibration\_audit\_v1.json}.
+
+\paragraph{Learned-feature refitting and its remaining failure.}
+We next freeze the invariant critic's 32 final-head features and fit their
+score coefficients, together with the quadratic scale feature, by constrained
+ridge score matching. Deep-feature score matching and linear solves are prior
+work \citep{wenliang2019deepkernels}. Antithetic final-noise pairs estimate the
+Stein terms at the actual finite noise level, without neural Hessian traces.
+The 16,384-parent panel is now development data for this variant. Both learned
+seeds outperform a random 33-feature control and a stronger 105-feature,
+element-pair-specific radial control in paired denoising error. However, only
+4/14 and 6/14 moment checks pass; maximum standardized residuals are 24.70 and
+13.39. The improved score-risk estimates do not qualify a score-based generator
+update. Complete results remain in the reproducible learned-feature audit.
+
+\paragraph{Exact-entropy refinement from an implicit base generator.}
+To obtain a control that does not require an estimated base score, we freeze
+the molecular generator $q_0$ and train a separate invertible map $T$.
+For a fixed target and integrable terms, the standard change-of-variables
+identity gives
+\[
+\mathrm{KL}(T_\#q_0\Vert\pi)-\mathrm{KL}(q_0\Vert\pi)
+=\mathbb E_{q_0}\!\left[\frac{U(Tx)-U(x)}{kT}
+-\log|\det_H DT(x)|\right].
+\]
+The unknown base entropy and target normalizer cancel. This is established
+normalizing-flow/Boltzmann-generator methodology \citep{noe2019boltzmann}, not
+a new objective. Carrying the original auxiliary through $T^{-1}$ also keeps
+its conditional approximation gap fixed; the work increment equals the bracketed
+quantity. We do not unfreeze the base generator under this objective.
+
+The bounded linear control acts on atom coordinates as $T(x)=\exp(K)x$, where
+$K=(W-\operatorname{diag}(W\mathbf1))/N$, and symmetric pair weights lie in
+$[-0.25,0.25]$. It preserves COM and joint atom/element permutation and spatial
+equivariance. Its exact intrinsic log volume is $3\operatorname{tr}K$.
+The typed model has 13 parameters for this condition; the scalar control ties
+all pair weights. Both start at identity and receive 200 updates, batch 16,
+with the same cosine learning-rate schedule and 3,712 oracle queries each.
+
+\begin{center}
+\begin{tabular}{lrrr}
+\toprule
+Adapter & Development $\Delta\mathrm{KL}$ & Fresh $\Delta\mathrm{KL}$ & Fresh path ESS\\
+\midrule
+None & 0 & 0 & 1.844/1,024\\
+Scalar & $-0.0615\pm0.0386$ & $-0.0636\pm0.0181$ & 1.752/1,024\\
+Typed & $-0.1577\pm0.0600$ & $-0.1019\pm0.0272$ & 2.245/1,024\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Entries are paired means $\pm$ SEM in nats. The development panel has 256
+samples; confirmation uses 1,024 newly generated base samples with no adapter
+updates. Typed-minus-scalar change on the fresh panel is
+$-0.0384\pm0.0174$ nat. Thus a small relative-KL improvement survives fresh
+evaluation, but this is one condition and one trained adapter seed, not broad
+calibration or a novel-method advantage. Independent development xTB checks
+converge on 32/32 in all three arms, with base/typed/scalar median strains
+0.6205/0.6012/0.6131 eV. Sampling efficiency remains poor. The fresh weight
+assessment uses the original reverse model, so its ESS is not directly pooled
+with earlier refitted-auxiliary results. The confirmation costs 3,072 additional
+oracle queries; inherited base-training and sample-production costs remain
+additional. Nonlinear adapters require their own complete implementation,
+inversion/volume checks and molecular experiments before further claims.

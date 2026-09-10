@@ -45,7 +45,10 @@ Jacobian/parameter-gradient tests through200-point cases.263 tests pass. Its
 invariant neural conditioner and species coupling wrappers are not implemented;
 no nonlinear molecular training result exists. Next design is specified in
 notes/species_coupling_adapter_candidate.md, with direct prior art and limitations.
-All latest jobs have completed; no external blocker or goal completion.
+All latest jobs have completed; no external blocker or goal completion. The
+updated paper builds with9 main pages at
+runs/verification/paper_20260910_exact_entropy/main.pdf; scientific readiness
+remains false.
 
 ## Earlier completed candidate: calibration improves partial score risk only
 
