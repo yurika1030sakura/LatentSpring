@@ -18,6 +18,16 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
+## Current follow-up: frozen-path innovation posterior
+
+A new bounded diagnostic keeps the16-step forward sampler and every endpoint
+fixed while replacing the sequential backward Gaussian by a global Gaussian
+in the path's original independent-noise coordinates. Exact linear-Gaussian
+conditioning, nonlinear path-density transformations and directional gradients
+pass6 targeted tests. This is a standard inference-based diagnostic, not a new
+AI-method claim. Protocol: notes/innovation_posterior_diagnostic.md. The real
+molecular smoke must pass before the32-path screen; no result is claimed yet.
+
 ## Latest completed screen: empirical weighted-FM projection failed its stop gate
 
 All four runs and the256-attempt independent xTB assessment45812870 completed.
