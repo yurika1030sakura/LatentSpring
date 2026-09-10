@@ -116,8 +116,19 @@ sign factor, which cancels in its importance ratio, giving
  W_+=W_{\rm raw}+[E_+(y)-E_{\rm raw}(y)]/(kT).
 \]
 This does not require the original source or reverse path to be inversion
-invariant. It defines a new weighted experiment. Its numerical and molecular
-qualification remain separate from the original results.
+invariant. It defines a new weighted experiment, evaluated separately from
+the original results.
+
+For training, an independent random inversion per parent permits one raw energy
+query per sampled parent. Since the source law is then invariant and $T$
+commutes with inversion,
+\[
+ \mathbb E_{q_0^+}E_{\rm raw}(Tx)=\mathbb E_{q_0^+}E_+(Tx).
+\]
+The volume term is even as well. Pathwise differentiation therefore gives an
+unbiased estimator of the projected-energy objective under the stated regularity
+conditions. This would not hold merely by querying raw energy on an arbitrary
+unaugmented source. Actual evaluation of projected energy uses both orientations.
 
 \section{Evidence and failure inventory}
 Source and checkpoint replay audits are stored in

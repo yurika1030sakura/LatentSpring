@@ -35,3 +35,14 @@ and nonlinear centered point map with exact3-by-3 volume accounting. General
 equivariant coupling, entropy minimization and KL-chain-rule arguments are prior
 work. The current small two-seed result on one condition is insufficient for an
 ICLR contribution claim; homogeneous-context expressivity limits also remain.
+
+## Inversion-projected target amendment
+
+The later real-potential audit exposes a raw eSEN inversion defect. Any new
+comparison must explicitly use the frozen repaired target E_plus=(E(x)+E(-x))/2
+and account for its raw oracle calls. The random-inversion one-query trick is
+an unbiased estimator of a LINEAR expected-energy objective under an invariant
+refined law. It does not give an unbiased projected target density inside an
+exponential. Do not substitute raw energy into FAB/AIS weights, MH acceptance,
+or projected-energy histograms as though it were E_plus. Those operations need
+the actual projected energy or a separately justified estimator/kernel.

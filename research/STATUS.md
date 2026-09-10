@@ -18,7 +18,24 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
-## Current priority: parity-consistent source and target
+## Latest corrected campaign release
+
+The even-potential audit45906924 passes all8 conditions and its larger FD ladder,
+using640 raw queries. N8 re-score45906933 completes14336 inverted-energy calls:
+convex-minus-affine -.013366+/-.002517 and-.012610+/-.002150 nat. The small
+signal survives the repaired source/target, but every path ESS remainsabout1/2048.
+No calibration or broad method advantage follows.
+
+All8 raw source pools have completed36864 queries. Corrected end-to-end
+training smoke45911477 passes24/24 cases and2304 queries;294 tests pass.
+The old held raw-target production jobs45892106/45892107 were cancelled before
+execution. New production uses explicit random source inversion, an unbiased
+one-query raw-potential training estimator, and paired projected-energy
+evaluation. Each arm18048 raw queries;48 arms are planned. New job IDs are in
+jobs.jsonl under parity_entropy_condition_00_v1 / parity_entropy_conditions_1_7_v1.
+No learned odd-energy control variate is used. Read NEXT and the frozen protocol.
+
+## Earlier checkpoint: parity-consistent source and target
 
 Real oracle audit45899596 completes256 queries. Four fixed geometries in each
 of8 conditions expose raw eSEN mirror differences up to .0533--.2262 eV per

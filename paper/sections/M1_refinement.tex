@@ -13,8 +13,8 @@ training streams show small improvements over typed-linear and matched
 neural-context affine controls. The latter differences are
 $-0.0133\pm0.0025$ and $-0.0126\pm0.0021$ nat on shared confirmation samples.
 Path importance weights remain severely concentrated. A broader eight-condition
-comparison is specified; production training is held after detecting a target
-symmetry issue, and external flow comparisons are not yet available. We present an implemented
+comparison has been reconstructed after a target-symmetry audit; full performance
+and external flow comparisons are not yet available. We present an implemented
 method candidate and its limitations, without claiming calibrated Boltzmann
 sampling or an established novel-method advantage.
 \end{abstract}
@@ -78,10 +78,14 @@ under joint permutations of coordinates and element identities.
 The target is
 \begin{equation}
  \pi(x)=Z^{-1}\exp[-U(x)/(kT)],\qquad
- U(x)=E_{\mathrm{eSEN}}(x;z,Q,S)+\frac{\kappa}{2}\sum_i\|x_i\|^2.
+ U(x)=E(x;z,Q,S)+\frac{\kappa}{2}\sum_i\|x_i\|^2.
  \label{eq:refine-target}
 \end{equation}
-The reported cold-target studies use $kT=0.025851999786435$ eV and
+The initial completed studies used raw eSEN for $E$. Following the symmetry
+audit below, the corrected target uses
+$E_+(x)=[E_{\mathrm{eSEN}}(x)+E_{\mathrm{eSEN}}(-x)]/2$.
+Results specify which target is evaluated. The cold-target studies use
+$kT=0.025851999786435$ eV and
 $\kappa=0.1$ eV/$\mathrm{\mathring A}^2$. The learned potential, confinement
 and electronic state are part of the target. This is not an unconfined
 experimental or direct-DFT ensemble. Artificial flow time is not molecular
@@ -238,7 +242,7 @@ Jacobians, context invariance, inverse composition, identity initialization,
 joint coordinate/element permutation, O(3) equivariance, independent batch
 evaluation and parameter finite differences. Reconstruction is exercised up
 to 200 atoms. Fourteen model tests cover both neural families. The complete
-repository suite currently passes 289 tests, including source-contract corruption
+repository suite currently passes 294 tests, including source-contract corruption
 and oracle-accounting checks. These are implementation checks, not evidence
 of molecular sampling quality. Trained checkpoints also undergo inverse,
 dense-Jacobian and public-loader replay checks.
@@ -309,11 +313,16 @@ training and 512 development rows per condition. Complete energy replay, inverse
 Jacobian and checkpoint checks passed for all 24 condition/family smoke arms,
 using 1,536 physical queries. These short checks have no performance standing.
 
-The production design uses all three model families and two training streams
-per condition, yielding 48 planned trained arms. Each arm receives 1,000 updates,
-batch 16, and 17,024 physical queries: 16,000 training plus 512 base and 512 adapted
-development evaluations. The planned adapter total is 817,152 queries; source
-production has a separate planned budget of 36,864. One source-production attempt timed
+The corrected production design uses all three model families and two training
+streams per condition, yielding 48 planned trained arms. Each arm receives
+1,000 updates and 18,048 raw-potential queries: 16,000 training plus 1,024 for
+512 base projected energies and 1,024 for 512 adapted projected energies.
+Training uses 16 independently inverted parents per update and one raw-potential
+query per parent. This is an unbiased projected-energy objective for the
+invariant refined law; evaluation explicitly averages both orientations.
+The planned adapter total is 866,304 queries. The prior raw-target training
+plan was cancelled before execution. Source production completed 36,864 queries.
+One source-production attempt timed
 out on a bulk RPC and was stopped, with an attempted-query bound of 0--8,192
 and no qualified output. Its records are retained. The replacement bounds
 requests and persists intermediate coordinates and scored chunks.
@@ -331,14 +340,19 @@ An O(3)-equivariant adapter alone therefore does not establish an invariant
 output distribution. The completed table concerns the original raw target;
 it is not retrospectively assigned to a symmetrized potential.
 
-Pending broader training is held while an explicit repair is qualified:
-average the raw energy at $x$ and $-x$, and use the fixed source mixture
+The explicit repair averages raw energy at $x$ and $-x$ and uses the fixed source mixture
 $(q_0+(-I)_\#q_0)/2$. This changes both the source and target definitions.
-The candidate projection and its entropy accounting are stated in
-Appendix \ref{app:parity-repair}; molecular outcomes under this repaired
-protocol remain pending. At finite-difference step $10^{-3}$
+The projection and its entropy accounting are stated in
+Appendix \ref{app:parity-repair}. Its real-potential audit passes all eight
+conditions at finite-difference steps $0.003$, $0.0015$ and $0.001$
+$\mathrm{\mathring A}$, with 640 raw queries. Re-scoring the fixed eight-atom
+models adds 14,336 inverted-energy queries. Convex-minus-affine changes under
+the repaired source/target are $-0.01337\pm0.00252$ and $-0.01261\pm0.00215$
+nat. The small signal survives, but path ESS remains approximately 1/2,048.
+This target repair therefore does not solve that observed weight collapse.
+At the original finite-difference step $10^{-3}$
 $\mathrm{\mathring A}$ the sampled force checks pass their declared tolerance;
-smaller-step discrepancies require an additional numerical ladder.
+smaller-step discrepancies are retained alongside the larger-step audit.
 
 \section{Limitations and remaining scientific gates}
 The construction provides an exact relative-entropy accounting route, not an

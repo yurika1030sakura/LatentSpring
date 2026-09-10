@@ -4,8 +4,21 @@ Full ICLR goal remains active and unachieved. This goal turn is PROGRESS:
 implemented generic broad-condition training, passed24 real-interface cases,
 repaired a verified bulk-oracle timeout, released the complete matched campaign,
 replayed both neural-context ablations and rewrote the primary manuscript around
-our current method.293 tests pass. No broad calibrated sampler or ICLR-ready
+our current method.294 tests pass. No broad calibrated sampler or ICLR-ready
 contribution is established. Do not mark complete from code or format checks.
+
+LATEST: projected-potential audit45906924 PASSES all8 conditions/640 queries.
+New-source/target N8 re-score45906933 completes14336 queries: convex-minus-affine
+-.013366+/-.002517 and-.012610+/-.002150 nat; all path ESS remainabout1/2048.
+Corrected training interface45911477 passes24/24 cases,2304 raw queries.
+All8 full raw source pools are complete (45889306,36864 queries).
+The old held raw-target jobs45892106/45892107 were cancelled before execution.
+NEW corrected full production names are parity_entropy_condition_00_v1 and
+parity_entropy_conditions_1_7_v1; obtain fresh job IDs/state from jobs.jsonl.
+Each full corrected arm uses18048 physical queries;48 planned arms866304.
+Read the exact frozen parity_training_protocol_v1.json and its source-law scope.
+Do not resume or relabel old raw-target jobs. No learned odd control variate
+has been implemented. Full scientific readiness remains false.
 
 CRITICAL NEW FINDING: raw eSEN is not inversion invariant on the32 checked
 geometries. Per-condition mirror differences reach .0533--.2262 eV, while proper
@@ -32,9 +45,8 @@ Immediate actions:
 -Old explicit works can be re-scored with a specified uniform-sign auxiliary:
  W_plus=W_raw+(E_plus-E_raw)/kT. Uniform proposal/target sign factors cancel;
  this does not require the original source or reverse path to be parity invariant.
--293 tests pass, including4 new symmetry-mixture/force/work tests and explicit
- inversion tests for both neural families. Real molecular projection is not yet
- qualified. Do not claim the parity issue explains the entire ESS failure.
+-294 tests pass, including4 new symmetry-mixture/force/work tests and explicit
+ inversion tests for both neural families. Real molecular projection now passes its prescribed checks. Do not claim the parity issue explains the entire ESS failure.
 -Freeze a NEW broad training source/target and matched physical-query recipe
  after these checks. Raw one-query gradients are unbiased for E_plus only with
  properly randomized source inversion. Paired gradients need both orientations

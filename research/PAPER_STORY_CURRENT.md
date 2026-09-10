@@ -11,12 +11,12 @@ Historical scalar-ordering audit: paper/legacy_audit.tex and preserved sections/
 
 The real oracle mirror audit finds .0533--.2262-eV defects, far above proper
 rotation/permutation roundoff. The source GVP also has cross-product features;
-do not assume source O(3) invariance from the adapter's symmetry. Full raw-target
-training is held before execution. A versioned inversion-mixture source and
-energy-averaged target are being qualified. Original raw-target KL values are
+do not assume source O(3) invariance from the adapter's symmetry. The old raw-target
+training jobs were cancelled before execution. The inversion-mixture source and
+energy-averaged target now pass their prescribed checks. Original raw-target KL values are
 not relabelled as new-target results. See notes/parity_refinement_candidate.md.
-The new main text now records this limitation; physical projection outcomes and
-broader performance remain pending.
+The new main text now records this limitation; physical projection preserves the small N8 gain, while
+broader performance remains pending.
 
 ## Scientific question
 
