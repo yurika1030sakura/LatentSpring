@@ -88,3 +88,10 @@ controls ask whether learning and directional correlation add value beyond
 preconditioning or reduced noise alone. The kernel and gradient checks pass;
 molecular benefit and novelty remain unestablished. AniDS, Chroma and elastic
 network models are relevant prior art. See notes/pair_precision_candidate.md.
+
+
+Completed update: the first learned/fixed/trace pair-precision comparison did
+not solve weight degeneration. The learned module is near isotropic on the
+checked terminal geometries and does not establish a new beneficial mechanism.
+The candidate is retained as negative evidence; the paper still lacks a validated
+AI method contribution. See pair_precision_full_comparison_v1.json in evidence.

@@ -1,0 +1,40 @@
+{
+  "complete": true,
+  "scope": "Frozen precision evaluated at first32 final geometries at t=15/16, not recorded preterminal path states.",
+  "rows": [
+    {
+      "arm": "learned",
+      "states": 32,
+      "minimum_eigenvalue": 0.9999999999999987,
+      "maximum_eigenvalue": 1.0336639845890245,
+      "states_with_maximum_above_2": 0
+    },
+    {
+      "arm": "fixed",
+      "states": 32,
+      "minimum_eigenvalue": 0.9999999999999986,
+      "maximum_eigenvalue": 6.15193545306732,
+      "states_with_maximum_above_2": 32
+    },
+    {
+      "arm": "trace",
+      "states": 32,
+      "minimum_eigenvalue": 1.0015865657542777,
+      "maximum_eigenvalue": 1.0019796728107124,
+      "states_with_maximum_above_2": 0
+    }
+  ],
+  "source_sha256": {
+    "runs/pair_precision_learned_5846_500_v1/last.ckpt": "b83c2825684e2952a8ba1b1ae4a3cfe2bf17bc98f6d729174e72247ee15d28ec",
+    "runs/pair_precision_learned_5846_500_v1/final_samples.pt": "3c1b4870937c0dfc02cd1fe1a8c6c64d917cd75cee395fe4ea0eebec08fac038",
+    "runs/pair_precision_fixed_5846_500_v1/last.ckpt": "ad5d4d53cf94c95c1dde8f499cf1ccb3eff9c8f292369b4b84440f2dcb0d538f",
+    "runs/pair_precision_fixed_5846_500_v1/final_samples.pt": "a3de5dac43b2110d439f6ddbe2949e5d3ec34efad2a04e1d7eca63ad4bb739d0",
+    "runs/pair_precision_trace_5846_500_v1/last.ckpt": "267a8513439ae5a115548bb88bf6985831d04307873b3e224f0519466bc85607",
+    "runs/pair_precision_trace_5846_500_v1/final_samples.pt": "6dabaa63bfebff726bb40385603c879900b765889aa3f2c06ae938c6df56a7cc"
+  },
+  "limitations": [
+    "This diagnoses the module near terminal geometries, not the full sampled trajectory.",
+    "Near-isotropic values at these inputs do not prove when or why the module weakened.",
+    "Covariance spectral bounds alone do not establish finite path-weight variance."
+  ]
+}

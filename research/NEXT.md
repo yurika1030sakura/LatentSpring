@@ -1,44 +1,40 @@
 # Next research decision
 
-Goal active and unachieved. 228 tests pass. Original manuscript remains an
-honest audit/development draft (nine main pages), with no validated ICLR-level
-AI contribution or broad calibrated molecular sampling benefit.
+Goal active, unachieved. 228 tests pass. All three pair-precision training arms
+45780761/45780762/45780775 and xTB45781150 have completed. No current broad
+sampling advantage or validated AI novelty; do not present this candidate as
+an ICLR breakthrough. Current branch outputs remain in laboratory storage.
 
-1. Live candidate comparison (source ec121f1):
-   - 45780761 pair_precision_learned_5846_500_v1
-   - 45780762 pair_precision_fixed_5846_500_v1
-   - 45780775 pair_precision_trace_5846_500_v1
-   Same FM weights, seed 9051, 500 updates/B16/K16, 256 initial/final evaluations,
-   300 K and .1 restraint, native means, scalar noise .2, no scalar annealing.
-   Each uses 8,512 oracle queries. Precision strength 32, learning rate .001;
-   means use 1e-5. Inspect all three, including learned versus fixed identical
-   initial sampling, work/energy variance, ESS, geometry and actual cost.
-   xTB assessment 45781150 waits for all three to succeed.
-   Preserve failed jobs and assess completed arms separately if necessary.
-2. Required gates already passed: molecular B2 45779357 (132 queries), B16
-   45780203 (160 queries, .443 GiB), loader 45780207 (exact coordinates,
-   work max error .000116). Learned precision weights demonstrably updated.
-   These are implementation checks, not evidence of a useful new method.
-3. The candidate uses learned/fixed pair elastic precision and a same-trace
-   isotropic control. Prior art includes elastic networks, AniDS and Chroma.
-   An atomwise anisotropic comparator and scaling work remain necessary before
-   novelty claims. Current dense cubic factorization and 1/N normalization
-   have unproven behavior at larger sizes. See notes/pair_precision_candidate.md.
-4. Completed original continuations to 1500 steps fail distributional calibration:
-   ESS 1.174/2.218/1.092 of256, all xTB32/32, median strain .49357/.52856/.13984.
-   Matched 25,024-query HMC is32/32, .56135 eV, with correlated chains. The
-   automatic audit is retained in work300_5846_1500_comparison.json. Do not
-   restart or keep extending those recipes solely because work decreases.
-5. Independent AgBr2 reference checks are complete. Two evaluation streams of
-   three trained seeds plus both controls are retained. Direct box cubature
-   orders20/32/48 support same-box QMC normalization; no full-domain certificate.
-   Four small HMC-SMC populations are too noisy for promotion to a reference.
-6. Eight-condition independent development FM/xTB baseline is complete; no
-   candidate physics outcomes on that panel yet. Reserved722 conditions remain
-   untouched. A broad final claim needs independent conditions, replicated
-   training benefit and fair compute comparisons, beyond the present one-case pilot.
+1. Final candidate result: learned/fixed/trace ESS1.130/1.230/1.000 of256,
+   xTB32/32,31/32,32/32, median successful strain .77571/1.00995/.88126 eV.
+   Original isotropic mean-work at8512 queries gives .56999 eV; same-query HMC
+   .90211 eV with correlated draws. HMC.56135 eV uses25024 queries, not8512.
+   Evidence: pair_precision_full_comparison_v1.json. Do not extend this recipe
+   or scale it across conditions without resolving its failure.
+2. Frozen precision diagnostics on first32 final geometries at t15/16 find
+   learned max eigenvalue1.03366 and trace1.00198 versus fixed6.15194. This
+   suggests weakening near the endpoint; it does not establish full-path
+   behavior or a cause. If needed, inspect actual retained trajectories rather
+   than interpreting final geometries as preterminal states.
+3. Next scientific diagnosis: separate poor forward endpoint coverage from
+   auxiliary reverse-kernel/weight variance. A frozen-forward experiment can
+   change backward modelling while keeping generated coordinates fixed.
+   Audit weight-moment conditions first: positive bounded covariance is not
+   itself a finite-importance-variance guarantee. State any proposed gradient
+   or tail mechanism as a hypothesis until verified. Do not add another long
+   covariance-training variant solely because its training loss declines.
+4. Previous1500-step isotropic continuations also failed calibration despite
+   better geometry. Their complete audit is work300_5846_1500_comparison.json.
+   All earlier LV, density, SMC and pilot failures remain relevant.
+5. AgBr2 has repeated weighted checks and an independent same-box cubature
+   cross-check. It is only one three-atom condition, not general calibration.
+   The four32-particle HMC-SMC references remain high-variance failures.
+6. New eight-condition development baseline is complete. Candidate physics
+   outcomes are untested; reserved722 conditions untouched. Final ICLR claims
+   still require a distinct learning contribution, multiple conditions/seeds,
+   reliable distribution checks and honest full-compute comparisons.
 
-Current paper story: PAPER_STORY_CURRENT.md. Keep inherited audit and all
-negative results. Never write home or modify shared FlowMol. Preserve bond-free
-OMol25, max_atoms200, true electronic state and separate environments. No new
-sampler/AI superiority claim follows from engineering PASS or a positive toy.
+See PAPER_STORY_CURRENT.md and STATUS.md. Preserve all raw outputs and source
+snapshots. Never write home or alter shared FlowMol. Keep OMol25 bond-free,
+max_atoms200, actual charge/spin, and the two environments separate. No goal
+completion or genuine external blocker is established by these failures.

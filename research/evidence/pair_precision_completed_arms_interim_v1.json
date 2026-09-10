@@ -1,0 +1,110 @@
+{
+  "complete": true,
+  "scope": "Interim comparison of four completed arms; trace control and xTB still pending.",
+  "rows": [
+    {
+      "arm": "isotropic_fixed_500",
+      "run": "work300_fixed_joint_5846_v1",
+      "oracle_evaluations": 8512,
+      "mean_work": -31.701924146520817,
+      "work_std": 59.297883254687,
+      "mean_energy_eV": -20927.42428773789,
+      "weights": {
+        "particles": 256,
+        "ess": 1.0002725464301905,
+        "ess_fraction": 0.0039073146344929316,
+        "maximum_weight": 0.9998637498390571,
+        "log_mean_weight": 112.60824871177911
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.44600461421351323,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 1.901357391175697,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      }
+    },
+    {
+      "arm": "isotropic_annealed_500",
+      "run": "work300_annealed_joint_5846_v1",
+      "oracle_evaluations": 8512,
+      "mean_work": 3.7002151690584784,
+      "work_std": 60.67808885402033,
+      "mean_energy_eV": -20926.59151406874,
+      "weights": {
+        "particles": 256,
+        "ess": 1.068665284397166,
+        "ess_fraction": 0.00417447376717643,
+        "maximum_weight": 0.9669687904820057,
+        "log_mean_weight": 101.92683513175857
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.48948714909237934,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 1.8989229370596736,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      }
+    },
+    {
+      "arm": "learned_precision_500",
+      "run": "pair_precision_learned_5846_500_v1",
+      "oracle_evaluations": 8512,
+      "mean_work": -24.879864795293493,
+      "work_std": 57.63097756710891,
+      "mean_energy_eV": -20927.184377244164,
+      "weights": {
+        "particles": 256,
+        "ess": 1.1297160297867925,
+        "ess_fraction": 0.004412953241354658,
+        "maximum_weight": 0.939131010964868,
+        "log_mean_weight": 110.34832208076301
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.45468593698647997,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 1.8818711943927755,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      }
+    },
+    {
+      "arm": "fixed_precision_500",
+      "run": "pair_precision_fixed_5846_500_v1",
+      "oracle_evaluations": 8512,
+      "mean_work": 18.024180124489533,
+      "work_std": 62.644327955226274,
+      "mean_energy_eV": -20926.205776324918,
+      "weights": {
+        "particles": 256,
+        "ess": 1.229970527814317,
+        "ess_fraction": 0.0048045723742746755,
+        "maximum_weight": 0.8956185158346723,
+        "log_mean_weight": 101.90968228561171
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.5451572253276215,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 1.887453471980836,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      }
+    }
+  ],
+  "source_sha256": {
+    "runs/work300_fixed_joint_5846_v1/results.json": "773219b76e028dab08957e22ac914d4d25f1623da253e1657fedd0e65feb9bf9",
+    "runs/work300_annealed_joint_5846_v1/results.json": "2a7ff64eceae8f11aef59e2c118dead73f5706672ed028532af7fdab66239000",
+    "runs/pair_precision_learned_5846_500_v1/results.json": "bfff1ea93139fe433d80c915d549461964523edbf3540daf50d87d74c3870bf9",
+    "runs/pair_precision_fixed_5846_500_v1/results.json": "5f2b2c460cec097a5c80f83b4c7725a00b875e64b2a6f1a3365c1ff8cebc8fbe"
+  },
+  "missing_arms": [
+    "pair_precision_trace_5846_500_v1 final evaluation",
+    "three-arm xTB assessment"
+  ],
+  "limitations": [
+    "All completed methods remain strongly weight-degenerate.",
+    "Lower work or energy is not a calibrated-distribution claim.",
+    "One training seed and one molecular condition do not establish novelty or a repeatable advantage."
+  ],
+  "scientific_submission_ready": false
+}

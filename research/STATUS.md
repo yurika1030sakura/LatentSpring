@@ -173,6 +173,26 @@ Learned/fixed initial samples agree within 2.17e-6 A and .00181 work units;
 see pair_precision_initial_equivalence_v1.json. No molecular benefit, originality
 or ICLR readiness is established by these execution gates.
 
+## Completed pair-precision candidate decision
+
+All three 500-step arms and xTB 45781150 completed. Learned / fixed-rule /
+isotropic-trace controls have ESS 1.130 / 1.230 / 1.000 of256. xTB convergence
+is32/32,31/32,32/32; successful median strains .77571,1.00995,.88126 eV.
+The learned arm improves on the fixed-rule variant but does not outperform
+the earlier 8,512-query isotropic mean-work strain .56999 eV. Same-query HMC
+is .90211 eV in one comparison with correlated samples; the .56135-eV HMC
+result uses 25,024 queries and must not be called the same-budget baseline.
+No calibrated or repeated sampling advantage is established. Preserve this
+failed recipe rather than scaling it up. See pair_precision_full_comparison_v1.json.
+
+On the first32 final geometries evaluated at t=15/16, learned relative-precision
+maximum eigenvalue is1.03366, trace1.00198, fixed6.15194. The learned module is
+nearly isotropic at these inputs. This is not a full-trajectory or causal test.
+Next work should isolate forward coverage versus auxiliary reverse-kernel
+limitations and examine moment/tail conditions before proposing another long
+training run. Bounded covariance eigenvalues alone do not guarantee finite
+path-weight variance. No specific causal explanation is yet established.
+
 ## What is established
 
 - 228 tests pass, including real FlowMol parameter gradients, full-state and

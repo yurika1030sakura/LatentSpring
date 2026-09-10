@@ -1,0 +1,156 @@
+{
+  "complete": true,
+  "scope": "All three prespecified pair-precision arms with all relaxation denominators.",
+  "rows": [
+    {
+      "arm": "learned",
+      "mean_work": -24.879864795293493,
+      "work_std": 57.63097756710891,
+      "mean_energy_eV": -20927.184377244164,
+      "weights": {
+        "particles": 256,
+        "ess": 1.1297160297867925,
+        "ess_fraction": 0.004412953241354658,
+        "maximum_weight": 0.939131010964868,
+        "log_mean_weight": 110.34832208076301
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.45468593698647997,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 1.8818711943927755,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "xtb": {
+        "arm": "learned",
+        "attempted": 32,
+        "converged": 32,
+        "strain_eV_success_only": {
+          "q10": 0.4715936976595458,
+          "median": 0.7757053276450563,
+          "q90": 1.595929635258796
+        },
+        "initial_max_force_norm_eV_A": {
+          "q10": 2.4211013891904742,
+          "median": 3.796946691425619,
+          "q90": 6.366488427019583
+        },
+        "force_values_present": 32
+      },
+      "oracle_evaluations": 8512,
+      "program_seconds": 3046.9426908490714
+    },
+    {
+      "arm": "fixed",
+      "mean_work": 18.024180124489533,
+      "work_std": 62.644327955226274,
+      "mean_energy_eV": -20926.205776324918,
+      "weights": {
+        "particles": 256,
+        "ess": 1.229970527814317,
+        "ess_fraction": 0.0048045723742746755,
+        "maximum_weight": 0.8956185158346723,
+        "log_mean_weight": 101.90968228561171
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.5451572253276215,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 1.887453471980836,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "xtb": {
+        "arm": "fixed",
+        "attempted": 32,
+        "converged": 31,
+        "strain_eV_success_only": {
+          "q10": 0.4212840882343585,
+          "median": 1.009948582496179,
+          "q90": 3.0899254660328097
+        },
+        "initial_max_force_norm_eV_A": {
+          "q10": 2.4240607333072215,
+          "median": 3.6699271537767717,
+          "q90": 6.234472845112121
+        },
+        "force_values_present": 32
+      },
+      "oracle_evaluations": 8512,
+      "program_seconds": 3003.168539591832
+    },
+    {
+      "arm": "trace",
+      "mean_work": -26.564606553626888,
+      "work_std": 55.72129078905765,
+      "mean_energy_eV": -20927.31998755919,
+      "weights": {
+        "particles": 256,
+        "ess": 1.0001875731220928,
+        "ess_fraction": 0.003906982707508175,
+        "maximum_weight": 0.9999062249676732,
+        "log_mean_weight": 110.77454171970781
+      },
+      "geometry": {
+        "weighted_pair_distance_variance_A2": 0.4302283344496586,
+        "weighted_overlap_fraction": 0.0,
+        "unweighted_overlap_fraction": 0.0,
+        "weighted_radius_gyration_A": 1.9216964790642854,
+        "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+      },
+      "xtb": {
+        "arm": "trace",
+        "attempted": 32,
+        "converged": 32,
+        "strain_eV_success_only": {
+          "q10": 0.3851171979432763,
+          "median": 0.8812628786376422,
+          "q90": 1.6773878390643517
+        },
+        "initial_max_force_norm_eV_A": {
+          "q10": 2.3568409338262257,
+          "median": 3.9461350021550077,
+          "q90": 6.255586163154623
+        },
+        "force_values_present": 32
+      },
+      "oracle_evaluations": 8512,
+      "program_seconds": 3181.6207513220143
+    }
+  ],
+  "source_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/pair_precision_5846_500_xtb_v1/assessment.json": "b16bf7942594bea74bcf5fba285eb0bff474fde90ad5dab29bcaa07ce49d0792",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/pair_precision_learned_5846_500_v1/results.json": "bfff1ea93139fe433d80c915d549461964523edbf3540daf50d87d74c3870bf9",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/pair_precision_fixed_5846_500_v1/results.json": "5f2b2c460cec097a5c80f83b4c7725a00b875e64b2a6f1a3365c1ff8cebc8fbe",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/pair_precision_trace_5846_500_v1/results.json": "456ba762dec5c2776e9f3083b3ed1f60cd1ea96a56fb19593b626ee8f8134583"
+  },
+  "decision": "No calibrated sampling benefit established; do not expand this recipe or claim AI superiority.",
+  "limitations": [
+    "One condition and training seed per arm.",
+    "xTB convergence does not certify chemical validity.",
+    "All three populations remain strongly weight-degenerate.",
+    "At 8,512 queries the learned strain median .776 eV is below HMC .902 eV in one small comparison; HMC draws are correlated. The earlier isotropic fixed-noise mean-work median .570 eV is lower. No repeatable advantage is established."
+  ],
+  "scientific_submission_ready": false,
+  "same_query_hmc": {
+    "oracle_queries": 8512,
+    "xtb": [
+      {
+        "arm": "hmc",
+        "attempted": 32,
+        "converged": 32,
+        "strain_eV_success_only": {
+          "q10": 0.3042399068494035,
+          "median": 0.9021054599603815,
+          "q90": 4.743332068398725
+        },
+        "initial_max_force_norm_eV_A": {
+          "q10": 1.7313385220863766,
+          "median": 2.8797263979839247,
+          "q90": 4.259336346301512
+        },
+        "force_values_present": 32
+      }
+    ],
+    "source_sha256": "fe6728ab5c4cab1299b149df77a617d04bd3921c4dda5c4f05717b7d4dc24ff5"
+  }
+}
