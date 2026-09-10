@@ -39,3 +39,27 @@ def endpoint_kl_surrogate(endpoint, proposal_score, target_score):
     if not all(torch.isfinite(v).all() for v in [endpoint, proposal_score, target_score]):
         raise ValueError('Non-finite endpoint or score')
     return (endpoint*(proposal_score-target_score).detach()).sum(-1).mean()
+
+
+def normalized_dsm_loss(score, noise, noise_std, *, mean_score=None):
+    """DSM without its parameter-constant term, optionally using a known CV.
+
+    score is evaluated at mean+sigma*noise. mean_score is evaluated at the
+    conditional mean, independently of that noise. Its zero-mean term must
+    retain parameter derivatives to reduce gradient variance. This established
+    control variate (e.g. nonlinear DSM) changes neither the expected gradient
+    nor the finite-sigma marginal being fitted. Antithetic examples can instead
+    be supplied as paired rows. Scaling changes optimizer numerics, so include
+    a matched scaled-IID control when comparing to raw DSM.
+    """
+    if score.ndim != 2 or score.shape != noise.shape:
+        raise ValueError('Matched score and Gaussian-noise matrices required')
+    if not math.isfinite(noise_std) or noise_std <= 0:
+        raise ValueError('Positive finite Gaussian scale required')
+    if mean_score is not None and mean_score.shape != score.shape:
+        raise ValueError('Mean score must match noisy score')
+    terms = [score, noise] if mean_score is None else [score, noise, mean_score]
+    if not all(torch.isfinite(v).all() for v in terms):
+        raise ValueError('Non-finite DSM control-variate inputs')
+    difference = score if mean_score is None else score-mean_score
+    return (.5*score.square()+difference*noise.detach()/noise_std).mean()

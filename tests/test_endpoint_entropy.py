@@ -1,6 +1,6 @@
 import torch
 
-from cfm_mol.endpoint_entropy import denoising_score_loss, endpoint_kl_surrogate
+from cfm_mol.endpoint_entropy import denoising_score_loss, endpoint_kl_surrogate, normalized_dsm_loss
 
 
 def quadrature():
@@ -34,3 +34,26 @@ def test_actual_noise_dsm_has_known_gaussian_conditional_optimum():
     coefficient = torch.tensor(1/(a*a+sigma*sigma), dtype=torch.float64, requires_grad=True)
     gradient = torch.autograd.grad(denoising_score_loss(-coefficient*y, eps, sigma), coefficient)[0]
     torch.testing.assert_close(gradient, torch.zeros_like(gradient), atol=1e-14, rtol=0)
+
+
+def test_mean_control_variate_keeps_gradient_and_removes_small_noise_divergence():
+    z, eps = quadrature()
+    sigma, a = .01, .8
+    coefficient = torch.tensor(.7, dtype=torch.float64, requires_grad=True)
+    mean = a*z; y = mean+sigma*eps
+    scores = -coefficient*y; center_scores = -coefficient*mean
+    raw = normalized_dsm_loss(scores, eps, sigma)
+    controlled = normalized_dsm_loss(scores, eps, sigma, mean_score=center_scores)
+    first, = torch.autograd.grad(raw, coefficient, retain_graph=True)
+    second, = torch.autograd.grad(controlled, coefficient)
+    expected = coefficient.detach()*(a*a+sigma*sigma)-1
+    torch.testing.assert_close(first, expected, atol=1e-12, rtol=0)
+    torch.testing.assert_close(second, expected, atol=1e-12, rtol=0)
+    # Independent analytic gradient expressions at the Gaussian optimum.
+    gen = torch.Generator().manual_seed(9120)
+    mean = .8*torch.randn(32768, dtype=torch.float64, generator=gen)
+    eps = torch.randn(32768, dtype=torch.float64, generator=gen)
+    c = 1/(.8**2+sigma**2); y = mean+sigma*eps
+    iid_gradient = c*y*y-y*eps/sigma
+    cv_gradient = c*y*y-eps*eps
+    assert float(iid_gradient.var()/cv_gradient.var()) > 1000

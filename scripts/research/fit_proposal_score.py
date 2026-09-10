@@ -10,6 +10,7 @@ import torch
 from flowmol.model_utils.load import read_config_file, model_from_config
 
 from cfm_mol.condition_systems import graph_from_condition
+from cfm_mol.endpoint_entropy import normalized_dsm_loss
 from cfm_mol.innovation_posterior import GaussianInnovationMap
 from cfm_mol.molecular_path_drift import MolecularPathDrift
 from cfm_mol.nonequilibrium import centered_orthonormal_basis
@@ -32,11 +33,12 @@ def main():
     p.add_argument('--heldout-pool', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--steps', type=int, default=500)
+    p.add_argument('--objective', choices=['raw', 'scaled_iid', 'grouped_iid', 'antithetic', 'mean_cv'], default='raw')
     p.add_argument('--batch', type=int, default=128)
     p.add_argument('--seed', type=int, default=9101)
     p.add_argument('--device', default='cuda')
     args = p.parse_args()
-    if min(args.steps, args.batch) < 1:
+    if args.batch % 2 or min(args.steps, args.batch) < 1:
         raise ValueError('Positive training counts required')
     output = args.out/'results.json'
     if output.exists():
@@ -113,6 +115,9 @@ def main():
         'heldout_parent_seed': heldout_report['train_seed'], 'train_parents': len(train_means), 'heldout_parents': len(test_means),
         'terminal_noise_std': sigma, 'gaussian_baseline_precision': gaussian_precision, 'new_oracle_evaluations': 0,
         'forward_model_updates': 0, 'critic_parameters': sum(v.numel() for v in critic.parameters()),
+        'score_point_evaluations_per_update': args.batch,
+        'independent_parents_per_update': args.batch if args.objective in ['raw', 'scaled_iid'] else args.batch//2,
+        'clipped_updates': 0, 'maximum_preclip_gradient_norm': 0.,
         'history': [], 'limitations': ['Frozen proposal only: no molecular actor or generated-distribution update.',
             'Fresh final noise is reused across controls; parent means are independent between training and assessment.',
             'The finite training mixture differs from the population proposal; independent heldout parents detect some overfitting.',
@@ -120,19 +125,36 @@ def main():
             'Standard invariant energy network and score-distillation tools are not claimed novel.']}
     write_json(output, report)
     for step in range(args.steps):
-        index = torch.randint(len(train_means), (args.batch,), generator=selection)
-        epsilon = torch.randn((args.batch, dimension), dtype=torch.float64, device=args.device, generator=noise)
-        y = train_means[index].to(args.device)+sigma*epsilon
+        grouped = args.objective in ['grouped_iid', 'antithetic', 'mean_cv']
+        count = args.batch//2 if grouped else args.batch
+        index = torch.randint(len(train_means), (count,), generator=selection)
+        epsilon = torch.randn((count, dimension), dtype=torch.float64, device=args.device, generator=noise)
+        mean = train_means[index].to(args.device)
+        y = mean+sigma*epsilon
+        if args.objective == 'mean_cv':
+            y = torch.cat([y, mean])
+        elif args.objective == 'antithetic':
+            y = torch.cat([y, mean-sigma*epsilon]); epsilon = torch.cat([epsilon, -epsilon])
+        elif args.objective == 'grouped_iid':
+            second = torch.randn(epsilon.shape, dtype=epsilon.dtype, device=epsilon.device, generator=noise)
+            y = torch.cat([y, mean+sigma*second]); epsilon = torch.cat([epsilon, second])
         optimizer.zero_grad(set_to_none=True)
         score = critic.score(y, basis, numbers, electronic, create_graph=True)
-        loss = (sigma*score+epsilon).square().mean()
+        if args.objective == 'raw':
+            loss = (sigma*score+epsilon).square().mean()
+        elif args.objective == 'mean_cv':
+            loss = normalized_dsm_loss(score[:count], epsilon, sigma, mean_score=score[count:])
+        else:
+            loss = normalized_dsm_loss(score, epsilon, sigma)
         if not torch.isfinite(loss):
             raise FloatingPointError('Non-finite critic loss')
         loss.backward()
         norm = torch.nn.utils.clip_grad_norm_(critic.parameters(), 10., error_if_nonfinite=True)
         optimizer.step()
+        report['clipped_updates'] += int(float(norm) > 10.)
+        report['maximum_preclip_gradient_norm'] = max(report['maximum_preclip_gradient_norm'], float(norm))
         if step == 0 or (step+1) % 50 == 0:
-            row = {'step': step+1, 'dsm_loss': float(loss.detach()), 'gradient_norm': float(norm), 'seconds': time.perf_counter()-start}
+            row = {'step': step+1, 'training_objective': args.objective, 'training_loss': float(loss.detach()), 'gradient_norm': float(norm), 'seconds': time.perf_counter()-start}
             report['history'].append(row); write_json(output, report); print(json.dumps(row), flush=True)
     evaluation_noise = torch.randn(test_means.shape, dtype=torch.float64, generator=torch.Generator().manual_seed(args.seed+1))
     y_all = test_means+sigma*evaluation_noise

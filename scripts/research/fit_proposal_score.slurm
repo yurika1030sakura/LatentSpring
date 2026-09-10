@@ -21,7 +21,8 @@ export XDG_CACHE_HOME="${SLURM_TMPDIR:-/tmp}/bgfm_score_cache_${SLURM_JOB_ID}"
 mkdir -p "$RUN_ROOT" "$MPLCONFIGDIR" "$XDG_CACHE_HOME"
 cd "$SOURCE_ROOT"
 STEPS="${3:-500}"
+OBJECTIVE="${4:-raw}"
 exec "$BGFM_STORE/envs/flowmol/bin/python" -u scripts/research/fit_proposal_score.py \
  --source-run "$LAB_RUNS/work300_annealed_joint_5846_1500_v1" \
  --training-pool "$LAB_RUNS/forward_work_teacher_5846_v1" \
- --heldout-pool "$LAB_RUNS/backward_refit_5846_v1" --out "$RUN_ROOT" --steps "$STEPS"
+ --heldout-pool "$LAB_RUNS/backward_refit_5846_v1" --out "$RUN_ROOT" --steps "$STEPS" --objective "$OBJECTIVE"

@@ -96,3 +96,31 @@ of zero. These are imperfect finite diagnostics, not a global score certificate.
 Report every probe, even when one gate fails. No best-checkpoint selection.
 A2-step runtime smoke precedes the500-step screen. Failed qualification prevents
 an actor update under this recipe. Toy success does not bypass this gate.
+
+
+## Known variance-reduction controls, same point-evaluation budget
+
+The tiny actual terminal noise can make ordinary DSM gradients noisy. Existing
+methods already address this: Birrell et al., Nonlinear denoising score matching
+for enhanced learning of structured distributions (2025),
+https://arxiv.org/abs/2405.15625 ; Meng et al., NeurIPS2021,
+https://proceedings.neurips.cc/paper_files/paper/2021/hash/d582ac40970f9885836a61d7b2c662e4-Abstract.html ;
+Jeha et al., Taylor-based control variates, https://arxiv.org/abs/2408.12270 .
+Antithetic noise and mean-zero DSM control variates are not claimed new here.
+
+Compare500-step frozen-critic controls with identical initialization, learning
+rate, clipping, parent pools and128 score-point evaluations per update:
+scaled_iid (128 independent parent/noise rows); grouped_iid (64 parents, two
+independent noises each); antithetic (64 parents, plus/minus the same noise);
+mean_cv (64 noisy rows plus their64 conditional means). The existing raw-DSM
+run remains a scale control. Evaluate all against the same heldout rows/gates.
+
+The scaled objective is E[.5||s(y)||^2+s(y) dot epsilon/sigma]. mean_cv replaces
+the last score by s(y)-s(mean). The subtracted term has zero expectation because
+epsilon is independent of mean; retain derivatives through s(mean). Antithetic
+pairing has the same expected finite-sigma gradient. These operations alter the
+critic gradient estimator, not the forward samples, sigma or requested target.
+For a linear Gaussian critic the mean-control gradient removes the leading
+1/sigma noise term; its equality of expectation and variance reduction pass a
+known-answer test. This remains a standard-mechanism control, not molecular proof.
+A scientific actor update still requires the frozen score qualification gate.
