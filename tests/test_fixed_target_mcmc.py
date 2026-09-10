@@ -3,7 +3,7 @@ import math
 import pytest
 import torch
 
-from cfm_mol.fixed_target_mcmc import mala_population
+from cfm_mol.fixed_target_mcmc import mala_population,hmc_population
 from cfm_mol.tempered_smc import DensityValue
 
 
@@ -33,3 +33,17 @@ def test_zero_moves_does_not_relabel_arbitrary_starts_as_equilibrium():
     torch.testing.assert_close(final,x.double())
     assert stats['target_evaluations']==4 and stats['acceptance_fraction'] is None
     assert stats['endpoint_density'].startswith('unknown')
+
+
+def test_hmc_clipped_kicks_keep_target_moments_and_count_every_leapfrog_query():
+    generator=torch.Generator().manual_seed(315)
+    initial=torch.randn(8192,2,dtype=torch.float64,generator=generator)
+    target=lambda x:DensityValue(-.5*x.square().sum(-1),-x)
+    final,value,stats=hmc_population(initial,target,leapfrog_counts=[7]*20,step_size=.3,
+        max_score_norm=.5,generator=generator)
+    assert stats['target_evaluations']==len(initial)*(1+7*20)
+    assert .1<stats['acceptance_fraction']<.95
+    assert float(final.mean(0).abs().max())<.04
+    assert float((final.var(0)-1).abs().max())<.06
+    torch.testing.assert_close(value.log_value,-.5*final.square().sum(-1))
+    torch.testing.assert_close(value.score,-final)

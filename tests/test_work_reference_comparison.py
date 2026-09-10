@@ -37,6 +37,16 @@ def test_work_offset_is_removed_with_correct_sign_and_reference_is_checked(tmp_p
     for row in json.loads(unweighted.read_text())['rows']:
         assert row['ess'] is None and row['log_normalizer_estimate'] is None
         assert row['log_normalizer_difference'] is None and row['maximum_weight'] is None
+    for stage in ['initial','final']:
+        path=run/f'{stage}_samples.pt';data=torch.load(path,weights_only=False)
+        data['sample_cluster_ids']=torch.arange(4).repeat_interleave(4);torch.save(data,path)
+    clustered=tmp_path/'clustered.json'
+    monkeypatch.setattr(sys,'argv',argv[:-1]+[str(clustered),'--unweighted']);module.main()
+    row=json.loads(clustered.read_text())['rows'][-1]
+    assert row['error_scope'].startswith('clustered')
+    values=torch.tensor(invariant_observables(x.numpy())['radius_gyration_A']).reshape(4,4).mean(1)
+    expected=float(values.std()/2)
+    assert row['moments']['radius_gyration_A']['empirical_estimate_se']==pytest.approx(expected)
     ref['oracle_sha256']='different_oracle';(reference/'reference.json').write_text(json.dumps(ref))
     monkeypatch.setattr(sys,'argv',argv[:-1]+[str(tmp_path/'wrong.json')])
     with pytest.raises(ValueError,match='Potential'):module.main()

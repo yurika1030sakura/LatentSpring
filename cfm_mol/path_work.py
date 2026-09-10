@@ -47,6 +47,7 @@ class TrainablePath:
     terminal: torch.Tensor
     log_initial: torch.Tensor
     log_forward_minus_backward: torch.Tensor
+    states: torch.Tensor | None = None
 
     def work(self,reduced_terminal_energy):
         if reduced_terminal_energy.shape!=self.log_initial.shape:
@@ -56,9 +57,21 @@ class TrainablePath:
         return value
 
 
+def gaussian_reference_step(left,right,noise_scale,prior_std,terminal_std,noise_annealing_power=0.):
+    """Scalar transition coefficients shared by simulation and fixed-path scoring."""
+    dt=right-left;step_noise=noise_scale*(1-left)**noise_annealing_power
+    std=step_noise*math.sqrt(dt)
+    if terminal_std is None:return dt,1.,1.,std,std
+    left_scale=prior_std*(terminal_std/prior_std)**left
+    right_scale=prior_std*(terminal_std/prior_std)**right
+    correlation=math.exp(-.5*step_noise**2*dt)
+    relative_noise=math.sqrt(-math.expm1(-step_noise**2*dt))
+    return dt,correlation*right_scale/left_scale,correlation*left_scale/right_scale,right_scale*relative_noise,left_scale*relative_noise
+
+
 def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,generator,*,
                            prior_std=1.,checkpoint_steps=False,terminal_std=None,max_drift_norm=None,
-                           forward_energy_only=False,mean_parameterization='reference',noise_annealing_power=0.):
+                           forward_energy_only=False,mean_parameterization='reference',noise_annealing_power=0.,retain_states=False):
     """Simulate reparameterized paths and retain complete first-order gradients.
 
     x0 must be an independent draw from the stated isotropic Gaussian.
@@ -92,16 +105,9 @@ def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,gen
     if max_drift_norm is not None and (not math.isfinite(max_drift_norm) or max_drift_norm<=0):raise ValueError('Invalid drift bound')
     log_initial=gaussian_log_density(x0,torch.zeros_like(x0),prior_std)
     x=x0;ratio=x0.new_zeros(len(x0),dtype=torch.float64)
+    saved=[x.detach().clone()] if retain_states else None
     for left,right in zip(grid,grid[1:]):
-        dt=right-left;step_noise=noise_scale*(1-left)**noise_annealing_power;std=step_noise*math.sqrt(dt)
-        af=ab=1.;std_forward=std_backward=std
-        if terminal_std is not None:
-            left_scale=prior_std*(terminal_std/prior_std)**left
-            right_scale=prior_std*(terminal_std/prior_std)**right
-            correlation=math.exp(-.5*step_noise**2*dt)
-            relative_noise=math.sqrt(-math.expm1(-step_noise**2*dt))
-            af=correlation*right_scale/left_scale;ab=correlation*left_scale/right_scale
-            std_forward=right_scale*relative_noise;std_backward=left_scale*relative_noise
+        dt,af,ab,std_forward,std_backward=gaussian_reference_step(left,right,noise_scale,prior_std,terminal_std,noise_annealing_power)
         noise=torch.randn(x.shape,dtype=x.dtype,device=x.device,generator=generator)
         def step(state,epsilon,left=left,right=right,dt=dt,af=af,ab=ab,sf=std_forward,sb=std_backward):
             drift=forward_drift(state,left)
@@ -127,5 +133,6 @@ def gaussian_training_path(x0,forward_drift,backward_drift,times,noise_scale,gen
             x,increment=checkpoint(step,x,noise,use_reentrant=False)
         else:x,increment=step(x,noise)
         ratio=ratio+increment
+        if saved is not None:saved.append(x.detach().clone())
     _states(x)
-    return TrainablePath(x,log_initial,ratio)
+    return TrainablePath(x,log_initial,ratio,None if saved is None else torch.stack(saved,dim=1))

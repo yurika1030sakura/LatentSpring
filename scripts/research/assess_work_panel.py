@@ -80,6 +80,8 @@ def main():
         work=data.get('work')
         if work is not None and work.shape!=(count,):raise ValueError('One work value is required per sample')
         selected=select_indices(count,args.xtb_count,args.seed)
+        clusters=data.get('sample_cluster_ids')
+        if clusters is not None and len(clusters)!=count:raise ValueError('Cluster IDs must match samples')
         weights=normalized_weights(-work.double()).numpy() if work is not None else None
         radii=[table.GetRcovalent(int(z)) for z in numbers]
         contacts=[contact_summary(item.numpy(),radii) for item in x]
@@ -98,9 +100,11 @@ def main():
         for index in selected:
             tasks.append({'arm':name,'validation_index':condition.get('source_row',0),'sample_id':index,
                 'positions':x[index].tolist(),'symbols':[table.GetElementSymbol(int(z)) for z in numbers],
-                'charge_recorded':condition['charge'],'spin':condition['spin_multiplicity']})
+                'charge_recorded':condition['charge'],'spin':condition['spin_multiplicity'],
+                **({'sample_cluster_id':int(clusters[index])} if clusters is not None else {})})
         sources.append({'arm':name,'condition':data['condition'],'samples':str(path.resolve()),'samples_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),
-            'results_sha256':hashlib.sha256(parent.read_bytes()).hexdigest()})
+            'results_sha256':hashlib.sha256(parent.read_bytes()).hexdigest(),
+            'sample_cluster_ids':None if clusters is None else torch.as_tensor(clusters).tolist()})
     report={'complete':False,'scope':__doc__,'condition':condition,'sources':sources,'geometry':geometry,
         'source_sha256':{str(path):hashlib.sha256(path.read_bytes()).hexdigest() for path in
             [Path(__file__).resolve(),Path(__file__).with_name('eval_position_xtb.py').resolve()]},
@@ -112,6 +116,7 @@ def main():
             'Importance ESS describes these weights, not proven mode coverage.',
             'One training seed and one condition do not establish reproducible molecular benefit.',
             'Strain statistics condition on convergence; report failures alongside them.']}
+    report['limitations'].append('Samples sharing a recorded chain/cluster ID are correlated; counts are descriptive, not independent repetitions.')
     write_json(output,report)
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         futures=[pool.submit(evaluate,task,binary,args.out,args.max_cycles) for task in tasks]
