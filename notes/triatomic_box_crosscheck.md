@@ -21,3 +21,11 @@ This checks a finite-domain integral and numerical order stability; it cannot
 certify total normalization or exclude important mass outside the box. Order
 agreement is not a rigorous error bound. Keep both orders and every SMC seed;
 do not select a reference retrospectively because it agrees with a candidate.
+
+
+The completed order-20 and order-32 results differ from the same-box QMC value
+by +.04961 and +.005303 nat respectively. This does not support a factor-of-two
+volume error, but the order change is still measurable. Freeze one additional
+order 48 (110,592 new queries) with exactly the same domain, potential and QMC
+comparison; retain both prior orders. Do not reinterpret this as a full-domain
+normalizer certificate.
