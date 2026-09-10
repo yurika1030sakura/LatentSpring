@@ -47,3 +47,13 @@ def test_hmc_clipped_kicks_keep_target_moments_and_count_every_leapfrog_query():
     assert float((final.var(0)-1).abs().max())<.06
     torch.testing.assert_close(value.log_value,-.5*final.square().sum(-1))
     torch.testing.assert_close(value.score,-final)
+
+
+def test_hmc_reuses_an_explicit_initial_value_without_charging_an_oracle_call():
+    initial=torch.ones(8,2,dtype=torch.float64);queried=[]
+    def target(z):
+        queried.append(len(z));return DensityValue(-.5*z.square().sum(-1),-z)
+    cached=target(initial);queried.clear()
+    _,_,stats=hmc_population(initial,target,leapfrog_counts=[3],step_size=.1,
+        generator=torch.Generator().manual_seed(10),initial_value=cached)
+    assert sum(queried)==stats['target_evaluations']==24

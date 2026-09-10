@@ -1,0 +1,306 @@
+{
+  "complete": true,
+  "rows": {
+    "logvariance_300K_5846_500_v1": {
+      "evaluations": {
+        "initial": {
+          "mean_shifted_work": 326.55613064298154,
+          "work_std": 193.4295491589794,
+          "mean_energy_eV": -20920.408004709832,
+          "weights": {
+            "particles": 256,
+            "ess": 1.0004894245132518,
+            "ess_fraction": 0.00390816181450489,
+            "maximum_weight": 0.9997553475995076,
+            "log_mean_weight": -46.016303868307155
+          },
+          "geometry": {
+            "weighted_pair_distance_variance_A2": 1.4935141210598557,
+            "weighted_overlap_fraction": 0.0234375,
+            "unweighted_overlap_fraction": 0.0234375,
+            "weighted_radius_gyration_A": 2.1539719510716555,
+            "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+          },
+          "weighted_geometry": {
+            "weighted_pair_distance_variance_A2": 0.00044867186921883324,
+            "weighted_overlap_fraction": 1.4334705968169748e-263,
+            "unweighted_overlap_fraction": 0.0234375,
+            "weighted_radius_gyration_A": 1.9539010543802768,
+            "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+          },
+          "oracle_evaluations": 256
+        },
+        "final": {
+          "mean_shifted_work": 5811.403852490879,
+          "work_std": 237.97323156669836,
+          "mean_energy_eV": -20824.914925999357,
+          "weights": {
+            "particles": 256,
+            "ess": 1.0,
+            "ess_fraction": 0.00390625,
+            "maximum_weight": 1.0,
+            "log_mean_weight": -5097.29363736244
+          },
+          "geometry": {
+            "weighted_pair_distance_variance_A2": 0.42523527177156917,
+            "weighted_overlap_fraction": 0.9921875,
+            "unweighted_overlap_fraction": 0.9921875,
+            "weighted_radius_gyration_A": 1.2132520678176335,
+            "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+          },
+          "weighted_geometry": {
+            "weighted_pair_distance_variance_A2": 2.3631766371740774e-31,
+            "weighted_overlap_fraction": 1.0,
+            "unweighted_overlap_fraction": 0.9921875,
+            "weighted_radius_gyration_A": 1.1189657167036184,
+            "scope": "geometry heuristics; not chemical validity or measured Boltzmann mode coverage"
+          },
+          "oracle_evaluations": 256
+        }
+      },
+      "oracle_evaluations": 8512
+    },
+    "logvariance_300K_5846_500_xtb_v1": {
+      "xtb_summaries": [
+        {
+          "arm": "initial",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 1.592162739054902,
+            "median": 4.404667727864393,
+            "q90": 9.604672987662003
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 3.1310365539808833,
+            "median": 7.591542462968597,
+            "q90": 37.12529618861939
+          },
+          "force_values_present": 32
+        },
+        {
+          "arm": "log_variance",
+          "attempted": 32,
+          "converged": 25,
+          "strain_eV_success_only": {
+            "q10": 165.5151666653778,
+            "median": 316.30090053104027,
+            "q90": 1123.6570303458616
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 317.3961454811975,
+            "median": 890.3017538320165,
+            "q90": 4467.41739429067
+          },
+          "force_values_present": 25
+        }
+      ]
+    },
+    "work_gradient_diagnostic_5846_v1": {
+      "evaluations": {},
+      "gradient_diagnostics": {
+        "estimators": {
+          "pathwise_forward": {
+            "batches": 16,
+            "parameters": 5904369,
+            "mean_gradient_norm": 5269.375678905092,
+            "mean_single_batch_norm": 8062.26018406492,
+            "trace_gradient_covariance": 66803993.74179493,
+            "mean_gradient_rms_standard_error": 2043.3427536422232,
+            "estimated_noise_to_mean_squared_ratio": 2.4059361713211405
+          },
+          "fixed_score_forward": {
+            "batches": 16,
+            "parameters": 5904369,
+            "mean_gradient_norm": 33655.22245322292,
+            "mean_single_batch_norm": 90590.03789420662,
+            "trace_gradient_covariance": 8835305742.128658,
+            "mean_gradient_rms_standard_error": 23499.07676661024,
+            "estimated_noise_to_mean_squared_ratio": 7.800396014031507
+          },
+          "pathwise_backward": {
+            "batches": 16,
+            "parameters": 5904369,
+            "mean_gradient_norm": 2178.407354809134,
+            "mean_single_batch_norm": 2256.0551362191545,
+            "trace_gradient_covariance": 430723.1846680127,
+            "mean_gradient_rms_standard_error": 164.07376097886828,
+            "estimated_noise_to_mean_squared_ratio": 0.09076534443932495
+          },
+          "fixed_score_backward": {
+            "batches": 16,
+            "parameters": 5904369,
+            "mean_gradient_norm": 157761.598856606,
+            "mean_single_batch_norm": 286031.2057493188,
+            "trace_gradient_covariance": 83872587883.4256,
+            "mean_gradient_rms_standard_error": 72401.91118136384,
+            "estimated_noise_to_mean_squared_ratio": 3.3699033495874735
+          }
+        },
+        "forward_population_scale": 1.875,
+        "forward_mean_gradient_cosine": 0.49189288469880965,
+        "forward_scaled_mean_difference_norm": 16028.11035337165,
+        "limitations": [
+          "Frozen parameters; no optimizer or gradient clipping is applied.",
+          "Finite-batch mean-norm estimates are themselves noisy.",
+          "Forward means share an expectation under normalized forward kernels; backward objectives differ.",
+          "These diagnostics do not establish molecular sampling performance."
+        ],
+        "batches": [
+          {
+            "batch": 0,
+            "mean_work": 424.33868512923164,
+            "fixed_path_work_max_difference": 0.000210673976880571,
+            "seconds": 17.297017882112414
+          },
+          {
+            "batch": 1,
+            "mean_work": 348.8774702911654,
+            "fixed_path_work_max_difference": 0.00021395033650151163,
+            "seconds": 23.448603795142844
+          },
+          {
+            "batch": 2,
+            "mean_work": 371.2558098331322,
+            "fixed_path_work_max_difference": 0.0001771512427808375,
+            "seconds": 29.73038653912954
+          },
+          {
+            "batch": 3,
+            "mean_work": 382.0822934275968,
+            "fixed_path_work_max_difference": 0.00021845801472863968,
+            "seconds": 35.77096744114533
+          },
+          {
+            "batch": 4,
+            "mean_work": 291.5355632335387,
+            "fixed_path_work_max_difference": 0.0001604977411489017,
+            "seconds": 41.861807849025354
+          },
+          {
+            "batch": 5,
+            "mean_work": 285.40877059936884,
+            "fixed_path_work_max_difference": 0.00012763671941229404,
+            "seconds": 47.86369698913768
+          },
+          {
+            "batch": 6,
+            "mean_work": 404.34257087904876,
+            "fixed_path_work_max_difference": 0.0003108021907678449,
+            "seconds": 54.146367135923356
+          },
+          {
+            "batch": 7,
+            "mean_work": 306.1837821528976,
+            "fixed_path_work_max_difference": 0.0001552114947003247,
+            "seconds": 60.299067524960265
+          },
+          {
+            "batch": 8,
+            "mean_work": 367.7413876422193,
+            "fixed_path_work_max_difference": 0.0002488577205213005,
+            "seconds": 66.1758993701078
+          },
+          {
+            "batch": 9,
+            "mean_work": 310.7876595534857,
+            "fixed_path_work_max_difference": 0.0002957068689966036,
+            "seconds": 72.26319808000699
+          },
+          {
+            "batch": 10,
+            "mean_work": 389.92659423596797,
+            "fixed_path_work_max_difference": 0.0002660346116272194,
+            "seconds": 78.30808130512014
+          },
+          {
+            "batch": 11,
+            "mean_work": 445.98217972278917,
+            "fixed_path_work_max_difference": 0.00035997899374251574,
+            "seconds": 84.44875009008683
+          },
+          {
+            "batch": 12,
+            "mean_work": 301.22332826014735,
+            "fixed_path_work_max_difference": 0.00036389953856996726,
+            "seconds": 90.3832773801405
+          },
+          {
+            "batch": 13,
+            "mean_work": 324.6586536464442,
+            "fixed_path_work_max_difference": 0.00035096702697501314,
+            "seconds": 96.41280036512762
+          },
+          {
+            "batch": 14,
+            "mean_work": 342.75862494427525,
+            "fixed_path_work_max_difference": 0.0003036655284063272,
+            "seconds": 102.48756129015237
+          },
+          {
+            "batch": 15,
+            "mean_work": 378.0116712839515,
+            "fixed_path_work_max_difference": 0.00022511592112550716,
+            "seconds": 108.38299720198847
+          }
+        ],
+        "weights_updated": false
+      },
+      "oracle_evaluations": 256
+    },
+    "hmc_300K_5846_v1/sampling": {
+      "summary": {
+        "trajectories": 34,
+        "leapfrog_steps": 1063,
+        "target_evaluations": 8512,
+        "accepted_per_chain": [
+          34,
+          34,
+          31,
+          33,
+          34,
+          34,
+          33,
+          33
+        ],
+        "acceptance_fraction": 0.9779411764705882,
+        "endpoint_density": "unknown; finite trajectories do not certify equilibrium"
+      },
+      "oracle_evaluations": 8512
+    },
+    "hmc_300K_5846_v1/xtb": {
+      "xtb_summaries": [
+        {
+          "arm": "hmc",
+          "attempted": 32,
+          "converged": 32,
+          "strain_eV_success_only": {
+            "q10": 0.3042399068494035,
+            "median": 0.9021054599603815,
+            "q90": 4.743332068398725
+          },
+          "initial_max_force_norm_eV_A": {
+            "q10": 1.7313385220863766,
+            "median": 2.8797263979839247,
+            "q90": 4.259336346301512
+          },
+          "force_values_present": 32
+        }
+      ]
+    }
+  },
+  "source_sha256": {
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/logvariance_300K_5846_500_v1/results.json": "b3aa3755d3fc81e43e763422f204093e907e4ea9bb7a4828593193db89866829",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/logvariance_300K_5846_500_xtb_v1/assessment.json": "01df4316777f1e2778c43e1d9d1fa58efd7677839f81673554808631bcf1446d",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work_gradient_diagnostic_5846_v1/results.json": "f25c42f490fc91810046d2d8e7a57cc28736a3aee2218d33bbc928c532ded602",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/hmc_300K_5846_v1/sampling/results.json": "42ddfb229e5603697a846a74cf2909164fd97e654779c9e1a94c4a4f7d819153",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/hmc_300K_5846_v1/xtb/assessment.json": "fe6728ab5c4cab1299b149df77a617d04bd3921c4dda5c4f05717b7d4dc24ff5"
+  },
+  "decision": "Do not expand this on-policy log-variance recipe. Test continued original mean-work training with matched higher-budget HMC.",
+  "limitations": [
+    "Gradient-noise diagnostic is at initialization, with only 16 independent batches.",
+    "Higher forward estimator variance and changed backward objective both matter; this does not prove a unique failure mechanism.",
+    "HMC convergence and a molecular normalizer are not certified."
+  ],
+  "scientific_submission_ready": false
+}

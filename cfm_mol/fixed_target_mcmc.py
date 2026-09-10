@@ -40,7 +40,7 @@ def mala_population(x0,target,*,steps,proposal_std,generator,max_score_norm=100.
 
 
 @torch.no_grad()
-def hmc_population(x0,target,*,leapfrog_counts,step_size,generator,max_score_norm=100.,callback=None):
+def hmc_population(x0,target,*,leapfrog_counts,step_size,generator,max_score_norm=100.,callback=None,initial_value=None):
     """Momentum-refreshed HMC with true Hamiltonian acceptance and cached forces.
 
     Clipped deterministic kicks remain volume preserving and reversible. The
@@ -50,7 +50,9 @@ def hmc_population(x0,target,*,leapfrog_counts,step_size,generator,max_score_nor
     counts=list(leapfrog_counts)
     if not counts or any(not isinstance(v,int) or v<1 for v in counts):raise ValueError('Positive integer trajectory lengths required')
     if any(not math.isfinite(v) or v<=0 for v in [step_size,max_score_norm]):raise ValueError('Positive finite HMC scales required')
-    x=x0.detach().double().clone();value=target(x).validate(x,True);n=len(x);evaluations=n
+    x=x0.detach().double().clone();n=len(x)
+    value=(target(x) if initial_value is None else initial_value).validate(x,True)
+    evaluations=n if initial_value is None else 0
     accepted=torch.zeros(n,dtype=torch.long,device=x.device)
     if callback is not None:callback(0,x,value,accepted.clone(),evaluations)
     for iteration,length in enumerate(counts,1):

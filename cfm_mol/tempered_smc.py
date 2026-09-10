@@ -103,7 +103,8 @@ def tempered_smc(x0: Tensor, initial: Callable[[Tensor], DensityValue],
                  proposal_std: float, generator: torch.Generator,
                  kernel: str = 'mala', moves_per_stage: int = 1,
                  resample_threshold: float = .5, max_score_norm: float = 100.,
-                 callback: Callable[[dict],None] | None = None) -> TemperedPopulation:
+                 callback: Callable[[dict],None] | None = None, hmc_leapfrog_steps: int = 8,
+                 hmc_step_size_schedule: Callable[[float],float] | None = None) -> TemperedPopulation:
     """Geometric bridges, pre-move reweighting, optional resampling, MH moves.
 
     With a fixed schedule, a normalized initial density, iid x0 from that
@@ -117,15 +118,16 @@ def tempered_smc(x0: Tensor, initial: Callable[[Tensor], DensityValue],
     adaptive temperature selection is hidden in this implementation.
     """
     _states(x0);grid=_schedule(betas,'betas')
-    if kernel not in ['mala','rwm','independence','hybrid']:raise ValueError('Unknown MH kernel')
+    if kernel not in ['mala','rwm','independence','hybrid','hmc']:raise ValueError('Unknown MH kernel')
     if not math.isfinite(proposal_std) or proposal_std<=0 or not isinstance(moves_per_stage,int) or moves_per_stage<1:
         raise ValueError('Invalid MH step or move count')
     if not 0<=resample_threshold<=1 or not math.isfinite(max_score_norm) or max_score_norm<=0:
         raise ValueError('Invalid resampling threshold or score cap')
+    if kernel=='hmc' and (not isinstance(hmc_leapfrog_steps,int) or hmc_leapfrog_steps<1):raise ValueError('Positive HMC trajectory length required')
     if kernel=='hybrid' and moves_per_stage!=2:raise ValueError('Hybrid requires exactly two moves per stage')
     if kernel in ['hybrid','independence'] and not callable(getattr(initial,'sample',None)):
         raise ValueError('Global MH requires a sampler for the exact initial density')
-    x=x0.detach().double().clone();n=len(x);need_score=kernel in ['mala','hybrid']
+    x=x0.detach().double().clone();n=len(x);need_score=kernel in ['mala','hybrid','hmc']
     a=initial(x).validate(x,need_score);b=target(x).validate(x,need_score)
     logw=x.new_full((n,),-math.log(n));logz=0.;ancestors=torch.arange(n,device=x.device)
     history=[];target_evaluations=n
@@ -143,6 +145,25 @@ def tempered_smc(x0: Tensor, initial: Callable[[Tensor], DensityValue],
             logw=x.new_full((n,),-math.log(n))
         accept_count=0;global_accepted=0;global_attempted=0
         for move in range(moves_per_stage):
+            if kernel=='hmc':
+                from cfm_mol.fixed_target_mcmc import hmc_population
+                def bridge(z):
+                    pa=initial(z).validate(z,True);pb=target(z).validate(z,True)
+                    return DensityValue((1-beta)*pa.log_value+beta*pb.log_value,
+                        (1-beta)*pa.score+beta*pb.score)
+                cached=DensityValue((1-beta)*a.log_value+beta*b.log_value,(1-beta)*a.score+beta*b.score)
+                scale=proposal_std if hmc_step_size_schedule is None else hmc_step_size_schedule(beta)
+                x,mixed,stats=hmc_population(x,bridge,leapfrog_counts=[hmc_leapfrog_steps],
+                    step_size=scale,generator=generator,max_score_norm=max_score_norm,initial_value=cached)
+                target_evaluations+=stats['target_evaluations']
+                accept_count+=sum(stats['accepted_per_chain'])
+                a=initial(x).validate(x,True)
+                # beta>0 on every mutation stage. Recover the accepted target
+                # value/score from the returned bridge, avoiding a repeated oracle
+                # query. Double precision and shifted energies limit cancellation.
+                b=DensityValue((mixed.log_value-(1-beta)*a.log_value)/beta,
+                    (mixed.score-(1-beta)*a.score)/beta).validate(x,True)
+                continue
             global_move=kernel=='independence' or (kernel=='hybrid' and move==0)
             mean=x
             if need_score and not global_move:
