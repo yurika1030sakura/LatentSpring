@@ -20,6 +20,13 @@ that all scientific checks passed.
 
 ## Latest corrected campaign release
 
+Current corrected jobs:45914819(condition0) and45914826(array1--7,concurrency2),
+currently queued. Task7 has a6-hour cap based on measured20-atom oracle cost;
+other conditions retain4 hours. Scientific query counts are unchanged.
+Current manuscript: runs/verification/paper_20260910_parity_release/main.pdf,
+6 main pages, with explicit raw/projected source-target distinctions.
+
+
 The even-potential audit45906924 passes all8 conditions and its larger FD ladder,
 using640 raw queries. N8 re-score45906933 completes14336 inverted-energy calls:
 convex-minus-affine -.013366+/-.002517 and-.012610+/-.002150 nat. The small

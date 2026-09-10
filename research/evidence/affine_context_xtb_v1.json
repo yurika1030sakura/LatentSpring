@@ -1,0 +1,55 @@
+{
+  "complete": true,
+  "scope": "Raw-source affine geometry assessment, retained separately from projected-target sampling",
+  "source_sha256": "c5c047879433c47472d6d4251d05067e79534fd4598fac88b3bedac26752eef9",
+  "xtb_summaries": [
+    {
+      "arm": "affine_main",
+      "attempted": 32,
+      "converged": 32,
+      "strain_eV_success_only": {
+        "q10": 0.4395514504428945,
+        "median": 0.5935302380883059,
+        "q90": 0.7844855888661756
+      },
+      "initial_max_force_norm_eV_A": {
+        "q10": 2.0242984591532895,
+        "median": 3.5068806856910304,
+        "q90": 5.233980233436967
+      },
+      "force_values_present": 32
+    },
+    {
+      "arm": "affine_replica",
+      "attempted": 32,
+      "converged": 32,
+      "strain_eV_success_only": {
+        "q10": 0.4304240089353698,
+        "median": 0.5912231814004087,
+        "q90": 0.7745296999533878
+      },
+      "initial_max_force_norm_eV_A": {
+        "q10": 2.018024095889514,
+        "median": 3.4345500244764606,
+        "q90": 5.168726675993141
+      },
+      "force_values_present": 32
+    }
+  ],
+  "paired": [
+    {
+      "before": "affine_main",
+      "after": "affine_replica",
+      "attempted_pairs": 32,
+      "better": 25,
+      "worse": 7,
+      "tie": 0,
+      "both_failed": 0,
+      "ranking": "converged before failed; then lower strain. This ranking is not chemical validity."
+    }
+  ],
+  "limitations": [
+    "Raw-source geometry panel; no measured geometry superiority or new-target calibration claim.",
+    "All64 attempted optimizations retained."
+  ]
+}

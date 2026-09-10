@@ -4,7 +4,7 @@ Working title: **Refining Molecular Generators with Exact Entropy Changes**.
 The primary manuscript now describes the implemented method, its complete
 volume/entropy derivations and the actual controlled evidence. It is a development
 draft, not an ICLR-ready paper. Latest PDF:
-runs/verification/paper_20260910_refinement_v4/main.pdf (5 main pages,9-page cap).
+runs/verification/paper_20260910_parity_release/main.pdf (6 main pages,9-page cap).
 Historical scalar-ordering audit: paper/legacy_audit.tex and preserved sections/PDFs.
 
 ## New target/source review
