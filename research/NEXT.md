@@ -1,55 +1,44 @@
 # Next research decision
 
-Goal remains active and unachieved. Latest scientific status: September 10 UTC.
-Last full suite: 222 tests pass; two new quadrature/noise-limit tests also pass.
-Latest manuscript build has 9 main pages, no unresolved references.
-No broad calibrated molecular benefit or ICLR-ready contribution is established.
+Goal active and unachieved. 228 tests pass. Original manuscript remains an
+honest audit/development draft (nine main pages), with no validated ICLR-level
+AI contribution or broad calibrated molecular sampling benefit.
 
-1. Live continuations to 1500 total steps (start from 500; optimizer and global
-   RNG step restored, no second temperature reset):
-   - 45763360 work300_fixed_joint_5846_1500_v1
-   - 45763361 work300_annealed_joint_5846_1500_v1
-   - 45763362 work300_annealed_energy_5846_1500_v1
-   Source 4b4c615. Each adds 16,512 queries, cumulative 25,024 including earlier
-   8,512. Assess final ESS, energy, work variance and geometry only when complete.
-   xTB 45764564 depends on all three and retains 32 attempts per arm.
-   Automatic comparison 45775349 waits on the xTB assessment, source 8c10dfb.
-   It checks resume provenance, 1000 added updates, matched 25,024-query totals,
-   every relaxation denominator and work/energy decomposition. Inspect its
-   comparison.json before interpreting the final arms.
-   If a run fails, preserve failure and assess completed arms separately.
-2. Matched 25,024-query HMC 45763216 completed: xTB 32/32, median strain .56135
-   eV. Eight chains supply 64 correlated draws; no normalizer/mixing certificate.
-3. Independent direct same-box integration is complete: jobs 45767649 and
-   45770866, orders 20/32/48, 151,360 new queries. Order 48 differs from order 32
-   by .001845 nat and from original QMC by .007148 nat (QMC relative SE 1.82%).
-   It supports the original volume factors in this finite box; do not declare
-   full-domain convergence. All four HMC-SMC seeds completed with pooled
-   Z/reference 1.723, descriptive SE .528. The original failed screen stands;
-   no passing seed or eight-atom reference is selected.
-4. Completed 500-step log-variance recipe fails: ESS 1/256, overlap 99.22%, xTB
-   25/32, median successful strain 316.30 eV. Preserve it; no scale-up. Frozen
-   gradient diagnostic 45762271 measured 37.6-fold forward covariance trace
-   increase after population-scale correction. Backward objectives also differ;
-   a unique failure mechanism is not established. NeurIPS 2025 arXiv:2506.10982
-   already distinguishes LV and reverse-KL bridge training.
-5. All AgBr2 five arms and two independent evaluation streams completed. Joint
-   annealed seeds have ESS 802.65/823.79/640.28 per8192; fixed joint 886.45;
-   energy-gradient-only 13.72. Their log-Z differences are -.05450/-.03472/-.06264,
-   -.03239 and -5.06827 nat. No annealing advantage over fixed noise is established.
-   Reproduce using combine_work_evaluations.py and input paths in
-   research/evidence/work300_all_triatomic_controls_v1.json. Keep both streams.
-6. New eight-condition development FM/xTB baseline is complete, all 512 generated
-   attempts plus eight references retained; FM64 xTB 239/256. Physics-training
-   outcomes on this panel remain untested. Reserved 722 conditions untouched.
-   Resolve larger-condition sampling before expanding or making transfer claims.
+1. Live candidate comparison (source ec121f1):
+   - 45780761 pair_precision_learned_5846_500_v1
+   - 45780762 pair_precision_fixed_5846_500_v1
+   - 45780775 pair_precision_trace_5846_500_v1
+   Same FM weights, seed 9051, 500 updates/B16/K16, 256 initial/final evaluations,
+   300 K and .1 restraint, native means, scalar noise .2, no scalar annealing.
+   Each uses 8,512 oracle queries. Precision strength 32, learning rate .001;
+   means use 1e-5. Inspect all three, including learned versus fixed identical
+   initial sampling, work/energy variance, ESS, geometry and actual cost.
+   xTB assessment 45781150 waits for all three to succeed.
+   Preserve failed jobs and assess completed arms separately if necessary.
+2. Required gates already passed: molecular B2 45779357 (132 queries), B16
+   45780203 (160 queries, .443 GiB), loader 45780207 (exact coordinates,
+   work max error .000116). Learned precision weights demonstrably updated.
+   These are implementation checks, not evidence of a useful new method.
+3. The candidate uses learned/fixed pair elastic precision and a same-trace
+   isotropic control. Prior art includes elastic networks, AniDS and Chroma.
+   An atomwise anisotropic comparator and scaling work remain necessary before
+   novelty claims. Current dense cubic factorization and 1/N normalization
+   have unproven behavior at larger sizes. See notes/pair_precision_candidate.md.
+4. Completed original continuations to 1500 steps fail distributional calibration:
+   ESS 1.174/2.218/1.092 of256, all xTB32/32, median strain .49357/.52856/.13984.
+   Matched 25,024-query HMC is32/32, .56135 eV, with correlated chains. The
+   automatic audit is retained in work300_5846_1500_comparison.json. Do not
+   restart or keep extending those recipes solely because work decreases.
+5. Independent AgBr2 reference checks are complete. Two evaluation streams of
+   three trained seeds plus both controls are retained. Direct box cubature
+   orders20/32/48 support same-box QMC normalization; no full-domain certificate.
+   Four small HMC-SMC populations are too noisy for promotion to a reference.
+6. Eight-condition independent development FM/xTB baseline is complete; no
+   candidate physics outcomes on that panel yet. Reserved722 conditions remain
+   untouched. A broad final claim needs independent conditions, replicated
+   training benefit and fair compute comparisons, beyond the present one-case pilot.
 
-Current source/data/target invariants remain in CLAUDE.md. Never write home or
-modify shared FlowMol. Every submission uses a committed immutable snapshot.
-Do not restart live jobs or equate engineering PASS with scientific qualification.
-Authors and submission remain with the user. Keep all failures and old outputs.
-
-The actual compute ledger and Gaussian surrogate limit are in STATUS. Neither
-matched oracle queries nor local harmonic calculations establish molecular
-sampling efficiency. Do not add architectures while the live continuations
-and independent reference check can resolve the current decisions.
+Current paper story: PAPER_STORY_CURRENT.md. Keep inherited audit and all
+negative results. Never write home or modify shared FlowMol. Preserve bond-free
+OMol25, max_atoms200, true electronic state and separate environments. No new
+sampler/AI superiority claim follows from engineering PASS or a positive toy.

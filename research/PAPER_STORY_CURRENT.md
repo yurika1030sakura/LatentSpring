@@ -45,7 +45,7 @@ restraint and the available configurations at that energy.
 | Conditional 3D coordinate generation | Implemented and exercised with original charge/spin, including eight new development conditions. |
 | Geometrically useful output | Some generated panels have high xTB convergence and improved strain; convergence is not full chemical validity, connectedness, bonding correctness or synthesizability. |
 | Calibrated small-system statistics | AgBr2 has three trained seeds, two fresh streams each, and independent quadrature plus a direct same-box cross-check; weighted statistics have support within stated uncertainty, without a global convergence certificate. |
-| Broad Boltzmann sampling | Not established. The completed eight-atom 500-step arms have ESS near one; 1500-step continuations remain live. |
+| Broad Boltzmann sampling | Not established. The completed eight-atom 500- and 1500-step arms remain strongly weight-degenerate. |
 | Noise annealing advantage | Not established: fixed-noise AgBr2 joint control is competitive. |
 | Superiority over HMC | Not established. Matched-query HMC is a substantive control and uses much less allocation time in the completed small runs. |
 | Fully unconditional generation of new composition/charge/spin and geometry | Not qualified by the current conditional experiments. |

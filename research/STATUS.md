@@ -145,9 +145,37 @@ Positive-curvature local surrogates give fixed-noise ceilings .29--.38, but thes
 are NOT bounds on the non-Gaussian molecular target. The two new standalone
 quadrature/noise-limit tests pass in addition to the last 222-test full suite.
 
+## Completed 1500-step decision and new candidate
+
+All eight-atom continuations, xTB 45764564 and audit 45775349 completed. Fixed /
+annealed joint / annealed energy have ESS 1.174 / 2.218 / 1.092 of 256 despite
+25,024 total queries each. All three xTB panels converge 32/32 with successful
+median strain .49357 / .52856 / .13984 eV; matched HMC is .56135 eV. Annealed
+joint work standard deviation falls to 19.44, but its restrained energy SD remains
+.4703 eV and distributional calibration is unresolved. Further isotropic training
+is not the current remedy. Full audit: work300_5846_1500_comparison.json.
+
+User explicitly requested developing a stronger AI contribution. A candidate
+learns bounded pairwise precision for correlated Gaussian path noise. Exact
+sampling/log-density and covariance gradients are implemented; 228 tests pass.
+This uses established elastic-network/anisotropic-noise ideas, not a claimed new
+identity. AniDS and Chroma are prior art. The dense 1/N-normalized prototype has
+unproven large-system scaling. Protocol: notes/pair_precision_candidate.md.
+
+Real molecular gates passed: 45779357 (B2), 45780203 (B16), and 45780207 (frozen
+loader). The precision head updates, B16 peak GPU allocation .443 GiB, and the
+loader reproduces coordinates exactly and work within .000116 nat.
+Live 500-step, 8,512-query controls from source ec121f1 are 45780761 (learned),
+45780762 (fixed geometry), 45780775 (isotropic trace control). They share FM
+initialization, seed 9051, target and mean-work objective. Check learned/fixed
+initial equivalence and retain all outcomes; xTB 45781150 waits for all three.
+Learned/fixed initial samples agree within 2.17e-6 A and .00181 work units;
+see pair_precision_initial_equivalence_v1.json. No molecular benefit, originality
+or ICLR readiness is established by these execution gates.
+
 ## What is established
 
-- 222 tests pass, including real FlowMol parameter gradients, full-state and
+- 228 tests pass, including real FlowMol parameter gradients, full-state and
   prior differentiation, exact discrete-adjoint comparisons, COM density,
   conditional FM targets, stochastic-replica identities, smooth geometry and
   dedicated Gaussian/Rademacher probe streams for common/independent controls,

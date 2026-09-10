@@ -48,12 +48,11 @@ invertible student is an existing strong baseline, not a new contribution.
 It is distinct from FALCON's few-step flow-map approach and must be considered
 before committing to a redesigned exact-likelihood geometry architecture.
 
-A possible subsequent physics-teacher study would optimize mean generalized
-work using differentiable Gaussian paths and external energy/force evaluations.
-This is a path-space KL / stochastic-normalizing-flow objective, also existing
-prior work. It could train the forward and auxiliary backward proposals rather
-than relying on fixed backward drift or hand-constructed templates. It has not
-been implemented or shown useful in this project; do not report it as a result.
+The implemented physics-teacher branch optimizes mean generalized work using
+differentiable Gaussian paths and external energy/force evaluations. This is an
+existing path-space KL / stochastic-normalizing-flow objective, not a new loss.
+Both forward and auxiliary backward proposals are trained. Current results and
+failures are in research/STATUS.md; no broad molecular superiority is established.
 
 
 ## Diffusion-bridge loss comparison, checked September 10, 2026

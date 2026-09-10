@@ -211,5 +211,10 @@ population scale, relative to the pathwise mean-work estimator. This does not
 identify a unique cause of failure: the backward objectives differ as well.
 The distinction between joint log-variance and reverse-KL updates is already
 studied by \citet{sanokowski2025rethinking}. We retain this failed recipe and
-make no new-objective claim. Longer matched mean-work/HMC experiments are
-pending; their outcomes are not represented by the execution checks.
+make no new-objective claim. Continuing the three original arms from 500 to 1,500 updates gives cumulative
+cost 25,024 queries each. Fixed-joint, annealed-joint and energy-gradient arms
+retain ESS 1.174, 2.218 and 1.092 out of 256, respectively. All three xTB panels
+converge for 32/32 attempts, with median strains 0.494, 0.529 and 0.140 eV.
+The matched HMC control gives 32/32 and 0.561 eV, with correlated retained draws.
+Thus longer training improves some geometry statistics but does not establish
+calibrated sampling or a total-compute advantage.
