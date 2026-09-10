@@ -18,7 +18,25 @@ Every submitted job uses a committed source snapshot; `jobs.jsonl` also records
 rejected submissions. A scheduler state of COMPLETED alone does not certify
 that all scientific checks passed.
 
-## Current follow-up: frozen-path innovation posterior
+## Current follow-up: frozen proposal score qualification
+
+The global innovation diagnostic45815623 completed in5m11s (32 oracle queries,
+plus4 smoke queries). Sequential ESS1.915/32; global metric0/.01/.1/1 ESS1.012/
+1.001/1/1. No global arm reaches4/32 or improves the sequential control, so this
+four-iteration Gaussian recipe is stopped. Its posterior mode residuals remain
+large for some paths; this does not rule out converged or non-Gaussian inference.
+Coordinate/probability/gradient checks pass and forward weights stay unchanged.
+Evidence: evidence/innovation_posterior_5846_v1.json.
+
+A prospective endpoint-entropy update is implemented with direct VSD/DMD prior
+art and no novelty claim. In the known scalar mechanism check, five fitted-critic
+seeds reach variance .24818--.25142 versus target .25; fixed-independent reverse
+and stale-critic controls collapse to .04. This is not a molecular result.
+The necessary next gate is an independently tested frozen molecular proposal
+score. A small invariant energy critic and heldout DSM/Stein checks are prepared;
+no molecular actor update has been made. See notes/endpoint_entropy_candidate.md.
+
+## Earlier frozen-path innovation protocol
 
 A new bounded diagnostic keeps the16-step forward sampler and every endpoint
 fixed while replacing the sequential backward Gaussian by a global Gaussian

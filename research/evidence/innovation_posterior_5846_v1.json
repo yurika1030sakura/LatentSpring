@@ -1,0 +1,902 @@
+{
+  "complete": true,
+  "format": "global_innovation_auxiliary_diagnostic_v1",
+  "scope": "Frozen molecular paths: compare sequential and global Gaussian auxiliaries.",
+  "configuration": {
+    "source_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+    "backward_refit": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/backward_refit_5846_v1",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/innovation_posterior_5846_v1",
+    "particles": 32,
+    "batch": 8,
+    "iterations": 4,
+    "seed": 9091,
+    "device": "cuda"
+  },
+  "condition": {
+    "source_row": 5846,
+    "raw_index": 589712,
+    "reference_geometry_loaded": true,
+    "reference_geometry_used_to_initialize": false,
+    "numbers": [
+      1,
+      15,
+      8,
+      6,
+      1,
+      6,
+      8,
+      12
+    ],
+    "charge": 1,
+    "spin_multiplicity": 1
+  },
+  "source_recipe": {
+    "config": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/4b4c6155fbee03d0143009a2cc4353e6bb2f63f9/configs/sweep/a1_fm_only_s2.yaml",
+    "checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/electronic_fm_global_v1/last.ckpt",
+    "resume_work_run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_v1",
+    "metadata": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/raw_metadata_replay_v1",
+    "oracle": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+    "condition_manifest": null,
+    "condition_index": null,
+    "oracle_python": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python3.11",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/work300_annealed_joint_5846_1500_v1",
+    "source_row": 5846,
+    "steps": 1500,
+    "path_steps": 16,
+    "batch": 16,
+    "eval_particles": 256,
+    "lr": 1e-05,
+    "noise": 0.2,
+    "kT": 0.025851999786435,
+    "restraint": 0.1,
+    "seed": 9051,
+    "gradient_diagnostics": 0,
+    "objective": "mean_work",
+    "mode": "joint",
+    "oracle_batch_size": 16,
+    "reference_kernel": "gaussian",
+    "mean_parameterization": "native",
+    "neutralize_temperature_input": true,
+    "noise_annealing_power": 0.5,
+    "prior_std": 1.0,
+    "max_drift_per_sqrt_dimension": 20.0,
+    "checkpoint_steps": true,
+    "device": "cuda"
+  },
+  "research_protocol": {
+    "config": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/source_snapshots/54861d06788b49755fc1853c629bb94154a0051e/configs/sweep/a1_fm_only_s2.yaml",
+    "warm_checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/displacement_development_rho01_v2/training/last.ckpt",
+    "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/electronic_fm_global_v1",
+    "steps": 10000,
+    "seed": 9041,
+    "terminal_time": 1.0,
+    "lr": 2e-05,
+    "batch_size": 1,
+    "device": "cuda",
+    "lambda_energy": 0.0,
+    "energy_every": 4,
+    "energy_steps": 16,
+    "energy_cap": 1500.0,
+    "energy_estimator": "replica_product",
+    "common_probes": false,
+    "checkpoint_energy": false,
+    "discrete_adjoint_energy": false,
+    "perturbation_indices": null,
+    "energy_control": "value",
+    "energy_gradient_diagnostics": false,
+    "energy_parents": 1,
+    "geometry_softening": 0.1,
+    "position_parameterization": "displacement",
+    "energy_shard": "/n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/perturbation_train_n30000_s0.pt",
+    "format": "electronic_geometry_fm_v1",
+    "composition_prior_checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/abl/a1_fm_only_s2/lightning_logs/version_30674367/checkpoints/midstep-step=30000.ckpt",
+    "warm_sha256": "704cf7be0763ed466cbd21d8dcb012d47685aff9689db91645a1a95088c23ce9",
+    "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+    "data_order_sha256": "3c752cb59488ed5975c4c498823da2d858da1f7bb4354522003671f4db36edb3",
+    "data_endpoint_time": 1.0,
+    "alignment": false,
+    "history_self_conditioning": false,
+    "steric_retractions": false,
+    "energy_temperature_eV": 1.0,
+    "purpose": "Matched FM continuation with verified global charge/spin or legacy features.\n\nThis is an empirical-data FM baseline, not Boltzmann training. Requested kT is\na model condition for future teacher training, not a temperature label inferred\nfor the OMol corpus. Warm starts reset AdamW; optimizer state is saved explicitly.\n",
+    "metadata": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/raw_metadata_replay_v1",
+    "global_state": 1,
+    "prior_std": 1.0,
+    "requested_kT": 1.0,
+    "electronic_conditioning": true,
+    "electronic_metadata": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/raw_metadata_replay_v1",
+    "metadata_progress_sha256": "bb9016536bf309bd12d923f2de7b2b732c657ac52c4c1df0ee1685d35cf5e750",
+    "script_sha256": "01a6a759b001e193be1450665bdffbe0526c9173cdc7fdf1bf34af4bf91ec90e"
+  },
+  "source_checkpoint_sha256": "694a680c4172a355e2a4e899486647f751702bea2dafad93364bf8b60a7b14b5",
+  "reverse_checkpoint_sha256": "2e177d8a587ea827eb2877c38050859e1ce904c58c123ed1c2f8c2d4fa5aa384",
+  "source_results_sha256": "8f5fa34b099adf42180d9b8fac3c5dd3f72ad2745184270bbdc17996aa488b7a",
+  "reverse_results_sha256": "b2e4afd231118374b19913789ffc7065be09e96c8f54a9ecc9b3ed49099a750c",
+  "latent_dimension": 336,
+  "endpoint_dimension": 21,
+  "terminal_noise_std": 0.0063553594759831,
+  "log_state_jacobian": -1164.9261853919231,
+  "metric_scales": [
+    0.0,
+    0.01,
+    0.1,
+    1.0
+  ],
+  "checks": [
+    {
+      "batch": 0,
+      "state_max_error": 2.2051162085201526e-07,
+      "log_density_max_error": 9.161123557532846e-05
+    },
+    {
+      "batch": 1,
+      "state_max_error": 2.663457916440848e-07,
+      "log_density_max_error": 0.0001285052992443525
+    },
+    {
+      "batch": 2,
+      "state_max_error": 2.0399098632495338e-07,
+      "log_density_max_error": 5.2747247309525847e-05
+    },
+    {
+      "batch": 3,
+      "state_max_error": 1.549721229121559e-07,
+      "log_density_max_error": 6.806318788221688e-05
+    }
+  ],
+  "posterior_diagnostics": [
+    {
+      "history": [
+        {
+          "iteration": 1,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            5751.3476529566615,
+            15645.294571713457,
+            7193.630888181229,
+            7830.664499040562,
+            1964.7108547229323,
+            10282.492746765683,
+            1772.421308965708,
+            8512.062282288492
+          ],
+          "objective_after": [
+            4149.23130940194,
+            4179.893493190156,
+            3402.683135878885,
+            3328.336960069129,
+            1166.6727955398244,
+            4711.465883518962,
+            1259.1075304516885,
+            5506.03925811486
+          ]
+        },
+        {
+          "iteration": 2,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            4149.23130940194,
+            4179.893493190156,
+            3402.683135878885,
+            3328.336960069129,
+            1166.6727955398244,
+            4711.465883518962,
+            1259.1075304516885,
+            5506.03925811486
+          ],
+          "objective_after": [
+            2148.9639731499606,
+            1462.7329029536634,
+            1877.7121500345681,
+            1557.9163815958786,
+            833.5872461107804,
+            3338.534002047851,
+            598.0807537364785,
+            1703.0796705092946
+          ]
+        },
+        {
+          "iteration": 3,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            2148.9639731499606,
+            1462.7329029536634,
+            1877.7121500345681,
+            1557.9163815958786,
+            833.5872461107804,
+            3338.5395601953655,
+            598.0807537364785,
+            1703.0796705092946
+          ],
+          "objective_after": [
+            1192.1136549471132,
+            962.7583094211553,
+            1063.2793860548304,
+            1010.9897528222832,
+            542.5199625194292,
+            355.4083905217958,
+            318.32783592852894,
+            470.4849848054354
+          ]
+        },
+        {
+          "iteration": 4,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            1192.1136549471132,
+            962.7583094211553,
+            1063.2793860548304,
+            1010.9897528222832,
+            542.5199625194292,
+            355.40755179347536,
+            318.32783592852894,
+            470.4849848054354
+          ],
+          "objective_after": [
+            504.79945655612846,
+            783.0469503149562,
+            555.1343525434526,
+            24.085091889691476,
+            153.28545171629062,
+            39.737143876499964,
+            296.9071805649359,
+            170.38110514279256
+          ]
+        }
+      ],
+      "final_objective": [
+        504.79945655612846,
+        783.0469503149562,
+        555.1343525434526,
+        24.085091889691476,
+        153.28545171629062,
+        39.737214551630395,
+        296.9071805649359,
+        170.38110514279256
+      ],
+      "endpoint_residual_norm": [
+        0.20025533421624242,
+        0.24943305723735468,
+        0.21022516703009145,
+        0.036392100797821944,
+        0.10643002388405676,
+        0.04722278025229906,
+        0.1522877031892399,
+        0.1125737649290916
+      ],
+      "posterior_gradient_norm": [
+        64600.20171527697,
+        13169.081786998573,
+        11307.486379264026,
+        4209.984992018691,
+        4887.274140805913,
+        1320.7300186934292,
+        29488.85664083888,
+        3499.9218891244313
+      ],
+      "initialization": "caller supplied endpoint-derived mean"
+    },
+    {
+      "history": [
+        {
+          "iteration": 1,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            11284.444290543817,
+            1735.4195790372812,
+            2819.380307066439,
+            1721.99962090577,
+            5933.7904511476245,
+            8448.391802867223,
+            3296.4864836384413,
+            8099.349682424212
+          ],
+          "objective_after": [
+            9575.304353590202,
+            1215.2831907821947,
+            1057.5912878363408,
+            417.4655091814219,
+            2778.245414886996,
+            7572.081259206041,
+            1465.4886595387504,
+            5959.547867103328
+          ]
+        },
+        {
+          "iteration": 2,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            9575.304353590202,
+            1215.2831907821947,
+            1057.5912878363408,
+            417.4655091814219,
+            2778.245414886996,
+            7572.080321262143,
+            1465.4886595387504,
+            5959.547867103328
+          ],
+          "objective_after": [
+            7037.930514366142,
+            392.1615432729911,
+            590.8999176301224,
+            139.57021136351446,
+            884.4067257813202,
+            6655.848448394032,
+            848.3664499722569,
+            2534.4887506024684
+          ]
+        },
+        {
+          "iteration": 3,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            7037.930514366142,
+            392.1615432729911,
+            590.8999176301224,
+            139.57021136351446,
+            884.4067257813202,
+            6655.847056426343,
+            848.3664499722569,
+            2534.4887506024684
+          ],
+          "objective_after": [
+            5057.77936978375,
+            198.37698836313007,
+            325.8934612509554,
+            101.30782996439675,
+            688.7878402379009,
+            4176.801034920154,
+            447.75987138439604,
+            395.503759795642
+          ]
+        },
+        {
+          "iteration": 4,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            5057.77936978375,
+            198.37698836313007,
+            325.8934612509554,
+            101.30782996439675,
+            688.7878402379009,
+            4176.8037960023785,
+            447.75987138439604,
+            395.503759795642
+          ],
+          "objective_after": [
+            3017.2600526768274,
+            37.61856456137345,
+            205.017433882786,
+            21.36570501511493,
+            370.7399728608192,
+            1747.7410145591768,
+            148.6129835521139,
+            205.39318553243442
+          ]
+        }
+      ],
+      "final_objective": [
+        3017.2600526768274,
+        37.61856456137345,
+        205.017433882786,
+        21.36570501511493,
+        370.7399728608192,
+        1747.7410145591768,
+        148.6129835521139,
+        205.39318553243442
+      ],
+      "endpoint_residual_norm": [
+        0.4928244396740732,
+        0.04504261944773766,
+        0.12556228012751947,
+        0.03144746795255367,
+        0.1705469939373246,
+        0.37531612757267657,
+        0.10612579769466568,
+        0.1250772377312184
+      ],
+      "posterior_gradient_norm": [
+        44369.897995595726,
+        2821.7712467860715,
+        4312.595062274929,
+        1650.7115218682877,
+        30462.978166019362,
+        102024.70332640586,
+        6157.122079091348,
+        10380.898052867899
+      ],
+      "initialization": "caller supplied endpoint-derived mean"
+    },
+    {
+      "history": [
+        {
+          "iteration": 1,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            5953.2967214798655,
+            8463.430938692398,
+            7161.743414349578,
+            12818.244670117172,
+            11651.474464323324,
+            8542.793331222912,
+            1915.6358712020347,
+            7715.352339804754
+          ],
+          "objective_after": [
+            4324.373547409931,
+            5786.0576234045175,
+            2691.8130039720463,
+            4739.280647809591,
+            6609.189828296355,
+            2268.797708704582,
+            929.7513341019572,
+            4390.262668713095
+          ]
+        },
+        {
+          "iteration": 2,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            4324.373547409931,
+            5786.0576234045175,
+            2691.8130039720463,
+            4739.280647809591,
+            6609.189828296355,
+            2268.797966479475,
+            929.7513341019572,
+            4390.262668713095
+          ],
+          "objective_after": [
+            2833.0963266527133,
+            2952.3854724959137,
+            1245.9737888422148,
+            2785.72224496288,
+            3868.0218450898224,
+            488.94485230838353,
+            520.7538851600747,
+            1375.8352005264453
+          ]
+        },
+        {
+          "iteration": 3,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            2833.0963266527133,
+            2952.3854724959137,
+            1245.9737888422148,
+            2785.72224496288,
+            3868.0218450898224,
+            488.94495881919875,
+            520.7538851600747,
+            1375.8352005264453
+          ],
+          "objective_after": [
+            952.2085824640442,
+            568.9578830515264,
+            1047.8056535092487,
+            1553.0211990843097,
+            2935.8968783941746,
+            386.1941283549201,
+            479.0537620606572,
+            652.8349016787411
+          ]
+        },
+        {
+          "iteration": 4,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            952.2085824640442,
+            568.9578830515264,
+            1047.8056535092487,
+            1553.0211990843097,
+            2935.8968783941746,
+            386.19352939841093,
+            479.0537620606572,
+            652.8349016787411
+          ],
+          "objective_after": [
+            525.4175922107935,
+            207.34333320153155,
+            864.9788117349844,
+            660.2707215334399,
+            2875.995756689003,
+            238.50874704141822,
+            151.02227347104576,
+            28.686417660478693
+          ]
+        }
+      ],
+      "final_objective": [
+        525.4175922107935,
+        207.34333320153155,
+        864.9788117349844,
+        660.2707215334399,
+        2875.995756689003,
+        238.50874700627173,
+        151.02227347104576,
+        28.686417660478693
+      ],
+      "endpoint_residual_norm": [
+        0.20442587148658078,
+        0.12551711982939348,
+        0.26309426085077103,
+        0.23004176148279323,
+        0.48146911794868963,
+        0.13733922018439002,
+        0.10718727701045767,
+        0.03979623480236
+      ],
+      "posterior_gradient_norm": [
+        36111.6170017742,
+        9558.965354951142,
+        21245.348307673157,
+        29598.772297454467,
+        114493.88623476916,
+        31371.850226251878,
+        3567.8856173164386,
+        2537.362170558629
+      ],
+      "initialization": "caller supplied endpoint-derived mean"
+    },
+    {
+      "history": [
+        {
+          "iteration": 1,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            4878.584730295582,
+            8967.235326347221,
+            94624.04014867471,
+            9093.621038871599,
+            4774.275591290084,
+            1565.0803629243173,
+            7671.121047428871,
+            8223.419201436502
+          ],
+          "objective_after": [
+            2985.601302988265,
+            7498.354017785493,
+            15543.703299782072,
+            4961.029658292094,
+            3584.086470782496,
+            276.62320469601326,
+            5879.676493223424,
+            5441.313994042118
+          ]
+        },
+        {
+          "iteration": 2,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            2985.601302988265,
+            7498.354017785493,
+            15543.703299782072,
+            4961.029658292094,
+            3584.086470782496,
+            276.62320469601326,
+            5879.676493223424,
+            5441.313994042118
+          ],
+          "objective_after": [
+            1113.4793669350286,
+            5009.6035652040855,
+            7388.911031793726,
+            3413.0254889657767,
+            1892.3935384664053,
+            197.2748988948199,
+            5096.561121620873,
+            4231.517665231465
+          ]
+        },
+        {
+          "iteration": 3,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            1113.4793669350286,
+            5009.6035652040855,
+            7388.911031793726,
+            3413.0254889657767,
+            1892.3935384664053,
+            197.2748988948199,
+            5096.561121620873,
+            4231.517665231465
+          ],
+          "objective_after": [
+            974.7458017835143,
+            2063.2240456709496,
+            7275.065771470142,
+            1936.3329137432208,
+            926.4511655402941,
+            157.83951331982834,
+            4653.432828077404,
+            3295.8843390107195
+          ]
+        },
+        {
+          "iteration": 4,
+          "accepted": [
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true,
+            true
+          ],
+          "objective_before": [
+            974.7458017835143,
+            2063.2240456709496,
+            7275.065771470142,
+            1936.3329137432208,
+            926.4511655402941,
+            157.83997418439458,
+            4653.432828077404,
+            3295.8843390107195
+          ],
+          "objective_after": [
+            789.8624567603131,
+            958.7854299079276,
+            7243.9127167326,
+            657.9374753365188,
+            472.0651909323794,
+            65.26201676953632,
+            4651.791388564151,
+            1849.0775545052911
+          ]
+        }
+      ],
+      "final_objective": [
+        789.8624567603131,
+        958.7854299079276,
+        7243.9127167326,
+        657.9374753365188,
+        472.0651909323794,
+        65.26204989983326,
+        4651.791388564151,
+        1849.0775545052911
+      ],
+      "endpoint_residual_norm": [
+        0.2506681379607175,
+        0.2766105261996117,
+        0.7636531017959146,
+        0.22948837035510466,
+        0.19261537624137623,
+        0.06879133938501777,
+        0.6125196820163624,
+        0.38575452371539537
+      ],
+      "posterior_gradient_norm": [
+        25986.09755565583,
+        167857.1104069219,
+        835438.6536202559,
+        37081.29055061954,
+        9541.707906048838,
+        4021.1780660799845,
+        615723.4634796648,
+        21707.577953986405
+      ],
+      "initialization": "caller supplied endpoint-derived mean"
+    }
+  ],
+  "limitations": [
+    "All auxiliaries share identical endpoints, energies and forward weights.",
+    "Global Gaussian conditioning and Gauss-Newton approximations are established methods, not claimed novelty.",
+    "Finite-iteration approximate posterior modes and Gaussian conditionals need not describe nonlinear or multimodal posterior structure.",
+    "The global Gaussian is normalized even without convergence; its importance variance need not be finite.",
+    "Neither a larger empirical ESS nor a successful small screen certifies target coverage.",
+    "Dense endpoint Jacobians are an expensive diagnostic, not a scalable production architecture."
+  ],
+  "map_directional_fd": [
+    {
+      "h": 0.003,
+      "relative_l2_error": 0.0011824855697774477,
+      "max_absolute_error": 0.0015483538530540741
+    },
+    {
+      "h": 0.001,
+      "relative_l2_error": 0.00019280752605014474,
+      "max_absolute_error": 0.00020386716151765683
+    }
+  ],
+  "oracle_evaluations": 32,
+  "evaluations": {
+    "sequential_refit": {
+      "weights": {
+        "particles": 32,
+        "ess": 1.9153662677426047,
+        "ess_fraction": 0.059855195866956395,
+        "maximum_weight": 0.6070134379483799,
+        "log_mean_weight": 110.53351771308662
+      },
+      "mean_work": -86.53889489374677,
+      "work_std": 15.508251036886929
+    },
+    "global_metric_0.0": {
+      "weights": {
+        "particles": 32,
+        "ess": 1.0122765603027872,
+        "ess_fraction": 0.0316336425094621,
+        "maximum_weight": 0.9939007567208483,
+        "log_mean_weight": 73.87766674901876
+      },
+      "mean_work": -41.9595692154547,
+      "work_std": 15.451007950123733
+    },
+    "global_metric_0.01": {
+      "weights": {
+        "particles": 32,
+        "ess": 1.0010498456089931,
+        "ess_fraction": 0.031282807675281035,
+        "maximum_weight": 0.9994753524890246,
+        "log_mean_weight": 83.00949470832705
+      },
+      "mean_work": 76980.07899567051,
+      "work_std": 366473.08520601364
+    },
+    "global_metric_0.1": {
+      "weights": {
+        "particles": 32,
+        "ess": 1.0,
+        "ess_fraction": 0.03125,
+        "maximum_weight": 1.0,
+        "log_mean_weight": 58.094242830112314
+      },
+      "mean_work": 770380.8421624796,
+      "work_std": 3664723.1271526385
+    },
+    "global_metric_1.0": {
+      "weights": {
+        "particles": 32,
+        "ess": 1.0,
+        "ess_fraction": 0.03125,
+        "maximum_weight": 1.0,
+        "log_mean_weight": -325.2409528976005
+      },
+      "mean_work": 7704535.397444794,
+      "work_std": 36647225.223582834
+    }
+  },
+  "forward_state_unchanged": true,
+  "shared_endpoints": true,
+  "seconds": 296.95677193487063,
+  "comparison_sha256": "d27c01eae168d553689ca1b9ccf6ccf3f15352af7ff6fa09d20463cd07563e53",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "map_calls": 94,
+  "peak_cuda_allocated_bytes": 527253504
+}

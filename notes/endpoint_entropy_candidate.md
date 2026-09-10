@@ -66,3 +66,33 @@ potentially difficult; an apparently decreasing DSM loss is not enough.
 Only after this gate should a bounded molecular actor comparison be proposed.
 Reserved evaluation conditions remain untouched. This prototype alone does not
 supply the method novelty needed for an ICLR submission.
+
+
+## Frozen molecular critic protocol, before outcomes
+
+Use4096 last-step means from forward_work_teacher_5846_v1 (parent seed9084)
+for training, and2048 means from backward_refit_5846_v1/training_paths.pt
+(parent seed9081) solely for heldout score assessment. Both hashes point to the
+identical frozen1500-update annealed forward model. Those paths previously
+trained a different reverse diagnostic; they never train this critic. Compute
+the actual final conditional means with the original field and actual final
+noise standard deviation. No oracle queries or forward updates are required.
+
+Fit a small invariant message-passing energy critic, two layers, hidden32,
+24 radial features, positive quadratic tails. Its score is minus its energy
+gradient in COM coordinates. Element identities, charge, spin and temperature
+are explicit. This standard auxiliary network does not replace FlowMol.
+Training uses500 AdamW steps, batch128, lr .001, clip10, seed9101. Draw fresh
+final noise each step from a separate stream. There is no added-noise schedule
+and no substitution of an FM velocity for a score. Energy normalization is
+unneeded for this critic, and no physical oracle labels enter its training.
+
+Assess one fresh-noise endpoint per independent heldout parent, seed9102.
+Compare zero score, an isotropic Gaussian score fitted using training moments,
+and the learned score on identical rows. A necessary gate requires a paired
+DSM improvement exceeding2 standard errors against both controls, plus four
+Stein moments (dilation and radial-gradient probes at1,2,3 A) each within3 SEM
+of zero. These are imperfect finite diagnostics, not a global score certificate.
+Report every probe, even when one gate fails. No best-checkpoint selection.
+A2-step runtime smoke precedes the500-step screen. Failed qualification prevents
+an actor update under this recipe. Toy success does not bypass this gate.

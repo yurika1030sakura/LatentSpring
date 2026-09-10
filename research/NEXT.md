@@ -4,7 +4,15 @@ Scientific goal unachieved. Current teacher/student/assessment jobs all complete
 no BGFM job from this screen remains active.237 tests pass. The current PDF
 remains an audit/development manuscript, not a qualified new-method submission.
 
-1. The empirical CFM study failed its predeclared gate: all three students
+1. New follow-up: frozen-proposal score qualification. The global innovation
+   Gaussian diagnostic45815623 failed: no global arm ESS>=4/32 or above the
+   sequential control. Stop the four-iteration Gaussian recipe; do not infer
+   that every inverse/posterior family has failed. The endpoint-entropy toy
+   passes five fitted linear-critic seeds; it is not molecular evidence.
+   Qualify scripts/research/fit_proposal_score.py via2-step smoke, then500-step
+   frozen score training and heldout DSM plus four Stein probes. No actor update
+   before the necessary score gate. Protocol notes/endpoint_entropy_candidate.md.
+2. The empirical CFM study failed its predeclared gate: all three students
    ESS~1/256 after matched reverse fitting. Do not extend this frozen pool.
    All8 xTB panels converge32/32, but statistics remain degenerate and tails
    often worsen. Keep evidence/forward_work_students_comparison_v1.json.
