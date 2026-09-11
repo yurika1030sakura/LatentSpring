@@ -1306,3 +1306,48 @@ parity_geometry_prefix_v2.json. The current development manuscript includes
 these adverse/mixed findings and builds at7/9 main pages. This is not scientific
 submission readiness. NEXT.md now separates the live queue and substantive
 next experiments from historical release notes.
+
+
+## 2026-09-11: exact-query physical MALA/HMC controls complete
+
+Source7b2927d implements the current projected-target controls and preserves
+all primitive MALA behavior while adding explicit cached initial values.
+The12 focused kernel/parity tests pass, including deterministic proposal replay,
+Gaussian target moments and exact rejection/subset query accounting. The frozen
+protocol uses512 source parents,16 common force updates and one additional
+transition for a fixed320-parent subset. HMC uses four common four-step leapfrog
+trajectories; MALA uses16 common transitions. Both orientations enter every new
+physical energy/force evaluation and every MH/Hamiltonian acceptance decision.
+Thus each production arm uses exactly18048 raw queries including initialization.
+
+Smokes45973274/45973609 pass176 queries each and replay every proposal. Full
+MALA45973718/45974132 and HMC45974116/45975150 complete with18048 queries each.
+Whole-allocation times:60/64 and65/64 seconds. Four independent audits reconstruct
+all2048 parents, all72 proposal batches and every cached value/acceptance, with
+no new physical calls. Mean projected-energy changes are -4.1013/-4.1189 eV
+(MALA) and -4.1998/-4.2050 eV (HMC). These are not KL changes. Total new raw
+queries in this branch are72544, including engineering; all queries are retained.
+
+Independent geometry45975404 completes128 attempts,119 converged and9 failed.
+MALA strain medians are3.0524/2.8456 eV with31/29 of32 convergence; HMC
+2.7689/2.5736 eV with30/29. Both strongly beat the corresponding convex models
+in paired convergence/strain ranking. The all-control condition0 audit retains
+480 attempts,423 converged and57 failed, across15 arms. Cross-run parent/source/
+target identities, input atomic symbols/positions and raw successful energy and
+convergence logs agree. See parity_physical_controls_v1.json,
+parity_all_controls_geometry_v1.json and the four per-run MCMC audit files.
+
+This fixed-batch result does not quantify learned-method amortization on new
+samples. None of the short MCMC outputs is an equilibrium reference; endpoint
+density, normalizer, KL change, importance ESS and mode coverage are not assigned.
+The eight raw development references already exist in
+runs/development_fm_baseline_v1/references.json and match the frozen development
+manifest; they are assessment inputs, never generator initializations.
+
+The primary-source review confirms that conditional-flow MH proposals and
+acceptance/entropy training already occur in Timewarp, and FM within adaptive
+MCMC in Markovian Flow Matching. Adding these ingredients alone cannot rescue
+novelty. notes/physical_control_decision_v1.md records the evidence and next
+independent-reference gates. The primary manuscript now includes all adverse
+controls and appropriate standard-method citations; scientific readiness is false.
+Main molecular jobs45914826_5/6 remain active at the last scheduler check.

@@ -10,7 +10,7 @@ source parents and18048 raw oracle queries each. Joint change upper-bounds EACF
 marginal change in expectation, so these results count against our quality
 superiority on this condition despite the unlike estimands. Parameter count and
 end-to-end time are not matched here. Saved-row/provenance checks and all1024
-checkpoint-parent replays pass; independent physical assessment remains pending.
+checkpoint-parent replays pass; independent physical assessments are also complete.
 See evidence/eacf_joint_comparison_audited_v1.json and NEXT. A possible cost
 advantage must be measured and scientifically useful; it cannot be presumed to
 rescue the novelty claim. The historical progress reports below are not a newer
@@ -27,6 +27,14 @@ The current construction therefore has no established external advantage.
 See evidence/eacf_full_compact_comparison_v1.json and
 evidence/eacf_geometry_comparison_v2.json. Matched physical-sampling controls and
 credible distribution references must guide any next reconstruction.
+
+Matched physical MALA/HMC controls now complete two replicas each,18048 raw
+queries per arm. They improve independent strain more than convex at lower
+measured cost for the same512 parents. This further weakens the present utility
+claim; short MCMC still does not establish equilibrium populations. Learned
+conditional-flow MH proposals and acceptance/entropy training already appear
+in Timewarp, and FM within adaptive MCMC in Markovian Flow Matching. See
+notes/physical_control_decision_v1.md for primary sources and the next gates.
 
 The inherited BGFM story centered on force/energy losses added to an existing
 FlowMol3 backbone and arguments linking them to Boltzmann behavior. New losses

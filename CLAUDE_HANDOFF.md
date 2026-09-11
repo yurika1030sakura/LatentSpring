@@ -9,6 +9,12 @@ Slurm45914826_5/6 remain live at the latest check. The current7-page development
 draft includes these adverse results. Preserve the original dated handoff and
 JSON snapshot below as history; they are not the current queue state.
 
+The subsequent physical-control checkpoint is also complete: two MALA and two
+HMC replicas,18048 raw queries each, with full stochastic replay and128 independent
+xTB attempts. They are stronger than the current convex refiner in strain and
+fixed-batch cost. Read `notes/physical_control_decision_v1.md` before any further
+neural reconstruction; short-chain acceptance is not population calibration.
+
 **Post-handoff Claude update reviewed:** read `notes/claude_update_review_v1.md` and
 `research/evidence/claude_update_review_v1.json` (repository-relative). Fixed-index
 splitting is a labelled diagnostic, not a permutation-equivariant repair.

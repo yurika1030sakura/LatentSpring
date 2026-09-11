@@ -1,0 +1,36 @@
+{
+  "complete": true,
+  "run": "runs/parity_hmc_condition_00_s1_v1",
+  "results_sha256": "b233839e087425f39f638f889684872be15f9db9d39ae33988942a1960bd7ae9",
+  "artifacts": {
+    "final_samples.pt": "7e928b355ffcb2a8216c2bef84453ef9dc36be771751e5ed905cee6b25cd2f43",
+    "oracle_trace.pt": "a13926fda659dd9195d51bc327aad9b7d489063f90fcf5e43d28b8a7ac31b632"
+  },
+  "kernel": "hmc",
+  "replica": 1,
+  "proposal_batches_replayed": 18,
+  "parents_replayed": 512,
+  "raw_queries_verified": 18048,
+  "additional_oracle_evaluations": 0,
+  "maximum_COM_error_A": 8.881784197001252e-16,
+  "slurm_accounting": "45975150|COMPLETED|64|holygpu7c26106|cpu=4,gres/gpu:nvidia_a100_3g.20gb=1,gres/gpu=1,mem=32G,node=1",
+  "common_acceptance": 0.9794921875,
+  "tail_acceptance": 0.98125,
+  "projected_energy_change_eV": {
+    "mean": -4.204979453966843,
+    "row_sem": 0.16661048578805132,
+    "parents": 512
+  },
+  "restrained_energy_change_eV": {
+    "mean": -4.2029203611554005,
+    "row_sem": 0.16487530840465411,
+    "parents": 512
+  },
+  "seconds": 57.04694141307846,
+  "scientific_submission_ready": false,
+  "limitations": [
+    "Replay uses stored oracle values, not independent physical re-evaluation.",
+    "Energy changes are not KL changes or probability-calibration evidence.",
+    "Finite-time endpoint density and mode coverage remain unknown."
+  ]
+}

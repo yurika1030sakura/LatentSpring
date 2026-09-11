@@ -4,7 +4,7 @@ Working title: **Refining Molecular Generators with Exact Entropy Changes**.
 The primary manuscript now describes the implemented method, its complete
 volume/entropy derivations and the actual controlled evidence. It is a development
 draft, not an ICLR-ready paper. Latest PDF:
-runs/verification/paper_20260911_eacf_compact_final/main.pdf (7 main pages,9-page cap).
+runs/verification/paper_20260911_physical_final/main.pdf (7 main pages,9-page cap).
 Historical scalar-ordering audit: paper/legacy_audit.tex and preserved sections/PDFs.
 
 The first full external comparison is adverse: full EACF improves the joint KL
@@ -16,6 +16,13 @@ support a general efficiency claim. All saved parents replay and every geometry
 failure is retained. See evidence/eacf_full_compact_comparison_v1.json,
 evidence/eacf_geometry_comparison_v2.json and NEXT.md. These results weaken the
 current method case; they do not complete an ICLR contribution.
+
+The matched-query physical MALA/HMC comparison also favors the direct controls
+in independent strain and cost on condition0. All four18048-query replicas and
+their full stochastic traces pass audit;128 xTB attempts retain119 converged and
+9 failures. The new manuscript includes these results and explicitly does not
+assign MCMC endpoint KL, density or equilibrium status. See
+evidence/parity_physical_controls_v1.json and notes/physical_control_decision_v1.md.
 
 ## New target/source review
 

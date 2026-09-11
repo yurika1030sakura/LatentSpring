@@ -15,9 +15,10 @@ $-0.0133\pm0.0025$ and $-0.0126\pm0.0021$ nat on shared confirmation samples.
 Path importance weights remain severely concentrated. A corrected-source,
 ten-atom comparison now shows a substantial advantage for a full equivariant
 augmented coupling-flow baseline, in both its joint-KL bound and independent
-GFN2-xTB strain. Our smaller model requires less computation under matched
-query budgets, but reaches a weaker improvement; this is not a same-quality
-speedup. The eight-condition study remains incomplete. We present an implemented
+GFN2-xTB strain. Our model costs less than full EACF, but a compact flow narrows
+the timing difference, and direct MALA/HMC controls give stronger geometry
+improvements at lower cost for the same fixed sample batch. The eight-condition
+study remains incomplete. We present an implemented
 method candidate and its limitations, without claiming calibrated Boltzmann
 sampling or an established novel-method advantage.
 \end{abstract}
@@ -67,6 +68,10 @@ Convex-potential and residual flows supply related invertibility principles
 element-group decomposition and nonlinear centered point transformation;
 equivariance, the KL objective and the linear-algebra identities themselves
 are not new claims. Broader external performance comparisons remain necessary.
+Learned conditional-flow proposals with Metropolis correction are also established
+\citep{klein2023timewarp}, as is combining flow matching with adaptive MCMC
+\citep{cabezas2024markovian}. Adding either ingredient alone would not establish
+a new contribution.
 
 \section{Conditional source and physical target}
 For fixed atomic numbers $z_1,\ldots,z_n$, charge $Q$ and spin multiplicity $S$,
@@ -449,6 +454,55 @@ An improved surrogate-target objective need not improve every independent
 geometry measure. Quality-versus-time comparisons and independent target
 distribution references remain necessary; neither the full nor compact
 comparison establishes our model's practical superiority.
+
+\paragraph{Direct physical-sampling controls.}
+We additionally run Metropolis-adjusted Langevin sampling
+\citep{roberts1996langevin} and Hamiltonian Monte Carlo
+\citep{neal2012hmc} on the same 512 source parents, using an orthonormal COM
+basis and the actual projected potential in every acceptance decision.
+The fixed proposal scales are $0.1\sqrt{kT/(1\,\mathrm{eV})}$ and
+$0.05\sqrt{kT/(1\,\mathrm{eV})}$ $\mathrm{\mathring A}$, respectively;
+score clipping corresponds to an intrinsic force-norm cap of
+100 eV/$\mathrm{\mathring A}$. Clipped MALA drifts enter both proposal
+densities; clipped HMC kicks retain true Hamiltonian acceptance. These are
+algorithmic coordinates and step sizes, not physical MD time or atomic masses.
+
+Every parent receives 16 new force evaluations, plus its initial value.
+MALA makes 16 transitions; HMC makes four four-step leapfrog trajectories.
+A prespecified, energy-independent subset of 320 parents receives one extra
+transition (one leapfrog step for HMC), reusing cached values. Each arm therefore
+uses exactly $2[512(1+16)+320]=18{,}048$ raw queries, including both orientations
+and every rejected proposal. The two stochastic replicas for each method use
+different declared random seeds. All proposals, cached values and acceptance
+decisions replay from saved traces without additional physical queries.
+
+\begin{table}[t]
+\centering
+\caption{Direct physical controls on the same ten-atom source, with the same
+query budget and 32 fixed xTB attempts per replica. Strain medians condition on
+convergence. These are finite-time MCMC endpoints, not equilibrium references.}
+\label{tab:physical-controls}
+\begin{tabular}{lrrr}
+\toprule
+Method & Converged, 1 / 2 & Median strain (eV), 1 / 2 & Seconds, 1 / 2\\
+\midrule
+Convex & 28 / 29 & 4.6595 / 4.6550 & 139 / 144\\
+MALA & 31 / 29 & 3.0524 / 2.8456 & 60 / 64\\
+HMC & 30 / 29 & 2.7689 / 2.5736 & 65 / 64\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The physical controls reduce projected energy by approximately 4.10--4.20 eV
+on average and give stronger independent strain improvements at lower measured
+cost for this fixed batch (Table~\ref{tab:physical-controls}). HMC has 30 better,
+zero worse and two both-failed pairs against the first convex replica, and
+28 better, two worse and two both-failed pairs against the second, under the
+declared convergence/strain ranking. We assign no endpoint density, KL-change
+estimate, normalizer or importance ESS to these short chains. Acceptance does
+not prove mixing. Learning costs amortized over larger numbers of future draws
+remain a separate question; the present results do not establish a practical
+advantage for our learned refinement.
 
 \section{Limitations and remaining scientific gates}
 The construction provides an exact relative-entropy accounting route, not an
