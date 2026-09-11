@@ -2,6 +2,20 @@
 
 This is a claim boundary, not a completed novelty certification.
 
+**2026-09-11 evidence update:** the first full external comparison weakens the
+current performance case. On condition0, two5629656-parameter EACF replicas
+achieve estimated joint KL changes -118.99 and -105.56 nat. Our19365-parameter
+convex replicas achieve marginal changes -24.74 and -24.66 nat with the same
+source parents and18048 raw oracle queries each. Joint change upper-bounds EACF
+marginal change in expectation, so these results count against our quality
+superiority on this condition despite the unlike estimands. Parameter count and
+end-to-end time are not matched here. Saved-row/provenance checks and all1024
+checkpoint-parent replays pass; independent physical assessment remains pending.
+See evidence/eacf_joint_comparison_audited_v1.json and NEXT. A possible cost
+advantage must be measured and scientifically useful; it cannot be presumed to
+rescue the novelty claim. The historical progress reports below are not a newer
+assessment of submission readiness.
+
 The inherited BGFM story centered on force/energy losses added to an existing
 FlowMol3 backbone and arguments linking them to Boltzmann behavior. New losses
 can be substantive AI contributions. Here, however, incorrect density/head

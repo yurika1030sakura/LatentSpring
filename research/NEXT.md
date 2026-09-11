@@ -1,15 +1,37 @@
 # Next research decision
 
-Latest execution checkpoint: the pair-potential prototype and capacity probe
-are complete. Mean KL improves but ESS remains poor; stop capacity-only expansion.
-GPU oracle544-query qualification passes at full precision on conditions0 and7;
-this is a system speedup, not method evidence. Full12-layer EACF smoke45959261
-passes96 queries with5629656 parameters. Production controls45960348(seed0) and
-45961068(seed1) are running,18048 raw queries each, one-hour caps. Re-query them.
-The canonical EACF auxiliary is N(x,.1^2 I), matching upstream defaults; do not
+Latest decision, 2026-09-11: both full EACF condition0 controls have completed.
+Their joint KL changes are -118.9897 +/-6.5106 and -105.5599 +/-6.4687 nat,
+versus convex marginal changes -24.7415 +/-2.2942 and -24.6573 +/-2.2692 nat.
+All SEMs are across512 parents, not independent training-seed uncertainty.
+Saved-row recomputation and matching source/target/query provenance pass for
+both replicas: evidence/eacf_joint_comparison_audited_v1.json. Each arm used
+18048 raw queries. EACF has5629656 parameters; convex has19365. This is not a
+parameter- or runtime-matched quality comparison.
+
+The joint and marginal changes are different estimands, but the former
+upper-bounds EACF's marginal change in expectation. Its substantially more
+negative value is therefore evidence AGAINST current convex quality superiority
+on this condition. Reverse ranking would not prove convex superiority. Do not
+describe these results as an ICLR breakthrough or a calibrated sampler.
+Complete512-parent checkpoint/inverse audits45965752/45965776 both PASS.
+Forward coordinates and log volumes replay exactly; maximum inverse-coordinate
+error is3.80e-13 A across1024 parents. Auxiliary Gaussian log probabilities and
+joint-KL row arithmetic also pass. No additional oracle queries were used.
+
+Own-method CPU-neural/GPU-oracle smoke45965340 passes96 queries and checkpoint
+replay. Matched-device production timing controls are submitted as
+parity_cpu_gpu_control_s0_v1 and parity_cpu_gpu_control_s1_v1; read the newest
+research/jobs.jsonl records. EACF physical outputs still need independent
+geometry assessment. Main molecular production remains unchanged and active.
+Five independent geometry conditions total1120 attempts,1038 converged,82 failed;
+typed controls often have lower success-only strain. Read
+evidence/parity_geometry_prefix_v1.json and retain all failure denominators.
+
+The pair-potential capacity probe improves mean KL but not ESS reliably; stop
+capacity-only expansion. GPU oracle544-query qualification is a system result.
+The canonical EACF auxiliary is N(x,.1^2 I), matching upstream defaults. Do not
 substitute the earlier independent-unit-Gaussian engineering recipe.
-Own-method CPU-neural/GPU-oracle control launcher is prepared for timing checks
-when GPU-test slots free; no matched timing advantage is claimed yet.
 
 
 **Post-handoff Claude update reviewed:** read `../notes/claude_update_review_v1.md` and

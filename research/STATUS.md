@@ -1221,3 +1221,38 @@ queued. The same-condition AgBr2 FM control 45747807 and MALA 45749291 are also
 queued. Every failure is retained. Reserved evaluation data remains untouched.
 The full suite passes 210 tests; the new frozen-inference loader still requires
 its pending real-GPU numerical check.
+
+
+## 2026-09-11: full EACF comparison weakens the current quality claim
+
+Both full condition0 EACF jobs45960348/45961068 are COMPLETED, each47m23s
+allocated and18048 raw oracle queries. Their joint KL changes are
+-118.989684 +/-6.510554 and -105.559859 +/-6.468737 nat across512 shared
+parents. The corresponding19365-parameter convex marginal changes are
+-24.741482 +/-2.294166 and -24.657281 +/-2.269249. EACF has5629656 parameters;
+this is a matched-source/query comparison, not matched parameter count or time.
+The paired differences are -94.248202 +/-5.244118 and -80.902578 +/-5.233584.
+SEMs describe parent Monte Carlo, not training-seed uncertainty.
+
+EACF joint change upper-bounds its physical marginal change in expectation;
+its more-negative joint result therefore counts against convex quality
+superiority on this condition. The reverse ranking would not certify convex
+superiority. No target-population coverage or ICLR novelty follows for either
+method. Both EACF all-parent replay jobs45965752/45965776 PASS:1024 forward
+coordinates/log volumes match exactly; inverse-coordinate errors <=3.80e-13 A.
+The conditional Gaussian density and joint-KL arithmetic were independently
+recomputed; no new oracle queries. Evidence:
+research/evidence/eacf_joint_comparison_audited_v1.json.
+
+Own CPU-neural/GPU-oracle control smoke45965340 completes96 queries and passes
+checkpoint reconstruction. Two matched-device production controls are released
+as45965900/45966072, one-hour caps; query actual outputs before stating costs.
+The eight-condition main production remains on its original snapshot. Latest
+committed replay prefix has32/48 completed arms. Five independent geometry
+conditions total1120 attempts,1038 converged and82 failures; typed controls
+frequently have lower success-only strain. Geometry is not full validity or
+population coverage. EACF independent geometry remains next work.
+
+Decision: retain this adverse comparison, finish cost/geometry evidence, and
+reassess the method claim. Do not describe implementation progress or the pair
+capacity probe's lower KL as solved effective sampling or submission readiness.

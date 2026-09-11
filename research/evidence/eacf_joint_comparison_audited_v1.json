@@ -1,0 +1,137 @@
+{
+  "at_utc": "2026-09-11T05:26:48.597161+00:00",
+  "complete": true,
+  "scope": "Two completed full EACF controls, all1024 checkpoint parents replayed, with matched-source convex comparison.",
+  "conditions": 1,
+  "seeds": 2,
+  "rows": [
+    {
+      "seed": 0,
+      "eacf_joint_change": {
+        "mean": -118.98968425317986,
+        "row_sem": 6.510553864333474,
+        "parents": 512
+      },
+      "convex_marginal_change": {
+        "mean": -24.741482426688602,
+        "row_sem": 2.2941662711466266,
+        "parents": 512
+      },
+      "eacf_joint_minus_convex_marginal": {
+        "mean": -94.24820182649127,
+        "row_sem": 5.244117681907241,
+        "parents": 512
+      },
+      "queries_per_arm": 18048,
+      "eacf_parameters": 5629656,
+      "convex_parameters": 19365,
+      "eacf_results_sha256": "45f0f06d913154cc9cb0f61eb73ca29179c19cf02388a28235e607c70111ea90",
+      "convex_results_sha256": "1da59e993b6bbd0f6cf3e1143a9439a216b79d221eb7ac3e53959e622f8beb95"
+    },
+    {
+      "seed": 1,
+      "eacf_joint_change": {
+        "mean": -105.55985892971427,
+        "row_sem": 6.468737231862163,
+        "parents": 512
+      },
+      "convex_marginal_change": {
+        "mean": -24.657281027680956,
+        "row_sem": 2.269249120680353,
+        "parents": 512
+      },
+      "eacf_joint_minus_convex_marginal": {
+        "mean": -80.9025779020333,
+        "row_sem": 5.233583955858248,
+        "parents": 512
+      },
+      "queries_per_arm": 18048,
+      "eacf_parameters": 5629656,
+      "convex_parameters": 19365,
+      "eacf_results_sha256": "a5e9db4f4b7129fa9f2c313a477c3e23cf82f5bfaf3e8de8c43c8c88a5c9cecd",
+      "convex_results_sha256": "4f7992d159de466daf83aeb69daddef4d1b63fc7281d0e29da965d925f098846"
+    }
+  ],
+  "additional_oracle_evaluations": 0,
+  "scientific_submission_ready": false,
+  "interpretation": "EACF joint KL change upper-bounds its marginal KL change in expectation. A reliably more-negative joint change than convex marginal change is evidence against convex quality superiority; reverse ranking is inconclusive.",
+  "limitations": [
+    "Finite parent Monte Carlo, one molecular condition, row SEM not training-seed uncertainty.",
+    "Matched oracle-query budget does not match parameter count or wall time.",
+    "No target-population or mode-coverage certificate.",
+    "Physical target energies are stored qualified-oracle values, not independently re-queried by this audit."
+  ],
+  "replay_audits": [
+    {
+      "path": "runs/eacf_joint_audit_s0_v1/audit.json",
+      "sha256": "c053c054f8a884bfeb101ec918f2bc5b47af336650c4bd103663e683f8e46dd2",
+      "complete": true,
+      "run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/eacf_joint_condition_00_s0_v1",
+      "source_commit": "5ed5467bc9e010b0d43a8e46f5a06d087ab56de9",
+      "results_sha256": "45f0f06d913154cc9cb0f61eb73ca29179c19cf02388a28235e607c70111ea90",
+      "artifacts": {
+        "adapter.pkl": "c674cabc8d209bbb6b8b511377507ff3a7f942ac1cc176fee2ad8d3e521727d1",
+        "samples.npz": "11f7ddd259c7596634fe6dbb2fd5f7fe350cb7237f2c13eccd04b078560d95de"
+      },
+      "parents_replayed": 512,
+      "auxiliary_gaussian_errors": {
+        "base": 2.4868995751603507e-14,
+        "adapted": 2.4868995751603507e-14
+      },
+      "replay_errors": {
+        "forward_positions": 0.0,
+        "forward_log_volume": 0.0,
+        "inverse_positions": 2.362554596402333e-13,
+        "inverse_log_volume": 1.794120407794253e-12
+      },
+      "paired_joint_kl_change": {
+        "mean": -118.98968425317989,
+        "row_sem": 6.510553864333474
+      },
+      "original_oracle_evaluations": 18048,
+      "additional_oracle_evaluations": 0,
+      "scientific_submission_ready": false,
+      "limitations": [
+        "Joint KL change upper-bounds physical marginal change in expectation.",
+        "No independent physical energy re-query or mode-coverage certification.",
+        "Row SEM is not training-seed uncertainty."
+      ]
+    },
+    {
+      "path": "runs/eacf_joint_audit_s1_v1/audit.json",
+      "sha256": "7d3d4b79a621611b02d79fa455ebf34310f9c4e387f2393a6f278a5eaa103477",
+      "complete": true,
+      "run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/eacf_joint_condition_00_s1_v1",
+      "source_commit": "5ed5467bc9e010b0d43a8e46f5a06d087ab56de9",
+      "results_sha256": "a5e9db4f4b7129fa9f2c313a477c3e23cf82f5bfaf3e8de8c43c8c88a5c9cecd",
+      "artifacts": {
+        "adapter.pkl": "ad8364467b6d32fa62e9f6133ba6ab74a1345e3bb66088eeae1c974e2cd2f96a",
+        "samples.npz": "6c52da5cd6cdd1feeb6b7e921e93dbf6917159ee715447ab7ff0439677122f5b"
+      },
+      "parents_replayed": 512,
+      "auxiliary_gaussian_errors": {
+        "base": 2.4868995751603507e-14,
+        "adapted": 2.842170943040401e-14
+      },
+      "replay_errors": {
+        "forward_positions": 0.0,
+        "forward_log_volume": 0.0,
+        "inverse_positions": 3.794742298168785e-13,
+        "inverse_log_volume": 3.2951419370874646e-12
+      },
+      "paired_joint_kl_change": {
+        "mean": -105.55985892971427,
+        "row_sem": 6.468737231862163
+      },
+      "original_oracle_evaluations": 18048,
+      "additional_oracle_evaluations": 0,
+      "scientific_submission_ready": false,
+      "limitations": [
+        "Joint KL change upper-bounds physical marginal change in expectation.",
+        "No independent physical energy re-query or mode-coverage certification.",
+        "Row SEM is not training-seed uncertainty."
+      ]
+    }
+  ],
+  "decision": "Current condition0 quality superiority is contradicted by both EACF training replicas; retain a measured cost-quality question, not an established ICLR contribution."
+}
