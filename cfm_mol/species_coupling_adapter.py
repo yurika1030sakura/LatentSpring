@@ -50,10 +50,18 @@ class InvariantContext(nn.Module):
 
 
 class SpeciesCouplingAdapter(nn.Module):
+    """Whole-element equivariant flow, with an optional labelled-block diagnostic.
+
+    ``split_groups=True`` uses fixed atom-index halves. It preserves O(3), COM
+    and the exact conditional determinant, but is NOT generally equivariant to
+    same-element permutations. It also fixes each half's centroid. Do not use
+    that diagnostic to support the whole-element architecture's symmetry claim.
+    """
     #: smallest active block the centered map accepts (it needs at least two points)
     MINIMUM_ACTIVE = 2
 
-    def __init__(self, numbers, *, charge, spin_multiplicity, kT, sweeps=1, hidden=32, radial=24):
+    def __init__(self, numbers, *, charge, spin_multiplicity, kT, sweeps=1, hidden=32, radial=24,
+                 split_groups=False):
         super().__init__()
         numbers = torch.as_tensor(numbers, dtype=torch.long)
         if numbers.ndim != 1 or not 2 <= len(numbers) <= 200 or ((numbers < 1) | (numbers > 118)).any():
@@ -69,8 +77,10 @@ class SpeciesCouplingAdapter(nn.Module):
             index = (numbers == kind).nonzero().flatten().tolist()
             if len(index) < 2:
                 continue
-            if len(index) >= 2*self.MINIMUM_ACTIVE:
-                # Split the group. A single whole-group layer replaces every active
+            if split_groups and len(index) >= 2*self.MINIMUM_ACTIVE:
+                # Split the group. Off by default so that checkpoints trained before
+                # this repair replay bit-for-bit; new runs opt in.
+                # A single whole-group layer replaces every active
                 # atom by the group centroid, so on a homogeneous system every atom
                 # is active, every direction vector context-origin is exactly zero,
                 # every sigmoid feature vanishes and the per-atom conditioner is
@@ -85,9 +95,12 @@ class SpeciesCouplingAdapter(nn.Module):
         one += [('centroid', first, second) for first, second in zip(types, types[1:])]
         self.layers = []
         for sweep in range(sweeps):self.layers.extend(one if sweep % 2 == 0 else list(reversed(one)))
+        self.permutation_equivariant = not any(mode == 'internal' and block is not None
+            for mode, _, block in one)
         self.configuration = {'sweeps': sweeps, 'hidden': hidden, 'radial': radial,
             'charge': charge, 'spin_multiplicity': spin_multiplicity, 'kT': kT,
-            'minimum_active': self.MINIMUM_ACTIVE,
+            'minimum_active': self.MINIMUM_ACTIVE, 'split_groups': bool(split_groups),
+            'permutation_equivariant': self.permutation_equivariant,
             'internal_blocks': [list(layer[2]) if layer[2] is not None else None
                                 for layer in one if layer[0] == 'internal']}
 
@@ -101,8 +114,8 @@ class SpeciesCouplingAdapter(nn.Module):
         ma = x[:, a].mean(1, keepdim=True)
         context = x.clone(); roles = torch.zeros_like(self.numbers); roles[a] = 1
         if mode == 'internal':
-            # The complementary atoms of the same element are the active block's
-            # exchangeable partners; name them so the conditioner can use them.
+            # Fixed labelled complement; exchanging atoms across these blocks
+            # changes the map. This role embedding does not restore permutation symmetry.
             roles[(self.numbers == first) & ~a] = 2
             context[:, a] = ma
             return context, ma, x[:, a]-ma, roles, a, None

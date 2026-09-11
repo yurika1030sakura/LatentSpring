@@ -1,5 +1,12 @@
 # Active research status — September 10, 2026 UTC
 
+**Post-handoff Claude update reviewed:** read `../notes/claude_update_review_v1.md` and
+`research/evidence/claude_update_review_v1.json` (repository-relative). Fixed-index
+splitting is a labelled diagnostic, not a permutation-equivariant repair.
+Three loader-failed experiments were recovered without retraining; the two
+colliding LJ13 arrays were stopped with evidence preserved. Condition0 of the
+original molecular campaign is complete; refresh all other job states.
+
 **Not yet submission ready.** The project now has a specified conditional
 sampler, full density gradients and independent generation checks. No repeatable molecular advantage against matched strong baselines has yet
 been established; the first independent three-atom calibration is recorded below. The old CNF

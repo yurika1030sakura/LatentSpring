@@ -1,0 +1,253 @@
+{
+  "recorded_at_utc": "2026-09-11T01:20:01.518947+00:00",
+  "scope": "Audit and repair of Claude update after a455367; partial production results, not ICLR readiness",
+  "original_head": "e88c1d882ef006ab76571641e5885117cbc318fe",
+  "preserved_snapshot": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/claude_update_audit_v1",
+  "original_source_manifest_sha256": "e99c66892669af27b88c3ab9df1dab2a780cdf619247dff5b98e0e8ec9b98e8b",
+  "findings": [
+    {
+      "id": "index_split_symmetry",
+      "severity": "scientific",
+      "resolved_as": "Explicit labelled diagnostic; main defaults retain whole-element layers; permutation-equivariant homogeneous repair remains open.",
+      "probe_seed": 771,
+      "coordinate_permutation_error_by_N": {
+        "4": 0.36926586216370283,
+        "8": 0.29618297827284934,
+        "13": 0.21587218894647453
+      },
+      "half_centroid_change_max_A": 1.1102230246251565e-16
+    },
+    {
+      "id": "layout_loader_failure",
+      "severity": "reproducibility",
+      "resolved_as": "Validate derived metadata separately from constructor options; recover only proven post-training loader failures."
+    },
+    {
+      "id": "concurrent_output_collision",
+      "severity": "provenance",
+      "cancelled_arrays": [
+        "45934998",
+        "45935775"
+      ],
+      "cancelled_tasks": 24,
+      "allocated_cpu_seconds": 56472,
+      "proof": "Both archived sbatch scripts read bench_grid_lj13.txt and write identical tags into particle_bench_v1. Their task0 first objectives differ.",
+      "resolved_as": "Preserved pre-cancel logs/source/results; cancelled both writers; immutable-snapshot launcher and exclusive output creation added."
+    },
+    {
+      "id": "particle_reference",
+      "severity": "target",
+      "resolved_as": "Match pinned EACF pair/harmonic constants; remove undocumented distance smoothing/floor; state tau=1 and labelled diagnostic scope.",
+      "upstream": "https://github.com/lollcat/se3-augmented-coupling-flows/tree/beafab1b1ccd2b770572daeef1cf15f3fe199c21/eacf/targets/target_energy"
+    },
+    {
+      "id": "particle_reproduction",
+      "severity": "reproducibility",
+      "resolved_as": "New runs save source hashes, checkpoint, evaluation samples and replay; historic runs without these remain provisional."
+    }
+  ],
+  "recovery": {
+    "complete": true,
+    "scope": "Recover only the recorded post-training constructor-metadata failures.\n\nOriginal reports and allocations stay failed. New directories contain copied,\nreplayed checkpoints and a linked recovery record; no optimization or oracle\nquery is repeated. This is an artifact qualification, not baseline superiority.\n",
+    "new_oracle_evaluations": 0,
+    "rows": [
+      {
+        "name": "base_noanneal",
+        "report_sha256": "e344b3d0b14a56ec1ec18b2ce33f9eacc103d10df8e7147b02ad25f066591074",
+        "run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/anneal_loader_recovery_v1/base_noanneal",
+        "recovery": {
+          "original_results": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/anneal_ablation_v1/base_noanneal/results.json",
+          "original_results_sha256": "c7d08d783c0b4ac35c473eefb03590b375843afdb0e8c5b9fe406311742291db",
+          "failed_job_id": "45931183",
+          "original_stderr_sha256": "96a75b38a967e40e3f644ce3f50b415a3ae75fb8c165532b16f92ce98884333b",
+          "original_process_success": false,
+          "reason": "Constructor options were mixed with derived block metadata.",
+          "new_oracle_evaluations": 0,
+          "all_evaluation_parents_replayed": 512,
+          "maximum_position_error_A": 1.7763568394002505e-15
+        }
+      },
+      {
+        "name": "anneal_kT1",
+        "report_sha256": "ed4da913859d8091a0e126d4488ffe415f81607b9099c51f9639b68c460cceda",
+        "run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/anneal_loader_recovery_v1/anneal_kT1",
+        "recovery": {
+          "original_results": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/anneal_ablation_v1/anneal_kT1/results.json",
+          "original_results_sha256": "3aae7ebc387fcd1ca60c793efc6c6defdfdcb8a05b19dc932f5c4033398a078e",
+          "failed_job_id": "45931185",
+          "original_stderr_sha256": "96a75b38a967e40e3f644ce3f50b415a3ae75fb8c165532b16f92ce98884333b",
+          "original_process_success": false,
+          "reason": "Constructor options were mixed with derived block metadata.",
+          "new_oracle_evaluations": 0,
+          "all_evaluation_parents_replayed": 512,
+          "maximum_position_error_A": 8.881784197001252e-16
+        }
+      },
+      {
+        "name": "anneal_kT1_sw4",
+        "report_sha256": "ead5cd36ec813a8f6dd357004d5ac0aa60720902ae0b0d0bbfcbb85be81b7a70",
+        "run": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/anneal_loader_recovery_v1/anneal_kT1_sw4",
+        "recovery": {
+          "original_results": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/anneal_ablation_v1/anneal_kT1_sw4/results.json",
+          "original_results_sha256": "b4abc9b0e7a3671e2851124922dc6cc7ea116de4775f132dc63929df8d058834",
+          "failed_job_id": "45931191",
+          "original_stderr_sha256": "96a75b38a967e40e3f644ce3f50b415a3ae75fb8c165532b16f92ce98884333b",
+          "original_process_success": false,
+          "reason": "Constructor options were mixed with derived block metadata.",
+          "new_oracle_evaluations": 0,
+          "all_evaluation_parents_replayed": 512,
+          "maximum_position_error_A": 3.1086244689504383e-15
+        }
+      }
+    ],
+    "scientific_submission_ready": false
+  },
+  "production_snapshot": {
+    "completed_arms": 13,
+    "failed_arms": 0,
+    "unresolved_arms": 35,
+    "report_sha256": "e636ada7937b7ad281baa6d2e726e0e2a4b7501cdec05719abb30ccfda396228",
+    "conditions": [
+      {
+        "index": 0,
+        "paired": {
+          "convex_minus_affine_s0": {
+            "delta_kl": {
+              "mean": -1.6713658894579124,
+              "sem": 0.535195959049465,
+              "independent_parents": 512
+            },
+            "delta_kl_per_internal_dof": {
+              "mean": -0.06190244035029304,
+              "sem": 0.01982207255738759,
+              "independent_parents": 512
+            }
+          },
+          "convex_minus_typed_s0": {
+            "delta_kl": {
+              "mean": -5.9168452369270685,
+              "sem": 0.7239268569302831,
+              "independent_parents": 512
+            },
+            "delta_kl_per_internal_dof": {
+              "mean": -0.21914241618248403,
+              "sem": 0.026812105812232718,
+              "independent_parents": 512
+            }
+          },
+          "convex_minus_affine_s1": {
+            "delta_kl": {
+              "mean": -1.5623405886426336,
+              "sem": 0.5334033114639689,
+              "independent_parents": 512
+            },
+            "delta_kl_per_internal_dof": {
+              "mean": -0.057864466246023476,
+              "sem": 0.019755678202369224,
+              "independent_parents": 512
+            }
+          },
+          "convex_minus_typed_s1": {
+            "delta_kl": {
+              "mean": -5.8567961774400965,
+              "sem": 0.7005671588227956,
+              "independent_parents": 512
+            },
+            "delta_kl_per_internal_dof": {
+              "mean": -0.21691837694222582,
+              "sem": 0.025946931808251694,
+              "independent_parents": 512
+            }
+          }
+        }
+      },
+      {
+        "index": 1,
+        "paired": {
+          "convex_minus_affine_s0": {
+            "delta_kl": {
+              "mean": -0.8806016703473688,
+              "sem": 0.304826613420141,
+              "independent_parents": 512
+            },
+            "delta_kl_per_internal_dof": {
+              "mean": -0.026684899101435417,
+              "sem": 0.009237170103640639,
+              "independent_parents": 512
+            }
+          },
+          "convex_minus_typed_s0": {
+            "delta_kl": {
+              "mean": 0.1646057104811561,
+              "sem": 0.4233665537318725,
+              "independent_parents": 512
+            },
+            "delta_kl_per_internal_dof": {
+              "mean": 0.004988051832762308,
+              "sem": 0.01282928950702643,
+              "independent_parents": 512
+            }
+          },
+          "convex_minus_affine_s1": {
+            "delta_kl": {
+              "mean": -0.864217710843868,
+              "sem": 0.25627493902345766,
+              "independent_parents": 512
+            },
+            "delta_kl_per_internal_dof": {
+              "mean": -0.02618841548011721,
+              "sem": 0.0077659072431350805,
+              "independent_parents": 512
+            }
+          }
+        }
+      },
+      {
+        "index": 7,
+        "paired": {
+          "convex_minus_affine_s0": {
+            "delta_kl": {
+              "mean": -1.167382327717781,
+              "sem": 0.5307552556560904,
+              "independent_parents": 512
+            },
+            "delta_kl_per_internal_dof": {
+              "mean": -0.020480391714347033,
+              "sem": 0.009311495713264745,
+              "independent_parents": 512
+            }
+          }
+        }
+      }
+    ]
+  },
+  "particle_smokes": {
+    "dw4": {
+      "results_sha256": "abc5ecdaf261ebfaceeab3d3101977a30c977d24f94a696d11ddc5e14b031dae",
+      "checkpoint_replay_passed": true,
+      "queries": 144,
+      "production_claim": false
+    },
+    "lj13": {
+      "results_sha256": "903e13fe43af54ef2749c415be48dc9fde81185202a1f7d5dcb26db3cd07a424",
+      "checkpoint_replay_passed": true,
+      "queries": 144,
+      "production_claim": false
+    }
+  },
+  "overwrite_guard_passed": true,
+  "full_tests_passed": 310,
+  "full_tests_log_sha256": "9ea6b45382c9dd5d1108dad26a0d9327ab8cf858bac922cecb83170bcbded0c1",
+  "live_main_array_snapshot": [
+    "45914826_[3-6%2]|PENDING|0:00|(JobArrayTaskLimit)",
+    "45914826_2|RUNNING|1:36|holygpu8a22206",
+    "45914826_7|RUNNING|1:42:23|holygpu8a22401"
+  ],
+  "scientific_submission_ready": false,
+  "limitations": [
+    "Fixed-index split does not solve homogeneous permutation-equivariant transport.",
+    "The log mean path weight near114 nat is not an absolute source-target KL estimate.",
+    "No independent coverage reference or external-baseline superiority follows from these results.",
+    "Current source-target and annealed optimization paths must remain separately identified."
+  ]
+}

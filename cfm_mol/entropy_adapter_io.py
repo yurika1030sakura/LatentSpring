@@ -10,6 +10,28 @@ from cfm_mol.species_coupling_adapter import SpeciesCouplingAdapter
 from cfm_mol.affine_species_adapter import AffineSpeciesCouplingAdapter
 
 
+def build_species_adapter(numbers, config, *, affine=False):
+    """Decode constructor options separately from validated layout metadata.
+
+    Legacy whole-group checkpoints have no layout metadata. The first split
+    implementation recorded blocks but omitted the opt-in flag, so infer that
+    specific historical format from its stored blocks, never from atom count.
+    """
+    options = {'charge', 'spin_multiplicity', 'kT', 'sweeps', 'hidden', 'radial', 'split_groups'}
+    derived = {'minimum_active', 'internal_blocks', 'permutation_equivariant'}
+    if set(config)-options-derived:
+        raise ValueError('Unknown species-adapter configuration fields')
+    kwargs = {key: value for key, value in config.items() if key in options}
+    if 'split_groups' not in kwargs and 'internal_blocks' in config:
+        kwargs['split_groups'] = any(block is not None for block in config['internal_blocks'])
+    model_class = AffineSpeciesCouplingAdapter if affine else SpeciesCouplingAdapter
+    model = model_class(numbers, **kwargs)
+    for key in derived & config.keys():
+        if model.configuration[key] != config[key]:
+            raise ValueError(f'Species-adapter derived layout differs: {key}')
+    return model
+
+
 def load_entropy_adapter(directory, device='cpu'):
     directory = Path(directory)
     report = json.loads((directory/'results.json').read_text())
@@ -40,8 +62,7 @@ def load_entropy_adapter(directory, device='cpu'):
                 or config['charge'] != report['condition']['charge']
                 or config['spin_multiplicity'] != report['condition']['spin_multiplicity']):
             raise ValueError('Species-adapter configuration differs')
-        model_class = SpeciesCouplingAdapter if kind == 'species_convex' else AffineSpeciesCouplingAdapter
-        model = model_class(state['condition']['numbers'], **config)
+        model = build_species_adapter(state['condition']['numbers'], config, affine=kind == 'species_affine')
     elif kind in ['typed', 'scalar']:
         model = LinearEntropyAdapter(state['condition']['numbers'], kind=kind, maximum_weight=report['maximum_pair_weight'])
     else:

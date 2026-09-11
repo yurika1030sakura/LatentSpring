@@ -1,5 +1,12 @@
 # Claude handoff — BGFM / ICLR 2027
 
+**Post-handoff Claude update reviewed:** read `notes/claude_update_review_v1.md` and
+`research/evidence/claude_update_review_v1.json` (repository-relative). Fixed-index
+splitting is a labelled diagnostic, not a permutation-equivariant repair.
+Three loader-failed experiments were recovered without retraining; the two
+colliding LJ13 arrays were stopped with evidence preserved. Condition0 of the
+original molecular campaign is complete; refresh all other job states.
+
 Prepared at the user's explicit request on September 10, 2026. Start in:
 
 ```bash

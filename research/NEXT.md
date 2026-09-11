@@ -1,5 +1,12 @@
 # Next research decision
 
+**Post-handoff Claude update reviewed:** read `../notes/claude_update_review_v1.md` and
+`research/evidence/claude_update_review_v1.json` (repository-relative). Fixed-index
+splitting is a labelled diagnostic, not a permutation-equivariant repair.
+Three loader-failed experiments were recovered without retraining; the two
+colliding LJ13 arrays were stopped with evidence preserved. Condition0 of the
+original molecular campaign is complete; refresh all other job states.
+
 Claude continuation: start with `../CLAUDE_HANDOFF.md` and
 `HANDOFF_STATE_20260910.json`. The handoff contains executable audit/assessment
 commands, recovery rules and claim boundaries. It does not complete the ICLR goal.

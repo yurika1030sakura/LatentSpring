@@ -37,6 +37,27 @@ def record_failure(oracle, report, output):
         raise
 
 
+def annealed_kT(step, steps, physical, start, fraction):
+    """Geometric ladder from `start` down to the physical kT, then constant.
+
+    This changes the training objective along the optimization path. Final
+    evaluation uses physical kT; training history records its actual temperature.
+    A log mean importance weight is not an estimate of the source's absolute KL.
+    """
+    if start is None:
+        return physical
+    if not math.isfinite(start) or start < physical:
+        raise ValueError('Anneal must start at or above the physical kT')
+    if not 0 < fraction <= 1:
+        raise ValueError('Anneal fraction must lie in (0, 1]')
+    if steps < 1 or not 0 <= step < steps:
+        raise ValueError('Require a valid update index and positive step count')
+    if steps == 1:
+        return physical
+    span = min(steps-1, max(1, int(round(fraction*steps))))
+    return physical*(start/physical)**(1.-min(1., step/span))
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--source-root', type=Path, required=True)
@@ -49,6 +70,14 @@ def main():
     p.add_argument('--steps', type=int, default=1000)
     p.add_argument('--eval-count', type=int, default=512)
     p.add_argument('--device', default='cuda')
+    p.add_argument('--sweeps', type=int, default=1,
+                   help='Coupling sweeps. Each sweep adds bounded log-volume capacity.')
+    p.add_argument('--anneal-from-kT', type=float, default=None,
+                   help='Start training at this kT (eV) and anneal geometrically to the physical '
+                        'kT. Final evaluation uses physical kT; training history records its '
+                        'actual temperature and objective.')
+    p.add_argument('--anneal-fraction', type=float, default=.5,
+                   help='Fraction of steps spent annealing before the physical kT is reached.')
     args = p.parse_args()
     if args.engineering_smoke:
         if args.steps != 2 or args.eval_count != 16:
@@ -76,7 +105,7 @@ def main():
     else:
         model_class = SpeciesCouplingAdapter if args.kind == 'convex' else AffineSpeciesCouplingAdapter
         adapter = model_class(condition['numbers'], charge=condition['charge'],
-            spin_multiplicity=condition['spin_multiplicity'], kT=kT)
+            spin_multiplicity=condition['spin_multiplicity'], kT=kT, sweeps=args.sweeps)
         kind, lr_start, lr_end = 'species_'+args.kind, .001, .00001
     adapter = adapter.to(args.device).double()
     optimizer = torch.optim.AdamW(adapter.parameters(), lr=lr_start, weight_decay=0.)
@@ -98,6 +127,9 @@ def main():
         'steps': args.steps, 'batch': 16, 'eval_count': args.eval_count, 'replica': args.replica,
         'init_seed': init_seed, 'selection_seed': selection_seed,
         'lr_start': lr_start, 'lr_end': lr_end, 'lr_schedule': 'cosine',
+        'sweeps': args.sweeps, 'anneal_from_kT_eV': args.anneal_from_kT,
+        'anneal_fraction': args.anneal_fraction,
+        'anneal_scope': 'final evaluation uses physical kT; history records the annealed training objective',
         'parameters': sum(p.numel() for p in adapter.parameters()),
         'energy_zero_eV': energy_zero, 'reference_geometry_used_to_initialize': False,
         'reference_energy_used_for_training': False, 'source_oracle_queries_additional': source['oracle_evaluations'],
@@ -168,7 +200,8 @@ def main():
                 if error is not None and error > .001:
                     raise ValueError('Identity adapter does not replay the source energy')
             potential = external_energy(y, energy, force)+restraint/2*y.square().sum((1, 2))
-            loss = ((potential-energy_zero)/kT-volume).mean()
+            step_kT = annealed_kT(step, args.steps, kT, args.anneal_from_kT, args.anneal_fraction)
+            loss = ((potential-energy_zero)/step_kT-volume).mean()
             if not torch.isfinite(loss):
                 raise FloatingPointError('Nonfinite entropy objective')
             loss.backward()
@@ -176,7 +209,8 @@ def main():
             optimizer.step()
             if step == 0 or (step+1) % 20 == 0:
                 row = {'step': step+1, 'objective': float(loss.detach()), 'mean_log_volume': float(volume.detach().mean()),
-                    'gradient_norm': float(gradient), 'lr': lr, 'seconds': time.perf_counter()-start}
+                    'gradient_norm': float(gradient), 'lr': lr, 'training_kT_eV': step_kT,
+                    'seconds': time.perf_counter()-start}
                 report['history'].append(row)
                 report['oracle_evaluations_so_far'] = oracle.evaluated
                 write_json(output, report)
@@ -257,8 +291,9 @@ def main():
         torch.testing.assert_close(replay.cpu(), stored_y[:16], atol=1e-9, rtol=1e-9)
         torch.testing.assert_close(replay_volume.expand(16).cpu() if replay_volume.ndim == 0 else replay_volume.cpu(),
             volume[:16], atol=1e-9, rtol=1e-9)
-    except Exception:
+    except Exception as exc:
         report['complete'] = False
+        report['failure'] = f'Checkpoint loader qualification failed: {type(exc).__name__}: {exc}'
         write_json(output, report)
         raise
     report['checkpoint_loader_replay_passed'] = True

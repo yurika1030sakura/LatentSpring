@@ -4,7 +4,7 @@ Before the split-group repair, an `internal` layer replaced every active atom by
 its own centroid.  On a homogeneous system every atom is active, so the context
 collapsed onto the origin, every direction vector was exactly zero, every
 sigmoid feature vanished, and a 19k-parameter conditional flow degenerated into
-a fixed two-parameter isotropic radial map with no configuration dependence.
+a fixed two-parameter isotropic radial map with no learned directional context.
 That is exactly the LJ/DW homonuclear-cluster family the field benchmarks on.
 """
 import torch
@@ -19,7 +19,7 @@ def _centered(batch, atoms, seed):
 
 
 def _adapter(numbers, **kw):
-    a = SpeciesCouplingAdapter(numbers, charge=0, spin_multiplicity=1, kT=0.025851999786435, **kw)
+    a = SpeciesCouplingAdapter(numbers, charge=0, spin_multiplicity=1, kT=0.025851999786435, split_groups=True, **kw)
     return a.double()
 
 
