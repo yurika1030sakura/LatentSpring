@@ -50,6 +50,9 @@ class InvariantContext(nn.Module):
 
 
 class SpeciesCouplingAdapter(nn.Module):
+    #: smallest active block the centered map accepts (it needs at least two points)
+    MINIMUM_ACTIVE = 2
+
     def __init__(self, numbers, *, charge, spin_multiplicity, kT, sweeps=1, hidden=32, radial=24):
         super().__init__()
         numbers = torch.as_tensor(numbers, dtype=torch.long)
@@ -61,19 +64,46 @@ class SpeciesCouplingAdapter(nn.Module):
         self.register_buffer('electronic', torch.tensor([charge/5., (spin_multiplicity-1)/5., math.log(kT)], dtype=torch.float64))
         self.conditioner = InvariantContext(hidden, radial)
         types = sorted(set(numbers.tolist()))
-        one = [('internal', kind, None) for kind in types if int((numbers == kind).sum()) > 1]
+        one = []
+        for kind in types:
+            index = (numbers == kind).nonzero().flatten().tolist()
+            if len(index) < 2:
+                continue
+            if len(index) >= 2*self.MINIMUM_ACTIVE:
+                # Split the group. A single whole-group layer replaces every active
+                # atom by the group centroid, so on a homogeneous system every atom
+                # is active, every direction vector context-origin is exactly zero,
+                # every sigmoid feature vanishes and the per-atom conditioner is
+                # structurally dead -- the map degenerates to a fixed two-parameter
+                # isotropic radial rescaling. Splitting keeps the complementary half
+                # at its real positions, so the conditioner sees real neighbours.
+                half = len(index)//2
+                one.append(('internal', kind, tuple(index[:half])))
+                one.append(('internal', kind, tuple(index[half:])))
+            else:
+                one.append(('internal', kind, None))
         one += [('centroid', first, second) for first, second in zip(types, types[1:])]
         self.layers = []
         for sweep in range(sweeps):self.layers.extend(one if sweep % 2 == 0 else list(reversed(one)))
         self.configuration = {'sweeps': sweeps, 'hidden': hidden, 'radial': radial,
-            'charge': charge, 'spin_multiplicity': spin_multiplicity, 'kT': kT}
+            'charge': charge, 'spin_multiplicity': spin_multiplicity, 'kT': kT,
+            'minimum_active': self.MINIMUM_ACTIVE,
+            'internal_blocks': [list(layer[2]) if layer[2] is not None else None
+                                for layer in one if layer[0] == 'internal']}
 
     def split_context(self, x, layer):
         mode, first, second = layer
-        a = self.numbers == first
+        if mode == 'internal' and second is not None:
+            a = torch.zeros_like(self.numbers, dtype=torch.bool)
+            a[torch.as_tensor(second, dtype=torch.long, device=self.numbers.device)] = True
+        else:
+            a = self.numbers == first
         ma = x[:, a].mean(1, keepdim=True)
         context = x.clone(); roles = torch.zeros_like(self.numbers); roles[a] = 1
         if mode == 'internal':
+            # The complementary atoms of the same element are the active block's
+            # exchangeable partners; name them so the conditioner can use them.
+            roles[(self.numbers == first) & ~a] = 2
             context[:, a] = ma
             return context, ma, x[:, a]-ma, roles, a, None
         b = self.numbers == second; roles[b] = 2
