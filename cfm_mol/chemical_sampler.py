@@ -72,7 +72,7 @@ class ChemicalTarget:
 
     def propose(self,state,action_index,generator,proposal_std):
         record=dict(old_state_id=state['state_id'],action_index=int(action_index),
-            new_state_id=-1,valid=False,reverse_action_index=-1)
+            new_state_id=-1,valid=False,reverse_action_index=-1,proposal_std=float(proposal_std))
         if action_index==0:
             z=(self.basis.T@state['positions']).flatten()
             mean=z+.5*proposal_std**2*_clip_score(state['score'][None],100/self.kT)[0]
@@ -122,12 +122,14 @@ class ChemicalTarget:
 
     @torch.no_grad()
     def transition(self,states,*,policy,generator,proposal_std,phase,local_only=False,uniform_local=.5):
+        scales=torch.as_tensor(proposal_std,dtype=torch.float64).expand(len(states))
+        if not torch.isfinite(scales).all() or (scales<=0).any():raise ValueError('Positive finite local scales required')
         logp=policy_log_probabilities(states,self.numbers,self.kT,policy,uniform_local)
         if local_only:indices=torch.zeros(len(states),dtype=torch.long)
         else:indices=torch.multinomial(logp.exp(),1,generator=generator)[:,0]
         candidates=[];records=[]
-        for state,index in zip(states,indices):
-            candidate,record=self.propose(state,int(index),generator,proposal_std)
+        for state,index,scale in zip(states,indices,scales):
+            candidate,record=self.propose(state,int(index),generator,float(scale))
             candidates.append(candidate);records.append(record)
         self.evaluate([s for s in candidates if s is not None],phase=phase)
         valid_indices=[i for i,s in enumerate(candidates) if s is not None]
@@ -135,7 +137,7 @@ class ChemicalTarget:
         accepted=list(states);logu=torch.rand(len(states),dtype=torch.float64,generator=generator).log()
         reverse_row=0
         for i,(old,new,record) in enumerate(zip(states,candidates,records)):
-            self.finish_record(old,new,record,proposal_std)
+            self.finish_record(old,new,record,float(scales[i]))
             pf=0. if local_only else float(logp[i,indices[i]])
             pr=0.
             if new is not None:

@@ -22,11 +22,12 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--table',type=Path,required=True);p.add_argument('--policies',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True);p.add_argument('--replica',type=int,choices=[0,1],required=True)
-    p.add_argument('--method',choices=['uniform','uniform_exchange','learned'],required=True)
+    p.add_argument('--method',choices=['uniform','uniform_exchange','uniform_multiscale','learned'],required=True)
     p.add_argument('--oracle-python',type=Path,required=True);p.add_argument('--oracle-checkpoint',type=Path,required=True)
     args=p.parse_args();root=Path(__file__).resolve().parents[2]
     protocol_path=root/'research/evidence/chemical_policy_protocol_v1.json';protocol=json.loads(protocol_path.read_text())
-    evaluation_path=root/'research/evidence/chemical_policy_evaluation_protocol_v2.json'
+    multiscale=args.method=='uniform_multiscale'
+    evaluation_path=root/'research/evidence'/('multiscale_chemical_protocol_v1.json' if multiscale else 'chemical_policy_evaluation_protocol_v2.json')
     evaluation=json.loads(evaluation_path.read_text())
     if evaluation['training_protocol_sha256']!=sha(protocol_path):raise ValueError('Changed training protocol')
     header=json.loads((args.table/'results.json').read_text());data_path=args.table/'development.pt'
@@ -60,7 +61,10 @@ def main():
         source_generation_denominators=header['source_generation_denominators'],
         reference_coordinates_loaded=False,scientific_submission_ready=False,history=[])
     write(output,report);target=None;oracle=None;transitions=[];history_ids=[];start=time.perf_counter()
-    generator=torch.Generator().manual_seed(protocol['evaluation_seeds'][args.replica])
+    transition_seed=evaluation.get('evaluation_seeds',protocol['evaluation_seeds'])[args.replica]
+    generator=torch.Generator().manual_seed(transition_seed)
+    scale_generator=torch.Generator().manual_seed(evaluation.get('scale_seed',0)+args.replica)
+    scale_history=[];report['transition_seed']=transition_seed
     steps=protocol['evaluation_steps'] if policy is not None else evaluation['uniform_total_budget_steps']
     try:
         oracle=EnergyOracle(args.oracle_python,root/'scripts/research/oracle_worker.py',args.oracle_checkpoint,
@@ -88,12 +92,19 @@ def main():
             if step%32==0 or step==steps:
                 print(json.dumps(row),flush=True);write(output,report)
             if step==steps:break
+            proposal_std=protocol['local_scale']*target.kT**.5
+            if multiscale:
+                choices=torch.randint(len(evaluation['local_scales']),(len(states),),generator=scale_generator)
+                proposal_std=torch.tensor(evaluation['local_scales'],dtype=torch.float64)[choices]*target.kT**.5
+                scale_history.append(choices.tolist())
             states,records=target.transition(states,policy=policy,generator=generator,
-                proposal_std=protocol['local_scale']*target.kT**.5,phase=f'evaluation_{step}',uniform_local=uniform_local)
+                proposal_std=proposal_std,phase=f'evaluation_{step}',uniform_local=uniform_local)
             transitions.extend(records)
         artifact=dict(states=target.states,query_trace=target.query_trace,transitions=transitions,
             history_state_ids=history_ids,generator_state=generator.get_state(),
-            policy_sha256=report['policy_sha256'],protocol_sha256=sha(protocol_path))
+            policy_sha256=report['policy_sha256'],protocol_sha256=sha(protocol_path),
+            scale_choice_history=scale_history,scale_generator_state=scale_generator.get_state(),
+            transition_seed=transition_seed)
         torch.save(artifact,args.out/'trace.pt')
         maximum=protocol['maximum_raw_queries_per_learned_eval_arm'] if policy is not None else evaluation['maximum_raw_queries_per_uniform_total_budget_arm']
         if oracle.evaluated>maximum:raise RuntimeError('Frozen evaluation query bound exceeded')

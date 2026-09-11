@@ -36,9 +36,9 @@ def audit_trace(data,condition,kT,restraint,std,policy=None,uniform_local=.5,rng
         assert graph['connectivity_smiles']==s['graph']['connectivity_smiles']
         torch.testing.assert_close(graph['bond_orders'],s['graph']['bond_orders'])
         assert terminal_exchange_actions(condition['numbers'],graph['bond_orders'])==s['actions']
-    def drift(s):
+    def drift(s,scale):
         score=s['score'];norm=float(score.norm());clipped=score*min(1.,100/kT/max(norm,1e-300))
-        return (basis.T@s['positions']).flatten()+.5*std**2*clipped
+        return (basis.T@s['positions']).flatten()+.5*scale**2*clipped
     transition_rows=data.get('warm_transitions',data.get('transitions',[]));table=data.get('table',[])
     probabilities=None
     if 'transitions' in data:
@@ -48,12 +48,13 @@ def audit_trace(data,condition,kT,restraint,std,policy=None,uniform_local=.5,rng
                 for i in range(0,len(states),256)])
     for row in transition_rows+table:
         old=states[row['old_state_id']];x=old['positions']
+        scale=row.get('proposal_std',std)
         if row['action_index']:
             action=old['actions'][row['action_index']-1];assert action==row['action']
             y,volume,inverse=exchange_terminal_sites(x,radii,action)
             torch.testing.assert_close(volume,row['log_volume']);assert inverse==row['inverse_action']
         else:
-            mean=drift(old);y=basis@(mean+std*row['noise']).reshape(len(condition['numbers'])-1,3)
+            mean=drift(old,scale);y=basis@(mean+scale*row['noise']).reshape(len(condition['numbers'])-1,3)
             torch.testing.assert_close(mean,row['forward_mean'])
         torch.testing.assert_close(y,row['proposal_positions'],atol=1e-10,rtol=0)
         if row['valid']:
@@ -66,9 +67,9 @@ def audit_trace(data,condition,kT,restraint,std,policy=None,uniform_local=.5,rng
                 torch.testing.assert_close(rv+volume,torch.zeros_like(volume),atol=1e-10,rtol=0)
                 base+=volume
             else:
-                reverse_mean=drift(new)
+                reverse_mean=drift(new,scale)
                 z=(basis.T@x).flatten();w=(basis.T@y).flatten()
-                base+=((w-mean).square().sum()-(z-reverse_mean).square().sum())/(2*std**2)
+                base+=((w-mean).square().sum()-(z-reverse_mean).square().sum())/(2*scale**2)
                 torch.testing.assert_close(reverse_mean,row['reverse_mean'])
             torch.testing.assert_close(base,row['base_log_ratio'],atol=1e-7,rtol=1e-9)
         else:

@@ -16,6 +16,19 @@ def test_trace_reconstructs_raw_target_and_policy_corrected_acceptance():
     x[1:4]*=1.09/3**.5;x[4]*=1.35/3**.5;x-=x.mean(0)
     states=target.evaluate([target.coordinate_state(x)],phase='initial')
     assert len(states[0]['actions'])==3
+    # Distinct, independently chosen scales define a mixture of valid MALA
+    # components; each reverse Gaussian must use its own selected scale.
+    pair=target.evaluate([target.coordinate_state(x.clone()) for _ in range(2)],phase='scale_test')
+    _,scale_rows=target.transition(pair,policy=None,generator=torch.Generator().manual_seed(45),
+        proposal_std=torch.tensor([.01,.04],dtype=x.dtype),phase='scale_test',local_only=True)
+    for row,scale in zip(scale_rows,[.01,.04]):
+        assert row['proposal_std']==scale
+        if row['valid']:
+            old=target.states[row['old_state_id']];new=target.states[row['new_state_id']]
+            z=(target.basis.T@old['positions']).flatten();y=(target.basis.T@new['positions']).flatten()
+            gaussian=((y-row['forward_mean']).square().sum()-(z-row['reverse_mean']).square().sum())/(2*scale**2)
+            torch.testing.assert_close(row['base_log_ratio'],
+                -(new['potential_eV']-old['potential_eV'])/target.kT+gaussian)
     policy=ChemicalMovePolicy().double()
     with torch.no_grad():
         policy.family_head.weight.normal_();policy.action_head[-1].weight.normal_()
