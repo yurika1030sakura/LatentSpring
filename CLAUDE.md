@@ -10,6 +10,13 @@ Codex audit). Read `notes/claude_update_review_v1.md` before using the optional
 index-split diagnostic or interpreting its particle results. Main molecular
 production remains on the original immutable snapshot.
 
+The original48-arm campaign and all8 geometry conditions are now complete.
+The active reconstruction is described in `research/RECONSTRUCTION_CURRENT.md`:
+conditional proposal densities, explicit validity support and reversible
+chemical/coordinate moves. These are research prototypes. The uniform chemical
+move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
+has not been established. `research/NEXT.md` is the current execution checkpoint.
+
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md` and
 `research/HANDOFF_STATE_20260910.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core

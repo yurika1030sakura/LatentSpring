@@ -1,5 +1,12 @@
 # Claude handoff — BGFM / ICLR 2027
 
+**Latest reconstruction checkpoint:** the original48-arm/8-condition campaign is
+complete. Start with `research/RECONSTRUCTION_CURRENT.md` and the rewritten
+`research/NEXT.md`. New work addresses explicit validity support and reversible
+topology/geometry transitions. A uniform chemical exchange crosses the observed
+constitutional-isomer barrier in both diagnostic repetitions; learned-policy
+advantage remains unestablished. The dated handoff below is historical.
+
 **September11 continuation checkpoint:** read `research/NEXT.md` first. Full
 and compact EACF controls, complete checkpoint replays and independent geometry
 comparisons are now finished. They do not establish our method's external

@@ -1,0 +1,141 @@
+{
+  "complete": true,
+  "scope": "Check saved chemical identities, paired starts, volumes and diagnostic costs.",
+  "slurm": "45999224|COMPLETED|103",
+  "rows": [
+    {
+      "method": "mala",
+      "replica": 0,
+      "new_raw_queries": 1544,
+      "inherited_reference_raw_queries": 41998,
+      "initial_smiles": [
+        "FC[SH](F)(F)(F)F",
+        "FC[SH](F)(F)(F)F",
+        "CS(F)(F)(F)(F)F",
+        "CS(F)(F)(F)(F)F"
+      ],
+      "final_smiles": [
+        "FC[SH](F)(F)(F)F",
+        "FC[SH](F)(F)(F)F",
+        "CS(F)(F)(F)(F)F",
+        "CS(F)(F)(F)(F)F"
+      ],
+      "final_energy_eV": [
+        -25505.764058835543,
+        -25505.56324163219,
+        -25506.865023017075,
+        -25506.7348404428
+      ],
+      "generated_first_target_cycle": [
+        null,
+        null
+      ],
+      "accepted_exchanges": 0,
+      "results_sha256": "957aa503af3d49dc9bafdb54e6b54207385b066bb95bbeabd3f29b8ccbbfe1e9",
+      "samples_sha256": "296273bd7115a0ce99f3c3a20deaa5b2ea7a12071f5bc40195a524d7d1140c9a"
+    },
+    {
+      "method": "mala",
+      "replica": 1,
+      "new_raw_queries": 1544,
+      "inherited_reference_raw_queries": 41998,
+      "initial_smiles": [
+        "FC[SH](F)(F)(F)F",
+        "FC[SH](F)(F)(F)F",
+        "CS(F)(F)(F)(F)F",
+        "CS(F)(F)(F)(F)F"
+      ],
+      "final_smiles": [
+        "FC[SH](F)(F)(F)F",
+        "FC[SH](F)(F)(F)F",
+        "CS(F)(F)(F)(F)F",
+        "CS(F)(F)(F)(F)F"
+      ],
+      "final_energy_eV": [
+        -25505.818175834127,
+        -25505.741062558882,
+        -25506.777125405446,
+        -25506.78159920802
+      ],
+      "generated_first_target_cycle": [
+        null,
+        null
+      ],
+      "accepted_exchanges": 0,
+      "results_sha256": "38c964580aa0e1f86e4e1dfc5a02e5bd9222854d65f8b87607019184d1a1daf5",
+      "samples_sha256": "13c2a2c68f613511a2693b1540ac1110c41496f3c6db27f308cd3ce4d1b77156"
+    },
+    {
+      "method": "exchange",
+      "replica": 0,
+      "new_raw_queries": 1544,
+      "inherited_reference_raw_queries": 41998,
+      "initial_smiles": [
+        "FC[SH](F)(F)(F)F",
+        "FC[SH](F)(F)(F)F",
+        "CS(F)(F)(F)(F)F",
+        "CS(F)(F)(F)(F)F"
+      ],
+      "final_smiles": [
+        "CS(F)(F)(F)(F)F",
+        "CS(F)(F)(F)(F)F",
+        "CS(F)(F)(F)(F)F",
+        "CS(F)(F)(F)(F)F"
+      ],
+      "final_energy_eV": [
+        -25506.841967154225,
+        -25506.86481406088,
+        -25506.647731629873,
+        -25506.867233508452
+      ],
+      "generated_first_target_cycle": [
+        9,
+        9
+      ],
+      "accepted_exchanges": 5,
+      "results_sha256": "91f994704c1120255829fb0f39f6fd38958e60ed4adab569063292e04791fdfe",
+      "samples_sha256": "3399aabfdee0c8ba6d664a695bf9196fb5c76d60dbe43323c552a65d456c7b43"
+    },
+    {
+      "method": "exchange",
+      "replica": 1,
+      "new_raw_queries": 1544,
+      "inherited_reference_raw_queries": 41998,
+      "initial_smiles": [
+        "FC[SH](F)(F)(F)F",
+        "FC[SH](F)(F)(F)F",
+        "CS(F)(F)(F)(F)F",
+        "CS(F)(F)(F)(F)F"
+      ],
+      "final_smiles": [
+        "CS(F)(F)(F)(F)F",
+        "CS(F)(F)(F)(F)F",
+        "CS(F)(F)(F)(F)F",
+        "CS(F)(F)(F)(F)F"
+      ],
+      "final_energy_eV": [
+        -25506.72085508512,
+        -25506.87651876956,
+        -25506.652571759332,
+        -25506.769044303368
+      ],
+      "generated_first_target_cycle": [
+        24,
+        5
+      ],
+      "accepted_exchanges": 5,
+      "results_sha256": "98da9eba0c1c40617fab70ef31ae78c85b156b98b9f19d23da816248c988223a",
+      "samples_sha256": "8d4a114890f4141a737cc4f52a5b991692cb4eaadc9afa78286b70410488318b"
+    }
+  ],
+  "new_raw_queries": 6176,
+  "saved_structures_checked": 1040,
+  "additional_oracle_queries": 0,
+  "scientific_submission_ready": false,
+  "limitations": [
+    "Uniform exchange is not a learned policy or established AI novelty.",
+    "Two generated initial configurations and two transition seeds, with QC-origin control chains.",
+    "Warm-start production costs are inherited and additional.",
+    "This v1 saves cycle endpoints and exchange decisions, not a full per-query force trace; full stochastic replay is not certified."
+  ]
+}

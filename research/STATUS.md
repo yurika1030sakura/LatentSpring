@@ -1351,3 +1351,63 @@ novelty. notes/physical_control_decision_v1.md records the evidence and next
 independent-reference gates. The primary manuscript now includes all adverse
 controls and appropriate standard-method citations; scientific readiness is false.
 Main molecular jobs45914826_5/6 remain active at the last scheduler check.
+
+
+## 2026-09-11: original study closed; conditional/topology reconstruction
+
+The original matrix now has48 qualified arms,0 failed,866304 raw refinement
+queries. All8 independent geometry conditions complete1792 attempts,1666
+converged and126 failed. Final evidence is parity_production_complete_v1.json
+and parity_geometry_complete_v1.json. The prior prefixes remain unchanged.
+
+New ConditionalMolecularProposal includes full-state conditioning, exact COM
+volume, collective low-rank noise and differentiable inverse likelihoods. Tests
+cover nonzero-parameter symmetry, batch independence, complete intrinsic
+Jacobians, inverse gradients,200 atoms, rigid-motion-invariant utility and hard
+support. metropolis_utility.py separately verifies fixed-coordinate MH score
+utility gradients against exact boundary derivatives; naive indicator pathwise
+training does not contain those boundary terms. No molecular actor has yet been
+trained with this helper.
+
+Controlled toy jobs45982929(shape),45985015(oracle-mode),45986980(data-derived
+spectral) all complete. The latter uses no mixture labels during training;
+its slow feature has .95--.98 held-out mode correlation within a fixed radial
+feature family. Frozen long evaluation45989157 completes12 cases. Nonlinear
+hybrid mode ESS264.5/842.7 versus MALA250.7/107.3 and affine hybrid274.5/209.6
+is a mixed seed-dependent signal, not stable superiority or a molecular result.
+All rank Rhat values remain above1.01. Initial shape/global-only failures and
+privileged-information diagnostic limitations remain retained.
+
+Reference smoke45980208(576 raw queries) and unrestricted pilot45980521(65600)
+pass proposal replay. The latter retains initialization memory, restrained-energy
+Rhat2.62, and fragment states. Connected smoke45988559 uses482 queries; pilot
+45989633 fails in shell mkdir on a full node /tmp, before Python or any oracle
+call. Run-local caches and TMPDIR-aware oracle stderr fix this infrastructure
+issue without modifying the sampler/target. Replacement45992214 completes41998
+raw queries,11801 unsupported proposals without oracle calls, and proposal
+replay. It retains connected states but restrained-energy Rhat1.78, not a qualified
+equilibrium reference. Both audits remain explicit about initialization families.
+
+The direct-conformer RDKit audit avoids the earlier XYZ scientific-notation
+parse issue and separates connectivity identities from coordinate-derived
+non-tetrahedral stereo tags. Condition0 has66 geometrically admissible training
+parents(34 RDKit assignment successes) and8 admissible development parents(4
+successes). The four development successes differ constitutionally from the QC
+reference. Connected-reference FM ladders are FC[SH](F)(F)(F)F; QC ladders are
+CS(F)(F)(F)(F)F. These are different isomers, not merely conformers.
+
+A uniform reversible terminal-site exchange is implemented with covalent-radius
+rescaling, explicit inverse action and intrinsic Jacobian(s_i*s_j)^3. The map
+passes dense COM Jacobian, inversion and symmetry checks. Job45999224 completes
+four matched warm-start arms,1544 new raw queries each. Both exchange replicas
+convert both FM-origin starts to the lower-energy reference connectivity;
+MALA-only controls never do. Generated first-hit cycles are9/9 and24/5. All1040
+saved cycle structures, identities, paired starts, volumes and costs are audited.
+This is a useful physical move, not learned-policy performance or AI novelty;
+v1 lacks a complete per-query force trace, so full stochastic replay is not claimed.
+
+New reference/chemical diagnostics total114832 raw queries including their
+smokes; old campaign and initialization costs remain additional. The /tmp failure
+has0 physical queries, not zero allocation cost. Read RECONSTRUCTION_CURRENT.md
+and NEXT.md for the active route and next policy/trace/independent-reference gates.
+All old failures and reserved722 outcomes are preserved. The goal is not complete.

@@ -1,5 +1,11 @@
 # Current paper direction — September11,2026
 
+**Active reconstruction:** read `RECONSTRUCTION_CURRENT.md`. The original
+48-arm study is complete, with adverse external controls. Current prototypes
+address validity-conditioned sampling and reversible topology/geometry moves.
+The manuscript below remains the previous candidate's audited development draft;
+it must not be presented as an already validated description of the new route.
+
 Working title: **Refining Molecular Generators with Exact Entropy Changes**.
 The primary manuscript now describes the implemented method, its complete
 volume/entropy derivations and the actual controlled evidence. It is a development

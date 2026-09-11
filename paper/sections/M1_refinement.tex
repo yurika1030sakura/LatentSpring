@@ -18,7 +18,7 @@ augmented coupling-flow baseline, in both its joint-KL bound and independent
 GFN2-xTB strain. Our model costs less than full EACF, but a compact flow narrows
 the timing difference, and direct MALA/HMC controls give stronger geometry
 improvements at lower cost for the same fixed sample batch. The eight-condition
-study remains incomplete. We present an implemented
+study is complete, with mixed architectural effects. We present an implemented
 method candidate and its limitations, without claiming calibrated Boltzmann
 sampling or an established novel-method advantage.
 \end{abstract}
@@ -317,7 +317,7 @@ queries and 320 xTB optimization attempts. The affine branch adds 37,184 oracle
 queries. Source generation, inherited pretraining and earlier failed method
 branches are additional costs.
 
-\paragraph{Prespecified broader study: partial completion.}
+\paragraph{Prespecified broader study: completed matrix.}
 An outcome-independent development manifest contains eight conditions with
 9--20 atoms, including charged and open-shell cases and metal-containing
 compositions. Every condition is retained. Source production targets 4,096
@@ -338,12 +338,14 @@ One source-production attempt timed
 out on a bulk RPC and was stopped, with an attempted-query bound of 0--8,192
 and no qualified output. Its records are retained. The replacement bounds
 requests and persists intermediate coordinates and scored chunks.
-The audited production prefix contains 39 completed arms, no failed arms and
-nine unresolved arms, with 703,872 acknowledged queries in completed runs.
-Six conditions have complete independent geometry assessments: 1,344 attempts,
-1,246 converged and 98 failed. Success-only strain does not consistently favor
-the convex model over the simpler controls. Complete broader performance
-results are not yet available. The reserved 722 conditions remain untouched.
+The audited production matrix contains all 48 completed arms and 866,304
+acknowledged queries, with no failed or unresolved arms. All eight conditions
+have independent geometry assessments: 1,792 attempts, 1,666 converged and 126
+failed. Convex-minus-affine point estimates are negative in all sixteen matched
+training pairs, but some differences are small relative to their parent-level
+SEM. Typed-control and independent-strain comparisons are mixed. These internal
+effects do not overcome the adverse external comparisons below. The reserved
+722 conditions remain untouched.
 
 \paragraph{New source/target symmetry audit.}
 On four fixed source geometries in each broader condition, raw eSEN energy
