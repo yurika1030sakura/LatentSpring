@@ -24,13 +24,14 @@ def pack_policy_states(states,numbers,kT):
     return x,bonds,torch.tensor(numbers,dtype=torch.long),electronic,actions
 
 
-def policy_log_probabilities(states,numbers,kT,policy=None):
+def policy_log_probabilities(states,numbers,kT,policy=None,uniform_local=.5):
     if policy is not None:return policy(*pack_policy_states(states,numbers,kT))
+    if not 0<uniform_local<1:raise ValueError('Both fixed move families require positive probability')
     maximum=max(1,max(len(s['actions']) for s in states))
     result=torch.full((len(states),maximum+1),-torch.inf,dtype=torch.float64)
     for i,s in enumerate(states):
-        m=len(s['actions']);result[i,0]=math.log(.5) if m else 0.
-        if m:result[i,1:m+1]=math.log(.5/m)
+        m=len(s['actions']);result[i,0]=math.log(uniform_local) if m else 0.
+        if m:result[i,1:m+1]=math.log((1-uniform_local)/m)
     return result
 
 
@@ -120,8 +121,8 @@ class ChemicalTarget:
         return record
 
     @torch.no_grad()
-    def transition(self,states,*,policy,generator,proposal_std,phase,local_only=False):
-        logp=policy_log_probabilities(states,self.numbers,self.kT,policy)
+    def transition(self,states,*,policy,generator,proposal_std,phase,local_only=False,uniform_local=.5):
+        logp=policy_log_probabilities(states,self.numbers,self.kT,policy,uniform_local)
         if local_only:indices=torch.zeros(len(states),dtype=torch.long)
         else:indices=torch.multinomial(logp.exp(),1,generator=generator)[:,0]
         candidates=[];records=[]
@@ -130,7 +131,7 @@ class ChemicalTarget:
             candidates.append(candidate);records.append(record)
         self.evaluate([s for s in candidates if s is not None],phase=phase)
         valid_indices=[i for i,s in enumerate(candidates) if s is not None]
-        reverse=policy_log_probabilities([candidates[i] for i in valid_indices],self.numbers,self.kT,policy) if valid_indices else None
+        reverse=policy_log_probabilities([candidates[i] for i in valid_indices],self.numbers,self.kT,policy,uniform_local) if valid_indices else None
         accepted=list(states);logu=torch.rand(len(states),dtype=torch.float64,generator=generator).log()
         reverse_row=0
         for i,(old,new,record) in enumerate(zip(states,candidates,records)):

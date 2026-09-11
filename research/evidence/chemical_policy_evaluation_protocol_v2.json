@@ -1,0 +1,19 @@
+{
+  "frozen": true,
+  "version": 2,
+  "training_protocol_sha256": "1f8b0fc8174848f616dd1a1759b0d6e4e8ae562eb4ed90546dd9aa835a0f85fd",
+  "reason": "Correct full-cost accounting before any molecular policy evaluation. Uniform policies need only the development source, whereas learning also consumed the 4096 generated training parents and their existing raw-energy queries. Preserve v1 as the actual training-table protocol.",
+  "evaluation_outcomes_seen_before_freeze": false,
+  "training_outcomes_seen": "Both training replicas saturated the local-family floor at 0.1. Add an otherwise identical fixed 0.1-local uniform-action baseline to distinguish learned action selection from a changed move frequency.",
+  "methods": ["uniform", "uniform_exchange", "learned"],
+  "fixed_local_probabilities": {"uniform": 0.5, "uniform_exchange": 0.1},
+  "replicas": [0, 1],
+  "learned_steps": 256,
+  "uniform_total_budget_steps": 1482,
+  "maximum_raw_queries_per_uniform_total_budget_arm": 11864,
+  "maximum_new_eval_queries_all_six_arms": 51568,
+  "comparison": "Report the 256-step sampling-only prefix separately; compare full-cost trajectories at the last baseline checkpoint whose actual total raw-query count does not exceed the learned arm's actual total. Uniform final endpoints can cost more and must not be called exactly matched.",
+  "total_raw_query_definition": "New sampling queries + training warm/action-table queries when learning + 4608 source queries when learning or 512 source queries when uniform + shared development warm-up queries. Training dataset is physically generated once for both training seeds; inherited costs are per-algorithm costs, not newly rerun physical queries.",
+  "wall_time_contract": "Source neural generation, offline policy training and sampling times are additional distinct costs. Raw-query matching is not a wall-time match. No claim of end-to-end runtime superiority from oracle calls alone.",
+  "unchanged": "Training objective, source eligibility, architecture, weights, sampling seeds, physical target, move maps and development parents remain the frozen v1 choices."
+}

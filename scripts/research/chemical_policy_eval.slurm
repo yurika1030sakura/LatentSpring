@@ -20,7 +20,7 @@ export TMPDIR="$RUN_ROOT/runtime/tmp" MPLCONFIGDIR="$RUN_ROOT/runtime/mpl"
 export XDG_CACHE_HOME="$RUN_ROOT/runtime/cache" CUDA_CACHE_PATH="$RUN_ROOT/runtime/cuda"
 mkdir -p "$TMPDIR" "$MPLCONFIGDIR" "$XDG_CACHE_HOME" "$CUDA_CACHE_PATH"
 cd "$SOURCE_ROOT"
-for METHOD in uniform learned; do
+for METHOD in uniform uniform_exchange learned; do
   for REPLICA in 0 1; do
     "$STORE/envs/flowmol/bin/python" -u scripts/research/evaluate_chemical_policy.py \
       --table "$TABLE_ROOT" --policies "$POLICY_ROOT" --out "$RUN_ROOT/${METHOD}_s${REPLICA}" \
