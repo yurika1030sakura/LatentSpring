@@ -17,7 +17,7 @@ class EnergyOracle:
         self.timeout=timeout_seconds;self.evaluated=0;self.requested_evaluations=0
         self.condition={'numbers':list(map(int,numbers)),'charge':int(charge),
                         'spin_multiplicity':int(spin_multiplicity)}
-        self.stderr=tempfile.TemporaryFile(mode='w+t',dir='/tmp')
+        self.stderr=tempfile.TemporaryFile(mode='w+t',dir=os.environ.get('TMPDIR') or '/tmp')
         environment=os.environ.copy()
         environment.update(PYTHONNOUSERSITE='1',PYTHONDONTWRITEBYTECODE='1',PYTHONUNBUFFERED='1')
         environment.setdefault('XDG_CACHE_HOME','/tmp/bgfm_oracle_cache')

@@ -1,0 +1,83 @@
+{
+  "complete": true,
+  "scope": "Check reference traces and quantify retained initialization memory.",
+  "domain": "unrestricted",
+  "run": "runs/parity_reference_pilot_v1",
+  "results_sha256": "922b93c116d121e08090cfc4a32af2b639030233e8a54616839f39508c14fe69",
+  "trace_sha256": "baec36eef0426be2a1e40cb182dd6a73e98ed3abed690e24618a43de64903949",
+  "raw_queries_verified": 65600,
+  "additional_oracle_queries": 0,
+  "maximum_COM_error_A": 5.773159728050814e-16,
+  "tail_rounds_per_ladder": 128,
+  "ladders": [
+    {
+      "ladder": 0,
+      "initialization": "fm",
+      "component_histogram": {
+        "2": 16,
+        "3": 112
+      },
+      "last_projected_energy_eV": -25506.65586272267,
+      "mean_projected_energy_eV": -25506.612605699916
+    },
+    {
+      "ladder": 1,
+      "initialization": "fm",
+      "component_histogram": {
+        "3": 128
+      },
+      "last_projected_energy_eV": -25508.79220759305,
+      "mean_projected_energy_eV": -25508.708928781074
+    },
+    {
+      "ladder": 2,
+      "initialization": "raw_qc_jitter",
+      "component_histogram": {
+        "1": 128
+      },
+      "last_projected_energy_eV": -25506.76980053394,
+      "mean_projected_energy_eV": -25506.77686940711
+    },
+    {
+      "ladder": 3,
+      "initialization": "raw_qc_jitter",
+      "component_histogram": {
+        "1": 128
+      },
+      "last_projected_energy_eV": -25506.845230682946,
+      "mean_projected_energy_eV": -25506.780810678574
+    }
+  ],
+  "projected_energy": {
+    "chains": 4,
+    "draws_per_chain": 128,
+    "mean": -25507.21980364167,
+    "split_rank_rhat": 2.029876738948477,
+    "ess": 2.023069550407892,
+    "scope": "Finite-chain diagnostic; requires separate initialization and mode-coverage checks"
+  },
+  "restrained_energy": {
+    "chains": 4,
+    "draws_per_chain": 128,
+    "mean": -25505.449072020958,
+    "split_rank_rhat": 2.6232730709047667,
+    "ess": 2.028440137151604,
+    "scope": "Finite-chain diagnostic; requires separate initialization and mode-coverage checks"
+  },
+  "radius_of_gyration_squared": {
+    "chains": 4,
+    "draws_per_chain": 128,
+    "mean": 3.5414632414245766,
+    "split_rank_rhat": 2.2272699253432515,
+    "ess": 2.0521564045678073,
+    "scope": "Finite-chain diagnostic; requires separate initialization and mode-coverage checks"
+  },
+  "slurm_accounting": "45980521|COMPLETED|191",
+  "reference_qualified": false,
+  "scientific_submission_ready": false,
+  "limitations": [
+    "Source-initialization differences and diagnostic Rhat/ESS require longer independent checks.",
+    "Connected/no-overlap support alone is not chemical identity or chemical validity.",
+    "Temperature exchange is not proof of physical mode mixing."
+  ]
+}
