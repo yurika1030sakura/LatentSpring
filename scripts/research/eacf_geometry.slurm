@@ -10,6 +10,12 @@
 set -euo pipefail
 SOURCE_ROOT="${1:?immutable source required}"
 RUN_ROOT="${2:?unique output required}"
+PROFILE="${3:-published}"
+case "$PROFILE" in
+  published) TRAIN_STEM=eacf_joint_condition_00; AUDIT_STEM=eacf_joint_audit ;;
+  compact) TRAIN_STEM=eacf_compact_condition_00; AUDIT_STEM=eacf_compact_audit ;;
+  *) exit 2 ;;
+esac
 STORE=/n/holylabs/woo_lab/Lab/yulili/bgfm
 LAB_RUNS=/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs
 export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH="$SOURCE_ROOT"
@@ -23,11 +29,11 @@ ARGS=()
 for REPLICA in 0 1; do
   EXPORTED="$RUN_ROOT/export_s${REPLICA}"
   "$STORE/envs/flowmol/bin/python" -u scripts/research/export_eacf_geometry.py \
-    --run "$LAB_RUNS/eacf_joint_condition_00_s${REPLICA}_v1" \
-    --audit "$LAB_RUNS/eacf_joint_audit_s${REPLICA}_v1/audit.json" \
+    --run "$LAB_RUNS/${TRAIN_STEM}_s${REPLICA}_v1" \
+    --audit "$LAB_RUNS/${AUDIT_STEM}_s${REPLICA}_v1/audit.json" \
     --reference "$LAB_RUNS/parity_entropy_condition_00_v1/condition_00_convex_s${REPLICA}" \
     --out "$EXPORTED"
-  ARGS+=(--samples "eacf_s${REPLICA}" "$EXPORTED/physical_samples.pt")
+  ARGS+=(--samples "eacf_${PROFILE}_s${REPLICA}" "$EXPORTED/physical_samples.pt")
 done
 exec "$STORE/envs/flowmol/bin/python" -u scripts/research/assess_work_panel.py \
   "${ARGS[@]}" --out "$RUN_ROOT" --require-shared-parents \

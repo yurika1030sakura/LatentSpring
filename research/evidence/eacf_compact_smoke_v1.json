@@ -1,0 +1,180 @@
+{
+  "complete": true,
+  "at_utc": "2026-09-11T05:41:38.453128+00:00",
+  "job_id": "45967020",
+  "scope": "Compact14900-parameter real-interface release gate; two updates, not a performance result.",
+  "results_sha256": "43c1533bc253c3d646e7bd5841521a7106e89da75d44cea54d79f8b4bb94aa09",
+  "report": {
+    "complete": true,
+    "scope": "Matched-source EACF joint-entropy control with a frozen architecture profile.\n\nThis is not standalone FAB: the FM source has no evaluated marginal density.\nJoint KL and physical marginal KL remain distinct. Every failed update/query is\nretained, and physical evaluation always uses the projected target.\n",
+    "kind": "eacf_spherical_joint",
+    "recipe": {
+      "upstream_commit": "beafab1b1ccd2b770572daeef1cf15f3fe199c21",
+      "nodes": 10,
+      "dim": 3,
+      "n_aug": 1,
+      "n_layers": 2,
+      "n_blocks": 1,
+      "mlp_units": [
+        12
+      ],
+      "n_invariant_feat_hidden": 12,
+      "embedding_dim": 8,
+      "num_discrete_feat": 119,
+      "spline_num_bins": 8,
+      "type": "spherical",
+      "reflection_invariant": true,
+      "n_inner_transforms": 1,
+      "dist_spline_max": 10.0,
+      "identity_init": true,
+      "scaling_layer": false,
+      "aux_conditioned_on_x": true,
+      "aux_scale": 0.1,
+      "aux_regularizer_weight": 1.0,
+      "engineering_only": false
+    },
+    "condition": {
+      "raw_index": 2203988,
+      "source": "orbnet_denali/orbnet_small_can_00095_25832ac1121a870e8e14b070adb580fc35e0e6a94b3f9000de25f89289cc78d9_1548060_0_1/orca.tar.zst",
+      "reference_source": null,
+      "data_id": "orbnet_denali",
+      "n_atoms": 10,
+      "atomic_numbers": [
+        6,
+        16,
+        9,
+        9,
+        9,
+        9,
+        9,
+        1,
+        1,
+        1
+      ],
+      "charge": 0,
+      "spin_multiplicity": 1,
+      "energy_eV": -25506.962665013136,
+      "composition_hex": "0300000000010000050000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "partition": "new_development",
+      "stratum": [
+        "new_development",
+        "2-12",
+        "orbnet_denali",
+        "neutral",
+        "singlet"
+      ],
+      "selection_rank": 364261897999277261,
+      "candidate_index": 194,
+      "panel_stratum": [
+        2,
+        12,
+        "neutral",
+        "singlet"
+      ],
+      "manifest_sha256": "cd0cff7c0b3422e1ae560b41c346d1753e5ebfc1ad7629387998911bd87f24ad",
+      "manifest_index": 0,
+      "manifest_role": "new_development",
+      "requested_kT_eV": 1.0,
+      "numbers": [
+        6,
+        16,
+        9,
+        9,
+        9,
+        9,
+        9,
+        1,
+        1,
+        1
+      ]
+    },
+    "architecture_profile": "compact",
+    "experiment_protocol_sha256": "8b4ceb6148b0c5e7474dca38968de27d0c1c3a992e25c8ee1186d75e7c11ed94",
+    "replica": 0,
+    "steps": 2,
+    "batch": 16,
+    "evaluation_parents": 16,
+    "engineering_only": true,
+    "source_export_sha256": "0af320cbb2c233c1fb0cbad78fc35f4064d7e1faeef74c6dd19f3085702cff52",
+    "source_results_sha256": "a8650fc8d3388d207461f21e6adb37cc6bb32e8ec7b08bd6f2765b13ce88f7eb",
+    "source_checkpoint_sha256": "aa25f1c31a7f5d692a8b6a0d1ccb8f564dc82ead95be05c5419f157ba63bbf18",
+    "training_sha256": "979bafad1b60128072ea736e7c12e2d528671a36052ee1b66fcc86fb59994c4e",
+    "evaluation_sha256": "3128263b713bd20ac99b89782c9d6f2df7888cbc626d7a801b3cafb99f7bc1ef",
+    "refinement_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+    "source_protocol_sha256": "36de049f1264d5d7865ef1c370e12ce2f24331d09b1fb9864f23bdd56a33c70b",
+    "source_kind": "finite_fm_gaussian_inversion_mixture",
+    "target_kind": "inversion_energy_average",
+    "kT_eV": 0.025851999786435,
+    "restraint_eV_A2": 0.1,
+    "source_sha256": {
+      "scripts/research/train_eacf_joint_refinement.py": "9a086dd66a6fe22216edb69be83de7aa112d7c656e34d11e4e0761acbf46efdb",
+      "cfm_mol/eacf_reference.py": "eaeab4493d8cf1986c051da932de7db7cdaa9969f3b2079c8e5d3a8bb3f2af12",
+      "cfm_mol/jax_energy_oracle.py": "c490cf68b58acc9e8124ea338345f4e54cb2b58467334df1dd4c690227e99fe7",
+      "cfm_mol/numpy_energy_oracle.py": "5f1972313a8739dd1d24f95a060499b650570751a4ee76797b79f0c64fea743d",
+      "scripts/research/oracle_worker.py": "ee784c39b042c2afa201612bb2dfbeb12ab28415ea5554d7698faf7b553b357c"
+    },
+    "init_seed": 9601,
+    "aux_training_seed": 9605,
+    "aux_evaluation_seed": 9607,
+    "expected_oracle_evaluations": 96,
+    "oracle_evaluations_so_far": 32,
+    "history": [
+      {
+        "step": 1,
+        "objective": 92.34932052282085,
+        "joint_component": 87.50318240061723,
+        "basis_regularizer": 4.846138122203619,
+        "gradient_norm": 1588.8087032939086,
+        "ignored_updates": 0,
+        "learning_rate": 1.9999999999999998e-05,
+        "seconds": 77.85395891685039
+      },
+      {
+        "step": 2,
+        "objective": 14.590985511207416,
+        "joint_component": 10.165415895059212,
+        "basis_regularizer": 4.425569616148204,
+        "gradient_norm": 1603.2612319804027,
+        "ignored_updates": 0,
+        "learning_rate": 2.600000000000001e-05,
+        "seconds": 77.95658478187397
+      }
+    ],
+    "optimizer": "Pinned upstream warmup-cosine Adam:2e-5 ->2e-4 ->2e-5 over1000 attempts, warmup30; dynamic median clipping2/ignore10/window100",
+    "scientific_submission_ready": false,
+    "limitations": [
+      "Joint change upper-bounds physical marginal change; do not rank unlike KLs as equal.",
+      "Recorded EACF architecture profile, matched-source adaptation; not standalone FAB.",
+      "GPU oracle passed selected CPU-agreement checks. Legacy CPU-oracle wall times are not a matched timing baseline.",
+      "One source condition/seed or a smoke does not establish broad performance."
+    ],
+    "parameters": 14900,
+    "oracle_runtime": {
+      "ready": true,
+      "device": "cuda",
+      "worker_batch_size": 32,
+      "torch_version": "2.8.0+cu128",
+      "base_precision_dtype": "torch.float32",
+      "tf32": false,
+      "activation_checkpointing": true,
+      "execution_mode": null,
+      "gpu_name": "NVIDIA A100-SXM4-40GB MIG 3g.20gb"
+    },
+    "paired_joint_kl_change": {
+      "mean": -0.005959330733545376,
+      "row_sem": 0.005543681221090087,
+      "parents": 16
+    },
+    "physical_COM_error": 1.332267629550188e-16,
+    "inverse_error": 1.2434497875801753e-14,
+    "checkpoint_replay_passed": true,
+    "oracle_evaluations": 96,
+    "ignored_updates": 0,
+    "seconds": 99.66423557791859,
+    "artifacts": {
+      "adapter.pkl": "30d77691f3fad65028413b82d24db1197b353014717deb10ed5cc295291dbc9c",
+      "samples.npz": "c50473fbacf89ef52a7299ef1796dd90769588a137e188575016c2453add9d4a"
+    }
+  },
+  "scientific_submission_ready": false
+}

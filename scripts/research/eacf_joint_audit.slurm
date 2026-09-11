@@ -11,6 +11,12 @@ set -euo pipefail
 SOURCE_ROOT="${1:?immutable source required}"
 RUN_ROOT="${2:?unique output required}"
 REPLICA="${3:?replica required}"
+PROFILE="${4:-published}"
+case "$PROFILE" in
+  published) TRAIN_STEM=eacf_joint_condition_00 ;;
+  compact) TRAIN_STEM=eacf_compact_condition_00 ;;
+  *) exit 2 ;;
+esac
 LAB=/n/holylabs/ryl_lab/Lab/yulili_cfm_mol
 EACF_SOURCE="$LAB/external/eacf_20260910"
 [ "$(git -C "$EACF_SOURCE" rev-parse HEAD)" = beafab1b1ccd2b770572daeef1cf15f3fe199c21 ]
@@ -24,5 +30,5 @@ export XDG_CACHE_HOME="${SLURM_TMPDIR:-/tmp}/eacf_audit_cache_${SLURM_JOB_ID}"
 mkdir -p "$RUN_ROOT" "$MPLCONFIGDIR" "$XDG_CACHE_HOME"
 cd "$SOURCE_ROOT"
 exec "$LAB/external/eacf_env_20260910/bin/python" -u scripts/research/audit_eacf_joint_refinement.py \
-  --run "$LAB/iclr2027/runs/eacf_joint_condition_00_s${REPLICA}_v1" \
+  --run "$LAB/iclr2027/runs/${TRAIN_STEM}_s${REPLICA}_v1" \
   --source "$LAB/iclr2027/runs/eacf_source_condition_00_v1" --out "$RUN_ROOT/audit.json"
