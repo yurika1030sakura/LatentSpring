@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Exact-entropy adapter on the standard DW-4 / LJ-13 Boltzmann benchmarks.
 
-Reports finite-sample reverse ESS using exact labelled density ratios. The
-fixed-index split adapter is not permutation equivariant. This is a diagnostic
-baseline, not a qualified instance of the permutation-equivariant method.
+Reports finite-sample reverse ESS using exact labelled density ratios. Each
+family records its own symmetry contract. Fixed-index convex/affine controls
+are diagnostics; the whole-element and global-pair families retain permutation
+equivariance. No molecular or ICLR performance qualification follows here.
 
 Annealing acts on the TRAINING PATH ONLY. Every reported number uses the
 benchmark temperature tau = 1.
@@ -23,6 +24,7 @@ from cfm_mol.benchmarks.particle_systems import PARAMETERS, reduced_energy
 from cfm_mol.species_coupling_adapter import SpeciesCouplingAdapter
 from cfm_mol.affine_species_adapter import AffineSpeciesCouplingAdapter
 from cfm_mol.entropy_adapter_io import build_species_adapter
+from cfm_mol.equivariant_pair_adapter import EquivariantPairAdapter
 
 
 def write_report(path, report):
@@ -48,7 +50,7 @@ def annealed_tau(step, steps, start, fraction):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--system', choices=['dw4', 'lj13'], required=True)
-    p.add_argument('--kind', choices=['convex', 'affine'], default='convex')
+    p.add_argument('--kind', choices=['convex', 'affine', 'whole_convex', 'whole_affine', 'pair', 'pair_affine'], default='convex')
     p.add_argument('--sweeps', type=int, default=4)
     p.add_argument('--steps', type=int, default=3000)
     p.add_argument('--batch', type=int, default=256)
@@ -73,8 +75,13 @@ def main():
     scale = args.scale if args.scale is not None else {'dw4': 1.6, 'lj13': 1.0}[args.system]
     torch.manual_seed(args.seed)
     source = CentredGaussianSource(n, scale=scale, device=args.device)
-    model_class = SpeciesCouplingAdapter if args.kind == 'convex' else AffineSpeciesCouplingAdapter
-    adapter = model_class([6]*n, charge=0, spin_multiplicity=1, kT=1., sweeps=args.sweeps, split_groups=True)
+    if args.kind.startswith('pair'):
+        adapter=EquivariantPairAdapter([6]*n,charge=0,spin_multiplicity=1,kT=1.,sweeps=args.sweeps,
+                                      affine=args.kind=='pair_affine')
+    else:
+        model_class=AffineSpeciesCouplingAdapter if args.kind.endswith('affine') else SpeciesCouplingAdapter
+        adapter=model_class([6]*n,charge=0,spin_multiplicity=1,kT=1.,sweeps=args.sweeps,
+                              split_groups=not args.kind.startswith('whole_'))
     adapter = adapter.to(args.device).double()
     optimiser = torch.optim.AdamW(adapter.parameters(), lr=args.lr, weight_decay=0.)
     train_gen = torch.Generator().manual_seed(args.seed+1000)
@@ -94,14 +101,20 @@ def main():
         'history': [], 'limitations': [
             'Reverse ESS on model samples does not certify mode coverage.',
             'A Gaussian source is not a pretrained molecular generator.',
-            'Fixed index halves break permutation equivariance and retain each half centroid.',
             'Finite-sample ESS does not have zero uncertainty.',
             'The singular LJ energy may have infinite expectation under a smooth positive proposal density.']}
+    if not adapter.permutation_equivariant:
+        report['limitations'].append('Fixed index halves break permutation equivariance and retain each half centroid.')
+    elif args.kind.startswith('pair'):
+        report['limitations'].append('Pair-potential prototype uses dense3N determinants and a finite radial basis; no universality or novelty is established.')
+    else:
+        report['limitations'].append('Whole-element contexts have limited angular expressivity on homogeneous systems.')
     source_root=Path(__file__).resolve().parents[2]
     report['source_sha256']={str(p.relative_to(source_root)):hashlib.sha256(p.read_bytes()).hexdigest()
         for p in [Path(__file__).resolve(), source_root/'cfm_mol/benchmarks/particle_systems.py',
                   source_root/'cfm_mol/benchmarks/harness.py', source_root/'cfm_mol/species_coupling_adapter.py',
-                  source_root/'cfm_mol/affine_species_adapter.py', source_root/'cfm_mol/centered_convex_flow.py']}
+                  source_root/'cfm_mol/affine_species_adapter.py', source_root/'cfm_mol/centered_convex_flow.py',
+                  source_root/'cfm_mol/equivariant_pair_adapter.py']}
     write_report(args.out, report)
 
     initial = reverse_diagnostics(args.system, source, adapter, args.eval_samples,
@@ -145,7 +158,8 @@ def main():
                 'configuration':adapter.configuration,'kind':args.kind,'source':report['source'],
                 'target_definition':report['target_definition'],'source_sha256':report['source_sha256']}, checkpoint)
     saved=torch.load(checkpoint,map_location='cpu',weights_only=False)
-    loaded=build_species_adapter([6]*n,saved['configuration'],affine=args.kind=='affine').double()
+    loaded=(EquivariantPairAdapter([6]*n,**saved['configuration']) if args.kind.startswith('pair') else
+            build_species_adapter([6]*n,saved['configuration'],affine=args.kind.endswith('affine'))).double()
     loaded.load_state_dict(saved['state_dict'])
     panel=torch.load(samples_path,map_location='cpu',weights_only=False)
     with torch.no_grad():
