@@ -63,6 +63,7 @@ def eacf_step(log_target,x,numbers,out):
     if not finite_tree(after):raise ValueError('Nonfinite updated EACF objective')
     forward=jax.jit(flow.bijector_forward_and_log_det_with_extra_apply)
     y,volume,_=forward(changed,joint)
+    np.testing.assert_allclose(np.asarray(y.positions[:,:,0,:]).mean(1),0,atol=2e-8,rtol=0)
     restored,back_volume,_=flow.bijector_inverse_and_log_det_with_extra_apply(changed,y)
     np.testing.assert_allclose(restored.positions,joint.positions,atol=2e-8,rtol=2e-8)
     np.testing.assert_allclose(volume+back_volume,0,atol=2e-8,rtol=0)
@@ -78,6 +79,7 @@ def eacf_step(log_target,x,numbers,out):
     return {'complete':True,'layers':1,'configuration':repr(config),'parameters':sum(v.size for v in jax.tree_util.tree_leaves(changed)),
         'gradient_norm':float(optax.global_norm(gradient)),'before_objective':float(value),'after_objective':float(after),
         'inverse_max_error':float(jnp.max(jnp.abs(restored.positions-joint.positions))),
+        'physical_COM_max_error':float(jnp.max(jnp.abs(y.positions[:,:,0,:].mean(1)))),
         'inversion_and_joint_permutation_checked':True,'checkpoint_sha256':sha(checkpoint),
         'objective_scope':'fixed-source JOINT relative-KL training component; not exact marginal KL',
         'engineering_only':True}
@@ -97,6 +99,7 @@ def main():
     report={'complete':False,'scope':__doc__,'rows':[],'engineering_only':True,'scientific_submission_ready':False,
         'panel_manifest_sha256':sha(args.panel/'manifest.json'),'protocol_sha256':manifest['protocol_sha256'],
         'fd_steps_A':[.003,.0015],'fd_absolute_tolerance_eV_A':.005,'fd_relative_tolerance':.02,
+        'batch_vjp_absolute_tolerance_eV_A':1e-5,
         'cached_energy_tolerance_eV':1e-4,'expected_raw_queries':64,'actual_raw_queries':0,
         'limitations':['Selected geometry checks do not establish global potential accuracy or a qualified external benchmark.',
             'Pure callbacks may be repeated/elided; report actual acknowledged worker calls after blocking.',
@@ -112,7 +115,7 @@ def main():
         report['rows'].append(row)
         with NumpyEnergyOracle(args.oracle_python,worker,args.oracle_checkpoint,
                 numbers=condition['numbers'],charge=condition['charge'],spin_multiplicity=condition['spin_multiplicity'],
-                stderr_path=args.out/f'oracle_{item["index"]:02d}.log') as oracle:
+                stderr_path=args.out/f'oracle_{item["index"]:02d}.log',audit_repeats=True) as oracle:
             try:
                 fn=make_even_log_target(oracle,kT=protocol['kT_eV'],restraint=protocol['restraint_eV_A2'])
                 weights=jnp.array([.7,-1.3],dtype=jnp.float64)
@@ -121,7 +124,10 @@ def main():
                 cached=-(data['energy_eV']+.5*protocol['restraint_eV_A2']*np.square(np.asarray(x)).sum((1,2)))/protocol['kT_eV']
                 values,individual_gradient=jax.jit(jax.vmap(jax.value_and_grad(fn)))(x)
                 values.block_until_ready()
-                np.testing.assert_allclose(gradient,weights[:,None,None]*individual_gradient,atol=1e-7,rtol=1e-7)
+                batch_error=float(jnp.max(jnp.abs(gradient-weights[:,None,None]*individual_gradient)))*protocol['kT_eV']
+                row['batch_vjp_maximum_error_eV_A']=batch_error
+                if batch_error>report['batch_vjp_absolute_tolerance_eV_A']:
+                    raise ValueError('Batch VJP differs beyond the physical force tolerance')
                 error=float(np.max(np.abs(np.asarray(values)-cached))*protocol['kT_eV'])
                 if error>report['cached_energy_tolerance_eV']:raise ValueError('Projected energy fails saved-source replay')
                 mirror=jax.jit(fn)(-x);mirror.block_until_ready()
@@ -142,10 +148,11 @@ def main():
                 row.update(cached_energy_error_eV=error,finite_differences=ladder,
                     batch_vjp_checked=True,gradient_COM_error=float(jnp.max(jnp.abs(gradient.mean(1)))))
                 if item['index']==0:row['eacf_step']=eacf_step(fn,x,condition['numbers'],args.out)
-                row.update(complete=True,acknowledged_raw_queries=oracle.evaluated,requested_raw_queries=oracle.requested_evaluations)
+                row.update(complete=True,acknowledged_raw_queries=oracle.evaluated,requested_raw_queries=oracle.requested_evaluations,
+                    exact_input_repeat_audit=oracle.repeat_audit)
             except Exception as exc:
                 row.update(failure=f'{type(exc).__name__}: {exc}',acknowledged_raw_queries=oracle.evaluated,
-                    requested_raw_queries=oracle.requested_evaluations)
+                    requested_raw_queries=oracle.requested_evaluations,exact_input_repeat_audit=oracle.repeat_audit)
                 report['actual_raw_queries']=sum(r.get('acknowledged_raw_queries',0) for r in report['rows'])
                 write(output,report);raise
         report['actual_raw_queries']=sum(r['acknowledged_raw_queries'] for r in report['rows'])

@@ -26,12 +26,16 @@ for line in sys.stdin:
 
 def test_buffered_protocol_and_chunk_counts(worker):
     x=np.arange(90,dtype=np.float64).reshape(10,3,3)
-    with NumpyEnergyOracle(sys.executable,worker,'unused',numbers=[6]*3,charge=0,spin_multiplicity=1,timeout_seconds=3.) as oracle:
+    with NumpyEnergyOracle(sys.executable,worker,'unused',numbers=[6]*3,charge=0,spin_multiplicity=1,timeout_seconds=3.,audit_repeats=True) as oracle:
         energy,force=oracle.evaluate_chunked(x,max_request=4)
         np.testing.assert_allclose(energy,.5*(x*x).sum((1,2)))
         np.testing.assert_allclose(force,-x)
         assert oracle.evaluated==oracle.requested_evaluations==10
         assert oracle.callback_requests==3
+        oracle.evaluate(x[:2])
+        assert oracle.repeat_audit['compared_structures']==2
+        assert oracle.repeat_audit['maximum_energy_difference_eV']==0
+        assert oracle.repeat_audit['maximum_force_difference_eV_A']==0
 
 
 def test_failed_worker_keeps_requested_and_acknowledged_counts(worker):
