@@ -89,3 +89,28 @@ Compare paired energy/entropy changes, finite-sample ESS, weight concentration,
 learned checkpoint replay, elapsed time and failure denominators. A promising
 pilot must then face a qualified independent reference and the molecular/strong
 baseline tests. It does not itself qualify an ICLR contribution.
+
+## Completed first pilot and controlled capacity follow-up
+
+All eight arms of job45952003 completed and all8192 saved parents per arm replay.
+Nonlinear pair-minus-affine changes are -11.045+/-0.170 and -11.390+/-0.234 nat.
+Against whole-element nonlinear they are -4.038+/-0.081 and -4.447+/-0.097;
+against the non-equivariant index-split diagnostic the pair candidate is worse
+by+1.634+/-0.173 and+0.953+/-0.212. Errors are row SEM. Pair endpoint ESS is only
+0.116% /0.268%, so the initial prototype does NOT resolve sampling efficiency.
+All results, including this negative evidence, are in pair_transport_pilot_v1.json.
+
+Both seeds reach mean absolute coefficient fractions above0.9998 of the spectral
+bound in every layer. This motivates one predefined capacity change: beta=.75,
+with the same four layers,1000 updates, batch128, two seeds, source and evaluation
+panel. The same-neural-parameter affine control is repeated. To separate range
+from an immediate change in gradient scale, the parameterization is
+
+    c = beta lambda ell tanh(raw * .25/beta)/(N K).
+
+It exactly preserves the original beta=.25 model and the initial parameter
+Jacobian for all tested beta values. The global proof holds for0<beta<1; inverse
+iteration allowance is increased to256, with explicit residual failure. Tests
+verify initial parameter-gradient agreement and a near-worst-case inverse at.75.
+The follow-up is four arms and643072 analytic target evaluations, no molecular
+oracle calls. A larger bound is not itself a novelty claim or guaranteed benefit.

@@ -52,6 +52,7 @@ def main():
     p.add_argument('--system', choices=['dw4', 'lj13'], required=True)
     p.add_argument('--kind', choices=['convex', 'affine', 'whole_convex', 'whole_affine', 'pair', 'pair_affine'], default='convex')
     p.add_argument('--sweeps', type=int, default=4)
+    p.add_argument('--pair-curvature-bound',type=float,default=.25)
     p.add_argument('--steps', type=int, default=3000)
     p.add_argument('--batch', type=int, default=256)
     p.add_argument('--scale', type=float, default=None, help='source Gaussian scale')
@@ -66,6 +67,8 @@ def main():
     if min(args.steps, args.batch, args.eval_samples) < 1 or not math.isfinite(args.lr) or args.lr <= 0:
         raise ValueError('Positive finite optimization and sample settings required')
     annealed_tau(0, args.steps, args.anneal_from_tau, args.anneal_fraction)
+    if not args.kind.startswith('pair') and args.pair_curvature_bound!=.25:
+        raise ValueError('Pair curvature option cannot modify a different family')
     args.out.parent.mkdir(parents=True, exist_ok=True)
     # Atomic reservation: two launchers must never share a results destination.
     with args.out.open('x') as reserved:
@@ -77,7 +80,7 @@ def main():
     source = CentredGaussianSource(n, scale=scale, device=args.device)
     if args.kind.startswith('pair'):
         adapter=EquivariantPairAdapter([6]*n,charge=0,spin_multiplicity=1,kT=1.,sweeps=args.sweeps,
-                                      affine=args.kind=='pair_affine')
+                                      affine=args.kind=='pair_affine',curvature_bound=args.pair_curvature_bound)
     else:
         model_class=AffineSpeciesCouplingAdapter if args.kind.endswith('affine') else SpeciesCouplingAdapter
         adapter=model_class([6]*n,charge=0,spin_multiplicity=1,kT=1.,sweeps=args.sweeps,

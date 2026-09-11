@@ -97,3 +97,31 @@ def test_extreme_coefficients_attain_the_declared_curvature_bound(direction):
     expected=9*(model.scale_bound+math.log(1+direction*model.curvature_bound))
     torch.testing.assert_close(volume,volume.new_tensor([expected]),atol=1e-11,rtol=1e-11)
     assert torch.isfinite(y).all()
+
+
+def test_capacity_change_preserves_initial_parameter_gradients():
+    models=[]
+    for bound in [.25,.75]:
+        torch.manual_seed(9581)
+        models.append(EquivariantPairAdapter([6]*4,charge=0,spin_multiplicity=1,kT=1.,
+            hidden=8,sweeps=2,curvature_bound=bound).double())
+    x=coordinates(4)
+    gradients=[]
+    for model in models:
+        y,volume=model(x)
+        loss=(y.square().sum((1,2))-volume).mean()
+        gradients.append(torch.autograd.grad(loss,tuple(model.parameters())))
+    for left,right in zip(*gradients):
+        torch.testing.assert_close(left,right,atol=1e-12,rtol=1e-12)
+
+
+def test_larger_curvature_bound_inverse_near_its_worst_case():
+    model=EquivariantPairAdapter([6]*4,charge=0,spin_multiplicity=1,kT=1.,
+        hidden=8,sweeps=1,curvature_bound=.75).double()
+    with torch.no_grad():model.pair_head[-1].bias.fill_(-1000.)
+    x=1e-3*coordinates(4)
+    y,volume=model(x)
+    restored,iv,diagnostics=model.inverse(y,tolerance=1e-13)
+    torch.testing.assert_close(restored,x,atol=1e-11,rtol=1e-11)
+    torch.testing.assert_close(iv,-volume,atol=1e-10,rtol=1e-10)
+    assert diagnostics['iterations'][0]>64

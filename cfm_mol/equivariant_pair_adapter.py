@@ -24,7 +24,7 @@ class EquivariantPairAdapter(nn.Module):
     permutation_equivariant=True
 
     def __init__(self,numbers,*,charge,spin_multiplicity,kT,sweeps=4,hidden=32,
-                 length_scales=(.3,.6,1.2,2.4,4.8),affine=False):
+                 length_scales=(.3,.6,1.2,2.4,4.8),affine=False,curvature_bound=.25):
         super().__init__()
         numbers=torch.as_tensor(numbers,dtype=torch.long)
         if numbers.ndim!=1 or not 2<=len(numbers)<=200 or ((numbers<1)|(numbers>118)).any():
@@ -33,6 +33,9 @@ class EquivariantPairAdapter(nn.Module):
             raise ValueError('Positive layer count and hidden size required')
         if not math.isfinite(kT) or kT<=0 or spin_multiplicity<1:
             raise ValueError('Invalid electronic/temperature condition')
+        if not math.isfinite(curvature_bound) or not 0<curvature_bound<1:
+            raise ValueError('Curvature bound must be strictly between zero and one')
+        self.curvature_bound=float(curvature_bound)
         scales=torch.as_tensor(length_scales,dtype=torch.float64)
         if scales.ndim!=1 or len(scales)<1 or not torch.isfinite(scales).all() or (scales<=0).any():
             raise ValueError('Positive finite radial lengths required')
@@ -48,7 +51,8 @@ class EquivariantPairAdapter(nn.Module):
         for head in [self.pair_head[-1],self.scale_head]:
             nn.init.zeros_(head.weight);nn.init.zeros_(head.bias)
         self.configuration={'charge':charge,'spin_multiplicity':spin_multiplicity,'kT':kT,
-            'sweeps':sweeps,'hidden':hidden,'length_scales':scales.tolist(),'affine':bool(affine)}
+            'sweeps':sweeps,'hidden':hidden,'length_scales':scales.tolist(),'affine':bool(affine),
+            'curvature_bound':self.curvature_bound}
         self.affine=bool(affine)
         self.sweeps=sweeps
 
@@ -59,7 +63,10 @@ class EquivariantPairAdapter(nn.Module):
             global_context.expand(len(i),-1)],dim=-1)
         lam=torch.exp(self.scale_bound*torch.tanh(self.scale_head(global_context)[0]))
         raw=self.pair_head(pair_context)
-        coefficient=self.curvature_bound*lam*self.length_scales*torch.tanh(raw)/(len(self.numbers)*len(self.length_scales))
+        # Preserve the original beta=.25 parameterization and the SAME initial
+        # parameter derivative when testing a larger spectral range.
+        coefficient=self.curvature_bound*lam*self.length_scales*torch.tanh(raw*.25/self.curvature_bound)/(
+            len(self.numbers)*len(self.length_scales))
         return lam,coefficient
 
     def residual(self,x,coefficient,*,with_blocks=False):
@@ -105,7 +112,7 @@ class EquivariantPairAdapter(nn.Module):
         return x,volume
 
     @torch.no_grad()
-    def inverse(self,y,*,tolerance=1e-11,max_iterations=64):
+    def inverse(self,y,*,tolerance=1e-11,max_iterations=256):
         """Contractive reconstruction; not an inverse-likelihood gradient API."""
         self._validate(y)
         if not math.isfinite(tolerance) or tolerance<=0 or max_iterations<1:raise ValueError('Invalid inverse settings')
