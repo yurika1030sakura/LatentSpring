@@ -1,0 +1,50 @@
+{
+  "frozen": true,
+  "version": 1,
+  "scope": "Controlled Gaussian-mixture experiment; equal total analytic-target queries include neural training. Not molecular validation.",
+  "atoms": 4,
+  "target_sigmas": [
+    0.5,
+    2.0
+  ],
+  "target_weights": [
+    0.5,
+    0.5
+  ],
+  "training_steps": 200,
+  "training_batch": 64,
+  "learning_rate": 0.001,
+  "chains": 32,
+  "evaluation_steps": 256,
+  "baseline_steps": 1056,
+  "total_analytic_target_queries_per_arm": 33824,
+  "init_seed": 9951,
+  "training_seed": 9953,
+  "evaluation_initial_seed": 9961,
+  "evaluation_transition_seed": 9963,
+  "mala_std": 0.5,
+  "rwm_std": 1.0,
+  "model": {
+    "hidden": 16,
+    "radial": 16,
+    "features": 4,
+    "rank": 4,
+    "step_size": 0.5,
+    "shift_bound": 4.0,
+    "scale_bound": 1.5,
+    "inverse_iterations": 32
+  },
+  "objective": "Negative expected MH-accepted squared change in typed sorted pair-distance profile.",
+  "cases": [
+    "nonlinear_s0",
+    "nonlinear_s1",
+    "affine_s0",
+    "affine_s1",
+    "mala_s0",
+    "mala_s1",
+    "rwm_s0",
+    "rwm_s1"
+  ],
+  "stop_rule": "Do not promote accepted-jump improvement without independent mode/variance and ESS diagnostics; no molecular advantage from this toy.",
+  "molecular_oracle_queries": 0
+}
