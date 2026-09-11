@@ -3,7 +3,7 @@ import math
 import pytest
 import torch
 
-from cfm_mol.fixed_target_mcmc import mala_population,hmc_population
+from cfm_mol.fixed_target_mcmc import mala_population,hmc_population,budgeted_population
 from cfm_mol.tempered_smc import DensityValue
 
 
@@ -57,3 +57,30 @@ def test_hmc_reuses_an_explicit_initial_value_without_charging_an_oracle_call():
     _,_,stats=hmc_population(initial,target,leapfrog_counts=[3],step_size=.1,
         generator=torch.Generator().manual_seed(10),initial_value=cached)
     assert sum(queried)==stats['target_evaluations']==24
+
+
+@pytest.mark.parametrize('kernel',['mala','hmc'])
+def test_budgeted_population_replays_proposals_and_cached_subset_without_extra_queries(kernel):
+    initial=torch.randn(16,5,dtype=torch.float64,generator=torch.Generator().manual_seed(8))
+    trace=[]
+    def target(z):
+        value=DensityValue(-.5*z.square().sum(-1),-z)
+        trace.append((z.clone(),value.log_value.clone(),value.score.clone()))
+        return value
+    kwargs=dict(kernel=kernel,force_updates=4,tail_indices=torch.arange(0,16,2),
+                step_size=.4,max_score_norm=.3,seed=27,hmc_length=4)
+    first,value,stats=budgeted_population(initial,target,**kwargs)
+    assert stats['target_evaluations']==sum(len(row[0]) for row in trace)==16*5+8
+    assert len(trace)==6 and len(trace[-1][0])==8
+    iterator=iter(trace)
+    def replay(z):
+        x,log_value,score=next(iterator)
+        torch.testing.assert_close(z,x,atol=0,rtol=0)
+        return DensityValue(log_value,score)
+    second,replayed,other=budgeted_population(initial,replay,**kwargs)
+    assert list(iterator)==[] and other==stats
+    torch.testing.assert_close(first,second,atol=0,rtol=0)
+    torch.testing.assert_close(value.log_value,replayed.log_value,atol=0,rtol=0)
+    torch.testing.assert_close(value.score,-first,atol=0,rtol=0)
+    with pytest.raises(ValueError,match='unique subset'):
+        budgeted_population(initial,target,**{**kwargs,'tail_indices':torch.tensor([0,0])})
