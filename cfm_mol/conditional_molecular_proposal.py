@@ -176,11 +176,19 @@ def invariant_jump_squared(x,y,numbers):
 def metropolis_transition(model,x,value,target,numbers,electronic,*,generator):
     noise=center(torch.randn(x.shape,dtype=x.dtype,device=x.device,generator=generator))
     proposed,forward=model.transform(x,noise,numbers,electronic)
-    new_value=target(proposed);reverse=model.log_prob(x,proposed,numbers,electronic)
+    new_value=target(proposed)
     if value.shape!=(len(x),) or new_value.shape!=(len(x),):
         raise ValueError('Require one target log value per state')
+    if not torch.isfinite(value).all() or torch.isnan(new_value).any() or torch.isposinf(new_value).any():
+        raise ValueError('Current states must have finite density; proposed values may be minus infinity')
+    valid=torch.isfinite(new_value)
+    reverse=torch.zeros_like(new_value)
+    if valid.any():
+        state=electronic[valid] if electronic.ndim==2 else electronic
+        reverse[valid]=model.log_prob(x[valid],proposed[valid],numbers,state)
     ratio=new_value-value+reverse-forward
-    if not torch.isfinite(ratio).all():raise ValueError('Nonfinite Metropolis ratio')
+    if torch.isnan(ratio).any() or torch.isposinf(ratio).any():raise ValueError('Invalid Metropolis ratio')
     take=torch.rand(len(x),dtype=x.dtype,device=x.device,generator=generator).log()<ratio.clamp_max(0)
     return torch.where(take[:,None,None],proposed,x),torch.where(take,new_value,value),dict(
-        accepted=take,log_ratio=ratio,accepted_invariant_jump=invariant_jump_squared(x,proposed,numbers)*take)
+        accepted=take,valid_proposals=valid,log_ratio=ratio,
+        accepted_invariant_jump=invariant_jump_squared(x,proposed,numbers)*take)

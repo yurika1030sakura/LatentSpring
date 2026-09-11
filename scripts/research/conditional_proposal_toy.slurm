@@ -11,6 +11,7 @@
 set -euo pipefail
 SOURCE_ROOT="${1:?immutable source required}"
 RUN_ROOT="${2:?unique output required}"
+OBJECTIVE="${3:-shape_jump}"
 STORE=/n/holylabs/woo_lab/Lab/yulili/bgfm
 KINDS=(nonlinear affine mala rwm)
 KIND="${KINDS[$((SLURM_ARRAY_TASK_ID / 2))]}"
@@ -22,4 +23,4 @@ export XDG_CACHE_HOME="${SLURM_TMPDIR:-/tmp}/conditional_cache_${SLURM_JOB_ID}"
 mkdir -p "$MPLCONFIGDIR" "$XDG_CACHE_HOME"
 cd "$SOURCE_ROOT"
 exec "$STORE/envs/flowmol/bin/python" -u scripts/research/train_conditional_proposal_toy.py \
-  --out "$RUN_ROOT/${KIND}_s${REPLICA}" --kind "$KIND" --replica "$REPLICA"
+  --out "$RUN_ROOT/${KIND}_s${REPLICA}" --kind "$KIND" --replica "$REPLICA" --objective "$OBJECTIVE"

@@ -91,6 +91,20 @@ def test_jump_observable_cannot_reward_rotations_or_same_element_relabelling():
     assert float(invariant_jump_squared(x,y,numbers).max())<1e-20
 
 
+def test_collective_covariance_updates_are_orthogonal_to_rigid_motion():
+    model,x,_,numbers,electronic=example()
+    context=model._context(x,numbers,electronic)
+    modes=context['collective']
+    assert float(modes.norm())>1e-5
+    torch.testing.assert_close(modes.sum(1),torch.zeros_like(modes.sum(1)),atol=1e-10,rtol=0)
+    torque=torch.linalg.cross(x[:,:,None,:].expand_as(modes),modes,dim=-1).sum(1)
+    torch.testing.assert_close(torque,torch.zeros_like(torque),atol=1e-10,rtol=0)
+    omega=torch.tensor([.2,-.4,.3],dtype=x.dtype)
+    rotational=torch.linalg.cross(omega.expand_as(x),x,dim=-1)
+    mapped,_=model._linear(rotational,context)
+    torch.testing.assert_close(mapped,rotational,atol=1e-10,rtol=1e-10)
+
+
 def test_metropolized_nonzero_proposal_preserves_known_gaussian_moments():
     model,_,_,numbers,electronic=example()
     generator=torch.Generator().manual_seed(9957)
@@ -103,3 +117,22 @@ def test_metropolized_nonzero_proposal_preserves_known_gaussian_moments():
         assert 0<float(info['accepted'].double().mean())<1
     assert abs(float(x.square().sum((1,2)).mean())-9)<.35
     assert float(x.mean(0).abs().max())<.08
+
+
+def test_metropolis_respects_hard_support_and_correct_conditional_moment():
+    from scipy.special import gammainc
+    model,_,_,numbers,electronic=example()
+    generator=torch.Generator().manual_seed(9958)
+    pool=center(torch.randn(8192,4,3,dtype=torch.float64,generator=generator))
+    radius=pool.square().sum((1,2));x=pool[(radius>4)&(radius<14)][:2048]
+    assert len(x)==2048
+    def target(z):
+        r=z.square().sum((1,2));value=-.5*r
+        return torch.where((r>4)&(r<14),value,torch.full_like(value,-torch.inf))
+    value=target(x);invalid=0
+    for _ in range(4):
+        x,value,info=metropolis_transition(model,x,value,target,numbers,electronic,generator=generator)
+        invalid+=int((~info['valid_proposals']).sum())
+        assert torch.isfinite(target(x)).all()
+    expected=9*(gammainc(5.5,7)-gammainc(5.5,2))/(gammainc(4.5,7)-gammainc(4.5,2))
+    assert invalid>0 and abs(float(x.square().sum((1,2)).mean())-expected)<.25

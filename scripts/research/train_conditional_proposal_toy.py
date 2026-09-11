@@ -31,10 +31,14 @@ def main():
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--kind',choices=['nonlinear','affine','mala','rwm'],required=True)
     parser.add_argument('--replica',type=int,choices=[0,1],required=True)
+    parser.add_argument('--objective',choices=['shape_jump','mode_jump'],default='shape_jump')
     args=parser.parse_args();root=Path(__file__).resolve().parents[2]
-    protocol_path=root/'research/evidence/conditional_proposal_toy_protocol_v1.json'
+    protocol_name=('conditional_proposal_toy_protocol_v1.json' if args.objective=='shape_jump'
+                   else 'conditional_proposal_mode_diagnostic_protocol_v1.json')
+    protocol_path=root/'research/evidence'/protocol_name
     protocol=json.loads(protocol_path.read_text())
     if not protocol['frozen']:raise ValueError('Require a frozen toy protocol')
+    if f'{args.kind}_s{args.replica}' not in protocol['cases']:raise ValueError('Case is not in the frozen protocol')
     args.out.mkdir(parents=True,exist_ok=True);output=args.out/'results.json'
     if output.exists():raise FileExistsError(output)
     n=protocol['atoms'];d=3*(n-1);chains=protocol['chains'];seed=args.replica
@@ -56,6 +60,7 @@ def main():
     torch.manual_seed(protocol['init_seed']+seed)
     model=None;training_generator=torch.Generator().manual_seed(protocol['training_seed']+seed)
     report=dict(complete=False,scope=__doc__,kind=args.kind,replica=seed,protocol_sha256=sha(protocol_path),
+        objective=args.objective,privileged_mode_feature=args.objective=='mode_jump',
         history=[],scientific_submission_ready=False,molecular_oracle_queries=0,
         source_sha256={str(p.relative_to(root)):sha(p) for p in [Path(__file__).resolve(),
             root/'cfm_mol/conditional_molecular_proposal.py',root/'cfm_mol/mcmc_diagnostics.py']})
@@ -70,7 +75,11 @@ def main():
                 noise=center(torch.randn(x.shape,dtype=x.dtype,generator=training_generator))
                 y,forward=model.transform(x,noise,numbers,electronic)
                 ratio=target(y)-target(x)+model.log_prob(x,y,numbers,electronic)-forward
-                objective=-(ratio.clamp_max(0).exp()*invariant_jump_squared(x,y,numbers)).mean()
+                if args.objective=='shape_jump':reward=invariant_jump_squared(x,y,numbers)
+                else:
+                    fx=components(x).softmax(-1)[:,1];fy=components(y).softmax(-1)[:,1]
+                    reward=(fy-fx).square()/fx.var().clamp_min(1e-4)
+                objective=-(ratio.clamp_max(0).exp()*reward).mean()
                 if not torch.isfinite(objective):raise ValueError('Nonfinite training objective')
                 optimizer.zero_grad();objective.backward()
                 norm=torch.nn.utils.clip_grad_norm_(model.parameters(),10.,error_if_nonfinite=True)
@@ -134,6 +143,7 @@ def main():
         radius=flat.square().sum((1,2)).reshape(evaluation_steps,chains).T.numpy()
         torch.save(dict(positions=states,accepted=torch.stack(accepted),invariant_jumps=torch.stack(jumps)),args.out/'chains.pt')
         report.update(complete=True,training_target_queries=training_queries,total_target_queries=queried,
+            additional_privileged_mode_feature_evaluations=training_queries if args.objective=='mode_jump' else 0,
             evaluation_steps=evaluation_steps,seconds=time.perf_counter()-start,
             evaluation_seconds=time.perf_counter()-evaluation_start,
             acceptance=float(torch.stack(accepted).double().mean()),
@@ -144,6 +154,8 @@ def main():
             limitations=['Exact target iid states initialize training and evaluation; this is a controlled toy only.',
                 'Equal analytic-target counts include neural training; runtime and retained-chain lengths differ.',
                 'Accepted invariant jump is not a mixing or global spectral-gap certificate.'])
+        if args.objective=='mode_jump':
+            report['limitations'].append('Uses known mixture posterior as an oracle slow coordinate; diagnostic only, not a learned or deployable molecular coordinate.')
         write(output,report);print(json.dumps({k:report[k] for k in ['complete','kind','replica','total_target_queries','large_component_probability','squared_radius']}),flush=True)
     except Exception as exc:
         if model is not None:torch.save(dict(configuration=model.configuration,state_dict=model.state_dict()),args.out/'failed_model.pt')
