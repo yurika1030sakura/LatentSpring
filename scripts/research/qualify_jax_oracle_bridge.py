@@ -75,12 +75,24 @@ def eacf_step(log_target,x,numbers,out):
     np.testing.assert_allclose(permuted.positions,y.positions[:,order],atol=2e-8,rtol=2e-8)
     np.testing.assert_allclose(pv,volume,atol=2e-8,rtol=2e-8)
     checkpoint=out/'eacf_engineering_step.pkl'
-    with checkpoint.open('wb') as f:pickle.dump({'config':config,'bijector':jax.device_get(changed),'optimizer':jax.device_get(state)},f)
+    # Upstream NetsConfig contains jitted activation callables, which are not
+    # portable pickle payloads. Save a declarative recipe and array state only.
+    recipe={'upstream_commit':'beafab1b1ccd2b770572daeef1cf15f3fe199c21',
+        'nets_factory':'get_minimal_nets_config(egnn)','num_discrete_feat':119,
+        'dim':3,'n_aug':1,'nodes':int(n),'n_layers':1,'type':'spherical',
+        'identity_init':True,'scaling_layer':False,
+        'kwargs':{'spherical':{'reflection_invariant':True,'n_inner_transforms':1}}}
+    with checkpoint.open('wb') as f:pickle.dump({'recipe':recipe,'bijector':jax.device_get(changed),'optimizer':jax.device_get(state)},f)
+    with checkpoint.open('rb') as f:saved=pickle.load(f)
+    replay,replay_volume,_=forward(saved['bijector'],joint)
+    np.testing.assert_allclose(replay.positions,y.positions,atol=1e-12,rtol=1e-12)
+    np.testing.assert_allclose(replay_volume,volume,atol=1e-12,rtol=1e-12)
     return {'complete':True,'layers':1,'configuration':repr(config),'parameters':sum(v.size for v in jax.tree_util.tree_leaves(changed)),
         'gradient_norm':float(optax.global_norm(gradient)),'before_objective':float(value),'after_objective':float(after),
         'inverse_max_error':float(jnp.max(jnp.abs(restored.positions-joint.positions))),
         'physical_COM_max_error':float(jnp.max(jnp.abs(y.positions[:,:,0,:].mean(1)))),
         'inversion_and_joint_permutation_checked':True,'checkpoint_sha256':sha(checkpoint),
+        'checkpoint_reload_replay_passed':True,
         'objective_scope':'fixed-source JOINT relative-KL training component; not exact marginal KL',
         'engineering_only':True}
 
