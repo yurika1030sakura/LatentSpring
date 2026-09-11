@@ -7,7 +7,8 @@ import math
 from pathlib import Path
 import time
 import torch
-from cfm_mol.chemical_sampler import ChemicalTarget
+from cfm_mol.chemical_sampler import ChemicalTarget,policy_log_probabilities
+from cfm_mol.chemical_policy import ChemicalMovePolicy
 from cfm_mol.chemical_moves import exchange_terminal_sites
 from cfm_mol.escorted_exchange import escorted_path
 from cfm_mol.energy_oracle import EnergyOracle
@@ -26,6 +27,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--table',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True);p.add_argument('--replica',type=int,choices=[0,1],required=True)
     p.add_argument('--protocol',type=Path)
+    p.add_argument('--policies',type=Path)
     p.add_argument('--oracle-python',type=Path,required=True);p.add_argument('--oracle-checkpoint',type=Path,required=True)
     args=p.parse_args();root=Path(__file__).resolve().parents[2]
     protocol_path=args.protocol or root/'research/evidence/escorted_chemical_protocol_v1.json';protocol=json.loads(protocol_path.read_text())
@@ -34,6 +36,18 @@ def main():
     if (not header['complete'] or header['protocol_sha256']!=protocol['source_table_protocol_sha256']
             or sha(data_path)!=header['artifacts']['development']):raise ValueError('Changed development starts')
     data=torch.load(data_path,map_location='cpu',weights_only=False)
+    policy=None;trained=None
+    if protocol.get('selection')=='learned':
+        if args.policies is None:raise ValueError('Frozen policies required')
+        directory=args.policies/f'replica_{args.replica}'
+        trained=json.loads((directory/'results.json').read_text())
+        if (not trained['complete'] or trained['training_table_sha256']!=header['artifacts']['training']
+                or sha(directory/'policy.pt')!=trained['checkpoint_sha256']
+                or trained['checkpoint_sha256']!=protocol['frozen_policy_sha256'][args.replica]
+                or trained['reference_coordinates_loaded'] or trained['development_coordinates_loaded']):
+            raise ValueError('Changed or unqualified training policy')
+        checkpoint=torch.load(directory/'policy.pt',map_location='cpu',weights_only=False)
+        policy=ChemicalMovePolicy(**checkpoint['configuration']).double();policy.load_state_dict(checkpoint['state_dict']);policy.eval()
     physical_path=root/'research/evidence/parity_training_protocol_v1.json';physical=json.loads(physical_path.read_text())
     if sha(physical_path)!=protocol['physical_protocol_sha256'] or sha(args.oracle_checkpoint)!=physical['raw_oracle_sha256']:
         raise ValueError('Changed physical target')
@@ -42,8 +56,11 @@ def main():
     report=dict(complete=False,scope=__doc__,replica=args.replica,condition=data['condition'],
         protocol_sha256=sha(protocol_path),development_sha256=sha(data_path),
         inherited_development_warm_raw_queries=header['streams']['development']['raw_queries'],
-        inherited_source_raw_queries=512,inherited_training_queries=0,
+        inherited_source_raw_queries=4608 if trained else 512,
+        inherited_training_queries=trained['inherited_training_raw_queries'] if trained else 0,
+        policy_sha256=trained['checkpoint_sha256'] if trained else None,
         source_attempts=512,eligible_source_parents=len(data['source_parent_ids']),
+        source_generation_denominators={'training':4096 if trained else 0,'development':512},
         parent_ids=data['source_parent_ids'],reference_coordinates_loaded=False,
         scientific_submission_ready=False,history=[])
     write(output,report);oracle=None;target=None;local_rows=[];paths=[];history_ids=[];scale_choices=[]
@@ -68,7 +85,8 @@ def main():
         def record(cycle):
             row=dict(cycle=cycle,energy_eV=[float(s['energy_eV']) for s in states],
                 smiles=[s['graph']['connectivity_smiles'] for s in states],new_raw_queries=oracle.evaluated,
-                total_raw_queries=oracle.evaluated+report['inherited_source_raw_queries']+report['inherited_development_warm_raw_queries'])
+                total_raw_queries=oracle.evaluated+report['inherited_source_raw_queries']+
+                    report['inherited_development_warm_raw_queries']+report['inherited_training_queries'])
             report['history'].append(row);history_ids.append([s['state_id'] for s in states]);write(output,report)
             print(json.dumps(row),flush=True)
         def local(cycle,side):
@@ -81,12 +99,17 @@ def main():
             local_rows.extend(rows)
         record(0)
         for cycle in range(protocol['cycles']):
-            local(cycle,'pre');old=list(states);actions=[];inverses=[];forward_counts=[];choice_indices=[]
-            for s in states:
+            local(cycle,'pre');old=list(states);actions=[];inverses=[];forward_counts=[];choice_indices=[];forward_logp=[]
+            with torch.no_grad():
+                joint=policy_log_probabilities(states,target.numbers,target.kT,policy)[:,1:]
+                conditional=joint-joint.logsumexp(1,keepdim=True)
+            for state_index,s in enumerate(states):
                 if not s['actions']:raise ValueError('Pilot requires eligible terminal exchanges')
-                index=int(torch.randint(len(s['actions']),(1,),generator=action_rng))
+                if policy is None:index=int(torch.randint(len(s['actions']),(1,),generator=action_rng))
+                else:index=int(torch.multinomial(conditional[state_index].exp(),1,generator=action_rng))
                 a=s['actions'][index];actions.append(a);inverses.append((a[0],a[1],a[3],a[2]))
                 forward_counts.append(len(s['actions']));choice_indices.append(index)
+                forward_logp.append(float(conditional[state_index,index]))
             calls=[];last=[]
             old_bonds=torch.stack([s['graph']['bond_orders'] for s in old])
             new_bonds=torch.stack([exchanged_bond_graph(b,a) for b,a in zip(old_bonds,actions)]) if guide else old_bonds
@@ -133,17 +156,22 @@ def main():
             for i,(candidate,inverse) in enumerate(zip(last,inverses)):
                 decision=dict(chain=i,valid=False,accepted=False,old_state_id=old[i]['state_id'],
                     proposed_state_id=candidate['state_id'],action=actions[i],inverse_action=inverse,
-                    choice_index=choice_indices[i],forward_count=forward_counts[i],log_uniform=float(logu[i]))
+                    choice_index=choice_indices[i],forward_count=forward_counts[i],log_uniform=float(logu[i]),
+                    forward_log_probability=forward_logp[i])
                 try:
                     graph_fields=target.coordinate_state(candidate['positions']);candidate.update(graph_fields)
                     candidate['role']='supported_path_endpoint'
                     if guide and not torch.equal(candidate['graph']['bond_orders'],new_bonds[i]):
                         raise ValueError('Endpoint graph differs from the paired guide graph')
                     if inverse not in candidate['actions']:raise ValueError('Inverse action absent at endpoint')
-                    reverse_count=len(candidate['actions']);correction=math.log(forward_counts[i]/reverse_count)
+                    reverse_count=len(candidate['actions'])
+                    with torch.no_grad():
+                        reverse_joint=policy_log_probabilities([candidate],target.numbers,target.kT,policy)[0,1:]
+                        reverse_logp=float((reverse_joint-reverse_joint.logsumexp(0))[candidate['actions'].index(inverse)])
+                    correction=reverse_logp-forward_logp[i]
                     ratio=float(target_ratio[i])+correction
                     take=float(logu[i])<min(0.,ratio)
-                    decision.update(valid=True,accepted=take,reverse_count=reverse_count,
+                    decision.update(valid=True,accepted=take,reverse_count=reverse_count,reverse_log_probability=reverse_logp,
                         action_log_ratio=correction,log_acceptance_ratio=ratio)
                     if take:states[i]=candidate
                 except ValueError as exc:decision['rejection_reason']=str(exc)

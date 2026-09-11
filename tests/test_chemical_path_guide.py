@@ -1,4 +1,6 @@
 import torch
+from cfm_mol.escorted_exchange import escorted_path
+from cfm_mol.tempered_smc import DensityValue
 from cfm_mol.chemical_path_guide import graph_guide_energy_force,exchanged_bond_graph
 from cfm_mol.chemical_moves import covalent_radii
 
@@ -34,3 +36,34 @@ def test_endpoint_guide_correction_recovers_the_original_target_ratio():
     guided=-(v+gy-u-gx)/kT+path_ratio+logj
     corrected=guided+(gy-gx)/kT
     torch.testing.assert_close(corrected,-(v-u)/kT+path_ratio+logj)
+
+
+def test_paired_guides_preserve_known_target_and_omitting_endpoint_correction_biases_it():
+    def run(correct):
+        rng=torch.Generator().manual_seed(115)
+        x=torch.randn(8192,1,dtype=torch.float64,generator=rng)
+        for _ in range(12):
+            old_sign=x.sign();current_sign=old_sign.clone()
+            def smooth(v,**kwargs):
+                displacement=v-1.5*current_sign
+                return DensityValue(-.5*v.square().sum(1)-1.5*displacement.square().sum(1),-v-3*displacement)
+            def mapping(v):
+                nonlocal current_sign
+                current_sign=-current_sign
+                return -v,torch.zeros(len(v),dtype=v.dtype)
+            initial=smooth(x)
+            y,_,path=escorted_path(x,smooth,mapping,steps_per_side=2,std=.3,max_score_norm=4.,
+                generator=rng,initial_value=initial)
+            ratio=path['smooth_log_acceptance_ratio']
+            if correct:
+                gx=1.5*(x-1.5*old_sign).square().sum(1)
+                gy=1.5*(y+1.5*old_sign).square().sum(1)
+                ratio=ratio+gy-gx
+            valid=(y.sign()==-old_sign).all(1)
+            take=valid&(torch.rand(len(x),dtype=x.dtype,generator=rng).log()<ratio.clamp_max(0))
+            x=torch.where(take[:,None],y,x)
+        return x
+    corrected=run(True);uncorrected=run(False)
+    assert abs(float(corrected.mean()))<.03
+    assert abs(float(corrected.square().mean())-1)<.05
+    assert float(uncorrected.square().mean())>1.2

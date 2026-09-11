@@ -1,0 +1,51 @@
+{
+  "frozen": true,
+  "version": 3,
+  "scope": "Frozen existing selector composed with the unchanged guided path. No new training; conditional exchange probabilities in both directions.",
+  "source_table_protocol_sha256": "1f8b0fc8174848f616dd1a1759b0d6e4e8ae562eb4ed90546dd9aa835a0f85fd",
+  "physical_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "cycles": 16,
+  "steps_per_side": 4,
+  "path_scale": 0.1,
+  "local_scales": [
+    0.1,
+    0.03,
+    0.01
+  ],
+  "transition_seeds": [
+    10321,
+    10323
+  ],
+  "action_seed": 10341,
+  "scale_seed": 10331,
+  "replicas": [
+    0,
+    1
+  ],
+  "guide": {
+    "bond_kappa": 20.0,
+    "nonbond_kappa": 100.0,
+    "nonbond_factor": 1.35
+  },
+  "guide_units": "eV/A^2 spring constants; bonded rest distances equal the covalent-radius sum. Only existing single-bond condition0 graphs qualified.",
+  "guide_pairing": "Before the map, guide with the initial graph. After the map, guide with its deterministic terminal-edge exchange. Require the final perceived graph to equal the latter, so the reverse uses the exact paired graphs in reverse order.",
+  "target_correction": "Guided endpoint log ratio adds (guide_energy_final-guide_energy_initial)/kT, restoring the original physical target ratio. Every reverse Gaussian uses its actual guided force. No guide term is added to the stationary target.",
+  "per_cycle": "Supported multiscale MALA, one symmetric guided exchange path, supported multiscale MALA.",
+  "intermediate_support": "No hard chemical support requirement at intermediate vertices; both physical inversion orientations evaluated everywhere.",
+  "maximum_new_raw_queries_per_replica": 1416,
+  "maximum_new_raw_queries": 2832,
+  "inherited_source_queries_per_replica": 4608,
+  "inherited_development_warm_queries_per_replica": 404,
+  "reference_coordinates_allowed": false,
+  "new_target_support": false,
+  "v1_outcomes_used_to_design_v2": "v1 accepted4/64 paths per replica and had16/16 unsupported difficult-parent endpoints. Its negative results remain preserved.",
+  "stop_rule": "Complete two replicas, audit every forward/reverse conditional choice and path probability. Compare to uniform guided v2 and stronger existing physical controls with inherited costs. No additional training or scale-up in this test.",
+  "selection": "learned",
+  "inherited_training_queries_per_replica": 5564,
+  "rationale": "v2 repaired endpoint support (64/64 and63/64) but acceptance remained4/64. Test whether the existing trained selector can choose useful paths; all inherited training/source costs count.",
+  "conditional_selection": "Normalize joint policy probabilities over exchange actions only. Local MALA stages are fixed and retain probability one within their own kernels.",
+  "frozen_policy_sha256": [
+    "8157c7226b3bec20c2e5e448d72b740af06c4a92ffb92e0411278fe398bddbe6",
+    "5ae7a19ea9b3da15f1f3792de5f4f3515867b7f5fee4cf108c8238b2a789d186"
+  ]
+}

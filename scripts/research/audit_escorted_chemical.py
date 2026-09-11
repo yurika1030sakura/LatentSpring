@@ -9,6 +9,8 @@ import torch
 from cfm_mol.chemical_moves import infer_chemical_graph,terminal_exchange_actions,covalent_radii,exchange_terminal_sites
 from cfm_mol.nonequilibrium import centered_orthonormal_basis
 from cfm_mol.chemical_path_guide import exchanged_bond_graph
+from cfm_mol.chemical_policy import ChemicalMovePolicy
+from cfm_mol.chemical_sampler import policy_log_probabilities
 
 
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -16,8 +18,10 @@ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--run',type=Path,required=True)
-    p.add_argument('--out',type=Path,required=True);args=p.parse_args();root=Path(__file__).resolve().parents[2]
-    pp=root/'research/evidence/escorted_chemical_protocol_v1.json';protocol=json.loads(pp.read_text())
+    p.add_argument('--out',type=Path,required=True);p.add_argument('--protocol',type=Path);p.add_argument('--policies',type=Path)
+    args=p.parse_args();root=Path(__file__).resolve().parents[2]
+    pp=args.protocol or root/'research/evidence/escorted_chemical_protocol_v1.json';protocol=json.loads(pp.read_text())
+    guide=protocol.get('guide')
     physical=json.loads((root/'research/evidence/parity_training_protocol_v1.json').read_text())
     kT=physical['kT_eV'];restraint=physical['restraint_eV_A2'];summaries=[]
     for replica in [0,1]:
@@ -26,6 +30,13 @@ def main():
         assert report['trace_sha256']==sha(directory/'trace.pt')
         data=torch.load(directory/'trace.pt',map_location='cpu',weights_only=False)
         condition=report['condition'];numbers=condition['numbers'];n=len(numbers);basis=centered_orthonormal_basis(n)
+        policy=None
+        if protocol.get('selection')=='learned':
+            if args.policies is None:raise ValueError('Frozen policies required')
+            checkpoint_path=args.policies/f'replica_{replica}/policy.pt'
+            assert sha(checkpoint_path)==report['policy_sha256']==protocol['frozen_policy_sha256'][replica]
+            checkpoint=torch.load(checkpoint_path,map_location='cpu',weights_only=False)
+            policy=ChemicalMovePolicy(**checkpoint['configuration']).double();policy.load_state_dict(checkpoint['state_dict']);policy.eval()
         radii=covalent_radii(numbers);states=data['states'];queries=data['query_trace'];graphs={}
         def graph(x):
             try:return infer_chemical_graph(x,numbers,condition['charge'])
@@ -57,6 +68,18 @@ def main():
         def clipped(score):
             norm=score.norm(dim=-1,keepdim=True)
             return score*torch.minimum(torch.ones_like(norm),(100/kT)/norm.clamp_min(1e-300))
+        def independent_guide(x,bonds):
+            if not guide:return torch.zeros(len(x),dtype=x.dtype),torch.zeros_like(x)
+            # Separate pairwise energy construction, differentiated by autograd.
+            y=x.detach().clone().requires_grad_();value=torch.zeros(len(x),dtype=x.dtype)
+            for i in range(n):
+                for j in range(i+1,n):
+                    d=((y[:,i]-y[:,j]).square().sum(-1)+1e-12).sqrt();r0=radii[i]+radii[j]
+                    bonded=bonds[:,i,j]>0
+                    value=value+.5*guide['bond_kappa']*(d-r0).square()*bonded
+                    value=value+.5*guide['nonbond_kappa']*(guide['nonbond_factor']*r0-d).clamp_min(0).square()*(~bonded)
+            force=-torch.autograd.grad(value.sum(),y)[0]
+            return value.detach(),force.detach()
         def local_batch(cycle,side):
             nonlocal ids,cursor,scale_cursor
             choices=torch.randint(len(protocol['local_scales']),(chains,),generator=scale_rng)
@@ -103,16 +126,37 @@ def main():
             assert path['map_source']==k and path['map_destination']==k+1
             assert path['vertices'].shape==(2*k+2,chains,dims)
             actions=[]
+            with torch.no_grad():
+                joint=policy_log_probabilities([states[i] for i in ids],numbers,kT,policy)[:,1:]
+                conditional=joint-joint.logsumexp(1,keepdim=True)
             for i,d in enumerate(path['decisions']):
-                aa=states[ids[i]]['actions'];chosen=int(torch.randint(len(aa),(1,),generator=action_rng))
+                aa=states[ids[i]]['actions']
+                if policy is None:chosen=int(torch.randint(len(aa),(1,),generator=action_rng))
+                else:chosen=int(torch.multinomial(conditional[i].exp(),1,generator=action_rng))
                 assert chosen==d['choice_index'] and aa[chosen]==d['action'] and len(aa)==d['forward_count']
+                if 'forward_log_probability' in d:
+                    assert abs(d['forward_log_probability']-float(conditional[i,chosen]))<1e-9
                 actions.append(aa[chosen])
+            old_bonds=torch.stack([states[i]['graph']['bond_orders'] for i in ids])
+            new_bonds=torch.stack([exchanged_bond_graph(b,a) for b,a in zip(old_bonds,actions)]) if guide else old_bonds
+            if guide:
+                assert path['guide']==guide
+                for i,(b,a,d) in enumerate(zip(new_bonds,actions,path['decisions'])):
+                    torch.testing.assert_close(exchanged_bond_graph(b,d['inverse_action']),old_bonds[i])
+            guidance_values=[]
             for vertex,vertex_ids in enumerate(path['vertex_state_ids']):
+                positions=torch.stack([states[i]['positions'] for i in vertex_ids])
+                bonds=old_bonds if vertex<=k else new_bonds
+                ge,gf=independent_guide(positions,bonds);guidance_values.append(ge)
+                if guide:
+                    torch.testing.assert_close(path['guide_bond_orders'][vertex],bonds)
+                    torch.testing.assert_close(path['guide_energies_eV'][vertex],ge,atol=1e-8,rtol=1e-9)
+                    torch.testing.assert_close(path['guide_forces_eV_A'][vertex],gf,atol=1e-8,rtol=1e-9)
                 for i,state_id in enumerate(vertex_ids):
                     s=states[state_id]
                     torch.testing.assert_close((basis.T@s['positions']).flatten(),path['vertices'][vertex,i],atol=1e-10,rtol=0)
-                    torch.testing.assert_close(-s['potential_eV']/kT,path['smooth_log_values'][vertex,i])
-                    torch.testing.assert_close(s['score'],path['smooth_scores'][vertex,i])
+                    torch.testing.assert_close(-(s['potential_eV']+ge[i])/kT,path['smooth_log_values'][vertex,i])
+                    torch.testing.assert_close(s['score']+(basis.T@gf[i]).flatten()/kT,path['smooth_scores'][vertex,i])
             paths_outside+=sum(any(graphs[v[i]] is None for v in path['vertex_state_ids'][1:-1]) for i in range(chains))
             volumes=[]
             for i,a in enumerate(actions):
@@ -139,6 +183,14 @@ def main():
             torch.testing.assert_close(total,path['path_log_ratio'],atol=1e-7,rtol=1e-9)
             base=path['smooth_log_values'][-1]-path['smooth_log_values'][0]+total+path['log_volume']
             torch.testing.assert_close(base,path['smooth_log_acceptance_ratio'],atol=1e-7,rtol=1e-9)
+            correction=(guidance_values[-1]-guidance_values[0])/kT
+            if guide:
+                torch.testing.assert_close(correction,path['physical_endpoint_log_correction'],atol=1e-7,rtol=1e-9)
+                torch.testing.assert_close(base+correction,path['target_log_acceptance_ratio'],atol=1e-7,rtol=1e-9)
+            base=base+correction
+            physical_difference=torch.tensor([-(states[end]['potential_eV']-states[start]['potential_eV'])/kT
+                for start,end in zip(path['vertex_state_ids'][0],path['vertex_state_ids'][-1])],dtype=torch.float64)
+            torch.testing.assert_close(base,physical_difference+total+path['log_volume'],atol=1e-7,rtol=1e-9)
             # Explicit reverse path action, including the opposite map volume.
             vertices=path['vertices'].flip(0);scores=path['smooth_scores'].flip(0);reverse_total=torch.zeros_like(total)
             for i,j in pairs:
@@ -150,9 +202,18 @@ def main():
                 assert d['old_state_id']==ids[i] and d['proposed_state_id']==end_id
                 reverse_actions=terminal_exchange_actions(numbers,g['bond_orders']) if g is not None else []
                 valid=g is not None and d['inverse_action'] in reverse_actions
+                if guide:valid=valid and torch.equal(g['bond_orders'],new_bonds[i])
                 assert valid==d['valid'] and d['log_uniform']==float(logu[i])
                 if valid:
-                    correction=math.log(d['forward_count']/len(reverse_actions));ratio=float(base[i])+correction
+                    if policy is None:correction=math.log(d['forward_count']/len(reverse_actions))
+                    else:
+                        with torch.no_grad():
+                            reverse_joint=policy_log_probabilities([states[end_id]],numbers,kT,policy)[0,1:]
+                            reverse_conditional=reverse_joint-reverse_joint.logsumexp(0)
+                        reverse_probability=float(reverse_conditional[reverse_actions.index(d['inverse_action'])])
+                        assert abs(reverse_probability-d['reverse_log_probability'])<1e-9
+                        correction=reverse_probability-d['forward_log_probability']
+                    ratio=float(base[i])+correction
                     assert d['reverse_count']==len(reverse_actions) and abs(d['action_log_ratio']-correction)<1e-12
                     assert abs(d['log_acceptance_ratio']-ratio)<1e-7
                     assert d['accepted']==(float(logu[i])<min(0.,ratio))
@@ -172,6 +233,9 @@ def main():
             escorted_valid=report['escorted_valid'],escorted_accepted=report['escorted_accepted'],
             reference_connectivity_first_hit_cycle=[next((h['cycle'] for h in report['history'] if h['smiles'][i]==reference),None) for i in range(chains)],
             final_energy_eV=report['history'][-1]['energy_eV'],trace_sha256=report['trace_sha256'],
+            paired_guide_graphs_replayed=guide is not None,guide_force_checked_by_independent_autograd=guide is not None,
+            physical_target_endpoint_correction_checked=guide is not None,
+            frozen_policy_conditional_choices_replayed=policy is not None,
             oracle_requeried=False,independent_physical_accuracy_certified=False))
     result=dict(complete=True,rows=summaries,scientific_submission_ready=False)
     if args.out.exists():raise FileExistsError(args.out)
