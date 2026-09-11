@@ -11,8 +11,12 @@ from eacf.utils.optimize import OptimizerConfig,get_optimizer
 UPSTREAM_COMMIT='beafab1b1ccd2b770572daeef1cf15f3fe199c21'
 
 
-def recipe_for(nodes,*,engineering=False):
-    return {'upstream_commit':UPSTREAM_COMMIT,'nodes':int(nodes),'dim':3,'n_aug':1,
+def recipe_for(nodes,*,engineering=False,profile='published'):
+    if profile not in ('published','compact'):
+        raise ValueError('Unknown EACF architecture profile')
+    if engineering and profile!='published':
+        raise ValueError('Engineering miniature and compact production profiles are distinct')
+    recipe={'upstream_commit':UPSTREAM_COMMIT,'nodes':int(nodes),'dim':3,'n_aug':1,
         'n_layers':1 if engineering else 12,'n_blocks':1 if engineering else 3,
         'mlp_units':[4] if engineering else [64,64],
         'n_invariant_feat_hidden':4 if engineering else 128,
@@ -21,6 +25,10 @@ def recipe_for(nodes,*,engineering=False):
         'dist_spline_max':10.,'identity_init':True,'scaling_layer':False,
         'aux_conditioned_on_x':True,'aux_scale':.1,'aux_regularizer_weight':1.,
         'engineering_only':bool(engineering)}
+    if profile=='compact':
+        # Prespecified capacity control, not the published full-size architecture.
+        recipe.update(n_layers=2,n_blocks=1,mlp_units=[4],n_invariant_feat_hidden=4)
+    return recipe
 
 
 def build_reference_flow(recipe):
