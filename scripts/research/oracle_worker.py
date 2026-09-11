@@ -24,11 +24,22 @@ def main():
     if args.batch_size<1:raise ValueError('Positive batch size required')
     if not args.checkpoint.is_file():raise FileNotFoundError(args.checkpoint)
     import ase
+    import torch
     from fairchem.core import FAIRChemCalculator
     from fairchem.core.units.mlip_unit import load_predict_unit
     from fairchem.core.datasets.atomic_data import atomicdata_list_to_batch
-    calculator=FAIRChemCalculator(load_predict_unit(str(args.checkpoint),device=args.device))
-    emit({'ready':True})
+    if args.device.startswith('cuda'):
+        torch.backends.cuda.matmul.allow_tf32=False
+        torch.backends.cudnn.allow_tf32=False
+        torch.set_float32_matmul_precision('highest')
+    predictor=load_predict_unit(str(args.checkpoint),device=args.device)
+    calculator=FAIRChemCalculator(predictor)
+    settings=predictor.inference_settings
+    emit({'ready':True,'device':args.device,'worker_batch_size':args.batch_size,
+        'torch_version':torch.__version__,'base_precision_dtype':str(settings.base_precision_dtype),
+        'tf32':bool(settings.tf32),'activation_checkpointing':bool(settings.activation_checkpointing),
+        'execution_mode':settings.execution_mode,
+        'gpu_name':torch.cuda.get_device_name(0) if args.device.startswith('cuda') else None})
     for line in sys.stdin:
         attempted=0
         try:
