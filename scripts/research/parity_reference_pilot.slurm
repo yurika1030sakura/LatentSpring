@@ -12,6 +12,7 @@ set -euo pipefail
 SOURCE_ROOT="${1:?immutable source required}"
 RUN_ROOT="${2:?unique output required}"
 MODE="${3:-smoke}"
+DOMAIN="${4:-unrestricted}"
 STORE=/n/holylabs/woo_lab/Lab/yulili/bgfm
 LAB_RUNS=/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs
 export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH="$SOURCE_ROOT"
@@ -20,7 +21,7 @@ export MPLCONFIGDIR="${SLURM_TMPDIR:-/tmp}/reference_mpl_${SLURM_JOB_ID}"
 export XDG_CACHE_HOME="${SLURM_TMPDIR:-/tmp}/reference_cache_${SLURM_JOB_ID}"
 mkdir -p "$RUN_ROOT" "$MPLCONFIGDIR" "$XDG_CACHE_HOME"
 cd "$SOURCE_ROOT"
-ARGS=(--out "$RUN_ROOT" --runs-root "$LAB_RUNS" --oracle-python "$STORE/envs/omol25/bin/python"
+ARGS=(--out "$RUN_ROOT" --runs-root "$LAB_RUNS" --domain "$DOMAIN" --oracle-python "$STORE/envs/omol25/bin/python"
       --oracle-checkpoint "$STORE/checkpoints/omol25/esen_sm_conserving_all.pt")
 if [ "$MODE" = smoke ]; then ARGS+=(--engineering-smoke); elif [ "$MODE" != pilot ]; then exit 2; fi
 exec "$STORE/envs/flowmol/bin/python" -u scripts/research/parity_reference_pilot.py "${ARGS[@]}"

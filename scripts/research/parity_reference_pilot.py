@@ -13,6 +13,8 @@ from cfm_mol.nonequilibrium import centered_orthonormal_basis
 from cfm_mol.parity_refinement import evaluate_even_potential
 from cfm_mol.temperature_exchange import exchange_scaled_states
 from cfm_mol.tempered_smc import DensityValue
+from cfm_mol.geometric_domain import connected_nonoverlapping
+from cfm_mol.supported_mcmc import supported_mala_population
 
 
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -27,8 +29,11 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out',type=Path,required=True);p.add_argument('--runs-root',type=Path,required=True)
     p.add_argument('--oracle-python',type=Path,required=True);p.add_argument('--oracle-checkpoint',type=Path,required=True)
-    p.add_argument('--engineering-smoke',action='store_true');args=p.parse_args()
-    root=Path(__file__).resolve().parents[2];protocol_path=root/'research/evidence/parity_reference_protocol_v1.json'
+    p.add_argument('--engineering-smoke',action='store_true')
+    p.add_argument('--domain',choices=['unrestricted','connected'],default='unrestricted');args=p.parse_args()
+    root=Path(__file__).resolve().parents[2]
+    protocol_path=root/'research/evidence'/('parity_reference_protocol_v1.json' if args.domain=='unrestricted'
+                                          else 'connected_reference_protocol_v1.json')
     protocol=json.loads(protocol_path.read_text());physical_path=root/'research/evidence/parity_training_protocol_v1.json'
     physical=json.loads(physical_path.read_text())
     if not protocol['frozen'] or sha(physical_path)!=protocol['physical_protocol_sha256']:
@@ -48,29 +53,46 @@ def main():
     if float(temperatures[0])!=physical['kT_eV']:raise ValueError('Cold target differs')
     levels=len(temperatures);ladders=4;chains=ladders*levels
     generator=torch.Generator().manual_seed(protocol['initialization_seed'])
-    selected=torch.randperm(len(source['positions']),generator=generator)[:2*levels]
+    radii=None;source_valid_count=None
+    if args.domain=='connected':
+        from rdkit import Chem
+        radii=torch.tensor([Chem.GetPeriodicTable().GetRcovalent(z) for z in numbers],dtype=torch.float64)
+        admissible=connected_nonoverlapping(source['positions'],radii).nonzero().flatten()
+        source_valid_count=len(admissible)
+        if len(admissible)<2:raise ValueError('Need at least two genuinely generated admissible starting states')
+        cold=admissible[torch.randperm(len(admissible),generator=generator)[:2]]
+        hot=admissible[torch.randint(len(admissible),(2,levels-1),generator=generator)]
+        selected=torch.cat([cold[:,None],hot],1).flatten()
+    else:selected=torch.randperm(len(source['positions']),generator=generator)[:2*levels]
     fm=source['positions'][selected].double()
     qc=torch.tensor(ref['positions'],dtype=torch.float64)[None].expand(2*levels,-1,-1).clone()
     jitter=torch.randn(qc.shape,dtype=torch.float64,generator=generator)*protocol['reference_jitter_A']
     qc=qc+jitter-jitter.mean(1,keepdim=True)
     signs=(2*torch.randint(2,(len(qc),),generator=generator)-1)[:,None,None]
     initial=torch.cat([fm,qc*signs])
+    if radii is not None and not connected_nonoverlapping(initial,radii).all():
+        raise ValueError('A prescribed reference initialization lies outside the new support')
     basis=centered_orthonormal_basis(n);temp=temperatures.repeat(ladders)
     latent=torch.einsum('nk,bnd->bkd',basis,initial).reshape(chains,-1)
     initial_w=latent/temp.sqrt()[:,None]
     rounds=protocol['engineering_rounds'] if args.engineering_smoke else protocol['pilot_rounds']
-    length=protocol['leapfrog_steps'];expected=2*chains*(1+rounds*length)
+    length=protocol.get('mala_steps_per_round',protocol['leapfrog_steps']);expected=2*chains*(1+rounds*length)
     restraint=physical['restraint_eV_A2'];zero=float(source['energy_eV'].mean())
     report=dict(complete=False,scope=__doc__,role='independent_reference_diagnostic',
         reference_qualified=False,scientific_submission_ready=False,condition=condition,
         protocol_sha256=sha(protocol_path),source_sha256=sha(source_path),reference_sha256=sha(ref_path),
         initialization_families=['fm','fm','raw_qc_jitter','raw_qc_jitter'],selected_fm_indices=selected.tolist(),
         uses_reference_geometry_for_initialization=True,engineering_only=args.engineering_smoke,
-        ladders=ladders,temperatures_eV=temperatures.tolist(),rounds=rounds,leapfrog_steps=length,
-        expected_raw_queries=expected,history=[],
+        domain=args.domain,kernel='supported_mala' if radii is not None else 'hmc',
+        source_proposals=len(source['positions']),admissible_source_proposals=source_valid_count,
+        unique_generated_initializations=len(selected.unique()),
+        ladders=ladders,temperatures_eV=temperatures.tolist(),rounds=rounds,
+        leapfrog_steps=length if radii is None else None,mala_steps_per_round=length if radii is not None else None,
+        expected_raw_queries=expected if radii is None else None,maximum_raw_queries=expected,history=[],
         implementation_sha256={str(p.relative_to(root)):sha(p) for p in [Path(__file__).resolve(),
             root/'cfm_mol/temperature_exchange.py',root/'cfm_mol/fixed_target_mcmc.py',
-            root/'cfm_mol/parity_refinement.py',root/'scripts/research/oracle_worker.py']},
+            root/'cfm_mol/parity_refinement.py',root/'scripts/research/oracle_worker.py',
+            root/'cfm_mol/geometric_domain.py',root/'cfm_mol/supported_mcmc.py']},
         limitations=['A raw QC structure is an initialization, not an equilibrium distribution.',
             'Replica exchanges and temperature round trips do not prove configuration-mode mixing.',
             'Cold draws are autocorrelated within four ladders; do not report them as independent samples.'])
@@ -93,9 +115,14 @@ def main():
                 report['history'].append(row);write(output,report);print(json.dumps(row),flush=True)
         snapshot(0)
         for iteration in range(rounds):
-            w,value,stats=hmc_population(w,target,leapfrog_counts=[length],step_size=protocol['scaled_step_size'],
-                max_score_norm=protocol['physical_force_cap_eV_A']/float(temperatures[0].sqrt()),
-                generator=rng,initial_value=value)
+            if radii is None:
+                w,value,stats=hmc_population(w,target,leapfrog_counts=[length],step_size=protocol['scaled_step_size'],
+                    max_score_norm=protocol['physical_force_cap_eV_A']/float(temperatures[0].sqrt()),
+                    generator=rng,initial_value=value)
+            else:
+                w,value,stats=supported_mala_population(w,target,steps=length,proposal_std=protocol['scaled_step_size'],
+                    max_score_norm=protocol['physical_force_cap_eV_A']/float(temperatures[0].sqrt()),
+                    generator=rng,initial_value=value)
             accepts.append(stats['accepted_per_chain'])
             shaped,value,labels,exchange=exchange_scaled_states(w.reshape(ladders,levels,-1),value,
                 temperatures,labels,parity=iteration%2,generator=rng)
@@ -109,14 +136,22 @@ def main():
             raise ValueError('Require qualified oracle precision')
         def target(w):
             entry=dict(w=w.clone(),complete=False);trace.append(entry)
-            x=positions(w);energy,force,components=evaluate_even_potential(oracle,x)
-            value=DensityValue(-(energy-zero+restraint/2*x.square().sum((1,2)))/temp,
-                torch.einsum('nk,bnd->bkd',basis,force-restraint*x).reshape_as(w)/temp.sqrt()[:,None])
+            x=positions(w)
+            valid=torch.ones(chains,dtype=torch.bool) if radii is None else connected_nonoverlapping(x,radii)
+            logp=torch.full((chains,),-torch.inf,dtype=w.dtype);score=torch.zeros_like(w)
+            energy=w.new_empty(0);force=w.new_empty((0,n,3));components={}
+            if valid.any():
+                energy,force,components=evaluate_even_potential(oracle,x[valid])
+                logp[valid]=-(energy-zero+restraint/2*x[valid].square().sum((1,2)))/temp[valid]
+                score[valid]=torch.einsum('nk,bnd->bkd',basis,force-restraint*x[valid]).reshape(int(valid.sum()),-1)/temp[valid].sqrt()[:,None]
+            value=DensityValue(logp,score)
             entry.update(complete=True,log_value=value.log_value.clone(),score=value.score.clone(),
-                energy_eV=energy,force_eV_A=force,**components)
+                valid=valid,energy_eV=energy,force_eV_A=force,**components)
             return value
         w,value,snapshots,swaps,accepts=run(target,record=True)
-        if oracle.evaluated!=expected:raise RuntimeError('Reference query count differs')
+        counted=2*sum(int(row['valid'].sum()) for row in trace)
+        if oracle.evaluated!=counted or counted>expected or (radii is None and counted!=expected):
+            raise RuntimeError('Reference query count differs')
         iterator=iter(trace)
         def replay_target(w):
             row=next(iterator);torch.testing.assert_close(w,row['w'],atol=1e-10,rtol=1e-10)
@@ -129,8 +164,11 @@ def main():
         torch.save(dict(initial_positions=initial,initial_scaled_latent=initial_w,temperatures=temperatures,
             trace=trace,snapshots=snapshots,swaps=swaps,hmc_acceptances=accepts),args.out/'reference_trace.pt')
         report.update(complete=True,raw_queries=oracle.evaluated,proposal_replay_passed=True,
+            total_proposed_target_states=sum(len(row['w']) for row in trace),
+            invalid_states_without_oracle=sum(int((~row['valid']).sum()) for row in trace),
             seconds=time.perf_counter()-start,artifact_sha256=sha(args.out/'reference_trace.pt'),
-            cold_hmc_acceptance_by_ladder=torch.tensor(accepts).reshape(rounds,ladders,levels).double().mean(0)[:,0].tolist())
+            cold_transition_acceptance_by_ladder=(torch.tensor(accepts).reshape(rounds,ladders,levels).double().mean(0)[:,0]/
+                (length if radii is not None else 1)).tolist())
         write(output,report)
     except Exception as exc:
         torch.save(dict(initial_positions=initial,initial_scaled_latent=initial_w,trace=trace),args.out/'failed_trace.pt')
