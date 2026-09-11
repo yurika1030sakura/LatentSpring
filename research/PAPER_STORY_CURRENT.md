@@ -18,6 +18,11 @@ not relabelled as new-target results. See notes/parity_refinement_candidate.md.
 The new main text now records this limitation; physical projection preserves the small N8 gain, while
 broader performance remains pending.
 
+Current AI/physics contribution boundaries: `NOVELTY_POSITION_CURRENT.md`.
+The newer production prefix has16 qualified arms; results are mixed across
+conditions. See evidence/parity_production_prefix_v2.json and the condition0
+geometry evidence before using the historical N8-only checkpoint below.
+
 ## Scientific question
 
 Can a fixed implicit molecular generator be refined toward a specified physical
