@@ -70,6 +70,8 @@ def main():
     p.add_argument('--steps', type=int, default=1000)
     p.add_argument('--eval-count', type=int, default=512)
     p.add_argument('--device', default='cuda')
+    p.add_argument('--oracle-device',choices=['cpu','cuda'],default='cpu')
+    p.add_argument('--oracle-batch-size',type=int,default=16)
     p.add_argument('--sweeps', type=int, default=1,
                    help='Coupling sweeps. Each sweep adds bounded log-volume capacity.')
     p.add_argument('--anneal-from-kT', type=float, default=None,
@@ -79,6 +81,7 @@ def main():
     p.add_argument('--anneal-fraction', type=float, default=.5,
                    help='Fraction of steps spent annealing before the physical kT is reached.')
     args = p.parse_args()
+    if args.oracle_batch_size<1:raise ValueError('Positive oracle batch size required')
     if args.engineering_smoke:
         if args.steps != 2 or args.eval_count != 16:
             raise ValueError('Engineering source permits only the fixed2-update16-row smoke')
@@ -131,6 +134,7 @@ def main():
         'anneal_fraction': args.anneal_fraction,
         'anneal_scope': 'final evaluation uses physical kT; history records the annealed training objective',
         'parameters': sum(p.numel() for p in adapter.parameters()),
+        'neural_device':args.device,'oracle_device':args.oracle_device,'oracle_batch_size':args.oracle_batch_size,
         'energy_zero_eV': energy_zero, 'reference_geometry_used_to_initialize': False,
         'reference_energy_used_for_training': False, 'source_oracle_queries_additional': source['oracle_evaluations'],
         'history': [], 'weights': None,
@@ -169,7 +173,9 @@ def main():
         raise ValueError('Physical oracle differs from the source target')
     with EnergyOracle(Path(recipe['oracle_python']), root/'scripts/research/oracle_worker.py', oracle_path,
             numbers=condition['numbers'], charge=condition['charge'],
-            spin_multiplicity=condition['spin_multiplicity'], batch_size=16) as oracle, record_failure(oracle, report, output):
+            spin_multiplicity=condition['spin_multiplicity'],device=args.oracle_device,
+            batch_size=args.oracle_batch_size) as oracle, record_failure(oracle, report, output):
+        report['oracle_runtime']=oracle.handshake
         if args.parity_target:
             initial_energy, _, components = evaluate_even_potential(oracle, x_eval)
             replay_energy = components['raw_energy_eV']

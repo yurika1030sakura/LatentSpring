@@ -1,5 +1,17 @@
 # Next research decision
 
+Latest execution checkpoint: the pair-potential prototype and capacity probe
+are complete. Mean KL improves but ESS remains poor; stop capacity-only expansion.
+GPU oracle544-query qualification passes at full precision on conditions0 and7;
+this is a system speedup, not method evidence. Full12-layer EACF smoke45959261
+passes96 queries with5629656 parameters. Production controls45960348(seed0) and
+45961068(seed1) are running,18048 raw queries each, one-hour caps. Re-query them.
+The canonical EACF auxiliary is N(x,.1^2 I), matching upstream defaults; do not
+substitute the earlier independent-unit-Gaussian engineering recipe.
+Own-method CPU-neural/GPU-oracle control launcher is prepared for timing checks
+when GPU-test slots free; no matched timing advantage is claimed yet.
+
+
 **Post-handoff Claude update reviewed:** read `../notes/claude_update_review_v1.md` and
 `research/evidence/claude_update_review_v1.json` (repository-relative). Fixed-index
 splitting is a labelled diagnostic, not a permutation-equivariant repair.

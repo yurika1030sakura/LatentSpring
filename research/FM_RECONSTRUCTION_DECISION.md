@@ -12,7 +12,10 @@ O(3) equivariance, change meaningful collective coordinates, admit a valid
 inverse and account for the full intrinsic Jacobian. A global equivariant
 pair-interaction convex map is one candidate for a bounded prototype; it would
 need full constrained-volume accounting and a fresh complexity/expressivity
-audit. It is not yet implemented or established as novel or better.
+audit. It is now implemented and passes constrained-Jacobian, inverse and symmetry
+checks. Two seeded pilots improve relative KL but retain very low ESS; no
+sampling-efficiency or novelty claim is established. See
+`evidence/pair_capacity_decision_v1.json`.
 
 For the molecular task, finish the frozen48-arm campaign and strong matched-source
 controls before attributing failure to the FM backbone. Poor finite-sample overlap

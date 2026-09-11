@@ -26,7 +26,8 @@ class EnergyOracle:
             '--device',device,'--batch-size',str(batch_size)],stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=self.stderr,
             text=True,bufsize=1,env=environment)
         try:
-            if self._receive().get('ready') is not True:raise RuntimeError('Oracle handshake failed')
+            self.handshake=self._receive()
+            if self.handshake.get('ready') is not True:raise RuntimeError('Oracle handshake failed')
         except Exception:
             self.close();raise
 
