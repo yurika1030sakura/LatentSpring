@@ -23,12 +23,12 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--table',type=Path,required=True);p.add_argument('--policies',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True);p.add_argument('--replica',type=int,choices=[0,1],required=True)
-    p.add_argument('--method',choices=['uniform','uniform_exchange','uniform_multiscale','uniform_angular','learned'],required=True)
+    p.add_argument('--method',choices=['uniform','uniform_exchange','uniform_multiscale','uniform_angular','force_angular','learned'],required=True)
     p.add_argument('--oracle-python',type=Path,required=True);p.add_argument('--oracle-checkpoint',type=Path,required=True)
     args=p.parse_args();root=Path(__file__).resolve().parents[2]
     protocol_path=root/'research/evidence/chemical_policy_protocol_v1.json';protocol=json.loads(protocol_path.read_text())
-    angular=args.method=='uniform_angular';multiscale=args.method in ('uniform_multiscale','uniform_angular')
-    evaluation_path=root/'research/evidence'/('angular_chemical_protocol_v1.json' if angular else
+    angular=args.method in ('uniform_angular','force_angular');multiscale=args.method in ('uniform_multiscale','uniform_angular','force_angular')
+    evaluation_path=root/'research/evidence'/('force_angular_protocol_v1.json' if args.method=='force_angular' else 'angular_chemical_protocol_v1.json' if angular else
         'multiscale_chemical_protocol_v1.json' if multiscale else 'chemical_policy_evaluation_protocol_v2.json')
     evaluation=json.loads(evaluation_path.read_text())
     if evaluation['training_protocol_sha256']!=sha(protocol_path):raise ValueError('Changed training protocol')
@@ -83,7 +83,7 @@ def main():
             torch.testing.assert_close(new['force_eV_A'],old['force_eV_A'],atol=1e-4,rtol=0)
         for step in range(steps+1):
             with torch.no_grad():local=policy_log_probabilities(states,target.numbers,target.kT,policy,uniform_local)[:,0].exp().tolist()
-            scheduled=('local','rotation','exchange','local')[step%4] if angular and step<steps else None
+            scheduled=evaluation['schedule'][step%4] if angular and step<steps else None
             if angular:local=[float(scheduled=='local')]*len(states) if scheduled else None
             row=dict(step=step,energy_eV=[float(s['energy_eV']) for s in states],
                 potential_eV=[float(s['potential_eV']) for s in states],

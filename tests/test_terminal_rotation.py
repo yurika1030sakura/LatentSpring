@@ -45,13 +45,14 @@ def test_internal_move_decisions_use_physical_ratio_and_count_only_scored_candid
     x[1:4]*=1.09/3**.5;x[4]*=1.35/3**.5;x-=x.mean(0)
     states=target.evaluate([target.coordinate_state(x)],phase='initial')
     rng=torch.Generator().manual_seed(121);valid=0
-    for kind in ['rotation','exchange']*10:
+    for kind in ['rotation','exchange','force_rotation']*10:
         old=states[0]
         states,rows=uniform_internal_transition(target,states,kind=kind,generator=rng,phase='test')
         row=rows[0];valid+=row['valid']
         if row['valid']:
             new=target.states[row['new_state_id']]
             expected=-float(new['potential_eV']-old['potential_eV'])/target.kT+float(row['log_volume'])+row['action_log_ratio']
+            if kind=='force_rotation':expected+=row['angular_log_reverse']-row['angular_log_forward']
             assert abs(expected-row['log_acceptance_ratio'])<1e-10
             assert row['accepted']==(row['log_uniform']<min(0.,expected))
         else:assert not row['accepted']

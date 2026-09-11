@@ -5,6 +5,7 @@ The Cartesian map has unit intrinsic COM volume. This is not AI novelty.
 """
 import math
 import torch
+from cfm_mol.spherical_proposal import vmf_sample,vmf_log_prob,force_vmf_parameter
 
 
 def terminal_rotation_actions(numbers,bonds):
@@ -36,11 +37,11 @@ def rotate_terminal(x,action,raw_quaternion):
 
 @torch.no_grad()
 def uniform_internal_transition(target,states,*,kind,generator,phase):
-    if kind not in ('rotation','exchange'):raise ValueError('Unknown internal move')
+    if kind not in ('rotation','force_rotation','exchange'):raise ValueError('Unknown internal move')
     candidates=[];rows=[]
     for old in states:
         actions=(terminal_rotation_actions(target.numbers,old['graph']['bond_orders'])
-            if kind=='rotation' else old['actions'])
+            if kind!='exchange' else old['actions'])
         row=dict(kind=kind,phase=phase,old_state_id=old['state_id'],new_state_id=-1,
             forward_count=len(actions),valid=False,accepted=False)
         candidate=None
@@ -51,11 +52,25 @@ def uniform_internal_transition(target,states,*,kind,generator,phase):
                 candidate,existing=target.propose(old,index+1,generator,.1*target.kT**.5)
                 row.update(existing)
             else:
-                raw=torch.randn(4,dtype=torch.float64,generator=generator)
-                y,reverse=rotate_terminal(old['positions'],action,raw)
-                recovered,_=rotate_terminal(y,action,reverse)
-                torch.testing.assert_close(recovered,old['positions'],atol=1e-10,rtol=1e-10)
-                row.update(raw_quaternion=raw,reverse_quaternion=reverse,proposal_positions=y)
+                if kind=='rotation':
+                    raw=torch.randn(4,dtype=torch.float64,generator=generator)
+                    y,reverse=rotate_terminal(old['positions'],action,raw)
+                    recovered,_=rotate_terminal(y,action,reverse)
+                    torch.testing.assert_close(recovered,old['positions'],atol=1e-10,rtol=1e-10)
+                    row.update(raw_quaternion=raw,reverse_quaternion=reverse)
+                else:
+                    leaf,anchor=action;vector=old['positions'][leaf]-old['positions'][anchor]
+                    radius=vector.norm();direction=vector/radius
+                    force=old['force_eV_A']-target.restraint*old['positions'];force=force-force.mean(0)
+                    cindex=int(torch.randint(3,(1,),generator=generator));concentration=(1.,10.,100.)[cindex]
+                    eta=force_vmf_parameter(direction[None],force[leaf][None],radius=radius,
+                        kT=target.kT,concentration=concentration)
+                    proposed,aux=vmf_sample(eta,generator=generator)
+                    y=old['positions'].clone();y[leaf]=y[anchor]+radius*proposed[0];y-=y.mean(0)
+                    row.update(concentration_index=cindex,concentration=concentration,radius=radius,
+                        old_direction=direction,new_direction=proposed[0],forward_natural_parameter=eta[0],
+                        angular_log_forward=float(vmf_log_prob(proposed,eta)[0]),angular_random=aux)
+                row['proposal_positions']=y
                 try:
                     candidate=target.coordinate_state(y)
                     if not torch.equal(candidate['graph']['bond_orders'],old['graph']['bond_orders']):
@@ -78,6 +93,15 @@ def uniform_internal_transition(target,states,*,kind,generator,phase):
         else:
             reverse_count=len(terminal_rotation_actions(target.numbers,new['graph']['bond_orders']))
             base=-float(new['potential_eV']-old['potential_eV'])/target.kT
+            if kind=='force_rotation':
+                leaf,anchor=row['action'];vector=new['positions'][leaf]-new['positions'][anchor]
+                radius=vector.norm();direction=vector/radius
+                force=new['force_eV_A']-target.restraint*new['positions'];force-=force.mean(0)
+                eta=force_vmf_parameter(direction[None],force[leaf][None],radius=radius,
+                    kT=target.kT,concentration=row['concentration'])
+                reverse=float(vmf_log_prob(row['old_direction'][None],eta)[0])
+                base+=reverse-row['angular_log_forward']
+                row.update(angular_log_reverse=reverse,reverse_natural_parameter=eta[0])
             row.update(new_state_id=new['state_id'],base_log_ratio=base,log_volume=0.)
         correction=math.log(row['forward_count']/reverse_count);ratio=base+correction
         take=float(logu[i])<min(0.,ratio)

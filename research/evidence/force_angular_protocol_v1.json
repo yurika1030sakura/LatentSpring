@@ -1,0 +1,41 @@
+{
+  "frozen": true,
+  "version": 1,
+  "scope": "Classical force-informed vMF angular proposal, with exact forward/reverse S2 densities, after uniform angular control failed.",
+  "training_protocol_sha256": "1f8b0fc8174848f616dd1a1759b0d6e4e8ae562eb4ed90546dd9aa835a0f85fd",
+  "hypothesis": "Uniform angular proposals accepted0/256 and5/256. Use the projected physical tangent force to direct angular moves before attributing this to missing AI capacity.",
+  "methods": [
+    "force_angular"
+  ],
+  "schedule": [
+    "local",
+    "force_rotation",
+    "exchange",
+    "local"
+  ],
+  "uniform_total_budget_steps": 256,
+  "local_scales": [
+    0.1,
+    0.03,
+    0.01
+  ],
+  "scale_seed": 10531,
+  "evaluation_seeds": [
+    10521,
+    10523
+  ],
+  "maximum_raw_queries_per_uniform_total_budget_arm": 2056,
+  "maximum_new_raw_queries": 4112,
+  "rotation": "Uniform terminal choice, uniform concentration label, then vMF on S2 with eta=c*u+0.5*clipped_surface_score. Surface score uses radius times COM-projected physical force/kT. Recompute the same-label reverse vMF parameter at y; include both normalizers. Radius and passive coordinates are retained, so the r^2 angular measure factor cancels.",
+  "exchange": "Uniform terminal exchange with its existing graph eligibility, explicit inverse and COM volume; no learned selector.",
+  "unused_scale_draws": "A scale label is drawn at every microstep for deterministic replay; it affects local steps only and is unused on rotation/exchange steps.",
+  "reference_coordinates_allowed": false,
+  "training_queries": 0,
+  "new_target_support": false,
+  "stop_rule": "Complete two bounded arms and replay every vMF density, draw, projected force and MH ratio. Conditional S2 density is not a full Cartesian endpoint density or an AI novelty claim.",
+  "concentrations": [
+    1.0,
+    10.0,
+    100.0
+  ]
+}
