@@ -1,11 +1,21 @@
-# Current paper direction — September10,2026
+# Current paper direction — September11,2026
 
 Working title: **Refining Molecular Generators with Exact Entropy Changes**.
 The primary manuscript now describes the implemented method, its complete
 volume/entropy derivations and the actual controlled evidence. It is a development
 draft, not an ICLR-ready paper. Latest PDF:
-runs/verification/paper_20260910_parity_final/main.pdf (6 main pages,9-page cap).
+runs/verification/paper_20260911_eacf_compact_final/main.pdf (7 main pages,9-page cap).
 Historical scalar-ordering audit: paper/legacy_audit.tex and preserved sections/PDFs.
+
+The first full external comparison is adverse: full EACF improves the joint KL
+bound and independent GFN2 strain substantially more than convex on condition0.
+A14900-parameter compact control also has more-negative joint changes than our
+19365-parameter marginal changes, but mixed independent geometry. Whole-allocation
+costs are196/198 versus139/144 seconds; the older full-model20x ratio cannot
+support a general efficiency claim. All saved parents replay and every geometry
+failure is retained. See evidence/eacf_full_compact_comparison_v1.json,
+evidence/eacf_geometry_comparison_v2.json and NEXT.md. These results weaken the
+current method case; they do not complete an ICLR contribution.
 
 ## New target/source review
 
@@ -19,9 +29,9 @@ The new main text now records this limitation; physical projection preserves the
 broader performance remains pending.
 
 Current AI/physics contribution boundaries: `NOVELTY_POSITION_CURRENT.md`.
-The newer production prefix has16 qualified arms; results are mixed across
-conditions. See evidence/parity_production_prefix_v2.json and the condition0
-geometry evidence before using the historical N8-only checkpoint below.
+The newer production prefix has39 qualified arms; results are mixed across
+conditions. See evidence/parity_production_prefix_v5.json and the six-condition
+geometry prefix before using the historical N8-only checkpoint below.
 
 ## Scientific question
 

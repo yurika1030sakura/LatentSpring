@@ -12,9 +12,12 @@ entropy or target normalizer. On one eight-atom development condition, two
 training streams show small improvements over typed-linear and matched
 neural-context affine controls. The latter differences are
 $-0.0133\pm0.0025$ and $-0.0126\pm0.0021$ nat on shared confirmation samples.
-Path importance weights remain severely concentrated. A broader eight-condition
-comparison has been reconstructed after a target-symmetry audit; full performance
-and external flow comparisons are not yet available. We present an implemented
+Path importance weights remain severely concentrated. A corrected-source,
+ten-atom comparison now shows a substantial advantage for a full equivariant
+augmented coupling-flow baseline, in both its joint-KL bound and independent
+GFN2-xTB strain. Our smaller model requires less computation under matched
+query budgets, but reaches a weaker improvement; this is not a same-quality
+speedup. The eight-condition study remains incomplete. We present an implemented
 method candidate and its limitations, without claiming calibrated Boltzmann
 sampling or an established novel-method advantage.
 \end{abstract}
@@ -49,10 +52,12 @@ OMol25 as the primary data source \citep{omol25}.
 The current contribution is an implemented construction and a controlled
 development study. We provide a constrained-volume derivation, actual interface
 and gradient checks, two training replicas and a matched architectural ablation.
-These establish numerical consistency and a small relative-KL signal on one
-condition. They do not establish a calibrated general sampler, broad
-generalization or sufficient novelty for a completed method paper. The broader
-comparison and remaining scientific gates are stated explicitly below.
+These establish numerical consistency and relative-KL signals on development
+conditions. A completed external comparison also exposes a material quality
+gap: the full augmented-flow baseline improves the physical objective and
+independent strain more than our model on its first matched condition. Broad
+generalization, useful efficiency and a calibrated sampler remain unestablished.
+The broader comparison and remaining scientific gates are stated below.
 
 \paragraph{Relation to prior methods.}
 Equivariant finite flows and augmented coupling flows already provide
@@ -61,7 +66,7 @@ Convex-potential and residual flows supply related invertibility principles
 \citep{huang2020convex,chen2019residual}. Our candidate distinction is the
 element-group decomposition and nonlinear centered point transformation;
 equivariance, the KL objective and the linear-algebra identities themselves
-are not new claims. External performance comparison remains necessary.
+are not new claims. Broader external performance comparisons remain necessary.
 
 \section{Conditional source and physical target}
 For fixed atomic numbers $z_1,\ldots,z_n$, charge $Q$ and spin multiplicity $S$,
@@ -242,7 +247,7 @@ Jacobians, context invariance, inverse composition, identity initialization,
 joint coordinate/element permutation, O(3) equivariance, independent batch
 evaluation and parameter finite differences. Reconstruction is exercised up
 to 200 atoms. Fourteen model tests cover both neural families. The complete
-repository suite currently passes 294 tests, including source-contract corruption
+repository suite passed 294 tests at the initial broad-study release, including source-contract corruption
 and oracle-accounting checks. These are implementation checks, not evidence
 of molecular sampling quality. Trained checkpoints also undergo inverse,
 dense-Jacobian and public-loader replay checks.
@@ -307,7 +312,7 @@ queries and 320 xTB optimization attempts. The affine branch adds 37,184 oracle
 queries. Source generation, inherited pretraining and earlier failed method
 branches are additional costs.
 
-\paragraph{Prespecified broader study: performance pending.}
+\paragraph{Prespecified broader study: partial completion.}
 An outcome-independent development manifest contains eight conditions with
 9--20 atoms, including charged and open-shell cases and metal-containing
 compositions. Every condition is retained. Source production targets 4,096
@@ -328,8 +333,12 @@ One source-production attempt timed
 out on a bulk RPC and was stopped, with an attempted-query bound of 0--8,192
 and no qualified output. Its records are retained. The replacement bounds
 requests and persists intermediate coordinates and scored chunks.
-Complete broader performance results are not yet available. The reserved 722
-conditions remain untouched.
+The audited production prefix contains 39 completed arms, no failed arms and
+nine unresolved arms, with 703,872 acknowledged queries in completed runs.
+Six conditions have complete independent geometry assessments: 1,344 attempts,
+1,246 converged and 98 failed. Success-only strain does not consistently favor
+the convex model over the simpler controls. Complete broader performance
+results are not yet available. The reserved 722 conditions remain untouched.
 
 \paragraph{New source/target symmetry audit.}
 On four fixed source geometries in each broader condition, raw eSEN energy
@@ -356,6 +365,91 @@ At the original finite-difference step $10^{-3}$
 $\mathrm{\mathring A}$ the sampled force checks pass their declared tolerance;
 smaller-step discrepancies are retained alongside the larger-step audit.
 
+\paragraph{Full external flow comparison: an adverse result.}
+The first corrected-source external comparison uses the ten-atom
+$\mathrm{CH_3F_5S}$ condition, charge zero and singlet multiplicity. We adapt
+the pinned EACF implementation \citep{midgley2023eacf}, with 12 spherical
+coupling layers, three EGNN blocks, MLP widths 64 and 64, invariant width 128,
+and reflection equivariance. The fixed source auxiliary is
+$r(a\mid x)=\mathcal N(a;x,0.1^2 I_{3n})$, also used in the target.
+Only the bijector is trained. The full model has 5,629,656 parameters and uses
+its upstream warmup-cosine Adam and dynamic gradient-clipping defaults.
+Both training replicas use the same physical parent-selection and inversion
+streams as our models, 1,000 updates of batch 16, and 18,048 raw oracle queries.
+Evaluation uses the same 512 physical parents and actual inversion-averaged
+energies. This is matched-source adaptation, not standalone FAB: the implicit
+FM source has no evaluated marginal density.
+
+For the joint map $(y,b)=S(x,a)$, the estimated change is the expectation of
+\[
+ \frac{U(y)-U(x)}{kT}-\log\det DS
+ +\log r(a\mid x)-\log r(b\mid y).
+\]
+Because the source auxiliary equals the target conditional,
+$\Delta\KL_{\mathrm{joint}}=\Delta\KL_x+\mathrm{Gap}_{\mathrm{final}}$
+with a nonnegative final conditional gap. These are different estimands.
+Nevertheless, EACF's substantially more-negative joint change counts against
+our marginal-quality superiority on this condition
+(Table~\ref{tab:external-eacf}). A reverse ranking would not establish our
+superiority. All 1,024 EACF parents replay exactly from saved checkpoints;
+the largest inverse-coordinate error is below $3.8\times10^{-13}$
+$\mathrm{\mathring A}$. These checks make the comparison reproducible,
+without certifying equilibrium coverage.
+
+\begin{table}[t]
+\centering
+\caption{Corrected-source external comparison on one ten-atom condition.
+Changes are in nats, with SEM across 512 parents for each fixed trained model.
+Joint and marginal changes are not identical. Whole-allocation timings include
+initialization, compilation, training and evaluation under matching CPU-neural
+and GPU-oracle allocations. Convex timings come from repetitions whose KL
+changes agree with the original runs within $2\times10^{-4}$ nat.}
+\label{tab:external-eacf}
+\begin{tabular}{lrrr}
+\toprule
+Method / reported change & Replica 1 & Replica 2 & Seconds, 1 / 2\\
+\midrule
+Convex / marginal & $-24.74\pm2.29$ & $-24.66\pm2.27$ & 139 / 144\\
+Full EACF / joint & $-118.99\pm6.51$ & $-105.56\pm6.47$ & 2843 / 2843\\
+Compact EACF / joint & $-27.23\pm2.67$ & $-32.56\pm3.03$ & 196 / 198\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Independent GFN2-xTB checks use the same 32 prespecified parents per arm,
+including every failure. Convex converges on 28/32 and 29/32 attempts, with
+success-only median strains 4.6595 and 4.6550 eV. EACF converges on 29/32 and
+28/32, with medians 3.2681 and 3.8977 eV. Ranking convergence before failure
+and then lower strain, EACF has 27 better, 3 worse and 2 both-failed pairs
+against the first convex replica; the second has 24 better and 8 worse.
+These paired diagnostics support EACF's advantage in local physical strain,
+not full chemical validity or target-mode populations. Both families retain
+predominantly disconnected distance-based contact graphs on this condition;
+fragments are allowed by the declared composition-level target.
+
+Our model has 19,365 parameters and lower measured computation, but its
+improvement is weaker. The timing difference is therefore not a speedup to
+equal quality. A compact EACF control is prespecified using parameter counts
+alone: two layers, one EGNN block, hidden/MLP width 12 and embedding width 8,
+giving 14,900 parameters. Both full compact replicas now complete 1,000 update
+attempts and 18,048 queries, with four and nine updates ignored by the upstream
+gradient guard. Every saved parent replays from its checkpoint. The paired
+joint-minus-convex-marginal changes are $-2.48\pm1.19$ and $-7.91\pm1.96$ nat.
+The whole-allocation cost ratio falls to 1.41 and 1.38. Between update 20 and
+1,000, compact EACF averages 0.080 and 0.082 seconds per attempt, compared with
+0.108 and 0.106 for convex; these intervals exclude initial compilation and
+are not isolated neural-throughput benchmarks. Thus the full-model timing
+ratio does not support a general efficiency advantage.
+
+Compact EACF's independent strain is mixed: 29/32 and 26/32 optimizations
+converge, with success-only medians 4.8488 and 4.6620 eV. Against convex,
+replica 1 has 13 better, 18 worse and one both-failed pair; replica 2 has
+17 better, 13 worse and two both-failed pairs under the declared ranking.
+An improved surrogate-target objective need not improve every independent
+geometry measure. Quality-versus-time comparisons and independent target
+distribution references remain necessary; neither the full nor compact
+comparison establishes our model's practical superiority.
+
 \section{Limitations and remaining scientific gates}
 The construction provides an exact relative-entropy accounting route, not an
 absolute source-density estimator or a guarantee of molecular validity.
@@ -364,7 +458,7 @@ local improvement. The element decomposition restricts homogeneous and
 passive-context-poor systems. The energy target is a confined learned potential,
 so results do not directly transfer to an experimental equilibrium ensemble.
 
-External equivariant-flow and matched-sampling baselines are still required.
+Broader external equivariant-flow and matched-sampling baselines are still required.
 An augmented baseline's joint-KL upper bound must not be ranked as an exact
 physical marginal KL. Physical-coordinate distribution diagnostics, credible
 independent references, geometry/diversity checks and complete computation are

@@ -1263,3 +1263,46 @@ allocation versus2843 seconds each for full EACF. Convex changes remain
 a measured cost-quality tradeoff, not equal-quality acceleration. Evidence:
 research/evidence/eacf_matched_cost_quality_v1.json. Smaller EACF controls,
 quality-versus-time curves and independent geometry remain required.
+
+
+## 2026-09-11: compact EACF and independent geometry close the first comparison
+
+Compact EACF was sized by target-free parameter counts, before target outcomes.
+An initial18320-count guess failed against the actual18388 count with zero
+oracle queries; this preflight is preserved in the sizing evidence. The final
+recipe uses2 layers,1 EGNN block,hidden/MLP12,embedding8 and14900 parameters.
+Smoke45967020 passes96 real queries. Production45967320/45967327 completes
+1000 update attempts and18048 queries per replica;4/9 updates are ignored by
+upstream gradient guards. Total new eSEN queries in this compact branch:36192.
+
+Compact joint KL changes are -27.22519 +/-2.66610 and -32.56460 +/-3.03411 nat.
+Paired joint-minus-convex marginal changes are -2.48370 +/-1.19211 and
+-7.90714 +/-1.95670. Whole-allocation seconds: compact196/198,convex139/144.
+Between updates20 and1000, compact uses .08008/.08210 seconds per attempt,
+convex .10805/.10638. The older full-model20x ratio is not a general or
+same-quality efficiency advantage. Audits45968020/45968027 replay every one
+of1024 compact parents exactly; inverse errors are below9.66e-13 A.
+
+Full EACF geometry45966772 completes64 attempts,57 converged and7 failed,
+with success-only median strains3.26808/3.89767 eV. Compact geometry45968690
+completes64 attempts,55 converged and9 failed,medians4.84879/4.66197 eV.
+Convex medians are4.6595/4.6550. Compact paired rankings versus convex are
+13 better/18 worse/1 both-failed and17 better/13 worse/2 both-failed. The full
+model's independent strain advantage is much clearer. All352 condition0
+attempts across11 arms retain304 converged and48 failed rows. Cross-assessment
+parent/target contracts, atom identities, actual input coordinates, executable
+hashes and raw successful energy/convergence logs have been checked.
+
+Main condition4 training and geometry45967727 are complete. The latest main
+prefix replays39/48 completed arms,0 failed,9 unresolved,703872 acknowledged
+queries in completed arms. Six geometry conditions total1344 attempts,
+1246 converged and98 failed. Main Slurm45914826_5/6 remain active; re-query
+before acting. No prior historical evidence or reserved722 outcomes changed.
+
+Reproducible comparison entrypoints: compare_eacf_controls.py and
+compare_geometry_assessments.py. Evidence: eacf_full_compact_comparison_v1.json,
+eacf_geometry_comparison_v2.json,parity_production_prefix_v5.json and
+parity_geometry_prefix_v2.json. The current development manuscript includes
+these adverse/mixed findings and builds at7/9 main pages. This is not scientific
+submission readiness. NEXT.md now separates the live queue and substantive
+next experiments from historical release notes.

@@ -16,11 +16,17 @@ advantage must be measured and scientifically useful; it cannot be presumed to
 rescue the novelty claim. The historical progress reports below are not a newer
 assessment of submission readiness.
 
-The matched-allocation cost follow-up has now completed: convex139/144 seconds
-versus EACF2843/2843 seconds, including process initialization and compilation.
-Convex retains its smaller KL improvement. This motivates testing cost-quality
-tradeoffs; it is not a20x same-quality speedup. A smaller EACF and quality-versus-
-time curves remain necessary. See evidence/eacf_matched_cost_quality_v1.json.
+The compact follow-up is also complete:14900-parameter EACF gives joint changes
+-27.2252/-32.5646 nat, versus convex marginal -24.7415/-24.6575. Whole-allocation
+times are196/198 versus139/144 seconds, including initialization and compilation.
+After step20, compact EACF has lower observed per-attempt time (.080/.082 versus
+.108/.106 seconds). The earlier full-model20x ratio is not a general efficiency
+advantage. Compact independent GFN2 strain is mixed (4.8488/4.6620 eV success-only
+medians,29/32 and26/32 convergence); full EACF is substantially better in strain.
+The current construction therefore has no established external advantage.
+See evidence/eacf_full_compact_comparison_v1.json and
+evidence/eacf_geometry_comparison_v2.json. Matched physical-sampling controls and
+credible distribution references must guide any next reconstruction.
 
 The inherited BGFM story centered on force/energy losses added to an existing
 FlowMol3 backbone and arguments linking them to Boltzmann behavior. New losses

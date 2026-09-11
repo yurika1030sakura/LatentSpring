@@ -1,5 +1,14 @@
 # Claude handoff — BGFM / ICLR 2027
 
+**September11 continuation checkpoint:** read `research/NEXT.md` first. Full
+and compact EACF controls, complete checkpoint replays and independent geometry
+comparisons are now finished. They do not establish our method's external
+advantage; the full-model20x timing ratio is not supported as a general efficiency
+claim after the compact comparison. Main production has39/48 audited arms;
+Slurm45914826_5/6 remain live at the latest check. The current7-page development
+draft includes these adverse results. Preserve the original dated handoff and
+JSON snapshot below as history; they are not the current queue state.
+
 **Post-handoff Claude update reviewed:** read `notes/claude_update_review_v1.md` and
 `research/evidence/claude_update_review_v1.json` (repository-relative). Fixed-index
 splitting is a labelled diagnostic, not a permutation-equivariant repair.

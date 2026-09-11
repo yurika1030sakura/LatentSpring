@@ -8,6 +8,7 @@ from pathlib import Path
 
 import numpy as np
 import torch
+from rdkit import Chem
 from assess_work_panel import paired_outcomes, quantiles
 from eval_position_xtb import ENERGY, HARTREE_EV
 
@@ -24,6 +25,7 @@ def main():
     if args.out.exists():
         raise FileExistsError(args.out)
     common = None
+    parent_contract = None
     rows, geometry, summaries, inputs, raw_hashes = [], [], [], [], {}
     names = set()
     for path in args.assessment:
@@ -50,18 +52,32 @@ def main():
                     or sha(samples_path.parent / 'results.json') != source['results_sha256']):
                 raise ValueError('Assessed source artifact changed')
             saved = torch.load(samples_path, map_location='cpu', weights_only=False)
+            trained = json.loads((samples_path.parent / 'results.json').read_text())
+            contract = {key: trained[key] for key in
+                ['source_results_sha256', 'evaluation_sha256', 'refinement_protocol_sha256']}
+            contract['sample_ids'] = saved['sample_ids']
+            if parent_contract is None:
+                parent_contract = contract
+            elif contract != parent_contract:
+                raise ValueError('Assessments use different source parents or physical targets')
             arm_rows = [r for r in report['xtb_rows'] if r['arm'] == source['arm']]
             if sorted(r['sample_id'] for r in arm_rows) != selected:
                 raise ValueError('Missing or duplicated attempted sample')
             for row in arm_rows:
                 if (row['charge_recorded'] != common['condition']['charge']
                         or row['spin'] != common['condition']['spin_multiplicity']
+                        or row['validation_index'] != common['identity_index']
                         or not row['spin_metadata_available']):
                     raise ValueError('Electronic state differs')
                 folder = path.parent / 'details' / f"{row['arm']}_{row['validation_index']}_{row['sample_id']}"
                 xyz_path = folder / 'input.xyz'
-                xyz = np.asarray([[float(v) for v in line.split()[1:]]
-                                  for line in xyz_path.read_text().splitlines()[2:]])
+                lines = xyz_path.read_text().splitlines()
+                symbols = [line.split()[0] for line in lines[2:]]
+                expected_symbols = [Chem.GetPeriodicTable().GetElementSymbol(int(z))
+                                    for z in common['condition']['numbers']]
+                if int(lines[0]) != len(expected_symbols) or symbols != expected_symbols:
+                    raise ValueError('xTB input atom identities differ')
+                xyz = np.asarray([[float(v) for v in line.split()[1:]] for line in lines[2:]])
                 np.testing.assert_allclose(xyz, saved['positions'][row['sample_id']], atol=1e-9, rtol=1e-11)
                 for name in ['input.xyz', 'single_point.stdout', 'single_point.stderr',
                              'relaxation.stdout', 'relaxation.stderr']:
@@ -104,6 +120,7 @@ def main():
         paired.append(dict(before=first, after=second, **paired_outcomes(a, b),
                            both_successful=len(changes), strain_change_both_successful=quantiles(changes)))
     result = dict(complete=True, scope=__doc__, settings=common, assessments=inputs,
+        comparator_sha256=sha(Path(__file__).resolve()), parent_contract=parent_contract,
         attempts=len(rows), converged=sum(r['success'] for r in rows),
         failed=sum(not r['success'] for r in rows), summaries=summaries, paired=paired,
         geometry=geometry, raw_log_hashes=raw_hashes, additional_oracle_evaluations=0,
