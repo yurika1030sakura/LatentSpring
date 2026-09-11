@@ -82,9 +82,14 @@ def eacf_step(log_target,x,numbers,out):
         'dim':3,'n_aug':1,'nodes':int(n),'n_layers':1,'type':'spherical',
         'identity_init':True,'scaling_layer':False,
         'kwargs':{'spherical':{'reflection_invariant':True,'n_inner_transforms':1}}}
-    with checkpoint.open('wb') as f:pickle.dump({'recipe':recipe,'bijector':jax.device_get(changed),'optimizer':jax.device_get(state)},f)
+    with checkpoint.open('wb') as f:pickle.dump({'recipe':recipe,'numbers':list(map(int,numbers)),
+        'bijector':jax.device_get(changed),'optimizer':jax.device_get(state)},f)
     with checkpoint.open('rb') as f:saved=pickle.load(f)
-    replay,replay_volume,_=forward(saved['bijector'],joint)
+    saved_recipe=saved['recipe']
+    rebuilt_nets=get_minimal_nets_config('egnn')._replace(num_discrete_feat=saved_recipe['num_discrete_feat'])
+    rebuilt=build_flow(FlowDistConfig(nets_config=rebuilt_nets,**{key:value for key,value in saved_recipe.items()
+        if key not in ['upstream_commit','nets_factory','num_discrete_feat']}))
+    replay,replay_volume,_=rebuilt.bijector_forward_and_log_det_with_extra_apply(saved['bijector'],joint)
     np.testing.assert_allclose(replay.positions,y.positions,atol=1e-12,rtol=1e-12)
     np.testing.assert_allclose(replay_volume,volume,atol=1e-12,rtol=1e-12)
     return {'complete':True,'layers':1,'configuration':repr(config),'parameters':sum(v.size for v in jax.tree_util.tree_leaves(changed)),
