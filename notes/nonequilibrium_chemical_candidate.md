@@ -1,7 +1,9 @@
 # Next bounded hypothesis: exchange with a reversible relaxation path
 
-Status: a concrete design for implementation/testing, not a completed method or
-new performance evidence. It responds to a measured failure: the action policy
+Status: the symmetric path and paired graph guide are now implemented and tested.
+The v1/v2 physical pilots are complete; a frozen-selector composition is the next
+comparison. No overall sampling or ICLR advantage is established. The work responds
+to a measured failure: the action policy
 learns rapid transitions for three parents but cannot repair the fourth; smaller
 local steps improve local acceptance without crossing that parent's barrier.
 
@@ -13,6 +15,25 @@ derive ratios directly from its actual Gaussian kernels; no new physics theorem
 or generic NCMC novelty is claimed.
 
 ## Coordinate/path construction to implement
+
+Implementation: `cfm_mol/escorted_exchange.py`, `chemical_path_guide.py`, and
+`scripts/research/escorted_chemical_pilot.py`. The first pilot46043136 consumed
+1384 raw queries per replica, accepted4/64 paths each, and left the difficult
+parent unsupported at all16 proposed endpoints. Its full raw-output, probability,
+path reversal and random-stream replay is in `escorted_chemical_audit_v1.json`.
+
+The fixed graph-guided pilot46061289 consumes the same1384 queries per replica.
+It improves supported endpoint counts from48/64 each to64/64 and63/64, but accepts
+only4/64 each and still fails the difficult parent. The evidence is
+`guided_escorted_chemical_audit_v2.json`. This separates a repaired proposal-validity
+problem from the remaining acceptance/work problem.
+
+The v3 protocol composes the existing trained selector with the unchanged guided
+path, without new training. It conditions the selector on the exchange family;
+both forward and reverse probabilities are normalized over exchange actions.
+The fixed MALA stages retain their own kernels. Source preparation and5564
+inherited training queries must count for each learned arm. This is a bounded
+composition test, not renewed scale-up of the failed selector recipe.
 
 Keep the old condition0 target and labelled COM measure. A valid initial x has
 the ordinary uniform terminal-exchange action list A(x). Choose a from that list
@@ -75,3 +96,27 @@ compositions; neutral-radical graph assignment is not yet a production support;
 metal chemistry remains unsupported. More general pendant-fragment moves can be
 investigated after the measured condition0 geometry barrier is understood, not
 added as unvalidated capacity or an automatic novelty claim.
+
+## Fixed graph guide and its exact target correction
+
+The pilot guide adds20 eV/A^2 bond springs around covalent-radius sums and
+100 eV/A^2 soft nonbond exclusions below1.35 times those sums. It is a proposal
+guide for the present single-bond graphs, not a physical force field. The
+initial graph guides the pre-map segment; its deterministic terminal-edge swap
+guides the post-map segment. A guided endpoint is eligible only if its perceived
+bond graph equals that expected graph. The reverse then uses the same graph pair
+in reverse order, including every reverse Gaussian mean.
+
+Let G_old(x),G_new(y) denote the endpoint guide energies. The propagated smooth
+densities are proportional to exp[-(U+G)/kT]. Therefore the path's smooth endpoint
+log ratio must receive +(G_new(y)-G_old(x))/kT to recover the original physical
+target. The guide is not added to the stationary distribution. This identity
+is checked against the direct physical endpoint difference in the producer and
+auditor. Independent autograd verifies all saved guide forces.
+
+Tests include the full augmented-path Jacobian/involution, reversed Gaussian
+path ratios, zero-length reduction to the terminal map, hard-endpoint support on
+a known half-normal target, molecular guide force/symmetry checks and a known
+normal target with paired guides. In the last test, omitting the endpoint guide
+correction produces a wrong second moment; applying it preserves the target.
+These checks establish implementation consistency, not molecular efficiency.

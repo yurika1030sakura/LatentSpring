@@ -17,8 +17,8 @@ chemical/coordinate moves. These are research prototypes. The uniform chemical
 move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
-**Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md` and
-`research/HANDOFF_STATE_20260910.json` first. They record the current method,
+**Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
+`research/INTERNAL_COORDINATE_STATE_20260911.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler

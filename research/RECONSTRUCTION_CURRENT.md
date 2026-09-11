@@ -6,6 +6,15 @@ support-aware molecular Markov sampler initialized by a flow-matching generator.
 The current paper remains the audited development draft for the previous
 exact-entropy refiner; it is not a submission-ready description of this new route.
 
+Latest checkpoint: `research/INTERNAL_COORDINATE_STATE_20260911.json`. The symmetric
+nonequilibrium paths, graph guidance and frozen-selector composition have now
+been implemented and tested; they do not establish an overall advantage. The
+force-informed S2 angular control produces the first difficult-parent transition
+in one of two replicas, while the other still fails. Read
+`notes/spherical_chemical_candidate.md` and the next bounded AI design in
+`notes/masked_angular_learning_design.md`. The older prospective descriptions
+below are retained as history where superseded.
+
 ## Why the original route is insufficient
 
 The completed original campaign has48 qualified arms and866304 raw refinement

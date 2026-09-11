@@ -11,6 +11,31 @@ refinement assumptions and gives the mathematics, evidence limits and next work.
 The primary manuscript still documents the earlier candidate; do not relabel its
 unrestricted-target results as results for a hard validity-conditioned target.
 
+## Latest internal-coordinate checkpoint (September11)
+
+Read `research/INTERNAL_COORDINATE_STATE_20260911.json`,
+`notes/spherical_chemical_candidate.md` and `notes/masked_angular_learning_design.md`.
+All ten new arms are COMPLETE: escorted46043136, graph-guided46061289,
+frozen-selector composition46062416, uniform angular46063403, and force-vMF
+angular46065397. Total new physical queries14992. Every raw pair, complete path,
+guide force, proposal density, acceptance decision and random stream is audited.
+
+Fixed guidance improves proposal support but not path acceptance; frozen learned
+selection still fails the difficult parent. Uniform rotations accept0/256 and
+5/256. Force-vMF rotations accept25/256 and43/256 and, in replica1, cross the
+difficult parent's isomer barrier at step163. Replica0 remains unresolved. This
+is a useful physical signal, not established AI or equilibrium superiority.
+
+The next concrete AI candidate masks the moved atom's orientation from its
+context and predicts an equivariant angular vector/tensor score. It must retain
+exact context invariance so a capped valid-proposal sampler can cancel its
+unknown conditional normalizer. Implement the tests in the design before fitting
+to generated TRAINING forces. No development/QC coordinates may train it. Compare
+against force-vMF, keep all preparation/search costs, and do not claim novelty
+from classical conditional-MH or spherical density identities alone.
+
+The dated checkpoints below are historical where superseded.
+
 ## Latest action-policy checkpoint (September11)
 
 **Completed evaluation and changed next action:** all six arms of46039029 and

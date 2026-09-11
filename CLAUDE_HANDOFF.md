@@ -1,5 +1,13 @@
 # Claude handoff — BGFM / ICLR 2027
 
+**Latest continuation entrypoint:** `research/INTERNAL_COORDINATE_STATE_20260911.json`
+and `research/NEXT.md`. All ten internal-coordinate/escort arms are complete and
+fully audited. Force-vMF produces the first difficult-parent transition in one
+of two seeds; no learned overall advantage or equilibrium certificate exists.
+The next concrete AI implementation is `notes/masked_angular_learning_design.md`.
+Preserve all failed escort, selector and uniform-rotation controls. Older pending
+job/design statements below are historical and must not replace this checkpoint.
+
 **Latest reconstruction checkpoint:** the original48-arm/8-condition campaign is
 complete. Start with `research/RECONSTRUCTION_CURRENT.md` and the rewritten
 `research/NEXT.md`. New work addresses explicit validity support and reversible
