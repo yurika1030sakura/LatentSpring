@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Matched-source EACF joint-entropy control, using the published full architecture.
+"""Matched-source EACF joint-entropy control with a frozen architecture profile.
 
 This is not standalone FAB: the FM source has no evaluated marginal density.
 Joint KL and physical marginal KL remain distinct. Every failed update/query is
@@ -40,12 +40,15 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--source',type=Path,required=True);p.add_argument('--out',type=Path,required=True)
     p.add_argument('--replica',type=int,choices=[0,1],default=0)
+    p.add_argument('--profile',choices=['published','compact'],default='published')
     p.add_argument('--oracle-python',type=Path,required=True);p.add_argument('--oracle-checkpoint',type=Path,required=True)
     p.add_argument('--engineering-smoke',action='store_true');args=p.parse_args()
     args.out.mkdir(parents=True,exist_ok=True);output=args.out/'results.json'
     if output.exists():raise FileExistsError(output)
     root=Path(__file__).resolve().parents[2]
-    experiment_path=root/'research/evidence/eacf_joint_refinement_protocol_v1.json'
+    experiment_name=('eacf_joint_refinement_protocol_v1.json' if args.profile=='published'
+                     else 'eacf_compact_refinement_protocol_v1.json')
+    experiment_path=root/'research/evidence'/experiment_name
     experiment=json.loads(experiment_path.read_text())
     manifest_path=args.source/'manifest.json';manifest=json.loads(manifest_path.read_text())
     array_path=args.source/'arrays.npz'
@@ -58,14 +61,23 @@ def main():
     if manifest['condition_index']!=experiment['condition_index']:raise ValueError('Wrong baseline condition')
     protocol=manifest['target'];condition=manifest['condition'];n=len(condition['numbers'])
     if sha(args.oracle_checkpoint)!=protocol['raw_oracle_sha256']:raise ValueError('Wrong physical oracle')
-    recipe=recipe_for(n,engineering=False)  # Smoke also exercises the FULL12-layer model.
-    steps,count=(2,16) if args.engineering_smoke else (1000,512)
+    recipe=recipe_for(n,engineering=False,profile=args.profile)
+    recipe_keys={'n_layers':'layers','n_blocks':'gnn_blocks','mlp_units':'mlp_units',
+                 'n_invariant_feat_hidden':'invariant_hidden','spline_num_bins':'spline_bins'}
+    if any(recipe[k]!=experiment[v] for k,v in recipe_keys.items()):
+        raise ValueError('Architecture differs from the frozen experiment')
+    if 'embedding_dim' in experiment and recipe['embedding_dim']!=experiment['embedding_dim']:
+        raise ValueError('Embedding differs from the frozen experiment')
+    if experiment['batch']!=16:raise ValueError('Source streams prescribe16 parents per update')
+    steps,count=((experiment['engineering_steps'],experiment['engineering_evaluation_parents'])
+                 if args.engineering_smoke else (experiment['steps'],experiment['evaluation_parents']))
     expected_queries=16*steps+4*count
     arrays=np.load(array_path);replica=args.replica
     xtrain=arrays['training_positions'];xdev=arrays['development_positions'][:count]*arrays['evaluation_signs'][:count,None,None]
     source_files=[Path(__file__).resolve(),root/'cfm_mol/eacf_reference.py',root/'cfm_mol/jax_energy_oracle.py',
         root/'cfm_mol/numpy_energy_oracle.py',root/'scripts/research/oracle_worker.py']
     report={'complete':False,'scope':__doc__,'kind':'eacf_spherical_joint','recipe':recipe,'condition':condition,
+        'architecture_profile':args.profile,
         'experiment_protocol_sha256':sha(experiment_path),
         'replica':replica,'steps':steps,'batch':16,'evaluation_parents':count,'engineering_only':args.engineering_smoke,
         'source_export_sha256':sha(manifest_path),'source_results_sha256':manifest['source_results_sha256'],
@@ -80,7 +92,7 @@ def main():
         'optimizer':'Pinned upstream warmup-cosine Adam:2e-5 ->2e-4 ->2e-5 over1000 attempts, warmup30; dynamic median clipping2/ignore10/window100',
         'scientific_submission_ready':False,
         'limitations':['Joint change upper-bounds physical marginal change; do not rank unlike KLs as equal.',
-            'Full upstream architecture, matched-source adaptation; not an implementation/result of standalone FAB.',
+            'Recorded EACF architecture profile, matched-source adaptation; not standalone FAB.',
             'GPU oracle passed selected CPU-agreement checks. Legacy CPU-oracle wall times are not a matched timing baseline.',
             'One source condition/seed or a smoke does not establish broad performance.']}
     write(output,report);start=time.perf_counter()
@@ -91,6 +103,9 @@ def main():
     optimizer,learning_rate=build_reference_optimizer(1000)
     opt_state=optimizer.init(params.bijector);theta=params.bijector
     report['parameters']=sum(p.size for p in jax.tree_util.tree_leaves(theta))
+    if 'parameters' in experiment and report['parameters']!=experiment['parameters']:
+        report['failure']='Parameter count differs from the frozen architecture'
+        write(output,report);raise ValueError(report['failure'])
     def joint(x,a):
         return FullGraphSample(positions=jnp.stack([x,a],axis=-2),features=jnp.repeat(features[...,None],len(x),axis=0))
     def aux_log_prob(x,a):

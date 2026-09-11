@@ -27,7 +27,8 @@ def recipe_for(nodes,*,engineering=False,profile='published'):
         'engineering_only':bool(engineering)}
     if profile=='compact':
         # Prespecified capacity control, not the published full-size architecture.
-        recipe.update(n_layers=2,n_blocks=1,mlp_units=[4],n_invariant_feat_hidden=4)
+        recipe.update(n_layers=2,n_blocks=1,mlp_units=[12],n_invariant_feat_hidden=12,
+                      embedding_dim=8)
     return recipe
 
 

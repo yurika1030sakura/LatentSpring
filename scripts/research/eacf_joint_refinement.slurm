@@ -13,6 +13,7 @@ SOURCE_ROOT="${1:?immutable source required}"
 RUN_ROOT="${2:?unique output required}"
 MODE="${3:-smoke}"
 REPLICA="${4:-0}"
+PROFILE="${5:-published}"
 LAB=/n/holylabs/ryl_lab/Lab/yulili_cfm_mol
 STORE=/n/holylabs/woo_lab/Lab/yulili/bgfm
 EACF_SOURCE="$LAB/external/eacf_20260910"
@@ -27,7 +28,7 @@ export MPLCONFIGDIR="${SLURM_TMPDIR:-/tmp}/eacf_joint_mpl_${SLURM_JOB_ID}"
 export XDG_CACHE_HOME="${SLURM_TMPDIR:-/tmp}/eacf_joint_cache_${SLURM_JOB_ID}"
 mkdir -p "$RUN_ROOT" "$MPLCONFIGDIR" "$XDG_CACHE_HOME"
 cd "$SOURCE_ROOT"
-ARGS=(--source "$LAB/iclr2027/runs/eacf_source_condition_00_v1" --out "$RUN_ROOT" --replica "$REPLICA"
+ARGS=(--source "$LAB/iclr2027/runs/eacf_source_condition_00_v1" --out "$RUN_ROOT" --replica "$REPLICA" --profile "$PROFILE"
       --oracle-python "$STORE/envs/omol25/bin/python" --oracle-checkpoint "$STORE/checkpoints/omol25/esen_sm_conserving_all.pt")
 if [ "$MODE" = smoke ]; then ARGS+=(--engineering-smoke); elif [ "$MODE" != production ]; then exit 2; fi
 exec "$EACF_PY" -u scripts/research/train_eacf_joint_refinement.py "${ARGS[@]}"

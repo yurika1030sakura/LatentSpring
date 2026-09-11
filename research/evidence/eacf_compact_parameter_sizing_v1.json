@@ -1,0 +1,45 @@
+{
+  "scope": "Target-free shape/count sizing only; no energy/force evaluations or optimizer updates.",
+  "initial_guess_failure": {
+    "expected": 18320,
+    "actual": 18388,
+    "queries": 0
+  },
+  "candidate_layers": 2,
+  "candidate_blocks": 1,
+  "embedding_dim": 8,
+  "rows": [
+    {
+      "width": 8,
+      "parameters": 10164,
+      "embedding_parameters": 3808
+    },
+    {
+      "width": 12,
+      "parameters": 14900,
+      "embedding_parameters": 3808
+    },
+    {
+      "width": 16,
+      "parameters": 20788,
+      "embedding_parameters": 3808
+    },
+    {
+      "width": 20,
+      "parameters": 27828,
+      "embedding_parameters": 3808
+    },
+    {
+      "width": 24,
+      "parameters": 36020,
+      "embedding_parameters": 3808
+    }
+  ],
+  "selection_rule": "Largest shared GNN/MLP width in [8,12,16,20,24] whose total parameter count does not exceed19365.",
+  "additional_oracle_evaluations": 0,
+  "selected": {
+    "width": 12,
+    "parameters": 14900,
+    "embedding_parameters": 3808
+  }
+}
