@@ -13,7 +13,7 @@ Prepared at the user's explicit request on September 10, 2026. Start in:
 cd /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027
 ```
 
-Branch: `iclr2027-research`. The home checkout `/n/home04/yulili/bgfm` is old.
+Original handoff branch: `iclr2027-research`; current review branch: `iclr2027-arch-fix`. The home checkout `/n/home04/yulili/bgfm` is old.
 Do not write there. `CLAUDE.md` remains the authoritative project guide. This
 handoff supplies the current execution state and supersedes older dated status
 paragraphs about queued jobs and unfinished engineering work. Re-query live

@@ -120,3 +120,18 @@ the large particle grid. A permutation-equivariant homogeneous extension, useful
 external-baseline gains and credible coverage remain research requirements.
 EACF dependencies have passed imports, but the full model/energy bridge has not
 been qualified yet; this turn prioritized the observed correctness failures.
+
+## Independent condition0 geometry follow-up
+
+CPU job45938396 completes in55 seconds:224 attempted GFN2 assessments,192
+converged and32 failed across base and six arms, with every failure retained.
+Base converges29/32 with median strain5.1851 eV; convex streams converge28/32
+and29/32 with medians4.6595 and4.6550 eV. Affine controls converge27/32 each,
+with medians4.7487 and4.8204 eV. These are success-only medians; the paired
+convex-versus-affine ranking favors convex20:10 and21:9, with2 pairs failing in
+both arms each. This is a modest one-condition geometry signal, not full
+chemical validity or distribution coverage.
+
+Evidence: `research/evidence/parity_geometry_condition_00_v1.json`. All source
+sample hashes and the shared-parent contract were checked. Current work is on
+`iclr2027-arch-fix`; earlier handoff state remains a historical snapshot.

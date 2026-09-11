@@ -19,6 +19,15 @@ the primary method manuscript, and launched corrected broader production.
 
 ## Current live campaign — re-query before acting
 
+Latest follow-up: condition0 training45914819 is COMPLETED, six qualified arms.
+Condition1 has also finished its allocation; newly completed arms still need
+full replay. Array2 and7 were running at the last query;3--6 pending.
+Geometry45938396 completes224 attempts (192 converged,32 failed). Read
+evidence/parity_geometry_condition_00_v1.json. Optional index splitting remains
+a labelled diagnostic. See the newer review above before the historical release
+notes below. An upstream EACF model/spherical-layer smoke is prepared for a
+separate CPU allocation; job handle will be recorded in jobs.jsonl.
+
 -45914819 parity_entropy_condition_00_v1: corrected condition0, all six arms,
  regular GPU,4-hour cap. Query its actual state; do not duplicate.
 -45914826 parity_entropy_conditions_1_7_v1: array1--7, concurrency2,4 hours/task,

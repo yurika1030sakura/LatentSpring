@@ -5,6 +5,11 @@ Updated 2026-09-10 after code, theory, archived-evidence and research diagnostic
 
 ## Active takeover branch
 
+Current review branch: `iclr2027-arch-fix` (Claude architecture update, then
+Codex audit). Read `notes/claude_update_review_v1.md` before using the optional
+index-split diagnostic or interpreting its particle results. Main molecular
+production remains on the original immutable snapshot.
+
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md` and
 `research/HANDOFF_STATE_20260910.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
