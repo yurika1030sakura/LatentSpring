@@ -13,6 +13,30 @@ unrestricted-target results as results for a hard validity-conditioned target.
 
 ## Latest action-policy checkpoint (September11)
 
+**Completed evaluation and changed next action:** all six arms of46039029 and
+both multiscale controls46040976 are COMPLETE and fully replayed. Read
+`notes/chemical_policy_decision_v2.md`. The selector reaches reference connectivity
+in one step for three of four parents in both seeds; it does not repair the
+difficult third parent or establish an overall sampling/cost advantage. Stop
+expansion of this selector recipe on condition0. The cheaper uniform endpoints
+already have lower mean final energies. Endpoint energies are not an equilibrium
+error certificate, and the full-cost endpoints are not exactly matched.
+
+Multiscale local steps improve the difficult parent's acceptance to66/138 and
+62/132 but still do not cross the barrier. Next implement and validate the
+exchange-plus-relaxation path specified in `notes/nonequilibrium_chemical_candidate.md`,
+with its full reverse Gaussian path probability and COM Jacobian. This is a
+prospective physical control, not already implemented AI novelty.
+
+The chemical census covers all eight development compositions without energy
+outcome selection. Terminal exchanges occur only in conditions0/4. Preserve
+metal-validator algorithm errors and neutral-radical assignment limitations.
+`chemical_support_v2.py` is experimental:25/32 radical-preview assignments have
+3--7 radical flags, so do not turn that count into a quantum-validity claim or
+adopt the new support for production. The old target is unchanged.
+
+The job-submission details below are a historical record of this completed round.
+
 The formerly requested learned chemical selector is implemented and trained.
 Read `notes/chemical_policy.md` and `CHEMICAL_POLICY_STATE_20260911.json`.
 The table job46038056 and two-seed training array46038463 are complete. Table
@@ -21,7 +45,7 @@ all proposals, saved raw paired outputs and random streams replay. The model
 has7106 parameters and improves its TRAINING utility from0.5222 to1.2441/1.2438.
 This is not held-out sampling evidence.
 
-Evaluation46039029 is submitted/running under the immutable v2 evaluation
+Evaluation46039029 was submitted under the immutable v2 evaluation
 protocol. It compares both learned policies to fixed0.5-local and fixed0.1-local
 uniform action selectors. Learning saturated the0.1 local probability floor,
 so the second baseline tests whether action selection adds anything beyond move
@@ -36,8 +60,8 @@ endpoint. Report the gap. A prospective bounded continuation is required before
 using a learned win over that endpoint to claim superiority at equal total cost.
 Do not change the running frozen v2 arms or relabel their caps after seeing results.
 
-Finish these six arms and run the recorded full replay audit before selecting a
-route. Preserve every invalid proposal and the four-parent source denominator.
+The six-arm replay audit is complete. Preserve every invalid proposal and the
+four-parent source denominator.
 Do not expand this one-composition policy if it cannot beat the strong uniform
 control after costs. Do not call increased training utility AI novelty, endpoint
 energy reduction equilibrium sampling, or these four parents generalization.

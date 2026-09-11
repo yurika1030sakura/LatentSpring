@@ -147,8 +147,7 @@ physical queries. Their empirical accepted utility rose from0.5222 to1.2441 and
 models saturate the0.1 local-family floor. The evaluation therefore includes
 fixed0.5-local and fixed0.1-local uniform-action controls.
 
-Job46039029 (`runs/chemical_policy_eval_v2`) is the six-arm evaluation currently
-submitted/running at this checkpoint; refresh Slurm and each terminal result.
+Job46039029 (`runs/chemical_policy_eval_v2`) completed all six evaluation arms.
 The v2 evaluation protocol was frozen before evaluation outcomes and corrects
 the source preparation ledger: learning inherits4608 source queries, uniform
 sampling only512. Training preparation adds5564 for learning; shared development
@@ -156,15 +155,36 @@ warm-up adds404. Uniform controls may run1482 steps versus256 learned steps.
 Use actual total-cost prefixes, not nominal equal-step or maximum-budget labels.
 Source neural generation and offline wall time remain additional distinct costs.
 
-No held-out learned-policy result or ICLR-level advantage is established yet.
-Read `research/CHEMICAL_POLICY_STATE_20260911.json` for jobs and exact audit command.
+Both learned replicas reach reference connectivity at step1 for three of four
+development parents. The remaining parent stays trapped in every arm. Against
+the0.1-local uniform control, equal-step mean energies are mixed; all cheaper
+uniform final endpoints have lower mean energy than the learned endpoints.
+All45644 new evaluation queries, graph/proposal decisions and random streams
+replay. No overall learned sampling/cost advantage is established; do not scale
+this selector recipe on condition0.
 
-1. Independently audit the new chain identities, probabilities, Jacobians and
-   all query counts; strengthen proposal trace recording before production.
-2. Learn an equivariant action-selection policy only from generated TRAINING
-   parents and new training transitions. Compare against the uniform chemical
-   move, not just MALA. Validation/QC reference coordinates cannot train the
-   generator or policy. Count policy training and initialization costs.
+The additional classical multiscale control46040976 is complete with1848/1838
+queries. For the difficult parent, local acceptance improves to66/138 and62/132,
+but neither replica crosses its connectivity barrier. This motivates testing
+exchange coupled to geometry adaptation. `notes/nonequilibrium_chemical_candidate.md`
+specifies an audited-path construction to implement next; it is not yet a result.
+
+The all-eight-condition chemical census finds terminal-exchange coverage only
+in conditions0/4. RDKit algorithm errors on metals and charged-mode rejection of
+neutral radicals are retained separately. The experimental v2 radical fallback
+passes basic methyl/ammonium checks, but25/32 preview assignments contain3--7
+radical flags and are NOT quantum/spin qualified. This new support is not adopted
+for production and does not relabel old trajectories.
+
+Read `notes/chemical_policy_decision_v2.md` and
+`research/CHEMICAL_POLICY_STATE_20260911.json` for the complete decision and next work.
+
+1. Implement/test the symmetric nonequilibrium exchange/relaxation path and its
+   complete reverse probability. Run a bounded physical control on the measured
+   geometry barrier before training another network.
+2. Learn only where the stronger physical controls leave a measured inefficiency.
+   Validation/QC reference coordinates cannot train the generator or policy.
+   Count every intermediate query, training and source-initialization cost.
 3. Extend chemistry moves only where a measured barrier requires it; terminal
    exchange is a limited primitive. More general reversible fragment exchanges
    must carry their exact inverse, atom inventory, validity and COM Jacobian.

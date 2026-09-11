@@ -1,24 +1,27 @@
 {
-  "at_utc": "2026-09-11T15:43:50.713474+00:00",
+  "at_utc": "2026-09-11T16:12:24.219223+00:00",
   "scientific_submission_ready": false,
   "source_commits": {
     "table": "bdd8ffcd463b25d9177730e27d9f9d96a7e8a5ad",
     "training": "81116b8cf7a448d1a4cb557f1f252b1977cf703d",
-    "evaluation": "1fc3e4cd89c493ffbef0289ea70250d80add7e4d"
+    "evaluation": "1fc3e4cd89c493ffbef0289ea70250d80add7e4d",
+    "multiscale": "73ef3075079e9914fdb9ee8b8c388bf38cf4a530"
   },
   "jobs": {
     "table": "46038056",
     "training": "46038463",
-    "evaluation": "46039029"
+    "evaluation": "46039029",
+    "multiscale": "46040976"
   },
   "runs": {
     "table": "runs/chemical_policy_table_v1",
     "training": "runs/chemical_policy_train_v1",
-    "evaluation": "runs/chemical_policy_eval_v2"
+    "evaluation": "runs/chemical_policy_eval_v2",
+    "multiscale": "runs/multiscale_chemical_v1"
   },
   "table_complete": true,
   "training_complete": true,
-  "evaluation_last_observed_state": "RUNNING; re-query live scheduler and all six terminal results",
+  "evaluation_last_observed_state": "COMPLETED 0:0; all six terminal results and full RNG/trajectory audit verified",
   "training_new_raw_queries": 5564,
   "development_warm_new_raw_queries": 404,
   "table_actual_new_raw_queries": 5968,
@@ -36,9 +39,24 @@
   ],
   "audit_command": "PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$PWD OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 envs/flowmol/bin/python -u scripts/research/audit_chemical_policy.py --table runs/chemical_policy_table_v1 --evaluation runs/chemical_policy_eval_v2 --policies runs/chemical_policy_train_v1 --out research/evidence/chemical_policy_full_audit_v2.json",
   "next": [
-    "Finish all six frozen evaluation arms; preserve failures and avoid reruns without a diagnosed cause.",
-    "Replay every raw pair, graph, proposal, inverse ratio, family selection, RNG stream and accepted state history.",
-    "Compare all four development parents and both seeds at equal sampling steps and at actual full-cost baseline prefixes; report them separately.",
-    "Apply the no-scale-up gate if learned policies do not beat uniform exchanges after cost; no equilibrium or molecular generalization claim."
-  ]
+    "Implement and test the augmented reversal and Gaussian path ratio for the symmetric exchange/relaxation candidate.",
+    "Run a bounded physical pilot for the measured difficult-parent geometry barrier; count every intermediate query.",
+    "Only train a further controller if a stronger physical kernel shows a useful remaining efficiency gap.",
+    "Qualify broader chemistry separately: terminal moves cover only two of eight current conditions; v2 radical support is experimental and not adopted."
+  ],
+  "evaluation_complete": true,
+  "overall_learned_sampling_advantage_established": false,
+  "selector_scale_up_allowed": false,
+  "new_evaluation_raw_queries": 45644,
+  "multiscale_complete": true,
+  "multiscale_new_raw_queries": 3686,
+  "no_bgfm_jobs_observed_running": true,
+  "evidence": [
+    "research/evidence/chemical_policy_decision_v2.json",
+    "research/evidence/chemical_policy_full_audit_v2.json",
+    "research/evidence/multiscale_chemical_audit_v1.json",
+    "research/evidence/chemical_source_panel_audit_v2.json",
+    "research/evidence/radical_support_preview_v1.json"
+  ],
+  "next_design": "notes/nonequilibrium_chemical_candidate.md"
 }

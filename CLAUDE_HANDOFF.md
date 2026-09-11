@@ -9,10 +9,13 @@ advantage remains unestablished. The dated handoff below is historical.
 
 **Latest learned-policy work:** read `research/CHEMICAL_POLICY_STATE_20260911.json`
 and `notes/chemical_policy.md`. Generated-parent table46038056 and two-seed
-training46038463 are complete. Six-arm evaluation46039029 is submitted/running
-at this checkpoint; refresh live state. Full training-table proposal and RNG
-replay passes. Compare against BOTH uniform action controls and include source
-preparation, training and warm-up costs. Training utility is not held-out success.
+training46038463, six-arm evaluation46039029 and multiscale control46040976 are
+complete. All saved molecular paths and random streams replay. Read
+`notes/chemical_policy_decision_v2.md`: the learned selector improves first hits
+for three of four parents but fails the overall cost/sampling gate; do not scale
+this recipe. Smaller local steps improve acceptance without repairing the last
+barrier. The next bounded construction is specified in
+`notes/nonequilibrium_chemical_candidate.md` and is not yet implemented.
 
 **September11 continuation checkpoint:** read `research/NEXT.md` first. Full
 and compact EACF controls, complete checkpoint replays and independent geometry
