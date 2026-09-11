@@ -1,0 +1,38 @@
+{
+  "at_utc": "2026-09-11T05:23:10.488171+00:00",
+  "complete": true,
+  "scope": "Saved-row comparison on identical source parents; checkpoint-wide EACF audit pending.",
+  "conditions": 1,
+  "seeds": 1,
+  "rows": [
+    {
+      "seed": 0,
+      "eacf_joint_change": {
+        "mean": -118.98968425317986,
+        "row_sem": 6.510553864333474,
+        "parents": 512
+      },
+      "convex_marginal_change": {
+        "mean": -24.741482426688602,
+        "row_sem": 2.2941662711466266,
+        "parents": 512
+      },
+      "eacf_joint_minus_convex_marginal": {
+        "mean": -94.24820182649127,
+        "row_sem": 5.244117681907241,
+        "parents": 512
+      },
+      "eacf_queries": 18048,
+      "results_sha256": "45f0f06d913154cc9cb0f61eb73ca29179c19cf02388a28235e607c70111ea90"
+    }
+  ],
+  "additional_oracle_evaluations": 0,
+  "scientific_submission_ready": false,
+  "interpretation": "EACF joint KL change upper-bounds its marginal KL change in expectation. A reliably more-negative joint change than convex marginal change is evidence against convex quality superiority; reverse ranking is inconclusive.",
+  "limitations": [
+    "Finite parent Monte Carlo, one molecular condition, row SEM not seed uncertainty.",
+    "512-parent EACF checkpoint replay pending.",
+    "Matched oracle-query budget does not match parameter count or wall time.",
+    "No target-population or mode-coverage certificate."
+  ]
+}
