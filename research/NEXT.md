@@ -29,6 +29,13 @@ frequency. Uniform controls receive the full source/training preparation budget
 as extra sampling; actual total-cost prefixes, not nominal endpoints, define
 comparisons. Initial-source neural generation and offline wall times are separate.
 
+Actual cost caveat: unsupported proposals skip physical queries. A baseline may
+reach its1482-step cap while still materially below the learned full-cost budget.
+In that case its endpoint is a CHEAPER control, not an exactly matched-budget
+endpoint. Report the gap. A prospective bounded continuation is required before
+using a learned win over that endpoint to claim superiority at equal total cost.
+Do not change the running frozen v2 arms or relabel their caps after seeing results.
+
 Finish these six arms and run the recorded full replay audit before selecting a
 route. Preserve every invalid proposal and the four-parent source denominator.
 Do not expand this one-composition policy if it cannot beat the strong uniform
