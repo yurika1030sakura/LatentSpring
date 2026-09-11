@@ -1,0 +1,53 @@
+{
+  "frozen": true,
+  "version": 1,
+  "scope": "Data-derived finite-feature slow-mode proposal pilot. No mixture labels in training; fixed radial features are not a universal learned representation.",
+  "atoms": 4,
+  "target_sigmas": [
+    0.5,
+    2.0
+  ],
+  "target_weights": [
+    0.5,
+    0.5
+  ],
+  "training_steps": 200,
+  "training_batch": 64,
+  "learning_rate": 0.001,
+  "chains": 32,
+  "evaluation_steps": 256,
+  "baseline_steps": 1056,
+  "total_analytic_target_queries_per_arm": 33824,
+  "init_seed": 9951,
+  "training_seed": 9953,
+  "evaluation_initial_seed": 9961,
+  "evaluation_transition_seed": 9963,
+  "mala_std": 0.5,
+  "rwm_std": 1.0,
+  "model": {
+    "hidden": 16,
+    "radial": 16,
+    "features": 4,
+    "rank": 4,
+    "step_size": 0.5,
+    "shift_bound": 4.0,
+    "scale_bound": 1.5,
+    "inverse_iterations": 32
+  },
+  "objective": "Lagged minimum Dirichlet direction in whitened invariant RBF features; maximize current accepted movement in that direction.",
+  "cases": [
+    "nonlinear_s0",
+    "nonlinear_s1",
+    "affine_s0",
+    "affine_s1"
+  ],
+  "stop_rule": "No global spectral-gap or molecular claim; require independent mode diagnostics and frozen-model budget-matched comparisons.",
+  "molecular_oracle_queries": 0,
+  "feature_count": 8,
+  "feature_training_batches": 64,
+  "feature_relative_cutoff": 0.0001,
+  "dirichlet_ema": 0.95,
+  "privileged_mode_coordinate": false,
+  "additional_reference_draws_for_feature_evaluation": 4096,
+  "baseline_protocol_sha256": "6dbb2fdff223f348b0b1134b61dc12d9ba7e7da39cb8d726b293d51aa147e274"
+}

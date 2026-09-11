@@ -31,10 +31,11 @@ def main():
     parser.add_argument('--out',type=Path,required=True)
     parser.add_argument('--kind',choices=['nonlinear','affine','mala','rwm'],required=True)
     parser.add_argument('--replica',type=int,choices=[0,1],required=True)
-    parser.add_argument('--objective',choices=['shape_jump','mode_jump'],default='shape_jump')
+    parser.add_argument('--objective',choices=['shape_jump','mode_jump','spectral_jump'],default='shape_jump')
     args=parser.parse_args();root=Path(__file__).resolve().parents[2]
-    protocol_name=('conditional_proposal_toy_protocol_v1.json' if args.objective=='shape_jump'
-                   else 'conditional_proposal_mode_diagnostic_protocol_v1.json')
+    protocol_name={'shape_jump':'conditional_proposal_toy_protocol_v1.json',
+        'mode_jump':'conditional_proposal_mode_diagnostic_protocol_v1.json',
+        'spectral_jump':'conditional_proposal_spectral_protocol_v1.json'}[args.objective]
     protocol_path=root/'research/evidence'/protocol_name
     protocol=json.loads(protocol_path.read_text())
     if not protocol['frozen']:raise ValueError('Require a frozen toy protocol')
@@ -70,15 +71,47 @@ def main():
             model=ConditionalMolecularProposal(**protocol['model'],nonlinear=args.kind=='nonlinear').double()
             report['parameters']=sum(p.numel() for p in model.parameters())
             optimizer=torch.optim.Adam(model.parameters(),lr=protocol['learning_rate'])
+            if args.objective=='spectral_jump':
+                # Reconstruct the first training batches, including their noise
+                # draws, so the feature dictionary uses no extra training data.
+                preview=torch.Generator().manual_seed(protocol['training_seed']+seed)
+                bank=[]
+                for _ in range(protocol['feature_training_batches']):
+                    batch=draw(protocol['training_batch'],preview);bank.append(batch)
+                    torch.randn(batch.shape,dtype=batch.dtype,generator=preview)
+                bank=torch.cat(bank)
+                radial_coordinate=(bank.square().sum((1,2))/d+1e-8).log()
+                centers=torch.quantile(radial_coordinate,torch.linspace(.05,.95,protocol['feature_count'],dtype=torch.float64))
+                width=max(.2,float((centers[1:]-centers[:-1]).median()))
+                def raw_features(z):
+                    coordinate=(z.square().sum((1,2))/d+1e-8).log()
+                    return torch.exp(-.5*((coordinate[:,None]-centers)/width)**2)
+                h=raw_features(bank);feature_mean=h.mean(0);h=h-feature_mean
+                eigenvalues,eigenvectors=torch.linalg.eigh(h.T@h/(len(h)-1))
+                keep=eigenvalues>protocol['feature_relative_cutoff']*eigenvalues[-1]
+                whitening=eigenvectors[:,keep]/eigenvalues[keep].sqrt()
+                def features(z):return (raw_features(z)-feature_mean)@whitening
+                running_dirichlet=None
+                report.update(feature_rank=int(keep.sum()),feature_dictionary_training_states=len(bank),
+                    feature_source='Only first prescribed training batches; no mixture identities or posterior features')
             for step in range(protocol['training_steps']):
                 x=draw(protocol['training_batch'],training_generator)
                 noise=center(torch.randn(x.shape,dtype=x.dtype,generator=training_generator))
                 y,forward=model.transform(x,noise,numbers,electronic)
                 ratio=target(y)-target(x)+model.log_prob(x,y,numbers,electronic)-forward
                 if args.objective=='shape_jump':reward=invariant_jump_squared(x,y,numbers)
-                else:
+                elif args.objective=='mode_jump':
                     fx=components(x).softmax(-1)[:,1];fy=components(y).softmax(-1)[:,1]
                     reward=(fy-fx).square()/fx.var().clamp_min(1e-4)
+                else:
+                    delta=features(y)-features(x)
+                    dirichlet=delta.T@(ratio.clamp_max(0).exp()[:,None]*delta)/(2*len(x))
+                    detached=dirichlet.detach()
+                    running_dirichlet=(detached if running_dirichlet is None else
+                        protocol['dirichlet_ema']*running_dirichlet+(1-protocol['dirichlet_ema'])*detached)
+                    _,vectors=torch.linalg.eigh(.5*(running_dirichlet+running_dirichlet.T))
+                    slow=vectors[:,0].detach()
+                    reward=.5*(delta@slow).square()
                 objective=-(ratio.clamp_max(0).exp()*reward).mean()
                 if not torch.isfinite(objective):raise ValueError('Nonfinite training objective')
                 optimizer.zero_grad();objective.backward()
@@ -103,6 +136,14 @@ def main():
                 restored.inverse_iterations=64
                 torch.testing.assert_close(restored.log_prob(vx,vy,numbers,electronic),backward,atol=1e-8,rtol=1e-9)
             report['trained_checkpoint_density_and_inverse_ladder_passed']=True
+            if args.objective=='spectral_jump':
+                torch.save(dict(centers=centers,width=width,mean=feature_mean,whitening=whitening,
+                    slow_vector=slow,dirichlet_ema=running_dirichlet),args.out/'spectral_feature.pt')
+                diagnostic=draw(4096,torch.Generator().manual_seed(9973+seed))
+                learned=features(diagnostic)@slow
+                truth=components(diagnostic).softmax(-1)[:,1]
+                report['heldout_slow_feature_mode_correlation']=float(torch.corrcoef(torch.stack([learned,truth]))[0,1].abs())
+                report['additional_reference_draws_for_feature_evaluation']=4096
         training_queries=queried
         evaluation_steps=protocol['evaluation_steps'] if model is not None else protocol['baseline_steps']
         initial_generator=torch.Generator().manual_seed(protocol['evaluation_initial_seed']+seed)
@@ -156,6 +197,8 @@ def main():
                 'Accepted invariant jump is not a mixing or global spectral-gap certificate.'])
         if args.objective=='mode_jump':
             report['limitations'].append('Uses known mixture posterior as an oracle slow coordinate; diagnostic only, not a learned or deployable molecular coordinate.')
+        if args.objective=='spectral_jump':
+            report['limitations'].append('Slow coordinate lies in a fixed radial RBF family; its restricted Rayleigh minimum is not a lower bound on the global spectral gap.')
         write(output,report);print(json.dumps({k:report[k] for k in ['complete','kind','replica','total_target_queries','large_component_probability','squared_radius']}),flush=True)
     except Exception as exc:
         if model is not None:torch.save(dict(configuration=model.configuration,state_dict=model.state_dict()),args.out/'failed_model.pt')
