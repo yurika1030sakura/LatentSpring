@@ -12,11 +12,12 @@ import jax.numpy as jnp
 import numpy as np
 
 
-def make_even_log_target(oracle, *, kT, restraint=.1, energy_zero_eV=0., max_request=32):
+def _make_log_energy(oracle, *, kT, restraint=.1, energy_zero_eV=0., max_request=32, average_inversion=True):
     """Log unnormalized pi_plus on COM-free coordinates, extended by centering.
 
-    Accepts [N,3] or [B,N,3]. Uses BOTH raw orientations on every real callback.
-    Gradient is P_H(F_plus-restraint*x)/kT. The VJP broadcasts a batch cotangent
+    Accepts [N,3] or [B,N,3]. The averaging branch uses both raw orientations;
+    the training-only branch uses one. Gradient is P_H(F_used-restraint*x)/kT.
+    The VJP broadcasts a batch cotangent
     over the atom and Cartesian axes; multiplying a bare [B] vector is wrong.
     Only first-order reverse differentiation is supported, not force Hessians.
     """
@@ -30,11 +31,14 @@ def make_even_log_target(oracle, *, kT, restraint=.1, energy_zero_eV=0., max_req
         if x.ndim!=3 or x.shape[-1]!=3 or not np.isfinite(x).all():
             raise ValueError('Finite Cartesian positions required')
         x=x-x.mean(axis=1,keepdims=True)
-        energies,forces=oracle.evaluate_chunked(np.concatenate([x,-x]),max_request=max_request)
-        energy,inverted_energy=np.split(energies,2)
-        force,inverted_force=np.split(forces,2)
-        physical_energy=.5*(energy+inverted_energy)
-        physical_force=.5*(force-inverted_force)
+        if average_inversion:
+            energies,forces=oracle.evaluate_chunked(np.concatenate([x,-x]),max_request=max_request)
+            energy,inverted_energy=np.split(energies,2)
+            force,inverted_force=np.split(forces,2)
+            physical_energy=.5*(energy+inverted_energy)
+            physical_force=.5*(force-inverted_force)
+        else:
+            physical_energy,physical_force=oracle.evaluate_chunked(x,max_request=max_request)
         logp=-(physical_energy+.5*restraint*(x*x).sum(axis=(1,2))-energy_zero_eV)/kT
         gradient=(physical_force-restraint*x)/kT
         gradient-=gradient.mean(axis=1,keepdims=True)
@@ -58,3 +62,19 @@ def make_even_log_target(oracle, *, kT, restraint=.1, energy_zero_eV=0., max_req
 
     log_target.defvjp(forward,backward)
     return log_target
+
+
+def make_even_log_target(oracle, *, kT, restraint=.1, energy_zero_eV=0., max_request=32):
+    """Actual inversion-averaged log target; use this for weights and acceptance."""
+    return _make_log_energy(oracle,kT=kT,restraint=restraint,energy_zero_eV=energy_zero_eV,
+                           max_request=max_request,average_inversion=True)
+
+
+def make_raw_training_log_energy(oracle, *, kT, restraint=.1, energy_zero_eV=0., max_request=32):
+    """One-query estimator ONLY for a linear expectation under an invariant law.
+
+    This is not pointwise log pi_plus. Do not use it in importance weights,
+    likelihood evaluation, FAB/AIS factors, or MH acceptance.
+    """
+    return _make_log_energy(oracle,kT=kT,restraint=restraint,energy_zero_eV=energy_zero_eV,
+                           max_request=max_request,average_inversion=False)

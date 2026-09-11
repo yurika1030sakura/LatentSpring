@@ -51,3 +51,16 @@ def test_single_and_vmap_agree_with_full_batch():
     assert oracle.evaluated==4
     with pytest.raises(ValueError,match='float64'):
         fn(x.astype(jnp.float32))
+
+
+def test_raw_training_estimator_averages_to_projected_energy_and_gradient():
+    from cfm_mol.jax_energy_oracle import make_raw_training_log_energy
+    oracle=AnalyticRawOracle()
+    raw=make_raw_training_log_energy(oracle,kT=.7,restraint=.1,energy_zero_eV=2.)
+    even=make_even_log_target(oracle,kT=.7,restraint=.1,energy_zero_eV=2.)
+    x=jax.random.normal(jax.random.PRNGKey(95),(3,4,3),dtype=jnp.float64)
+    signs=jnp.concatenate([x,-x],axis=0)
+    v,g=jax.jit(jax.value_and_grad(lambda scale:jnp.mean(raw(scale*signs))))(1.1)
+    ev,eg=jax.jit(jax.value_and_grad(lambda scale:jnp.mean(even(scale*x))))(1.1)
+    np.testing.assert_allclose([v,g],[ev,eg],atol=1e-12,rtol=1e-12)
+    assert oracle.evaluated==12

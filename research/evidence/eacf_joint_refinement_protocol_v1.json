@@ -1,0 +1,38 @@
+{
+  "frozen": true,
+  "version": 1,
+  "scope": "EACF12-layer joint-entropy adaptation of exactly the frozen FM inversion-mixture source; not standalone FAB",
+  "source_export_sha256": "0af320cbb2c233c1fb0cbad78fc35f4064d7e1faeef74c6dd19f3085702cff52",
+  "physical_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "upstream_commit": "beafab1b1ccd2b770572daeef1cf15f3fe199c21",
+  "condition_index": 0,
+  "steps": 1000,
+  "batch": 16,
+  "evaluation_parents": 512,
+  "oracle_evaluations_per_arm": 18048,
+  "engineering_steps": 2,
+  "engineering_evaluation_parents": 16,
+  "engineering_oracle_evaluations": 96,
+  "layers": 12,
+  "gnn_blocks": 3,
+  "mlp_units": [
+    64,
+    64
+  ],
+  "invariant_hidden": 128,
+  "spline_bins": 8,
+  "auxiliary": "N(a;x,0.1^2 I) in3N dimensions, fixed in source and target",
+  "reflection_invariant": true,
+  "auxiliary_basis_regularizer": 1.0,
+  "optimizer": "published default: warmup30,Adam2e-5/2e-4/2e-5,dynamic median clipping2/ignore10/window100",
+  "training_energy": "one raw query per independently inverted parent; valid only for invariant linear expectation",
+  "evaluation_energy": "actual E_plus from both orientations",
+  "oracle_device": "cuda",
+  "oracle_batch_size": 32,
+  "gpu_qualification": "runs/oracle_gpu_qualification_v1/results.json",
+  "limitations": [
+    "Joint and physical marginal changes are not identical.",
+    "Legacy CPU-oracle timings are not a matched timing baseline.",
+    "Source/pretraining, failures and assessment compute remain additional."
+  ]
+}
