@@ -126,6 +126,39 @@ for the observed barrier, not AI novelty or complete equilibrium sampling.
 
 ## Next work
 
+### September 11 learned-policy implementation checkpoint
+
+The action policy is now implemented and trained, rather than only proposed.
+`cfm_mol/chemical_policy.py` has 7106 parameters, invariant whole-state messages,
+defensive local/exchange probabilities and explicit reverse family/action
+correction. `cfm_mol/chemical_sampler.py` records every proposal, invalid reason,
+paired raw energy/force result and acceptance random variable. See
+`notes/chemical_policy.md` for the target and finite-table training objective.
+
+The generated-training-only table job46038056 completed with5564 training raw
+queries and404 development warm-up queries. All34/4096 eligible training and
+4/512 eligible development parents are included. No QC/evaluation coordinates
+trained the policy. Saved query arithmetic, all3078 proposals and full random
+streams replay in `evidence/chemical_policy_table_rng_audit_v1.json`.
+
+Both offline training replicas in job46038463 completed without additional
+physical queries. Their empirical accepted utility rose from0.5222 to1.2441 and
+1.2438; this is a training statistic, not a molecular sampling advantage. Both
+models saturate the0.1 local-family floor. The evaluation therefore includes
+fixed0.5-local and fixed0.1-local uniform-action controls.
+
+Job46039029 (`runs/chemical_policy_eval_v2`) is the six-arm evaluation currently
+submitted/running at this checkpoint; refresh Slurm and each terminal result.
+The v2 evaluation protocol was frozen before evaluation outcomes and corrects
+the source preparation ledger: learning inherits4608 source queries, uniform
+sampling only512. Training preparation adds5564 for learning; shared development
+warm-up adds404. Uniform controls may run1482 steps versus256 learned steps.
+Use actual total-cost prefixes, not nominal equal-step or maximum-budget labels.
+Source neural generation and offline wall time remain additional distinct costs.
+
+No held-out learned-policy result or ICLR-level advantage is established yet.
+Read `research/CHEMICAL_POLICY_STATE_20260911.json` for jobs and exact audit command.
+
 1. Independently audit the new chain identities, probabilities, Jacobians and
    all query counts; strengthen proposal trace recording before production.
 2. Learn an equivariant action-selection policy only from generated TRAINING

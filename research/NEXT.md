@@ -11,6 +11,31 @@ refinement assumptions and gives the mathematics, evidence limits and next work.
 The primary manuscript still documents the earlier candidate; do not relabel its
 unrestricted-target results as results for a hard validity-conditioned target.
 
+## Latest action-policy checkpoint (September11)
+
+The formerly requested learned chemical selector is implemented and trained.
+Read `notes/chemical_policy.md` and `CHEMICAL_POLICY_STATE_20260911.json`.
+The table job46038056 and two-seed training array46038463 are complete. Table
+preparation uses5564 raw queries for training and404 for development warm-up;
+all proposals, saved raw paired outputs and random streams replay. The model
+has7106 parameters and improves its TRAINING utility from0.5222 to1.2441/1.2438.
+This is not held-out sampling evidence.
+
+Evaluation46039029 is submitted/running under the immutable v2 evaluation
+protocol. It compares both learned policies to fixed0.5-local and fixed0.1-local
+uniform action selectors. Learning saturated the0.1 local probability floor,
+so the second baseline tests whether action selection adds anything beyond move
+frequency. Uniform controls receive the full source/training preparation budget
+as extra sampling; actual total-cost prefixes, not nominal endpoints, define
+comparisons. Initial-source neural generation and offline wall times are separate.
+
+Finish these six arms and run the recorded full replay audit before selecting a
+route. Preserve every invalid proposal and the four-parent source denominator.
+Do not expand this one-composition policy if it cannot beat the strong uniform
+control after costs. Do not call increased training utility AI novelty, endpoint
+energy reduction equilibrium sampling, or these four parents generalization.
+The older immediate-next lists below are historical context where superseded.
+
 ## Completed original campaign
 
 -48/48 qualified arms,0 failed,866304 raw refinement queries; source generation

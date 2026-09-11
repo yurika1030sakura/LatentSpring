@@ -14,7 +14,7 @@ from cfm_mol.nonequilibrium import centered_orthonormal_basis
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
-def audit_trace(data,condition,kT,restraint,std,policy=None,uniform_local=.5):
+def audit_trace(data,condition,kT,restraint,std,policy=None,uniform_local=.5,rng_seed=None):
     states=data['states'];basis=centered_orthonormal_basis(len(condition['numbers']));radii=covalent_radii(condition['numbers'])
     queries=data['query_trace'];raw_count=sum(2*len(q['positions']) for q in queries)
     for i,q in enumerate(queries):
@@ -93,10 +93,40 @@ def audit_trace(data,condition,kT,restraint,std,policy=None,uniform_local=.5):
             for chain,r in enumerate(transition_rows[step*chains:(step+1)*chains]):
                 assert old[chain]==r['old_state_id']
                 assert new[chain]==(r['new_state_id'] if r['accepted'] else r['old_state_id'])
+    else:
+        ids=list(data['initial_state_ids']);chains=len(ids)
+        assert len(transition_rows)%chains==0
+        for begin in range(0,len(transition_rows),chains):
+            for chain,r in enumerate(transition_rows[begin:begin+chains]):
+                assert r['old_state_id']==ids[chain]
+                if r['accepted']:ids[chain]=r['new_state_id']
+        assert ids==data['warm_state_ids']
+    if rng_seed is not None:
+        rng=torch.Generator().manual_seed(rng_seed)
+        if 'inversion_signs' in data:
+            signs=2*torch.randint(2,(len(data['inversion_signs']),),generator=rng)-1
+            torch.testing.assert_close(signs,data['inversion_signs'])
+        chains=len(data.get('history_state_ids',[data.get('initial_state_ids',[])])[0])
+        for begin in range(0,len(transition_rows),chains):
+            group=transition_rows[begin:begin+chains]
+            if probabilities is not None:
+                p=probabilities[[r['old_state_id'] for r in group]].exp()
+                choices=torch.multinomial(p,1,generator=rng)[:,0].tolist()
+                assert choices==[r['action_index'] for r in group]
+            for r in group:
+                if r['action_index']==0:
+                    noise=torch.randn(r['noise'].shape,dtype=torch.float64,generator=rng)
+                    torch.testing.assert_close(noise,r['noise'],atol=0,rtol=0)
+            logu=torch.rand(chains,dtype=torch.float64,generator=rng).log()
+            assert logu.tolist()==[r['log_uniform'] for r in group]
+        for r in table:
+            if r['action_index']==0:
+                torch.testing.assert_close(torch.randn(r['noise'].shape,dtype=torch.float64,generator=rng),r['noise'],atol=0,rtol=0)
+        torch.testing.assert_close(rng.get_state(),data['generator_state'],atol=0,rtol=0)
     return dict(raw_queries=raw_count,scored_states=len(states),proposals=len(transition_rows)+len(table),
         invalid_proposals=sum(not r['valid'] for r in transition_rows+table),
         saved_raw_pair_reconstruction=True,proposal_and_reverse_ratio_replay=True,
-        oracle_requeried=False,independent_physical_accuracy_certified=False)
+        rng_replay=rng_seed is not None,oracle_requeried=False,independent_physical_accuracy_certified=False)
 
 
 def main():
@@ -106,10 +136,11 @@ def main():
     protocol=json.loads((root/'research/evidence/chemical_policy_protocol_v1.json').read_text())
     header=json.loads((args.table/'results.json').read_text());assert header['complete']
     rows=[]
-    for stream in ['training','development']:
+    for stream_index,stream in enumerate(['training','development']):
         path=args.table/f'{stream}.pt';assert sha(path)==header['artifacts'][stream]
         data=torch.load(path,map_location='cpu',weights_only=False)
-        row=audit_trace(data,data['condition'],data['kT_eV'],data['restraint_eV_A2'],protocol['local_scale']*data['kT_eV']**.5)
+        row=audit_trace(data,data['condition'],data['kT_eV'],data['restraint_eV_A2'],protocol['local_scale']*data['kT_eV']**.5,
+            rng_seed=protocol['table_seed']+stream_index)
         assert row['raw_queries']==header['streams'][stream]['raw_queries']
         rows.append(dict(stream=stream,artifact_sha256=sha(path),**row))
     condition=data['condition'];kT=data['kT_eV'];restraint=data['restraint_eV_A2']
@@ -124,7 +155,8 @@ def main():
                     checkpoint=torch.load(path,map_location='cpu',weights_only=False)
                     policy=ChemicalMovePolicy(**checkpoint['configuration']).double();policy.load_state_dict(checkpoint['state_dict']);policy.eval()
                 row=audit_trace(trace,condition,kT,restraint,protocol['local_scale']*kT**.5,policy,
-                    report['uniform_local_probability'] if method!='learned' else .5)
+                    report['uniform_local_probability'] if method!='learned' else .5,
+                    rng_seed=protocol['evaluation_seeds'][replica])
                 assert row['raw_queries']==report['new_raw_queries']
                 for h,ids in zip(report['history'],trace['history_state_ids']):
                     assert h['smiles']==[trace['states'][i]['graph']['connectivity_smiles'] for i in ids]

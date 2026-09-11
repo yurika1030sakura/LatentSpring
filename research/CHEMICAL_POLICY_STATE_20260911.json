@@ -1,0 +1,44 @@
+{
+  "at_utc": "2026-09-11T15:43:50.713474+00:00",
+  "scientific_submission_ready": false,
+  "source_commits": {
+    "table": "bdd8ffcd463b25d9177730e27d9f9d96a7e8a5ad",
+    "training": "81116b8cf7a448d1a4cb557f1f252b1977cf703d",
+    "evaluation": "1fc3e4cd89c493ffbef0289ea70250d80add7e4d"
+  },
+  "jobs": {
+    "table": "46038056",
+    "training": "46038463",
+    "evaluation": "46039029"
+  },
+  "runs": {
+    "table": "runs/chemical_policy_table_v1",
+    "training": "runs/chemical_policy_train_v1",
+    "evaluation": "runs/chemical_policy_eval_v2"
+  },
+  "table_complete": true,
+  "training_complete": true,
+  "evaluation_last_observed_state": "RUNNING; re-query live scheduler and all six terminal results",
+  "training_new_raw_queries": 5564,
+  "development_warm_new_raw_queries": 404,
+  "table_actual_new_raw_queries": 5968,
+  "inherited_source_queries_per_learned_arm": 4608,
+  "inherited_source_queries_per_uniform_arm": 512,
+  "policy_parameters": 7106,
+  "empirical_training_utility": [
+    1.2441261983386136,
+    1.2438257439453382
+  ],
+  "training_utility_not_heldout_performance": true,
+  "protocols": [
+    "research/evidence/chemical_policy_protocol_v1.json",
+    "research/evidence/chemical_policy_evaluation_protocol_v2.json"
+  ],
+  "audit_command": "PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$PWD OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2 envs/flowmol/bin/python -u scripts/research/audit_chemical_policy.py --table runs/chemical_policy_table_v1 --evaluation runs/chemical_policy_eval_v2 --policies runs/chemical_policy_train_v1 --out research/evidence/chemical_policy_full_audit_v2.json",
+  "next": [
+    "Finish all six frozen evaluation arms; preserve failures and avoid reruns without a diagnosed cause.",
+    "Replay every raw pair, graph, proposal, inverse ratio, family selection, RNG stream and accepted state history.",
+    "Compare all four development parents and both seeds at equal sampling steps and at actual full-cost baseline prefixes; report them separately.",
+    "Apply the no-scale-up gate if learned policies do not beat uniform exchanges after cost; no equilibrium or molecular generalization claim."
+  ]
+}
