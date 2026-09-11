@@ -25,8 +25,9 @@ full replay. Array2 and7 were running at the last query;3--6 pending.
 Geometry45938396 completes224 attempts (192 converged,32 failed). Read
 evidence/parity_geometry_condition_00_v1.json. Optional index splitting remains
 a labelled diagnostic. See the newer review above before the historical release
-notes below. An upstream EACF model/spherical-layer smoke is prepared for a
-separate CPU allocation; job handle will be recorded in jobs.jsonl.
+notes below. Upstream EACF model/spherical-layer smoke45939182 is RUNNING on CPU,
+30-minute cap, output runs/eacf_upstream_smoke_v1. Its selected upstream tests
+are engineering qualification only; inspect terminal state and junit.xml.
 
 -45914819 parity_entropy_condition_00_v1: corrected condition0, all six arms,
  regular GPU,4-hour cap. Query its actual state; do not duplicate.
