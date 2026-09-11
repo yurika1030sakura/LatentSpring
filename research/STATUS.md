@@ -1,5 +1,13 @@
 # Active research status — September 10, 2026 UTC
 
+Latest continuation evidence (September11 UTC): EACF upstream45939182 passes
+2 selected tests; real JAX/oracle bridge45945638 passes64 calls including a
+minimal real-energy EACF step and checkpoint reconstruction. Earlier8/36-call
+failures remain retained. Geometry condition1 job45942488 completes224 attempts,
+all converged, with no clear convex-over-typed advantage. Main corrected
+production continues; use NEXT and re-query Slurm. These are not full baseline
+performance or calibrated population results.
+
 **Post-handoff Claude update reviewed:** read `../notes/claude_update_review_v1.md` and
 `research/evidence/claude_update_review_v1.json` (repository-relative). Fixed-index
 splitting is a labelled diagnostic, not a permutation-equivariant repair.

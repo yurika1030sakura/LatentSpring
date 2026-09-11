@@ -15,9 +15,20 @@ Full ICLR goal remains ACTIVE and unachieved. Previous goal turn: PROGRESS.
 We implemented exact-volume refinement, diagnosed/repaired a material source/
 target symmetry issue, completed physical and end-to-end qualification, rewrote
 the primary method manuscript, and launched corrected broader production.
-294 tests pass. No broad calibrated sampler or qualified ICLR advantage yet.
+312 repository tests pass, plus2 separate JAX bridge analytic tests. No broad
+calibrated sampler or qualified ICLR advantage yet.
 
 ## Current live campaign — re-query before acting
+
+Latest external qualification: upstream45939182 passes2 tests. Real JAX/oracle
+bridge45945638 passes64 raw calls on neutral-singlet and charge+2 triplet inputs,
+including one9160-parameter EACF optimizer step, inverse, symmetry and checkpoint
+reconstruction. Failed45942379/45944337 retain8/36 calls respectively. This is
+108 total probe calls, not a production baseline. See the new bridge evidence.
+Condition1 geometry45942488 completes224/224 GFN2 attempts, all converged; typed
+strain remains comparable/slightly lower than convex. No all-condition superiority.
+Read FM_RECONSTRUCTION_DECISION.md and NOVELTY_POSITION_CURRENT.md for the
+architecture/AI/physics claim boundaries and next design decisions.
 
 Latest follow-up: condition0 training45914819 is COMPLETED, six qualified arms.
 Condition1 has also finished its allocation; newly completed arms still need
@@ -25,9 +36,8 @@ full replay. Array2 and7 were running at the last query;3--6 pending.
 Geometry45938396 completes224 attempts (192 converged,32 failed). Read
 evidence/parity_geometry_condition_00_v1.json. Optional index splitting remains
 a labelled diagnostic. See the newer review above before the historical release
-notes below. Upstream EACF model/spherical-layer smoke45939182 is RUNNING on CPU,
-30-minute cap, output runs/eacf_upstream_smoke_v1. Its selected upstream tests
-are engineering qualification only; inspect terminal state and junit.xml.
+notes below. Upstream EACF smoke45939182 is COMPLETED;2 selected tests pass.
+Output runs/eacf_upstream_smoke_v1 remains engineering qualification only.
 
 -45914819 parity_entropy_condition_00_v1: corrected condition0, all six arms,
  regular GPU,4-hour cap. Query its actual state; do not duplicate.

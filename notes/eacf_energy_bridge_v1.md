@@ -53,3 +53,14 @@ source. A standalone explicit-density EACF/FAB comparison needs its own source/
 pretraining protocol and full compute accounting. All methods must use actual
 E_plus in exponentiated weights and MH acceptance. Physics-based geometry and
 qualified independent population diagnostics remain necessary comparisons.
+
+## Completed real qualification
+
+Job45945638 passes64 raw calls, including a full real-energy gradient/update
+on a9160-parameter one-layer EACF component and recipe-based checkpoint
+reconstruction. Both physical states pass cached energy and finite-difference
+checks. Original failures45942379/45944337 retain8/36 calls; total108 calls.
+The initial reduced-unit comparison was overstrict: exact repeated oracle inputs
+show force differences up to7.69e-6 eV/A. The revised weighted-VJP gate is
+explicitly1e-5 eV/A and the independent finite-difference ladder is unchanged.
+No full EACF performance experiment or qualified population comparison follows.
