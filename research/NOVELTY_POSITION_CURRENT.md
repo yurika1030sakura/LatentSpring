@@ -16,6 +16,12 @@ advantage must be measured and scientifically useful; it cannot be presumed to
 rescue the novelty claim. The historical progress reports below are not a newer
 assessment of submission readiness.
 
+The matched-allocation cost follow-up has now completed: convex139/144 seconds
+versus EACF2843/2843 seconds, including process initialization and compilation.
+Convex retains its smaller KL improvement. This motivates testing cost-quality
+tradeoffs; it is not a20x same-quality speedup. A smaller EACF and quality-versus-
+time curves remain necessary. See evidence/eacf_matched_cost_quality_v1.json.
+
 The inherited BGFM story centered on force/energy losses added to an existing
 FlowMol3 backbone and arguments linking them to Boltzmann behavior. New losses
 can be substantive AI contributions. Here, however, incorrect density/head

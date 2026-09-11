@@ -20,9 +20,13 @@ error is3.80e-13 A across1024 parents. Auxiliary Gaussian log probabilities and
 joint-KL row arithmetic also pass. No additional oracle queries were used.
 
 Own-method CPU-neural/GPU-oracle smoke45965340 passes96 queries and checkpoint
-replay. Matched-device production timing controls are submitted as
-parity_cpu_gpu_control_s0_v1 and parity_cpu_gpu_control_s1_v1; read the newest
-research/jobs.jsonl records. EACF physical outputs still need independent
+replay. Production controls45965900/45966072 also COMPLETE and replay all1024
+parents exactly. Whole-allocation times are139/144 seconds versus2843 seconds
+for each EACF replica, under matching allocations and oracle settings. Their
+convex KL changes remain -24.74149/-24.65745 nat. These are two different
+cost-quality points, not20x faster attainment of equal quality. Smaller EACF
+controls and quality-versus-time curves are needed to test an efficiency claim.
+Read evidence/eacf_matched_cost_quality_v1.json. EACF outputs still need independent
 geometry assessment. Main molecular production remains unchanged and active.
 Five independent geometry conditions total1120 attempts,1038 converged,82 failed;
 typed controls often have lower success-only strain. Read

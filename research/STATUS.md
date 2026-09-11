@@ -1256,3 +1256,10 @@ population coverage. EACF independent geometry remains next work.
 Decision: retain this adverse comparison, finish cost/geometry evidence, and
 reassess the method claim. Do not describe implementation progress or the pair
 capacity probe's lower KL as solved effective sampling or submission readiness.
+
+Cost follow-up:45965900/45966072 are now COMPLETED,139/144 seconds of whole
+allocation versus2843 seconds each for full EACF. Convex changes remain
+-24.74149/-24.65745 nat; both512-parent saved models replay exactly. This is
+a measured cost-quality tradeoff, not equal-quality acceleration. Evidence:
+research/evidence/eacf_matched_cost_quality_v1.json. Smaller EACF controls,
+quality-versus-time curves and independent geometry remain required.

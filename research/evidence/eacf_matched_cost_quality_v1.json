@@ -1,0 +1,97 @@
+{
+  "complete": true,
+  "at_utc": "2026-09-11T05:29:59.243960+00:00",
+  "scope": "Two measured cost-quality points under matching CPU-neural/GPU-oracle allocations; not time to equal quality.",
+  "rows": [
+    {
+      "seed": 0,
+      "own_job": "45965900",
+      "eacf_job": "45960348",
+      "own_allocation_seconds": 139,
+      "eacf_allocation_seconds": 2843,
+      "own_recorded_seconds": 125.8979053851217,
+      "eacf_recorded_seconds": 2832.4388331880327,
+      "own_marginal_kl_change": {
+        "mean": -24.74148588734088,
+        "sem": 2.29417162794871,
+        "samples": 512
+      },
+      "eacf_joint_kl_change": {
+        "mean": -118.98968425317986,
+        "row_sem": 6.510553864333474,
+        "parents": 512
+      },
+      "queries_per_arm": 18048,
+      "own_parameters": 19365,
+      "eacf_parameters": 5629656,
+      "checkpoint_parents_replayed": 512,
+      "max_replay_error_A": 0.0,
+      "own_results_sha256": "e01b27a047524aca889d1631a337930e23ebaf9c2015c56e25d3ef6b88f69f83",
+      "eacf_results_sha256": "45f0f06d913154cc9cb0f61eb73ca29179c19cf02388a28235e607c70111ea90",
+      "allocation_time_ratio": 20.453237410071942
+    },
+    {
+      "seed": 1,
+      "own_job": "45966072",
+      "eacf_job": "45961068",
+      "own_allocation_seconds": 144,
+      "eacf_allocation_seconds": 2843,
+      "own_recorded_seconds": 127.1022791469004,
+      "eacf_recorded_seconds": 2829.8020086241886,
+      "own_marginal_kl_change": {
+        "mean": -24.657453709333247,
+        "sem": 2.2692323699549837,
+        "samples": 512
+      },
+      "eacf_joint_kl_change": {
+        "mean": -105.55985892971427,
+        "row_sem": 6.468737231862163,
+        "parents": 512
+      },
+      "queries_per_arm": 18048,
+      "own_parameters": 19365,
+      "eacf_parameters": 5629656,
+      "checkpoint_parents_replayed": 512,
+      "max_replay_error_A": 0.0,
+      "own_results_sha256": "1f7280f98d85cfc45c657c04868bfe5b8149828c3450582b9cbf13680d0abc64",
+      "eacf_results_sha256": "a5e9db4f4b7129fa9f2c313a477c3e23cf82f5bfaf3e8de8c43c8c88a5c9cecd",
+      "allocation_time_ratio": 19.743055555555557
+    }
+  ],
+  "slurm_accounting": {
+    "45960348": [
+      "COMPLETED",
+      "2843",
+      "holygpu7c26106",
+      "cpu=4,gres/gpu:nvidia_a100_3g.20gb=1,gres/gpu=1,mem=32G,node=1"
+    ],
+    "45961068": [
+      "COMPLETED",
+      "2843",
+      "holygpu7c26106",
+      "cpu=4,gres/gpu:nvidia_a100_3g.20gb=1,gres/gpu=1,mem=32G,node=1"
+    ],
+    "45965900": [
+      "COMPLETED",
+      "139",
+      "holygpu7c26106",
+      "cpu=4,gres/gpu:nvidia_a100_3g.20gb=1,gres/gpu=1,mem=32G,node=1"
+    ],
+    "45966072": [
+      "COMPLETED",
+      "144",
+      "holygpu7c26202",
+      "cpu=4,gres/gpu:nvidia_a100_3g.20gb=1,gres/gpu=1,mem=32G,node=1"
+    ]
+  },
+  "additional_oracle_evaluations": 0,
+  "scientific_submission_ready": false,
+  "limitations": [
+    "One condition, two training seeds, different parameter counts and final quality.",
+    "Allocated timing includes initialization, JAX compilation, training, evaluation and process exit.",
+    "Recorded Python timer boundaries differ slightly; prefer whole-allocation times.",
+    "Matched allocations and GPU class do not fix physical CPU host or isolate hardware noise.",
+    "No claim of faster attainment of equal quality or target-mode coverage.",
+    "A smaller EACF and quality-versus-time curves remain necessary before efficiency superiority claims."
+  ]
+}
