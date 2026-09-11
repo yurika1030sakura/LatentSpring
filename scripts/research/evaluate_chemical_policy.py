@@ -9,6 +9,7 @@ import torch
 from cfm_mol.chemical_sampler import ChemicalTarget,policy_log_probabilities
 from cfm_mol.chemical_policy import ChemicalMovePolicy
 from cfm_mol.energy_oracle import EnergyOracle
+from cfm_mol.terminal_rotation import uniform_internal_transition
 
 
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -22,12 +23,13 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--table',type=Path,required=True);p.add_argument('--policies',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True);p.add_argument('--replica',type=int,choices=[0,1],required=True)
-    p.add_argument('--method',choices=['uniform','uniform_exchange','uniform_multiscale','learned'],required=True)
+    p.add_argument('--method',choices=['uniform','uniform_exchange','uniform_multiscale','uniform_angular','learned'],required=True)
     p.add_argument('--oracle-python',type=Path,required=True);p.add_argument('--oracle-checkpoint',type=Path,required=True)
     args=p.parse_args();root=Path(__file__).resolve().parents[2]
     protocol_path=root/'research/evidence/chemical_policy_protocol_v1.json';protocol=json.loads(protocol_path.read_text())
-    multiscale=args.method=='uniform_multiscale'
-    evaluation_path=root/'research/evidence'/('multiscale_chemical_protocol_v1.json' if multiscale else 'chemical_policy_evaluation_protocol_v2.json')
+    angular=args.method=='uniform_angular';multiscale=args.method in ('uniform_multiscale','uniform_angular')
+    evaluation_path=root/'research/evidence'/('angular_chemical_protocol_v1.json' if angular else
+        'multiscale_chemical_protocol_v1.json' if multiscale else 'chemical_policy_evaluation_protocol_v2.json')
     evaluation=json.loads(evaluation_path.read_text())
     if evaluation['training_protocol_sha256']!=sha(protocol_path):raise ValueError('Changed training protocol')
     header=json.loads((args.table/'results.json').read_text());data_path=args.table/'development.pt'
@@ -81,9 +83,11 @@ def main():
             torch.testing.assert_close(new['force_eV_A'],old['force_eV_A'],atol=1e-4,rtol=0)
         for step in range(steps+1):
             with torch.no_grad():local=policy_log_probabilities(states,target.numbers,target.kT,policy,uniform_local)[:,0].exp().tolist()
+            scheduled=('local','rotation','exchange','local')[step%4] if angular and step<steps else None
+            if angular:local=[float(scheduled=='local')]*len(states) if scheduled else None
             row=dict(step=step,energy_eV=[float(s['energy_eV']) for s in states],
                 potential_eV=[float(s['potential_eV']) for s in states],
-                smiles=[s['graph']['connectivity_smiles'] for s in states],local_probability=local,
+                smiles=[s['graph']['connectivity_smiles'] for s in states],local_probability=local,scheduled_move=scheduled,
                 new_raw_queries=oracle.evaluated,
                 refinement_raw_queries=oracle.evaluated+report['inherited_training_raw_queries'],
                 total_raw_queries=oracle.evaluated+report['inherited_training_raw_queries']+
@@ -97,8 +101,13 @@ def main():
                 choices=torch.randint(len(evaluation['local_scales']),(len(states),),generator=scale_generator)
                 proposal_std=torch.tensor(evaluation['local_scales'],dtype=torch.float64)[choices]*target.kT**.5
                 scale_history.append(choices.tolist())
-            states,records=target.transition(states,policy=policy,generator=generator,
-                proposal_std=proposal_std,phase=f'evaluation_{step}',uniform_local=uniform_local)
+            if angular and scheduled!='local':
+                states,records=uniform_internal_transition(target,states,kind=scheduled,generator=generator,phase=f'evaluation_{step}')
+            else:
+                states,records=target.transition(states,policy=policy,generator=generator,
+                    proposal_std=proposal_std,phase=f'evaluation_{step}',uniform_local=uniform_local,local_only=angular)
+                if angular:
+                    for record in records:record['kind']='local'
             transitions.extend(records)
         artifact=dict(states=target.states,query_trace=target.query_trace,transitions=transitions,
             history_state_ids=history_ids,generator_state=generator.get_state(),
