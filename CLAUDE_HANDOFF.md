@@ -1,5 +1,21 @@
 # Claude handoff — BGFM / ICLR 2027
 
+**Current EACF/reuse checkpoint:** start with
+`research/EACF_AND_REUSE_STATE_20260912.json`, `research/NEXT.md` and
+`notes/eacf_directional_decision_v1.md`. Four EACF directional-MH arms and real-map
+audits are complete; all flow proposals reject. These are repurposed refinement
+checkpoints, not MH-trained or native EACF/FAB baselines. Learned-vector graph
+first hits repeat on the old four starts; full-cost physical controls remain
+competitive and broad learned advantage is unestablished. New calls6518.
+Fresh geometry-only8192-parent recovery46134723 is running and dependent
+audit46134750 pending; refresh Slurm before using results. The v1 DGL startup
+failure and cancelled audit are preserved. Next finish this source audit and
+freeze a measured fresh-parent reuse comparison before energy queries.
+Current working PDF: `runs/verification/eacf_directional_working_20260912/main.pdf`,
+8 main pages, compilation/citation/page checks pass. The goal remains active;
+scientific submission readiness is false. Earlier next-action statements below
+are historical.
+
 **Newest fragment/benchmark checkpoint:** read
 `research/FRAGMENT_AND_BENCHMARK_STATE_20260912.json`,
 `notes/fragment_and_benchmark_decision_v1.md` and

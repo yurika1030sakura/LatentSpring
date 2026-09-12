@@ -65,8 +65,10 @@ source likelihood. The auxiliary law/dimension and intrinsic volume must match
 the actual upstream code: physical coordinates are COM constrained; auxiliary
 coordinates may be unconstrained. Validate the known-target construction and
 real forward/inverse interface, then freeze a bounded experiment. Keep both
-published and compact capacities. This baseline is prospective, not implemented
-or tested by this note.
+published and compact capacities. This baseline is now implemented and audited;
+`notes/eacf_directional_decision_v1.md` records the completed frozen-checkpoint
+pilot. It is a repurposed refinement control, not native EACF/FAB performance or
+a baseline trained for MH acceptance.
 
 ## Claim-specific gates
 

@@ -1,5 +1,25 @@
 # Next research decision — 2026-09-12
 
+## Latest EACF and fresh-source checkpoint
+
+Read `research/EACF_AND_REUSE_STATE_20260912.json` and
+`notes/eacf_directional_decision_v1.md`. All four real EACF directional-MH pilots
+and audits are complete, with6518 new raw physical calls. The learned vector
+repeats4/4 diagnostic graph first hits, physical site3/4 and2/4, and frozen EACF
+proposal reuse0/4. EACF maps were not trained for MH acceptance; this is not a
+native-generator superiority result. Full-cost site controls remain adverse.
+
+Fresh source v1 failed at DGLGraph.cuda() before any sampling. Recovery v2 uses
+the correct .to('cuda') and retains all v1 evidence. Producer46134723 is RUNNING
+and its structural auditor46134750 is PENDING at this checkpoint. Re-query both.
+NEXT finish/audit the8192 fresh source attempts, then freeze paired fresh-parent
+reuse before energy queries, preserving all source failures and training costs.
+New seeds for one composition are not independent-composition validation. Do not
+expand the singleton mixture or open reserved722 outcomes yet.
+
+The working paper includes the qualified baseline method and limited result;
+the build passes with8 main pages. Scientific submission readiness remains false.
+
 ## Latest fragment and benchmark checkpoint
 
 Read `research/FRAGMENT_AND_BENCHMARK_STATE_20260912.json`,

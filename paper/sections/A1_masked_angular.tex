@@ -494,6 +494,15 @@ output count, source attempts, correlation and costs remains necessary. Training
 inference and measured amortization should be reported separately. The fully
 charged four-parent stress test is not the only meaningful usage regime.
 
+A direction-augmented MH pilot also uses the frozen published and compact EACF
+refiners~\citep{midgley2023eacf} as reversible proposals on the same target and
+four starts. Neither capacity accepts a flow move or reaches the diagnostic
+reference graph in either 256-step replica; the normalized learned vector reaches
+it from all four starts in both replicas. These refiners were not trained for MH
+acceptance, so this diagnoses their reuse as proposals, not native EACF performance.
+Appendix~\ref{app:eacf-directional} gives the auxiliary law, verified volumes,
+query costs and the limits of this small, repeatedly inspected comparison.
+
 \section{Related work and position}
 \label{sec:related-position}
 Learned molecular proposals with Metropolis correction already appear in

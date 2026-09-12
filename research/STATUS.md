@@ -1,3 +1,14 @@
+# EACF and fresh-source checkpoint — September12
+
+Current: `research/EACF_AND_REUSE_STATE_20260912.json` and
+`notes/eacf_directional_decision_v1.md`. Four frozen EACF proposal arms and real-map
+audits complete,6518 new physical calls. Learned-vector graph first hits repeat
+on the old four starts; no broad or full-cost superiority is established.
+Fresh source recovery46134723 is running, audit46134750 pending; v1 startup
+failure preserved. Next complete source audit and freeze measured fresh-parent
+reuse. Current paper8 main pages; scientific submission readiness false.
+Re-query scheduler state before acting; older checkpoints below are historical.
+
 # Active research status — September 10, 2026 UTC
 
 Latest continuation evidence (September11 UTC): EACF upstream45939182 passes

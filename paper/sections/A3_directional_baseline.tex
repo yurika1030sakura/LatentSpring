@@ -1,0 +1,59 @@
+\section{Frozen augmented-flow proposal comparison}
+\label{app:eacf-directional}
+
+The existing EACF refinement checkpoints transform a flow-matching source whose
+density is unavailable. We therefore use their actual invertible augmented maps
+as MH proposals, without assigning them an independent physical proposal density.
+Given $x\in\HH$, draw $a\sim\rho(\cdot\mid x)=\mathcal N(x,0.1^2I_{3N})$
+and a uniform direction $d\in\{0,1\}$. With $f_0=f$ and $f_1=f^{-1}$, compute
+$(y,b)=f_d(x,a)$ and accept using
+\begin{equation}
+ \log R=-\frac{U(y)-U(x)}{kT}
+       +\log\rho(b\mid y)-\log\rho(a\mid x)
+       +\log\left|\det Df_d(x,a)\right|.
+\end{equation}
+Unsupported physical endpoints are rejected. On the extended state, the proposal
+$(x,a,d)\mapsto(y,b,1-d)$ is an involution. The ratio above is the change in its
+extended target density $\pi(x)\rho(a\mid x)/2$, including the volume change.
+This is a standard augmented-space MH construction, not a new theoretical claim.
+Auxiliary coordinates are unconstrained in $\mathbb R^{3N}$; projecting them onto
+the physical COM subspace would change both their law and the Jacobian contract.
+
+We check the pinned upstream forward and inverse interfaces on archived and fresh
+auxiliaries, reflections and atom permutations. For one checkpoint per capacity,
+the complete 57-dimensional Jacobian ($27$ physical and $30$ auxiliary dimensions)
+agrees with the reported log volume to $2.92\times10^{-13}$ or better.
+Every evaluated flow transformation, inverse, random draw, physical-query
+coordinate and acceptance ratio is subsequently replayed. These checks qualify
+the implementation; they do not certify finite-time equilibrium sampling.
+
+\begin{table}[h]
+\centering\small
+\caption{Frozen proposal pilot on one ten-atom composition and four common starts.
+Pairs give two replicas. All arms use 256 microsteps with the same local and
+force-rotation schedule; actual query counts differ. Hits count starts that ever
+reach the diagnostic reference graph. Total calls include source, training and
+warm preparation. An additional 2,048 historical generator-validation calls per
+EACF checkpoint are reported separately from these training/inference totals.}
+\begin{tabular}{lrrrr}
+\toprule
+Proposal & Graph hits / 4 & Nonlocal accepts / 256 & Sampling calls & Total calls\\
+\midrule
+Physical site & (3,2) & (4,3) & (1818,1840) & (2734,2756)\\
+Learned vector & (4,4) & (5,5) & (1870,1880) & (12446,12456)\\
+Published EACF reuse & (0,0) & (0,0) & (1654,1538) & (22666,22550)\\
+Compact EACF reuse & (0,0) & (0,0) & (1674,1652) & (22686,22664)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Among supported EACF proposals, even the largest observed log acceptance ratio
+is below $-10$ across the four runs. Both unfavorable potential changes and the
+auxiliary/volume correction contribute. These checkpoints were trained as
+refiners under their original objective, not to obtain high MH acceptance from
+the warmed states. The result cannot establish failure of the architecture or
+superiority over native EACF/FAB sampling. The physical site control is much
+cheaper after preparation; longer physical controls also remain relevant.
+Fresh-parent reuse and independent compositions are needed before promoting the
+learned-vector pilot to a competitive sampling claim. No equilibrium distribution
+or new chemical-discovery claim follows from these graph first hits.
