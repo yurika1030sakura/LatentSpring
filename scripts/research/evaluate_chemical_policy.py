@@ -10,6 +10,8 @@ from cfm_mol.chemical_sampler import ChemicalTarget,policy_log_probabilities
 from cfm_mol.chemical_policy import ChemicalMovePolicy
 from cfm_mol.energy_oracle import EnergyOracle
 from cfm_mol.terminal_rotation import uniform_internal_transition
+from cfm_mol.masked_angular_guide import MaskedAngularGuide
+from cfm_mol.masked_angular_sampler import masked_angular_transition
 
 
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -23,12 +25,13 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--table',type=Path,required=True);p.add_argument('--policies',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True);p.add_argument('--replica',type=int,choices=[0,1],required=True)
-    p.add_argument('--method',choices=['uniform','uniform_exchange','uniform_multiscale','uniform_angular','force_angular','learned'],required=True)
+    p.add_argument('--method',choices=['uniform','uniform_exchange','uniform_multiscale','uniform_angular','force_angular','learned','masked_tensor','masked_vector','masked_zero'],required=True)
     p.add_argument('--oracle-python',type=Path,required=True);p.add_argument('--oracle-checkpoint',type=Path,required=True)
     args=p.parse_args();root=Path(__file__).resolve().parents[2]
     protocol_path=root/'research/evidence/chemical_policy_protocol_v1.json';protocol=json.loads(protocol_path.read_text())
-    angular=args.method in ('uniform_angular','force_angular');multiscale=args.method in ('uniform_multiscale','uniform_angular','force_angular')
-    evaluation_path=root/'research/evidence'/('force_angular_protocol_v1.json' if args.method=='force_angular' else 'angular_chemical_protocol_v1.json' if angular else
+    masked=args.method.startswith('masked_')
+    angular=masked or args.method in ('uniform_angular','force_angular');multiscale=angular or args.method=='uniform_multiscale'
+    evaluation_path=root/'research/evidence'/('masked_angular_evaluation_protocol_v1.json' if masked else 'force_angular_protocol_v1.json' if args.method=='force_angular' else 'angular_chemical_protocol_v1.json' if angular else
         'multiscale_chemical_protocol_v1.json' if multiscale else 'chemical_policy_evaluation_protocol_v2.json')
     evaluation=json.loads(evaluation_path.read_text())
     if evaluation['training_protocol_sha256']!=sha(protocol_path):raise ValueError('Changed training protocol')
@@ -40,7 +43,7 @@ def main():
     physical_path=root/'research/evidence/parity_training_protocol_v1.json';physical=json.loads(physical_path.read_text())
     if sha(physical_path)!=protocol['physical_protocol_sha256'] or sha(args.oracle_checkpoint)!=physical['raw_oracle_sha256']:
         raise ValueError('Physical target changed')
-    policy=None;trained=None
+    policy=None;trained=None;guide_model=None
     if args.method=='learned':
         directory=args.policies/f'replica_{args.replica}';trained=json.loads((directory/'results.json').read_text())
         if not trained['complete'] or trained['protocol_sha256']!=sha(protocol_path) or sha(directory/'policy.pt')!=trained['checkpoint_sha256']:
@@ -48,6 +51,17 @@ def main():
         if trained['training_table_sha256']!=header['artifacts']['training']:raise ValueError('Policy used another training table')
         checkpoint=torch.load(directory/'policy.pt',map_location='cpu',weights_only=False)
         policy=ChemicalMovePolicy(**checkpoint['configuration']).double();policy.load_state_dict(checkpoint['state_dict']);policy.eval()
+    if masked and args.method!='masked_zero':
+        model_name=args.method.removeprefix('masked_');directory=args.policies/f'{model_name}_s{args.replica}'
+        trained=json.loads((directory/'results.json').read_text())
+        if (not trained['complete'] or trained['training_sha256']!=header['artifacts']['training']
+                or trained['protocol_sha256']!=evaluation['masked_training_protocol_sha256']
+                or sha(directory/'model.pt')!=trained['checkpoint_sha256']
+                or trained['checkpoint_sha256']!=evaluation['frozen_model_sha256'][model_name][args.replica]
+                or trained['development_coordinates_loaded'] or trained['reference_coordinates_loaded']):
+            raise ValueError('Unqualified masked angular model')
+        checkpoint=torch.load(directory/'model.pt',map_location='cpu',weights_only=False)
+        guide_model=MaskedAngularGuide(**checkpoint['configuration']).double();guide_model.load_state_dict(checkpoint['state_dict']);guide_model.eval()
     args.out.mkdir(parents=True,exist_ok=True);output=args.out/'results.json'
     if output.exists():raise FileExistsError(output)
     uniform_local=.1 if args.method=='uniform_exchange' else .5
@@ -62,7 +76,7 @@ def main():
         inherited_generated_parent_attempts=4608 if trained else 512,
         source_generation_denominators=header['source_generation_denominators'],
         reference_coordinates_loaded=False,scientific_submission_ready=False,history=[])
-    write(output,report);target=None;oracle=None;transitions=[];history_ids=[];start=time.perf_counter()
+    write(output,report);target=None;oracle=None;transitions=[];history_ids=[];searches=[];start=time.perf_counter()
     transition_seed=evaluation.get('evaluation_seeds',protocol['evaluation_seeds'])[args.replica]
     generator=torch.Generator().manual_seed(transition_seed)
     scale_generator=torch.Generator().manual_seed(evaluation.get('scale_seed',0)+args.replica)
@@ -101,7 +115,11 @@ def main():
                 choices=torch.randint(len(evaluation['local_scales']),(len(states),),generator=scale_generator)
                 proposal_std=torch.tensor(evaluation['local_scales'],dtype=torch.float64)[choices]*target.kT**.5
                 scale_history.append(choices.tolist())
-            if angular and scheduled!='local':
+            if masked and scheduled=='masked_angle':
+                states,records,search=masked_angular_transition(target,states,guide_model,
+                    max_trials=evaluation['capped_direction_trials'],generator=generator,phase=f'evaluation_{step}')
+                searches.append(search)
+            elif angular and scheduled!='local':
                 states,records=uniform_internal_transition(target,states,kind=scheduled,generator=generator,phase=f'evaluation_{step}')
             else:
                 states,records=target.transition(states,policy=policy,generator=generator,
@@ -113,7 +131,7 @@ def main():
             history_state_ids=history_ids,generator_state=generator.get_state(),
             policy_sha256=report['policy_sha256'],protocol_sha256=sha(protocol_path),
             scale_choice_history=scale_history,scale_generator_state=scale_generator.get_state(),
-            transition_seed=transition_seed)
+            transition_seed=transition_seed,masked_searches=searches)
         torch.save(artifact,args.out/'trace.pt')
         maximum=protocol['maximum_raw_queries_per_learned_eval_arm'] if policy is not None else evaluation['maximum_raw_queries_per_uniform_total_budget_arm']
         if oracle.evaluated>maximum:raise RuntimeError('Frozen evaluation query bound exceeded')
@@ -121,6 +139,9 @@ def main():
             seconds=time.perf_counter()-start,trace_sha256=sha(args.out/'trace.pt'),
             proposals=len(transitions),invalid_proposals=sum(not r['valid'] for r in transitions),
             accepted_proposals=sum(r['accepted'] for r in transitions),
+            angular_search_trials=sum(len(t['indices']) for s in searches for t in s['trials']),
+            angular_geometry_checks=sum(len(s['geometry_checks']) for s in searches),
+            angular_search_exhaustions=sum(int((~s['success']).sum()) for s in searches),
             limitation='Only four generated development parents for one composition and two seeds; no equilibrium or generalization certificate.')
         write(output,report)
     except Exception as exc:

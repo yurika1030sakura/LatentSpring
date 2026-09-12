@@ -1,5 +1,7 @@
 import torch
 from cfm_mol.masked_angular_guide import MaskedAngularGuide,masked_angular_context,angular_log_score,angular_surface_score
+from cfm_mol.masked_angular_sampler import capped_directions,masked_angular_transition
+from cfm_mol.chemical_sampler import ChemicalTarget
 
 
 def example():
@@ -74,3 +76,48 @@ def test_capped_unknown_normalizer_cancels_only_with_invariant_context():
     torch.testing.assert_close(pi@p,pi,atol=1e-12,rtol=0)
     leaking=invariant.clone();leaking[0,1]-=2;leaking[1,2]-=1
     assert float((pi@kernel(leaking)-pi).abs().max())>1e-3
+
+
+def test_capped_sphere_sampler_and_mh_preserve_a_known_supported_target():
+    g=torch.Generator().manual_seed(132);n=4096
+    eta=torch.tensor([0.,0.,2.],dtype=torch.float64).expand(n,-1);matrix=torch.zeros(n,3,3,dtype=eta.dtype)
+    envelope=torch.full((n,),2.,dtype=eta.dtype)
+    valid=lambda u,index:u[:,2]>0
+    y,ok,trace=capped_directions(eta,matrix,envelope,valid,max_trials=64,generator=g)
+    assert int(ok.sum())>4090
+    expected=1/(1-torch.exp(torch.tensor(-2.,dtype=eta.dtype)))-.5
+    assert abs(float(y[ok,2].mean()-expected))<.025
+    raw=torch.randn(n,3,dtype=eta.dtype,generator=g);raw[:,2]=raw[:,2].abs();x=raw/raw.norm(dim=1,keepdim=True)
+    for _ in range(8):
+        y,ok,_=capped_directions(eta,matrix,envelope,valid,max_trials=64,generator=g)
+        ratio=angular_log_score(x,eta,matrix)-angular_log_score(y,eta,matrix)
+        take=ok&(torch.rand(n,dtype=eta.dtype,generator=g).log()<ratio.clamp_max(0))
+        x=torch.where(take[:,None],y,x)
+    assert abs(float(x[:,2].mean())-.5)<.025
+    assert abs(float(x[:,2].square().mean())-1/3)<.025
+    _,failed,records=capped_directions(eta[:2],matrix[:2],envelope[:2],lambda u,index:torch.zeros(len(u),dtype=torch.bool),max_trials=3,generator=g)
+    assert not failed.any() and len(records)==3
+
+
+def test_molecular_capped_transition_keeps_context_and_scores_only_one_candidate():
+    class Oracle:
+        evaluated=0
+        def evaluate_chunked(self,x,max_request):
+            self.evaluated+=len(x);return .5*x.square().sum((1,2)),-x
+    target=ChemicalTarget(Oracle(),dict(numbers=[6,1,1,1,9],charge=0,spin_multiplicity=1),.5,.1)
+    x=torch.tensor([[0.,0.,0.],[1.,1.,1.],[1.,-1.,-1.],[-1.,1.,-1.],[-1.,-1.,1.]],dtype=torch.float64)
+    x[1:4]*=1.09/3**.5;x[4]*=1.35/3**.5;x-=x.mean(0)
+    states=target.evaluate([target.coordinate_state(x)],phase='initial');model=MaskedAngularGuide().double()
+    with torch.no_grad():model.vector_weight.weight.normal_(0,.1);model.tensor_weight.weight.normal_(0,.1)
+    g=torch.Generator().manual_seed(133);scored=0
+    for _ in range(8):
+        old=states[0];states,rows,search=masked_angular_transition(target,states,model,max_trials=16,generator=g,phase='test')
+        row=rows[0];scored+=row['valid']
+        assert len(search['geometry_checks'])<=16
+        if row['valid']:
+            new=target.states[row['new_state_id']]
+            ratio=-float(new['potential_eV']-old['potential_eV'])/.5+row['old_angular_score']-row['new_angular_score']
+            assert abs(row['log_acceptance_ratio']-ratio)<1e-10
+            assert row['accepted']==(row['log_uniform']<min(0.,ratio))
+        else:assert row['exhausted'] and not row['accepted']
+    assert target.oracle.evaluated==2*(1+scored)

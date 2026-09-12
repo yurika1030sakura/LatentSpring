@@ -1,0 +1,49 @@
+{
+  "frozen": true,
+  "version": 1,
+  "training_protocol_sha256": "1f8b0fc8174848f616dd1a1759b0d6e4e8ae562eb4ed90546dd9aa835a0f85fd",
+  "masked_training_protocol_sha256": "aa967c50580157d5dc96b511acdaefb3b7297039c4dc38bdf43dfae579e21659",
+  "frozen_model_sha256": {
+    "tensor": [
+      "b9c71592148bd995a9fcaeb664b18299d012e8b824639fee4170159fac0e5d80",
+      "1e5eb40a9a9bedfde95f77c49b273eef6218c928919d6fccf3389656a84f1be9"
+    ],
+    "vector": [
+      "0cb2ac9c5f2e9d4ed462cba6e359b3b85e18357424120be9e61d295fbb65180e",
+      "bdc8211cd1ac476892ba3c6351f544ae7908fd5874a3a8bd6a3ea401f4c770a1"
+    ]
+  },
+  "methods": [
+    "masked_zero",
+    "masked_vector",
+    "masked_tensor"
+  ],
+  "replicas": [
+    0,
+    1
+  ],
+  "uniform_total_budget_steps": 256,
+  "maximum_raw_queries_per_uniform_total_budget_arm": 2056,
+  "maximum_new_raw_queries": 12336,
+  "evaluation_seeds": [
+    10631,
+    10633
+  ],
+  "scale_seed": 10641,
+  "local_scales": [
+    0.1,
+    0.03,
+    0.01
+  ],
+  "schedule": [
+    "local",
+    "masked_angle",
+    "exchange",
+    "local"
+  ],
+  "capped_direction_trials": 64,
+  "scope": "Frozen masked angular guides versus same-cap zero guide and vector ablation; force-vMF previous control retained.",
+  "cost_contract": "No new physical calls during fitting; each learned method inherits all5564 training-preparation and4096 training-source queries. Development source512 and warm-up404 are common. Count all capped search attempts, neural/geometry time and physical queries separately.",
+  "new_target_support": false,
+  "stop_rule": "Training MSE, capped validity and correctness tests are not scientific success. Require repeated benefit over strong physical and same-cap controls, then independent molecular conditions and distribution checks before claiming ICLR readiness."
+}
