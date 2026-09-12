@@ -56,9 +56,10 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     for name in ['project','run','out']:
         p.add_argument('--'+name, type=Path, required=True)
+    p.add_argument('--protocol', type=Path)
     args = p.parse_args()
     root = Path(__file__).resolve().parents[2]
-    pp = root/'research/evidence/fresh_reuse_protocol_v1.json'
+    pp = args.protocol or root/'research/evidence/fresh_reuse_protocol_v1.json'
     protocol = json.loads(pp.read_text())
     data, source_audit, physical, shared = validate_inputs(root, args.project, protocol)
     report = json.loads((args.run/'results.json').read_text())

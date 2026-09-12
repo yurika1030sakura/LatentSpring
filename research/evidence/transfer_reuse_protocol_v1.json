@@ -1,0 +1,47 @@
+{
+  "frozen": true,
+  "frozen_at_utc": "2026-09-12T07:10:29.614231+00:00",
+  "source_audit_sha256": "22bfd15b9280a945bd90d93fc7cf5ad9faabd0199721cbadfe49a962d79b6059",
+  "source_projection_root": "runs/transfer_reuse_inputs_v1",
+  "case_protocol_sha256": {
+    "research/evidence/transfer_reuse_case_00.json": "382e20a66e20d12b57b59ac87559b68514bff6affef06080c5d9a95d1a2784c1",
+    "research/evidence/transfer_reuse_case_01.json": "6c848e0a71986efa2b10df5cb54a3f669a11eeb4fdd3defb67d18aef93b952ff",
+    "research/evidence/transfer_reuse_case_02.json": "b7d7fb6cfaeec57d1aec2c0b3a87969afcd6bb60576be5d09bdaac06af4c9450",
+    "research/evidence/transfer_reuse_case_03.json": "e9848181f0183a0184e201a7306dd9a5827bf2ac14850f63acc2a08c909ce35b",
+    "research/evidence/transfer_reuse_case_04.json": "be12c19d7c483fe0f058d0ab096a3da0baf8e57168de98ac6350eff0f57ddb88",
+    "research/evidence/transfer_reuse_case_05.json": "12192803c47d72177125dae2771724285b7eb9c017900bf6d2f43a78d99b68f1"
+  },
+  "conditions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "parents_per_condition": 16,
+  "total_parents": 96,
+  "methods": [
+    "site",
+    "learned_vector"
+  ],
+  "replicas": [
+    0,
+    1
+  ],
+  "one_time_training_raw_queries": 9660,
+  "maximum_new_physical_queries": 307392,
+  "primary": {
+    "learned_queries_per_parent": 512,
+    "site_allocation": "Across96 parents in condition/source order:614 calls for first30,612 for remaining66. Charge9660 training calls ONCE across the six compositions; shared preparation on both sides.",
+    "observable": "Mean of six within-composition paired mean restrained-potential differences; average the two fixed replicas within each parent.",
+    "uncertainty": "2000 hierarchical bootstrap draws: resample six composition clusters, then16 parents within each sampled cluster. Do not treat96 parents as96 independent compositions.",
+    "both_replica_means_reported": true
+  },
+  "secondary": "Per-composition and same-inference-budget outcomes, support, accepted moves and all wall times. No new reference structure defines discovery; no Boltzmann claim.",
+  "bootstrap_seed": 24691,
+  "bootstrap_replicates": 2000,
+  "stop_rule": "Retain all six compositions and every failed/censored arm. No retraining on these states. No aggregate superiority if required endpoints are missing. Positive aggregate is not a win for every composition. Keep source unsupported counts and declared scope.",
+  "reserved_outcomes_allowed": false,
+  "scientific_submission_ready": false
+}

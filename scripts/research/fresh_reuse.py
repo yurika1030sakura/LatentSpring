@@ -109,6 +109,17 @@ def validate_inputs(root, project, protocol):
     source = project/protocol['source_run']
     audit_path = project/protocol['source_audit']
     audit = json.loads(audit_path.read_text())
+    if 'derived_from_audit' in audit:
+        parent_path = project/audit['derived_from_audit']
+        assert sha(parent_path) == audit['derived_from_audit_sha256'] == protocol['parent_source_audit_sha256']
+        parent_audit = json.loads(parent_path.read_text())
+        assert parent_audit['complete'] and parent_audit['all_chunk_rows_verified'] and parent_audit['all_six_conditions_retained']
+        source_row = parent_audit['rows'][audit['condition_index']]
+        assert source_row['index'] == audit['condition_index'] == protocol['condition_index']
+        for key in ['source_results_sha256','attempted','chemically_supported','validator_errors','supported_parent_ids']:
+            assert audit[key] == source_row[key]
+        assert audit['source_samples_sha256'] == source_row['samples_sha256']
+        assert audit['protocol_sha256'] == parent_audit['protocol_sha256']
     report = json.loads((source/'results.json').read_text())
     submission = json.loads((source/'submission.json').read_text())
     assert submission['source_commit'] == protocol['source_commit']
@@ -130,9 +141,10 @@ def main():
         p.add_argument('--'+name, type=Path, required=True)
     p.add_argument('--method', choices=['site','learned_vector'])
     p.add_argument('--replica', type=int, choices=[0,1])
+    p.add_argument('--protocol', type=Path)
     args = p.parse_args()
     root = Path(__file__).resolve().parents[2]
-    pp = root/'research/evidence/fresh_reuse_protocol_v1.json'
+    pp = args.protocol or root/'research/evidence/fresh_reuse_protocol_v1.json'
     protocol = json.loads(pp.read_text())
     data, source_audit, physical, shared = validate_inputs(root, args.project, protocol)
     assert sha(args.oracle_checkpoint) == physical['raw_oracle_sha256']
