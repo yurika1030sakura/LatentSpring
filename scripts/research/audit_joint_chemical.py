@@ -12,6 +12,7 @@ from cfm_mol.joint_chemical_geometry import joint_chemical_transition, distinct_
 from cfm_mol.terminal_rotation import uniform_internal_transition
 from scripts.research.audit_masked_angular import ReplayOracle, equal, sha
 from scripts.research.evaluate_joint_chemical import load_model
+from scripts.research.evaluate_normalized_site import load_model as load_normalized_model
 
 
 def independent_log_q(x, y, bonds, numbers, electronic, radii, action, order, kind, model, protocol, trace):
@@ -35,7 +36,15 @@ def independent_log_q(x, y, bonds, numbers, electronic, radii, action, order, ki
         row = trace['steps'][stage]
         assert tuple(row['root']) == (a, b)
         torch.testing.assert_close(template, row['context'], atol=1e-9, rtol=1e-9)
-        if model is not None:
+        if kind == 'normalized_site':
+            with torch.no_grad():
+                params, weights = model(template[None], desired[None], numbers, electronic,
+                                         torch.tensor([[a, b]], dtype=torch.long))
+            params, weights = params[0], weights[0]
+            torch.testing.assert_close(params, row['parameters'], atol=1e-8, rtol=1e-9)
+            torch.testing.assert_close(weights, row['log_weights'], atol=1e-8, rtol=1e-9)
+            torch.testing.assert_close(weights.exp().sum(), x.new_tensor(1.))
+        elif model is not None:
             with torch.no_grad():
                 e, matrix, _ = model(template[None], desired[None], numbers, electronic,
                                      torch.tensor([[a, b]], dtype=torch.long))
@@ -49,12 +58,12 @@ def independent_log_q(x, y, bonds, numbers, electronic, radii, action, order, ki
                         v = template[neighbor]-template[b]
                         e -= v/v.norm().clamp_min(1e-12)
                 e *= protocol['site_concentration']/e.norm().clamp_min(1e-12)
-        torch.testing.assert_close(e, row['eta'], atol=1e-8, rtol=1e-9)
-        torch.testing.assert_close(matrix, row['matrix'], atol=1e-8, rtol=1e-9)
-        # Independently evaluate the explicitly normalized mixture of two vMFs.
-        values, axes = torch.linalg.eigh(matrix)
-        delta = values[-1]-values[-2]
-        params = torch.stack([e+delta*axes[:, -1], e-delta*axes[:, -1]])
+        if kind != 'normalized_site':
+            torch.testing.assert_close(e, row['eta'], atol=1e-8, rtol=1e-9)
+            torch.testing.assert_close(matrix, row['matrix'], atol=1e-8, rtol=1e-9)
+            values, axes = torch.linalg.eigh(matrix)
+            delta = values[-1]-values[-2]
+            params = torch.stack([e+delta*axes[:, -1], e-delta*axes[:, -1]])
         log_c = []
         for eta in params:
             kappa = float(eta.norm())
@@ -64,7 +73,8 @@ def independent_log_q(x, y, bonds, numbers, electronic, radii, action, order, ki
                 value = math.log(kappa)-math.log(4*math.pi)-math.log(math.sinh(kappa))
             log_c.append(value)
         log_c = torch.tensor(log_c, dtype=x.dtype)
-        weights = (-log_c).log_softmax(0)
+        if kind != 'normalized_site':
+            weights = (-log_c).log_softmax(0)
         u = (y[a]-y[b])/rr[index]
         lp = float(torch.logsumexp(weights+log_c+params@u, 0))
         assert abs(lp-float(row['angular_log_density'])) < 1e-7
@@ -76,15 +86,33 @@ def independent_log_q(x, y, bonds, numbers, electronic, radii, action, order, ki
     return log_q
 
 
+def independent_defensive_q(x, y, bonds, numbers, electronic, radii, action, order, model, protocol, trace):
+    physical_weight = protocol['physical_weight']
+    assert trace['physical_weight'] == physical_weight == .5
+    first = independent_log_q(x, y, bonds, numbers, electronic, radii, action, order,
+                              'site', None, protocol, trace['components'][0])
+    second = independent_log_q(x, y, bonds, numbers, electronic, radii, action, order,
+                               'normalized_site', model, protocol, trace['components'][1])
+    values = x.new_tensor([first, second])
+    torch.testing.assert_close(values, trace['component_log_densities'], atol=1e-7, rtol=1e-9)
+    result = float(torch.logsumexp(values+x.new_tensor([physical_weight, 1-physical_weight]).log(), 0))
+    assert abs(result-float(trace['log_coordinate_density'])) < 1e-7
+    assert result-first >= math.log(physical_weight)-1e-7
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for arg in ['run', 'models', 'table', 'out']:
         parser.add_argument('--'+arg, type=Path, required=True)
     parser.add_argument('--previous', type=Path, help='Audit continued full-cost controls against this immutable pilot prefix')
     parser.add_argument('--wait-seconds', type=int, default=0, help='Bounded wait for each pending arm within one common deadline')
+    parser.add_argument('--normalized-site', action='store_true')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
-    pp = root/'research/evidence/joint_chemical_protocol_v1.json'
+    pp = root/'research/evidence'/('normalized_site_evaluation_protocol_v1.json' if args.normalized_site else 'joint_chemical_protocol_v1.json')
+    if args.normalized_site and args.previous:
+        raise ValueError('Normalized-site pilot does not use the old continuation protocol')
     protocol = json.loads(pp.read_text())
     cp = root/'research/evidence/joint_chemical_full_cost_protocol_v1.json'
     continuation = json.loads(cp.read_text()) if args.previous else None
@@ -135,10 +163,14 @@ def main():
                 assert protocol['steps'] <= steps <= continuation['maximum_total_steps']
             oracle = ReplayOracle(data['query_trace'])
             target = ChemicalTarget(oracle, report['condition'], physical['kT_eV'], physical['restraint_eV_A2'])
-            model, metadata = load_model(args.models, method, replica, protocol, header['artifacts']['training'])
+            loader = load_normalized_model if args.normalized_site else load_model
+            model, metadata = loader(args.models, method, replica, protocol, header['artifacts']['training'])
+            learned = method.startswith('learned_') if args.normalized_site else metadata is not None
             assert report['policy_sha256'] == (metadata['checkpoint_sha256'] if metadata else None)
-            assert report['inherited_training_raw_queries'] == (metadata['inherited_training_raw_queries'] if metadata else 0)
-            assert report['inherited_source_raw_queries'] == (header['inherited_source_raw_queries'] if metadata else 512)
+            assert report['inherited_training_raw_queries'] == (metadata['inherited_training_raw_queries'] if learned else 0)
+            assert report['inherited_source_raw_queries'] == (header['inherited_source_raw_queries'] if learned else 512)
+            if args.normalized_site:
+                assert report['weights_kind'] == ('initial' if method == 'initial_mixture' else 'final' if learned else 'physical')
             assert report['inherited_development_warm_raw_queries'] == header['streams']['development']['raw_queries']
             states = target.evaluate([target.coordinate_state(starts['states'][i]['positions']) for i in starts['warm_state_ids']], phase='initial')
             rng = torch.Generator().manual_seed(protocol['evaluation_seeds'][replica])
@@ -164,7 +196,8 @@ def main():
                 elif kind == 'force_rotation':
                     states, rows = uniform_internal_transition(target, states, kind=kind, generator=rng, phase=phase)
                 else:
-                    states, rows = joint_chemical_transition(target, states, kind=method, generator=rng,
+                    decoder = ('site' if method == 'site' else 'defensive_site') if args.normalized_site else method
+                    states, rows = joint_chemical_transition(target, states, kind=decoder, generator=rng,
                         phase=phase, model=model, radial_width=protocol['radial_width'], site_concentration=protocol['site_concentration'])
                     for index, row in enumerate(rows):
                         if not row['valid']:
@@ -175,6 +208,12 @@ def main():
                             i, j, k, l = row['action']
                             r = target.radii
                             correction = 3*float(((r[i]+r[l])/(r[j]+r[l])).log()+((r[j]+r[k])/(r[i]+r[k])).log())
+                        elif decoder == 'defensive_site':
+                            qf = independent_defensive_q(x, y, old[index]['graph']['bond_orders'], numbers, electronic,
+                                target.radii, row['action'], row['order'], model, protocol, row['forward'])
+                            qr = independent_defensive_q(y, x, new['graph']['bond_orders'], numbers, electronic,
+                                target.radii, row['inverse_action'], row['order'], model, protocol, row['reverse'])
+                            correction = qr-qf
                         else:
                             qf = independent_log_q(x, y, old[index]['graph']['bond_orders'], numbers, electronic,
                                 target.radii, row['action'], row['order'], method, model, protocol, row['forward'])
