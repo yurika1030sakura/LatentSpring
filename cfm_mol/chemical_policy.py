@@ -26,7 +26,10 @@ class ChemicalMovePolicy(nn.Module):
         for head in [self.family_head,self.action_head[-1]]:
             nn.init.zeros_(head.weight);nn.init.zeros_(head.bias)
 
-    def forward(self,x,bonds,numbers,electronic,actions,mask=None):
+    def element_nodes(self,numbers):
+        return self.elements(numbers)
+
+    def _action_logits(self,x,bonds,numbers,electronic,actions,mask=None):
         if (x.ndim!=3 or x.shape[-1]!=3 or not 2<=x.shape[1]<=200
                 or bonds.shape!=x.shape[:2]+(x.shape[1],) or numbers.shape!=(x.shape[1],)
                 or actions.ndim!=3 or actions.shape[0]!=len(x) or actions.shape[-1]!=4):
@@ -37,7 +40,7 @@ class ChemicalMovePolicy(nn.Module):
             raise ValueError('Finite state inputs required')
         n=x.shape[1];distance=((x[:,:,None]-x[:,None,:]).square().sum(-1)+1e-8).sqrt()
         radial=torch.exp(-.5*((distance[...,None]-self.centers)/.4)**2)
-        nodes=self.elements(numbers)[None]+self.state(electronic)[:,None]
+        nodes=self.element_nodes(numbers)[None]+self.state(electronic)[:,None]
         pair_mask=(~torch.eye(n,dtype=torch.bool,device=x.device))[None,:,:,None]
         for message,update in zip(self.messages,self.updates):
             a=nodes[:,:,None].expand(-1,-1,n,-1);b=nodes[:,None,:].expand(-1,n,-1,-1)
@@ -48,7 +51,7 @@ class ChemicalMovePolicy(nn.Module):
         if (((actions<0)|(actions>=n))&mask[...,None]).any():
             raise ValueError('Action index outside the molecule')
         if actions.shape[1]==0:
-            return nodes.sum((1,2))[:,None]*0
+            return nodes,x.new_zeros(len(x),0),mask
         safe=torch.where(mask[...,None],actions,torch.zeros_like(actions))
         batch=torch.arange(len(x),device=x.device)[:,None]
         i,j,k,l=safe.unbind(-1)
@@ -57,6 +60,12 @@ class ChemicalMovePolicy(nn.Module):
         first=torch.cat([hi,hj,hk,hl,di[...,None],dj[...,None],dij[...,None]],-1)
         second=torch.cat([hj,hi,hl,hk,dj[...,None],di[...,None],dij[...,None]],-1)
         logits=.5*(self.action_head(first)[...,0]+self.action_head(second)[...,0])
+        return nodes,logits,mask
+
+    def forward(self,x,bonds,numbers,electronic,actions,mask=None):
+        nodes,logits,mask=self._action_logits(x,bonds,numbers,electronic,actions,mask)
+        if actions.shape[1]==0:
+            return nodes.sum((1,2))[:,None]*0
         counts=mask.sum(1);available=counts>0
         local=self.family_floor+(1-2*self.family_floor)*self.family_head(nodes.mean(1))[:,0].sigmoid()
         local=torch.where(available,local,torch.ones_like(local))

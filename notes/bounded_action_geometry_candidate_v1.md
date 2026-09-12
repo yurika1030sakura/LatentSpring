@@ -55,3 +55,32 @@ eligibility, complete forward/reverse likelihood ratios, support and actual
 importance weights. A small offline gain still needs fresh measured sampling
 validation before a production comparison. Do not treat the probability-flow
 identity, action logits, or an extra neural head alone as established AI novelty.
+
+## Implementation checkpoint
+
+The candidate is now implemented in `cfm_mol/bounded_action_geometry.py`.
+`BoundedConditionalActionPolicy` reuses the old symmetric message/action encoder
+and substitutes continuous atomic descriptors. It has no move-family head.
+`ActionGeometryGuide` keeps inactive components frozen for each ablation;
+`full_observed_densities` combines conditional action and coordinate laws and
+checks the recorded uniform action-count ratio against freshly enumerated sets.
+The production joint transition accepts the conditional policy explicitly and
+records its complete forward/reverse action probabilities. The default old
+uniform-action RNG and checkpoint behavior remain unchanged.
+
+All 1,671 behavior attempts have their legal action sets checked. The 1,597
+scored pairs have valid inverse actions; forward counts range from 4 to 36 and
+reverse counts from 4 to 38. Original `ChemicalMovePolicy` state dictionaries
+reproduce the previous implementation exactly. Independent NumPy action
+probabilities agree on real geometry; fixed finite-state and molecular gradient,
+symmetry and transition replay tests pass. These are implementation checks.
+
+The frozen six-arm protocol is
+`research/evidence/action_geometry_training_protocol_v1.json`: three variants,
+two seeds, 300 fixed steps, batch eight, same objective/data and total log-ratio
+bound 2. Active neural parameter counts and runtime are reported, not claimed
+matched. No fresh-oracle validation outcomes enter this fitting experiment.
+Training and audit scripts are `train_action_geometry.py` and
+`audit_action_geometry.py` under `scripts/research/`. The audit rebuilds the split,
+replays final/baseline metrics, checks both active-head gradients and independently
+evaluates full densities on one scored edge per parent. Read NEXT for live jobs.

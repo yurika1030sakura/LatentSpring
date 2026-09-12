@@ -1,0 +1,100 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-12T21:08:41.599490+00:00",
+  "data_run": "runs/accepted_utility_data_v1/dataset",
+  "data_results_sha256": "2ffc4924b6781f846cc8b164bbcd0dcb091c92b4114002915fa339432e987f8e",
+  "data_sha256": "a879bda7abcc5070f4213fe160e7ee0318fa578946cac6a1fb1dc15291618600",
+  "arc_options": {
+    "margin": 1e-08,
+    "max_segment_width": 0.04908738521234052
+  },
+  "seeds": [
+    25621,
+    25623
+  ],
+  "steps": 300,
+  "batch_edges": 8,
+  "learning_rate": 0.003,
+  "weight_decay": 0.0001,
+  "gradient_clip": 5.0,
+  "ratio_penalty_eV": 0.005,
+  "log_steps": [
+    50,
+    100,
+    150,
+    200,
+    250,
+    300
+  ],
+  "final_checkpoint_selection": "Fixed final step300; no favorable intermediate selection.",
+  "objective": "Maximize J_theta - eta0*C_theta, normalized by baseline expected query cost. J is signed actual-MH potential decrease, C is importance-estimated scored-proposal raw cost. eta0 is the frozen FIT baseline J/C. Add an empirical forward/reverse log-ratio penalty; it is not a KL claim. Learned action variants use FULL forward/reverse action-plus-coordinate densities and FULL uniform-action behavioral density, with separate action_log_ratio=0.",
+  "edge_sampling": "Half parent/replica/condition-balanced empirical weights, half the same weights times absolute baseline cost-adjusted utility. Divide every minibatch contribution by its exact index sampling probability. No scored/accepted-only conditioning.",
+  "validation": "All12 newly hashed selection parents; report every condition, raw J, C, J/C, constitutional flow, scored-edge ESS and weight range. These remain internal empirical proxies, not molecular efficiency or final evaluation.",
+  "new_physical_queries": 0,
+  "model_training_source_raw_queries": 12288,
+  "model_training_preparation_raw_queries": 5822,
+  "total_model_specific_data_raw_queries": 18110,
+  "maximum_cpu_hours": 6,
+  "scope": "Three bounded offline variants, two seeds each; no new physical queries. No fitting on fresh proposal outcomes, prior molecular evaluations or reserved conditions. Internal comparisons are descriptive and not multiplicity-adjusted. Fresh measured sampling gains remain necessary.",
+  "scientific_submission_ready": false,
+  "variants": [
+    "action",
+    "geometry",
+    "joint"
+  ],
+  "models": {
+    "action": {
+      "geometry": {
+        "hidden": 16,
+        "radial": 16,
+        "query_radial": 24,
+        "site_concentration": 64.0,
+        "cutoff": 6.0,
+        "restraint": 0.1,
+        "log_score_bound": 0.5
+      },
+      "action": {
+        "hidden": 16,
+        "radial": 16,
+        "logit_bound": 1.0
+      }
+    },
+    "geometry": {
+      "geometry": {
+        "hidden": 16,
+        "radial": 16,
+        "query_radial": 24,
+        "site_concentration": 64.0,
+        "cutoff": 6.0,
+        "restraint": 0.1,
+        "log_score_bound": 0.5
+      },
+      "action": {
+        "hidden": 16,
+        "radial": 16,
+        "logit_bound": 1.0
+      }
+    },
+    "joint": {
+      "geometry": {
+        "hidden": 16,
+        "radial": 16,
+        "query_radial": 24,
+        "site_concentration": 64.0,
+        "cutoff": 6.0,
+        "restraint": 0.1,
+        "log_score_bound": 0.25
+      },
+      "action": {
+        "hidden": 16,
+        "radial": 16,
+        "logit_bound": 0.5
+      }
+    }
+  },
+  "matched_complete_log_ratio_bound": 2.0,
+  "initialization": "Physical site coordinates and uniform legal actions exactly. Geometry constructed first; geometry-only uses the same seeds/configuration as the prior two-seed geometric utility comparison.",
+  "move_family_schedule": "Fixed externally; no local/rotation/joint frequency learned.",
+  "ablations": "Same fixed steps, minibatch draws, seed pairs, data, objective coefficients and total log-ratio bound. Report active parameter counts and runtime; total neural parameter counts are not matched.",
+  "audit": "Rebuild split, replay every final/baseline edge, independently evaluate action probabilities and arc densities on one scored edge per parent, check trained objective finite differences for both active heads. No optimizer-trajectory replay claim."
+}

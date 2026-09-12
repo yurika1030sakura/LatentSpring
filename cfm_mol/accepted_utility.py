@@ -1,4 +1,4 @@
-"""Actual-MH accepted utility under recorded behavioral coordinate proposals."""
+"""Actual-MH accepted utility under recorded behavioral proposals."""
 import torch
 
 
@@ -6,8 +6,11 @@ def accepted_importance_utility(log_forward,log_reverse,log_behavior,target_log_
     """Return signed utility and its NONCLIPPED accepted-flow importance factor.
 
     Inputs concern supported, scored attempts. Unsupported attempts must remain
-    in the external denominator with zero utility. Behavioral action selection
-    must match the learned action selection; only the coordinate law is changed.
+    in the external denominator with zero utility. For coordinate-only learning,
+    densities are coordinate laws and action_log_ratio is the unchanged reverse
+    minus forward action log probability. For learned action selection, pass FULL
+    action-plus-coordinate learned/behavior densities and action_log_ratio=0.
+    Never add the uniform action-count ratio a second time with full densities.
     The identity does not qualify behavioral support or importance-weight ESS.
     """
     if not all(t.shape==log_forward.shape for t in [log_reverse,log_behavior,target_log_ratio,action_log_ratio,reward]):

@@ -168,7 +168,7 @@ def defensive_joint_proposal(x, bonds, numbers, electronic, radii, action, *, ki
 
 @torch.no_grad()
 def joint_chemical_transition(target, states, *, kind, generator, phase,
-                              model=None, radial_width=.05, site_concentration=10.,arc_options=None,row_generators=None):
+                              model=None, radial_width=.05, site_concentration=10.,arc_options=None,row_generators=None,action_policy=None):
     """Matched restricted deterministic or normalized joint-geometry MH move."""
     numbers = torch.tensor(target.numbers, dtype=torch.long)
     electronic = torch.tensor([target.condition['charge'], target.condition['spin_multiplicity'], target.kT], dtype=torch.float64)
@@ -194,7 +194,18 @@ def joint_chemical_transition(target, states, *, kind, generator, phase,
             valid=False, accepted=False)
         candidate = None
         if actions:
-            index = int(torch.randint(len(actions), (1,), generator=rng))
+            if action_policy is None:
+                index = int(torch.randint(len(actions), (1,), generator=rng))
+            else:
+                eligible, action_logp = action_policy.legal_log_probabilities(
+                    old['positions'], old['graph']['bond_orders'], numbers, electronic)
+                if eligible != actions:
+                    raise ValueError('Conditional action policy changed the legal action list')
+                if not torch.isfinite(action_logp).all() or abs(float(action_logp.exp().sum())-1)>1e-10:
+                    raise ValueError('Finite normalized conditional action probabilities required')
+                index = int(torch.multinomial(action_logp.exp(), 1, generator=rng))
+                row.update(forward_action_log_probabilities=action_logp,
+                           log_forward_action=action_logp[index])
             action = actions[index]
             i, j, k, l = action
             inverse = (i, j, l, k)
@@ -230,8 +241,20 @@ def joint_chemical_transition(target, states, *, kind, generator, phase,
                     if is_arc:
                         row['reverse_density_positive']=bool(torch.isfinite(reverse_q))
                         if not row['reverse_density_positive']:raise ValueError('Zero reverse arc proposal density')
+                action_ratio = math.log(len(actions)/len(reverse_actions))
+                if action_policy is not None:
+                    eligible, reverse_logp = action_policy.legal_log_probabilities(
+                        y, candidate['graph']['bond_orders'], numbers, electronic)
+                    if eligible != reverse_actions or not torch.isfinite(reverse_logp).all():
+                        raise ValueError('Invalid reverse conditional action probabilities')
+                    if abs(float(reverse_logp.exp().sum())-1)>1e-10:
+                        raise ValueError('Reverse conditional action probabilities must normalize')
+                    reverse_selected = reverse_logp[reverse_actions.index(inverse)]
+                    action_ratio = float(reverse_selected-row['log_forward_action'])
+                    row.update(reverse_action_log_probabilities=reverse_logp,
+                               log_reverse_action=reverse_selected)
                 row.update(valid=True, reverse_count=len(reverse_actions),
-                    action_log_ratio=math.log(len(actions)/len(reverse_actions)))
+                    action_log_ratio=action_ratio)
             except ValueError as exc:
                 candidate = None
                 row['rejection_reason'] = str(exc)

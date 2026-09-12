@@ -44,10 +44,10 @@ def edge_values(model,row,options):
 
 
 @torch.no_grad()
-def evaluate(model,records,options):
+def evaluate(model,records,options,edge_evaluator=edge_values):
     weights=population_weights(records);values=[]
     for r in records:
-        u,c,g,w,p,l=edge_values(model,r,options)
+        u,c,g,w,p,l=edge_evaluator(model,r,options)
         values.append(dict(index=r['index'],parent=r['parent'],replica=r['replica'],step=r['step'],valid=r['valid'],
             utility_eV=float(u),expected_raw_cost=float(c),accepted_constitutional_flow=float(g),
             scored_importance=float(w),ratio_penalty=float(p),log_forward_ratio=float(l)))
