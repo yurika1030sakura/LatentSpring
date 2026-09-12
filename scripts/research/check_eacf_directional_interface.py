@@ -22,6 +22,12 @@ def main():
     if output.exists():
         raise FileExistsError(output)
     saved_report = json.loads((args.run/'results.json').read_text())
+    recipe = saved_report['recipe']
+    shape = tuple(recipe[k] if not isinstance(recipe[k], list) else tuple(recipe[k]) for k in
+                  ['n_layers', 'n_blocks', 'mlp_units', 'n_invariant_feat_hidden', 'embedding_dim'])
+    profiles = {(12, 3, (64, 64), 128, 32): 'published', (2, 1, (12,), 12, 8): 'compact'}
+    if shape not in profiles or saved_report.get('architecture_profile', profiles[shape]) != profiles[shape]:
+        raise ValueError('Unknown or inconsistent frozen architecture profile')
     for name, digest in saved_report['artifacts'].items():
         assert sha(args.run/name) == digest
     archived = np.load(args.run/'samples.npz')
@@ -29,7 +35,7 @@ def main():
     assert table_report['complete'] and sha(args.table/'development.pt') == table_report['artifacts']['development']
     warm = torch.load(args.table/'development.pt', map_location='cpu', weights_only=False)
     assert warm['condition'] == saved_report['condition'] and warm['stream'] == 'development'
-    report = dict(complete=False, profile=saved_report['architecture_profile'], replica=saved_report['replica'],
+    report = dict(complete=False, profile=profiles[shape], replica=saved_report['replica'],
         checkpoint_sha256=sha(args.run/'adapter.pkl'), development_sha256=sha(args.table/'development.pt'),
         original_results_sha256=sha(args.run/'results.json'), new_physical_queries=0,
         scientific_submission_ready=False, checks=[])
