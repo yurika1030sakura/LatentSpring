@@ -83,6 +83,31 @@ successful repair. The range/architecture were selected after inspecting the
 full probe summaries, so these are internal diagnostics, not a blind test.
 Do not release these pilot weights as a corrected molecular method.
 
+The completed post hoc decomposition (`runs/stiffness_mode_diagnostic_v1`,
+job 46148875) reproduces both checkpoint metrics and independently checks
+
+    KL(vMF(k_t,mu_t) || vMF(k_s,mu_s))
+      = KL(vMF(k_t,mu_t) || vMF(k_s,mu_t))
+        + k_s A(k_t) (1 - mu_t dot mu_s).
+
+On the eight withheld training parents, final width KL is only 0.0334/0.0681,
+whereas direction KL is 13.0439/6.1902. Direction contributes over 98% of the
+remaining error in each seed. Thus the student learns concentration but is too
+confident in its direction on new parents. The physical-site control has local
+teacher KL 1.997 at concentration 64 and 5.343 at 400 on these same parents:
+merely increasing concentration amplifies direction error. These comparisons
+are diagnostic local-surrogate KLs, not molecular trajectory outcomes.
+
+Eight additional proposal-training compositions are frozen in
+`research/evidence/proposal_training_panel_v1.json`, with four per size stratum
+8--12 and 13--24. Fixed metadata ranks exclude both the old eight and evaluated
+six compositions; energy values and generated structures cannot affect selection.
+The initial geometry-only protocol permits 256 attempts per composition, zero
+physical calls and no model fitting. All source failures must be retained before
+any subsequent physical-data protocol is frozen. The generator now records the
+explicit `fresh_training` stream. Selection/energy-independence tests and a full
+regression replay of the previous six source audits passed (job 46149458).
+
 ## Next decisions
 
 Physical controls with concentrations64 and400 are frozen and running across
