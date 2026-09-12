@@ -174,6 +174,12 @@ def joint_chemical_transition(target, states, *, kind, generator, phase,
     With a delayed-acceptance screen, valid means geometrically supported;
     scored identifies the proposals that actually reached the energy oracle.
     Use scored, not valid, for physical-query cost accounting in that mode.
+    log_acceptance_ratio remains the ordinary unscreened MH ratio. Screened
+    rows additionally store the conditional second-stage threshold and total
+    per-candidate acceptance probability. On an ACTUAL screened run, an unbiased
+    one-step utility estimate is zero for unqueried rows and alpha_2*reward for
+    queried rows: multiplying by the first-gate probability again double-counts
+    the already sampled gate. Total alpha is for fully scored reference pairs.
     """
     numbers = torch.tensor(target.numbers, dtype=torch.long)
     electronic = torch.tensor([target.condition['charge'], target.condition['spin_multiplicity'], target.kT], dtype=torch.float64)

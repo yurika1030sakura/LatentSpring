@@ -1,81 +1,81 @@
 # Current research status — September 12, 2026
 
-Authoritative checkpoint: `research/DELAYED_SCREEN_STATE_20260912.json`.
-The full ICLR goal remains active and scientifically unachieved. Delayed
-screening has a positive internal query-rate proxy, but no learned advantage
-over suitable cheap controls or actual molecular efficiency gain is established.
+Authoritative checkpoint: `research/SOURCE_FORCE_SCREEN_STATE_20260912.json`.
+The full ICLR goal remains active and scientifically unachieved. The completed
+source-force learner does not establish a useful advantage over cheap controls.
 
-## Completed bounded delayed-screen comparison
+## General gates and completed experiment
 
-The physical site-arc proposal and move-family schedule are fixed. Zero and
-physical screens are fixed controls; linear and neural screens each have two
-300-step models trained only on 36 FIT parents. The same 12 internal-selection
-parents, 1,671 attempts and 74 failed attempts remain. Antisymmetric factors are
-bounded by log(16); the exact second acceptance step corrects the cheap screen.
-A zero screen reproduces original RNG streams, queries and trajectories exactly.
-The screen sees no candidate oracle values before the first decision.
+Forward gates use the current state's cached even force, proposed geometry,
+perceived graphs, electronic conditions and known proposal ratio. Candidate
+force is used only after a passing gate and a paid query. The second log ratio
+is R + log(g_reverse) - log(g_forward), not an assumed reciprocal R-s. Tests
+cover molecular/force symmetries, information order, zero-gate exact RNG/query
+replay, and visible error after an invalid paid reverse gate. Nineteen combined
+regressions pass; independent FIT preview agrees to2.23e-16.
 
-Internal expected utility per raw call (eV):
+A five-coefficient linear model and paired-geometry/force GNN each train for300
+steps and two seeds. Physical, source-work and zero controls are fixed. Each
+learner's constant-thinning control is calibrated only from FIT query use.
+The unchanged data contain36 FIT /12 internal-selection parents,1,671 attempts,
+74 failures, and verified original force/electronic provenance. No new oracle
+calls are used; inherited data construction still costs18,110 raw calls.
 
-| Screen | Seed 0 | Seed 1 |
+The objective/evaluation now includes initial and nonjoint work/cost constants
+from the original complete prefixes. The72 FIT prefixes cost128 calls each and
+have mean expected work0.4947591 eV, giving the fixed rate0.0038653057 eV/call.
+Joint contributions are replaced at recorded states; the changed trajectories
+are not replayed. All96 original prefixes and1,671 joints are joined and checked.
+
+## Internal whole-prefix results
+
+Expected work per expected raw call, eV, on12 internal parents and24 prefixes:
+
+| Model | Seed0 | Seed1 |
 | --- | --- | --- |
-| No screen | 0.003225565 | same fixed control |
-| Fixed physical | 0.006225109 | same fixed control |
-| Linear | 0.004225544 | 0.004607301 |
-| Neural | 0.004225887 | 0.004607253 |
+| No screen | 0.004167470 | same fixed control |
+| Fixed physical | 0.004733094 | same fixed control |
+| Source work | 0.004522226 | same fixed control |
+| Linear | 0.004224067 | 0.004263457 |
+| Neural | 0.004420138 | 0.004258544 |
 
-The learned gains over no screening are about 31% / 43%; their descriptive
-parent intervals exclude zero. The fixed physical control's point gain is 93%,
-with difference interval [0.0003541, 0.0059175] eV per expected call. Learned-minus-
-physical intervals span zero and do not establish a learned advantage. Neural-
-minus-linear differences are +3.42e-7 / -4.81e-8, with intervals spanning zero.
-The extra neural model has no established value in this comparison.
+Neural gains versus no screen are6.06% /2.19%; fixed physical gives13.57% and
+source work8.51%. Neural-minus-physical differences are-0.0003130 /-0.0004745,
+with95% parent intervals[-0.0005384,-0.0001026] and[-0.0008875,-0.0001086]. Both
+favor the fixed physical control. Only the first neural seed beats its matched
+thinning baseline; neither establishes an advantage over the linear model.
+Intervals fix four compositions, retain both trajectories per parent and are
+not multiplicity-adjusted. Summary: `runs/source_force_screen_summary_v1/results.json`.
 
-Learned screens retain about 94.7% / 95.4% of signed utility while expected joint
-query cost falls to 72.3% / 66.8% of no screening. These are recorded-pair
-expectations, not actual saved calls or screened-chain results. Expected rejected
-joint calls occupy only 24.35% of the preceding complete FIT trajectory budget;
-large conditional query-rate changes cannot be called whole-sampler speedups.
-Preparation and learning costs are additional. All intervals fix four
-compositions, resample parents with both trajectories and are not multiplicity-
-adjusted. Summary: `runs/delayed_screen_summary_v2/results.json`; v1 is retained.
+All final/control metrics replay. Independent calculations cover6,388 supported
+pair cases with both gates and balance, max discrepancy2.09e-14. Six sensitive
+trained-head gradients agree with FD to8.51e-10. Jobs46199581/46199747 completed
+with exit code zero. This is still a fixed-source expectation, not achieved
+query savings, changed-chain endpoints, equilibrium or a wall-time speedup.
+The earlier93% physical-screen gain used conditional joint-query rates; the
+13.57% value uses whole-prefix denominators, so those numbers are compatible.
 
-Every final/fixed-control metric replays. Independent NumPy checks cover 1,597
-supported pairs per model, including both orientations and balance: 6,388 pair
-cases, maximum discrepancy 3.09e-14. Six sensitive trained-head finite differences
-have maximum error 4.93e-10. Training 46196124 and audit 46196212 are complete.
-No new physical queries or actual query savings were produced by this experiment.
-Data construction costs remain 18,110 raw calls.
+## Next bounded learning question
 
-## Implementation and next information source
+`runs/gate_teacher_diagnostic_v1/results.json` uses only FIT outcomes. Neural
+seed0 retains98.95% of expected accepted moves but costs7.26 times the oracle-
+informed minimal gate; seed1 retains75.67% and costs5.71 times that teacher.
+Physical screening retains51.20% and costs3.00 times it. These are diagnostics,
+not evidence for a different primary success metric or a mixing comparison.
+The oracle-informed gate uses unknown candidate energy and is not deployable.
 
-Actual screened dispatch distinguishes geometry validity from scored proposals;
-first-stage rejects do not query the candidate potential. Mathematical/sampler
-checks passed 22 tests, followed by 17 screen/oracle/joint regressions. A fake
-worker exposed a buffered-stdout timeout in the tensor oracle. Reusing the
-NumPy oracle byte-buffer reader fixes it; numeric values and counters pass.
-Energy RPC time is recorded separately, including failed calls. Old runs retain
-original timing; no historical failure is inferred from the fake-worker test.
+The bounded oracle targets and a simple underprediction/retention relation are
+implemented in `cfm_mol/gate_teacher.py`; two tests pass. A next candidate tests
+dense target pretraining followed by utility refinement against a matched total-
+step direct-utility control, with both linear/neural and two seeds. No such
+protocol or model is frozen/fitted yet. See `notes/gate_distillation_candidate_v1.md`.
+No new physical queries are needed initially. Keep all selection/fresh/prior
+molecular-evaluation and722 reserved outcomes out of fitting. Prior action/geometry,
+scalar-chain, strong-control and transfer negatives remain unchanged.
 
-`runs/screen_force_pairs_v1` now attaches already-paid source forces to all 1,671
-attempts and candidate forces to 1,597 scored pairs. Original split, charge/spin,
-positions and trace hashes are preserved. All 3,233 distinct used force states
-and projected scores reconstruct exactly from raw/inverted outputs. No new
-queries or fitting were used. Candidate force must remain unavailable to the
-forward pre-query screen. A source-force candidate needs a general nonsymmetric
-screen correction; it is not yet implemented or frozen. Read
-`notes/cached_force_screen_candidate_v1.md` and NEXT.
+Historical status: `notes/archive/status_through_delayed_screen_20260912.md`.
 
-The action/geometry null result, scalar-chain failure, old vector/strong-control
-and transfer negatives, and geometric fresh-proposal null result remain unchanged.
-Their complete checkpoints are `research/ACTION_GEOMETRY_STATE_20260912.json`,
-`research/ACCEPTED_UTILITY_STATE_20260912.json` and
-`research/CONDITIONAL_CHAIN_RESULT_20260912.json`. Do not scale those weights.
-Keep every evaluated cohort and the 722 reserved outcomes out of fitting.
-
-Historical status: `notes/archive/status_through_action_geometry_complete_20260912.md`.
-
-Verified development PDF: `runs/verification/delayed_screen_completed_20260912/main.pdf`
-(9 main pages, 22 total). Build record:
-`research/evidence/delayed_screen_completed_build_20260912.json`. This does not
-establish scientific submission readiness.
+Verified development PDF: `runs/verification/source_force_screen_completed_20260912/main.pdf`
+(9 main pages,23 total). Build evidence:
+`research/evidence/source_force_screen_completed_build_20260912.json`. Scientific
+submission readiness remains false.

@@ -1,0 +1,73 @@
+\section{Cached-force gates and whole-prefix accounting}
+\label{app:source-force-screen}
+
+The physical sampler already stores a paired-oracle force at each current state.
+We test using it in a cheap gate, with candidate force available only after the
+first test passes. Such gates need not be reciprocal. For forward and reverse
+passing probabilities $g_f,g_r\in[e^{-B},1]$, the correction is
+\begin{equation}
+ \alpha_2=\min\{1,e^R g_r/g_f\},\qquad
+ \alpha_{\mathrm{total}}=\min\{g_f,e^R g_r\}.
+\end{equation}
+The reverse gate is evaluated with the newly queried candidate force. The
+forward routine receives only the source force. This is ordinary MH on a
+screened proposal with rejected mass assigned to self transitions; substituting
+$R-s$ without a reciprocal-factor relation would be incorrect. Tests verify
+zero-screen RNG/query equivalence, finite-state balance, actual molecular
+information order and visible failure after an invalid paid reverse gate.
+
+The five-coefficient control adds source even-force work to the preceding cheap
+features. A fixed work control combines this first-order physical energy estimate
+with the exact known COM-restraint change and proposal ratio. The neural model
+uses a two-layer invariant paired-geometry graph encoder with source force/work,
+force norm, displacement, electronic conditions and symmetric leaf/anchor roles.
+All 1,671 pairs retain their original split and failures. Forces and projected
+scores for 3,233 used states reconstruct exactly from the stored raw/inverted
+outputs; no new oracle calls are needed.
+
+We also change the declared proxy to include initial and nonjoint costs and work.
+Each recorded physical trajectory contributes equally. Its nonjoint terms remain
+fixed while joint expectations are replaced by those of the screen. The 72 FIT
+trajectories each cost 128 calls and have mean expected work 0.4947591\,eV, giving
+the fixed optimization rate $\eta_0=0.0038653057$\,eV per call. These are still
+fixed-source expectations, not a replay of the changed chain. Two seeds per
+learned model run 300 steps. Constant thinning is separately calibrated to each
+model's FIT joint-query use and evaluated without tuning on selection outcomes.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{lrrr}
+\toprule
+Gate & Work (eV/prefix) & Calls/prefix & $10^3$ work/call \\
+\midrule
+No screen & 0.53344 & 128.000 & 4.1675 \\
+Fixed physical & 0.50311 & 106.296 & 4.7331 \\
+Source work & 0.49293 & 109.003 & 4.5222 \\
+Linear, seed 0 & 0.48188 & 114.081 & 4.2241 \\
+Linear, seed 1 & 0.49525 & 116.162 & 4.2635 \\
+Neural, seed 0 & 0.53344 & 120.684 & 4.4201 \\
+Neural, seed 1 & 0.48793 & 114.576 & 4.2585 \\
+\bottomrule
+\end{tabular}
+\caption{Internal whole-prefix expectations on 12 selection parents and two
+physical trajectories each. All initial/nonjoint contributions are retained.
+The last column is in $10^{-3}$\,eV per expected call. These values are not
+achieved speedups or screened-chain endpoint measurements.}
+\label{tab:source-force-screen}
+\end{table}
+
+All final/control metrics replay. Independent checks cover 6,388 supported-pair
+cases, both gates and their balance relation (maximum error
+$2.09\times10^{-14}$); six sensitive trained-head finite differences have maximum
+error $8.51\times10^{-10}$. Relative to no screening, neural point improvements
+are 6.06\% and 2.19\%, versus 13.57\% for fixed physical screening and 8.51\% for
+the fixed work control. Both neural-minus-physical 95\% parent intervals are
+below zero: $[-5.38,-1.03]\times10^{-4}$ and
+$[-8.88,-1.09]\times10^{-4}$\,eV per expected call. Only the first neural seed
+establishes improvement over its matched thinning control; neural-minus-linear
+intervals span zero for both seeds. These descriptive intervals fix composition
+and are not multiplicity-adjusted. This comparison therefore does not establish
+a useful neural advantage and does not justify scaling the weights. The earlier
+93\% physical-screen result concerns conditional joint-query rates; it is not
+inconsistent with the smaller whole-prefix estimate here. Neither estimate
+establishes a complete-chain or wall-time gain.

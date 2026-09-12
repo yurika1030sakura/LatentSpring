@@ -2,45 +2,43 @@
 
 Active checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
 `iclr2027-arch-fix`. Read `CLAUDE.md`, `research/NEXT.md`, `research/STATUS.md` and
-`research/DELAYED_SCREEN_STATE_20260912.json`. Keep environments separate and
+`research/SOURCE_FORCE_SCREEN_STATE_20260912.json`. Keep environments separate;
 never write to the home checkout.
 
-The four delayed-screen training arms and independent audits are complete.
-They use the fixed physical site-arc proposal and exact two-stage correction.
-Internal learned query-rate gains over no screen are 31% / 43%, while the fixed
-physical control's point gain is 93%. Neural and four-parameter linear results
-are nearly identical; their difference intervals span zero. No useful neural
-advantage, achieved query saving, full-chain or wall-time benefit is established.
-Do not scale those neural weights. All prior negatives remain.
+The source-force screen uses general forward/reverse gate probabilities and
+candidate force only after querying. Its paired-geometry neural encoder,
+linear control, fixed physical/work controls and FIT-matched thinning are
+implemented. All four300-step runs and independent audits are complete.
+Whole-prefix neural point gains are6.06% /2.19% versus no screen, but fixed
+physical gives13.57%. Both neural-minus-physical intervals are below zero;
+neural-minus-linear intervals span zero. Only seed0 beats matched thinning.
+No repeatable useful neural advantage is established. Do not scale the weights.
 
-Summary: `runs/delayed_screen_summary_v2/results.json`; v1 is retained. Every
-model/control metric and 6,388 supported-pair cases are independently checked,
-with both orientations, factor balance and costs. Maximum discrepancy is
-3.09e-14; six trained-head finite differences have maximum error 4.93e-10.
-Jobs 46196124 and 46196212 are terminal; re-query Slurm before action.
+Summary: `runs/source_force_screen_summary_v1/results.json`. All model/control
+metrics and6,388 supported-pair cases replay independently; max error2.09e-14.
+Six trained-head FD checks have max error8.51e-10. Training46199581 and audit
+46199747 are terminal. No new physical queries or actual saved calls occurred.
+The prefix proxy includes initial/nonjoint cost/work but holds source trajectories
+fixed. It is not a changed chain or wall-time result. Previous negatives remain.
 
-The next bounded candidate may use the source force already cached by the
-sampler. `runs/screen_force_pairs_v1` contains all 1,671 old pairs/failures and
-unchanged splits, with 3,233 used states' forces reconstructed exactly from raw
-and inverted oracle forces. No new physical calls were used. Candidate force
-is available only after its query: it must never be fed into a forward screen.
-Read `notes/cached_force_screen_candidate_v1.md` and NEXT. Source-force gates
-need the general reverse/forward gate correction, not an assumed antisymmetric
-R-s formula. No force-screen model or protocol is implemented or frozen yet.
+Next read `notes/gate_distillation_candidate_v1.md`. FIT-only gate-target
+analysis suggests testing dense label pretraining before utility refinement,
+with a matched total-step direct-utility control. The oracle labels and simple
+retention bound are implemented/tested; no distillation model or protocol is
+frozen/fitted yet. Do not claim the oracle teacher is deployable: its labels use
+the candidate's energy, which a cheap forward gate cannot see. Only36 FIT
+parents may enter optimization; retain12 internal-selection parents and failures.
 
-The tensor EnergyOracle's buffered noisy-output timeout was reproduced with a
-fake worker and fixed using the existing NumPy oracle's byte-buffer reader.
-Values and requested/acknowledged counts still pass tests; RPC wall time is now
-recorded separately. This does not retroactively time or invalidate prior runs.
+`runs/screen_force_pairs_v1` contains all1,671 pairs with audited force provenance;
+`runs/screen_prefix_accounting_v1` contains the96 original trajectory constants.
+Do not fit on fresh follow-up outcomes, either prior molecular evaluation cohort
+or722 reserved conditions. Data construction remains18,110 raw calls. Actual
+chain gains, complete costs and suitable learned/physical controls are required.
+The ICLR goal is active and scientifically unachieved. Authors/submission remain
+with the user. Prior handoff:
+`notes/archive/claude_handoff_through_delayed_screen_20260912.md`.
 
-Keep only 36 FIT parents in optimization; retain the 12 internal-selection
-parents and all failures. Never fit on fresh follow-up outcomes, either prior
-molecular evaluation cohort, or the 722 reserved conditions. Inherited data
-construction costs remain 18,110 raw calls. The ICLR goal remains active and the
-paper scientifically unready; authors and actual submission remain with the user.
-Prior handoff: `notes/archive/claude_handoff_through_action_geometry_complete_20260912.md`.
-
-Verified development PDF: `runs/verification/delayed_screen_completed_20260912/main.pdf`
-(9 main pages, 22 total). Build record:
-`research/evidence/delayed_screen_completed_build_20260912.json`. This does not
-establish scientific submission readiness.
+Verified development PDF: `runs/verification/source_force_screen_completed_20260912/main.pdf`
+(9 main pages,23 total). Build evidence:
+`research/evidence/source_force_screen_completed_build_20260912.json`. Scientific
+submission readiness remains false.

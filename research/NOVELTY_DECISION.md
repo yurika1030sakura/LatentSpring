@@ -1,35 +1,37 @@
 # Current contribution decision — September 12, 2026
 
-The bounded delayed-screen comparison is complete and audited. Linear and
-neural models improve a recorded-pair query-rate proxy over no screening, but
-the fixed physical screen has a higher point estimate. Neural-versus-linear
-intervals span zero. This does not establish an added neural contribution or
-actual sampling gain. Read `research/DELAYED_SCREEN_STATE_20260912.json`.
+The source-force/general-gate comparison is complete. Both neural seeds lose
+to the fixed physical screen on the declared internal whole-prefix proxy;
+only one beats matched thinning, and neither establishes benefit over linear
+learning. Read `research/SOURCE_FORCE_SCREEN_STATE_20260912.json`. Do not scale
+these weights or promote cached force inputs alone as a useful AI contribution.
 
-Delayed acceptance, learned surrogates, derivative-informed acceleration and
-screening of structural moves have close prior art; see
-`notes/delayed_acceptance_prior_art_20260912.md`. The exact correction is required
-for validity, not claimed as a new theorem. Large per-joint-query changes do not
-establish whole-kernel speedups, and no actual calls have been saved in this
-recorded-pair experiment. Do not scale these neural weights.
+The correction for arbitrary positive screens is ordinary MH on q*g. The source
+force is already paid for by the physical sampler; using it is not a new physics
+law. Correct information order, density ratios, force parity and complete costs
+are required for validity, not stand-alone novelty. All prior negative results
+remain. Whole-prefix expectations do not prove changed-chain or equilibrium gains.
 
-The next possible input is a cached source force. It is already part of the
-physical sampler and may support a work estimate before querying a candidate.
-This is a first-order approximation with known limitations, not exact finite
-work. A source-only gate is generally nonreciprocal; its reverse probability
-must be computed after querying the candidate and included in the correction.
-The force-augmented data are audited, but no such model or frozen experiment
-exists yet. See `notes/cached_force_screen_candidate_v1.md`.
+A FIT-only diagnosis motivates testing dense gate-target pretraining, followed by
+the existing utility objective, against equally trained direct-utility controls.
+The oracle targets retain original MH acceptance and are pointwise minimal under
+the gate floor; the simple log-underprediction bound follows directly from the
+minimum of forward/reverse probability flows. These are elementary identities,
+not new theorems. The teacher uses candidate energy and cannot run as a cheap
+forward screen. Empirical target error cannot certify uniform unseen-state
+retention or mixing. See `notes/gate_distillation_candidate_v1.md`.
 
-Any contribution must demonstrate useful molecular learning against fixed
-physical and simple learned controls, with actual chain/query/wall-time/data
-costs and independent final evaluation. Include a thinning/frequency control
-when interpreting screened-chain gains. No fitting on internal selection,
-fresh follow-up outcomes, either previous molecular evaluation cohort or the
-722 reserved conditions. The old action/geometry, scalar, vector and stronger-
-control negatives remain; standard MH/force principles and a new neural head
-alone do not satisfy novelty. The user requires a useful defensible method,
-not perfection or a new physical law. The full ICLR goal is active and the
-paper scientifically unready.
+No distillation protocol/model is frozen/fitted yet. A matched comparison must
+include linear and neural variants, both seeds, fixed physical controls and FIT-
+matched thinning, without switching the primary metric after outcomes. Only36
+FIT parents may enter updates. Keep12 internal-selection parents, fresh follow-up,
+old molecular evaluation cohorts and722 reserved outcomes out of fitting.
 
-Prior decision: `notes/archive/novelty_decision_through_action_geometry_complete_20260912.md`.
+The intended contribution still needs a distinct useful method with real chain,
+query, timing/data-cost evidence against strong physical and representative
+learned generators, realistic reuse and independent final evaluation. Neither
+an added loss nor a new neural head automatically supplies novelty. The full
+ICLR goal remains active and scientifically unachieved; no new physical law or
+universal perfection is required.
+
+Prior decision: `notes/archive/novelty_decision_through_delayed_screen_20260912.md`.

@@ -18,7 +18,7 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/DELAYED_SCREEN_STATE_20260912.json` first. They record the current method,
+`research/SOURCE_FORCE_SCREEN_STATE_20260912.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
@@ -124,17 +124,29 @@ streams, queries and states. A fake-worker test exposed buffered stdout hiding
 an oracle response; the byte-buffer reader fixes it, and RPC wall time is now
 recorded separately. Original physical results and old timing are retained.
 
-Cached force inputs are now audited in `runs/screen_force_pairs_v1`: all1,671
-attempts, unchanged36/12 split and3,233 force states reconstruct exactly from
-raw/inverted outputs. No new physical queries were used. Candidate force must
-never enter a forward pre-query decision. A source-force gate needs general
-reverse/forward probability correction, not automatically R-s. Read
-`notes/cached_force_screen_candidate_v1.md` and NEXT; this new model/protocol is
-not implemented or frozen. Classical/learned screening and force work estimates
-have prior art and do not by themselves supply novelty. Exclude all evaluated
-cohorts and722 reserved outcomes from fitting. The ICLR goal remains active;
-competitive sampling, equilibrium and scientific submission readiness are
-unqualified. Do not scale the failed neural weights.
+The general source-force screen and whole-prefix accounting comparison are now
+COMPLETE. Forward decisions use only cached source force; candidate force is
+used after querying for the reverse gate. The correction includes both actual
+gate probabilities. Four300-step linear/neural models and fixed physical/work/
+zero controls plus FIT-matched thinning are audited. All6,388 pair cases pass
+independent checks, and all whole-prefix metrics replay. Both neural seeds lose
+to the fixed physical screen; only one beats thinning. No repeatable useful
+neural advantage is established. Do not scale these weights. Jobs46199581 and
+46199747 are terminal. Read `research/SOURCE_FORCE_SCREEN_STATE_20260912.json`.
+
+The fixed-source whole-prefix proxy includes initial/nonjoint costs but does
+not replay changed chains. Neural gains6.06/2.19% versus no screen are below the
+fixed physical13.57%. The earlier93% value used conditional joint-query rates;
+it is not a whole-sampler speedup. No new physical queries or actual savings
+occurred. Force provenance and original36/12 split remain audited.
+
+A FIT-only gate-target diagnosis motivates a bounded pretraining comparison.
+`cfm_mol/gate_teacher.py` implements oracle-only labels and a simple retention
+relation, not a deployable cheap oracle or a new theorem. Read
+`notes/gate_distillation_candidate_v1.md`. Match total training steps and simple
+controls; no distillation model/protocol is frozen or fitted yet. Exclude every
+evaluated cohort and722 reserved outcomes from fitting. The ICLR goal is active;
+competitive sampling, equilibrium and scientific readiness remain unqualified.
 The previous manuscript is `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
 exact-entropy refinement candidate. It is explicitly a development draft.

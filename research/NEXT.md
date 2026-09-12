@@ -1,50 +1,49 @@
 # Next research actions — September 12, 2026
 
-Read `research/DELAYED_SCREEN_STATE_20260912.json`. Use the laboratory checkout;
-never write to home. The full ICLR goal remains active and scientifically unachieved.
+Read `research/SOURCE_FORCE_SCREEN_STATE_20260912.json`. Use the laboratory
+checkout; never write to home. The full ICLR goal remains active and unachieved.
 
-1. The four learned delayed-screen arms and independent audits are COMPLETE.
-   Summary: `runs/delayed_screen_summary_v2/results.json` (v1 is retained).
-   Learned internal rates improve 31% / 43% over no screening, but the fixed
-   physical control has a higher 93% point improvement. Neural versus linear
-   intervals span zero. No achieved savings or whole-chain gain follows. Do not
-   scale the neural weights or claim a new AI contribution from this result.
-2. Read `notes/cached_force_screen_candidate_v1.md`. The force-augmented pair
-   dataset is ready in `runs/screen_force_pairs_v1`: all 1,671 attempts, original
-   36 FIT / 12 internal-selection split, 3,233 force states reconstructed exactly
-   from raw/inverted queries. Source force is already cached sampler state.
-   Candidate force is unavailable before querying it and must never enter the
-   forward screen. No new oracle calls were used; no force-screen model is trained.
-3. First implement and test the GENERAL screened-proposal correction:
-   log alpha_2 = min(0, R + log g_reverse - log g_forward). A source-only force
-   work estimate is not antisymmetric; do not reuse R-s without qualification.
-   Test finite-state balance, actual molecular reversal, zero-screen RNG/query
-   equivalence, pre-query information access and paid-query error accounting.
-4. Before fitting, freeze a small comparison with no screening, the completed
-   fixed physical screen, a source-work physical control, a simple fitted screen
-   and any neural addition. Keep the base proposal and move-family schedule.
-   Add constant random thinning when interpreting complete-chain gains. Include
-   whole-kernel costs; joint-query rates alone can exaggerate practical benefit.
-   No force-screen model/protocol is implemented or frozen yet.
-5. Existing `utility_onpolicy_v1` PHYSICAL proposals provide a separate internal
-   recorded-proposal check of frozen screens without new oracle calls. Freeze
-   that analysis before evaluating the models there and retain all 1,152 physical
-   attempts. Report expected utility/cost, not actual savings or a screened-chain
-   result. Never fit on these outcomes.
-6. Keep every failure and prior negative result. No fitting on internal selection
-   outcomes, fresh follow-up outcomes, the old six-composition evaluation, the
-   48-parent scalar-chain cohort or the 722 reserved conditions. A useful method
-   still needs real chain gains, complete timing/data costs, strong physical and
-   representative learned-generator baselines and an independent final cohort.
-   Generic delayed acceptance and force Taylor estimates are not new principles.
+1. Source-force screening and whole-prefix accounting are COMPLETE and audited.
+   Summary: `runs/source_force_screen_summary_v1/results.json`. Both neural seeds
+   lose to the fixed physical screen; their difference intervals are below zero.
+   Only seed0 improves over no screen and its FIT-matched thinning control.
+   Neither seed establishes benefit over linear learning. Do not scale the weights.
+2. Read `notes/gate_distillation_candidate_v1.md`. The FIT-only diagnostic shows
+   neural seed0 retaining98.95% of recorded expected acceptance but costing7.26
+   times an inadmissible oracle teacher, versus75.67% /5.71 for seed1. These do
+   not change the primary result or establish mixing. Actual candidate energy
+   defines the oracle labels and is unavailable to a cheap gate at inference.
+3. `cfm_mol/gate_teacher.py` and two tests implement ordinary-MH-preserving bounded
+   oracle labels and a simple log-underprediction/acceptance-retention relation.
+   It is an elementary identity, not a new theorem. Freeze a matched total-step
+   comparison before optimization: direct utility800 versus gate-target500 plus
+   utility300, both linear/neural and two seeds, with the same data, bounds and
+   controls. Exact objective/sampling choices are not frozen yet. No distillation
+   model has been fitted. Do not just extend the old300-step runs.
+4. Both phases may use only the36 FIT parents. Keep the12 internal-selection
+   parents, every failure, the original force/energy provenance and whole-prefix
+   cost accounting. Source force may enter the forward gate; candidate force and
+   true energy enter labels or post-query reverse correction only. Retention is
+   a separate diagnostic, never a replacement success metric after outcomes.
+   Initial work needs no new physical queries.
+5. The existing `utility_onpolicy_v1` PHYSICAL proposals remain available for a
+   separately frozen internal check of candidate gates on1,152 recorded draws.
+   No fitting on these outcomes. Such a check estimates expectations, not actual
+   saved calls or screened chains. Preserve its internal/reused-data designation.
+6. Real chains, complete wall-time/data/query costs, strong physical and
+   representative learned-generator baselines, realistic reuse and independent
+   final evaluation remain necessary. Keep the old six-composition and48-parent
+   molecular evaluations and all722 reserved outcomes out of fitting. Do not
+   mistake ordinary screening, cached forces or a new training loss for novelty.
 
-Training 46196124 and audit 46196212 are terminal. Re-query Slurm before action.
-The tensor oracle's noisy-output buffering failure is reproduced and repaired;
-energy RPC time is now recorded separately. Existing runs keep their original
-records and cannot acquire retroactive timing. See STATUS for the latest PDF.
-Prior NEXT: `notes/archive/next_through_action_geometry_complete_20260912.md`.
+Training46199581 and audit46199747 are terminal; re-query Slurm before action.
+Current results are fixed-source whole-prefix expectations, not changed chains.
+The previous conditional-joint93% physical-screen rate gain and current13.57%
+whole-prefix gain use different denominators and are not contradictory. Read
+STATUS for the current PDF. Prior NEXT:
+`notes/archive/next_through_delayed_screen_20260912.md`.
 
-Verified development PDF: `runs/verification/delayed_screen_completed_20260912/main.pdf`
-(9 main pages, 22 total). Build record:
-`research/evidence/delayed_screen_completed_build_20260912.json`. This does not
-establish scientific submission readiness.
+Verified development PDF: `runs/verification/source_force_screen_completed_20260912/main.pdf`
+(9 main pages,23 total). Build evidence:
+`research/evidence/source_force_screen_completed_build_20260912.json`. Scientific
+submission readiness remains false.
