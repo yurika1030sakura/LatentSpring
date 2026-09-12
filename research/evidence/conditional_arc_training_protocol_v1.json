@@ -1,0 +1,115 @@
+{
+  "frozen": true,
+  "frozen_at_utc": "2026-09-12T17:37:01.250960+00:00",
+  "data_run": "runs/conditional_arc_data_v1",
+  "data_results_sha256": "182d0f250f80873fafd44a28abc2d136bae764597430ac0382cbf0a8d34ce97d",
+  "data_sha256": "ae8e5f45a53326f25f03a6699341f6722de3b688cd1d9485c99d401d311641fd",
+  "fit_conditions": [
+    1,
+    2,
+    3,
+    5
+  ],
+  "fit_parent_ids": {
+    "1": [
+      5,
+      28,
+      35,
+      55,
+      58,
+      59,
+      63,
+      68,
+      80,
+      88,
+      91,
+      94
+    ],
+    "2": [
+      0,
+      1,
+      4,
+      12,
+      15,
+      16,
+      18,
+      23,
+      27,
+      29,
+      30,
+      39
+    ],
+    "3": [
+      14,
+      16,
+      17,
+      20,
+      29,
+      34,
+      37,
+      38,
+      45,
+      47,
+      49,
+      50
+    ],
+    "5": [
+      3,
+      12,
+      36,
+      47,
+      48,
+      68,
+      103,
+      111,
+      127,
+      148,
+      176,
+      190
+    ]
+  },
+  "seeds": [
+    25521,
+    25523
+  ],
+  "objectives": [
+    "work",
+    "work_force"
+  ],
+  "steps": 800,
+  "checkpoints": [
+    200,
+    400,
+    600,
+    800
+  ],
+  "batch_contexts": 16,
+  "learning_rate": 0.002,
+  "weight_decay": 0.0001,
+  "gradient_clip": 10.0,
+  "energy_scale_eV": 0.1,
+  "force_weights": {
+    "work": 0.0,
+    "work_force": 0.1
+  },
+  "model": {
+    "hidden": 16,
+    "radial": 16,
+    "query_radial": 24,
+    "coefficient_bound_eV": 2.0,
+    "site_concentration": 64.0,
+    "cutoff": 6.0,
+    "restraint": 0.1
+  },
+  "sampling": "Uniform condition, uniform FIT parent, uniform available context. Identical independent batch RNG per algorithm seed across objectives.",
+  "selection": "Use final step800 for every objective/seed, with no early stopping or best-checkpoint selection.",
+  "validation": "Report every objective and both seeds on local-check and nonlocal-arc work and gradient errors; parent then composition means. FIT local_check labels and all232 withheld contexts are excluded from fitting.",
+  "new_training_raw_queries": 0,
+  "label_construction_and_internal_validation_raw_queries": 20950,
+  "separate_physical_route_pilot_raw_queries": 36864,
+  "maximum_fitting_cpu_hours": 8,
+  "model_release": "No automatic molecular release based on training fit or acceptance. Review actual internal nonlocal predictions, exact proposal density integration and measured costs before a bounded learned-chain experiment.",
+  "scientific_submission_ready": false,
+  "reserved_outcomes_allowed": false,
+  "reference_coordinates_allowed": false
+}
