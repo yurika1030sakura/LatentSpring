@@ -64,3 +64,15 @@ def test_initialization_consumes_budget_without_additional_proposals():
         dict(local_scales=[.1], schedule=['local']), progress)
     assert progress['rounds'] == [] and target.oracle.evaluated == 2
     assert progress['query_cap_reached'] == [True]
+
+
+def test_analysis_does_not_extrapolate_or_count_algorithm_replicas_as_new_parents():
+    from scripts.research.summarize_fresh_reuse import endpoint, bootstrap_mean
+    events=[dict(queries=2,smiles='A',potential_eV=0.),dict(queries=4,smiles='B',potential_eV=-1.)]
+    assert endpoint(events,6,'B') is None
+    assert endpoint(events,4,'B')['ever_reference']
+    assert not endpoint(events,4,'B')['initial_reference']
+    result=bootstrap_mean([[-10.,-20.],[10.,20.]],torch.Generator().manual_seed(2),2000)
+    assert result['independent_source_parents']==2
+    assert result['mean']==0.
+    assert result['parent_bootstrap_95_percent_interval']==[0.,0.]
