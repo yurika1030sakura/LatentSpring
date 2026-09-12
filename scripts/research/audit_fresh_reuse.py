@@ -112,6 +112,12 @@ def main():
                 report['method'], report['replica'], batch, protocol, shared, actual)
             actual.update(states=target.states, query_trace=target.query_trace)
             equal(actual, saved)
+            for local_index, state_id in enumerate(saved['history_state_ids'][0]):
+                original = warm['states'][warm['history_state_ids'][-1][begin+local_index]]
+                observed = saved['states'][state_id]
+                torch.testing.assert_close(observed['positions'], original['positions'], atol=0, rtol=0)
+                torch.testing.assert_close(observed['energy_eV'], original['energy_eV'], atol=1e-4, rtol=0)
+                torch.testing.assert_close(observed['force_eV_A'], original['force_eV_A'], atol=1e-4, rtol=0)
             assert oracle.index == len(oracle.queries) and oracle.evaluated-offset == chunk['raw_queries']
             checked += check_ratios(saved, target, model, report['method'], shared)
             audits.append(dict(file=chunk['file'], trace_sha256=sha(path), parent_ids=chunk['parent_ids'],
