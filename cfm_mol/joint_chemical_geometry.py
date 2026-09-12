@@ -168,12 +168,22 @@ def defensive_joint_proposal(x, bonds, numbers, electronic, radii, action, *, ki
 
 @torch.no_grad()
 def joint_chemical_transition(target, states, *, kind, generator, phase,
-                              model=None, radial_width=.05, site_concentration=10.):
+                              model=None, radial_width=.05, site_concentration=10.,arc_options=None):
     """Matched restricted deterministic or normalized joint-geometry MH move."""
     numbers = torch.tensor(target.numbers, dtype=torch.long)
     electronic = torch.tensor([target.condition['charge'], target.condition['spin_multiplicity'], target.kT], dtype=torch.float64)
     rows, candidates = [], []
-    proposal = defensive_joint_proposal if kind == 'defensive_site' else joint_geometry_proposal
+    is_arc=kind in {'arc_uniform','arc_site','arc_site_confinement','arc_model'}
+    options={}
+    if is_arc:
+        from cfm_mol.joint_arc_geometry import marginal_joint_arc_proposal
+        proposal=marginal_joint_arc_proposal
+        options=dict(arc_options or {})
+        if 'restraint' in options and options['restraint']!=target.restraint:
+            raise ValueError('Arc confinement must use the declared target restraint')
+        options['restraint']=target.restraint
+    else:
+        proposal = defensive_joint_proposal if kind == 'defensive_site' else joint_geometry_proposal
     for old in states:
         actions = distinct_anchor_actions(numbers, old['graph']['bond_orders'])
         row = dict(kind='joint_exchange', decoder=kind, phase=phase,
@@ -194,22 +204,29 @@ def joint_chemical_transition(target, states, *, kind, generator, phase,
                 order = int(torch.randint(2, (1,), generator=generator))
                 y, log_q, forward = proposal(old['positions'], old['graph']['bond_orders'],
                     numbers, electronic, target.radii, action, kind=kind, order=order, generator=generator,
-                    model=model, radial_width=radial_width, site_concentration=site_concentration)
+                    model=model, radial_width=radial_width, site_concentration=site_concentration,**options)
                 row.update(order=order, forward=forward, log_forward_coordinate=log_q)
+                if is_arc and y is None:
+                    row.update(proposal_positions=None,geometry_supported=False,rejection_reason=forward['failure'])
+                    rows.append(row);candidates.append(None);continue
             row['proposal_positions'] = y
             try:
                 candidate = target.coordinate_state(y)
                 if not torch.equal(candidate['graph']['bond_orders'], desired):
                     raise ValueError('Endpoint differs from desired exchanged bond graph')
+                if is_arc:row['geometry_supported']=True
                 reverse_actions = distinct_anchor_actions(numbers, candidate['graph']['bond_orders'])
                 if inverse not in reverse_actions:
                     raise ValueError('Inverse graph action ineligible')
                 if kind != 'deterministic':
                     _, reverse_q, reverse = proposal(y, desired, numbers, electronic,
                         target.radii, inverse, kind=kind, order=order, observed=old['positions'],
-                        model=model, radial_width=radial_width, site_concentration=site_concentration)
+                        model=model, radial_width=radial_width, site_concentration=site_concentration,**options)
                     row.update(reverse=reverse, log_reverse_coordinate=reverse_q,
                         coordinate_log_ratio=reverse_q-log_q)
+                    if is_arc:
+                        row['reverse_density_positive']=bool(torch.isfinite(reverse_q))
+                        if not row['reverse_density_positive']:raise ValueError('Zero reverse arc proposal density')
                 row.update(valid=True, reverse_count=len(reverse_actions),
                     action_log_ratio=math.log(len(actions)/len(reverse_actions)))
             except ValueError as exc:
