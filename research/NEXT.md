@@ -4,21 +4,23 @@ Read `research/GEODESIC_RECONSTRUCTION_STATE_20260912.json` and `research/STATUS
 Use `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`; never write into the home
 checkout. The ICLR goal remains active and scientifically unachieved.
 
-1. Re-query producer46176878 and CPU audit46176906. Consume all four case reports
-   in `runs/joint_arc_budget_v1/condition_XX/results.json` and their independent
-   counterparts in `runs/joint_arc_budget_audit_v1`. Do not rerun completed arms
-   because an observation timed out. Preserve incomplete attempts and their costs.
-2. Summarize the frozen32/64/128-query readouts across all48 FIT parents. Average
-   algorithm seeds within parent, then parents within each of four compositions;
-   report every composition and all censored chains. Compare potential changes,
-   visited connectivity and measured sampling runtime; no mixing claim follows.
-   This is training route selection, not blind evaluation or an AI success.
-3. If the full-chain arc proposal is useful, develop a conditional score of
-   nonlocal energy/work along feasible arcs. Use the existing force/work data and
-   freeze any further query and internal split protocol before new calls. The
-   local unrestricted vMF probability teacher fails support, and its constrained
-   version loses one-step energy progress to uniform arcs. Do not distill it
-   unquestioningly or optimize acceptance alone. No new neural model is fitted.
+1. The physical full-chain pilot46176878 and audit46176906 are COMPLETE.
+   `runs/joint_arc_budget_summary_v1/results.json` includes all24 arms,48 parents,
+   two seeds and36,864 calls. Site arcs improve the fixed-training-panel128-call
+   potential readout by0.07615 eV against legacy site64, with22.4% extra sampling
+   time; uniform arcs do not establish an average full-chain gain. Preserve all
+   three query readouts and composition estimates. Do not rerun these paths.
+2. Implement a masked conditional score of nonlocal energy/work along feasible
+   arcs. First use existing audited FIT-context force/work and valid arc endpoint
+   labels; local fit accuracy alone does not qualify long-arc probabilities.
+   Freeze the feature/score and internal validation design before fitting. This
+   new score is not implemented or trained yet. Keep the physical site-arc score
+   as the mandatory baseline and preserve exact density evaluation on reversal.
+3. Check withheld internal parents/compositions for conditional work and proposal
+   quality before a bounded learned complete-chain experiment. Any extra physical
+   labels need their own frozen budget/protocol. The unrestricted local teacher
+   fails support, and uniform arcs' root-only signal did not carry over to full
+   chains; do not use teacher imitation or acceptance alone as a release gate.
 4. After an internally qualified model, freeze a matched-cost test against strong
    physical AND appropriate learned baselines. Re-account all development/training
    costs and initializer failures. Old legacy physical paths cannot be described

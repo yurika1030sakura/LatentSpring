@@ -27,9 +27,11 @@ arcs, despite higher acceptance. Do not equate fit, normalization or acceptance
 with useful exploration. The next neural representation must be tested on actual
 nonlocal work and complete-chain progress, not only local teacher imitation.
 
-Producer46176878 and audit46176906 compare complete physical chains on48 fixed
-FIT parents, with no new learned model. Their outcomes can guide design but are
-not a blind benchmark. The evaluated six-composition set cannot fit weights,
+Producer46176878 and audit46176906 are complete on48 fixed FIT parents.
+At128 calls, physical site arcs improve mean potential change by0.07615 eV over
+legacy site64, with22.4% greater measured sampling runtime. All24 arms and4,668
+joint MH ratios are verified. Uniform arcs show no established full-chain gain.
+These outcomes guide design; no new learned model or blind benchmark is involved. The evaluated six-composition set cannot fit weights,
 and722 reserved outcomes remain untouched. A final scoped claim must include
 representative learned-generator/MCMC baselines as well as strong physics,
 held-out compositions, full costs, ablations and relevant distributional checks.

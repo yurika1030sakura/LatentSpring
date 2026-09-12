@@ -12,9 +12,10 @@ force/work teacher is invalid globally and its constrained version yields less
 single-step energy progress than uniform arcs. Do not launch the superseded
 unrestricted teacher-KL plan. The new learned score is still to be built.
 
-The bounded training full-chain pilot is producer46176878, audit46176906,
-sourcebde3590, at most36,864 new raw calls. Refresh their live Slurm state; do not
-start duplicates. NEXT contains the exact output paths and interpretation gates.
+The bounded training full-chain pilot46176878 and audit46176906 are COMPLETE,
+sourcebde3590,36,864 raw calls. Site arcs give a promising query-efficiency signal
+against legacy site64 but take22.4% more sampling time. No AI advantage follows.
+Do not start duplicates. NEXT contains the exact results and next score-design task.
 All source zeros, target incompatibility and negative controls must remain visible.
 Authors and actual submission are handled by the user. Continue authorized work.
 The project is not scientifically ready for ICLR submission.

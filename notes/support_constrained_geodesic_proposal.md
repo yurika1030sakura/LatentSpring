@@ -140,10 +140,15 @@ forward/reverse densities with maximum log error4.27e-14. Uniform arc order
 marginalization rescues157 proposals with zero retained-order reverse density.
 This remains a geometric support result, with no new neural weights or energy calls.
 
-The next complete-chain TRAINING experiment is frozen in
+The complete-chain TRAINING experiment was frozen in
 `research/evidence/joint_arc_budget_protocol_v1.json`:48 FIT parents, four
 compositions, two seeds, legacy site64 versus uniform/site arcs,128 raw queries
 per parent and36,864 maximum additional calls. Common local and force-rotation
-moves remain fixed. Producer46176878 and audit46176906 are submitted; refresh
-Slurm before interpreting their status. The pilot does not establish equilibrium,
-blind generalization, AI novelty or scientific submission readiness.
+moves remain fixed. Producer46176878 and audit46176906 are now complete, including all24 arms,
+36,864 raw calls and4,668 independent joint MH ratios. Site arcs improve the128-call
+fixed-training-panel potential change by0.07615 eV over legacy site64 (descriptive
+parent95% interval[-0.17088,-0.00732]), with22.4% more measured sampling runtime.
+Uniform arcs do not establish an average full-chain gain. Summary:
+`runs/joint_arc_budget_summary_v1/results.json`. This supports site arcs as the
+next physical baseline, not equilibrium, blind generalization, AI novelty or
+scientific submission readiness.

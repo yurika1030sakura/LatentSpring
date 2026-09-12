@@ -1,0 +1,128 @@
+\section{Constrained geodesic reconstruction: development evidence}
+\label{app:geodesic-reconstruction}
+
+The failure against stronger physical controls motivates a reconstruction of the
+geometric proposal. This appendix records an independently checked physical
+proposal and its training-panel diagnostics. No new neural model is fitted in
+this round, and these results do not establish a learned advantage.
+Geodesic sampling on the sphere has established precedents, including
+\citet{habeck2025geodesic}; their convergence guarantees do not transfer to this
+molecular kernel without a separate argument.
+
+\paragraph{Feasible directions and implemented probability law.}
+Fix a terminal root radius $r$, its anchor and all passive positions. Relative
+to the anchor, a passive vector $w$ with a required minimum root distance $d$
+gives the spherical half-space
+\begin{equation}
+ u^\top w\leq\frac{r^2+\|w\|^2-d^2}{2r},\qquad u\in\sphere.
+\end{equation}
+We use the declared graph builder's contact thresholds, a small numerical margin,
+and separate root--anchor and passive-geometry checks. The final desired graph
+and sanitizer are still checked. These are algorithmic support constraints,
+not quantum stability certificates.
+For a reference direction $u_0$ and a uniform unit tangent $v$, write
+$u(\theta)=\cos(\theta)u_0+\sin(\theta)v$.
+Each half-space becomes a scalar trigonometric inequality; its exact interval
+intersection gives the feasible arcs on this circle. Empty intervals are failed
+proposals without repeated sampling until success.
+
+Segments of width at most $\pi/64$ linearly interpolate endpoint log scores.
+For endpoint difference $\delta=g_1-g_0$ and segment width $h$, the mass is
+$h\exp(g_0)\operatorname{exprel}(\delta)$, where
+$\operatorname{exprel}(\delta)=(\exp(\delta)-1)/\delta$ with its continuous limit
+at zero. Segment selection and inverse-CDF sampling use this same normalized
+interpolant. For $u\ne\pm u_0$, let $\theta\in(0,\pi)$ be its angular separation
+and let $v$ point toward $u$ in the tangent plane. The density per sphere area is
+\begin{equation}
+ q(u\mid u_0,C)=
+ \frac{p_v(\theta\mid C)+p_{-v}(2\pi-\theta\mid C)}
+ {2\pi\lvert\sin\theta\rvert}.
+\end{equation}
+Both circle preimages and their actual normalizers are included. Failure mass
+remains a self transition; it is not divided out by an unknown success rate.
+
+\paragraph{Complete joint density.}
+Both lognormal radii are sampled before the two root directions. Each direction
+uses the actual partial context, and unsupported passive arrangements fail once.
+The coordinate density includes both angular factors and the Cartesian radial
+factors $r_1^{-3}r_2^{-3}$. The COM chart has a constant factor
+$((N-2)/N)^{3/2}$ which cancels for this same-size reverse move. We sample one
+fair decoder order but evaluate the candidate density as
+$q_{\mathrm{joint}}=(q_{01}+q_{10})/2$, in both directions. This is ordinary
+mixture marginalization. The complete MH ratio also includes the forward/reverse
+eligible-action counts. Zero reverse density gives rejection before an energy
+query. Tests check the full six-coordinate chart volume, symmetries, and one
+complete joint MH update started from independent exact samples of a known
+joint target, in addition to the root-only checks.
+
+\paragraph{Support repair and a failed local teacher.}
+The audited training source has support counts $45,32,106,99,0,19,0,96$ out of
+256 attempts per composition. All zeros are retained. The six nonempty cases
+supply 96 prepared parents. Fixed-context force/work probes yield 438 local
+surrogates, but 47 have a negative axial coefficient: their unrestricted
+full-sphere teacher produces only 16 supported draws out of 376 attempts.
+Restricting to feasible arcs raises this to 376/376; all 14,016 root arc draws
+in the four-score screen preserve the graph and positive reverse density.
+In the complete joint support screen, each arc score gives 745/768 supported
+positive-reverse proposals versus 690/768 for legacy site64. All 3,072 attempts
+replay; 750 independent forward/reverse density checks have maximum log error
+$4.27\times10^{-14}$.
+
+Support does not ensure useful movement. On 206 fixed FIT contexts, 824 frozen
+first-draw endpoints cost 1,648 paired raw oracle calls. The fitted score has
+expected MH acceptance 0.725 but expected potential change only $-0.0453$\,eV;
+uniform arcs give 0.248 and $-0.1440$\,eV. These parent-then-composition means are
+root-only training diagnostics with the per-context score held fixed under
+reversal. Local fit or high acceptance cannot serve as a sufficient learning
+gate, and unrestricted teacher-density distillation is not justified.
+
+\paragraph{Complete-chain physical pilot.}
+A frozen protocol compares legacy site64, uniform arcs and site arcs on all 48
+FIT parents from four compositions, with two algorithm seeds. Each parent has
+128 raw calls including initialization; the shared local and force-rotation
+moves are unchanged. All 24 arms reach the budget, using 36,864 raw calls in
+total. Full trajectory replay and 4,668 independent joint MH checks pass.
+Table~\ref{tab:arc-training-chain} reports potential changes at the largest
+frozen readout. Algorithm seeds are averaged within parent before composition
+averaging. Site arcs also raise the mean number of visited constitutional
+connectivities from 1.458 to 1.719, but aggregate measured sampling time rises
+from 98.87 to 121.04 seconds. There is no matched-wall-time superiority claim.
+Uniform arcs' root-only advantage does not establish a complete-chain benefit.
+
+\begin{table}[t]
+\centering
+\caption{Exploratory complete-chain TRAINING comparison at 128 raw calls per
+parent. Negative potential change is a decrease. The four composition identities
+are fixed; this is not an independent generalization benchmark.}
+\label{tab:arc-training-chain}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Training condition & Legacy site64 & Uniform arc & Site arc\\
+ & $\Delta U$ (eV) & $\Delta U$ (eV) & $\Delta U$ (eV)\\
+\midrule
+1 & $-0.4021$ & $-0.4953$ & $-0.6255$\\
+2 & $-0.3658$ & $-0.3680$ & $-0.4137$\\
+3 & $-0.4725$ & $-0.5313$ & $-0.4799$\\
+5 & $-0.4701$ & $-0.2940$ & $-0.4960$\\
+Equal-condition mean & $-0.4276$ & $-0.4221$ & $-0.5038$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Site arcs minus legacy site64 give $-0.07615$\,eV, with descriptive parent-bootstrap
+95\% interval $[-0.17088,-0.00732]$\,eV. All four composition point estimates favor
+site arcs, with condition 1 contributing much of the mean. Uniform arcs minus
+legacy site64 give $+0.00547$\,eV, interval $[-0.09609,+0.09340]$\,eV.
+The 32-call site-arc interval crosses zero. These exploratory intervals are
+not adjusted for the multiple methods and readouts. The physical construction
+provides a stronger next baseline; it does not establish AI novelty, equilibrium
+sampling, or held-out superiority. Full outcomes and query ledgers are retained
+in the versioned joint-arc budget summary and its frozen protocol.
+
+Finally, a necessary degree bound identifies empty connected support for
+training condition 6, composition C$_4$H$_{10}$OFCl, under the pinned graph
+builder: maximum degree sum 31 is smaller than the 32 required for a connected
+17-atom graph. Its 256 source failures remain in the denominator. This is an
+incompatibility with this algorithmic target, not a statement that the composition
+is chemically impossible. The other zero-support case remains unresolved.

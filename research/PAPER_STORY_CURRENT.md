@@ -19,11 +19,14 @@ That contribution remains unproved. The previous normalized-site learner loses
 its demonstrated advantage to stronger physical controls. New local force/work
 fits repair a local identification problem but do not provide a useful global
 teacher: even on valid arcs, a uniform proposal makes more single-step expected
-energy progress. A full-chain physical comparison is now running to guide the
-next model design. No new neural weights are claimed as a successful repair.
+energy progress. The full-chain physical comparison is complete: site arcs improve the128-call
+training readout by0.07615 eV over legacy site64 but add22.4% sampling runtime.
+Uniform arcs' root-only signal does not establish a full-chain average gain.
+This motivates a learned nonlocal score against a stronger site-arc baseline. No new neural weights are claimed as a successful repair.
 
 The current manuscript `paper/angular_working.tex` reports the earlier candidate
-and its adverse controls; it has not incorporated this new arc round. Lower
+and its adverse controls, with a new development appendix recording the arc
+construction, its failed local teacher and the complete physical pilot. Lower
 finite-cost energy and validator acceptance do not establish an equilibrium energy
 distribution or quantum stability. Useful held-out performance against strong
 physical and representative learned baselines is still required on a declared scope.

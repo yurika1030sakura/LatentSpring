@@ -53,8 +53,11 @@ and750 independent forward/reverse densities agree. This is geometric progress,
 not a demonstrated learned advantage. Local force/work fits fail as unrestricted
 probability teachers. On valid arcs their higher acceptance still gives less
 expected one-step energy decrease than uniform arcs; do not blindly distill them.
-No new model is fitted. The complete-chain TRAINING pilot is producer46176878,
-audit46176906, fixed48 FIT parents and36,864 maximum new raw calls. Re-query Slurm.
+No new model is fitted. The complete-chain TRAINING pilot46176878 and audit46176906
+are complete:48 FIT parents,36,864 calls,4,668 independently checked joint ratios.
+Site arcs improve the128-call training potential-change readout by0.07615 eV over
+legacy site64, with22.4% more sampling runtime. Uniform arcs do not establish
+average full-chain gain. This is a promising physical baseline, not an AI result.
 Start with `research/GEODESIC_RECONSTRUCTION_STATE_20260912.json` and
 `notes/support_constrained_geodesic_proposal.md`. The prior conditional-learning
 plan is partly superseded. The pinned connected validator has empty support for

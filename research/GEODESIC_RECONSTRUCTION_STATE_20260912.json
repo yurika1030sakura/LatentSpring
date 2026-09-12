@@ -1,10 +1,10 @@
 {
-  "updated_at_utc": "2026-09-12T17:09:02.420171+00:00",
+  "updated_at_utc": "2026-09-12T17:18:41.568539+00:00",
   "scientific_submission_ready": false,
   "goal_status": "active",
   "current_branch": "iclr2027-arch-fix",
   "supersedes_current_pointer": "research/SHARP_CONTROLS_AND_TRAINING_STATE_20260912.json",
-  "conclusion": "The geometric proposal is independently qualified; no new learned advantage is established. Stronger physical controls remove the old demonstrated learner advantage.",
+  "conclusion": "The constrained site-arc physical chain shows promising fixed-training-panel query-efficiency and connectivity progress, with22.4percent higher sampling runtime. No new learned advantage is established; stronger physical controls still remove the old learner advantage.",
   "evidence_sha256": {
     "runs/site_concentration_summary_v1/results.json": "02cf3ea536f8bf1d0490e40adfb756d0194afcf0547cbc92b2ed606c9e299528",
     "runs/proposal_training_geometry_audit_v1/results.json": "9bbea279f325fff1daca405893b638163c63b552c649b781f60f3502c970eb3b",
@@ -15,7 +15,10 @@
     "runs/arc_oracle_feasibility_summary_v2/results.json": "4f7b6ad0dcd768ed6d4c72786fe3b9c4416fe8d57c41348d048747b24bd43dbf",
     "runs/joint_arc_audit_v1/results.json": "8931ed83e94e20614c0a0b37f38feeb2065890348aa4327e088e825929d1a05f",
     "research/evidence/connected_degree_feasibility_v1.json": "22b294b16ab09fff66fdfda6c6f3ee76c505f81097be707a07d8d317a1060b55",
-    "research/evidence/joint_arc_budget_engineering_v1.json": "f4ae5e43a1085cebfc4184af42d35e606af2556b72c90981b75eddac25da5d7c"
+    "research/evidence/joint_arc_budget_engineering_v1.json": "f4ae5e43a1085cebfc4184af42d35e606af2556b72c90981b75eddac25da5d7c",
+    "runs/joint_arc_budget_summary_v1/results.json": "48b25b2bc5824f6985847e6b260887e6c437601e3b5ff19a79256b450c2ee8ec",
+    "research/evidence/joint_arc_budget_completed_v1.json": "dcc37dd0ec5dbbaa6a8e57b93b8197cd484ad92e252d53ffe99804b11e46220f",
+    "research/evidence/geodesic_paper_build_20260912.json": "fe03119206d9de3bb3828070159a468330d77d6a71417a04657d229a587b5240"
   },
   "local_teacher_failure": {
     "negative_axial_contexts": 47,
@@ -137,14 +140,67 @@
     "raw_queries_per_parent": 128,
     "run": "runs/joint_arc_budget_v1",
     "audit_run": "runs/joint_arc_budget_audit_v1",
-    "scheduler_status": "Submitted; both producer tasks RUNNING at2026-09-12T17:06:37Z. Re-query Slurm."
+    "scheduler_status": "All producer and audit tasks COMPLETED with0:0, live verified2026-09-12T17:12Z.",
+    "complete": true,
+    "raw_queries": 36864,
+    "independent_joint_MH_checks": 4668,
+    "summary": "runs/joint_arc_budget_summary_v1/results.json"
   },
-  "next": "Consume complete full-chain pilot and independent replay before method selection. Any next score should learn nonlocal work on feasible arcs; do not distill the failed unrestricted local teacher or optimize acceptance alone.",
+  "next": "Develop and test a masked conditional score of nonlocal energy/work on feasible arcs using audited FIT data. Keep physical site arcs as the stronger baseline. No need to rerun the complete physical pilot; qualify internal work predictions before a new learned molecular experiment.",
   "heldout_contract": "Use frozen FIT parents for this route diagnostic. Do not fit on evaluated six-composition coordinates or query722 reserved outcomes.",
   "paper": {
     "entrypoint": "paper/angular_working.tex",
-    "last_reviewed_pdf": "runs/verification/sharp_controls_20260912/main.pdf",
+    "last_reviewed_pdf": "runs/verification/geodesic_reconstruction_20260912/main.pdf",
     "main_pages": 8,
-    "contains_new_arc_round": false
+    "contains_new_arc_round": true,
+    "build_evidence": "research/evidence/geodesic_paper_build_20260912.json"
+  },
+  "joint_budget_result": {
+    "complete": true,
+    "at_utc": "2026-09-12T17:14:42.505719+00:00",
+    "producer": "46176878",
+    "audit": "46176906",
+    "scheduler_all_terminal_completed": true,
+    "summary_path": "runs/joint_arc_budget_summary_v1/results.json",
+    "summary_sha256": "48b25b2bc5824f6985847e6b260887e6c437601e3b5ff19a79256b450c2ee8ec",
+    "summary_source_commit": "cf6df6b",
+    "source_commit": "bde35905864320f404b844d74bb0257aef513a62",
+    "audit_sha256": {
+      "1": "eaa835a2032171e3335866e2faaa1b4790fe67027726d35ea42f3792d5bf2a0b",
+      "2": "59b2f97224223237ebf8b24338f6f48a68d7ca36e0d1b4da601d7e8e7f67f6fb",
+      "3": "efcfa7a7801907b249ec9299a533328bb1aa7b68a0d75d76ba5714edc6197977",
+      "5": "6af08a5112216295db8d46085e039b72c4675562a09d555684d12c0818c1bbd0"
+    },
+    "all_conditions": [
+      1,
+      2,
+      3,
+      5
+    ],
+    "fit_parents": 48,
+    "algorithm_seeds": 2,
+    "arms": 24,
+    "all_query_caps_reached": true,
+    "new_raw_queries": 36864,
+    "independent_joint_MH_checks": 4668,
+    "arc_site_minus_legacy_site64_at128": {
+      "available": true,
+      "mean": -0.07614996002932153,
+      "fixed_composition_parent_bootstrap_95_percent_interval": [
+        -0.1708787791942541,
+        -0.0073236648563579365
+      ],
+      "parents": 48,
+      "per_condition_mean": {
+        "1": -0.2233327397004056,
+        "2": -0.04794147185748443,
+        "3": -0.0074084090811084025,
+        "5": -0.025917219478287734
+      },
+      "inference_scope": "Descriptive TRAINING comparison; four composition identities fixed, algorithm seeds averaged within parent. Not an unseen-composition generalization interval."
+    },
+    "measured_sampling_runtime_ratio_arc_site_to_legacy": 1.2241610985428353,
+    "inference": "Exploratory fixed TRAINING panel, descriptive unadjusted parent intervals across multiple methods/readouts. No learned advantage, unseen-composition or matched-wall-time superiority claim.",
+    "scientific_submission_ready": false
   }
 }

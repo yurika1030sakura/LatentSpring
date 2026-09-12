@@ -48,16 +48,29 @@ other zero-support case remains unresolved. The validator and panels are unchang
 | FIT root oracle screen;1,648 calls | 46160646 | 46160899 |
 | Real complete joint support | 46174307 | 46176033 |
 
-A bounded complete-chain TRAINING pilot is submitted: producer46176878,
-dependent replay46176906, immutable sourcebde3590. It compares legacy site64,
-uniform arc and site arc at128 raw calls per parent,48 fixed FIT parents,
-two algorithm seeds,36,864 maximum new raw calls. Common local and force-rotation
-moves are unchanged. Query stopping measures finite-cost output, not stationarity.
-Re-query Slurm and consume all four conditions before interpreting outcomes.
+The complete-chain TRAINING pilot and independent replay are now COMPLETE:
+producer46176878, audit46176906, sourcebde3590. All24 arms reach their declared
+budgets,36,864 raw calls in total;4,668 joint MH ratios pass independent density
+quadrature. Summary: `runs/joint_arc_budget_summary_v1/results.json`.
+At128 calls per parent, site arcs minus legacy site64 give mean potential change
+-0.07615 eV, descriptive parent95% interval[-0.17088,-0.00732] on the four fixed
+training compositions. All four composition point estimates favor site arcs;
+condition1 contributes much of the average. Mean visited connectivities increase
+from1.4583 to1.71875. Sampling runtime rises from98.87 to121.04 aggregate seconds
+(~22.4%); this is not a matched-wall-time result. Uniform arcs have no established
+average full-chain gain(+0.00547 eV, interval[-0.09609,+0.09340]).
+
+These are exploratory TRAINING comparisons across several methods/readouts;
+intervals are descriptive and not multiplicity-adjusted. Geometry with the site
+prior is a useful next physical baseline, not an AI advantage or a blind test.
+All current round's jobs are terminal. No molecular rerun is needed to consume
+this result. Develop the conditional nonlocal score before new learned sampling.
 
 The manuscript `paper/angular_working.tex` already reports the strong-control
 negative results. Its latest reviewed PDF is
-`runs/verification/sharp_controls_20260912/main.pdf` (eight main pages); the new
-arc round is not yet incorporated. No new model is fitted. Representative learned
+`runs/verification/geodesic_reconstruction_20260912/main.pdf` (eight main pages,
+17 total). The new development appendix includes the arc law, negative teacher
+check, complete physical pilot and target incompatibility. Citations and page
+checks pass, with the result table visually checked. No new model is fitted. Representative learned
 baselines, useful held-out performance and distributional claims remain open.
 Earlier status is preserved in `notes/archive/status_through_sharp_training_20260912.md`.
