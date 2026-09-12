@@ -168,11 +168,13 @@ def defensive_joint_proposal(x, bonds, numbers, electronic, radii, action, *, ki
 
 @torch.no_grad()
 def joint_chemical_transition(target, states, *, kind, generator, phase,
-                              model=None, radial_width=.05, site_concentration=10.,arc_options=None):
+                              model=None, radial_width=.05, site_concentration=10.,arc_options=None,row_generators=None):
     """Matched restricted deterministic or normalized joint-geometry MH move."""
     numbers = torch.tensor(target.numbers, dtype=torch.long)
     electronic = torch.tensor([target.condition['charge'], target.condition['spin_multiplicity'], target.kT], dtype=torch.float64)
     rows, candidates = [], []
+    if row_generators is not None and len(row_generators)!=len(states):
+        raise ValueError('One explicit generator per source state required')
     is_arc=kind in {'arc_uniform','arc_site','arc_site_confinement','arc_model','arc_energy','arc_bounded'}
     options={}
     if is_arc:
@@ -184,14 +186,15 @@ def joint_chemical_transition(target, states, *, kind, generator, phase,
         options['restraint']=target.restraint
     else:
         proposal = defensive_joint_proposal if kind == 'defensive_site' else joint_geometry_proposal
-    for old in states:
+    for state_index,old in enumerate(states):
+        rng=generator if row_generators is None else row_generators[state_index]
         actions = distinct_anchor_actions(numbers, old['graph']['bond_orders'])
         row = dict(kind='joint_exchange', decoder=kind, phase=phase,
             old_state_id=old['state_id'], new_state_id=-1, forward_count=len(actions),
             valid=False, accepted=False)
         candidate = None
         if actions:
-            index = int(torch.randint(len(actions), (1,), generator=generator))
+            index = int(torch.randint(len(actions), (1,), generator=rng))
             action = actions[index]
             i, j, k, l = action
             inverse = (i, j, l, k)
@@ -201,9 +204,9 @@ def joint_chemical_transition(target, states, *, kind, generator, phase,
                 y, log_volume, _ = exchange_terminal_sites(old['positions'], target.radii, action)
                 row.update(log_volume=log_volume, coordinate_log_ratio=log_volume)
             else:
-                order = int(torch.randint(2, (1,), generator=generator))
+                order = int(torch.randint(2, (1,), generator=rng))
                 y, log_q, forward = proposal(old['positions'], old['graph']['bond_orders'],
-                    numbers, electronic, target.radii, action, kind=kind, order=order, generator=generator,
+                    numbers, electronic, target.radii, action, kind=kind, order=order, generator=rng,
                     model=model, radial_width=radial_width, site_concentration=site_concentration,**options)
                 row.update(order=order, forward=forward, log_forward_coordinate=log_q)
                 if is_arc and y is None:
@@ -237,7 +240,10 @@ def joint_chemical_transition(target, states, *, kind, generator, phase,
         rows.append(row)
         candidates.append(candidate)
     target.evaluate([s for s in candidates if s is not None], phase=phase)
-    log_u = torch.rand(len(states), dtype=torch.float64, generator=generator).log()
+    if row_generators is None:
+        log_u = torch.rand(len(states), dtype=torch.float64, generator=generator).log()
+    else:
+        log_u = torch.stack([torch.rand((),dtype=torch.float64,generator=g) for g in row_generators]).log()
     updated = list(states)
     for index, (old, new, row) in enumerate(zip(states, candidates, rows)):
         row['log_uniform'] = float(log_u[index])

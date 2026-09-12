@@ -117,3 +117,50 @@ def test_stratified_index_sampling_preserves_all_attempt_empirical_objective():
     exhaustive=(selection*(weights/selection)*value).sum();direct=(weights*value).sum()
     torch.testing.assert_close(exhaustive,direct,atol=1e-14,rtol=0)
     torch.testing.assert_close(torch.autograd.grad(exhaustive,value)[0],weights,atol=1e-14,rtol=0)
+
+
+def test_per_source_random_streams_match_individual_transitions():
+    from cfm_mol.chemical_sampler import ChemicalTarget
+    from cfm_mol.joint_chemical_geometry import joint_chemical_transition
+    x,y,bonds,new,z,e,radii,action,inverse,q0,qr0=molecular_pair()
+    class Oracle:
+        evaluated=0
+        def evaluate_chunked(self,p,max_request):
+            self.evaluated+=len(p);return .01*p.square().sum((1,2)),-.02*p
+    def target():return ChemicalTarget(Oracle(),dict(numbers=z.tolist(),charge=0,spin_multiplicity=1),.026,.1)
+    batch=target();states=batch.evaluate([batch.coordinate_state(x),batch.coordinate_state(y)],phase='initial')
+    seeds=[25641,25643]
+    end,rows=joint_chemical_transition(batch,states,kind='arc_site',generator=None,
+        row_generators=[torch.Generator().manual_seed(s) for s in seeds],phase='probe',site_concentration=64.)
+    for i,p in enumerate([x,y]):
+        single=target();old=single.evaluate([single.coordinate_state(p)],phase='initial')
+        other,record=joint_chemical_transition(single,old,kind='arc_site',generator=None,
+            row_generators=[torch.Generator().manual_seed(seeds[i])],phase='probe',site_concentration=64.)
+        assert rows[i]['accepted']==record[0]['accepted'] and rows[i]['valid']==record[0]['valid']
+        assert rows[i]['log_uniform']==record[0]['log_uniform']
+        torch.testing.assert_close(end[i]['positions'],other[0]['positions'],atol=0,rtol=0)
+
+
+def test_fresh_proposal_probe_replays_and_zero_guides_match_physics():
+    from cfm_mol.chemical_sampler import ChemicalTarget
+    from scripts.research.audit_masked_angular import ReplayOracle,equal
+    from scripts.research.evaluate_utility_onpolicy import run
+    x,y,bonds,new,z,e,radii,action,inverse,q0,qr0=molecular_pair()
+    class Oracle:
+        evaluated=0
+        def evaluate_chunked(self,p,max_request):
+            self.evaluated+=len(p);return .01*p.square().sum((1,2)),-.02*p
+    condition=dict(numbers=z.tolist(),charge=0,spin_multiplicity=1)
+    make=lambda oracle:ChemicalTarget(oracle,condition,.026,.1)
+    old=make(Oracle());initial=old.evaluate([old.coordinate_state(x),old.coordinate_state(y)],phase='old')
+    sources=[(dict(parent=i,behavior_replica=0,slot=0),state) for i,state in enumerate(initial)]
+    models=dict(physical=None,learned_s0=BoundedArcGuide().double(),learned_s1=BoundedArcGuide().double())
+    protocol=dict(methods=list(models),trials_per_source=2,seed=25661,arc_options={})
+    target=make(Oracle());saved=run(target,models,sources,protocol,1)
+    replay=ReplayOracle(saved['query_trace']);actual=run(make(replay),models,sources,protocol,1);equal(actual,saved)
+    assert replay.index==len(replay.queries)
+    by_method={m:[r for r in saved['attempts'] if r['method']==m] for m in models}
+    for m in ['learned_s0','learned_s1']:
+        for a,b in zip(by_method['physical'],by_method[m]):
+            assert a['valid']==b['valid'] and a['raw_cost']==b['raw_cost']
+            assert abs(a['expected_utility_eV']-b['expected_utility_eV'])<1e-8
