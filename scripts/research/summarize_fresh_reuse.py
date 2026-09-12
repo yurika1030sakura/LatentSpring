@@ -30,6 +30,8 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--project',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True)
+    p.add_argument('--run',type=Path,required=True)
+    p.add_argument('--audits',type=Path,required=True)
     args=p.parse_args()
     root=args.project
     pp=root/'research/evidence/fresh_reuse_protocol_v1.json'
@@ -46,8 +48,8 @@ def main():
     for method in protocol['methods']:
         for rep in protocol['replicas']:
             key=f'{method}_s{rep}'
-            directory=root/'runs/fresh_reuse_eval_v1'/key
-            audit_path=root/'runs/fresh_reuse_audit_v1'/key/'results.json'
+            directory=args.run/key
+            audit_path=args.audits/key/'results.json'
             report=json.loads((directory/'results.json').read_text())
             audit=json.loads(audit_path.read_text())
             assert audit['complete'] and report['complete'] and audit['full_producer_replay']

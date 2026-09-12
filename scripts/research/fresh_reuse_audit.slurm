@@ -12,6 +12,7 @@ set -euo pipefail
 SOURCE_ROOT="${1:?source required}"
 RUN_ROOT="${2:?unique output required}"
 PROJECT="${3:?project required}"
+EVALUATION_RUN="${4:?evaluation directory required}"
 METHODS=(site learned_vector)
 METHOD="${METHODS[$((SLURM_ARRAY_TASK_ID/2))]}"
 REPLICA=$((SLURM_ARRAY_TASK_ID%2))
@@ -20,5 +21,5 @@ export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPAT
 export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2
 cd "$SOURCE_ROOT"
 "$STORE/envs/flowmol/bin/python" -u scripts/research/audit_fresh_reuse.py \
-  --project "$PROJECT" --run "$PROJECT/runs/fresh_reuse_eval_v1/${METHOD}_s${REPLICA}" \
+  --project "$PROJECT" --run "$EVALUATION_RUN/${METHOD}_s${REPLICA}" \
   --out "$RUN_ROOT/${METHOD}_s${REPLICA}/results.json"
