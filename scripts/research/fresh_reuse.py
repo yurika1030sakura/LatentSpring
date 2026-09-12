@@ -25,10 +25,29 @@ def update_query_counts(counts, indices, rows, oracle_delta, cap):
         cost = 2*int(row['valid'])
         counts[index] += cost
         charged += cost
-        if counts[index] > cap:
+        limit = cap[index] if isinstance(cap, (list, tuple)) else cap
+        if counts[index] > limit:
             raise ValueError('Per-parent physical-query cap exceeded')
     if charged != oracle_delta:
         raise ValueError('Paired oracle calls differ from parent ledger')
+
+
+def parent_query_caps(protocol, method, batch_index, parent_ids):
+    """Resolve prospectively declared per-parent caps; never infer them from outcomes."""
+    maximum = protocol['query_caps'][method]
+    mapping = protocol.get('query_caps_by_parent', {})
+    if method in mapping:
+        if str(batch_index) not in mapping[method]:
+            raise ValueError('Missing declared condition-specific query caps')
+        declared = mapping[method][str(batch_index)]
+        if any(str(pid) not in declared for pid in parent_ids):
+            raise ValueError('Missing declared parent-specific query cap')
+        caps = [declared[str(pid)] for pid in parent_ids]
+    else:
+        caps = [maximum]*len(parent_ids)
+    if any(not isinstance(c, int) or isinstance(c, bool) or c<2 or c%2 or c>maximum for c in caps):
+        raise ValueError('Even parent caps between2 and declared maximum required')
+    return caps
 
 
 def run_budget(target, positions, parent_ids, model, method, replica, batch_index, protocol, shared, progress):
@@ -36,6 +55,9 @@ def run_budget(target, positions, parent_ids, model, method, replica, batch_inde
     cap = protocol['query_caps'][method]
     if cap < 2 or cap % 2 or len(positions) != len(parent_ids):
         raise ValueError('Matched starts and an even cap including initialization required')
+    caps = parent_query_caps(protocol, method, batch_index, parent_ids)
+    if 'query_caps_by_parent' in protocol:
+        progress['query_caps_per_parent'] = caps
     rng = torch.Generator().manual_seed(protocol['evaluation_seeds'][replica]+100003*batch_index)
     srng = torch.Generator().manual_seed(protocol['scale_seeds'][replica]+100003*batch_index)
     states = target.evaluate([target.coordinate_state(x) for x in positions], phase='initial')
@@ -44,7 +66,7 @@ def run_budget(target, positions, parent_ids, model, method, replica, batch_inde
         history_state_ids=[[s['state_id'] for s in states]], query_count_history=[list(counts)])
     start_count = target.oracle.evaluated-2*len(states)
     for step in range(protocol['maximum_microsteps']):
-        indices = [i for i, count in enumerate(counts) if count < cap]
+        indices = [i for i, count in enumerate(counts) if count < caps[i]]
         if not indices:
             break
         current = [states[i] for i in indices]
@@ -66,7 +88,7 @@ def run_budget(target, positions, parent_ids, model, method, replica, batch_inde
                 kind=decoder, generator=rng, phase=phase,
                 model=model, radial_width=shared['radial_width'], site_concentration=shared['site_concentration'],
                 arc_options=protocol.get('arc_options'))
-        update_query_counts(counts, indices, rows, target.oracle.evaluated-before, cap)
+        update_query_counts(counts, indices, rows, target.oracle.evaluated-before, caps)
         for index, new in zip(indices, proposed):
             states[index] = new
         progress['rounds'].append(dict(step=step, active_indices=indices, scale_choices=choices.tolist(), kind=kind))
@@ -75,7 +97,7 @@ def run_budget(target, positions, parent_ids, model, method, replica, batch_inde
         progress['query_count_history'].append(list(counts))
         assert sum(counts) == target.oracle.evaluated-start_count
     progress.update(generator_state=rng.get_state(), scale_generator_state=srng.get_state(),
-        final_queries_per_parent=counts, query_cap_reached=[q == cap for q in counts])
+        final_queries_per_parent=counts, query_cap_reached=[q == c for q, c in zip(counts, caps)])
     return states
 
 

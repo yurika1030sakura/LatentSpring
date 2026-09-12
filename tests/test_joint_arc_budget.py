@@ -41,3 +41,15 @@ def test_budgeted_chain_replays_mixed_moves_and_independent_joint_densities(meth
     assert result['all_caps_reached']
     assert [r['reached'] for r in result['endpoints']]==[True,True,False]*2
     assert result['transition_counts']['joint_exchange']['attempted']>0
+
+
+def test_final_readouts_use_declared_caps_and_never_convert_censoring_to_completion():
+    data=dict(parent_ids=[3,5],query_caps_per_parent=[4,6],final_queries_per_parent=[4,2],query_cap_reached=[True,False],
+        query_count_history=[[2,2],[4,2]],history_state_ids=[[0,1],[2,1]],transitions=[],
+        states=[dict(potential_eV=torch.tensor(v),graph={'connectivity_smiles':s}) for v,s in [(0.,'A'),(1.,'B'),(-1.,'C')]])
+    result=diagnostics(data,[2,'final'])
+    final=[r for r in result['endpoints'] if r['readout']=='final']
+    assert [r['raw_queries'] for r in final]==[4,6]
+    assert [r['reached'] for r in final]==[True,False]
+    assert final[0]['potential_change_eV']==-1.
+    assert 'potential_eV' not in final[1]

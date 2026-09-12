@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Bounded TRAINING-only full-chain comparison of legacy and constrained proposals."""
 import argparse
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -15,11 +16,47 @@ from scripts.research.audit_joint_arc_support import independent_arc_q
 from scripts.research.audit_joint_chemical import independent_log_q
 from scripts.research.audit_masked_angular import ReplayOracle, equal, sha
 from scripts.research.evaluate_chemical_policy import write
-from scripts.research.fresh_reuse import run_budget
+from scripts.research.fresh_reuse import run_budget, parent_query_caps
 
 
-def inputs(root, project, index):
-    pp = root/'research/evidence/joint_arc_budget_protocol_v1.json'
+def validate_chain_cost_contract(project, protocol, preparation_audit):
+    """Independently recover shared preparation and model data costs before queries."""
+    selected = [(int(i), pid) for i, ids in protocol['parent_ids_by_condition'].items() for pid in ids]
+    assert len(selected) == len(set(selected)) == 48
+    ordered = sorted(selected, key=lambda pair: hashlib.sha256(
+        f"{protocol['cost_assignment_seed']}|{pair[0]}|{pair[1]}".encode()).hexdigest())
+    extra = set(ordered[:39]); total = 0
+    for index, pid in selected:
+        cap = protocol['query_caps_by_parent']['arc_site'][str(index)][str(pid)]
+        assert cap == (438 if (index, pid) in extra else 436)
+        total += cap
+    shared = full = 0
+    for row in preparation_audit['rows']:
+        if row['zero_support']: continue
+        path = project/protocol['preparation_run']/f"condition_{row['index']:02d}/results.json"
+        assert sha(path) == row['results_sha256']
+        data = json.loads(path.read_text())
+        for pid, cost in zip(data['parent_ids'], data['raw_queries_per_parent']):
+            full += cost
+            if (row['index'], pid) in selected: shared += cost
+    probe = json.loads((project/'runs/multicomposition_angular_audit_v1/results.json').read_text())
+    assert probe['complete']
+    labels = probe['raw_queries_in_probes']
+    for run, indices in [('arc_oracle_feasibility', [1,2,3,5]), ('arc_internal_validation', [0,1,2,3,5,7])]:
+        for index in indices:
+            path = project/f'runs/{run}_audit_v1/condition_{index:02d}/results.json'
+            audit = json.loads(path.read_text()); assert audit['complete'] and audit['full_replay']
+            labels += audit['raw_queries']
+    overhead = full-shared+labels
+    assert full == protocol['common_preparation_raw_queries_all_96_parents']
+    assert shared == protocol['common_selected_preparation_raw_queries'] == 6088
+    assert overhead == protocol['model_specific_raw_overhead_per_method_replica'] == 14862
+    assert total == protocol['primary_total_raw_calls_per_method_replica'] == 48*128+overhead
+    assert len(protocol['replicas'])*(total+2*48*128) == protocol['maximum_total_new_raw_queries']
+
+
+def inputs(root, project, index, protocol_path=None):
+    pp = protocol_path or root/'research/evidence/joint_arc_budget_protocol_v1.json'
     protocol = json.loads(pp.read_text())
     assert protocol['frozen'] and index in protocol['condition_indices']
     for name in ['preparation_audit', 'joint_support_audit']:
@@ -41,8 +78,20 @@ def inputs(root, project, index):
     assert sha(split_path) == protocol['split_protocol_sha256']
     split = json.loads(split_path.read_text())['condition_splits'][str(index)]
     ids = protocol['parent_ids_by_condition'][str(index)]
-    assert ids == split['fit_parent_ids'] and len(ids) == 12
-    assert not set(ids) & set(split['withheld_parent_ids'])
+    if protocol.get('selection_role') == 'internal_withheld_parent_or_composition':
+        assert ids == split['withheld_parent_ids']+split['withheld_composition_parent_ids']
+        assert not set(ids) & set(split['fit_parent_ids'])
+        ap = project/protocol['learning_audit']
+        assert sha(ap) == protocol['learning_audit_sha256']
+        audit = json.loads(ap.read_text())
+        assert audit['complete'] and audit['full_data_rebuilt'] and audit['all_split_masks_rebuilt']
+        assert audit['protocol_sha256'] == protocol['training_protocol_sha256']
+        validate_chain_cost_contract(project, protocol, json.loads((project/protocol['preparation_audit']).read_text()))
+        for name, info in protocol['models'].items():
+            assert next(r for r in audit['rows'] if r['name'] == name)['model_sha256'] == info['sha256']
+    else:
+        assert ids == split['fit_parent_ids'] and len(ids) == 12
+        assert not set(ids) & set(split['withheld_parent_ids'])
     indices = [warm['parent_ids'].index(i) for i in ids]
     positions = warm['warm_positions'][indices]
     physical_path = root/'research/evidence/parity_training_protocol_v1.json'
@@ -50,13 +99,32 @@ def inputs(root, project, index):
     return pp, protocol, header, warm, positions, ids, json.loads(physical_path.read_text())
 
 
+def load_scalar_model(project, protocol, method, replica):
+    if method not in protocol.get('model_methods', {}):
+        return None, None
+    from cfm_mol.conditional_arc_energy import ConditionalArcEnergy
+    objective = protocol['model_methods'][method]
+    info = protocol['models'][f'{objective}_s{replica}']
+    path = project/info['path']
+    if sha(path) != info['sha256']:
+        raise ValueError('Scalar model differs from the frozen checkpoint')
+    checkpoint = torch.load(path, map_location='cpu', weights_only=False)
+    assert checkpoint['objective'] == objective and checkpoint['replica'] == replica
+    assert checkpoint['protocol_sha256'] == protocol['training_protocol_sha256']
+    model = ConditionalArcEnergy(**checkpoint['configuration']).double()
+    model.load_state_dict(checkpoint['state_dict']); model.eval(); model.requires_grad_(False)
+    return model, info['sha256']
+
+
 def diagnostics(saved, readouts):
     endpoints = []
     for i, parent in enumerate(saved['parent_ids']):
         first = saved['states'][saved['history_state_ids'][0][i]]
-        for cap in readouts:
+        for readout in readouts:
+            cap = saved['query_caps_per_parent'][i] if readout == 'final' else readout
             hit = next((j for j, counts in enumerate(saved['query_count_history']) if counts[i] == cap), None)
             row = dict(parent=parent, raw_queries=cap, reached=hit is not None)
+            if 'final' in readouts: row['readout'] = readout
             if hit is not None:
                 end = saved['states'][saved['history_state_ids'][hit][i]]
                 smiles = [saved['states'][ids[i]]['graph']['connectivity_smiles'] for ids in saved['history_state_ids'][:hit+1]]
@@ -123,14 +191,15 @@ def main():
     for name in ['project', 'out']: p.add_argument('--'+name, type=Path, required=True)
     for name in ['oracle-python', 'oracle-checkpoint', 'run']: p.add_argument('--'+name, type=Path)
     p.add_argument('--index', type=int, required=True)
+    p.add_argument('--protocol', type=Path)
     args = p.parse_args(); root = Path(__file__).resolve().parents[2]
-    pp, protocol, header, warm, positions, ids, physical = inputs(root, args.project, args.index)
+    pp, protocol, header, warm, positions, ids, physical = inputs(root, args.project, args.index, args.protocol)
     shared = protocol['shared']
     args.out.mkdir(parents=True, exist_ok=True); output = args.out/'results.json'
     if output.exists(): raise FileExistsError(output)
     report = dict(complete=False, phase=args.phase, index=args.index, condition=header['condition'],
         protocol_sha256=sha(pp), parent_ids=ids, arms=[], new_raw_queries=0, scientific_submission_ready=False,
-        scope='FIT parents only, full-chain fixed-query readouts; no new learned model or equilibrium claim.')
+        scope=protocol.get('scope', 'FIT parents only, full-chain fixed-query readouts; no new learned model or equilibrium claim.'))
     write(output, report)
     oracle = None
     started = time.monotonic()
@@ -152,9 +221,13 @@ def main():
         for replica in protocol['replicas']:
             for method in protocol['methods']:
                 name = f'{method}_s{replica}'
+                model_tick = time.monotonic()
+                model, model_hash = load_scalar_model(args.project, protocol, method, replica)
+                model_loading_seconds = time.monotonic()-model_tick
                 if args.phase == 'audit':
                     expected = source['arms'][len(report['arms'])]
                     assert expected['name'] == name
+                    if 'model_methods' in protocol: assert expected['model_sha256'] == model_hash
                     path = args.run/expected['file']; assert sha(path) == expected['trace_sha256']
                     saved = torch.load(path, map_location='cpu', weights_only=False)
                     oracle = ReplayOracle(saved['query_trace']); oracle.evaluated = saved['raw_query_offset']
@@ -163,7 +236,7 @@ def main():
                 progress = dict(raw_query_offset=offset)
                 tick = time.monotonic()
                 try:
-                    run_budget(target, positions, ids, None, method, replica, args.index, protocol, shared, progress)
+                    run_budget(target, positions, ids, model, method, replica, args.index, protocol, shared, progress)
                 except Exception:
                     progress.update(states=target.states, query_trace=target.query_trace)
                     torch.save(progress, args.out/f'{name}_failed_trace.pt')
@@ -176,6 +249,7 @@ def main():
                     path = args.out/f'{name}_trace.pt'; torch.save(progress, path)
                     row = dict(name=name, method=method, replica=replica, file=path.name, trace_sha256=sha(path),
                         raw_query_offset=offset, raw_queries=cost, sampling_seconds=time.monotonic()-tick, **stats)
+                    if 'model_methods' in protocol: row.update(model_sha256=model_hash, model_loading_seconds=model_loading_seconds)
                 else:
                     equal(progress, saved); equal(stats, {k: expected[k] for k in stats})
                     assert oracle.index == len(oracle.queries) and cost == expected['raw_queries']
@@ -189,7 +263,8 @@ def main():
                 print(json.dumps(dict(index=args.index, arm=name, phase=args.phase, raw_queries=cost,
                     caps_reached=stats['all_caps_reached'])), flush=True)
         total = sum(r['raw_queries'] for r in report['arms'])
-        assert total <= protocol['maximum_total_new_raw_queries']//len(protocol['condition_indices'])
+        maximum = len(protocol['replicas'])*sum(sum(parent_query_caps(protocol, method, args.index, ids)) for method in protocol['methods'])
+        assert total <= maximum
         if args.phase == 'evaluate':
             assert oracle.evaluated == oracle.requested_evaluations == total
             report['requested_raw_queries'] = oracle.requested_evaluations

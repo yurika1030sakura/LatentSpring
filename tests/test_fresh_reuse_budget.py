@@ -76,3 +76,19 @@ def test_analysis_does_not_extrapolate_or_count_algorithm_replicas_as_new_parent
     assert result['independent_source_parents']==2
     assert result['mean']==0.
     assert result['parent_bootstrap_95_percent_interval']==[0.,0.]
+
+
+def test_heterogeneous_parent_caps_remain_exact_when_active_batch_shrinks():
+    target=Target();progress={}
+    protocol=dict(query_caps={'site':10},evaluation_seeds=[17],scale_seeds=[19],maximum_microsteps=9,
+        query_caps_by_parent={'site':{'2':{'100':4,'200':6,'300':10}}})
+    run_budget(target,[torch.tensor(i) for i in range(3)],[100,200,300],None,'site',0,2,protocol,
+        dict(local_scales=[.1,.03],schedule=['local']),progress)
+    assert progress['query_caps_per_parent']==[4,6,10]
+    assert progress['final_queries_per_parent']==[4,2,10]
+    assert progress['query_cap_reached']==[True,False,True]
+    assert target.oracle.evaluated==16
+    assert progress['rounds'][-1]['active_indices']==[1]
+    with pytest.raises(ValueError,match='Missing declared parent'):
+        run_budget(Target(),[torch.tensor(0)],[999],None,'site',0,2,protocol,
+            dict(local_scales=[.1],schedule=['local']),{})
