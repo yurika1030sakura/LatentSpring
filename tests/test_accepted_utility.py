@@ -104,3 +104,16 @@ def test_bounded_score_controls_the_complete_marginal_joint_density_ratio():
     for source,end,graph,move,reference in [(x,y,bonds,action,q0),(y,x,new,inverse,qr0)]:
         q,_=observed_joint_arc_density(source,end,graph,z,e,radii,move,kind='arc_bounded',model=model)
         assert abs(float(q-reference))<=4*bound+1e-10
+
+
+def test_stratified_index_sampling_preserves_all_attempt_empirical_objective():
+    from scripts.research.train_accepted_utility import population_weights
+    records=[dict(index=1,parent=10,replica=0),dict(index=1,parent=10,replica=0),
+        dict(index=1,parent=20,replica=0),dict(index=2,parent=30,replica=0)]
+    weights=population_weights(records)
+    torch.testing.assert_close(weights,torch.tensor([.125,.125,.25,.5],dtype=torch.float64))
+    value=torch.tensor([0.,.4,-.1,.2],dtype=torch.float64,requires_grad=True)
+    selection=.5*weights+.5*(weights*value.detach().abs())/(weights*value.detach().abs()).sum()
+    exhaustive=(selection*(weights/selection)*value).sum();direct=(weights*value).sum()
+    torch.testing.assert_close(exhaustive,direct,atol=1e-14,rtol=0)
+    torch.testing.assert_close(torch.autograd.grad(exhaustive,value)[0],weights,atol=1e-14,rtol=0)
