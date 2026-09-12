@@ -1,0 +1,55 @@
+{
+  "frozen": true,
+  "version": 1,
+  "profiles": [
+    "published",
+    "compact"
+  ],
+  "replicas": [
+    0,
+    1
+  ],
+  "checkpoint_sha256": {
+    "compact": [
+      "f58b92202b8966b35eedf410ed66514ee191851e1cab3e2b94cbb5005375eb1f",
+      "d65ca9efa5be62c16439e62d5aa02f19d615c290ade215d9c4a2fd65eca3e290"
+    ],
+    "published": [
+      "c674cabc8d209bbb6b8b511377507ff3a7f942ac1cc176fee2ad8d3e521727d1",
+      "ad8364467b6d32fa62e9f6133ba6ab74a1345e3bb66088eeae1c974e2cd2f96a"
+    ]
+  },
+  "interface_results_sha256": {
+    "compact": [
+      "7844ee86ca04640dbcb79ae02b877e72505f034eed72f7d041e497e51c677c28",
+      "aa06208e23c47949385d3a9468bcb367c8046842ee43ce4b2c66ebe70f24219b"
+    ],
+    "published": [
+      "fdc877105f1d4ccafb30c0699acacee05ad392614fcbb83ca7f55cb9a3c33ad6",
+      "e1480110a45df567aad39ac80f24146696a77722775282be749518ab7259f2d0"
+    ]
+  },
+  "shared_evaluation_protocol_sha256": "5c07c900d33e6778bcf1e4f6d9869dc4a4d9fcc9dae3dfaa448a9ee4475470d5",
+  "reused_control_sha256": {
+    "site": [
+      "95a4c8e0566f1c7ec25698ea01fedeafb58e335cb77b3dc487e3c97e049ef551",
+      "8e0c186385e47029831a6ec1bac1db26061f57eaa4b2c146cc9d34f261740893"
+    ],
+    "learned_vector": [
+      "64327069a02a6ed691f15d24afb9efe8b8f7a61c392855682d7d4841928820be",
+      "8798967716ea07ca35696073dfaeaae38d1ba78b5146482b83c56089deade11a"
+    ]
+  },
+  "steps": 256,
+  "chains": 4,
+  "maximum_new_raw_queries": 8224,
+  "inherited_training_raw_queries": 16000,
+  "source_density_used": false,
+  "target_support_changed": false,
+  "auxiliary_law": "Full3N Gaussian with mean x and fixed sigma0.1; physical x in dimension3(N-1).",
+  "direction_probability": 0.5,
+  "selection": "Both pre-existing capacities and both seeds; no outcome-based checkpoint selection. Reuse the already frozen site/vector controls with identical starts, target, schedule and seed definitions.",
+  "cost_contract": "EACF training16000 raw calls and source preparation counted;2048 earlier generator-validation calls reported separately, not silently charged as training. Sampling, compile/startup and steady transport times separated. Fixed microsteps/max query caps do not imply equal actual costs.",
+  "scope": "Development sampling-proposal comparison, not a native unconditional-generator or broad molecular benchmark.",
+  "stop_rule": "No superiority from a short prefix, missing source density, or mismatched physical targets. Preserve invalid proposals, nonfinite map failures and all negative outcomes."
+}

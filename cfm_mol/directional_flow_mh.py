@@ -28,6 +28,8 @@ def directional_flow_transition(target, states, transport, *, generator, phase):
         raise ValueError('Invalid learned-map output shapes')
     if not all(torch.isfinite(v).all() for v in [y, b, volume]):
         raise FloatingPointError('Nonfinite learned-map output; no silent rejection')
+    if float(y.mean(1).abs().max()) > 1e-8:
+        raise ValueError('Learned transport failed to map physical COM space into itself')
     forward = conditional_auxiliary_log_prob(auxiliary, x, transport.aux_scale)
     reverse = conditional_auxiliary_log_prob(b, y, transport.aux_scale)
     candidates, rows = [], []
