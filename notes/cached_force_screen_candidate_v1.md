@@ -76,3 +76,34 @@ learner; no gradient through an unavailable candidate oracle is permitted.
    an independent final cohort can qualify a useful method. Leave old evaluated
    molecular cohorts and the 722 reserved outcomes out of fitting. This candidate
    is an investigation, not proof that adding force features will create novelty.
+
+## Implemented source-force experiment
+
+`cfm_mol/source_force_screen.py` now implements positive nonreciprocal gates and
+`joint_chemical_geometry.py` computes the reverse gate only after a successful
+candidate query. It retains the reciprocal-factor branch unchanged. Tests verify
+finite-state balance, sensitive parameter gradients, molecular/force symmetries,
+zero-screen exact RNG/query equivalence, absence of candidate-force information
+before querying, and a visible error after an invalid paid reverse gate.
+
+The new paired-state neural encoder sees source/candidate geometry and graphs,
+continuous atomic descriptors, source force/work/norm/displacement features and
+symmetric leaf/anchor roles. A five-coefficient linear model supplies the simpler
+learned control. Fixed controls include no screen, the previous physical screen,
+and source-force work plus the EXACT known COM-restraint difference and proposal
+ratio. Both learned models initialize at zero; old checkpoints are not loaded.
+
+`runs/screen_prefix_accounting_v1/results.json` joins all 1,671 attempts to their
+96 original physical trajectories, retaining initial queries and all nonjoint
+work/costs. For the 72 FIT trajectories, mean cost is128 calls and mean expected
+work is0.4947591 eV, giving a frozen baseline rate0.0038653057 eV/call. The new
+objective weights complete trajectories equally, with fixed nonjoint terms,
+rather than giving each variable-length joint-attempt population equal mass.
+This is still a fixed-source empirical proxy, not a changed chain trajectory.
+
+`research/evidence/source_force_screen_training_protocol_v1.json` freezes two
+seeds each for linear/neural, 300 steps and batch eight. Initial/nonjoint costs
+remain in evaluation. A constant thinning probability is calibrated from FIT
+query use separately for each learned model, without selection outcomes. The
+same bound, data and optimizer budgets are used; active parameter counts and
+runtime are reported. No new physical queries are used. See NEXT for live jobs.

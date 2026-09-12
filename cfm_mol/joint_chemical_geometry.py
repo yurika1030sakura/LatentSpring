@@ -276,18 +276,27 @@ def joint_chemical_transition(target, states, *, kind, generator, phase,
             row.update(scored=False,screen_passed=False)
             if candidate is None:
                 continue
-            factor=screen.log_factor(old['positions'],candidate['positions'],old['graph']['bond_orders'],
-                candidate['graph']['bond_orders'],numbers,electronic,row['action'],
-                float(row['coordinate_log_ratio'])+row['action_log_ratio'])
-            if not torch.isfinite(factor) or abs(float(factor))>screen.log_factor_bound+1e-10:
-                raise ValueError('Finite bounded pre-oracle factor required')
-            first=min(0.,float(factor))
+            if hasattr(screen,'log_pass_probability'):
+                forward_gate=screen.log_pass_probability(old['positions'],candidate['positions'],old['graph']['bond_orders'],
+                    candidate['graph']['bond_orders'],numbers,electronic,row['action'],
+                    float(row['coordinate_log_ratio'])+row['action_log_ratio'],old['force_eV_A'])
+                if not torch.isfinite(forward_gate) or not -screen.log_factor_bound-1e-10<=float(forward_gate)<=0:
+                    raise ValueError('Finite bounded forward log gate probability required')
+                first=float(forward_gate);factor=None
+                row.update(screen_semantics='general_gate',log_forward_gate=first)
+            else:
+                factor=screen.log_factor(old['positions'],candidate['positions'],old['graph']['bond_orders'],
+                    candidate['graph']['bond_orders'],numbers,electronic,row['action'],
+                    float(row['coordinate_log_ratio'])+row['action_log_ratio'])
+                if not torch.isfinite(factor) or abs(float(factor))>screen.log_factor_bound+1e-10:
+                    raise ValueError('Finite bounded pre-oracle factor required')
+                first=min(0.,float(factor))
             rng=generator if row_generators is None else row_generators[index]
             # Acceptance one needs no random draw: a zero screen exactly retains
             # the original sampler's random stream and energy queries.
             gate_u=float(torch.rand((),dtype=torch.float64,generator=rng).log()) if first<0 else None
             passed=first==0 or gate_u<first
-            row.update(log_screen_factor=float(factor),first_log_acceptance=first,
+            row.update(log_screen_factor=None if factor is None else float(factor),first_log_acceptance=first,
                        screen_log_uniform=gate_u,screen_passed=passed,scored=passed)
             if not passed:
                 candidates[index]=None
@@ -304,7 +313,17 @@ def joint_chemical_transition(target, states, *, kind, generator, phase,
             continue
         target_ratio = -float(new['potential_eV']-old['potential_eV'])/target.kT
         ratio = target_ratio+float(row['coordinate_log_ratio'])+row['action_log_ratio']
-        second_ratio=ratio if screen is None else ratio-row['log_screen_factor']
+        if screen is not None and hasattr(screen,'log_pass_probability'):
+            # Candidate energy AND force exist only after the first gate passes.
+            reverse_gate=screen.log_pass_probability(new['positions'],old['positions'],new['graph']['bond_orders'],
+                old['graph']['bond_orders'],numbers,electronic,row['inverse_action'],
+                -float(row['coordinate_log_ratio'])-row['action_log_ratio'],new['force_eV_A'])
+            if not torch.isfinite(reverse_gate) or not -screen.log_factor_bound-1e-10<=float(reverse_gate)<=0:
+                raise ValueError('Invalid reverse gate after paid candidate query')
+            row['log_reverse_gate']=float(reverse_gate)
+            second_ratio=ratio+float(reverse_gate)-row['log_forward_gate']
+        else:
+            second_ratio=ratio if screen is None else ratio-row['log_screen_factor']
         take = float(log_u[index]) < min(0., second_ratio)
         row.update(new_state_id=new['state_id'], target_log_ratio=target_ratio,
                    log_acceptance_ratio=ratio, accepted=take)
