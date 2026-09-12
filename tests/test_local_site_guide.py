@@ -65,3 +65,26 @@ def test_masking_covariance_permutation_and_zero_head_control():
     rotated,_=model(x[:,perm]@rotation,bonds[:,perm][:,:,perm],numbers[perm],electronic,lookup[roots])
     torch.testing.assert_close(rotated,first@rotation,atol=1e-10,rtol=1e-10)
     with pytest.raises(ValueError):model(x,bonds,numbers,electronic*0,roots)
+
+
+def test_stiffness_can_exceed_old_cap_without_rotating_intrinsic_mode():
+    import math
+    from cfm_mol.local_site_guide import StiffnessSiteGuide
+    from cfm_mol.spherical_proposal import vmf_sample,vmf_log_prob
+    x,bonds,numbers,roots,electronic,_=fixture()
+    model=StiffnessSiteGuide().double()
+    d0,k0,h=model.intrinsic_parameters(x,bonds,numbers,electronic,roots)
+    torch.testing.assert_close(k0,torch.full_like(k0,10.),atol=1e-5,rtol=0)
+    with torch.no_grad():model.concentration_head.bias.fill_(math.log(512/(2048-512)))
+    d1,k1,_=model.intrinsic_parameters(x,bonds,numbers,electronic,roots)
+    torch.testing.assert_close(d0,d1);torch.testing.assert_close(k1,torch.full_like(k1,512.))
+    eta,_=model(x,bonds,numbers,electronic,roots)
+    direction,_=vmf_sample(eta[:,0],generator=torch.Generator().manual_seed(24911))
+    assert torch.isfinite(vmf_log_prob(direction,eta[:,0])).all()
+    # Concentrated-vMF angular second moment has exact E[cos(theta)] below.
+    e=torch.tensor([[0.,0.,1024.]],dtype=torch.float64).expand(8192,-1)
+    draws,_=vmf_sample(e,generator=torch.Generator().manual_seed(24912))
+    assert abs(float(draws[:,2].mean())-(1-1/1024))<5e-5
+    # Likelihood training through the stable high-concentration normalizer.
+    loss=-vmf_log_prob(direction.detach(),eta[:,0]).mean();loss.backward()
+    assert all(p.grad is None or torch.isfinite(p.grad).all() for p in model.parameters())

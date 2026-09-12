@@ -69,6 +69,8 @@ def independent_log_q(x, y, bonds, numbers, electronic, radii, action, order, ki
             kappa = float(eta.norm())
             if kappa < 1e-5:
                 value = -math.log(4*math.pi)-kappa*kappa/6+kappa**4/180
+            elif kappa > 20:
+                value = math.log(kappa)-math.log(2*math.pi)-kappa-math.log1p(-math.exp(-2*kappa))
             else:
                 value = math.log(kappa)-math.log(4*math.pi)-math.log(math.sinh(kappa))
             log_c.append(value)

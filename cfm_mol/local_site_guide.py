@@ -31,7 +31,7 @@ class LocalSiteGuide(NormalizedSiteGuide):
         self.configuration=dict(hidden=hidden,radial=radial,bound=bound,site_concentration=site_concentration,
             cutoff=cutoff,restraint=restraint)
 
-    def components(self,x,bonds,numbers,electronic,roots):
+    def components(self,x,bonds,numbers,electronic,roots,*,return_nodes=False):
         if (not 2<=x.shape[1]<=200 or bonds.shape!=x.shape[:2]+(x.shape[1],)
                 or numbers.shape!=(x.shape[1],) or numbers.dtype!=torch.long
                 or ((numbers<1)|(numbers>118)).any()):
@@ -59,8 +59,39 @@ class LocalSiteGuide(NormalizedSiteGuide):
         residual=residual*self.bound/(self.bound+residual.norm(dim=1,keepdim=True))
         site=physical_site_parameter(masked,roles,bonds,roots,self.site_concentration)
         harmonic=confinement_parameter(masked,radius,electronic[:,2],self.restraint)
+        if return_nodes:return site,harmonic,residual,nodes
         return site,harmonic,residual
 
     def forward(self,x,bonds,numbers,electronic,roots):
         site,harmonic,residual=self.components(x,bonds,numbers,electronic,roots)
         return (site+harmonic+residual)[:,None],x.new_zeros(len(x),1)
+
+
+class StiffnessSiteGuide(LocalSiteGuide):
+    """Separate intrinsic angular mode and stiffness, then add exact confinement."""
+    def __init__(self,hidden=16,radial=16,bound=64.,site_concentration=10.,cutoff=6.,restraint=.1,
+                 max_concentration=2048.,initial_concentration=10.):
+        super().__init__(hidden,radial,bound,site_concentration,cutoff,restraint)
+        if not 0<initial_concentration<max_concentration or not math.isfinite(max_concentration):
+            raise ValueError('Finite positive initial and maximum concentrations required')
+        self.max_concentration=max_concentration
+        self.concentration_head=torch.nn.Linear(2*hidden,1)
+        torch.nn.init.zeros_(self.concentration_head.weight)
+        torch.nn.init.constant_(self.concentration_head.bias,math.log(initial_concentration/(max_concentration-initial_concentration)))
+        self.configuration.update(max_concentration=max_concentration,initial_concentration=initial_concentration)
+
+    def intrinsic_parameters(self,x,bonds,numbers,electronic,roots):
+        site,harmonic,residual,nodes=self.components(x,bonds,numbers,electronic,roots,return_nodes=True)
+        batch=torch.arange(len(x),device=x.device)
+        context=torch.cat([nodes[batch,roots[:,0]],nodes[batch,roots[:,1]]],1)
+        concentration=self.max_concentration*torch.sigmoid(self.concentration_head(context)[:,0])
+        vector=site+residual;norm=vector.norm(dim=1,keepdim=True)
+        # A directionless environment stays isotropic instead of selecting a
+        # laboratory axis. The analytic confinement may still be nonzero.
+        direction=vector/norm.clamp_min(1e-12)
+        concentration=torch.where(norm[:,0]>1e-12,concentration,torch.zeros_like(concentration))
+        return direction,concentration,harmonic
+
+    def forward(self,x,bonds,numbers,electronic,roots):
+        direction,concentration,harmonic=self.intrinsic_parameters(x,bonds,numbers,electronic,roots)
+        return (concentration[:,None]*direction+harmonic)[:,None],x.new_zeros(len(x),1)
