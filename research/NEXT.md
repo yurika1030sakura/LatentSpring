@@ -10,7 +10,17 @@ checkout. The ICLR goal remains active and scientifically unachieved.
    Audit: `runs/conditional_arc_learning_audit_v1/results.json`.
    The `arc_energy` complete joint decoder is implemented with independently
    checked scalar energy readout and forward/reverse normalization.
-2. The frozen `research/evidence/conditional_arc_chain_protocol_v1.json`
+2. **Recovery update:** original worker46181560_0 failed at a reproduced near-pole
+   tangent cancellation; worker1 completed. The original audit46181692 was
+   cancelled. The frame is reorthogonalized without relaxing checks; all47 cached
+   requests/352 calls and prior states/transitions replay identically. Recovery
+   producer46182765 uses `runs/conditional_arc_chain_recovery_v1` for condition5,
+   reusing its completed physical arm and cached partial learner. Maximum
+   additional recovery cost is3,446 calls; the overall66,588-call budget is unchanged.
+   Preserve the original failure and its runtime. Follow the replacement audit,
+   and supply `--recovery-run` to the summary. Do not rerun completed conditions.
+
+   The frozen `research/evidence/conditional_arc_chain_protocol_v1.json`
    complete-chain pilot is submitted as46181560, with independent audit46181692.
    The unique outputs are `runs/conditional_arc_chain_v1` and
    `runs/conditional_arc_chain_audit_v1`. Re-query these jobs and consume all36

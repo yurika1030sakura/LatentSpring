@@ -202,7 +202,20 @@ def verify_recovery_prefix(run, source):
     assert cached == info['cached_partial_calls'] == info['expected_cached_partial_calls']
     assert info['all_cached_requests_replayed']
     for old_row,new_row in zip(old['arms'],source['arms']):
-        assert old_row['name'] == new_row['name'] and old_row['trace_sha256'] == new_row['trace_sha256']
+        assert old_row['name'] == new_row['name']
+        if 'control_repair' in source and old_row['name']=='arc_site_s0':
+            repair=source['control_repair'];prior_report=Path(repair['source_results'])
+            assert sha(prior_report)==repair['source_results_sha256']
+            assert old_row['trace_sha256']==repair['original_control_trace_sha256']
+            assert new_row['trace_sha256']==repair['corrected_control_trace_sha256']
+            assert repair['additional_physical_calls']==repair['additional_requested_calls']==1392
+            corrected=torch.load(run/new_row['file'],map_location='cpu',weights_only=False)
+            original_trace=torch.load(previous/old_row['file'],map_location='cpu',weights_only=False)
+            prefix=[q for q in original_trace['query_trace'] if q['raw_queries_after']<=repair['reused_prefix_raw_calls']]
+            equal(corrected['query_trace'][:len(prefix)],prefix)
+            assert prefix[-1]['raw_queries_after']==358 and repair['source_prefix_replayed']
+        else:
+            assert old_row['trace_sha256'] == new_row['trace_sha256']
     assert source['new_raw_queries'] == info['previous_physical_calls']+info['additional_physical_calls']
     assert info['additional_physical_calls'] == info['additional_requested_calls']
     return True

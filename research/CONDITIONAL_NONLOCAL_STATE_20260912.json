@@ -1,5 +1,5 @@
 {
-  "updated_at_utc": "2026-09-12T18:12:42.652993+00:00",
+  "updated_at_utc": "2026-09-12T18:30:25.303991+00:00",
   "goal_status": "active",
   "scientific_submission_ready": false,
   "supersedes_current_pointer": "research/GEODESIC_RECONSTRUCTION_STATE_20260912.json",
@@ -156,10 +156,21 @@
     "scope": "All48 internally withheld parents, six compositions, both learned objectives/seeds and physical site-arc control.",
     "maximum_new_raw_queries": 66588,
     "primary_total_per_method_replica": 21006,
-    "scheduler_status": "Both producer tasks RUNNING at2026-09-12T18:10Z; audit depends on their successful completion. Re-query Slurm.",
+    "scheduler_status": "Original worker0 FAILED at the reproduced near-pole frame check; worker1 COMPLETED. Original dependency audit46181692 CANCELLED. Recovery and replacement audit handles below are authoritative; re-query Slurm.",
     "driver_per_parent_caps_implemented": true,
     "scalar_model_loading_implemented": true,
-    "engineering": "research/evidence/conditional_arc_chain_engineering_v1.json"
+    "engineering": "research/evidence/conditional_arc_chain_engineering_v1.json",
+    "recovery": {
+      "producer": "46182765",
+      "run": "runs/conditional_arc_chain_recovery_v1",
+      "source_commit": "561f23847e2a21665345a98f252df3929a9dbaba",
+      "expected_additional_raw_queries": 3446,
+      "original_condition_queries_retained": 2102,
+      "engineering": "research/evidence/conditional_arc_chart_recovery_v1.json",
+      "repaired_prefix_replayed": true,
+      "raw_query_budget_unchanged": true,
+      "prior_failed_attempt_time_retained": true
+    }
   },
   "candidate_diagnostic": {
     "path": "runs/conditional_arc_candidate_diagnostic_v1/results.json",

@@ -126,6 +126,10 @@ def main():
         result['recovery']=dict(recovered['recovery'],results_sha256=sha(args.recovery_run/'results.json'),
             source_run=str(args.recovery_run),per_method_timing_complete=False,
             interpretation='The recovered partial arm sampling_seconds excludes its earlier failed-attempt time; previous elapsed time is retained in recovery provenance. No matched-wall-time claim is allowed. Raw-call accounting reuses the saved prefix once.')
+    if args.recovery_run is not None and 'control_repair' in recovered:
+        result['control_repair']=recovered['control_repair']
+        result['actual_physical_queries_including_discarded_control_suffix']=source_cost+recovered['control_repair']['additional_physical_calls']
+        result['matched_cost_scope']='Declared corrected method trajectories are matched. Actual research spending also includes1392 calls from the discarded numerical-control suffix; it is explicitly reported as repair overhead.'
     if args.out.exists():raise FileExistsError(args.out)
     args.out.parent.mkdir(parents=True,exist_ok=True);args.out.write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result['readouts'].get('final',result['readouts']['128']),indent=2))
