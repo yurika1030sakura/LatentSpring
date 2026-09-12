@@ -12,8 +12,8 @@ from scripts.research.audit_masked_angular import ReplayOracle,equal,sha
 from scripts.research.evaluate_chemical_policy import write
 
 
-def inputs(root,project,index):
-    pp=root/'research/evidence/arc_oracle_feasibility_protocol_v1.json';protocol=json.loads(pp.read_text())
+def inputs(root,project,index,protocol_path=None):
+    pp=protocol_path or root/'research/evidence/arc_oracle_feasibility_protocol_v1.json';protocol=json.loads(pp.read_text())
     ap=project/protocol['arc_audit'];audit=json.loads(ap.read_text())
     assert sha(ap)==protocol['arc_audit_sha256']
     assert audit['complete'] and audit['all_arc_and_fullsphere_draws_replayed'] and audit['all_graph_checks_repeated']
@@ -27,7 +27,16 @@ def inputs(root,project,index):
     assert sha(source_dir/'results.json')==protocol['source_results_sha256'][str(index)]
     assert sha(source_dir/'trace.pt')==source_report['trace_sha256']
     source=torch.load(source_dir/'trace.pt',map_location='cpu',weights_only=False)
-    selected=protocol['fit_context_ids'][str(index)]
+    selected=protocol.get('context_ids',protocol.get('fit_context_ids'))[str(index)]
+    if 'context_ids' in protocol:
+        split_path=root/'research/evidence/multicomposition_angular_probe_protocol_v1.json'
+        assert sha(split_path)==protocol['split_protocol_sha256']
+        split=json.loads(split_path.read_text())['condition_splits'][str(index)]
+        allowed=split['withheld_parent_ids']+split['withheld_composition_parent_ids']
+        assert allowed==protocol['parent_ids_by_condition'][str(index)]
+        assert not set(allowed)&set(split['fit_parent_ids'])
+        assert selected==[c['context'] for c in source['contexts'] if c['parent_id'] in allowed]
+        assert 2*len(protocol['methods'])*sum(map(len,protocol['context_ids'].values()))==protocol['maximum_new_raw_queries']
     rows=[r for r in arc if r['condition']==index and r['context'] in selected and r['method'] in protocol['methods']]
     assert len(rows)==len(selected)*len(protocol['methods'])
     assert {r['context'] for r in rows}==set(selected)
@@ -69,8 +78,9 @@ def main():
     for name in ['oracle-python','oracle-checkpoint','run']:p.add_argument('--'+name,type=Path)
     p.add_argument('--phase',choices=['evaluate','audit'],required=True)
     p.add_argument('--index',type=int,required=True)
+    p.add_argument('--protocol',type=Path)
     args=p.parse_args();root=Path(__file__).resolve().parents[2]
-    pp,protocol,audit,header,source,rows,physical=inputs(root,args.project,args.index)
+    pp,protocol,audit,header,source,rows,physical=inputs(root,args.project,args.index,args.protocol)
     assert args.index in protocol['condition_indices']
     if args.phase=='audit':
         report=json.loads((args.run/'results.json').read_text())
@@ -100,7 +110,10 @@ def main():
     if output.exists():raise FileExistsError(output)
     result=dict(complete=False,index=args.index,protocol_sha256=sha(pp),condition=header['condition'],arc_audit_sha256=sha(args.project/protocol['arc_audit']),
         source_results_sha256=sha(args.project/f'runs/multicomposition_angular_probe_v1/condition_{args.index:02d}/results.json'),
-        fit_context_ids=protocol['fit_context_ids'][str(args.index)],new_raw_queries=0,new_model_fitted=False,scientific_submission_ready=False)
+        new_raw_queries=0,new_model_fitted=False,scientific_submission_ready=False)
+    selection_key='context_ids' if 'context_ids' in protocol else 'fit_context_ids'
+    result[selection_key]=protocol[selection_key][str(args.index)]
+    if selection_key=='context_ids':result['selection_role']=protocol['selection_role']
     write(output,result);oracle=target=None
     try:
         assert sha(args.oracle_checkpoint)==physical['raw_oracle_sha256']
@@ -113,7 +126,7 @@ def main():
         assert oracle.evaluated==oracle.requested_evaluations==2*len(rows)
         result.update(complete=True,rows=data,trace_sha256=sha(args.out/'trace.pt'),new_raw_queries=oracle.evaluated,
             requested_raw_queries=oracle.requested_evaluations,oracle_runtime=oracle.handshake,
-            scope='First frozen draw per FIT context and scoring rule. Expected one-step MH diagnostics with the per-context surrogate held fixed; not a trained learner, joint molecular sampler, cost-matched learning benefit or equilibrium result.')
+            scope=protocol.get('scope','First frozen draw per FIT context and scoring rule. Expected one-step MH diagnostics with the per-context surrogate held fixed; not a trained learner, joint molecular sampler, cost-matched learning benefit or equilibrium result.'))
         write(output,result);print(json.dumps(dict(index=args.index,endpoints=len(rows),new_raw_queries=oracle.evaluated)))
     except Exception as exc:
         if target is not None:torch.save(dict(states=target.states,query_trace=target.query_trace),args.out/'failed_trace.pt')

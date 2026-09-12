@@ -64,7 +64,7 @@ def log_exprel(value):
     return torch.where(size<1e-4,series,regular)
 
 
-def circle_law(base,tangent,normals,limits,eta,*,max_segment_width=math.pi/64):
+def circle_law(base,tangent,normals,limits,eta,*,max_segment_width=math.pi/64,score=None):
     if base.shape!=(3,) or tangent.shape!=(3,) or eta.shape!=(3,) or normals.shape!=(len(limits),3):
         raise ValueError('Three-dimensional directions, score and halfspaces required')
     if not all(torch.isfinite(t).all() for t in [base,tangent,normals,limits,eta]):
@@ -81,7 +81,10 @@ def circle_law(base,tangent,normals,limits,eta,*,max_segment_width=math.pi/64):
     if not segments:return None
     edges=base.new_tensor(segments);width=edges[:,1]-edges[:,0]
     directions=edges.cos()[...,None]*base+edges.sin()[...,None]*tangent
-    heights=directions@eta;delta=heights[:,1]-heights[:,0]
+    heights=directions@eta if score is None else score(directions)
+    if heights.shape!=edges.shape or not torch.isfinite(heights).all():
+        raise ValueError('Finite scalar score required at every actual interpolation edge')
+    delta=heights[:,1]-heights[:,0]
     log_masses=width.log()+heights[:,0]+log_exprel(delta)
     normalizer=torch.logsumexp(log_masses,0)
     return dict(arcs=arcs,edges=edges,width=width,heights=heights,delta=delta,
@@ -138,7 +141,7 @@ def arc_teacher_kl(teacher,student):
     return (probabilities*difference).sum()-teacher['log_normalizer'].detach()+student['log_normalizer']
 
 
-def direction_log_prob(observed,base,normals,limits,eta,*,max_segment_width=math.pi/64,chart_tolerance=1e-10):
+def direction_log_prob(observed,base,normals,limits,eta,*,max_segment_width=math.pi/64,chart_tolerance=1e-10,score=None):
     """Sphere density includes BOTH oriented-circle preimages and |sin theta|."""
     torch.testing.assert_close(observed.norm(),observed.new_tensor(1.),atol=1e-9,rtol=0)
     cosine=base@observed;perpendicular=observed-cosine*base;sine=perpendicular.norm()
@@ -146,7 +149,7 @@ def direction_log_prob(observed,base,normals,limits,eta,*,max_segment_width=math
     tangent=perpendicular/sine;theta=torch.atan2(sine,cosine)
     logs=[]
     for sign,angle in [(1,theta),(-1,TAU-theta)]:
-        law=circle_law(base,sign*tangent,normals,limits,eta,max_segment_width=max_segment_width)
+        law=circle_law(base,sign*tangent,normals,limits,eta,max_segment_width=max_segment_width,score=score)
         value=angle_log_prob(angle,law)
         logs.append(observed.new_tensor(-torch.inf) if value is None else value)
     result=torch.logsumexp(torch.stack(logs),0)-math.log(TAU)-sine.log()
@@ -155,17 +158,17 @@ def direction_log_prob(observed,base,normals,limits,eta,*,max_segment_width=math
 
 
 @torch.no_grad()
-def draw_direction(base,normals,limits,eta,*,generator,max_segment_width=math.pi/64,chart_tolerance=1e-10):
+def draw_direction(base,normals,limits,eta,*,generator,max_segment_width=math.pi/64,chart_tolerance=1e-10,score=None):
     noise=torch.randn(3,dtype=base.dtype,device=base.device,generator=generator)
     tangent=noise-(noise@base)*base;length=tangent.norm()
     if float(length)<1e-12:return None,base.new_tensor(-torch.inf),dict(failure='Degenerate circle frame',noise=noise)
     tangent=tangent/length
-    law=circle_law(base,tangent,normals,limits,eta,max_segment_width=max_segment_width)
+    law=circle_law(base,tangent,normals,limits,eta,max_segment_width=max_segment_width,score=score)
     if law is None:return None,base.new_tensor(-torch.inf),dict(failure='Empty admissible circle',noise=noise,tangent=tangent)
     theta,random=draw_angle(law,generator=generator)
     direction=theta.cos()*base+theta.sin()*tangent
     logq,density=direction_log_prob(direction,base,normals,limits,eta,
-        max_segment_width=max_segment_width,chart_tolerance=chart_tolerance)
+        max_segment_width=max_segment_width,chart_tolerance=chart_tolerance,score=score)
     trace=dict(noise=noise,tangent=tangent,theta=theta,random=random,arcs=law['arcs'],
                log_circle_normalizer=law['log_normalizer'],density=density)
     if not torch.isfinite(logq):
