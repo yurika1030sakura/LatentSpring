@@ -1,5 +1,5 @@
 {
-  "updated_at_utc": "2026-09-12T17:58:17.047595+00:00",
+  "updated_at_utc": "2026-09-12T18:12:42.652993+00:00",
   "goal_status": "active",
   "scientific_submission_ready": false,
   "supersedes_current_pointer": "research/GEODESIC_RECONSTRUCTION_STATE_20260912.json",
@@ -135,16 +135,36 @@
     "model_specific_raw_overhead_for_next_withheld_parent_pilot": 14862,
     "previous_shared_physical_route_pilot": 36864
   },
-  "next": "Freeze a complete-chain comparison of both learned objectives against physical site arcs on all48 internally withheld parents. Count common initialization/preparation once, use exact per-parent physical prefixes to match model-specific data cost, and preserve same-inference readouts, runtime and all failures. Do not call internal development a blind final benchmark.",
+  "next": "Consume all36 frozen molecular-chain arms and independent replay. Compare both same-inference and exact matched-total readouts; do not infer success from partial cases. Diagnose any remaining density overconfidence using the preserved finite-candidate analysis.",
   "references": "notes/nonlocal_arc_prior_art_20260912.md",
   "paper_updated_for_new_scalar_learning": true,
   "next_protocol": "research/evidence/conditional_arc_chain_protocol_v1.json",
   "next_protocol_sha256": "5f69ffae6d7f88f73c89c81019dad3d83e6d78514ce04f6c182e77b6df49fc46",
-  "next_protocol_submitted": false,
+  "next_protocol_submitted": true,
   "paper": {
     "pdf": "runs/verification/conditional_nonlocal_20260912/main.pdf",
     "build_evidence": "research/evidence/conditional_nonlocal_paper_build_20260912.json",
     "main_pages": 8,
     "total_pages": 18
+  },
+  "active_chain_experiment": {
+    "producer": "46181560",
+    "audit": "46181692",
+    "source_commit": "6b6b265c256151b22a4f6fb780969d5962fcc055",
+    "run": "runs/conditional_arc_chain_v1",
+    "audit_run": "runs/conditional_arc_chain_audit_v1",
+    "scope": "All48 internally withheld parents, six compositions, both learned objectives/seeds and physical site-arc control.",
+    "maximum_new_raw_queries": 66588,
+    "primary_total_per_method_replica": 21006,
+    "scheduler_status": "Both producer tasks RUNNING at2026-09-12T18:10Z; audit depends on their successful completion. Re-query Slurm.",
+    "driver_per_parent_caps_implemented": true,
+    "scalar_model_loading_implemented": true,
+    "engineering": "research/evidence/conditional_arc_chain_engineering_v1.json"
+  },
+  "candidate_diagnostic": {
+    "path": "runs/conditional_arc_candidate_diagnostic_v1/results.json",
+    "sha256": "05a82ce6b958a0b94c60006de2db2616847b23c90f5fc94cb69f1ebc826dd40e",
+    "new_physical_queries": 0,
+    "finding": "Learned scores more often select a low-energy member of the fixed five-candidate sets, but most finite-set KL values worsen. Better energy prediction does not imply calibrated probabilities. This is NOT continuous conditional KL and did not modify the frozen chain protocol."
   }
 }

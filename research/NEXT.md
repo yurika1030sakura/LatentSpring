@@ -10,8 +10,11 @@ checkout. The ICLR goal remains active and scientifically unachieved.
    Audit: `runs/conditional_arc_learning_audit_v1/results.json`.
    The `arc_energy` complete joint decoder is implemented with independently
    checked scalar energy readout and forward/reverse normalization.
-2. Implement the frozen `research/evidence/conditional_arc_chain_protocol_v1.json`
-   complete-chain pilot on all48 internally withheld parents:16 each
+2. The frozen `research/evidence/conditional_arc_chain_protocol_v1.json`
+   complete-chain pilot is submitted as46181560, with independent audit46181692.
+   The unique outputs are `runs/conditional_arc_chain_v1` and
+   `runs/conditional_arc_chain_audit_v1`. Re-query these jobs and consume all36
+   arms; do not launch duplicates. The pilot covers all48 withheld parents:16 each
    in conditions0 and7, four each in1,2,3,5. Their IDs are the union of the two
    withheld lists in `multicomposition_angular_probe_protocol_v1.json`. Keep both
    learned objectives/seeds and a physical site-arc control; no favorable-seed
@@ -24,9 +27,10 @@ checkout. The ICLR goal remains active and scientifically unachieved.
    exactly21,006; assign the extra pair of calls by a prospectively fixed hash.
    Retain same-inference32/64/128-call readouts and measured runtime. Maximum new
    production cost for three methods and two replicas is66,588 raw calls.
-   The driver needs explicit per-parent caps and scalar-model loading; do not
-   silently reuse the old fixed-cap/FIT-only driver with mismatched semantics.
-4. Replay every chain, all raw-call ledgers and independent joint MH ratios before
+   Per-parent caps and scalar-model loading are implemented and tested. Nine
+   targeted tests pass; old real physical trajectories and their summary replay
+   unchanged under the generalized driver.
+4. Consume every chain replay, all raw-call ledgers and independent joint MH ratios before
    interpretation. Predictive error improvement alone is insufficient. If learning
    adds useful sampling, test a broader frozen reuse cohort and appropriate
    learned baselines; preserve every adverse cost regime and composition.
@@ -42,3 +46,9 @@ reserved outcomes untouched until the method, scope and final benchmark are
 frozen. Authors and actual submission remain with the user. No new permission is
 required for authorized research work. Prior NEXT:
 `notes/archive/next_through_geodesic_physics_20260912.md`.
+
+A supplementary, post-training five-candidate diagnostic is in
+`runs/conditional_arc_candidate_diagnostic_v1/results.json`. Learned energy
+ranking improves, but most finite-set probability KL values worsen. These are
+not continuous conditional distributions: no quadrature/proposal-volume weights
+enter that diagnostic. It does not change the running frozen experiment.

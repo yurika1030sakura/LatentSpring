@@ -13,9 +13,11 @@ complete joint graph/radius/two-root updates. It passes independent density and
 public MH checks. Do not pass this model through the old vector `arc_model`.
 
 All this round's jobs are terminal:46178737/46178918 and46179382/46180176.
-There is no learned complete-chain result yet. NEXT specifies the48 internally
-withheld-parent comparison, exact21,006-call method/replica accounting and66,588
-maximum new raw calls. Implement per-parent physical caps before launching it.
+The48 internally withheld-parent molecular comparison is now submitted as46181560,
+with independent audit46181692. Per-parent caps and scalar-model loading are
+implemented/tested. Exact cost is21,006 calls per method/replica and66,588 maximum
+new calls overall. Refresh these handles; do not launch a duplicate. All36 arms
+and their audits are required before interpreting results.
 Do not retrain completed models, restart completed jobs, or call prediction gains
 an ICLR-ready sampling contribution. The prior physical site-arc benefit and all
 negative controls remain recorded. Keep reserved722 outcomes untouched.

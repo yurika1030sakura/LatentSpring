@@ -38,8 +38,18 @@ Audit: `runs/conditional_arc_learning_audit_v1/results.json`.
 | Complete physical site/uniform arc chains | 46176878 | 46176906 |
 | Real complete joint support | 46174307 | 46176033 |
 
-All these jobs are terminal. The new scalar model has no learned molecular
-complete-chain experiment yet. NEXT specifies the next cost-matched pilot.
+Those training/validation jobs are terminal. The new complete-chain experiment
+is now submitted as46181560, with independent audit46181692. It contains36 arms
+on48 internally withheld parents across six compositions, at most66,588 new raw
+calls. The generalized driver supports the exact436/438 physical caps and128
+learned caps, with21,006 counted calls per method/replica after model data costs.
+Nine budget tests pass and the old physical trajectories/summary replay unchanged.
+Re-query Slurm before status or result claims; partial arms are not conclusions.
+
+A supplementary five-candidate diagnostic shows better energy ranking but mostly
+worse finite-set probability KL after learning. It exposes potential overconfidence;
+it is neither continuous conditional KL nor evidence of molecular sampling failure.
+It uses existing labels, adds no physical calls and does not alter the frozen pilot.
 
 The preceding physical arc result remains useful: on48 FIT parents, site arcs
 improve the128-call potential-change readout by0.07615 eV against legacy site64,
