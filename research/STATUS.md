@@ -1,5 +1,14 @@
 # EACF and fresh-source checkpoint — September12
 
+Current checkpoint: `research/FRESH_REUSE_STATE_20260912.json` and
+`notes/fresh_reuse_checkpoint_v1.md`. All8192 fresh source attempts audited,
+72 supported; all72 warm starts completed and replayed,9360 physical calls.
+Four budget/analysis tests pass. Frozen paired evaluation46135971 is RUNNING;
+audit46135988 and summary/figure46136261 are PENDING. Refresh these handles,
+then read the predeclared primary full-cost result; preserve all failures and
+missing endpoints. Current paper8 main pages; scientific submission readiness
+false. Older pending/next-action statements below are historical.
+
 Current: `research/EACF_AND_REUSE_STATE_20260912.json` and
 `notes/eacf_directional_decision_v1.md`. Four frozen EACF proposal arms and real-map
 audits complete,6518 new physical calls. Learned-vector graph first hits repeat

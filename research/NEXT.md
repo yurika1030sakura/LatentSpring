@@ -1,5 +1,14 @@
 # Next research decision — 2026-09-12
 
+Current checkpoint: `research/FRESH_REUSE_STATE_20260912.json` and
+`notes/fresh_reuse_checkpoint_v1.md`. All8192 fresh source attempts audited,
+72 supported; all72 warm starts completed and replayed,9360 physical calls.
+Four budget/analysis tests pass. Frozen paired evaluation46135971 is RUNNING;
+audit46135988 and summary/figure46136261 are PENDING. Refresh these handles,
+then read the predeclared primary full-cost result; preserve all failures and
+missing endpoints. Current paper8 main pages; scientific submission readiness
+false. Older pending/next-action statements below are historical.
+
 ## Latest EACF and fresh-source checkpoint
 
 Read `research/EACF_AND_REUSE_STATE_20260912.json` and
