@@ -14,26 +14,22 @@ accepted-movement objectives have prior art. The importance-flow identity and
 bounded-score ratio bounds are elementary mathematics, not new general theorems.
 See `notes/nonlocal_arc_prior_art_20260912.md`.
 
-The six-arm conditional action/geometry comparison is now complete and audited.
-Action-only and joint internal point estimates are below physics and their
-intervals span zero. Joint improves on action-only but does not establish gain
-on geometry alone or physics. Thus coupling two learned components has not
-established the intended contribution. Do not scale these weights. Read
-`research/ACTION_GEOMETRY_STATE_20260912.json`.
+Conditional action selection together with feasible placement is now implemented;
+the frozen six-arm comparison and independent audits are running. Read
+`research/ACTION_GEOMETRY_STATE_20260912.json`. No advantage follows yet.
+This differs from the earlier failed selector only if it keeps the move-family
+schedule fixed, uses audited regrowth geometry, trains signed cost-adjusted
+accepted utility and includes the full inverse-action probability. Read
+`notes/chemical_policy_decision_v2.md` before implementation. Additional action
+capacity alone does not establish novelty or resolve a geometry bottleneck.
 
-A separate FIT-only query-cost census motivates considering a corrected cheap
-pre-screen. Expected rejected joint calls account for 24.35% of recorded
-complete-trajectory calls, before preparation/learning overhead. This is not a
-measured saving. `notes/delayed_acceptance_prior_art_20260912.md` records close
-classical, neural and structural-move prior art. Generic delayed acceptance,
-learning a surrogate, or saving oracle queries is not automatically novel.
-Any candidate needs a distinct and useful contribution for this molecular task,
-cheap physical/simple learned controls, actual chain gains and complete costs.
-No screening model or frozen protocol exists yet.
-
-No fitting on fresh validation outcomes, either evaluated molecular cohort or
-722 reserved conditions. Preserve every failure and signed-work metric. A
-positive one-step proxy still needs fresh sampling and independent evaluation.
+A matched action-only / geometry-only / joint comparison can test whether the
+coupling is useful. Equal likelihood-ratio bounds, data and optimizer
+budgets are frozen; preserve every failed attempt in denominators. No
+fitting on fresh validation outcomes, either evaluated molecular cohort or the
+722 reserved conditions. A positive empirical one-step proxy still needs fresh
+sampling validation, strong physical and representative learned baselines,
+realistic reuse costs and independent final evaluation.
 
 The scalar-chain failure and old vector learner's stronger-control/transfer
 failures remain unchanged. Lower finite-budget potential is not an equilibrium

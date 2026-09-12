@@ -102,17 +102,24 @@ established. Do not scale this frozen geometry-only recipe. Those preceding geom
 are terminal; the new comparison below is active. Re-query Slurm. Read
 `research/ACCEPTED_UTILITY_STATE_20260912.json`.
 
-Bounded CONDITIONAL action selection together with placement is now implemented,
-keeping the move-family schedule fixed and all forward/reverse probabilities.
-Read `notes/bounded_action_geometry_candidate_v1.md` and the old selector's
-failure in `notes/chemical_policy_decision_v2.md`. The six-arm protocol is frozen and training
-is running as 46192301 with dependent independent audit 46192339. The action-only,
-geometry-only and joint variants have matched total likelihood-ratio bounds.
-Read `research/ACTION_GEOMETRY_STATE_20260912.json` and NEXT. This uses no new
-oracle queries and is not established novelty.
-Do not fit on fresh validation outcomes, either evaluated molecular cohort or
-722 reserved outcomes. Equilibrium, competitive learned-generator advantage
-and scientific submission readiness remain unqualified. Keep the full goal active.
+The six-arm bounded CONDITIONAL action/geometry comparison is now COMPLETE.
+Neither action-only nor joint establishes an internal utility gain versus
+physics. Geometry-only reproduces the prior +2.7% proxy, whose fresh-proposal
+benefit remains unqualified. All final/baseline metrics and576 full densities
+replay; eight trained-head gradients pass finite differences. Jobs46192301 and
+46192339 are terminal. Read `research/ACTION_GEOMETRY_STATE_20260912.json`.
+Do not scale these frozen weights or claim useful coupling from the architecture.
+
+A FIT-only query-cost census records expected rejected joint calls equal to
+24.35% of complete-trajectory calls, excluding preparation/learning overhead.
+This is not an achievable saving or a wall-time prediction. Before any bounded
+pre-screen experiment, read `notes/delayed_acceptance_prior_art_20260912.md`:
+classical, neural and structural-move delayed acceptance already exist. The
+next screen must have exact reverse correction and suitable cheap controls;
+no screening model or frozen protocol exists yet. No new physical queries were
+used in this round. Exclude every evaluated cohort and722 reserved outcomes from
+fitting. Competitive sampling, equilibrium and scientific submission readiness
+remain unqualified. Keep the full ICLR goal active.
 The previous manuscript is `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
 exact-entropy refinement candidate. It is explicitly a development draft.

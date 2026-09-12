@@ -94,12 +94,15 @@ def test_actual_pair_initialization_bounds_and_parameter_gradients(variant):
     assert all(float(v)==0 for v in edge_values(model,{'valid':False},{}))
 
 
-def test_actual_transition_uses_selected_forward_and_inverse_probabilities():
+@pytest.mark.parametrize('variant',['action','joint'])
+def test_actual_transition_uses_selected_forward_and_inverse_probabilities(variant):
     from cfm_mol.chemical_sampler import ChemicalTarget
     from cfm_mol.joint_chemical_geometry import joint_chemical_transition
     from scripts.research.audit_masked_angular import ReplayOracle,equal
-    row=pair_record();model=BoundedConditionalActionPolicy().double()
-    with torch.no_grad():model.action_head[-1].weight.normal_(0,.2)
+    row=pair_record();model=ActionGeometryGuide(variant).double()
+    with torch.no_grad():
+        model.action.action_head[-1].weight.normal_(0,.2)
+        if variant=='joint':model.geometry.query_head[-1].weight.normal_(0,.2)
     class Oracle:
         evaluated=0
         def evaluate_chunked(self,p,max_request):
@@ -107,8 +110,9 @@ def test_actual_transition_uses_selected_forward_and_inverse_probabilities():
     def run(oracle):
         target=ChemicalTarget(oracle,dict(numbers=row['numbers'].tolist(),charge=0,spin_multiplicity=1),.026,.1)
         old=target.evaluate([target.coordinate_state(row['x'])],phase='initial')
-        states,rows=joint_chemical_transition(target,old*12,kind='arc_site',generator=torch.Generator().manual_seed(25711),
-            phase='test',site_concentration=64.,action_policy=model)
+        states,rows=joint_chemical_transition(target,old*12,kind='arc_site' if variant=='action' else 'arc_bounded',
+            model=None if variant=='action' else model.geometry,generator=torch.Generator().manual_seed(25711),
+            phase='test',site_concentration=64.,action_policy=model.action)
         return target,states,rows
     target,states,rows=run(Oracle())
     valid=[r for r in rows if r['valid']];assert valid
@@ -116,6 +120,14 @@ def test_actual_transition_uses_selected_forward_and_inverse_probabilities():
         ratio=float(r['log_reverse_action']-r['log_forward_action'])
         assert abs(r['action_log_ratio']-ratio)<1e-12
         assert abs(r['log_acceptance_ratio']-(r['target_log_ratio']+float(r['coordinate_log_ratio'])+ratio))<1e-12
+        from scripts.research.audit_action_geometry import independent_action_logp
+        from scripts.research.audit_joint_arc_support import independent_arc_q
+        old=target.states[r['old_state_id']];new=target.states[r['new_state_id']]
+        af,pf=independent_action_logp(model.action,old['positions'],old['graph']['bond_orders'],row['numbers'],row['electronic'])
+        ar,pr=independent_action_logp(model.action,new['positions'],new['graph']['bond_orders'],row['numbers'],row['electronic'])
+        action_ratio=pr[ar.index(tuple(r['inverse_action']))]-pf[af.index(tuple(r['action']))]
+        independent=r['target_log_ratio']+independent_arc_q(r['reverse'])-independent_arc_q(r['forward'])+action_ratio
+        assert abs(independent-r['log_acceptance_ratio'])<1e-7
     oracle=ReplayOracle(target.query_trace);other,states2,rows2=run(oracle)
     equal(rows,rows2);equal(states,states2)
     assert oracle.index==len(oracle.queries)

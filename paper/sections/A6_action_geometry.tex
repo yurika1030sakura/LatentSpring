@@ -1,0 +1,70 @@
+\section{Conditional action and geometry ablations}
+\label{app:action-geometry}
+
+The preceding geometric utility model leaves chemical action selection uniform.
+We next test a bounded conditional action policy together with the placement
+model. The local/rotation/exchange schedule remains fixed. An invariant graph
+encoder uses continuous atomic descriptors, pair distances, perceived bonds and
+the original electronic condition. Action features are symmetrized under swapping
+the two exchanging leaves and their anchors. A bounded logit is normalized over
+all eligible exchanges; no move-family head is learned. Empty legal sets give
+self transitions. This reuses the earlier action encoder but changes its
+coordinate proposal and training objective; it does not erase the earlier
+selector's failure.
+
+For augmented action/coordinate densities, write
+$Q_{\theta,f}=p_\theta(a\mid x)q_\theta(y\mid x,a)$ and use the newly enumerated
+inverse action set at $y$ for $Q_{\theta,r}$. The behavioral forward density is
+$Q_{b,f}=q_b(y\mid x,a)/N_f$. The observed utility is
+\begin{equation}
+ r(x,y)\min\!\left\{\frac{Q_{\theta,f}}{Q_{b,f}},
+ e^{-\Delta U/kT}\frac{Q_{\theta,r}}{Q_{b,f}}\right\}.
+\end{equation}
+The uniform action-count ratio must not be added again. Bounded action logits
+$B_a$ and root log-scores $B_g$ imply a total proposal-ratio bound
+$\exp(2B_a+4B_g)$ on common support. The fixed comparisons use action-only
+$B_a=1$, geometry-only $B_g=0.5$, and joint $B_a=0.5,B_g=0.25$, each with total
+bound $e^2$. All start at the same physical proposal and use the same data,
+optimizer, minibatch draws and 300 steps with two seeds. Active parameter counts
+and runtime are recorded separately; they are not claimed matched.
+
+The six arms retain the same 36 fitting and 12 internal-selection parents,
+1,671 attempts and 18,110 data-construction calls. No new oracle calls are used.
+Every final/baseline metric is replayed; 576 full forward/reverse densities are
+checked with independent action enumeration, NumPy action-network evaluation
+and arc quadrature. Maximum density disagreement is $4.98\times10^{-14}$.
+Eight trained-head objective finite differences have maximum error
+$3.17\times10^{-10}$. Geometry-only parameters reproduce the preceding models
+to within $7.8\times10^{-16}$.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lcc}
+\toprule
+Learned component & Seed 0 & Seed 1 \\
+\midrule
+Action only & $-6.27\;[-17.11,+3.62]$ & $-5.60\;[-16.28,+4.07]$ \\
+Geometry only & $+8.82\;[+3.55,+15.61]$ & $+8.76\;[+3.12,+15.59]$ \\
+Joint & $-0.68\;[-11.02,+9.54]$ & $-0.59\;[-9.12,+8.85]$ \\
+\bottomrule
+\end{tabular}
+\caption{Internal offline utility-rate differences against physics, in
+$10^{-5}$\,eV per expected raw call, with descriptive 95\% parent-bootstrap
+intervals. Positive values favor learning. Four compositions are fixed and
+parents are resampled within composition, retaining both behavior trajectories.
+These intervals are not multiplicity-adjusted. A common bootstrap seed is used
+for all comparisons in this appendix.}
+\label{tab:action-geometry}
+\end{table}
+
+The joint model does not establish improvement over physics. Against geometry
+alone, its differences are $-9.50\times10^{-5}$ and $-9.35\times10^{-5}$\,eV per
+call, with intervals $[-22.23,1.12]\times10^{-5}$ and
+$[-19.80,-0.30]\times10^{-5}$. Joint learning improves on action-only learning
+in this empirical proxy, but that comparison does not establish a useful
+combined method. The fixed bound allocation limits the scope of the conclusion;
+it does not rule out every possible joint policy. These weights do not justify
+molecular scale-up. The earlier geometry-only fresh-proposal null result and
+scalar-model chain failure remain unchanged. No independent final-test or
+equilibrium advantage is established.

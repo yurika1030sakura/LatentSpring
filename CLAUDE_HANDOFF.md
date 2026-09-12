@@ -1,43 +1,47 @@
 # Claude continuation — September 12, 2026
 
 Active checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
-`iclr2027-arch-fix`. Read `CLAUDE.md`, `research/NEXT.md`,
-`research/STATUS.md` and `research/ACTION_GEOMETRY_STATE_20260912.json`.
-Keep the environments separate and do not write to the home checkout.
+`iclr2027-arch-fix`. Read `CLAUDE.md`, `research/NEXT.md`, `research/STATUS.md` and
+`research/ACTION_GEOMETRY_STATE_20260912.json`. Keep environments separate and
+never write to the home checkout.
 
-The bounded geometric accepted-utility learner is implemented, trained with two
-seeds and audited. Differentiable observed joint densities include the actual
-reverse contexts, both orders and all normalizers. Production draws remain
-no-grad. Both seeds improve the internal offline utility-per-call proxy by about
-2.7%, with stable importance weights. This does not establish a useful sampler.
+The six-arm conditional action/geometry comparison is COMPLETE and independently
+audited. Action-only internal rates fall 1.94% / 1.74%; joint rates fall
+0.21% / 0.18%. Both variants' intervals versus physics span zero. Geometry-only
+reproduces the preceding +2.7% offline proxy; its actual fresh-proposal benefit
+remains unestablished. Joint has no demonstrated gain over geometry alone.
+Do not scale these weights. All source failures and previous negatives remain.
 
-The fresh-proposal follow-up is COMPLETE: 72 fixed internal source states,
-3,456 attempts, 6,708 raw calls and 3,354 independent MH checks. Actual utility
-differences are near zero and both parent intervals span zero. Small effects
-remain possible; no fresh-proposal gain or complete-chain benefit is established.
-Do not scale this frozen geometry-only recipe. Jobs 46186496, 46186856, 46186968,
-46189583 and 46189707 from that preceding experiment are terminal. The new
-comparison is active; re-query Slurm before action.
+Every final/baseline metric replays, with 576 independent full density checks
+(max error 4.98e-14) and eight trained-head finite differences (max error
+3.17e-10). Production tests cover simultaneous learned action and geometry,
+NumPy action probabilities, arc quadrature and trajectory replay. Geometry-only
+parameters reproduce the prior models within 7.8e-16. Jobs 46192301 and 46192339
+are terminal; re-query Slurm before action. Summary:
+`runs/action_geometry_summary_v1/results.json`.
 
-The bounded conditional action/geometry comparison is now implemented as described in
-`notes/bounded_action_geometry_candidate_v1.md`. Read the old
-`cfm_mol/chemical_policy.py` and `notes/chemical_policy_decision_v2.md` first:
-the earlier selector failed its sampling/cost gate. Keep the move-family schedule
-fixed, compute full forward/reverse action probabilities, and match total
-likelihood-ratio bounds across ablations. This is a hypothesis, not established
-novelty. Its frozen six-arm training is running as 46192301, with independent
-audit 46192339. Follow NEXT; no new oracle calls are used. Complete every arm and
-audit before interpreting component versus joint differences.
+A FIT-only cost census finds that expected rejected joint calls account for
+24.35% of the recorded complete-trajectory call budget. This is not an achievable
+saving or a wall-time prediction. The oracle-informed screening diagnostic is
+explicitly inadmissible as a cheap algorithm. Next read
+`notes/delayed_acceptance_prior_art_20260912.md` and NEXT before implementing any
+screen. Delayed acceptance, including neural and structural-move variants, has
+prior art. It cannot be renamed as our novelty.
 
-Use only the existing 36 FIT parents; retain the frozen 12-parent internal
-selection split. Do not fit on fresh follow-up outcomes, either evaluated
-molecular cohort, or the 722 reserved conditions. Data construction costs 18,110
-raw calls; do not inherit the scalar learner's different overhead. Preserve the
-scalar-chain failure and all earlier strong-control negatives.
+A possible bounded comparison must preserve exact reverse pairing, original
+charge/spin/support and the paired oracle, start at the physical kernel, and
+include cheap physical and simple learned screens. Only the 36 FIT parents may
+enter fitting; retain the 12 internal-selection parents and all failed attempts.
+No fitting on fresh follow-up outcomes, either prior evaluated molecular cohort
+or the 722 reserved conditions. No new physical queries were used in this round.
+Data construction still costs 18,110 raw calls.
 
-The manuscript includes both offline and fresh-proposal results:
-`runs/verification/accepted_utility_20260912/main.pdf` (8 main pages, 20 total).
-Formatting passes; scientific submission readiness is false. Continue the full
-ICLR goal; authors and actual submission remain with the user.
+The development manuscript now includes the six-arm negative result in its
+main-text interpretation and appendix. The ICLR goal remains active and the
+paper scientifically unready. Authors and actual submission remain with the user.
+Prior handoff: `notes/archive/claude_handoff_through_action_geometry_running_20260912.md`.
 
-Prior handoff: `notes/archive/claude_handoff_through_scalar_chain_20260912.md`.
+Verified development PDF: `runs/verification/action_geometry_completed_20260912/main.pdf`
+(9 main pages, 21 total). Build record:
+`research/evidence/action_geometry_completed_build_20260912.json`. Scientific
+submission readiness remains false.

@@ -1,8 +1,8 @@
 {
-  "updated_at_utc": "2026-09-12T21:17:42.987034+00:00",
+  "updated_at_utc": "2026-09-12T21:36:02.622610+00:00",
   "goal_status": "active",
   "scientific_submission_ready": false,
-  "previous_goal_turn_classification": "progress: committed current evidence/manuscript and exact summary replay",
+  "previous_goal_turn_classification": "progress: implemented/tested bounded action-geometry model and submitted frozen six-arm comparison",
   "previous_checkpoint": "research/ACCEPTED_UTILITY_STATE_20260912.json",
   "implementation": "cfm_mol/bounded_action_geometry.py",
   "protocol": "research/evidence/action_geometry_training_protocol_v1.json",
@@ -32,33 +32,154 @@
     "training": "46192301",
     "audit": "46192339"
   },
-  "scheduler_observed_at_utc": "2026-09-12T21:16:18.681918+00:00",
-  "scheduler_snapshot": [
-    "46192301_2|bgfm-action-geometry-train|RUNNING|holy8a24105",
-    "46192301_3|bgfm-action-geometry-train|RUNNING|holy8a24106",
-    "46192301_[4-5%2]|bgfm-action-geometry-train|PENDING|(JobArrayTaskLimit)",
-    "46192339_[0-5%2]|bgfm-action-geometry-audit|PENDING|(Dependency)"
-  ],
-  "current_conclusion": "Implementation is qualified; six-arm offline comparison is running. The action-only arms have completed and their unaudited internal utility rates are below physical initialization. Await all frozen arms and independent audits; no new sampling advantage is established.",
-  "next": "Finish six frozen arms and independent audits, then summarize all pairwise internal comparisons without outcome-based retraining. Do not release molecular scale-up or reserved evaluation based on an offline proxy alone.",
+  "scheduler_observed_at_utc": "2026-09-12T21:36:02.622610+00:00",
+  "scheduler_snapshot": [],
+  "current_conclusion": "All six arms and independent audits complete. Action-only and joint internal point estimates are below physical initialization; their intervals cross zero. Geometry-only reproduces its preceding +2.7% offline proxy but has no established fresh-proposal benefit. No useful joint learned advantage is established. Do not scale these weights.",
+  "next": "Use the FIT-only query-cost census to scope a bounded corrected pre-screen experiment. First test antisymmetric two-stage acceptance and realistic cost accounting; compare cheap physical, simple learned and neural screens before any new oracle experiment. Standard delayed acceptance is prior art and alone does not establish ICLR novelty.",
   "summary_command": "python scripts/research/summarize_action_geometry.py --project \"$PWD\" --run runs/action_geometry_train_v1 --audit runs/action_geometry_audit_v1 --out runs/action_geometry_summary_v1/results.json",
   "reserved_conditions_unqueried": 722,
-  "interim_action_only_unaudited": [
+  "all_current_work_terminal": true,
+  "training_complete": true,
+  "independent_audits_complete": true,
+  "summary": "runs/action_geometry_summary_v1/results.json",
+  "summary_sha256": "f025cba1cbbb000065b6331348e2064c76588769a73b4f35d64fa2def7da62a8",
+  "comparisons": [
     {
       "replica": 0,
-      "complete": true,
-      "baseline_rate": 0.0032255650197107553,
-      "final_internal_rate": 0.003162878536771486,
-      "relative_difference": -0.019434264247102595,
-      "audited": false
+      "learned": "action",
+      "control": "physical",
+      "control_eV_per_expected_raw_call": 0.003225565019710746,
+      "learned_eV_per_expected_raw_call": 0.0031628785367714867,
+      "difference_eV_per_expected_raw_call": -6.26864829392595e-05,
+      "relative_difference": -0.019434264247099597,
+      "fixed_composition_parent_bootstrap95": [
+        -0.00017108498719573678,
+        3.616621710101405e-05
+      ]
+    },
+    {
+      "replica": 0,
+      "learned": "geometry",
+      "control": "physical",
+      "control_eV_per_expected_raw_call": 0.003225565019710746,
+      "learned_eV_per_expected_raw_call": 0.0033137372230159757,
+      "difference_eV_per_expected_raw_call": 8.81722033052295e-05,
+      "relative_difference": 0.027335428914446958,
+      "fixed_composition_parent_bootstrap95": [
+        3.5472394801621884e-05,
+        0.00015605522638666245
+      ]
+    },
+    {
+      "replica": 0,
+      "learned": "joint",
+      "control": "physical",
+      "control_eV_per_expected_raw_call": 0.003225565019710746,
+      "learned_eV_per_expected_raw_call": 0.003218731583898286,
+      "difference_eV_per_expected_raw_call": -6.8334358124602645e-06,
+      "relative_difference": -0.0021185236604137625,
+      "fixed_composition_parent_bootstrap95": [
+        -0.00011017170707851385,
+        9.53912329027713e-05
+      ]
+    },
+    {
+      "replica": 0,
+      "learned": "joint",
+      "control": "geometry",
+      "control_eV_per_expected_raw_call": 0.0033137372230159757,
+      "learned_eV_per_expected_raw_call": 0.003218731583898286,
+      "difference_eV_per_expected_raw_call": -9.500563911768976e-05,
+      "relative_difference": -0.028670239286874066,
+      "fixed_composition_parent_bootstrap95": [
+        -0.00022234445532705403,
+        1.1239848572365931e-05
+      ]
+    },
+    {
+      "replica": 0,
+      "learned": "joint",
+      "control": "action",
+      "control_eV_per_expected_raw_call": 0.0031628785367714867,
+      "learned_eV_per_expected_raw_call": 0.003218731583898286,
+      "difference_eV_per_expected_raw_call": 5.585304712679923e-05,
+      "relative_difference": 0.017658928876798097,
+      "fixed_composition_parent_bootstrap95": [
+        2.1005896819676403e-05,
+        0.00010284544165121545
+      ]
     },
     {
       "replica": 1,
-      "complete": true,
-      "baseline_rate": 0.0032255650197107553,
-      "final_internal_rate": 0.003169538673105658,
-      "relative_difference": -0.01736946744608525,
-      "audited": false
+      "learned": "action",
+      "control": "physical",
+      "control_eV_per_expected_raw_call": 0.003225565019710746,
+      "learned_eV_per_expected_raw_call": 0.003169538673105659,
+      "difference_eV_per_expected_raw_call": -5.602634660508733e-05,
+      "relative_difference": -0.017369467446082254,
+      "fixed_composition_parent_bootstrap95": [
+        -0.00016279416832621144,
+        4.0685576160834694e-05
+      ]
+    },
+    {
+      "replica": 1,
+      "learned": "geometry",
+      "control": "physical",
+      "control_eV_per_expected_raw_call": 0.003225565019710746,
+      "learned_eV_per_expected_raw_call": 0.003313180465267408,
+      "difference_eV_per_expected_raw_call": 8.761544555666197e-05,
+      "relative_difference": 0.027162821093750233,
+      "fixed_composition_parent_bootstrap95": [
+        3.1179997396948555e-05,
+        0.00015585138795744767
+      ]
+    },
+    {
+      "replica": 1,
+      "learned": "joint",
+      "control": "physical",
+      "control_eV_per_expected_raw_call": 0.003225565019710746,
+      "learned_eV_per_expected_raw_call": 0.0032196810478662494,
+      "difference_eV_per_expected_raw_call": -5.883971844496735e-06,
+      "relative_difference": -0.001824167799607479,
+      "fixed_composition_parent_bootstrap95": [
+        -9.124867689025169e-05,
+        8.85214673221643e-05
+      ]
+    },
+    {
+      "replica": 1,
+      "learned": "joint",
+      "control": "geometry",
+      "control_eV_per_expected_raw_call": 0.003313180465267408,
+      "learned_eV_per_expected_raw_call": 0.0032196810478662494,
+      "difference_eV_per_expected_raw_call": -9.34994174011587e-05,
+      "relative_difference": -0.028220442074112118,
+      "fixed_composition_parent_bootstrap95": [
+        -0.00019795613992869797,
+        -3.044568447605183e-06
+      ]
+    },
+    {
+      "replica": 1,
+      "learned": "joint",
+      "control": "action",
+      "control_eV_per_expected_raw_call": 0.003169538673105659,
+      "learned_eV_per_expected_raw_call": 0.0032196810478662494,
+      "difference_eV_per_expected_raw_call": 5.01423747605906e-05,
+      "relative_difference": 0.015820086117283028,
+      "fixed_composition_parent_bootstrap95": [
+        1.4322250015406587e-05,
+        9.991978903981912e-05
+      ]
     }
-  ]
+  ],
+  "independent_full_densities": 576,
+  "maximum_independent_density_error": 4.973799150320701e-14,
+  "maximum_trained_gradient_fd_error": 3.1657026999809545e-10,
+  "next_note": "notes/delayed_acceptance_prior_art_20260912.md",
+  "query_cost_diagnostic": "runs/joint_query_cost_diagnostic_v1/results.json",
+  "model_fitting_on_new_evaluation_outcomes": false,
+  "paper_build": "research/evidence/action_geometry_completed_build_20260912.json"
 }

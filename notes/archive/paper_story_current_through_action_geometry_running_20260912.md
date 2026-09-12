@@ -19,18 +19,14 @@ Its uncertainty still allows small effects. Both results belong in the paper;
 neither constitutes a complete-chain, final-test or equilibrium advantage.
 The earlier scalar predictor's failed molecular comparison is also retained.
 
-The proposed coupling of chemical exchange selection and geometric placement
-has now been tested in six fixed offline arms. Neither action-only nor joint
-establishes a proxy gain over physics. Joint does better than action-only but
-has no established improvement over geometry alone. All metrics and 576 full
-densities replay independently. The completed negative comparison is included
-in the manuscript, not presented as an ongoing hopeful result.
-
-A FIT-only cost census suggests investigating corrected cheap query screening.
-Only 24.35% of recorded complete-trajectory calls are associated, in expectation,
-with rejected joint proposals; this is not an achievable saving. Classical and
-learned delayed acceptance have substantial prior art. This possible next
-component is not implemented or a new paper story yet.
+The next hypothesis is that learning which chemical exchange to attempt together
+with its feasible geometric placement can help. This requires a separate bounded
+conditional-action comparison, fixed move-family schedule, correct inverse
+probabilities, and action-only / geometry-only / joint ablations. The old
+selector's negative result is relevant. This candidate is now implemented, with
+six frozen offline training arms (46192301) and independent audit (46192339).
+No completed comparative result is available yet.
+See `notes/bounded_action_geometry_candidate_v1.md`.
 
 AI novelty remains unestablished. Generic MH, regrowth, neural surrogates and
 accepted-utility identities are prior art. A credible contribution must show
@@ -41,7 +37,7 @@ physical law is required, and none is claimed.
 Current execution: `research/ACTION_GEOMETRY_STATE_20260912.json`.
 Preceding completed evidence: `research/ACCEPTED_UTILITY_STATE_20260912.json`.
 Development manuscript: `paper/angular_working.tex`, including
-`paper/sections/A5_accepted_utility.tex` and `paper/sections/A6_action_geometry.tex`.
-Current PDF: `runs/verification/action_geometry_completed_20260912/main.pdf`
-(9 main pages, 21 total). Formatting passes; scientific readiness is false.
+`paper/sections/A5_accepted_utility.tex`.
+Current PDF: `runs/verification/accepted_utility_20260912/main.pdf`
+(8 main pages, 20 total). Formatting passes; scientific readiness is false.
 Prior story: `notes/archive/paper_story_current_through_scalar_chain_20260912.md`.

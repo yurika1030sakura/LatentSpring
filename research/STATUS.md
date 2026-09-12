@@ -1,88 +1,76 @@
 # Current research status — September 12, 2026
 
 Authoritative checkpoint: `research/ACTION_GEOMETRY_STATE_20260912.json`.
-The ICLR goal remains active and scientifically unachieved. The preceding bounded
-geometric learner has a small offline proxy gain but no established
-fresh-proposal sampling advantage. Do not scale its frozen weights.
+The ICLR goal remains active and scientifically unachieved. The completed
+conditional action/geometry comparison has no established combined advantage.
 
-## Active conditional action/geometry comparison
+## Six-arm comparison completed
 
-The conditional action model, full observed-density objective and production
-forward/reverse action correction are implemented. Six fixed offline arms are
-running as 46192301; independent audit 46192339 follows. The action-only arms
-have finished with internal rates below initialization; these interim outcomes
-are not yet independently audited. Finish the geometry/joint arms and all audits
-before judging the coupling. No new physical queries are used. See NEXT.
+Three variants (action-only, geometry-only, joint), two seeds, 300 fixed steps,
+and the same 36 FIT / 12 internal-selection parents use identical data,
+minibatch draws, optimizer and complete likelihood-ratio bound exp(2). The
+move-family schedule is fixed. Active parameter counts/runtime are reported
+separately. All 1,671 attempts, including 74 failures, remain. Training and
+audits use no new physical queries; inherited data construction costs 18,110.
 
-## Preceding geometric utility result: implemented and audited
+Internal utility-rate differences versus physical initialization, in
+1e-5 eV per expected raw call, with descriptive 95% parent-bootstrap intervals:
 
-The bounded guide directly trains signed actual-MH accepted potential decrease
-with query costs, using differentiable observed forward/reverse joint densities.
-Production sampling remains no-grad. Its residual log-score bound B=0.5 gives
-a complete coordinate-density ratio bound exp(2) relative to physical site arcs
-on common support. Exact finite-state identities, actual-map finite differences
-and independent density calculations qualify the implementation; they do not
-establish method novelty or sampling efficiency.
+| Variant | Seed 0 | Seed 1 |
+| --- | --- | --- |
+| Action only | -6.27 [-17.11, 3.62] | -5.60 [-16.28, 4.07] |
+| Geometry only | +8.82 [3.55, 15.61] | +8.76 [3.12, 15.59] |
+| Joint | -0.68 [-11.02, 9.54] | -0.59 [-9.12, 8.85] |
 
-The protected physical behavior dataset contains 1,671 attempts: 1,597 scored
-and 74 retained failures. Its frozen split has 36 FIT and 12 internal-selection
-parents across four fixed compositions. Data construction costs 12,288 trajectory
-plus 5,822 preparation = 18,110 raw calls. Both 300-step training seeds use no
-additional oracle calls. All final metrics replay, including trained-objective
-finite differences. Two-seed training and its audit are complete.
+The physical rate is 0.003225565 eV per expected raw call. Action-only and joint
+point changes are -1.94% / -1.74% and -0.21% / -0.18%; their intervals span zero.
+Joint improves on action-only in this proxy but does not establish improvement
+on geometry alone or physics. The allocation of the common bound limits this
+conclusion; it is not a theorem excluding every joint policy. Intervals are
+internal, descriptive, fixed-composition and not multiplicity-adjusted.
 
-## Offline proxy and fresh proposals
+All final/baseline metrics replay. Six audits check 576 independent full
+forward/reverse densities (maximum error 4.98e-14) and eight trained-head finite
+differences (maximum error 3.17e-10). Geometry-only parameters reproduce previous
+models within 7.8e-16; its roughly 2.7% offline gain is unchanged. Old and new
+intervals use different fixed bootstrap draws, so finite-bootstrap endpoints
+differ slightly. Summary: `runs/action_geometry_summary_v1/results.json`.
+Training 46192301 and audit 46192339 are complete with exit code zero.
 
-On the 12 internal-selection parents, estimated utility per expected raw call
-rises from 0.003225565 to 0.003313737 / 0.003313180 eV, gains of 2.73% / 2.72%.
-Descriptive parent-bootstrap intervals for differences are
-[3.307e-5, 1.511e-4] / [2.758e-5, 1.554e-4] eV per call.
-Scored-edge effective counts remain about 402 / 401 versus 406 at initialization;
-maximum observed importance ratios are below 1.68. These are importance
-diagnostics, not molecular ESS. Summary:
-`runs/accepted_utility_summary_v1/results.json`.
+## Existing molecular negatives remain
 
-The frozen fresh-proposal follow-up uses 72 source states (first/middle/last
-joint-attempt sources from two physical trajectories per selection parent),
-16 draws per state and three methods. All 3,456 attempts are retained.
-Each method scores 1,118 candidates and costs 2,236 raw calls: 6,708 total.
-All proposals and 3,354 MH ratios pass replay and independent checks.
+The preceding geometry-only fresh-proposal check (3,456 attempts, 6,708 calls)
+does not establish actual utility gain. Its intervals still allow small effects;
+the population differs from the full offline proxy. The scalar work and
+work-plus-force models fail the 48-parent complete-chain comparison after data
+costs, and neither establishes same-inference energy benefit. The old vector
+learner's stronger-control and transfer failures are unchanged. See
+`research/ACCEPTED_UTILITY_STATE_20260912.json` and
+`research/CONDITIONAL_CHAIN_RESULT_20260912.json`. Do not scale those weights.
 
-Actual fresh-proposal utility per raw call is 0.002632881 for physics,
-0.002635169 for learned seed 0 and 0.002632618 for seed 1. Differences are
-+2.288e-6 and -2.625e-7 eV per call, with descriptive parent intervals
-[-8.543e-5, 1.131e-4] and [-1.620e-4, 1.694e-4]. Neither establishes a gain.
-These intervals do not rule out a small effect, and the selected source
-population differs from the full offline population. Expected constitutional
-flow is also similar. No complete-chain or equilibrium conclusion follows.
-Summary: `runs/utility_onpolicy_summary_v1/results.json`.
+## FIT-only query-cost diagnosis
 
-## Preserved negatives and next work
+The 36 FIT parents contribute 1,242 joint attempts, 1,186 scored, costing 2,372
+calls out of 9,216 complete-trajectory calls. Balanced expected acceptance among
+scored joint proposals is 5.35%. Expected calls associated with rejected joint
+moves total 2,244.0, or 24.35% of recorded trajectory calls. This describes this
+move family and fixed empirical prefix; it does not predict achievable savings
+or a changed chain's behavior. Preparation and learning costs are additional.
+An oracle-informed screening diagnostic uses the unseen candidate energy and
+is explicitly not deployable. Actual saved calls are zero. Separate oracle and
+geometry timings are unavailable, so no wall-time claim follows.
 
-The scalar work / work-plus-force learner's 19--24% prediction improvement did
-not give molecular benefit. Its 48-parent, six-composition comparison loses after
-model-data costs (+0.5453 / +0.4929 eV against physics); equal-inference intervals
-span zero. Corrected trajectories use 66,588 raw calls; actual research cost is
-67,980 after the retained numerical repair. All original failures and discarded
-suffixes remain. See `research/CONDITIONAL_CHAIN_RESULT_20260912.json`.
+Read `notes/delayed_acceptance_prior_art_20260912.md` before the next bounded
+screening investigation. Classical, neural and structural-move delayed acceptance
+already exist. A corrected cheap screen may be worth testing; generic screening
+cannot supply novelty by renaming it. No new screen or protocol is implemented
+or frozen yet. Leave all evaluated outcomes and the 722 reserved conditions out
+of fitting. The development manuscript includes the completed negative result;
+formatting completion does not establish scientific readiness.
 
-The old vector learner's failures against concentration 64/400 controls and
-six-composition transfer remain unchanged. Source support counts remain
-45,32,106,99,0,19,0,96 out of 256 each. Condition 6 has empty connected support
-under the pinned builder; condition 4 remains unresolved. This is algorithmic
-support, not a physical chemistry impossibility claim.
+Historical status: `notes/archive/status_through_action_geometry_running_20260912.md`.
 
-Active: bounded conditional action selection together with placement, keeping the
-move-family schedule fixed. The old selector's failure must inform this distinct
-comparison. See `notes/bounded_action_geometry_candidate_v1.md` and NEXT.
-No fitting on fresh validation outcomes, either evaluated molecular cohort or
-the 722 reserved conditions.
-
-All preceding geometric-utility jobs are terminal, verified with Slurm accounting:
-46186496, 46186856, 46186968, 46189583 and 46189707. The manuscript includes the
-offline signal and fresh-proposal null result:
-`runs/verification/accepted_utility_20260912/main.pdf` (8 main pages, 20 total).
-Build evidence: `research/evidence/accepted_utility_build_20260912.json`.
-The paper is not scientifically submission ready.
-
-Previous status: `notes/archive/status_through_scalar_chain_20260912.md`.
+Verified development PDF: `runs/verification/action_geometry_completed_20260912/main.pdf`
+(9 main pages, 21 total). Build record:
+`research/evidence/action_geometry_completed_build_20260912.json`. Scientific
+submission readiness remains false.
