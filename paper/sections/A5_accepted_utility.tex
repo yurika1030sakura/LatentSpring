@@ -1,0 +1,68 @@
+\section{Bounded accepted-utility learning: internal checks}
+\label{app:accepted-utility}
+
+The scalar predictor's failure motivates direct optimization of the actual
+Metropolis-corrected proposal utility. For a fixed source $x$, action $a$ and
+behavioral candidate $y$, let $q_b$ be the recorded coordinate density and
+$q_{\theta,f},q_{\theta,r}$ the learned forward/reverse coordinate densities.
+With $A=-(U(y)-U(x))/kT+\log(N_f/N_r)$, the accepted importance contribution is
+\begin{equation}
+ r(x,y)\min\!\left\{\frac{q_{\theta,f}}{q_b},
+                    e^A\frac{q_{\theta,r}}{q_b}\right\}.
+\end{equation}
+This is the ordinary importance ratio times MH acceptance, not a new sampling
+identity. It requires behavioral coverage. Unsupported attempts retain zero
+utility in the full empirical denominator. The source population is fixed for
+this objective; the expression does not differentiate the future state
+population of a learned chain or establish improved long-run sampling.
+
+We add a masked neural log-score residual of magnitude at most $B=0.5$ to the
+physical site score. It is a proposal score, not a physical-energy predictor.
+Endpoint-linear interpolation retains this bound. A normalized root density
+changes by at most $e^{2B}$, and the two-root density, including order
+marginalization, by at most $e^{4B}=e^2$ on the common support. This elementary
+bound controls the importance ratio; it is not an efficiency guarantee.
+A separate observed-density interface differentiates all conditional scores and
+normalizers with respect to model parameters, while production sampling retains
+its no-gradient boundary. Exact finite-state tests, actual-map finite differences,
+independent density quadrature and symmetry checks qualify the implementation.
+
+The existing physical site-arc FIT trajectories provide 1,671 attempts, including
+74 unscored failures. Their 12,288 calls plus 5,822 preparation calls give 18,110
+data-construction calls. A fixed hash assigns 36 parents to fitting and 12 to
+internal selection. Two seeds run 300 fixed steps from physical initialization.
+The objective uses signed accepted potential decrease $J$ and expected query cost
+$C$, optimizing $J-\eta_0 C$ with the FIT baseline rate $\eta_0=J_0/C_0$ fixed.
+An empirical forward/reverse log-ratio penalty is included. Stratified edge
+selection uses its exact finite-dataset sampling correction; no behavioral
+importance weights are clipped. This remains an empirical one-step proxy.
+
+Independent replay confirms all final metrics and trained-objective gradients.
+The internal selection rate increases from $0.0032256$ to $0.0033137$ and
+$0.0033132$\,eV per expected raw call, about 2.7\% for each seed. Descriptive
+parent-bootstrap intervals for the differences are
+$[3.31,15.11]\times10^{-5}$ and $[2.76,15.54]\times10^{-5}$\,eV per call.
+The weighted scored-edge effective counts remain about 402 and 401 versus 406
+at initialization, with maximum observed importance ratios below 1.68. These
+counts are importance diagnostics, not independent molecular sample sizes.
+
+\paragraph{Fresh-proposal oracle check.}
+A frozen follow-up takes the first, middle and last joint-attempt source state
+from each of the two physical trajectories for every internal selection parent.
+This gives 72 fixed states. Each method draws 16 new proposals per state, with
+matched per-source/trial random streams. All 3,456 attempts are retained. Each
+method scores 1,118 candidates, for 2,236 raw calls per method and 6,708 total;
+all proposals and 3,354 MH ratios pass independent replay and quadrature.
+The source-state population is narrower than the full offline proxy population,
+so their absolute baseline rates should not be equated.
+
+The actual fresh-proposal rates are $0.0026329$\,eV per raw call for physics and
+$0.0026352$, $0.0026326$ for the learned seeds. Differences are
+$2.29\times10^{-6}$ and $-2.63\times10^{-7}$\,eV per call, with descriptive parent
+intervals $[-8.54,11.31]\times10^{-5}$ and
+$[-16.20,16.94]\times10^{-5}$. Neither establishes an actual proposal-utility
+advantage. These intervals also do not rule out a small effect. No complete-chain
+or final-test benefit follows, and the preceding scalar-model negative result is
+unchanged. Uniform chemical action selection remains a possible additional
+learning target, requiring a separate bounded comparison with correct inverse
+probabilities and a fixed move-family schedule.

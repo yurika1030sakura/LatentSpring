@@ -1,39 +1,39 @@
 # Current contribution decision — September 12, 2026
 
-The scalar conditional predictor is implemented and its internal work errors
-improve, but the complete molecular comparison fails to establish a useful
-learned contribution. Both objectives lose to physical site arcs after data costs;
-equal-inference energy and useful connectivity-change diagnostics are unqualified.
-Read `research/CONDITIONAL_CHAIN_RESULT_20260912.json`. Do not scale these weights.
+The bounded geometric accepted-utility learner is implemented and audited, but
+has not established a useful sampling contribution. Both seeds improve an
+internal offline proxy by about 2.7%; fresh actual-oracle proposal checks have
+near-zero point differences and intervals spanning zero. Do not scale these
+weights or call the offline result a molecular generation gain.
+Read `research/ACCEPTED_UTILITY_STATE_20260912.json`.
 
 The intended contribution remains useful learning of coupled molecular graph
-changes and3D placements with computable proposal probabilities and realistic
-costs. Correct geometry, exact MH, neural energy regression and an added force
-loss do not by themselves establish novelty. Classical biased regrowth,
-self-learning MC, learned decoders and geodesic sampling are prior art; see
-`notes/nonlocal_arc_prior_art_20260912.md`. The old vector learner's failures
-against stronger physical controls also remain unchanged.
+changes and 3D placements with computable proposal probabilities and realistic
+costs. Exact MH, biased regrowth, neural surrogate energies, bounded logits and
+accepted-movement objectives have prior art. The importance-flow identity and
+bounded-score ratio bounds are elementary mathematics, not new general theorems.
+See `notes/nonlocal_arc_prior_art_20260912.md`.
 
-A next bounded candidate directly learns the actual accepted proposal utility,
-using observed forward/reverse joint densities and existing FIT-parent physical
-pairs. The probability-flow/importance identity and bounded-score density-ratio
-bound are elementary established mathematics. They are not claimed new theorems.
-The possible contribution is an effective and justified method for this coupled
-molecular task, if future properly matched experiments support it. No such
-replacement has yet been implemented or validated. See
-`notes/accepted_utility_learning_candidate_v1.md`.
+Next investigate conditional action selection together with feasible placement.
+This differs from the earlier failed selector only if it keeps the move-family
+schedule fixed, uses audited regrowth geometry, trains signed cost-adjusted
+accepted utility and includes the full inverse-action probability. Read
+`notes/chemical_policy_decision_v2.md` before implementation. Additional action
+capacity alone does not establish novelty or resolve a geometry bottleneck.
 
-Require behavioral support, complete failure denominators, importance-weight
-stability and actual-map gradients before fitting; require fresh chain benefit
-before scale-up. Keep energy progress and structural exploration distinct rather
-than changing the success metric after outcomes. Representative learned baselines
-and strong physical controls remain necessary on a declared scope. A failed
-repurposed EACF refiner cannot substitute for native EACF performance.
+A matched action-only / geometry-only / joint comparison can test whether the
+coupling is useful. Freeze equal likelihood-ratio bounds, data and optimizer
+budgets before fitting; preserve every failed attempt in denominators. No
+fitting on fresh validation outcomes, either evaluated molecular cohort or the
+722 reserved conditions. A positive empirical one-step proxy still needs fresh
+sampling validation, strong physical and representative learned baselines,
+realistic reuse costs and independent final evaluation.
 
-All source failures, target incompatibility, numerical-repair costs and negative
-results stay in the record. No fitting on either evaluated cohort or722 reserved
-outcomes. The user does not require perfection or a new physical law, but the
-actual proposed contribution must be correct and useful. The goal remains active
-and the paper remains scientifically unready.
+The scalar-chain failure and old vector learner's stronger-control/transfer
+failures remain unchanged. Lower finite-budget potential is not an equilibrium
+distribution result. A failed repurposed EACF refiner cannot substitute for native
+EACF performance. The user does not require perfection or a new physical law;
+the proposed contribution must nevertheless be correct, distinctive and useful.
+The ICLR goal remains active and the paper scientifically unready.
 
-Prior decision: `notes/archive/novelty_decision_through_scalar_prediction_20260912.md`.
+Prior decision: `notes/archive/novelty_decision_through_scalar_chain_20260912.md`.

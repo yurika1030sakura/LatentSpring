@@ -1,0 +1,176 @@
+{
+  "updated_at_utc": "2026-09-12T21:01:25.733083+00:00",
+  "goal_status": "active",
+  "scientific_submission_ready": false,
+  "previous_checkpoint": "research/CONDITIONAL_CHAIN_RESULT_20260912.json",
+  "conclusion": "Bounded geometric accepted-utility learning gives a small offline proxy gain, but fresh-proposal actual-oracle intervals span zero. No measured molecular sampling advantage is established; do not scale this frozen geometry-only recipe.",
+  "implementation": {
+    "model": "cfm_mol/bounded_arc_guide.py",
+    "utility": "cfm_mol/accepted_utility.py",
+    "observed_density": "cfm_mol/joint_arc_geometry.py::observed_joint_arc_density",
+    "sampler_kind": "arc_bounded",
+    "gradients": "Model parameters only at fixed observed geometries; production sampling remains no-grad.",
+    "log_score_bound": 0.5,
+    "joint_likelihood_ratio_bound": "exp(2)",
+    "physical_initialization_exact": true
+  },
+  "data": {
+    "run": "runs/accepted_utility_data_v1/dataset",
+    "results_sha256": "2ffc4924b6781f846cc8b164bbcd0dcb091c92b4114002915fa339432e987f8e",
+    "attempts": 1671,
+    "scored": 1597,
+    "failed_attempts_retained": 74,
+    "fit_parents": 36,
+    "internal_selection_parents": 12,
+    "source_trajectory_raw_queries": 12288,
+    "source_preparation_raw_queries": 5822,
+    "total_data_raw_queries": 18110
+  },
+  "training": {
+    "run": "runs/accepted_utility_train_v1",
+    "protocol": "research/evidence/accepted_utility_training_protocol_v1.json",
+    "seeds": [
+      25621,
+      25623
+    ],
+    "steps": 300,
+    "model_physical_queries": 0,
+    "audit": "runs/accepted_utility_train_audit_v1/results.json",
+    "audit_sha256": "5e0e8509721c6782dcab8e84c3fa92a66d0e94df3554618d498a48b8459d2dcf"
+  },
+  "offline": {
+    "summary": "runs/accepted_utility_summary_v1/results.json",
+    "sha256": "56b2b921bd3e89116a861ab4fd9188babbb6cb6dedeee5f684cf3dff15400477",
+    "results": [
+      {
+        "replica": 0,
+        "baseline_eV_per_expected_raw_call": 0.003225565019710746,
+        "final_eV_per_expected_raw_call": 0.0033137372230159735,
+        "difference_eV_per_expected_raw_call": 8.817220330522733e-05,
+        "relative_gain": 0.02733542891444629,
+        "fixed_composition_parent_bootstrap95": [
+          3.307164547671892e-05,
+          0.0001511027750117147
+        ],
+        "maximum_scored_importance": 1.6665044330147036,
+        "baseline_scored_edge_ESS": 405.7236590691481,
+        "final_scored_edge_ESS": 402.0816036247674,
+        "per_condition": {
+          "1": {
+            "baseline": 0.003322154570698662,
+            "final": 0.0034436578363245744
+          },
+          "2": {
+            "baseline": 0.002848544527167313,
+            "final": 0.0029734957552006907
+          },
+          "3": {
+            "baseline": 0.0045587094791160986,
+            "final": 0.004547594386781918
+          },
+          "5": {
+            "baseline": 0.0021691719243295384,
+            "final": 0.0022792235873852203
+          }
+        }
+      },
+      {
+        "replica": 1,
+        "baseline_eV_per_expected_raw_call": 0.003225565019710746,
+        "final_eV_per_expected_raw_call": 0.0033131804652674077,
+        "difference_eV_per_expected_raw_call": 8.761544555666153e-05,
+        "relative_gain": 0.02716282109375001,
+        "fixed_composition_parent_bootstrap95": [
+          2.757677289766825e-05,
+          0.0001553638336896845
+        ],
+        "maximum_scored_importance": 1.6705344566166465,
+        "baseline_scored_edge_ESS": 405.7236590691481,
+        "final_scored_edge_ESS": 401.48612804969036,
+        "per_condition": {
+          "1": {
+            "baseline": 0.003322154570698662,
+            "final": 0.0034448162445300415
+          },
+          "2": {
+            "baseline": 0.002848544527167313,
+            "final": 0.0030044764908426476
+          },
+          "3": {
+            "baseline": 0.0045587094791160986,
+            "final": 0.004518068313080788
+          },
+          "5": {
+            "baseline": 0.0021691719243295384,
+            "final": 0.0022774501022265136
+          }
+        }
+      }
+    ]
+  },
+  "fresh_proposal_check": {
+    "producer": "runs/utility_onpolicy_v1",
+    "audit": "runs/utility_onpolicy_audit_v1",
+    "summary": "runs/utility_onpolicy_summary_v1/results.json",
+    "sha256": "2a2e4ec664112b248d7580ec0ece9e33e4ce9fc1bab64b6aa1b11c796ced5ff6",
+    "states": 72,
+    "parents": 12,
+    "attempts": 3456,
+    "new_raw_queries": 6708,
+    "maximum_raw_queries": 6912,
+    "independent_MH_checks": 3354,
+    "methods": {
+      "physical": {
+        "expected_utility_eV": 0.005110348459142515,
+        "raw_cost": 1.9409722222222223,
+        "expected_constitutional_flow": 0.045002924820298974,
+        "utility_eV_per_expected_raw_call": 0.0026328807803811167
+      },
+      "learned_s0": {
+        "expected_utility_eV": 0.005114789658396285,
+        "raw_cost": 1.9409722222222223,
+        "expected_constitutional_flow": 0.044826567920646626,
+        "utility_eV_per_expected_raw_call": 0.00263516891166034
+      },
+      "learned_s1": {
+        "expected_utility_eV": 0.005109838942089803,
+        "raw_cost": 1.9409722222222223,
+        "expected_constitutional_flow": 0.0462980064117159,
+        "utility_eV_per_expected_raw_call": 0.002632618274278825
+      }
+    },
+    "comparisons": {
+      "learned_s0": {
+        "difference_eV_per_expected_raw_call": 2.288131279223199e-06,
+        "relative_gain": 0.0008690599651428599,
+        "fixed_composition_parent_bootstrap95": [
+          -8.542757735841532e-05,
+          0.00011307868840542117
+        ]
+      },
+      "learned_s1": {
+        "difference_eV_per_expected_raw_call": -2.62506102291591e-07,
+        "relative_gain": -9.970299614314726e-05,
+        "fixed_composition_parent_bootstrap95": [
+          -0.00016196650719293277,
+          0.00016942448036909308
+        ]
+      }
+    }
+  },
+  "jobs": {
+    "data": "46186496 COMPLETED",
+    "training": "46186856 COMPLETED",
+    "training_audit": "46186968 COMPLETED",
+    "fresh_proposals": "46189583 COMPLETED",
+    "fresh_proposal_audit": "46189707 COMPLETED"
+  },
+  "all_current_work_terminal": true,
+  "next": "Implement bounded conditional action selection with fixed move-family schedule and full forward/reverse action probabilities. Reuse prior selector code while preserving its recorded failure; compare action-only, geometry-only and joint with a matched likelihood-ratio bound. Freeze before optimization and do not fit on evaluation outcomes.",
+  "next_note": "notes/bounded_action_geometry_candidate_v1.md",
+  "prior_selector": "notes/chemical_policy_decision_v2.md",
+  "reserved_conditions_unqueried": 722,
+  "paper_build": "research/evidence/accepted_utility_build_20260912.json",
+  "scheduler_verified_at_utc": "2026-09-12T21:01:25.733083+00:00",
+  "scheduler_evidence": "runs/verification/accepted_utility_20260912/scheduler_verified.txt"
+}

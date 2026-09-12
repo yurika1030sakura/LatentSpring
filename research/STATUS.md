@@ -1,65 +1,79 @@
 # Current research status — September 12, 2026
 
-Authoritative checkpoint: `research/CONDITIONAL_CHAIN_RESULT_20260912.json`.
-The ICLR goal is active and scientifically unachieved. The latest scalar predictor
-has no established molecular sampling advantage and should not be scaled.
+Authoritative checkpoint: `research/ACCEPTED_UTILITY_STATE_20260912.json`.
+The ICLR goal remains active and scientifically unachieved. The latest bounded
+geometric learner has a small offline proxy gain but no established
+fresh-proposal sampling advantage. Do not scale its frozen weights.
 
-The complete comparison covers48 internally withheld parents in six compositions,
-three methods and two seeds. All36 arms reach their budgets. Independent audits
-replay every trajectory and8,682 joint MH ratios. At the declared method/data cost
-of21,006 calls per replica (plus6,088 common preparation calls), work-only minus
-physical potential is+0.5453 eV, descriptive95% parent interval[0.3630,0.7590].
-Work-plus-force is+0.4929 eV,[0.3099,0.7052]. All six composition point estimates
-favor physical site arcs. These are internal development comparisons.
+## Implemented and audited
 
-At equal128-call inference, the differences are+0.0469 eV,[-0.0577,0.1783], and
--0.0055 eV,[-0.1499,0.1471]. Neither establishes average energy benefit. The
-force-versus-work difference is also uncertain. These findings are stronger than
-merely failing to amortize training on a small cohort: the same-inference signal
-is unqualified as well. The19--24% internal work-prediction improvement remains
-true but does not constitute a useful sampler result.
+The bounded guide directly trains signed actual-MH accepted potential decrease
+with query costs, using differentiable observed forward/reverse joint densities.
+Production sampling remains no-grad. Its residual log-score bound B=0.5 gives
+a complete coordinate-density ratio bound exp(2) relative to physical site arcs
+on common support. Exact finite-state identities, actual-map finite differences
+and independent density calculations qualify the implementation; they do not
+establish method novelty or sampling efficiency.
 
-A post-hoc constitutional-move diagnostic gives expected accepted changes per
-parent at128 calls of0.995 (physics),0.927 (work),0.969 (work-plus-force), averaged
-equally over compositions. Mean visited connectivities are1.927,1.917,2.016.
-There is no clear exploration benefit. These counts do not measure independent
-samples or mixing; same-connectivity moves may still alter conformations. The
-separate five-candidate diagnostic improves energy ranking but mostly worsens
-confidence KL; it is not a continuous conditional-KL estimate or a proven cause.
+The protected physical behavior dataset contains 1,671 attempts: 1,597 scored
+and 74 retained failures. Its frozen split has 36 FIT and 12 internal-selection
+parents across four fixed compositions. Data construction costs 12,288 trajectory
+plus 5,822 preparation = 18,110 raw calls. Both 300-step training seeds use no
+additional oracle calls. All final metrics replay, including trained-objective
+finite differences. Two-seed training and its audit are complete.
 
-Summary: `runs/conditional_arc_chain_summary_v1/results.json`.
-Figure: `runs/conditional_arc_chain_figure_v1/conditional_arc_controls.pdf`.
-Move diagnostic: `runs/conditional_arc_chain_move_diagnostic_v1/results.json`.
+## Offline proxy and fresh proposals
 
-## Numerical repair and provenance
+On the 12 internal-selection parents, estimated utility per expected raw call
+rises from 0.003225565 to 0.003313737 / 0.003313180 eV, gains of 2.73% / 2.72%.
+Descriptive parent-bootstrap intervals for differences are
+[3.307e-5, 1.511e-4] / [2.758e-5, 1.554e-4] eV per call.
+Scored-edge effective counts remain about 402 / 401 versus 406 at initialization;
+maximum observed importance ratios are below 1.68. These are importance
+diagnostics, not molecular ESS. Summary:
+`runs/accepted_utility_summary_v1/results.json`.
 
-Original worker46181560_0 failed on near-pole tangent cancellation; worker1
-completed. The dependent audit46181692 was cancelled. Reorthogonalization fixes
-the numerical residual without weakening checks. Recovery46182765 replays all47
-cached requests/352 raw calls and preserves earlier states/transitions. Audit
-46182808 passes five conditions but detects a previously rejected reverse-frame
-error in one physical control. Only that control suffix is regenerated as46183584,
-reusing its358-call prefix and adding1,392 new calls. Final condition5 audit
-46183645 completes. All current work is terminal.
+The frozen fresh-proposal follow-up uses 72 source states (first/middle/last
+joint-attempt sources from two physical trajectories per selection parent),
+16 draws per state and three methods. All 3,456 attempts are retained.
+Each method scores 1,118 candidates and costs 2,236 raw calls: 6,708 total.
+All proposals and 3,354 MH ratios pass replay and independent checks.
 
-Corrected method trajectories contain66,588 calls; actual physical research
-spending, including the discarded numerical-control suffix, is67,980. Both are
-reported. The recovered partial arm's earlier failure time is retained separately,
-so per-method timing does not support a matched-wall-time claim. No old evidence
-is overwritten. The corrected condition5 is `runs/conditional_arc_control_repair_v1`;
-use its audit with the other five completed audits from46182808.
+Actual fresh-proposal utility per raw call is 0.002632881 for physics,
+0.002635169 for learned seed 0 and 0.002632618 for seed 1. Differences are
++2.288e-6 and -2.625e-7 eV per call, with descriptive parent intervals
+[-8.543e-5, 1.131e-4] and [-1.620e-4, 1.694e-4]. Neither establishes a gain.
+These intervals do not rule out a small effect, and the selected source
+population differs from the full offline population. Expected constitutional
+flow is also similar. No complete-chain or equilibrium conclusion follows.
+Summary: `runs/utility_onpolicy_summary_v1/results.json`.
 
-All source zeros and prior negative controls remain. Training support counts are
-45,32,106,99,0,19,0,96 out of256 each. Condition6 has empty connected support under
-the pinned builder; condition4 remains unresolved. Original charge/spin and722
-reserved outcomes are preserved. The old vector learner's failure against
-concentration64/400 controls is not overturned.
+## Preserved negatives and next work
 
-The development manuscript includes the scalar prediction and complete-chain
-negative results, recovery costs and limits. Current build:
-`runs/verification/conditional_chain_completed_20260912/main.pdf` (eight main
-pages,19 total; no unresolved references or overfull boxes; result pages visually
-checked).
-NEXT specifies a bounded accepted-utility investigation using FIT-parent data,
-not another run of the failed frozen learner. Historical status:
-`notes/archive/status_through_scalar_prediction_20260912.md`.
+The scalar work / work-plus-force learner's 19--24% prediction improvement did
+not give molecular benefit. Its 48-parent, six-composition comparison loses after
+model-data costs (+0.5453 / +0.4929 eV against physics); equal-inference intervals
+span zero. Corrected trajectories use 66,588 raw calls; actual research cost is
+67,980 after the retained numerical repair. All original failures and discarded
+suffixes remain. See `research/CONDITIONAL_CHAIN_RESULT_20260912.json`.
+
+The old vector learner's failures against concentration 64/400 controls and
+six-composition transfer remain unchanged. Source support counts remain
+45,32,106,99,0,19,0,96 out of 256 each. Condition 6 has empty connected support
+under the pinned builder; condition 4 remains unresolved. This is algorithmic
+support, not a physical chemistry impossibility claim.
+
+Next: bounded conditional action selection together with placement, keeping the
+move-family schedule fixed. The old selector's failure must inform this distinct
+comparison. See `notes/bounded_action_geometry_candidate_v1.md` and NEXT.
+No fitting on fresh validation outcomes, either evaluated molecular cohort or
+the 722 reserved conditions.
+
+All current BGFM jobs are terminal, verified with Slurm accounting:
+46186496, 46186856, 46186968, 46189583 and 46189707. The manuscript includes the
+offline signal and fresh-proposal null result:
+`runs/verification/accepted_utility_20260912/main.pdf` (8 main pages, 20 total).
+Build evidence: `research/evidence/accepted_utility_build_20260912.json`.
+The paper is not scientifically submission ready.
+
+Previous status: `notes/archive/status_through_scalar_chain_20260912.md`.

@@ -1,6 +1,6 @@
 # BGFM project guide
 
-Updated 2026-09-12 after constrained geodesic and complete joint-kernel audits. Read
+Updated 2026-09-12 after bounded accepted-utility and fresh-proposal audits. Read
 `audit/20260908/REVIEW.md` before interpreting any result as Boltzmann sampling.
 
 ## Active takeover branch
@@ -18,7 +18,7 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/CONDITIONAL_CHAIN_RESULT_20260912.json` first. They record the current method,
+`research/ACCEPTED_UTILITY_STATE_20260912.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
@@ -88,15 +88,29 @@ failures and discarded suffixes remain preserved. Partial-arm timing excludes
 its previous failed-attempt time, which is separately recorded; no matched-wall-
 time claim follows. See `research/CONDITIONAL_CHAIN_RESULT_20260912.json`.
 
-The next bounded candidate is direct accepted-utility learning from recorded
-FIT-parent physical proposal pairs. First implement differentiable OBSERVED
-joint densities, test the actual forward/reverse objective and audit importance
-weights. `notes/accepted_utility_learning_candidate_v1.md` gives the standard
-identity, support/denominator requirements and limits. It is not an implemented
-replacement or a novelty result. Do not fit on the evaluated48 withheld parents,
-old six-composition test coordinates, or722 reserved outcomes. Read NEXT.
-Equilibrium, competitive learned-generator and scientific submission readiness
-remain unqualified. Keep the full goal active.
+Bounded geometric accepted-utility learning is now implemented, trained and
+audited. It differentiates observed forward/reverse joint proposal densities
+while retaining no-grad production draws. Two seeds improve the internal offline
+utility-per-call proxy by about 2.7%, with stable importance weights. Its physical
+behavior data costs 18,110 raw calls, not the scalar model's old overhead.
+
+The fresh actual-oracle check is COMPLETE: 72 internal source states, 3,456
+attempts, 6,708 raw calls and 3,354 independently replayed MH ratios. Actual
+utility differences are near zero and both parent intervals span zero. Small
+effects remain possible, but no fresh-proposal or full-chain benefit is
+established. Do not scale this frozen geometry-only recipe. All current jobs
+are terminal; re-query Slurm before action. Read
+`research/ACCEPTED_UTILITY_STATE_20260912.json`.
+
+Next investigate bounded CONDITIONAL action selection together with placement,
+keeping the move-family schedule fixed and all forward/reverse probabilities.
+Read `notes/bounded_action_geometry_candidate_v1.md` and the old selector's
+failure in `notes/chemical_policy_decision_v2.md`. This is a candidate to
+implement, not established novelty. Freeze matched action-only, geometry-only
+and joint ablations before optimization. Initial work needs no new oracle.
+Do not fit on fresh validation outcomes, either evaluated molecular cohort or
+722 reserved outcomes. Equilibrium, competitive learned-generator advantage
+and scientific submission readiness remain unqualified. Keep the full goal active.
 The previous manuscript is `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
 exact-entropy refinement candidate. It is explicitly a development draft.
