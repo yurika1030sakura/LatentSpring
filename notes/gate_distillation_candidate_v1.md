@@ -71,3 +71,22 @@ The sampler retains ordinary R in `log_acceptance_ratio`; read its explicit
 `second_log_acceptance` for this conditional estimate and `scored` for paid cost.
 Realized trajectory energy changes are a separate valid readout. This distinction
 must be tested when wiring the future physical evaluation driver.
+
+## Implemented matched comparison
+
+The protocol is now frozen in
+`research/evidence/gate_distillation_training_protocol_v1.json`. Both recipes
+use identical activity-stratified index draws at every step, with the appropriate
+exact empirical weighting for each objective. Direct utility and distillation
+both reset Adam at500. Teacher loss is normalized squared log-gate error on
+both orientations, with invalid attempts contributing zero in the full mean.
+No selection outcomes enter either phase and no intermediate checkpoint is
+chosen by validation. A500-step checkpoint is saved solely for objective audits.
+
+The trainer hashes all sampled index arrays; the audit reconstructs them and
+checks the boundary/final hashes. It also verifies both phase-boundary and final
+objective gradients, all gates/metrics and fixed/thinning controls. Eight tests
+pass. Training/evaluation code is `train_gate_distillation.py` and
+`audit_gate_distillation.py` under `scripts/research/`. Read NEXT for live jobs.
+No new physical queries are required; no scientific improvement is implied by
+implementation checks.

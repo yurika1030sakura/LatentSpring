@@ -1,0 +1,68 @@
+{
+  "steps": 800,
+  "batch_edges": 8,
+  "learning_rate": 0.003,
+  "weight_decay": 0.0001,
+  "gradient_clip": 5.0,
+  "log_steps": [
+    100,
+    200,
+    300,
+    400,
+    500,
+    600,
+    700,
+    800
+  ],
+  "total_model_specific_data_raw_queries": 18110,
+  "frozen": true,
+  "at_utc": "2026-09-12T23:38:33.634448+00:00",
+  "data_run": "runs/screen_force_pairs_v1",
+  "data_sha256": "bb72dae72f7da000bf685d2a7fc7f135e2ed57db142d16df48dc84061a25e1f9",
+  "data_results_sha256": "01eb07b9ced90be22702caeeec4ebc73cb85e6549bf77b40d28aa5476190508b",
+  "prefix_accounting": "runs/screen_prefix_accounting_v1/results.json",
+  "prefix_accounting_sha256": "cde2d39ced8f4028bca5e361b0cd339faddffbcc54b8e2a2175c337fc5afc6ca",
+  "fixed_fit_baseline_rate": 0.0038653056636949496,
+  "seeds": [
+    26001,
+    26003
+  ],
+  "variants": [
+    "linear",
+    "neural"
+  ],
+  "fixed_controls": [
+    "zero",
+    "physical",
+    "work"
+  ],
+  "model": {
+    "log_factor_bound": 2.772588722239781,
+    "restraint": 0.1,
+    "hidden": 16,
+    "radial": 16
+  },
+  "gate_penalty_eV": 0.0001,
+  "force_information": "Forward gate receives only cached SOURCE physical even force. Reverse gate receives the candidate force only after its paid query. No gradients through force/coordinate inputs are required for gate fitting.",
+  "linear_features": "Previous four cheap physical/proposal features plus physical even-force dot COM displacement divided by kT. Work control uses this force term, exact COM restraint difference and complete known proposal ratio. Fixed physical control reproduces the preceding screen.",
+  "neural": "Two-layer invariant paired-source/candidate geometry graph encoder with role embeddings and atomwise source-force work/norm/displacement features. Zero output initialization; no earlier checkpoint loaded.",
+  "objective": "Fixed recorded whole-prefix utility minus FIT whole-prefix baseline rate times expected cost; normalize by baseline128 calls. Initial and nonjoint contributions remain fixed. Uniform1/72 weight per FIT trajectory, not per joint attempt; regularizer averages squared forward/reverse log gates across all FIT attempts. Both gates enter utility; only forward gate enters query cost.",
+  "edge_sampling": "Both recipes use identical FIT-only activity-stratified index probabilities and same random draws per seed/variant for every step. Teacher contributions use exact uniform-attempt index correction; utility contributions use exact whole-prefix weights. All failures retained.",
+  "thinning_control": "One constant passing probability per learned model, calibrated from its FIT expected joint-query fraction, evaluated with ordinary corrected MH. No selection outcome sets this probability.",
+  "validation": "All12 internal selection parents and their24 recorded prefixes. Report whole-prefix and conditional joint rates, raw work/cost, joint acceptance and constitutional flow. These are fixed-source expectations, not changed chains or achieved savings.",
+  "protected": "Only36 FIT parents enter optimization; no internal-selection or fresh-follow-up outcomes, prior molecular evaluation cohorts or722 reserved outcomes enter fitting.",
+  "final_checkpoint": "Fixed800 for both recipes and seeds, all controls unchanged.",
+  "maximum_cpu_hours": 8,
+  "new_physical_queries": 0,
+  "scientific_submission_ready": false,
+  "phase_boundary": 500,
+  "recipes": [
+    "direct",
+    "distill"
+  ],
+  "stages": "Direct: utility at all800 steps. Distill: normalized squared forward/reverse oracle log-gate errors for500 steps, then the same utility objective for300 steps. Adam is reset at step500 for BOTH recipes; no intermediate validation or checkpoint selection.",
+  "teacher_objective": "Mean across all FIT attempts, with zero contribution for unsupported attempts, of [(log_gf-log_gf_star)^2+(log_gr-log_gr_star)^2]/(2 B^2). Oracle targets clamp the fixed true MH log ratio and its negative into[-B,0]. Target energy is a training label, never a model input.",
+  "phase_boundary_checkpoint": "Saved at500 for audit only; all comparisons use the fixed800-step model. No validation at the boundary.",
+  "audit": "Replay all final controls/model metrics, both gates on all1597 scored pairs, final utility gradients and the actual phase-boundary objective gradients for every active head. Preserve eight independent arms and all negative results.",
+  "scope": "Matched8-arm offline comparison; same architectures/data/total steps. No actual chain or saved-query claim from the fixed-source whole-prefix proxy."
+}
