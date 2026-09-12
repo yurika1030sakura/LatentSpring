@@ -19,17 +19,21 @@ from scripts.research.evaluate_chemical_policy import sha, write
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ['config', 'checkpoint', 'manifest', 'original-source', 'out']:
+    for name in ['config', 'checkpoint', 'manifest', 'out']:
         parser.add_argument('--'+name, type=Path, required=True)
+    parser.add_argument('--original-source', type=Path)
+    parser.add_argument('--protocol', type=Path)
+    parser.add_argument('--condition-index', type=int)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
-    pp = root/'research/evidence/geometry_only_source_protocol_v1.json'
+    pp = args.protocol or root/'research/evidence/geometry_only_source_protocol_v1.json'
     protocol = json.loads(pp.read_text())
     parent_path = root/'research/evidence/species_breadth_source_protocol_v2.json'
     assert sha(parent_path) == protocol['parent_source_protocol_sha256']
     parent = json.loads(parent_path.read_text())
     for name in ['config', 'checkpoint', 'manifest']:
-        assert sha(getattr(args, name)) == parent[name+'_sha256']
+        expected = protocol.get('manifest_sha256', parent['manifest_sha256']) if name == 'manifest' else parent[name+'_sha256']
+        assert sha(getattr(args, name)) == expected
     os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':4096:8'
     torch.use_deterministic_algorithms(True)
     config = read_config_file(args.config)
@@ -48,13 +52,27 @@ def main():
     for p in model.parameters():
         p.requires_grad_(False)
     del saved
-    index, batch, count = protocol['condition_index'], protocol['batch'], protocol['count']
+    index = args.condition_index if args.condition_index is not None else protocol['condition_index']
+    batch, count = protocol['batch'], protocol['count']
     assert count % batch == 0
     condition = load_condition(args.manifest, index)
     condition.update(requested_kT_eV=recipe['requested_kT'], numbers=condition['atomic_numbers'])
-    original = json.loads((args.original_source/f'condition_{index:02d}/results.json').read_text())
-    assert original['complete'] and original['condition'] == condition
-    old_seeds = {seed for stream in original['streams'].values() for seed in stream['batch_seeds']}
+    original_hash = None
+    if protocol.get('new_panel'):
+        assert args.original_source is None and index in protocol['condition_indices']
+        assert protocol['seed_namespace'] not in protocol['excluded_seed_namespaces']
+        # Namespace stride exceeds the entire candidate/stream/batch seed range.
+        assert 0 <= condition['candidate_index'] < 1000 and protocol['stream_number'] == 2
+        assert count//batch < 1000 and condition['manifest_role'] == 'new_development'
+        assert 'energy_eV' not in condition
+        old_seeds = set()
+    else:
+        assert args.original_source is not None and index == protocol['condition_index']
+        original_path = args.original_source/f'condition_{index:02d}/results.json'
+        original = json.loads(original_path.read_text())
+        assert original['complete'] and original['condition'] == condition
+        old_seeds = {seed for stream in original['streams'].values() for seed in stream['batch_seeds']}
+        original_hash = sha(original_path)
     seeds = [1000000000*protocol['seed_namespace']+100003*condition['candidate_index']+100000003*protocol['stream_number']+i for i in range(count//batch)]
     assert not old_seeds.intersection(seeds) and len(set(seeds)) == len(seeds)
     base = graph_from_condition(condition, config['dataset']['atom_map'],
@@ -73,7 +91,8 @@ def main():
     report = dict(complete=False, protocol_sha256=sha(pp), parent_source_protocol_sha256=sha(parent_path),
         checkpoint_sha256=sha(args.checkpoint), config_sha256=sha(args.config), manifest_sha256=sha(args.manifest),
         condition=condition, stream='fresh_development', count=count, batch=batch, batch_seeds=seeds,
-        original_source_results_sha256=sha(args.original_source/f'condition_{index:02d}/results.json'),
+        original_source_results_sha256=original_hash,
+        condition_index=index, seed_namespace=protocol['seed_namespace'],
         no_seed_overlap_with_original_streams=True, source_sampler='64-step midpoint displacement FM at T=1 plus .025-A COM Gaussian noise',
         physical_queries=0, energy_labels_computed=False, reference_coordinates_loaded=False,
         scientific_submission_ready=False, source_density_available=False, completed_samples=0,

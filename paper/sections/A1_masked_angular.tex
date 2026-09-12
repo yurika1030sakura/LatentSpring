@@ -506,7 +506,9 @@ query costs and the limits of this small, repeatedly inspected comparison.
 \section{Related work and position}
 \label{sec:related-position}
 Learned molecular proposals with Metropolis correction already appear in
-Timewarp~\citep{klein2023timewarp}, and flow-based MCMC acceleration is addressed
+Timewarp~\citep{klein2023timewarp}, including acceptance-based refinement.
+L2HMC learns kernels using a jump-distance criterion~\citep{levy2018l2hmc},
+and flow-based MCMC acceleration is addressed
 by Markovian flow matching~\citep{cabezas2024markovian}. Masked conditionals used
 as MH proposals are also established outside molecular sampling, including
 \citet{goyal2022maskedmh}. We do not claim masking, conditional MH, directional
@@ -523,3 +525,7 @@ and Boltzmann-oriented conformation generation~\citep{swanson2023vonmises}.
 Equivariant VFM studies molecular generation and post-hoc conditional control
 within variational flow matching~\citep{eijkelboom2025controlled}. Neither directional
 mixtures nor generic symmetry-aware post-hoc control constitute novelty here.
+TITO learns transferable lagged molecular transitions using conditional equivariant
+flow matching~\citep{vigueradiez2026tito}; general transferable dynamics is also
+established prior work. Our candidate must demonstrate the value of coupling
+connectivity changes and explicit geometric proposals under its stated target.

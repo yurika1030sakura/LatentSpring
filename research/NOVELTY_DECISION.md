@@ -1,69 +1,67 @@
-# Method contribution decision — September10,2026
+# Current contribution decision — September12,2026
 
-The preferred ICLR direction is a new learning method motivated and constrained
-by molecular statistical mechanics. We do not need a new physical law, and the
-AFM/Jarzynski link alone is not novelty. A strong physics analysis could support
-a machine-learning contribution, but the current elementary identities and
-single-condition failures are not sufficient as a standalone ICLR result.
+The active candidate learns normalized equivariant geometric proposals for
+reversible molecular attachment exchanges. The FM initializer is frozen and its
+unknown density is not used. A learned directional center corrects the physical
+coordination-site prior; the complete forward and reverse proposal densities,
+Cartesian radius factors, graph-action probabilities and hard structural support
+enter MH. The normalized-vector model is the current reference learner; adding
+mixture components did not improve the completed pilot.
 
-The measured learning problem is allocating probability across configurations
-at a cold, specified molecular target. Lower energy and plausible geometries
-can coexist with weight collapse. The latest independent4096-path teacher has
-raw ESS2.625; stabilizing its weights changes the training objective and does
-not create missing target information. Same-family reverse refits failed.
+This is an implemented AI-method candidate, not an established novelty or
+superiority result. Neither force fitting, vMF densities, equivariance, MH,
+masking, defensive mixtures nor the AFM/Jarzynski analogy is a new general idea.
+The contribution must be the useful learned coupling of connectivity proposals
+and their 3D geometry, supported by appropriate comparisons and ablations.
+A new physical law and universal perfection are not submission requirements.
 
-The current three-student experiment is a bounded test of an existing weighted
-CFM family, not a claimed novel algorithm. It asks whether direct endpoint
-projection improves what mean-work training did not. Uniform, affine and power
-controls, source control, independent full-target paths, equally budgeted
-reverse refits, ODE resolution and all xTB attempts are retained. If all three
-students remain ESS<16/256 after refitting, stop extending this frozen pool.
+## Evidence that controls the next decision
 
-A future contribution must specify an actual learning intervention that
-improves the reliability of target-mass information or the learned transport.
-It must distinguish auxiliary path randomness from endpoint-distribution error,
-state any stabilization bias, and retain probability accounting for the actual
-sampler. Merely fitting a stronger reverse network, clipping weights, annealing,
-adding diversity, or appending Gaussian noise does not meet the novelty bar.
+Read research/FRESH_REUSE_STATE_20260912.json and the live Slurm handles in
+notes/fresh_reuse_checkpoint_v1.md. The old four-parent graph first-hit signal
+repeats, but fully charged physical controls are strong. Repurposed frozen EACF
+refiners accept no direction-MH flow moves; they were not trained for that use,
+so their failure is not a claim against native EACF/FAB or its architecture.
 
-Before promoting another algorithm:
-- Demonstrate its predicted mechanism on a tractable distribution with a known
-  answer, including a negative control and an auxiliary-model mismatch case.
-- Pass numerical sampling/density checks for the real FlowMol interface.
-- Beat direct relevant methods under matched total compute, including HMC and
-  the pertinent EWFM/MFM/flow-perturbation components. The existing power arm is
-  not an implementation of EWFM.
-- Replicate distributional and geometric gains across predeclared conditions
-  and seeds. Neither a toy nor AgBr2 alone establishes broad molecular sampling.
+The fresh source has72 supported parents out of8192 attempts, a major initializer
+limitation. Preparation is complete and replayed. The prospective primary test
+compares all72 parents at exactly matched raw physical cost including training;
+its full sampling outputs are complete and independent audits are running.
+Read the declared primary endpoint first. Do not choose a favorable secondary
+budget to replace an unfavorable primary result. Query-count stopping measures
+finite-cost output, not stationary Boltzmann sampling.
 
-Primary prior art and exact scopes are recorded in
-notes/forward_mass_update_candidate.md. The novelty assessment remains open.
-The project is not scientifically submission ready; no acceptance probability
-or broad target-calibration claim is justified by current evidence.
+## Coverage and learning gaps
 
+The current learned singleton move requires unlike terminal H/halogen roots at
+different anchors. In the eight-composition geometry screen it has eligible
+moves only for conditions0 and4. Other physically supported compositions cannot
+be claimed as learned connectivity coverage just because local moves run there.
+Physical pendant-fragment proposals already have verified inverse/volume rules
+and accepted backbone transitions in other compositions. No fragment-specific
+learner is implemented or trained. Its force response involves translation and
+torque; singleton force labels and masking cannot simply be reused unchanged.
 
-Latest outcome: empirical CFM is stopped. Global innovation Gaussian inference
-and the frozen molecular score-critic recipes also failed their prescribed
-checks. The endpoint-gradient scalar prototype is valid but uses established
-VSD/DMD and denoising/variance-reduction principles. No molecular actor update
-or novel-method performance result exists. The antithetic small-panel pass did
-not survive independent confirmation; it cannot be used as positive evidence
-for paper readiness. Current complete record: score_qualification_complete_v1.
+If the frozen singleton learner lacks useful full-cost gains, do not respond by
+only enlarging that network. Diagnose the mismatch between pointwise force fit,
+actual proposal probabilities and accepted movement. Any broader learned-fragment
+candidate must specify its normalized conditional law, physical learning signal,
+full reverse calculation and comparison with the existing physical fragment kernel
+before molecular training. Existing conditional-MH and learned-MCMC objectives
+remain prior art; an additional loss alone is not a novelty certificate.
 
+## Requirements for the intended ICLR claim
 
-Current concrete candidate: residual-calibrated endpoint-entropy learning. Its
-four-direction frozen calibration layer has a replicated partial score-risk
-improvement on16384 new samples, but fails unfitted radial/angle checks. No
-actor or sampling benefit is established. Its quadratic projection theorem is
-standard finite-feature score matching, with direct Li/Turner and Shi et al.
-prior art. Any eventual contribution must go beyond that identity. A richer
-learned-feature calibration is a prospective next design, not a completed result.
+Establish a distinct, useful method contribution against learned molecular MCMC,
+graph-editing/regrowth and directional-mixture work; compare representative
+learned generators as well as strong physical controls; show reproducible benefit
+on the declared scope with measured costs, independent compositions and failures.
+Qualify distributional claims with suitable references instead of inferring them
+from correct MH or lower energy. Keep original charge/spin provenance and reserved
+outcomes intact. The project remains scientifically unready for submission.
 
-
-Latest route: an exact-entropy linear refinement baseline has a small fresh-panel
-marginal-KL decrease. This established method supplies a control, not novelty.
-The current architecture to develop is nonlinear species coupling using a
-centered convex point-map primitive with exact constrained volume. The primitive
-has263-suite coverage but no full neural conditioner, coupling wrapper or
-molecular training result. Review EACF, equivariant finite/convex/residual flows
-before claiming any distinction. Full sampling improvements remain required.
+Closest verified sources and distinctions are in
+notes/normalized_site_novelty_review.md and research/CLAIM_AND_BENCHMARK_SCOPE.md.
+The superseded September10 route decisions and all negative conclusions are
+preserved in notes/archive/novelty_decision_through_20260910.md. They are historical
+and must not trigger another launch of a stopped critic, teacher or convex recipe.

@@ -57,3 +57,27 @@ We still need cheaper training/preparation or measured amortization, stronger
 independent-condition results, and actual distribution qualification. Generic
 mixtures, equivariance, force fitting, defensive MH and correct math are necessary
 ingredients, not sufficient novelty claims.
+
+## September12 follow-up: accepted movement and newer dynamics models
+
+The full Timewarp preprint was downloaded and its training section inspected.
+It already refines proposals through an acceptance-ratio objective together with
+likelihood and entropy terms (equations15--17). Optimizing MH acceptance is not
+a new general learning principle. L2HMC already optimizes an expected squared
+jump criterion. These remain relevant precedents if pointwise force fitting is
+replaced by an objective closer to accepted movement.
+
+TITO, published in Science Advances in2026, learns lagged molecular transition
+distributions with conditional equivariant flow matching across compositions
+and time lags. Its preprint method section was inspected, not just its title.
+Broad transferable flow-based dynamics is therefore not a distinctive claim
+for this project. A possible distinction here is reversible connectivity edits
+with explicit coordinate probabilities and an electronic-state-conditioned
+physical target; it still requires useful method and benchmark evidence.
+
+Primary sources: [Timewarp](https://arxiv.org/abs/2302.01170),
+[L2HMC](https://arxiv.org/abs/1711.09268),
+[TITO preprint](https://arxiv.org/abs/2510.07589),
+[TITO publication record](https://pubmed.ncbi.nlm.nih.gov/41950332/).
+File hashes and exact inspected scope are recorded in
+`research/evidence/accepted_move_prior_art_20260912.json`.
