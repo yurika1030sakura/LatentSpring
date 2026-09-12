@@ -131,7 +131,13 @@ def validate_inputs(root, project, protocol):
     assert audit['attempted'] == protocol['source_attempts'] and audit['physical_queries'] == 0
     data = torch.load(source/'samples.pt', map_location='cpu', weights_only=False)
     assert data['condition'] == report['condition'] and data['stream'] == 'fresh_development'
-    return data, audit, json.loads(physical_path.read_text()), json.loads(shared_path.read_text())
+    shared = json.loads(shared_path.read_text())
+    if 'proposal_site_concentration' in protocol:
+        concentration = float(protocol['proposal_site_concentration'])
+        if not 0 < concentration < float('inf'):
+            raise ValueError('Positive finite prospective site concentration required')
+        shared['site_concentration'] = concentration
+    return data, audit, json.loads(physical_path.read_text()), shared
 
 
 def main():
@@ -162,7 +168,7 @@ def main():
         assert prep_report['complete'] and prep_audit['complete'] and prep_audit['full_producer_replay']
         assert sha(prep/'results.json') == prep_audit['results_sha256']
         assert sha(prep/'trace.pt') == prep_report['trace_sha256'] == prep_audit['trace_sha256']
-        assert prep_report['protocol_sha256'] == sha(pp)
+        assert prep_report['protocol_sha256'] == protocol.get('preparation_protocol_sha256', sha(pp))
         warm = torch.load(prep/'trace.pt', map_location='cpu', weights_only=False)
         assert warm['condition'] == data['condition'] and warm['parent_ids'] == source_audit['supported_parent_ids'][:protocol['maximum_parents']]
         model, metadata = load_model(args.project/'runs/normalized_site_train_v1', args.method, args.replica,
@@ -173,6 +179,7 @@ def main():
         source_results_sha256=source_audit['source_results_sha256'], source_samples_sha256=source_audit['source_samples_sha256'],
         source_audit_sha256=sha(args.project/protocol['source_audit']),
         policy_sha256=metadata['checkpoint_sha256'] if metadata else None,
+        proposal_site_concentration=shared['site_concentration'],
         one_time_training_raw_queries=protocol['one_time_training_raw_queries'] if metadata else 0,
         reference_coordinates_loaded=False, fresh_coordinates_used_for_training=False,
         scientific_submission_ready=False, chunks=[], new_raw_queries=0)

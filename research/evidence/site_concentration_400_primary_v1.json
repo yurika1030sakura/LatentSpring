@@ -1,0 +1,81 @@
+{
+  "frozen": true,
+  "version": 1,
+  "frozen_at_utc": "2026-09-12T06:18:19.032779+00:00",
+  "source_run": "runs/geometry_only_source_v2",
+  "source_audit": "runs/geometry_only_source_audit_v2/results.json",
+  "source_commit": "42e22039f492ad132fa4adc272afd15e0947083f",
+  "source_protocol_sha256": "9ccb52fe553f5970384012eaa458ddfae7fa0f2060a43dd0809b6c0156c5f2cd",
+  "source_attempts": 8192,
+  "shared_protocol_sha256": "5c07c900d33e6778bcf1e4f6d9869dc4a4d9fcc9dae3dfaa448a9ee4475470d5",
+  "physical_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "training_artifact_sha256": "ba15594f8bee4210badc01dfaf8691f14720b4af09096e7deedf3ea01809e2e1",
+  "preparation_run": "runs/fresh_reuse_prepare_v1",
+  "preparation_audit": "runs/fresh_reuse_prepare_audit_v1/results.json",
+  "maximum_parents": 128,
+  "minimum_parents": 16,
+  "batch": 16,
+  "warm_seed": 24201,
+  "warm_steps": 64,
+  "warm_local_scale": 0.1,
+  "methods": [
+    "site",
+    "learned_vector"
+  ],
+  "replicas": [
+    0,
+    1
+  ],
+  "evaluation_seeds": [
+    24211,
+    24213
+  ],
+  "scale_seeds": [
+    24221,
+    24223
+  ],
+  "query_caps": {
+    "site": 1024,
+    "learned_vector": 512
+  },
+  "maximum_microsteps": 2048,
+  "maximum_total_new_raw_queries": 409856,
+  "one_time_training_raw_queries": 9660,
+  "training_cost_components": {
+    "training_source": 4096,
+    "training_preparation": 5564
+  },
+  "one_time_fit_seconds": [
+    10.365339409792796,
+    10.065561284078285
+  ],
+  "prior_old_development_source_and_warm": 916,
+  "quality_query_budgets": [
+    128,
+    256,
+    512
+  ],
+  "reuse_prefixes": [
+    4,
+    8,
+    16,
+    32,
+    64,
+    128
+  ],
+  "bootstrap_seed": 24231,
+  "bootstrap_replicates": 2000,
+  "selection": "Reuse exactly the already audited initial parents and warm starts; change only physical site angular concentration and allow2048 microsteps to reach the same1024-call trajectory ceiling.",
+  "matched_full_cost_rule": "For a prefix of N parents and learned per-parent budget B, give site B+2*q+2*(i<r) queries on parent i, where (q,r)=divmod(9660//2,N). This spends exactly the same aggregate raw-call budget including training, provided all recorded paths reach those budgets. Do not extrapolate beyond measured1024-call site paths; report unavailable prefixes.",
+  "endpoints": "Current restrained potential at query budgets; paired potential difference with parent-cluster bootstrap averaging replicas before resampling; diagnostic reference-graph first hit and terminal occupancy; initial-reference parents reported separately; structural support and diverse perceived graphs with all source attempts.",
+  "reference_connectivity": "CS(F)(F)(F)(F)F",
+  "cost_contract": "Charge all paired physical calls including rejected supported proposals; training source/preparation once per learned model, warm preparation and new geometry source shared. Source generation uses zero energy calls but all8192 neural attempts and total wall time remain reported. Historical exploration costs are retained separately. Do not divide measured wall time to invent unmeasured prefix timings.",
+  "interpretation": "Fresh random starts of one already inspected development composition, not independent compositions. Random query-count stopping is a finite-cost performance readout, not an equilibrium-preserving stopping rule. First hits and energies do not validate a Boltzmann distribution.",
+  "new_training_allowed": false,
+  "reference_coordinates_allowed": false,
+  "reserved_outcomes_allowed": false,
+  "stop_rule": "Abort on nonfinite oracle values or unexpected validator exceptions and preserve the failed prefix/costs. No superiority claim from missing arms, source selection by energy, unmeasured cost amortization or seed pooling as independent parent replication.",
+  "proposal_site_concentration": 400.0,
+  "preparation_protocol_sha256": "3a7981a448b0f6e7338639c04d399c3a40d0f4d35857f6d66b304e76844e6294",
+  "scope": "Prospective physical-only angular-width control; no model fitted. Preserve all censored endpoints and actual compute costs."
+}

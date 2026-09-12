@@ -1,0 +1,76 @@
+{
+  "frozen": true,
+  "version": 1,
+  "frozen_at_utc": "2026-09-12T06:18:19.032779+00:00",
+  "source_run": "runs/transfer_reuse_inputs_v1/condition_05",
+  "source_audit": "runs/transfer_reuse_inputs_v1/condition_05/source_audit.json",
+  "source_commit": "22f000f5984dbb96286a516278b4b5ac2bf5f407",
+  "source_protocol_sha256": "72d4380010eeb6d8f4bac1bc0b24bee1b71e115b90205be57419a8daecca9066",
+  "source_attempts": 512,
+  "shared_protocol_sha256": "5c07c900d33e6778bcf1e4f6d9869dc4a4d9fcc9dae3dfaa448a9ee4475470d5",
+  "physical_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "training_artifact_sha256": "ba15594f8bee4210badc01dfaf8691f14720b4af09096e7deedf3ea01809e2e1",
+  "preparation_run": "runs/transfer_reuse_prepare_v1/condition_05",
+  "preparation_audit": "runs/transfer_reuse_prepare_audit_v1/condition_05/results.json",
+  "maximum_parents": 16,
+  "minimum_parents": 16,
+  "batch": 16,
+  "warm_seed": 29601,
+  "warm_steps": 64,
+  "warm_local_scale": 0.1,
+  "methods": [
+    "site",
+    "learned_vector"
+  ],
+  "replicas": [
+    0,
+    1
+  ],
+  "evaluation_seeds": [
+    29611,
+    29613
+  ],
+  "scale_seeds": [
+    29621,
+    29623
+  ],
+  "query_caps": {
+    "site": 1024,
+    "learned_vector": 512
+  },
+  "maximum_microsteps": 2048,
+  "maximum_total_new_raw_queries": 51232,
+  "one_time_training_raw_queries": 9660,
+  "training_cost_components": {
+    "training_source": 4096,
+    "training_preparation": 5564
+  },
+  "one_time_fit_seconds": [
+    10.365339409792796,
+    10.065561284078285
+  ],
+  "prior_old_development_source_and_warm": 916,
+  "quality_query_budgets": [
+    128,
+    256,
+    512
+  ],
+  "reuse_prefixes": [],
+  "bootstrap_seed": 24231,
+  "bootstrap_replicates": 2000,
+  "selection": "Reuse exactly the already audited initial parents and warm starts; change only physical site angular concentration and allow2048 microsteps to reach the same1024-call trajectory ceiling.",
+  "matched_full_cost_rule": "Use the global six-composition allocation in transfer_reuse_protocol_v1.json. Training is charged once across96 parents, not once per case.",
+  "endpoints": "Current restrained potential at query budgets; paired potential difference with parent-cluster bootstrap averaging replicas before resampling; diagnostic reference-graph first hit and terminal occupancy; initial-reference parents reported separately; structural support and diverse perceived graphs with all source attempts.",
+  "reference_connectivity": null,
+  "cost_contract": "Charge all paired physical calls including rejected supported proposals; training source/preparation once per learned model, warm preparation and new geometry source shared. Source generation uses zero energy calls but all8192 neural attempts and total wall time remain reported. Historical exploration costs are retained separately. Do not divide measured wall time to invent unmeasured prefix timings.",
+  "interpretation": "Development composition held out from guide training. Physical target and frozen guide unchanged. Aggregation and one-time training cost across all six compositions are specified by transfer_reuse_protocol_v1.json.",
+  "new_training_allowed": false,
+  "reference_coordinates_allowed": false,
+  "reserved_outcomes_allowed": false,
+  "stop_rule": "Abort on nonfinite oracle values or unexpected validator exceptions and preserve the failed prefix/costs. No superiority claim from missing arms, source selection by energy, unmeasured cost amortization or seed pooling as independent parent replication.",
+  "parent_source_audit_sha256": "22bfd15b9280a945bd90d93fc7cf5ad9faabd0199721cbadfe49a962d79b6059",
+  "condition_index": 5,
+  "proposal_site_concentration": 64.0,
+  "preparation_protocol_sha256": "12192803c47d72177125dae2771724285b7eb9c017900bf6d2f43a78d99b68f1",
+  "scope": "Prospective physical-only angular-width control; no model fitted. Preserve all censored endpoints and actual compute costs."
+}
