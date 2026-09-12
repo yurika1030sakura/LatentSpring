@@ -1,5 +1,14 @@
 # Decision after the completed strong physical controls
 
+**Historical plan, partly superseded September12.** The probes below are now
+complete. Their locally fitted full-sphere probability teachers fail support;
+the repaired arc teachers still lose one-step energy progress to uniform arcs.
+Do not execute the unrestricted teacher-KL plan below. Read
+`notes/support_constrained_geodesic_proposal.md` and
+`research/GEODESIC_RECONSTRUCTION_STATE_20260912.json` for current evidence and
+`research/NEXT.md` for the active full-chain pilot. This text preserves the
+prospective reasoning and budget before those results were observed.
+
 The frozen normalized-site learner has no established competitive advantage.
 Its original one-composition gain was against concentration 10. Concentrations
 64 and 400 remove that demonstrated gain, under both cost regimes for 400.

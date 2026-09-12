@@ -1,81 +1,63 @@
 # Current research status — September 12, 2026
 
-Current authoritative checkpoint: `research/SHARP_CONTROLS_AND_TRAINING_STATE_20260912.json`.
-Active checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
-`iclr2027-arch-fix`. The ICLR goal remains active and scientifically unachieved.
-Do not write to the old home checkout. Read `CLAUDE.md` for environment and target
-contracts and `research/CLAIM_AND_BENCHMARK_SCOPE.md` for the user's actual scope.
+Current checkpoint: `research/GEODESIC_RECONSTRUCTION_STATE_20260912.json`.
+The ICLR goal is active. The method is not scientifically ready for submission.
+Read `research/CLAIM_AND_BENCHMARK_SCOPE.md` for the user's intended standard.
 
-The frozen normalized-site learner has **no established competitive advantage**.
-The original 72-parent, concentration-10 comparison and its GFN2 check remain
-valid for those endpoints. With the stronger concentration-64 physical prior,
-the matched-total learned-minus-physical mean is +0.0320 eV, parent 95% interval
-[-0.0002, +0.0673]. The stronger controls also do not establish average benefit
-on the six additional compositions. Both concentration-400 calibration-accounting
-regimes are retained. Do not generalize the old GFN2 result to unscored new endpoints.
+The new constrained joint proposal passes independent correctness checks. The
+old normalized-site learner has no established competitive advantage against the
+completed concentration-64/400 physical controls. Its original concentration-10
+benefit and GFN2 check remain valid only for those endpoints; frozen transfer
+has no demonstrated average gain. Do not repeat or scale the old learner.
 
-All 28 new physical control arms, full trajectory replay and independent joint
-MH ratios are complete. The complete control round uses 688,128 raw calls.
-Summary: `runs/site_concentration_summary_v1/results.json`; reviewed figure:
-`runs/site_concentration_figure_v1/controls.pdf`. The original learner's advantage
-against concentration 10 is baseline-specific; do not repeat or scale its weights.
+The reconstruction now restricts root directions to analytically computed
+feasible circle arcs and evaluates the actual normalized proposal. Complete graph,
+two-radius and two-root updates include both oriented-circle preimages, Cartesian
+radius factors and the marginal density over both decoder orders. Empty partial
+contexts and zero reverse density are failures, without resampling until success.
 
-The stiffness student's internal failure is now diagnosed: direction contributes
-more than 98% of held-out-parent local-teacher KL, despite good width fitting.
-This is a training-context diagnostic, not a new method result or a new physics law.
-See `runs/stiffness_mode_diagnostic_v1/results.json`.
+On 96 prepared TRAINING parents, all 3,072 joint proposal attempts were replayed.
+The new proposals preserve the requested exchanged graph and positive reverse
+density for 745/768 attempts, versus 690/768 for legacy site64. The uniform arc
+method rescues 157 proposals by marginalizing decoder order. Independent density
+quadrature checks 750 forward/reverse values with maximum log error 4.27e-14.
+This is geometric support improvement, not learned efficiency or equilibration.
 
-Eight disjoint proposal-training compositions have now been generated and fully
-audited: support counts 45, 32, 106, 99, 0, 19, 0, 96 out of 256 each, zero validator
-exceptions. Both zero-support compositions are retained. The six nonempty cases
-supply 96 first-supported training parents, with 64-step physical preparation and
-complete replay costing 11,910 raw calls. No evaluated-six-composition coordinates,
-reference initializations or reserved outcomes enter this preparation. These are
-training inputs, not equilibrium samples or proof of learned benefit.
+The 438-context force/work probe fits are locally accurate but can be bad global
+probability teachers: in 47 negative-axial contexts only16/376 unrestricted teacher
+draws were supported. Arc restriction repairs this to376/376; all14,016 real root
+arc draws preserve the graph. However, the true-oracle FIT-context single-step
+screen favors uniform arcs for expected energy progress: -0.1440 eV versus -0.0453
+eV for the fitted score, despite the latter's higher acceptance (0.725 vs0.248).
+Do not train merely to maximize acceptance or imitate that local teacher.
 
-Source audit: `runs/proposal_training_geometry_audit_v1/results.json`.
-Preparation audit: `runs/proposal_training_preparation_audit_v1/results.json`.
-All jobs from this round are terminal at this checkpoint. Re-query Slurm before
-new work; never restart a process because an observation timeout elapsed.
+The original eight training-source support counts remain45,32,106,99,0,19,0,96
+out of256 each. Both zeros stay in the denominator. Condition6 (C4H10OFCl) has
+empty connected support under the pinned RDKit builder: maximum degree sum31 is
+below the32 necessary for a connected17-atom graph. This is a target-definition
+incompatibility, not proof that the composition is chemically impossible. The
+other zero-support case remains unresolved. The validator and panels are unchanged.
 
-Current manuscript: `paper/angular_working.tex`; reviewed-build output:
-`runs/verification/sharp_controls_20260912/main.pdf`, eight main pages. The abstract
-and results include the failure against stronger physical controls. Build/citation
-checks pass; scientific submission readiness remains false.
-
-## Completed handles
-
-| Work | Producer | Audit / summary |
+| Completed work | Producer | Audit / summary |
 |---|---|---|
-| Strong physical widths | 46147217 | 46148255 / 46148506 |
-| Control figure | 46150265 | PDF/PNG visually checked |
-| Direction/width diagnostic | 46148875 | Checkpoint metrics and scalar KL identity verified |
-| Training-source checks | 46149458 | Selection test and old full source-audit regression pass |
-| Eight training sources | 46149838 | 46149969 |
-| Training physical preparation | 46150875 | 46150903 |
+| Strong physical controls | 46147217 | 46148255 / 46148506 |
+| Eight disjoint training sources | 46149838 | 46149969 |
+| 96 training preparations;11,910 calls | 46150875 | 46150903 |
+| 438 conditional contexts;5,536 calls | 46152939 | 46153206 |
+| Real root arc support | 46157830 | 46159984 |
+| FIT root oracle screen;1,648 calls | 46160646 | 46160899 |
+| Real complete joint support | 46174307 | 46176033 |
 
-## Next authorized work
+A bounded complete-chain TRAINING pilot is submitted: producer46176878,
+dependent replay46176906, immutable sourcebde3590. It compares legacy site64,
+uniform arc and site arc at128 raw calls per parent,48 fixed FIT parents,
+two algorithm seeds,36,864 maximum new raw calls. Common local and force-rotation
+moves are unchanged. Query stopping measures finite-cost output, not stationarity.
+Re-query Slurm and consume all four conditions before interpreting outcomes.
 
-Implement the bounded multi-composition conditional-probe experiment in
-`notes/conditional_learning_after_sharp_controls_v1.md`. Freeze the exact protocol,
-input hashes, seeds and internal parent/composition split before new queries.
-The proposed new-probe ceiling is 6,144 raw calls, using audited training starts.
-Both passive geometry and radius must remain fixed within each angular probe set.
-Preserve all proposal-support, rank and local-approximation failures, and replay
-all geometry and random streams independently before fitting.
-
-Compare the same-data angular-force and normalized-density objectives with a
-small declared physical-prior regularization ablation. A model that improves
-training fit but worsens held-out direction/proper-density/work checks is not
-ready for another molecular pilot. No frozen learner from this checkpoint is a
-successful repair. Generic vMF, regularization, force fitting and MH remain prior art.
-
-After internal qualification, freeze the molecular comparison at actual training
-cost against the strong physical trajectories and appropriate learned baselines.
-The existing physical paths reach 1,024 calls per parent and can support the
-planned new cost allocation without rerunning those baselines. The evaluated six
-compositions must not be used to fit weights. Reserved outcomes remain untouched
-until the final method, scope and benchmark are frozen. Authors and submission
-are handled by the user; do not ask permission to continue authorized research.
-
-Full historical status: `notes/archive/status_through_transfer_checkpoint_20260912.md`.
+The manuscript `paper/angular_working.tex` already reports the strong-control
+negative results. Its latest reviewed PDF is
+`runs/verification/sharp_controls_20260912/main.pdf` (eight main pages); the new
+arc round is not yet incorporated. No new model is fitted. Representative learned
+baselines, useful held-out performance and distributional claims remain open.
+Earlier status is preserved in `notes/archive/status_through_sharp_training_20260912.md`.

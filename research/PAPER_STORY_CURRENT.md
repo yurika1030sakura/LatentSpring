@@ -1,34 +1,34 @@
 # Current paper story — September 12, 2026
 
-The current paper is `paper/angular_working.tex`, **Learning Geometry for
-Reversible Molecular Graph Exchanges**. It is a development draft with verified
-methods and adverse controls; it is not an established competitive ICLR method.
+The research question is how to propose useful molecular connectivity changes
+with compatible3D geometry and computable reverse probabilities. An OMol25-trained
+flow-matching initializer supplies coordinates with unknown finite-step density;
+it remains frozen. A separate corrector proposes coupled connectivity, radius
+and angular updates, then uses the full MH ratio for the declared restrained,
+inversion-averaged eSEN target on algorithmic molecular support.
 
-A fixed OMol25-trained flow-matching initializer supplies atom- and electronic-
-conditioned coordinates. Its finite-step source density is unknown. Subsequent
-reversible graph/geometry proposals have explicit forward/reverse conditional
-probabilities and Cartesian volume factors, permitting MH correction for the
-stated restrained, inversion-averaged, algorithmic-support target. The learned
-component predicts geometric proposal densities from masked molecular context.
-This is an implemented method candidate; generic MH and force fitting are not
-standalone novelty claims.
+The newest reconstruction computes feasible angular arcs and their normalized
+proposal probabilities. It accounts for both circle orientations and both root
+orders in the complete joint density. This substantially improves proposal support
+in the audited training screen. Generic geometry, MH, force fitting and geodesic
+walks are established ingredients; their correctness alone is not AI novelty.
 
-The initial 72-parent energy benefit against the concentration-10 physical prior
-is independently corroborated by GFN2 on those original endpoints. It fails to
-remain established with stronger physical widths. Frozen transfer to six further
-compositions also lacks a demonstrated average benefit. These limits are stated
-in the abstract and main results; stronger physical endpoints have not received
-that original GFN2 check. Lower finite-budget energy is not a calibrated energy
-distribution or an equilibrium ensemble.
+The intended AI contribution is a useful conditional energy/proposal model that
+learns how to move across these feasible regions at lower total physical cost.
+That contribution remains unproved. The previous normalized-site learner loses
+its demonstrated advantage to stronger physical controls. New local force/work
+fits repair a local identification problem but do not provide a useful global
+teacher: even on valid arcs, a uniform proposal makes more single-step expected
+energy progress. A full-chain physical comparison is now running to guide the
+next model design. No new neural weights are claimed as a successful repair.
 
-The next research question is whether identifiable conditional training signals
-and calibrated directional predictions can yield useful transfer across molecular
-contexts. New training data now cover six additional supported compositions, with
-two zero-support compositions preserved. Data preparation and a local fitting
-identity do not establish this proposed AI contribution. The bounded next design
-is `notes/conditional_learning_after_sharp_controls_v1.md`.
+The current manuscript `paper/angular_working.tex` reports the earlier candidate
+and its adverse controls; it has not incorporated this new arc round. Lower
+finite-cost energy and validator acceptance do not establish an equilibrium energy
+distribution or quantum stability. Useful held-out performance against strong
+physical and representative learned baselines is still required on a declared scope.
 
-Read `research/SHARP_CONTROLS_AND_TRAINING_STATE_20260912.json` for exact evidence,
-`research/NOVELTY_DECISION.md` for claim boundaries, and
-`research/CLAIM_AND_BENCHMARK_SCOPE.md` for the intended submission standard.
-The previous entropy-refinement paper story is archived at `notes/archive/paper_story_current_through_transfer_checkpoint_20260912.md`.
+See `research/GEODESIC_RECONSTRUCTION_STATE_20260912.json`, `research/NOVELTY_DECISION.md`
+and `research/CLAIM_AND_BENCHMARK_SCOPE.md`. The project remains scientifically
+unready for submission. Earlier story:
+`notes/archive/paper_story_current_through_sharp_training_20260912.md`.

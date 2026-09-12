@@ -1,0 +1,150 @@
+{
+  "updated_at_utc": "2026-09-12T17:09:02.420171+00:00",
+  "scientific_submission_ready": false,
+  "goal_status": "active",
+  "current_branch": "iclr2027-arch-fix",
+  "supersedes_current_pointer": "research/SHARP_CONTROLS_AND_TRAINING_STATE_20260912.json",
+  "conclusion": "The geometric proposal is independently qualified; no new learned advantage is established. Stronger physical controls remove the old demonstrated learner advantage.",
+  "evidence_sha256": {
+    "runs/site_concentration_summary_v1/results.json": "02cf3ea536f8bf1d0490e40adfb756d0194afcf0547cbc92b2ed606c9e299528",
+    "runs/proposal_training_geometry_audit_v1/results.json": "9bbea279f325fff1daca405893b638163c63b552c649b781f60f3502c970eb3b",
+    "runs/proposal_training_preparation_audit_v1/results.json": "ac67d8681076722265901d6f12b1edd844a7742d17f6eff8aba4fc65003b8bf4",
+    "runs/multicomposition_angular_audit_v1/results.json": "4a5fd3bc1487639e78646f5e8da493c5c8dcd4d855e3a606f23c8583839f9c47",
+    "runs/multicomposition_angular_summary_v1/results.json": "1c26176056af780d6bcd6b57245543fc88d12472178b12e0f4c9adab7e9b75ff",
+    "runs/arc_teacher_audit_v2/results.json": "f032332c06d8f29acb97c60f617f5c48f506dcaf2e7811bcd543223aeb13ecc4",
+    "runs/arc_oracle_feasibility_summary_v2/results.json": "4f7b6ad0dcd768ed6d4c72786fe3b9c4416fe8d57c41348d048747b24bd43dbf",
+    "runs/joint_arc_audit_v1/results.json": "8931ed83e94e20614c0a0b37f38feeb2065890348aa4327e088e825929d1a05f",
+    "research/evidence/connected_degree_feasibility_v1.json": "22b294b16ab09fff66fdfda6c6f3ee76c505f81097be707a07d8d317a1060b55",
+    "research/evidence/joint_arc_budget_engineering_v1.json": "f4ae5e43a1085cebfc4184af42d35e606af2556b72c90981b75eddac25da5d7c"
+  },
+  "local_teacher_failure": {
+    "negative_axial_contexts": 47,
+    "draws": 376,
+    "full_sphere_supported": 16,
+    "constrained_arc_supported": 376
+  },
+  "all_single_root_arc_draws": {
+    "attempts": 14016,
+    "graph_preserved": 14016,
+    "reverse_density_positive": 14016
+  },
+  "joint_support": [
+    {
+      "method": "legacy_site64",
+      "attempts": 768,
+      "drawn": 768,
+      "geometry_supported": 690,
+      "reverse_density_positive": 690,
+      "order_marginalization_rescued": 0,
+      "validator_error": 0
+    },
+    {
+      "method": "arc_uniform",
+      "attempts": 768,
+      "drawn": 745,
+      "geometry_supported": 745,
+      "reverse_density_positive": 745,
+      "order_marginalization_rescued": 157,
+      "validator_error": 0
+    },
+    {
+      "method": "arc_site",
+      "attempts": 768,
+      "drawn": 745,
+      "geometry_supported": 745,
+      "reverse_density_positive": 745,
+      "order_marginalization_rescued": 6,
+      "validator_error": 0
+    },
+    {
+      "method": "arc_site_confinement",
+      "attempts": 768,
+      "drawn": 745,
+      "geometry_supported": 745,
+      "reverse_density_positive": 745,
+      "order_marginalization_rescued": 8,
+      "validator_error": 0
+    }
+  ],
+  "joint_support_audit": {
+    "complete": true,
+    "results_sha256": "023bc22fb92538b359b2384a7432d31ee739bd22eb218bc9181c24f9992b84bf",
+    "trace_sha256": "e6f7ea40b43a031bafb60bbc800f5d11852b2bc804327507930416d8039d448f",
+    "all_attempts_replayed": 3072,
+    "all_random_streams_replayed": true,
+    "all_geometry_checks_repeated": true,
+    "independent_first_trial_forward_reverse_densities": 750,
+    "maximum_log_density_error": 4.263256414560601e-14,
+    "new_physical_queries": 0,
+    "scientific_submission_ready": false
+  },
+  "oracle_feasibility": {
+    "fitted": {
+      "expected_acceptance": 0.724781793316675,
+      "expected_potential_change_eV": -0.045316408287030915,
+      "expected_squared_COM_displacement_A2": 0.029049232638085787
+    },
+    "site64": {
+      "expected_acceptance": 0.5226986061862424,
+      "expected_potential_change_eV": -0.04860350379949617,
+      "expected_squared_COM_displacement_A2": 0.031088819459453236
+    },
+    "site64_confinement": {
+      "expected_acceptance": 0.5268992433993384,
+      "expected_potential_change_eV": -0.04994464049017139,
+      "expected_squared_COM_displacement_A2": 0.042283502199552486
+    },
+    "uniform": {
+      "expected_acceptance": 0.2477984456966973,
+      "expected_potential_change_eV": -0.1440108519721425,
+      "expected_squared_COM_displacement_A2": 0.30753386627032925
+    }
+  },
+  "oracle_feasibility_conclusion": "The fitted score has higher acceptance but less expected energy decrease and movement than uniform arcs. TRAINING root-only feasibility; no complete-chain or learning benefit follows.",
+  "new_training_costs": {
+    "preparation": 11910,
+    "multicomposition_angular_probes": 5536,
+    "arc_endpoint_feasibility": 1648,
+    "maximum_additional_joint_budget_pilot": 36864,
+    "model_fitted": false
+  },
+  "algorithmic_support_failure": {
+    "training_condition_index": 6,
+    "candidate_index": 4,
+    "composition": "C4H10OFCl",
+    "maximum_degree_sum": 31,
+    "minimum_connected_degree_sum": 32,
+    "scope": "Empty connected D_v1 under the pinned RDKit graph builder; not a general chemical impossibility. Preserve all256 failed source attempts; no replacement. Other zero condition4 remains unresolved."
+  },
+  "active_experiment": {
+    "producer": "46176878",
+    "audit": "46176906",
+    "protocol": "research/evidence/joint_arc_budget_protocol_v1.json",
+    "source_commit": "bde35905864320f404b844d74bb0257aef513a62",
+    "fit_parents": 48,
+    "conditions": [
+      1,
+      2,
+      3,
+      5
+    ],
+    "replicas": 2,
+    "methods": [
+      "legacy_site64",
+      "arc_uniform",
+      "arc_site"
+    ],
+    "raw_queries_per_parent": 128,
+    "run": "runs/joint_arc_budget_v1",
+    "audit_run": "runs/joint_arc_budget_audit_v1",
+    "scheduler_status": "Submitted; both producer tasks RUNNING at2026-09-12T17:06:37Z. Re-query Slurm."
+  },
+  "next": "Consume complete full-chain pilot and independent replay before method selection. Any next score should learn nonlocal work on feasible arcs; do not distill the failed unrestricted local teacher or optimize acceptance alone.",
+  "heldout_contract": "Use frozen FIT parents for this route diagnostic. Do not fit on evaluated six-composition coordinates or query722 reserved outcomes.",
+  "paper": {
+    "entrypoint": "paper/angular_working.tex",
+    "last_reviewed_pdf": "runs/verification/sharp_controls_20260912/main.pdf",
+    "main_pages": 8,
+    "contains_new_arc_round": false
+  }
+}

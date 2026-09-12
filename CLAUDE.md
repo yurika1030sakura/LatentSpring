@@ -1,6 +1,6 @@
 # BGFM project guide
 
-Updated 2026-09-12 after transfer, independent-energy and curvature diagnostics. Read
+Updated 2026-09-12 after constrained geodesic and complete joint-kernel audits. Read
 `audit/20260908/REVIEW.md` before interpreting any result as Boltzmann sampling.
 
 ## Active takeover branch
@@ -18,7 +18,7 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/SHARP_CONTROLS_AND_TRAINING_STATE_20260912.json` first. They record the current method,
+`research/GEODESIC_RECONSTRUCTION_STATE_20260912.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
@@ -46,13 +46,22 @@ full replay and the cost-accounted summary are complete. Frozen six-composition
 transfer also has no demonstrated average gain. The stiffness student overfits;
 direction contributes over 98% of its held-out-parent local-teacher KL.
 Eight disjoint training compositions have now been generated/audited, with two
-zero-support cases retained. The six nonempty cases supply 96 physically prepared
-training parents, fully replayed with 11,910 raw calls. No new model is fitted.
-All this round's jobs are terminal; re-query Slurm before new action. Start with
-`research/SHARP_CONTROLS_AND_TRAINING_STATE_20260912.json` and
-`notes/conditional_learning_after_sharp_controls_v1.md`. Do not scale the frozen
-learner or claim a successful repair. Equilibrium, competitive learned-generator
-and matched-wall-time superiority remain unqualified.
+zero-support cases retained. The constrained geodesic proposal now has fully
+audited root and joint graph/radius/two-root implementations. On real training
+starts, joint support increases from690/768 to745/768; all3,072 attempts replay
+and750 independent forward/reverse densities agree. This is geometric progress,
+not a demonstrated learned advantage. Local force/work fits fail as unrestricted
+probability teachers. On valid arcs their higher acceptance still gives less
+expected one-step energy decrease than uniform arcs; do not blindly distill them.
+No new model is fitted. The complete-chain TRAINING pilot is producer46176878,
+audit46176906, fixed48 FIT parents and36,864 maximum new raw calls. Re-query Slurm.
+Start with `research/GEODESIC_RECONSTRUCTION_STATE_20260912.json` and
+`notes/support_constrained_geodesic_proposal.md`. The prior conditional-learning
+plan is partly superseded. The pinned connected validator has empty support for
+training condition6 by a necessary degree bound; preserve that failure and the
+other unresolved source zero. Do not scale the old learner or claim a successful
+AI repair. Equilibrium, competitive learned-generator and matched-wall-time
+superiority remain unqualified.
 The previous manuscript is `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
 exact-entropy refinement candidate. It is explicitly a development draft.

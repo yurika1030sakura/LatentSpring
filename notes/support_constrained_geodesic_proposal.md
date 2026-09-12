@@ -98,17 +98,52 @@ draw preserves the original graph and has finite reverse density; independent
 full-draw replay and first-draw density quadrature are recorded separately.
 This validity repair is supplied by the geometric construction, not by learning.
 
-Next score a prospectively fixed, bounded set of existing arc draws on FIT parents
-with the true paired oracle and complete MH ratios. Keep physical uniform/site
-arc controls. If the energy-score surrogate is useful on these valid proposals,
-fit a masked conditional score using force/work and/or the implemented arc-law KL,
-with the frozen internal parent/composition split. If it extrapolates poorly,
-improve the conditional energy representation rather than distilling its invalid
-full-sphere extension.
+The prospectively frozen true-oracle check is complete:824 first-draw endpoints
+on206 FIT contexts,1,648 raw calls, full replay and independent raw-energy MH
+checks. Equal composition means after parent means give fitted-score acceptance
+0.7248 and expected potential change-0.0453 eV; uniform arcs give0.2478 and-0.1440
+eV. Uniform arcs also have much greater accepted squared movement. These are
+root-only TRAINING checks, with per-context scores held fixed under reversal.
+High acceptance and local fit do not qualify a useful learned proposal. The
+reproducible summary is `scripts/research/summarize_arc_oracle_feasibility.py`,
+with `runs/arc_oracle_feasibility_summary_v2/results.json` reproducing the preserved
+v1 summary exactly to1e-12.
 
-Joint graph/radius/two-root integration is NOT implemented or qualified yet.
-It must retain both root densities, Cartesian radius factors, order/action
-probabilities, all reverse contexts and zero-reverse-support failures. Root-level
-known-target tests cannot substitute for that full molecular transition audit.
-No new neural weights, energy advantage, equilibrium ensemble or submission
-readiness follows from the present geometry result.
+## Complete joint integration
+
+`cfm_mol/joint_arc_geometry.py` implements coupled graph, radius and two-root
+regeneration. Both radii are drawn before directions. Each angular law uses its
+actual partial context; unsupported passive arrangements fail once. Both angular
+densities and Cartesian radial factors enter the coordinate density. The public
+`joint_chemical_transition` checks the target's actual graph and uses the complete
+forward/reverse density and eligible-action count ratio before MH.
+
+The decoder samples one fair root order, retaining failures, but evaluates the
+candidate density as the marginal0.5(q_order0+q_order1). Reverse density uses the
+same marginalization. Both circle orientations are already included within each
+root law. This standard mixture marginalization improves probability flow over
+retaining order as an auxiliary variable; it is not a new general MH theorem.
+
+Five targeted joint tests cover symmetry, marginal-order probability flow,
+full six-coordinate chart volume, the public query ledger, and a complete known
+joint target initialized by independent exact rejection sampling. The volume
+check includes((N-2)/N)^(3/2)*exp(3ell1+3ell2)*|sin(theta1)sin(theta2)|. The fixed
+COM factor cancels in the same-size reverse ratio. Root-only tests do not replace
+these complete-joint checks.
+
+The real training-start screen and independent audit are now complete:
+`runs/joint_arc_support_v1` and `runs/joint_arc_audit_v1/results.json`. Each of
+three arc scoring rules has745/768 supported positive-reverse proposals versus
+legacy site's690/768. All3,072 attempts and random streams replay, including23
+failed arc partial/empty attempts per method. Independent quadrature checks750
+forward/reverse densities with maximum log error4.27e-14. Uniform arc order
+marginalization rescues157 proposals with zero retained-order reverse density.
+This remains a geometric support result, with no new neural weights or energy calls.
+
+The next complete-chain TRAINING experiment is frozen in
+`research/evidence/joint_arc_budget_protocol_v1.json`:48 FIT parents, four
+compositions, two seeds, legacy site64 versus uniform/site arcs,128 raw queries
+per parent and36,864 maximum additional calls. Common local and force-rotation
+moves remain fixed. Producer46176878 and audit46176906 are submitted; refresh
+Slurm before interpreting their status. The pilot does not establish equilibrium,
+blind generalization, AI novelty or scientific submission readiness.
