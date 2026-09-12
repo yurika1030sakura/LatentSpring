@@ -1,7 +1,7 @@
 \section{Capped conditional proposal proof}
 Fix a terminal/anchor pair and context $c$. Let $h_c(v)$ be the base angular
 proposal density and let its internal acceptance satisfy
-$h_c(v)a_c(v)=C(c){\bf1}_{D(c)}(v)\exp s_\theta(v;c)$, with $C(c)>0$ independent
+$h_c(v)a_c(v)=C(c){\bf 1}_{D(c)}(v)\exp s_\theta(v;c)$, with $C(c)>0$ independent
 of $v$. Let $Z(c)=\int h_c(v)a_c(v)\,d\Omega(v)$. Independence of successive trials
 gives the non-self density after a cap $K$ as
 \[
@@ -20,16 +20,16 @@ $C$, $Z$ or $K$ can differ and must enter the reverse ratio. Our finite-state
 negative control exhibits the resulting bias when context invariance is broken.
 
 \section{Directional envelope proof}
-Let $t=|v^\top u|\in[0,1]$, $d=\lambda_3-\lambda_2\ge0$. The spectral bound gives
+Let $t=|v^\top u|\in[0,1]$, $d=\lambda_3-\lambda_2\ge 0$. The spectral bound gives
 $u^\top A u\le\lambda_2+d t^2$. Since the derivative of $\log\cosh z$ is bounded
-by one for $z\ge0$,
+by one for $z\ge 0$,
 \[
  \log\cosh d-\log\cosh(dt)\le d(1-t).
 \]
 Consequently
 \[
  u^\top A u-\log\cosh(dt)-[\lambda_3-\log\cosh d]
- \le-d(1-t^2)+d(1-t)=-dt(1-t)\le0.
+ \le-d(1-t^2)+d(1-t)=-dt(1-t)\le 0.
 \]
 For natural parameters $\eta_\pm=\eta\pm dv$, let $C_\pm$ be their vMF normalizers.
 Mixture weights proportional to $C_\pm^{-1}$ produce a normalized base density
@@ -44,15 +44,15 @@ $Z_D/(4\pi e^M)$, whereas the two-vMF envelope succeeds with probability
 $Z_D/(H e^B)$, where $H$ is the normalizing integral of the base mixture's
 unnormalized score. Their exact ratio is $4\pi e^M/(H e^B)$; no support volume
 or $Z_D$ estimate is needed. Since
-$H\le4\pi e^{\|\eta\|}\cosh d$ and $B=\lambda_3-\log\cosh d$, this ratio
+$H\le 4\pi e^{\|\eta\|}\cosh d$ and $B=\lambda_3-\log\cosh d$, this ratio
 is at least one for $M=\|\eta\|+\lambda_3$.
-On identical saved development contexts, median per-trial factors are183.6/265.4
-for the two tensor models and86.4/85.7 for vector models. These are internal
+On identical saved development contexts, median per-trial factors are 183.6/265.4
+for the two tensor models and 86.4/85.7 for vector models. These are internal
 rejection-success factors, not runtime speedups or reductions in equilibrium error.
 
 \section{Joint coordinate volume and reversibility}
 Fix two moved roots and the relative positions of the passive atoms. Let
-$P=I-\mathbf1\mathbf1^\top/N$. Changes to the two Cartesian root vectors followed
+$P=I-\mathbf 1\mathbf 1^\top/N$. Changes to the two Cartesian root vectors followed
 by COM projection have derivative columns $Pe_i$ and $Pe_j$ in each spatial
 component. Their Gram matrix has diagonal $1-1/N$ and off-diagonal $-1/N$.
 The induced six-dimensional volume factor is therefore
@@ -60,7 +60,7 @@ $[(N-2)/N]^{3/2}$, independent of the anchor assignment or endpoint. Equivalentl
 a full chart including the passive relative coordinates is linear with constant
 Jacobian. Either construction yields a common factor in the conditional
 forward/reverse ratio. Each moved vector contributes
-$r^2dr\,d\Omega=r^3d\ell\,d\Omega$, proving the radial term in
+$r^2 dr\,d\Omega=r^3 d\ell\,d\Omega$, proving the radial term in
 Eq.~\eqref{eq:joint-q}.
 
 For fixed source, action and order, the two radial laws are normalized; the two
@@ -69,7 +69,7 @@ Their autoregressive product is thus a normalized proposal on the six-dimensiona
 conditional coordinate chart. The graph/geometry check is applied only after this
 single draw. Its failures produce self-transitions rather than an unknown
 support-conditioned proposal normalization. For an eligible endpoint, the inverse
-attachment action exists and uses the same augmented order with probability$1/2$.
+attachment action exists and uses the same augmented order with probability $1/2$.
 Applying the minimum forward/reverse probability flow gives
 Eq.~\eqref{eq:joint-mh} and detailed balance for each paired action/order. Summing
 over these pairs preserves detailed balance. Mixing both orders also prevents
@@ -79,14 +79,14 @@ Re-evaluating the first conditional using both final root positions would not
 evaluate this autoregressive proposal. Tests reconstruct both source-dependent
 templates explicitly and include a negative check distinguishing the completed
 endpoint context. A correlated log-normal radial target checks stationary radial
-and Cartesian moments with nontrivial radial proposals; removing the$r^3$ term
+and Cartesian moments with nontrivial radial proposals; removing the $r^3$ term
 produces detectable bias. This known-target check supplements, rather than
 replaces, molecular proposal and physical-query replay.
 
 \section{Implementation verification and interpretation}
 Tests check masked-context equality under leaf motion and COM recentering,
 orthogonal and permutation covariance, batch independence, surface derivatives,
-rejection envelopes, normalized vMF densities and known supported S2 targets.
+rejection envelopes, normalized vMF densities and known supported $\sphere$ targets.
 The original molecular paths retain paired raw forces and energies, every
 candidate trial and all random streams. Frozen-producer replay exactly reproduces
 the first learned study's coordinates, and a separate calculation checks the

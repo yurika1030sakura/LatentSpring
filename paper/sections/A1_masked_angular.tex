@@ -1,21 +1,21 @@
 \begin{abstract}
 Energy-aware molecular sampling requires both an explicit statistical target and
-proposals that respect its geometric support. A generator can supply useful initial
-states while leaving its finite-step density unknown, and correct Metropolis
-acceptance does not by itself make Cartesian moves efficient. We study learned
-angular proposals that retain a terminal bond length and mask the moved atom's
-direction from their conditioning context. A graph network predicts an equivariant
-vector and traceless tensor defining an unnormalized angular score. Because the
-context is unchanged by an accepted angular update, the unknown normalization
-introduced by chemical-support rejection cancels in the Metropolis ratio, including
-when candidate search has a finite trial cap. We fit the guide to physical angular
-forces without requiring equilibrium training samples or oracle Hessians. A
-development study compares the guide with uniform and force-informed angular
-controls, retaining every failed search and preparation cost. Current results
-establish implementation consistency and improve angular proposal acceptance
-after an exact envelope correction. They do not yet establish repeatable
-cross-isomer mixing, a total-cost learned advantage or calibrated molecular
-equilibrium ensembles.
+proposals that respect its geometric support. A flow-matching generator can supply
+initial states while leaving its finite-step density unknown, and correct
+Metropolis acceptance does not by itself make local moves efficient. We study
+learned geometry proposals for reversible molecular graph exchanges. A masked
+graph network predicts equivariant vector and tensor coefficients from physical
+angular-force examples. Fixed-geometry angular updates can cancel unknown
+support normalizers but leave graph/geometry barriers unresolved. Our joint update
+instead regenerates two radii and directions after an attachment exchange, using
+explicitly normalized autoregressive directional mixtures and the correct
+Cartesian volume factors. Complete reverse densities permit Metropolis correction
+without a source likelihood or equilibrium training coordinates. In a development
+study, both frozen tensor models reach a diagnostic reference connectivity from
+all four generated starts, while matched short physical controls retain failures.
+We preserve every rejected proposal and all preparation costs. This repeated
+first-passage signal does not yet establish equilibrium mixing, a total-cost
+learned advantage or calibrated molecular equilibrium ensembles.
 \end{abstract}
 
 \section{Problem and scope}
@@ -31,8 +31,9 @@ Our development evidence identifies separate failures. Cartesian local moves can
 be rejected by a hard structural domain. Large unstructured rotations can satisfy
 the domain yet have negligible physical acceptance. A learned selector can improve
 the first connectivity transition without improving total-cost sampling. These
-distinctions motivate a conditional angular guide, with target correctness and
-empirical efficiency evaluated separately.
+distinctions motivate a conditional angular guide and, after its graph-transition
+failure, a joint graph/geometry update. Target correctness and empirical
+efficiency are evaluated separately.
 
 The present study fixes atom identities, total charge and spin multiplicity.
 The target may contain different constitutional isomers; it is not an unconditional
@@ -43,11 +44,11 @@ quantum electronic state. We retain a bond-free flow-matching initializer and ma
 no claim that this preliminary study solves broad molecular generation.
 
 \section{Target and internal-coordinate update}
-For $N$ labelled atoms, let $\HH=\{x\in\mathbb R^{N\times3}:\sum_i x_i=0\}$,
+For $N$ labelled atoms, let $\HH=\{x\in\mathbb R^{N\times 3}:\sum_i x_i=0\}$,
 with its Euclidean volume in dimension $3(N-1)$. We use
 \begin{equation}
- \pi(x)\propto {\bf1}_{D}(x)\exp[-U(x)/(kT)],\qquad
- U(x)=\tfrac12[E_{\rm raw}(x)+E_{\rm raw}(-x)]+\tfrac\gamma2\|x\|^2.
+ \pi(x)\propto {\bf 1}_{D}(x)\exp[-U(x)/(kT)],\qquad
+ U(x)=\tfrac 12[E_{\rm raw}(x)+E_{\rm raw}(-x)]+\tfrac\gamma 2\|x\|^2.
  \label{eq:angular-target}
 \end{equation}
 The raw potential is a fixed OMol25 eSEN energy model~\citep{esen}. Both inversion orientations are
@@ -101,7 +102,7 @@ and initialize both outputs to zero.
 Let $D(c)\subset\sphere$ be the same-graph angular support. First consider uniform
 directions accepted by an internal rejection step with probability
 \begin{equation}
- a_c(u)={\bf1}_{D(c)}(u)\exp[s_\theta(u;c)-M(c)],
+ a_c(u)={\bf 1}_{D(c)}(u)\exp[s_\theta(u;c)-M(c)],
  \qquad M(c)\ge\sup_{u\in\sphere}s_\theta(u;c).
 \end{equation}
 Stop at the first success, or retain the old state after $K$ failed trials. Let
@@ -109,7 +110,7 @@ $Z(c)$ be the one-trial success probability and
 $b_K(Z)=\sum_{j=0}^{K-1}(1-Z)^j$. The non-self generated density is
 \begin{equation}
  Q_K(v\mid u,c)=\frac{b_K(Z(c))}{4\pi}
- {\bf1}_{D(c)}(v)\exp[s_\theta(v;c)-M(c)].
+ {\bf 1}_{D(c)}(v)\exp[s_\theta(v;c)-M(c)].
 \end{equation}
 The unknown $Z$, bound $M$ and cap factor are identical in the reverse update.
 They therefore cancel without estimation.
@@ -141,7 +142,7 @@ proportional to the reciprocals of their normalizers. Its density is proportiona
 to $\exp(\eta^\top u)\cosh(d v^\top u)$. A valid rejection bound is
 \begin{equation}
  B=\lambda_3-\log\cosh d,\qquad
- \log a(u)=u^\top A u-\log\cosh(d v^\top u)-B\le0.
+ \log a(u)=u^\top A u-\log\cosh(d v^\top u)-B\le 0.
 \end{equation}
 After support rejection the generated density remains proportional to
 $\exp s_\theta$. All additional constants depend only on $c$, so
@@ -174,7 +175,7 @@ We use the two-vMF mixture itself, without rejection to the quadratic score:
 \end{equation}
 Uniform directions and a fixed vMF coordination-site prior are physical controls.
 The latter points away from the sum of the other bonded neighbors' unit vectors,
-with concentration10, or is uniform when that sum is zero. Vector and tensor
+with concentration 10, or is uniform when that sum is zero. Vector and tensor
 decoders reuse the frozen angular guides without new fitting.
 
 Writing $c_m$ for the sequential template context, the coordinate density is,
@@ -205,7 +206,7 @@ that generic autoregressive densities or Metropolis correction are novel.
 The physical angular score at a supported point is
 \begin{equation}
  g=r(I-u u^\top)F_{\HH,i}/(kT),\qquad
- \nabla_{\sphere}s_\theta=(I-u u^\top)(\eta+2Au),
+ \nabla_{\sphere}s_\theta=(I-u u^\top)(\eta+2 Au),
 \end{equation}
 where $F_\HH$ includes the restraint and COM projection. We regress the latter
 against a norm-capped version of $g$. This is supervised pointwise force fitting,
@@ -257,21 +258,58 @@ Kernel & Angular accepts & Reference-graph hits & Total raw queries\\
 \midrule
 Uniform rotation & (0, 5) & (3, 3) & (2456, 2476)\\
 Force-informed vMF & (25, 43) & (3, 4) & (2618, 2802)\\
-Masked zero, cap64 & (4, 6) & (3, 3) & (2794, 2814)\\
-Masked vector, cap64 & (6, 10) & (2, 3) & (12230, 12228)\\
-Masked tensor, cap64 & (6, 4) & (4, 3) & (12176, 12014)\\
+Masked zero, cap 64 & (4, 6) & (3, 3) & (2794, 2814)\\
+Masked vector, cap 64 & (6, 10) & (2, 3) & (12230, 12228)\\
+Masked tensor, cap 64 & (6, 4) & (4, 3) & (12176, 12014)\\
 \bottomrule
 \end{tabular}
 \end{table}
 
-With the improved envelope, neither tensor model exhausts any of its256 searches;
-they accept75/256 and58/256 angular updates. The vector ablations accept10/256 and
-29/256, and zero guides4/256 and6/256. This repairs proposal-generation inefficiency
+With the improved envelope, neither tensor model exhausts any of its 256 searches;
+they accept 75/256 and 58/256 angular updates. The vector ablations accept 10/256 and
+29/256, and zero guides 4/256 and 6/256. This repairs proposal-generation inefficiency
 and improves local angular acceptance. It does not resolve the difficult parent's
 connectivity in either tensor replica; the zero and vector controls each resolve
-it in one replica. Total raw-query costs are12462/12456 for tensor,12484/12632 for
-vector, and2972/2812 for zero guides. The improved implementation therefore does
+it in one replica. Total raw-query costs are 12462/12456 for tensor, 12484/12632 for
+vector, and 2972/2812 for zero guides. The improved implementation therefore does
 not establish a full-cost learned sampling advantage.
+
+\paragraph{Joint graph and geometry experiment.}
+Table~\ref{tab:joint-first} reports the completed normalized joint experiment.
+All arms share the same four starts and local/force-angular/joint-exchange/local
+schedule. The two tensor replicas reach the diagnostic graph from the difficult
+parent at steps 91 and 23; the vector replicas do so in only one seed, and none of
+the three physical controls do so within this 256-step pilot. This is a useful
+repeated development first-passage signal. The tensor arms nevertheless inherit
+roughly four times the total raw-query cost of the short physical controls. A
+prospectively bounded continuation of the unchanged physical chains tests the
+same total costs; the short-pilot comparison alone cannot establish superiority.
+
+\begin{table}[t]
+\centering\small
+\caption{Normalized joint graph/geometry pilot. Each pair lists two replicas.
+All 256 joint attempts per replica remain in the denominator. All paths and random
+streams replay, with independently checked coordinate densities and MH ratios.}
+\label{tab:joint-first}
+\begin{tabular}{lrrr}
+\toprule
+Decoder & Valid/accepted & Reference-graph hits & Total raw queries\\
+\midrule
+Deterministic map & (244/5,243/5) & (3,3) & (2668,2602)\\
+Uniform geometry & (29/1,19/0) & (0,0) & (2370,2172)\\
+Coordination-site & (239/3,233/3) & (2,2) & (2766,2768)\\
+Frozen vector & (128/4,251/5) & (3,4) & (12228,12470)\\
+Frozen tensor & (180/5,256/7) & (4,4) & (12310,12460)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The tensor coefficients were fitted to the quadratic score, whereas joint proposals
+use the normalized mixture. Its actual training angular-score MSE is 575.2/602.7,
+compared with 439.7/475.0 for the fitted quadratic score. The vector densities coincide
+and their errors are unchanged. This diagnostic prevents interpreting the earlier
+force-fit numbers as errors of a different normalized decoder. Neither in-sample
+fit nor first-passage success certifies equilibrium accuracy.
 
 In the first-envelope study the tensor guide and force-informed control each
 repair the difficult start in one replica, while the other remains unresolved.

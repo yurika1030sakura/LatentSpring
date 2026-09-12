@@ -4,6 +4,7 @@ import argparse
 import json
 import math
 from pathlib import Path
+import time
 import torch
 from cfm_mol.chemical_sampler import ChemicalTarget
 from cfm_mol.chemical_path_guide import exchanged_bond_graph
@@ -79,25 +80,59 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for arg in ['run', 'models', 'table', 'out']:
         parser.add_argument('--'+arg, type=Path, required=True)
+    parser.add_argument('--previous', type=Path, help='Audit continued full-cost controls against this immutable pilot prefix')
+    parser.add_argument('--wait-seconds', type=int, default=0, help='Bounded wait for each pending arm within one common deadline')
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     pp = root/'research/evidence/joint_chemical_protocol_v1.json'
     protocol = json.loads(pp.read_text())
+    cp = root/'research/evidence/joint_chemical_full_cost_protocol_v1.json'
+    continuation = json.loads(cp.read_text()) if args.previous else None
+    if continuation:
+        assert continuation['original_protocol_sha256'] == sha(pp)
     physical = json.loads((root/'research/evidence/parity_training_protocol_v1.json').read_text())
     header = json.loads((args.table/'results.json').read_text())
     assert sha(args.table/'results.json') == protocol['table_results_sha256']
     assert sha(args.table/'development.pt') == header['artifacts']['development']
     starts = torch.load(args.table/'development.pt', map_location='cpu', weights_only=False)
     summaries = []
-    for method in protocol['methods']:
+    deadline = time.monotonic()+args.wait_seconds
+    for method in (continuation['methods'] if continuation else protocol['methods']):
         for replica in protocol['replicas']:
             directory = args.run/f'{method}_s{replica}'
-            report = json.loads((directory/'results.json').read_text())
+            while True:
+                report_path = directory/'results.json'
+                report = json.loads(report_path.read_text()) if report_path.exists() else {}
+                if report.get('complete') or report.get('failure'):
+                    break
+                remaining = deadline-time.monotonic()
+                if remaining <= 0:
+                    raise RuntimeError(f'Arm is not complete: {directory}')
+                print(f'Waiting for terminal artifact: {directory.name}', flush=True)
+                time.sleep(min(10., remaining))
             assert report['complete'] and report['evaluation_protocol_sha256'] == sha(pp)
             assert report['trace_sha256'] == sha(directory/'trace.pt')
             assert report['condition'] == starts['condition']
             assert report['development_parent_ids'] == starts['source_parent_ids']
             data = torch.load(directory/'trace.pt', map_location='cpu', weights_only=False)
+            prefix = None
+            steps = protocol['steps']
+            if continuation:
+                name = f'{method}_s{replica}'
+                before = json.loads((args.previous/name/'results.json').read_text())
+                assert sha(args.previous/name/'results.json') == report['parent_results_sha256'] == continuation['parent_results_sha256'][name]
+                assert report['continuation_protocol_sha256'] == sha(cp)
+                assert sha(args.previous/name/'trace.pt') == before['trace_sha256']
+                prefix = torch.load(args.previous/name/'trace.pt', map_location='cpu', weights_only=False)
+                equal(data['states'][:len(prefix['states'])], prefix['states'])
+                equal(data['query_trace'][:len(prefix['query_trace'])], prefix['query_trace'])
+                equal(data['transitions'][:len(prefix['transitions'])], prefix['transitions'])
+                equal(report['history'][:len(before['history'])], before['history'])
+                assert report['additional_raw_queries'] == report['new_raw_queries']-before['new_raw_queries']
+                assert report['additional_raw_queries'] == report['additional_requested_raw_queries']
+                assert report['new_raw_queries'] == report['requested_raw_queries']
+                steps = report['actual_total_steps']
+                assert protocol['steps'] <= steps <= continuation['maximum_total_steps']
             oracle = ReplayOracle(data['query_trace'])
             target = ChemicalTarget(oracle, report['condition'], physical['kT_eV'], physical['restraint_eV_A2'])
             model, metadata = load_model(args.models, method, replica, protocol, header['artifacts']['training'])
@@ -114,7 +149,7 @@ def main():
             assert chains == 4
             totals = {kind: dict(attempts=0, valid=0, accepted=0, by_parent_valid=[0]*chains, by_parent_accepted=[0]*chains) for kind in protocol['schedule']}
             checked = 0
-            for step in range(protocol['steps']):
+            for step in range(steps):
                 assert [s['state_id'] for s in states] == data['history_state_ids'][step]
                 choices = torch.randint(len(protocol['local_scales']), (chains,), generator=srng)
                 assert choices.tolist() == data['scale_choice_history'][step]
@@ -165,24 +200,39 @@ def main():
                     totals[kind]['accepted'] += row['accepted']
                     totals[kind]['by_parent_valid'][index] += row['valid']
                     totals[kind]['by_parent_accepted'][index] += row['accepted']
+                if prefix is not None and step+1 == protocol['steps']:
+                    equal(rng.get_state(), prefix['generator_state'])
+                    equal(srng.get_state(), prefix['scale_generator_state'])
             equal(target.states, data['states'])
             equal(target.query_trace, data['query_trace'])
             equal(rng.get_state(), data['generator_state'])
             equal(srng.get_state(), data['scale_generator_state'])
             assert oracle.index == len(oracle.queries)
             assert oracle.evaluated == report['new_raw_queries'] == report['requested_raw_queries']
-            assert len(data['transitions']) == protocol['steps']*chains
-            assert len(data['history_state_ids']) == len(report['history']) == protocol['steps']+1
+            assert len(data['transitions']) == steps*chains
+            assert len(data['history_state_ids']) == len(report['history']) == steps+1
+            if continuation:
+                budget = continuation['target_total_raw_queries'][replica]
+                gap = budget-report['history'][-1]['total_raw_queries']
+                assert gap == report['total_budget_gap'] and gap >= 0
+                assert gap < 2*chains or steps == continuation['maximum_total_steps']
             reference = 'CS(F)(F)(F)(F)F'
             summaries.append(dict(method=method, replica=replica, raw_queries=oracle.evaluated,
                 total_raw_queries=report['history'][-1]['total_raw_queries'], full_producer_replay=True,
                 independent_joint_MH_ratio_checks=checked, all_random_streams_replayed=True,
                 maximum_replay_position_error_A=oracle.maximum_position_error, oracle_requeried=False, moves=totals,
                 reference_connectivity_first_hit_step=[next((h['step'] for h in report['history'] if h['smiles'][i] == reference), None) for i in range(chains)],
-                final_energy_eV=report['history'][-1]['energy_eV'], seconds=report['seconds'], trace_sha256=report['trace_sha256']))
+                final_energy_eV=report['history'][-1]['energy_eV'], seconds=report['seconds'], trace_sha256=report['trace_sha256'],
+                actual_total_steps=steps, immutable_prefix_checked=prefix is not None,
+                additional_raw_queries=report.get('additional_raw_queries', oracle.evaluated),
+                total_budget_gap=report.get('total_budget_gap')))
             print(json.dumps(summaries[-1]), flush=True)
     result = dict(complete=True, rows=summaries, evaluation_protocol_sha256=sha(pp),
-                  total_new_raw_queries=sum(s['raw_queries'] for s in summaries), scientific_submission_ready=False)
+                  total_sampling_raw_queries=sum(s['raw_queries'] for s in summaries),
+                  total_new_raw_queries=sum(s['additional_raw_queries'] for s in summaries), scientific_submission_ready=False)
+    if continuation:
+        result['continuation_protocol_sha256'] = sha(cp)
+        assert result['total_new_raw_queries'] <= continuation['maximum_additional_raw_queries']
     if args.out.exists():
         raise FileExistsError(args.out)
     args.out.parent.mkdir(parents=True, exist_ok=True)
