@@ -17,8 +17,8 @@ A new physical law and universal perfection are not submission requirements.
 
 ## Evidence that controls the next decision
 
-Read research/FRESH_REUSE_STATE_20260912.json and the live Slurm handles in
-notes/fresh_reuse_checkpoint_v1.md. The old four-parent graph first-hit signal
+Read research/TRANSFER_AND_CURVATURE_STATE_20260912.json and refresh its live
+Slurm handles. The old four-parent graph first-hit signal
 repeats, but fully charged physical controls are strong. Repurposed frozen EACF
 refiners accept no direction-MH flow moves; they were not trained for that use,
 so their failure is not a claim against native EACF/FAB or its architecture.
@@ -34,10 +34,31 @@ this frozen guide, on one composition; it is not a broad superiority claim.
 The128-call secondary matched-cost interval crosses zero. Query-count stopping
 measures finite-cost output, not stationary Boltzmann sampling.
 
-Six additional DEVELOPMENT compositions have now been selected by a fixed hash
-within declared H/halogen eligibility and size strata, without energy or geometry
-ranking. Their fresh geometry-only source is running. Preserve zero support and
-all failures, then freeze the physical transfer test; do not fit on these samples.
+The independent GFN2 check completes all 364 fixed-coordinate attempts. Its
+learned minus site endpoint energy is -0.4132 eV, parent 95% interval
+[-0.5918, -0.2462]. This corroborates approximate-energy ordering on the original
+composition, without establishing DFT accuracy, quantum validity or equilibrium.
+
+The frozen six-composition DEVELOPMENT transfer test is complete and fully
+replayed. At matched total cost the mean difference is +0.0978 eV, hierarchical
+95% interval [-0.0161, +0.2141]. Equal-inference mean is +0.0042 eV. No average
+transfer benefit is established; five of six primary point estimates favor the
+physical control. These evaluated sources must not enter training.
+
+Training-only fixed-context probes reveal why pointwise tangential force labels
+need not determine a conditional proposal's concentration. Thirty-two local vMF
+fits are independently verified, and a mode/stiffness representation is tested.
+However, both 24-fit/8-withheld-parent student pilots overfit; there is no validated
+new learner benefit. The identifiability algebra and vMF identities are established
+mathematics. A successful local oracle fit is not an AI contribution by itself.
+Read notes/counterfactual_conditional_density.md for the exact scope and failures.
+
+Physical concentrations 64 and 400 are now frozen and running on both cohorts,
+with independent audit and cost-accounted summary jobs queued. Their completed
+results must determine whether a simple physical width change explains the old
+neural advantage. Show both incremental reuse and fully charged calibration.
+Do not expand the failed student or advertise an architectural repair before
+these controls and a useful learning test support it.
 
 ## Coverage and learning gaps
 

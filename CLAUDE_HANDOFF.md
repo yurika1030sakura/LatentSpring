@@ -1,21 +1,37 @@
 # Claude handoff — BGFM / ICLR 2027
 
-Current completed-result checkpoint: `research/FRESH_REUSE_AND_TRANSFER_STATE_20260912.json`.
-All fresh-reuse sampling, full replay and independent joint ratios are COMPLETE.
-The declared primary comparison favors learning by0.1735eV at55884 raw calls
-per method/replica, with95 percent parent-bootstrap interval0.0994--0.2595eV.
-This is a scoped one-composition raw-call-budget benefit; source support is
-72/8192 and equilibrium, independent chemistry and wall-time superiority remain
-unqualified. Six additional DEVELOPMENT compositions are frozen by metadata
-hash without energy/geometry ranking. Source46137946 and audit46138020 completed; all six compositions have
-at least16 supported parents. Physical preparation46139228 and replay46139311
-completed for96 parents with11946 raw calls. Frozen transfer evaluation46139699
-is RUNNING; full audit46139781 and summary46139869 are queued. Read
-`notes/fresh_reuse_result_and_transfer_v1.md`. Inspect the globally matched-cost
-hierarchical primary result, not a selected favorable composition. Do not fit
-on these states.
-Current paper8 main pages, scientific submission readiness false. Older pending
-statements below are historical.
+Current checkpoint: `research/TRANSFER_AND_CURVATURE_STATE_20260912.json`.
+The 72-parent one-composition test is complete and fully audited: learned minus
+site potential is -0.1735 eV at 55,884 raw calls per method/replica, with parent
+95% interval [-0.2595, -0.0994] eV. All 364 independent GFN2 single points succeed;
+fixed-endpoint raw-energy difference is -0.4132 eV, interval [-0.5918, -0.2462].
+This supports approximate-energy ordering on that composition, not DFT accuracy,
+equilibrium, wall-time speedup or broad generator superiority. Source support
+remains 72/8192.
+
+The six additional DEVELOPMENT compositions are now complete and fully audited
+(96 parents, jobs 46139699/46139781/46139869). Their primary learned minus site
+potential is +0.0978 eV, hierarchical 95% interval [-0.0161, +0.2141]; equal
+inference mean is +0.0042 eV. No average transfer benefit is established. Preserve
+all six outcomes and do not train on these evaluated sources or reserved outcomes.
+
+Training-only fixed-context angular probes are complete and independently replayed
+(32 contexts, 448 raw calls). They identify a conditional-width limitation in the
+old parameterization. The new mode/stiffness student fits 24 contexts but overfits
+both seeds on eight withheld training parents. Do not promote these weights or
+call this a successful repair. Read `notes/counterfactual_conditional_density.md`.
+
+Stronger physical width controls (kappa 64 and 400, all 72+96 parents, two replicas)
+are RUNNING as 46147217; audit 46148255 and summary 46148506 are dependency queued
+at this checkpoint. Re-query live Slurm. Read complete audited output at
+`runs/site_concentration_summary_v1/results.json` before selecting another model.
+Report same-inference and zero-incremental calibration reuse, plus fully charged
+10,108-call calibration for kappa 400. Do not interpret incomplete prefixes.
+
+Current working PDF: `runs/verification/transfer_and_gfn2_20260912_final/main.pdf`,
+eight main pages, build/citation checks passed. The paper includes the positive
+GFN2 and negative transfer results; scientific submission readiness remains false.
+Older checkpoint and pending-job statements below are historical.
 
 Current checkpoint: `research/FRESH_REUSE_STATE_20260912.json` and
 `notes/fresh_reuse_checkpoint_v1.md`. All8192 fresh source attempts audited,

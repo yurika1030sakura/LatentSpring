@@ -1,0 +1,215 @@
+{
+  "at_utc": "2026-09-12T09:55:05.236309+00:00",
+  "goal_status": "active_unachieved",
+  "scientific_submission_ready": false,
+  "source_commit_before_documentation": "a925aed014fed0752fc879907182951c33d72c24",
+  "primary_one_composition": {
+    "parents": 72,
+    "source_attempts": 8192,
+    "source_supported": 72,
+    "matched_raw_calls_per_method_and_replica": 55884,
+    "learned_minus_site_potential_eV": -0.17350627122760265,
+    "parent_bootstrap_95_percent_interval_eV": [
+      -0.25954793369379175,
+      -0.09940138846554192
+    ],
+    "completed_and_audited": true
+  },
+  "independent_gfn2": {
+    "audit": "runs/fresh_primary_xtb_v1/audit_v2.json",
+    "attempted": 364,
+    "successful": 364,
+    "fixed_coordinate_energy_difference": {
+      "mean": -0.41321352817029894,
+      "parent_bootstrap_95_percent_interval": [
+        -0.5918149019109471,
+        -0.24615890121103778
+      ],
+      "independent_source_parents": 72
+    },
+    "scope": "Independent approximate-energy ordering on the same one-composition endpoints; not DFT accuracy or equilibrium."
+  },
+  "six_composition_transfer": {
+    "completed_and_audited": true,
+    "parents": 96,
+    "conditions": 6,
+    "primary": {
+      "mean": 0.09778564372269709,
+      "hierarchical_95_percent_interval": [
+        -0.016114441140659134,
+        0.21413649142420277
+      ],
+      "per_composition_mean": [
+        0.11329660400224384,
+        0.06967780741251772,
+        -0.0977105091442354,
+        0.022411586833186448,
+        0.16304255272552837,
+        0.3159958205069415
+      ],
+      "per_algorithm_replica_mean": [
+        0.09893217223725514,
+        0.09663911520813902
+      ],
+      "independent_compositions": 6,
+      "parents_per_composition": 16,
+      "algorithm_replicas": 2,
+      "scope": "Hierarchical percentile bootstrap conditional on the fixed trained checkpoints; algorithm replicas are averaged within source parent."
+    },
+    "same_inference": {
+      "mean": 0.0041597927220209385,
+      "hierarchical_95_percent_interval": [
+        -0.08968378438936118,
+        0.09891664077071406
+      ],
+      "per_composition_mean": [
+        0.023965794942341745,
+        -0.03545685883727856,
+        -0.10032395934831584,
+        -0.0633594042792538,
+        0.016847011298523284,
+        0.1832861725561088
+      ],
+      "per_algorithm_replica_mean": [
+        -0.011317897698972956,
+        0.019637483143014833
+      ],
+      "independent_compositions": 6,
+      "parents_per_composition": 16,
+      "algorithm_replicas": 2,
+      "scope": "Hierarchical percentile bootstrap conditional on the fixed trained checkpoints; algorithm replicas are averaged within source parent."
+    },
+    "new_raw_queries": 306858,
+    "average_benefit_established": false,
+    "development_only": true,
+    "fit_on_these_states": false
+  },
+  "angular_training_probe": {
+    "contexts": 32,
+    "new_raw_queries": 448,
+    "fully_audited": true,
+    "scope": "Local conditional-vMF approximation and identifiability diagnostic; not a molecular sampling benefit."
+  },
+  "stiffness_student": {
+    "pilots": [
+      {
+        "replica": 0,
+        "results": "runs/stiffness_pilot_v1/replica_0/results.json",
+        "sha256": "9341b9cc6f8bbf2a0e84fd5016b3120cffc99c83e3456ad1629b7b79b54a896e",
+        "initial_withheld": {
+          "contexts": 8,
+          "teacher_kl": 4.078615156858945,
+          "heldout_angle_force_mse": 2556.268632979751,
+          "heldout_angle_work_mae_over_kT": 3.7296964937153816,
+          "predicted_concentrations": [
+            10.03062282806317,
+            11.170140353728215,
+            9.51582844957638,
+            8.79947271237949,
+            9.419664662761326,
+            10.010946621150419,
+            9.733823704336482,
+            5.641774062022158
+          ]
+        },
+        "final_withheld": {
+          "contexts": 8,
+          "teacher_kl": 13.077321631544534,
+          "heldout_angle_force_mse": 5457.889601544509,
+          "heldout_angle_work_mae_over_kT": 6.510239771547116,
+          "predicted_concentrations": [
+            415.4854599696757,
+            555.6778321286345,
+            423.2056983643641,
+            430.5730626420263,
+            229.80849686249383,
+            398.3123754828766,
+            658.2023728743259,
+            385.35869040484533
+          ]
+        },
+        "final_fit_teacher_kl": 0.09367690554220341
+      },
+      {
+        "replica": 1,
+        "results": "runs/stiffness_pilot_v1/replica_1/results.json",
+        "sha256": "70a7e42af68f19556d8540a2ddc99e3528d3a805156a7b392c3b951487574493",
+        "initial_withheld": {
+          "contexts": 8,
+          "teacher_kl": 4.078615156858945,
+          "heldout_angle_force_mse": 2556.268632979751,
+          "heldout_angle_work_mae_over_kT": 3.7296964937153816,
+          "predicted_concentrations": [
+            10.03062282806317,
+            11.170140353728215,
+            9.51582844957638,
+            8.79947271237949,
+            9.419664662761326,
+            10.010946621150419,
+            9.733823704336482,
+            5.641774062022158
+          ]
+        },
+        "final_withheld": {
+          "contexts": 8,
+          "teacher_kl": 6.258267198287836,
+          "heldout_angle_force_mse": 2976.979258851849,
+          "heldout_angle_work_mae_over_kT": 5.0511310427979605,
+          "predicted_concentrations": [
+            338.2545183069562,
+            400.1951853909007,
+            376.4478607394494,
+            322.44596779050676,
+            214.7216045546728,
+            355.00080313650795,
+            562.6913116968669,
+            328.54370992296487
+          ]
+        },
+        "final_fit_teacher_kl": 0.17476084196549926
+      }
+    ],
+    "decision": "Both seeds overfit: do not release these weights as a successful repair or scale their sampling.",
+    "new_sampling_benefit_established": false
+  },
+  "live_controls": {
+    "producer_job": "46147217",
+    "audit_job": "46148255",
+    "summary_job": "46148506",
+    "producer_status_at_checkpoint": "RUNNING",
+    "audit_status_at_checkpoint": "PENDING_DEPENDENCY",
+    "summary_status_at_checkpoint": "PENDING_DEPENDENCY",
+    "concentrations": [
+      64,
+      400
+    ],
+    "cohorts": {
+      "primary": 72,
+      "transfer": 96
+    },
+    "replicas": 2,
+    "raw_query_ceiling": 688128,
+    "summary_output": "runs/site_concentration_summary_v1/results.json",
+    "calibration_accounting": "Show same-inference, zero-incremental calibration reuse, and for kappa 400 fully charged 10108-call calibration.",
+    "interpret_completed_audited_outputs_only": true
+  },
+  "equilibrium_qualified": false,
+  "matched_wall_time_speedup_established": false,
+  "native_learned_generator_superiority_established": false,
+  "reserved_outcomes_used": false,
+  "working_pdf": "runs/verification/transfer_and_gfn2_20260912_final/main.pdf",
+  "paper_build_manifest": "research/evidence/transfer_and_gfn2_paper_build_20260912.json",
+  "next": "Re-query producer/audit/summary before acting. Once terminal, inspect every arm and the complete cost-accounted summary. Decide whether the neural advantage survives sharpened physical widths before further model expansion. Preserve the negative transfer and overfit; never train on these six evaluated sources.",
+  "evidence_sha256": {
+    "runs/fresh_reuse_summary_v1/results.json": "fd8ba21ea0ac9521b6c5c5df966d9dbf8aac7ff0312d712e45e99628c4f76002",
+    "runs/transfer_reuse_summary_v1/results.json": "eee26bb7675e042de39fd63356d3282304670eb2b72954203289b3601a2698a0",
+    "runs/fresh_primary_xtb_v1/audit_v2.json": "9b67f458ff1edde5bc3c7be40a4e383ac8da4d4193b9b2ef833b3d7d8279a196",
+    "runs/angular_curvature_probe_v1/results.json": "0de1863c616b78b73bcf4c8d4f1a8b26b4acbf6b79c51d549ed64f4ba4911934",
+    "runs/angular_curvature_probe_v1/audit.json": "f1c101d7bf0e07e085c1bbfdc6dde9d50b5eb83089cee441df513691ef6c6397",
+    "runs/transfer_proposal_diagnostic_v1/results.json": "0d072a55c3f6fd3c9a12c748627b6da616e87330fc68304e59ac90135dbbc3f0",
+    "research/evidence/site_concentration_controls_protocol_v1.json": "6abd547fa82afe1378c957fd0c6bcddf05dc225affaf6fc9d4b1fbee7649d77f",
+    "notes/counterfactual_conditional_density.md": "78e73e02d88cc6557383be7d3a88d459e20a43c25132a341f70cb5c0d4a7be39",
+    "runs/stiffness_pilot_v1/replica_0/results.json": "9341b9cc6f8bbf2a0e84fd5016b3120cffc99c83e3456ad1629b7b79b54a896e",
+    "runs/stiffness_pilot_v1/replica_1/results.json": "70a7e42af68f19556d8540a2ddc99e3528d3a805156a7b392c3b951487574493"
+  }
+}

@@ -1,6 +1,6 @@
 # BGFM project guide
 
-Updated 2026-09-10 after code, theory, archived-evidence and research diagnostics. Read
+Updated 2026-09-12 after transfer, independent-energy and curvature diagnostics. Read
 `audit/20260908/REVIEW.md` before interpreting any result as Boltzmann sampling.
 
 ## Active takeover branch
@@ -18,7 +18,7 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/FRESH_REUSE_AND_TRANSFER_STATE_20260912.json` first. They record the current method,
+`research/TRANSFER_AND_CURVATURE_STATE_20260912.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
@@ -39,11 +39,17 @@ diagnostics prevent a superiority claim. Pendant-fragment maps are implemented
 and their physical pilot is audited, including a preserved Al validator failure.
 The direction-augmented EACF MH baseline and its full real-map replay are complete.
 These are frozen refinement checkpoints reused as proposals, not native EACF/FAB
-performance. The fresh8192-parent source and72-parent preparation are now audited. The completed
-primary test establishes a scoped raw-call-budget potential benefit on72 fresh
-parents. Six additional development-composition sources and96 physical starts are
-fully audited. Frozen transfer evaluation46139699 and dependent audit46139781
-are active. Independent chemistry and equilibrium are still unqualified. See research/FRESH_REUSE_AND_TRANSFER_STATE_20260912.json.
+performance. The fresh 8192-parent source and 72-parent preparation are audited.
+The primary matched-raw-call benefit is -0.1735 eV; independent GFN2 fixed-endpoint
+checks corroborate energy ordering (-0.4132 eV, all 364 attempts succeed).
+Frozen transfer to six development compositions is complete and fully audited:
+mean +0.0978 eV with hierarchical 95% interval [-0.0161, +0.2141], so no average
+transfer gain is established. Training-only angular curvature probes pass their
+independent audit; the new stiffness student overfits both seeds and must not be
+released as a successful repair. Stronger physical angular-width controls are
+running as 46147217, followed by audit 46148255 and summary 46148506. Refresh live
+state and read `research/TRANSFER_AND_CURVATURE_STATE_20260912.json`. Equilibrium,
+broad learned-generator and matched-wall-time superiority remain unqualified.
 The previous manuscript is `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
 exact-entropy refinement candidate. It is explicitly a development draft.

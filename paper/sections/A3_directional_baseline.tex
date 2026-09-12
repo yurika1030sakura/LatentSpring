@@ -119,3 +119,56 @@ independent-composition generalization. Source generation takes 956 seconds;
 the full site paths take about 387 seconds per replica and the shorter learned
 paths about 240 seconds. These unequal-length timings are reported separately
 and are not a matched-wall-time speedup claim.
+
+\subsection{Independent approximate-energy check}
+
+We evaluate all 288 primary endpoints and all 72 common starts with GFN2-xTB~\citep{gfn2xtb}
+at fixed coordinates, preserving total charge and spin. Four additional inverted
+starts check the numerical symmetry contract. All 364 single-point/gradient
+calculations converge and all raw logs and input coordinates are reparsed.
+The learned-minus-site mean GFN2 energy difference is $-0.4132$\,eV, with
+parent-bootstrap 95\% interval $[-0.5918,-0.2462]$\,eV; both replicas favor the
+learned endpoints. Adding the same restraint changes this mean by less than
+$2\times10^{-5}$\,eV. This corroborates the energetic ordering with a second
+approximate potential, rather than establishing DFT accuracy, chemical stability
+or a Boltzmann ensemble.
+
+\subsection{Frozen six-composition transfer result}
+
+We select six additional development compositions by a fixed hash, with three
+each in the 8--12 and 13--24 atom size strata. Selection uses composition,
+neutral singlet electronic state and H/halogen eligibility, with no energy or
+generated-geometry ranking. The frozen source produces 512 draws per composition;
+all source failures remain in the denominator. We evaluate the first 16 supported
+parents per composition, using the original learned checkpoints without fitting
+to these coordinates. Training cost is charged once across all 96 parents.
+
+\begin{table}[h]
+\centering\small
+\caption{Transfer to six additional compositions. Differences are learned minus
+site restrained potential, averaged across two replicas and 16 parents per row.
+Each method's aggregate primary budget is 70,758 raw calls per replica including
+preparation and the learned training cost. These are development results.}
+\begin{tabular}{rrrr}
+\toprule
+Atoms & Supported source / 512 & Same inference calls (eV) & Same total calls (eV)\\
+\midrule
+12 & 215 & 0.0240 & 0.1133\\
+12 & 59 & $-0.0355$ & 0.0697\\
+9 & 108 & $-0.1003$ & $-0.0977$\\
+20 & 146 & $-0.0634$ & 0.0224\\
+22 & 34 & 0.0168 & 0.1630\\
+23 & 178 & 0.1833 & 0.3160\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The primary mean difference is $+0.0978$\,eV, with hierarchical composition/parent
+bootstrap 95\% interval $[-0.0161,0.2141]$\,eV. Both replica means are positive;
+only one composition's mean favors learning. At equal inference calls, the
+aggregate difference is $+0.0042$\,eV with interval $[-0.0897,0.0989]$\,eV.
+Neither comparison demonstrates average transfer benefit. All 24 trajectories
+and their random streams and joint MH ratios are audited; this round uses
+306,858 new raw calls. These outcomes limit the earlier one-composition result.
+Stronger physical concentration controls are now prospectively specified;
+the current neural advantage cannot be generalized to tuned physical proposals.
