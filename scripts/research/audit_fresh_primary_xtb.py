@@ -32,7 +32,7 @@ def main():
         torch.testing.assert_close(xyz,torch.tensor(task['positions'],dtype=torch.float64),atol=1e-12,rtol=0)
         for file in ['stdout','stderr']:assert sha(work/(file+'.txt'))==row[file+'_sha256']
         gradient=(work/'gradient').read_text() if (work/'gradient').exists() else ''
-        assert (sha(work/'gradient') if gradient else None)==row['gradient_sha256']
+        assert (sha(work/'gradient') if (work/'gradient').exists() else None)==row['gradient_sha256']
         assert row['original_charge']==condition['charge'] and row['original_spin_multiplicity']==condition['spin_multiplicity']
         assert row['uhf']==condition['spin_multiplicity']-1
         if row['returncode'] is None:
@@ -50,7 +50,7 @@ def main():
         entry=dict(task_id=task['task_id'],successful_pair=a['success'] and b['success'])
         if entry['successful_pair']:
             entry.update(energy_error_eV=abs(a['energy_eV']-b['energy_eV']),
-                force_error_eV_A=float((torch.tensor(a['force_eV_A'])+torch.tensor(b['force_eV_A'])).abs().max()))
+                force_error_eV_A=float((torch.tensor(a['force_eV_A'],dtype=torch.float64)+torch.tensor(b['force_eV_A'],dtype=torch.float64)).abs().max()))
         entry['passed']=entry['successful_pair'] and entry['energy_error_eV']<=protocol['energy_inversion_tolerance_eV'] and entry['force_error_eV_A']<=protocol['force_inversion_tolerance_eV_A']
         inversions.append(entry)
     failures=[{k:r.get(k) for k in ['task_id','method','replica','parent_id','failure']} for r in rows.values() if not r['success']]
