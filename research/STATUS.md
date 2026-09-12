@@ -1,5 +1,22 @@
 # EACF and fresh-source checkpoint — September12
 
+Current completed-result checkpoint: `research/FRESH_REUSE_AND_TRANSFER_STATE_20260912.json`.
+All fresh-reuse sampling, full replay and independent joint ratios are COMPLETE.
+The declared primary comparison favors learning by0.1735eV at55884 raw calls
+per method/replica, with95 percent parent-bootstrap interval0.0994--0.2595eV.
+This is a scoped one-composition raw-call-budget benefit; source support is
+72/8192 and equilibrium, independent chemistry and wall-time superiority remain
+unqualified. Six additional DEVELOPMENT compositions are frozen by metadata
+hash without energy/geometry ranking. Source46137946 and audit46138020 completed; all six compositions have
+at least16 supported parents. Physical preparation46139228 and replay46139311
+completed for96 parents with11946 raw calls. Frozen transfer evaluation46139699
+is RUNNING; full audit46139781 and summary46139869 are queued. Read
+`notes/fresh_reuse_result_and_transfer_v1.md`. Inspect the globally matched-cost
+hierarchical primary result, not a selected favorable composition. Do not fit
+on these states.
+Current paper8 main pages, scientific submission readiness false. Older pending
+statements below are historical.
+
 Current checkpoint: `research/FRESH_REUSE_STATE_20260912.json` and
 `notes/fresh_reuse_checkpoint_v1.md`. All8192 fresh source attempts audited,
 72 supported; all72 warm starts completed and replayed,9360 physical calls.

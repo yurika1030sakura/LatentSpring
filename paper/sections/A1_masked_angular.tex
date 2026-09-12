@@ -4,20 +4,19 @@ proposals that respect its geometric support. A flow-matching generator can supp
 initial states while leaving its finite-step density unknown, and correct
 Metropolis acceptance does not by itself make local moves efficient. We study
 learned geometry proposals for reversible molecular graph exchanges. A masked
-graph network learns equivariant directional distributions from physical
-angular-force examples. Fixed-geometry angular updates can cancel unknown
-support normalizers but leave graph/geometry barriers unresolved. Our joint update
-instead regenerates two radii and directions after an attachment exchange, using
-explicitly normalized autoregressive directional mixtures and the correct
-Cartesian volume factors. Complete reverse densities permit Metropolis correction
-without a source likelihood or equilibrium training coordinates. In a development
-study, both frozen tensor models reach a diagnostic reference connectivity from
-all four generated starts, while matched short physical controls retain failures.
-Continuing the physical controls to the same total cost shows that a simple
-coordination-site prior reaches the diagnostic graph earlier once learning
-preparation is counted. We preserve these adverse controls, all rejected proposals
-and a failed transfer screen. Equilibrium mixing, a total-cost learned advantage
-and calibrated molecular equilibrium ensembles remain unestablished.
+graph network learns an equivariant correction to a physical coordination-site
+prior from generated-state force examples. After an attachment exchange, an
+autoregressive proposal regenerates two radii and directions. Explicit normalized
+densities, Cartesian volume factors and complete reverse contexts permit
+Metropolis correction without a source likelihood or equilibrium training samples.
+Earlier four-start tests favor physical controls after preparation cost. In a
+prospectively specified reuse test on 72 fresh starts of one composition, however,
+the learned vector lowers mean restrained potential by 0.174\,eV at equal total
+physical-call cost including training (parent-bootstrap 95\% interval:
+0.099--0.260\,eV). Both replicas favor learning. We retain the adverse small-budget
+results and the low source support rate of 72/8,192. This establishes a scoped
+finite-cost benefit; independent-composition transfer and calibrated equilibrium
+ensembles remain unestablished.
 \end{abstract}
 
 \section{Problem and scope}
@@ -502,6 +501,17 @@ it from all four starts in both replicas. These refiners were not trained for MH
 acceptance, so this diagnoses their reuse as proposals, not native EACF performance.
 Appendix~\ref{app:eacf-directional} gives the auxiliary law, verified volumes,
 query costs and the limits of this small, repeatedly inspected comparison.
+
+\paragraph{Fresh-parent evidence including training cost.}
+A prospectively specified follow-up generates 8,192 new FM draws and retains
+all 72 supported parents, with no energy selection. At equal total raw-call
+cost including training, the learned vector lowers mean restrained potential
+by 0.174\,eV relative to site (parent-bootstrap 95\% interval: 0.099--0.260\,eV);
+both algorithm replicas favor learning. This establishes a finite-cost benefit
+on new starts for this composition. The source support rate is only 0.88\%,
+and neither other-composition performance nor equilibrium calibration follows.
+The complete protocol, adverse secondary budget and outcomes are in
+Appendix~\ref{app:eacf-directional}.
 
 \section{Related work and position}
 \label{sec:related-position}

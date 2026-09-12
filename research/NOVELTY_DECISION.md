@@ -26,10 +26,18 @@ so their failure is not a claim against native EACF/FAB or its architecture.
 The fresh source has72 supported parents out of8192 attempts, a major initializer
 limitation. Preparation is complete and replayed. The prospective primary test
 compares all72 parents at exactly matched raw physical cost including training;
-its full sampling outputs are complete and independent audits are running.
-Read the declared primary endpoint first. Do not choose a favorable secondary
-budget to replace an unfavorable primary result. Query-count stopping measures
-finite-cost output, not stationary Boltzmann sampling.
+all four outputs and independent audits are complete. The declared primary
+comparison favors learning by0.1735eV, with95 percent parent-bootstrap interval
+0.0994--0.2595eV, at55884 total raw calls per method and replica. Both replica
+means favor learning. This is the first qualified measured-reuse benefit for
+this frozen guide, on one composition; it is not a broad superiority claim.
+The128-call secondary matched-cost interval crosses zero. Query-count stopping
+measures finite-cost output, not stationary Boltzmann sampling.
+
+Six additional DEVELOPMENT compositions have now been selected by a fixed hash
+within declared H/halogen eligibility and size strata, without energy or geometry
+ranking. Their fresh geometry-only source is running. Preserve zero support and
+all failures, then freeze the physical transfer test; do not fit on these samples.
 
 ## Coverage and learning gaps
 
