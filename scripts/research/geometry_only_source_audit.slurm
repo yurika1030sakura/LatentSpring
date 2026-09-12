@@ -11,10 +11,11 @@ set -euo pipefail
 SOURCE_ROOT="${1:?source required}"
 RUN_ROOT="${2:?unique output required}"
 PROJECT="${3:?artifact root required}"
+SOURCE_RUN="${4:-$PROJECT/runs/geometry_only_source_v1}"
 STORE=/n/holylabs/woo_lab/Lab/yulili/bgfm
 export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH="$SOURCE_ROOT"
 export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2
 cd "$SOURCE_ROOT"
 "$STORE/envs/flowmol/bin/python" -u scripts/research/audit_geometry_only_source.py \
-  --run "$PROJECT/runs/geometry_only_source_v1" --original-source "$PROJECT/runs/species_breadth_source_full_v2" \
+  --run "$SOURCE_RUN" --original-source "$PROJECT/runs/species_breadth_source_full_v2" \
   --out "$RUN_ROOT/results.json"

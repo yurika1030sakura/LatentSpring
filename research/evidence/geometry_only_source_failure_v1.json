@@ -1,0 +1,15 @@
+{
+  "job_id": "46134355",
+  "state": "FAILED",
+  "exit_code": "1:0",
+  "dependent_audit_job": "46134525",
+  "dependent_state": "CANCELLED",
+  "failure": "AttributeError: 'DGLGraph' object has no attribute 'cuda'",
+  "failure_log": "logs/bgfm-geometry-only-source-46134355.err",
+  "failure_log_sha256": "b56c740877ae19b0d02e020e04b2ec4f50f808c385c2165494668a8f1c042723",
+  "failure_before_sampling": true,
+  "completed_samples": 0,
+  "physical_queries": 0,
+  "recovery": "Replace DGLGraph.cuda() with DGLGraph.to(cuda); keep protocol, random seeds and source artifacts fixed. Recover into unique geometry_only_source_v2; retain v1 logs and snapshot.",
+  "scientific_submission_ready": false
+}

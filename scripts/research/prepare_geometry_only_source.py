@@ -60,7 +60,7 @@ def main():
     base = graph_from_condition(condition, config['dataset']['atom_map'],
         n_bond_classes=5 if config['mol_fm'].get('explicit_aromaticity', False) else 4)
     n = base.num_nodes()
-    graph = dgl.batch([base]*batch).cuda()
+    graph = dgl.batch([base]*batch).to('cuda')
     nbi, _ = get_batch_idxs(graph)
     upper = get_upper_edge_mask(graph)
     basis = centered_orthonormal_basis(n, device='cuda')
