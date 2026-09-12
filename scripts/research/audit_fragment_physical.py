@@ -51,15 +51,22 @@ def independent_auxiliary_logp(x, target_bonds, radii, roots, vectors, sigma, co
     return result
 
 
-def audit_arm(directory, positions, condition, parents, protocol, protocol_hash, physical, *, stage, method=None, replica=0, warm_queries=0, initial_signs=None):
+def audit_arm(directory, positions, condition, parents, protocol, protocol_hash, physical, *, stage, method=None, replica=0, warm_queries=0, interruption=None, failure_out=None):
     report = json.loads((directory/'results.json').read_text())
-    assert report['complete'] and report['protocol_sha256'] == protocol_hash
+    failed = not report['complete']
+    if failed:
+        assert interruption is not None and report['failure'] == interruption['failure']
+        assert sha(directory/'results.json') == interruption['failed_report_sha256']
+        assert sha(directory/'failed_trace.pt') == interruption['failed_trace_sha256']
+    assert report['protocol_sha256'] == protocol_hash
     assert report['condition'] == condition and report['parent_ids'] == parents
     assert report['stream'] == 'development' and report['only_development_positions_used']
-    assert sha(directory/'trace.pt') == report['trace_sha256']
+    trace_path = directory/('failed_trace.pt' if failed else 'trace.pt')
+    if not failed:
+        assert sha(trace_path) == report['trace_sha256']
     assert report['inherited_warm_raw_queries'] == warm_queries
-    data = torch.load(directory/'trace.pt', map_location='cpu', weights_only=False)
-    assert data['stream'] == 'development'
+    data = torch.load(trace_path, map_location='cpu', weights_only=False)
+    assert data.get('stream', 'development' if failed else None) == 'development'
     index = report['condition_index']
     rng = torch.Generator().manual_seed(protocol['warm_seed']+index if stage == 'warm' else protocol['evaluation_seeds'][replica]+100*index)
     if stage == 'warm':
@@ -71,13 +78,18 @@ def audit_arm(directory, positions, condition, parents, protocol, protocol_hash,
     target = ChemicalTarget(oracle, condition, physical['kT_eV'], physical['restraint_eV_A2'])
     states = target.evaluate([target.coordinate_state(x) for x in positions], phase='initial')
     steps = protocol['warm_steps'] if stage == 'warm' else protocol['evaluation_steps']
+    if failed:
+        assert len(data['transitions']) % len(states) == 0
+        steps = len(data['transitions'])//len(states)
+        assert len(data['history_state_ids']) == steps+1
     counts = {kind: dict(attempts=0, valid=0, accepted=0, accepted_multiatom=0, accepted_backbone=0,
               accepted_constitution=0) for kind in ['local', 'force_rotation', 'fragment_exchange']}
     independent_checks = 0
     for step in range(steps):
         assert [s['state_id'] for s in states] == data['history_state_ids'][step]
         choices = torch.randint(len(protocol['local_scales']), (len(states),), generator=srng)
-        assert choices.tolist() == data['scale_choice_history'][step]
+        if not failed:
+            assert choices.tolist() == data['scale_choice_history'][step]
         scales = torch.tensor(protocol['local_scales'], dtype=torch.float64)[choices]*target.kT**.5
         kind = 'local' if stage == 'warm' else protocol['schedule'][step % 4]
         if method == 'local_only' and kind == 'fragment_exchange':
@@ -138,6 +150,41 @@ def audit_arm(directory, positions, condition, parents, protocol, protocol_hash,
                 counts[kind][key] += bool(row['accepted'] and row.get(field, False))
     equal(target.states, data['states'])
     equal(target.query_trace, data['query_trace'])
+    failure_attempts = []
+    if failed:
+        # Replay the pending step without converting its validator exception
+        # into a chemical-domain self transition. No new physical queries occur.
+        original_coordinate_state = target.coordinate_state
+        def observed_coordinate_state(x):
+            try:
+                return original_coordinate_state(x)
+            except Exception as exc:
+                failure_attempts.append(dict(positions=x.clone(), error_type=type(exc).__name__, reason=str(exc)))
+                raise
+        target.coordinate_state = observed_coordinate_state
+        choices = torch.randint(len(protocol['local_scales']), (len(states),), generator=srng)
+        scales = torch.tensor(protocol['local_scales'], dtype=torch.float64)[choices]*target.kT**.5
+        next_kind = protocol['schedule'][steps % 4]
+        if method == 'local_only' and next_kind == 'fragment_exchange':
+            next_kind = 'local'
+        try:
+            if next_kind == 'local':
+                target.transition(states, policy=None, generator=rng, proposal_std=scales, phase=f'{stage}_{steps}', local_only=True)
+            elif next_kind == 'force_rotation':
+                uniform_internal_transition(target, states, kind=next_kind, generator=rng, phase=f'{stage}_{steps}')
+            else:
+                fragment_transition(target, states, method=method, generator=rng, phase=f'{stage}_{steps}',
+                    max_fragment_atoms=protocol['max_fragment_atoms'], radial_width=protocol['radial_width'], concentration=protocol['site_concentration'])
+        except IndexError as exc:
+            assert f'{type(exc).__name__}: {exc}' == report['failure']
+        else:
+            raise AssertionError('Recorded validator failure did not reproduce')
+        assert failure_attempts[-1]['error_type'] == 'IndexError'
+        assert failure_out is not None
+        if failure_out.exists():
+            raise FileExistsError(failure_out)
+        torch.save(dict(attempts=failure_attempts, completed_steps=steps, failed_kind=next_kind,
+            physical_queries_added=0), failure_out)
     equal(rng.get_state(), data['generator_state'])
     equal(srng.get_state(), data['scale_generator_state'])
     assert oracle.index == len(data['query_trace'])
@@ -146,9 +193,11 @@ def audit_arm(directory, positions, condition, parents, protocol, protocol_hash,
     summary = dict(condition_index=index, stage=stage, method=method, replica=replica, raw_queries=oracle.evaluated,
         total_raw_queries=report['history'][-1]['total_raw_queries'], moves=counts, independent_fragment_checks=independent_checks,
         full_producer_replay=True, all_random_streams_replayed=True, maximum_replay_position_error_A=oracle.maximum_position_error,
-        trace_sha256=report['trace_sha256'], final_energy_eV=report['history'][-1]['energy_eV'],
+        trace_sha256=sha(trace_path), final_energy_eV=report['history'][-1]['energy_eV'],
         unique_connectivity_per_parent=[len(set(h['smiles'][i] for h in report['history'])) for i in range(len(states))],
-        seconds=report['seconds'], oracle_requeried=False)
+        seconds=report.get('seconds'), oracle_requeried=False, sampling_arm_complete=not failed,
+        recorded_failure_reproduced=failed, completed_steps=steps,
+        failure=report.get('failure'), failure_geometry_sha256=sha(failure_out) if failed else None)
     print(json.dumps(summary), flush=True)
     return summary, torch.stack([s['positions'] for s in states])
 
@@ -157,6 +206,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ['run', 'source', 'out']:
         parser.add_argument('--'+name, type=Path, required=True)
+    parser.add_argument('--remainder', type=Path)
+    parser.add_argument('--interruption', type=Path)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[2]
     pp = root/'research/evidence/fragment_physical_protocol_v1.json'
@@ -165,21 +216,37 @@ def main():
     census_path = root/'research/evidence/chemical_source_panel_audit_v2.json'
     assert sha(census_path) == protocol['census_sha256']
     census = json.loads(census_path.read_text())
-    result = dict(complete=False, warm=[], rows=[], scientific_submission_ready=False)
+    interruption = json.loads(args.interruption.read_text()) if args.interruption else None
+    result = dict(complete=False, warm=[], rows=[], not_started=[], scientific_submission_ready=False)
     for index in protocol['condition_indices']:
+        run = args.run
+        if not (run/f'warm_{index}/results.json').exists():
+            if args.remainder is None:
+                raise FileNotFoundError(f'Warm input for condition{index}')
+            run = args.remainder
         source = load_entropy_source(args.source, index,
             protocol_path=root/'research/evidence/species_breadth_source_protocol_v2.json',
             manifest_path=root/'research/evidence/development_panel_v1.json')
         parents = [r['parent_id'] for r in census['conditions'][index]['streams']['development']['supported_parents']][:protocol['chains']]
-        warm, endpoint = audit_arm(args.run/f'warm_{index}', source['development']['positions'][parents], source['condition'],
+        warm, endpoint = audit_arm(run/f'warm_{index}', source['development']['positions'][parents], source['condition'],
             parents, protocol, sha(pp), physical, stage='warm')
         result['warm'].append(warm)
+        failed_condition = False
         for method in protocol['methods']:
             for replica in protocol['replicas']:
-                summary, _ = audit_arm(args.run/f'condition_{index}/{method}_s{replica}', endpoint, source['condition'], parents,
-                    protocol, sha(pp), physical, stage='evaluate', method=method, replica=replica, warm_queries=warm['raw_queries'])
+                directory = run/f'condition_{index}/{method}_s{replica}'
+                if not (directory/'results.json').exists():
+                    assert failed_condition and interruption is not None and index == interruption['condition_index']
+                    result['not_started'].append(dict(condition_index=index, method=method, replica=replica,
+                        reason='Original sequential job stopped at the recorded validator failure'))
+                    continue
+                summary, _ = audit_arm(directory, endpoint, source['condition'], parents,
+                    protocol, sha(pp), physical, stage='evaluate', method=method, replica=replica, warm_queries=warm['raw_queries'],
+                    interruption=interruption, failure_out=args.out.parent/'reproduced_failure.pt')
                 result['rows'].append(summary)
+                failed_condition = failed_condition or not summary['sampling_arm_complete']
     result.update(complete=True, new_physical_queries=sum(r['raw_queries'] for r in result['warm']+result['rows']))
+    result['sampling_panel_complete'] = not result['not_started'] and all(row['sampling_arm_complete'] for row in result['rows'])
     assert result['new_physical_queries'] <= protocol['maximum_new_raw_queries']
     if args.out.exists():
         raise FileExistsError(args.out)
