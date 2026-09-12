@@ -1,0 +1,10 @@
+{
+  "reproduced": true,
+  "test": "tests/test_oracle_chunking.py::test_tensor_oracle_buffered_worker_values_cost_and_elapsed_time",
+  "original_failure": "TimeoutError: Energy oracle response timed out at handshake with a noise line followed by a complete result in the same buffered write.",
+  "fix": "Reuse the independently tested byte-buffer drain-before-select reader from NumpyEnergyOracle, retaining the tensor oracle value/count interface.",
+  "new_physical_queries": 0,
+  "previous_runs_scope": "Fake-worker reproduction and repair; no new conclusion about historical physical runs.",
+  "physical_jobs_run_during_reproduction": 0,
+  "reproduction_and_regression_passed": true
+}

@@ -15,7 +15,7 @@ from scripts.research.audit_joint_arc_support import independent_arc_q
 from scripts.research.audit_masked_angular import equal, sha
 
 
-def independent_action_logp(model, x, bonds, numbers, electronic):
+def independent_action_logp(model, x, bonds, numbers, electronic, *, raw_scores=False):
     """NumPy legal enumeration and complete neural action probabilities."""
     s={k:v.detach().cpu().numpy() for k,v in model.state_dict().items()}
     x,b,z,e=[v.detach().cpu().numpy() for v in (x,bonds,numbers,electronic)]
@@ -50,6 +50,7 @@ def independent_action_logp(model, x, bonds, numbers, electronic):
         f=np.concatenate([nodes[i],nodes[j],nodes[k],nodes[l],[d1,d2,dij]])
         r=np.concatenate([nodes[j],nodes[i],nodes[l],nodes[k],[d2,d1,dij]])
         raw.append(float((mlp('action_head',f)+mlp('action_head',r))[0]/2))
+    if raw_scores:return actions,np.asarray(raw)
     logits=model.logit_bound*np.tanh(np.asarray(raw)/model.logit_bound)
     return actions,logits-np.logaddexp.reduce(logits)
 

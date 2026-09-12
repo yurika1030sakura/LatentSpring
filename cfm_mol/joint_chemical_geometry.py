@@ -168,8 +168,13 @@ def defensive_joint_proposal(x, bonds, numbers, electronic, radii, action, *, ki
 
 @torch.no_grad()
 def joint_chemical_transition(target, states, *, kind, generator, phase,
-                              model=None, radial_width=.05, site_concentration=10.,arc_options=None,row_generators=None,action_policy=None):
-    """Matched restricted deterministic or normalized joint-geometry MH move."""
+                              model=None, radial_width=.05, site_concentration=10.,arc_options=None,row_generators=None,action_policy=None,screen=None):
+    """Matched restricted deterministic or normalized joint-geometry MH move.
+
+    With a delayed-acceptance screen, valid means geometrically supported;
+    scored identifies the proposals that actually reached the energy oracle.
+    Use scored, not valid, for physical-query cost accounting in that mode.
+    """
     numbers = torch.tensor(target.numbers, dtype=torch.long)
     electronic = torch.tensor([target.condition['charge'], target.condition['spin_multiplicity'], target.kT], dtype=torch.float64)
     rows, candidates = [], []
@@ -262,6 +267,31 @@ def joint_chemical_transition(target, states, *, kind, generator, phase,
             row['rejection_reason'] = 'No different-anchor terminal action'
         rows.append(row)
         candidates.append(candidate)
+    if screen is not None:
+        if screen.restraint != target.restraint:
+            raise ValueError('Screen and target restraint must agree')
+        # All coordinate proposals are made before drawing screening uniforms.
+        # The model receives only cheap coordinate/graph/proposal inputs.
+        for index,(old,candidate,row) in enumerate(zip(states,candidates,rows)):
+            row.update(scored=False,screen_passed=False)
+            if candidate is None:
+                continue
+            factor=screen.log_factor(old['positions'],candidate['positions'],old['graph']['bond_orders'],
+                candidate['graph']['bond_orders'],numbers,electronic,row['action'],
+                float(row['coordinate_log_ratio'])+row['action_log_ratio'])
+            if not torch.isfinite(factor) or abs(float(factor))>screen.log_factor_bound+1e-10:
+                raise ValueError('Finite bounded pre-oracle factor required')
+            first=min(0.,float(factor))
+            rng=generator if row_generators is None else row_generators[index]
+            # Acceptance one needs no random draw: a zero screen exactly retains
+            # the original sampler's random stream and energy queries.
+            gate_u=float(torch.rand((),dtype=torch.float64,generator=rng).log()) if first<0 else None
+            passed=first==0 or gate_u<first
+            row.update(log_screen_factor=float(factor),first_log_acceptance=first,
+                       screen_log_uniform=gate_u,screen_passed=passed,scored=passed)
+            if not passed:
+                candidates[index]=None
+                row['rejection_reason']='Delayed-acceptance first stage'
     target.evaluate([s for s in candidates if s is not None], phase=phase)
     if row_generators is None:
         log_u = torch.rand(len(states), dtype=torch.float64, generator=generator).log()
@@ -274,9 +304,13 @@ def joint_chemical_transition(target, states, *, kind, generator, phase,
             continue
         target_ratio = -float(new['potential_eV']-old['potential_eV'])/target.kT
         ratio = target_ratio+float(row['coordinate_log_ratio'])+row['action_log_ratio']
-        take = float(log_u[index]) < min(0., ratio)
+        second_ratio=ratio if screen is None else ratio-row['log_screen_factor']
+        take = float(log_u[index]) < min(0., second_ratio)
         row.update(new_state_id=new['state_id'], target_log_ratio=target_ratio,
                    log_acceptance_ratio=ratio, accepted=take)
+        if screen is not None:
+            row.update(second_log_acceptance=min(0.,second_ratio),
+                       total_log_acceptance=row['first_log_acceptance']+min(0.,second_ratio))
         if take:
             updated[index] = new
     return updated, rows

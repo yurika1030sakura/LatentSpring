@@ -94,3 +94,34 @@ with no outcome-based acceptance-label threshold or uncorrected rejection.
 Require real raw-call and full wall-time comparisons before production. A
 successful screen would still need a distinct, useful molecular contribution
 beyond established delayed acceptance to support an ICLR claim.
+
+## Bounded implementation and frozen training
+
+The screen and actual early-query dispatch are now implemented in
+`cfm_mol/delayed_acceptance.py` and `joint_chemical_geometry.py`. The latter keeps
+`valid` as geometry/reverse-support status and uses `scored` for actual oracle
+queries when screening is enabled. First-stage rejects retain their coordinates
+and failure denominator, but never acquire an oracle target ratio. A zero screen
+exactly reproduces the old random stream, raw queries and resulting states.
+
+The fixed physical screen combines squared covalent-radius-normalized bond
+strain (10 eV coefficient), nonbonded inverse-distance power12 repulsion (1 eV),
+and the exact declared COM restraint, plus the known complete proposal ratio.
+These are heuristic surrogate energies. The linear screen fits four coefficients;
+the neural screen adds a shared symmetric action-encoder readout difference
+between the two orientations. Both learned models initialize at zero; neither
+loads a prior checkpoint. The final odd tanh factor is bounded by log(16).
+
+`research/evidence/delayed_screen_training_protocol_v1.json` freezes two seeds
+per learned model, 300 steps, batch eight, the same FIT-only split and a signed
+cost-adjusted two-stage objective. Zero/physical controls and every failed
+attempt are retained. There are no new oracle calls. Independent audits evaluate
+both factors with NumPy on every supported recorded pair and check detailed
+balance, costs and sensitive trained-head gradients. Read NEXT for live jobs.
+
+A separate fake-worker regression exposed TextIO buffering before select in the
+tensor EnergyOracle. The existing NumPy oracle's byte-buffer reader fixes this;
+original numeric outputs and requested/acknowledged counters remain. Energy RPC
+wall time is now recorded separately, including failed calls, to support future
+complete-cost comparisons. This does not retroactively supply timing for old
+runs or qualify a sampling advantage.

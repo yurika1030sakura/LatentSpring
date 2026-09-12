@@ -15,6 +15,7 @@ class EnergyOracle:
                  spin_multiplicity, device='cpu', timeout_seconds=60., batch_size=1):
         if not isinstance(batch_size,int) or batch_size<1:raise ValueError('Positive integer oracle batch size required')
         self.timeout=timeout_seconds;self.evaluated=0;self.requested_evaluations=0
+        self.evaluation_seconds=0.;self._buffer=b''
         self.condition={'numbers':list(map(int,numbers)),'charge':int(charge),
                         'spin_multiplicity':int(spin_multiplicity)}
         self.stderr=tempfile.TemporaryFile(mode='w+t',dir=os.environ.get('TMPDIR') or '/tmp')
@@ -33,30 +34,44 @@ class EnergyOracle:
 
     def _receive(self):
         deadline=time.monotonic()+self.timeout
-        while time.monotonic()<deadline:
-            readable,_,_=select.select([self.process.stdout],[],[],max(0,deadline-time.monotonic()))
-            if not readable:raise TimeoutError('Energy oracle response timed out')
-            line=self.process.stdout.readline()
-            if not line:
+        while True:
+            # Drain our own byte buffer before selecting the file descriptor;
+            # TextIO readline can otherwise hide a complete buffered response.
+            if b'\n' in self._buffer:
+                line,self._buffer=self._buffer.split(b'\n',1)
+                if line.startswith(b'BGFM_ORACLE_JSON '):
+                    return json.loads(line[len(b'BGFM_ORACLE_JSON '):])
+                continue
+            remaining=deadline-time.monotonic()
+            if remaining<=0:raise TimeoutError('Energy oracle response timed out')
+            ready,_,_=select.select([self.process.stdout],[],[],remaining)
+            if not ready:raise TimeoutError('Energy oracle response timed out')
+            chunk=os.read(self.process.stdout.fileno(),65536)
+            if not chunk:
                 self.stderr.seek(0)
                 raise RuntimeError('Oracle exited: '+self.stderr.read()[-2000:])
-            if line.startswith('BGFM_ORACLE_JSON '):return json.loads(line[len('BGFM_ORACLE_JSON '):])
-        raise TimeoutError('Energy oracle response timed out')
+            self._buffer+=chunk
 
     def evaluate(self, positions):
-        positions=torch.as_tensor(positions).detach().cpu().double()
-        if positions.ndim!=3 or not torch.isfinite(positions).all():raise ValueError('Invalid oracle positions')
-        request={**self.condition,'positions':positions.tolist()}
-        self.requested_evaluations+=len(positions)
-        self.process.stdin.write(json.dumps(request,allow_nan=False)+'\n');self.process.stdin.flush()
-        response=self._receive()
-        self.evaluated+=int(response.get('attempted_evaluations',0))
-        if response.get('ok') is not True:raise RuntimeError(response.get('error','Invalid oracle response'))
-        energy=torch.tensor(response['energies_eV'],dtype=torch.float64)
-        force=torch.tensor(response['forces_eV_A'],dtype=torch.float64)
-        if energy.shape!=(len(positions),) or force.shape!=positions.shape or not torch.isfinite(energy).all() or not torch.isfinite(force).all():
-            raise RuntimeError('Invalid oracle energy/force shape or value')
-        return energy,force
+        started=time.perf_counter()
+        try:
+            positions=torch.as_tensor(positions).detach().cpu().double()
+            if positions.ndim!=3 or not torch.isfinite(positions).all():raise ValueError('Invalid oracle positions')
+            request={**self.condition,'positions':positions.tolist()}
+            self.requested_evaluations+=len(positions)
+            self.process.stdin.write(json.dumps(request,allow_nan=False)+'\n');self.process.stdin.flush()
+            response=self._receive()
+            self.evaluated+=int(response.get('attempted_evaluations',0))
+            if response.get('ok') is not True:raise RuntimeError(response.get('error','Invalid oracle response'))
+            energy=torch.tensor(response['energies_eV'],dtype=torch.float64)
+            force=torch.tensor(response['forces_eV_A'],dtype=torch.float64)
+            if energy.shape!=(len(positions),) or force.shape!=positions.shape or not torch.isfinite(energy).all() or not torch.isfinite(force).all():
+                raise RuntimeError('Invalid oracle energy/force shape or value')
+            return energy,force
+        finally:
+            # Includes serialization, IPC and physical inference, including a
+            # failed request's elapsed time. Startup is recorded separately.
+            self.evaluation_seconds+=time.perf_counter()-started
 
     def close(self):
         if hasattr(self,'process'):
