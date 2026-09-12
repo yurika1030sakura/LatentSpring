@@ -1,0 +1,252 @@
+\begin{abstract}
+Energy-aware molecular sampling requires both an explicit statistical target and
+proposals that respect its geometric support. A generator can supply useful initial
+states while leaving its finite-step density unknown, and correct Metropolis
+acceptance does not by itself make Cartesian moves efficient. We study learned
+angular proposals that retain a terminal bond length and mask the moved atom's
+direction from their conditioning context. A graph network predicts an equivariant
+vector and traceless tensor defining an unnormalized angular score. Because the
+context is unchanged by an accepted angular update, the unknown normalization
+introduced by chemical-support rejection cancels in the Metropolis ratio, including
+when candidate search has a finite trial cap. We fit the guide to physical angular
+forces without requiring equilibrium training samples or oracle Hessians. A
+development study compares the guide with uniform and force-informed angular
+controls, retaining every failed search and preparation cost. Current results
+establish implementation consistency and improve angular proposal acceptance
+after an exact envelope correction. They do not yet establish repeatable
+cross-isomer mixing, a total-cost learned advantage or calibrated molecular
+equilibrium ensembles.
+\end{abstract}
+
+\section{Problem and scope}
+Implicit molecular generators and equilibrium samplers solve different problems.
+Our FlowMol3-based initializer~\citep{flowmol3}, trained on an OMol25
+subset~\citep{omol25}, supplies coordinates, but its implemented finite-step
+law need not have an available likelihood. Metropolis correction can instead use
+the probability ratio of a subsequent conditional proposal. This avoids assigning
+a fictitious source density, while leaving the practical problem of choosing
+efficient molecular moves.
+
+Our development evidence identifies separate failures. Cartesian local moves can
+be rejected by a hard structural domain. Large unstructured rotations can satisfy
+the domain yet have negligible physical acceptance. A learned selector can improve
+the first connectivity transition without improving total-cost sampling. These
+distinctions motivate a conditional angular guide, with target correctness and
+empirical efficiency evaluated separately.
+
+The present study fixes atom identities, total charge and spin multiplicity.
+The target may contain different constitutional isomers; it is not an unconditional
+distribution over chemical compositions or a fixed-stereoisomer ensemble. Perceived
+bonds define a stated algorithmic support and proposal context. They are not supplied
+OMol bond-supervision labels, and their successful assignment does not certify a
+quantum electronic state. We retain a bond-free flow-matching initializer and make
+no claim that this preliminary study solves broad molecular generation.
+
+\section{Target and internal-coordinate update}
+For $N$ labelled atoms, let $\HH=\{x\in\mathbb R^{N\times3}:\sum_i x_i=0\}$,
+with its Euclidean volume in dimension $3(N-1)$. We use
+\begin{equation}
+ \pi(x)\propto {\bf1}_{D}(x)\exp[-U(x)/(kT)],\qquad
+ U(x)=\tfrac12[E_{\rm raw}(x)+E_{\rm raw}(-x)]+\tfrac\gamma2\|x\|^2.
+ \label{eq:angular-target}
+\end{equation}
+The raw potential is a fixed OMol25 eSEN energy model~\citep{esen}. Both inversion orientations are
+evaluated; the conservative averaged force is
+$[F_{\rm raw}(x)-F_{\rm raw}(-x)]/2$. A single raw evaluation cannot replace this
+average inside an exponential weight or acceptance ratio. In the current pilot,
+$kT=0.025851999786435$ eV and $\gamma=0.1$ eV/\AA$^2$.
+
+The domain $D$ requires connected, nonoverlapping geometry and a successful
+deterministic bond assignment and sanitization at the requested total charge.
+This changes the target relative to unconstrained energy sampling. Our original
+unconstrained experiments retain their original interpretation. The graph criterion
+has material radical and metal limitations, discussed in Section~\ref{sec:angular-limits}.
+
+Select a single-bonded terminal atom $i$ and its passive anchor $k$.
+Write $x_i-x_k=r u$, with $u\in\sphere$. Hold $r$ and all passive relative
+coordinates fixed, replace $u$, and recenter the coordinates. A linear chart on
+$\HH$ consists of the passive relative coordinates and $x_i-x_k$; its determinant
+is constant. The angular part of volume is $r^2\,dr\,d\Omega(u)$, so the radial
+factor cancels between the forward and reverse update. The proposal density in
+this section is conditional on this angular subspace, not a density on all of $\HH$.
+
+\section{Masked equivariant angular guide}
+\paragraph{Invariant context.}
+The retained context $c$ contains the passive coordinates relative to $k$, radius
+$r$, atom identities, electronic condition and the perceived graph $G$. Before
+any geometric features or message passing, the moved atom's coordinate is replaced
+by the anchor. Leaf and anchor roles are marked without assigning learned meaning
+to absolute atom indices. An angular candidate is eligible only if its perceived
+bond matrix equals $G$. Consequently the context is identical before and after
+the update. Retaining the moved atom's old direction in the network would generally
+invalidate the normalizer cancellation below.
+
+\paragraph{Vector and tensor outputs.}
+Two scalar message-passing blocks use atom embeddings, role embeddings, radial
+features of the masked coordinates and the observed bond matrix. Invariant scalar
+weights combine passive vectors and their traceless dyadic products to produce
+a polar vector $\eta_\theta(c)$ and symmetric traceless matrix $A_\theta(c)$.
+The angular score is
+\begin{equation}
+ s_\theta(u;c)=\eta_\theta(c)^\top u+u^\top A_\theta(c)u.
+ \label{eq:angular-score}
+\end{equation}
+This is a linear--quadratic directional model. The tensor can represent symmetric
+polar or planar structure without selecting an arbitrary oriented normal. A
+vector-only ablation sets $A=0$. Joint atom permutations and orthogonal coordinate
+transformations preserve the scalar score. We bound the combined coefficient norms
+and initialize both outputs to zero.
+
+\subsection{Capped support-conditioned proposals}
+Let $D(c)\subset\sphere$ be the same-graph angular support. First consider uniform
+directions accepted by an internal rejection step with probability
+\begin{equation}
+ a_c(u)={\bf1}_{D(c)}(u)\exp[s_\theta(u;c)-M(c)],
+ \qquad M(c)\ge\sup_{u\in\sphere}s_\theta(u;c).
+\end{equation}
+Stop at the first success, or retain the old state after $K$ failed trials. Let
+$Z(c)$ be the one-trial success probability and
+$b_K(Z)=\sum_{j=0}^{K-1}(1-Z)^j$. The non-self generated density is
+\begin{equation}
+ Q_K(v\mid u,c)=\frac{b_K(Z(c))}{4\pi}
+ {\bf1}_{D(c)}(v)\exp[s_\theta(v;c)-M(c)].
+\end{equation}
+The unknown $Z$, bound $M$ and cap factor are identical in the reverse update.
+They therefore cancel without estimation.
+
+\begin{proposition}[Conditional capped update]
+For a frozen guide with invariant context, an eligible angular proposal $y$ is
+accepted using
+\begin{equation}
+ \log R=-\frac{U(y)-U(x)}{kT}
+ +s_\theta(u_x;c)-s_\theta(u_y;c)
+ +\log\frac{p(i,k\mid y)}{p(i,k\mid x)}.
+ \label{eq:angular-mh}
+\end{equation}
+The resulting update satisfies detailed balance with the declared target.
+Exhausted searches contribute self-transitions.
+\end{proposition}
+We begin with uniform terminal selection. This supplies an exact proposal
+\emph{ratio}; it does not supply a normalized conditional likelihood, source
+likelihood or partition-function estimate. Composing the update with separately
+corrected local and chemical-exchange kernels preserves the target, even when
+the deterministic scan as a whole is not reversible.
+
+\subsection{A more efficient rejection envelope}
+Uniform score rejection can be inefficient for concentrated guides. Let
+$\lambda_3\ge\lambda_2$ be the two largest eigenvalues of $A$, let $v$ be a top
+eigenvector, and set $d=\lambda_3-\lambda_2$. The base proposal is a mixture of
+von Mises--Fisher distributions with natural parameters $\eta\pm d v$ and weights
+proportional to the reciprocals of their normalizers. Its density is proportional
+to $\exp(\eta^\top u)\cosh(d v^\top u)$. A valid rejection bound is
+\begin{equation}
+ B=\lambda_3-\log\cosh d,\qquad
+ \log a(u)=u^\top A u-\log\cosh(d v^\top u)-B\le0.
+\end{equation}
+After support rejection the generated density remains proportional to
+$\exp s_\theta$. All additional constants depend only on $c$, so
+Eq.~\eqref{eq:angular-mh} remains valid under the cap. Eigenvector sign changes
+exchange mixture components; when $d=0$, the axis disappears. We treat this as
+an exact implementation improvement, not an established new distributional theorem.
+
+\section{Training and experimental contract}
+The physical angular score at a supported point is
+\begin{equation}
+ g=r(I-u u^\top)F_{\HH,i}/(kT),\qquad
+ \nabla_{\sphere}s_\theta=(I-u u^\top)(\eta+2Au),
+\end{equation}
+where $F_\HH$ includes the restraint and COM projection. We regress the latter
+against a norm-capped version of $g$. This is supervised pointwise force fitting,
+not an equilibrium score-matching theorem. It requires neither oracle Hessians
+nor normalized guide densities. Our finite-time training states need not be
+equilibrium samples for this regression objective; generalization and useful
+sampling nevertheless require separate evidence.
+
+The current table contains 2,782 supported scored states and 22,256 eligible
+state/leaf examples from 34 generated training parents. Parents are sampled
+uniformly, followed by an example within the parent, retaining parent/time
+correlation in the provenance. Only generated training coordinates and their
+audited physical forces are used. The four generated development starts are
+separate. A reference connectivity is used as a diagnostic, not as a known
+equilibrium point mass or a training label.
+
+The two-layer guide has 6,082 parameters. We fit tensor and vector variants at
+two seeds for 1,000 updates of 64 examples. The in-sample MSE of the norm-capped,
+dimensionless angular-score labels is
+439.7/475.0 for the tensor variant and 639.8/623.7 for the vector ablation, versus
+730.0 for zero prediction. These numbers measure training fit only.
+
+Every chain uses the schedule local/angle/exchange/local. Local MALA uses a fixed
+mixture of three scales; chemical moves are uniform, invertible terminal exchanges
+with their actual intrinsic Jacobian and reverse-action probability. Comparisons
+retain a zero-score model with the same candidate cap and a force-informed vMF
+control with explicit forward/reverse angular densities.
+
+\section{Development evidence and current limits}
+\label{sec:angular-limits}
+All entries in Table~\ref{tab:angular-first} use four identical generated
+development starts and 256 updates per replica. Accepted angular moves are
+reported with all attempts in the denominator. The failed searches of learned
+models are not discarded. The uniform-score envelope results reveal a severe
+computational bottleneck: the tensor variants exhaust 228/256 and 226/256 searches.
+The efficient-envelope experiment is completed and fully replayed separately;
+the original outcomes remain unchanged.
+
+\begin{table}[t]
+\centering\small
+\caption{First angular study. Each cell lists the two replicas, with 256 angular
+attempts per replica. Connectivity hits
+are diagnostic coverage among four starts, not equilibrium accuracy. Total raw
+queries include each method's required source, warm-up and training preparation.}
+\label{tab:angular-first}
+\begin{tabular}{lrrr}
+\toprule
+Kernel & Angular accepts & Reference-graph hits & Total raw queries\\
+\midrule
+Uniform rotation & (0, 5) & (3, 3) & (2456, 2476)\\
+Force-informed vMF & (25, 43) & (3, 4) & (2618, 2802)\\
+Masked zero, cap64 & (4, 6) & (3, 3) & (2794, 2814)\\
+Masked vector, cap64 & (6, 10) & (2, 3) & (12230, 12228)\\
+Masked tensor, cap64 & (6, 4) & (4, 3) & (12176, 12014)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+With the improved envelope, neither tensor model exhausts any of its256 searches;
+they accept75/256 and58/256 angular updates. The vector ablations accept10/256 and
+29/256, and zero guides4/256 and6/256. This repairs proposal-generation inefficiency
+and improves local angular acceptance. It does not resolve the difficult parent's
+connectivity in either tensor replica; the zero and vector controls each resolve
+it in one replica. Total raw-query costs are12462/12456 for tensor,12484/12632 for
+vector, and2972/2812 for zero guides. The improved implementation therefore does
+not establish a full-cost learned sampling advantage.
+
+In the first-envelope study the tensor guide and force-informed control each
+repair the difficult start in one replica, while the other remains unresolved.
+The improved-envelope study does not make the learned success repeatable. Source
+preparation is substantial: only 34/4096 training and
+4/512 development parents pass the current support. Learning inherits 5,564
+training-preparation queries and the training-source cost; physical controls do
+not inherit unused training data. Each scored geometry requires both inversion
+orientations. Neural evaluation, geometry searches and wall time are additional
+costs, not interchangeable with raw oracle calls.
+
+The broader eight-condition census finds eligible terminal exchanges only in two
+conditions. The old bond-assignment mode rejects neutral radicals and encounters
+algorithm errors for some metals. An experimental radical fallback increases graph
+assignability but does not certify chemistry or spin, and is not adopted here.
+Independent molecular generalization, reference-distribution convergence, practical
+scaling and an anonymous reproducibility package remain outstanding. The reserved
+evaluation conditions remain unused.
+
+\section{Related work and position}
+Learned molecular proposals with Metropolis correction already appear in
+Timewarp~\citep{klein2023timewarp}, and flow-based MCMC acceleration is addressed
+by Markovian flow matching~\citep{cabezas2024markovian}. Masked conditionals used
+as MH proposals are also established outside molecular sampling, including
+\citet{goyal2022maskedmh}. We do not claim masking, conditional MH, directional
+distributions, tensor covariance or force regression as new general ideas.
+The candidate contribution is their concrete combination for invariant-context,
+validity-conditioned molecular angular updates, together with a demonstrated
+cost/quality advantage if subsequent experiments establish one. The current
+development evidence is insufficient for that final empirical claim.

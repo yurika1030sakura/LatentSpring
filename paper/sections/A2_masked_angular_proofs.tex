@@ -1,0 +1,66 @@
+\section{Capped conditional proposal proof}
+Fix a terminal/anchor pair and context $c$. Let $h_c(v)$ be the base angular
+proposal density and let its internal acceptance satisfy
+$h_c(v)a_c(v)=C(c){\bf1}_{D(c)}(v)\exp s_\theta(v;c)$, with $C(c)>0$ independent
+of $v$. Let $Z(c)=\int h_c(v)a_c(v)\,d\Omega(v)$. Independence of successive trials
+gives the non-self density after a cap $K$ as
+\[
+ Q_K(v\mid c)=h_c(v)a_c(v)\sum_{j=0}^{K-1}(1-Z(c))^j.
+\]
+The probability of exhausting the cap is $(1-Z(c))^K$ and yields a self-transition.
+For two eligible directions with the same context, all factors except their
+unnormalized angular scores cancel. Including the selection probability of the
+leaf/anchor pair yields Eq.~\eqref{eq:angular-mh}. The usual minimum probability
+flow then gives detailed balance. The chart determinant on $\HH$ is constant,
+and the common radius contributes the same $r^2$ factor in each direction.
+
+This argument does not apply if the guide, support or cap depends on the old
+direction through an unmasked feature. In that case the factors involving
+$C$, $Z$ or $K$ can differ and must enter the reverse ratio. Our finite-state
+negative control exhibits the resulting bias when context invariance is broken.
+
+\section{Directional envelope proof}
+Let $t=|v^\top u|\in[0,1]$, $d=\lambda_3-\lambda_2\ge0$. The spectral bound gives
+$u^\top A u\le\lambda_2+d t^2$. Since the derivative of $\log\cosh z$ is bounded
+by one for $z\ge0$,
+\[
+ \log\cosh d-\log\cosh(dt)\le d(1-t).
+\]
+Consequently
+\[
+ u^\top A u-\log\cosh(dt)-[\lambda_3-\log\cosh d]
+ \le-d(1-t^2)+d(1-t)=-dt(1-t)\le0.
+\]
+For natural parameters $\eta_\pm=\eta\pm dv$, let $C_\pm$ be their vMF normalizers.
+Mixture weights proportional to $C_\pm^{-1}$ produce a normalized base density
+proportional to $\exp(\eta^\top u)\cosh(dv^\top u)$. Multiplying by the bounded
+rejection probability gives a constant times $\exp(\eta^\top u+u^\top A u)$.
+This constant is fixed by the invariant context and therefore cancels in the
+capped conditional MH construction.
+
+For identical coefficients and any common support, let $Z_D=\int_D\exp(s_\theta)
+\,d\Omega$. Uniform score rejection succeeds per trial with probability
+$Z_D/(4\pi e^M)$, whereas the two-vMF envelope succeeds with probability
+$Z_D/(H e^B)$, where $H$ is the normalizing integral of the base mixture's
+unnormalized score. Their exact ratio is $4\pi e^M/(H e^B)$; no support volume
+or $Z_D$ estimate is needed. Since
+$H\le4\pi e^{\|\eta\|}\cosh d$ and $B=\lambda_3-\log\cosh d$, this ratio
+is at least one for $M=\|\eta\|+\lambda_3$.
+On identical saved development contexts, median per-trial factors are183.6/265.4
+for the two tensor models and86.4/85.7 for vector models. These are internal
+rejection-success factors, not runtime speedups or reductions in equilibrium error.
+
+\section{Implementation verification and interpretation}
+Tests check masked-context equality under leaf motion and COM recentering,
+orthogonal and permutation covariance, batch independence, surface derivatives,
+rejection envelopes, normalized vMF densities and known supported S2 targets.
+The original molecular paths retain paired raw forces and energies, every
+candidate trial and all random streams. Frozen-producer replay exactly reproduces
+the first learned study's coordinates, and a separate calculation checks the
+physical-energy and angular-score acceptance ratio.
+
+These checks verify the specified implementation and its mathematical contracts.
+They do not independently validate the energy model, establish quantum chemical
+validity, estimate a source likelihood or prove finite-time convergence to
+Eq.~\eqref{eq:angular-target}. Those scientific limits remain explicit in the main
+text and must be addressed before submission.

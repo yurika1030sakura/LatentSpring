@@ -1,0 +1,31 @@
+% Development manuscript for the current candidate; main.tex preserves the older study.
+\documentclass{article}
+\usepackage{iclr2027_conference,times}
+\usepackage{amsmath,amssymb,amsthm,graphicx,booktabs,array,microtype,xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=green!45!black,urlcolor=blue!70!black]{hyperref}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+\newcommand{\sphere}{\mathbb S^2}
+\newcommand{\HH}{\mathcal H}
+\title{Learning Validity-Conditioned Angular\\Proposals for Molecular Sampling}
+\author{Anonymous}
+\begin{document}
+\maketitle
+\begin{center}\textbf{Development draft. Learned sampling superiority and submission readiness are not established.}\end{center}
+\input{sections/A1_masked_angular}
+\label{endofmaintext}
+\subsubsection*{Reproducibility statement}
+Source protocols, model checkpoints, generated-parent identities, charge and spin
+conditions, all raw potential/force evaluations, candidate-search histories and
+random streams are retained. Independent checks reconstruct physical targets and
+Metropolis ratios, while frozen-producer replay reproduces the learned trajectories.
+The final anonymous code and data package remains to be assembled and verified.
+\subsubsection*{AI use statement}
+AI tools assisted method exploration, literature search, implementation, test
+design, experiment orchestration, analysis and drafting. Human-author verification
+and the final submission review remain outstanding in this development version.
+\bibliography{refs}
+\bibliographystyle{iclr2027_conference}
+\appendix
+\input{sections/A2_masked_angular_proofs}
+\end{document}

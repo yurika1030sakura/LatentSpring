@@ -1,6 +1,6 @@
 #!/bin/bash
 # Compile in /tmp by default; fail on compilation, citation or page-limit errors.
-# Usage: bash paper/build.sh [build-directory] [main.tex|legacy_audit.tex]
+# Usage: bash paper/build.sh [build-directory] [entrypoint.tex]
 set -euo pipefail
 SOURCE_DIR="$(cd "$(dirname "$0")" && pwd)"
 BUILD_DIR="${1:-${BGFM_PAPER_BUILD_DIR:-/tmp/bgfm-paper-build}}"

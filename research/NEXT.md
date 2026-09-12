@@ -11,6 +11,38 @@ refinement assumptions and gives the mathematics, evidence limits and next work.
 The primary manuscript still documents the earlier candidate; do not relabel its
 unrestricted-target results as results for a hard validity-conditioned target.
 
+## Latest learned-guide and paper checkpoint — September12
+
+Read `research/MASKED_ANGULAR_STATE_20260912.json`. Four masked-guide training arms
+and twelve frozen sampling arms are COMPLETE, with full producer replay and
+independent MH-ratio checks. The6082-parameter tensor model improves training
+angular-score MSE to439.7/475.0 versus639.8/623.7 for the vector ablation. Training
+uses only audited generated TRAINING states and adds no new physical queries.
+
+The initial uniform score envelope is inefficient. The exact two-vMF envelope
+removes tensor search exhaustion and raises angular accepts to75/256 and58/256.
+Both tensor replicas still fail the difficult graph barrier. Zero and vector
+controls each cross it in one replica. Learned total costs exceed12000 raw calls
+versus about3000 for zero guides. No overall learned sampling advantage is proven.
+Evidence: `masked_angular_audit_v1.json`, `masked_angular_audit_v2.json`,
+`masked_angular_decision_v1.json` and `angular_envelope_fixed_context_audit_v1.json`.
+
+Next implement/test the normalized JOINT graph/radius/direction proposal in
+`notes/joint_graph_geometry_design.md`. Preserve fixed-geometry, uniform and
+coordination-site controls. Reuse learned guides only with the ACTUAL normalized
+directional proposal density; same-context cancellation cannot be assumed after
+the graph/radius context changes. Do not enlarge the current angular-force fit
+without addressing the measured graph/geometry coupling.
+
+Current candidate manuscript: `paper/angular_working.tex`, with method, proofs,
+completed positive/negative evidence and explicit limits. `paper/main.tex` keeps
+the previous study. Official dates were rechecked: abstract September18, full
+paper September25 AoE, main text limit9 pages. The working draft is not scientifically
+submission-ready. Follow the deadline plan in `research/PLAN.md` while continuing
+the experimental and reproducibility gates.
+
+Earlier implementation plans and job-status statements below are historical.
+
 ## Latest internal-coordinate checkpoint (September11)
 
 Read `research/INTERNAL_COORDINATE_STATE_20260911.json`,

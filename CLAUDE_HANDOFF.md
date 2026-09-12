@@ -1,5 +1,13 @@
 # Claude handoff — BGFM / ICLR 2027
 
+**September12 latest:** `research/MASKED_ANGULAR_STATE_20260912.json` and
+`research/NEXT.md` supersede the older checkpoints below. The masked vector/tensor
+guide is implemented, trained and evaluated. The efficient envelope improves
+angular acceptance but does not establish graph mixing or total-cost superiority.
+The next experiment is the joint graph/radius/direction proposal specified in
+`notes/joint_graph_geometry_design.md`. A current working paper now exists at
+`paper/angular_working.tex`; it remains explicitly unready for submission.
+
 **Latest continuation entrypoint:** `research/INTERNAL_COORDINATE_STATE_20260911.json`
 and `research/NEXT.md`. All ten internal-coordinate/escort arms are complete and
 fully audited. Force-vMF produces the first difficult-parent transition in one

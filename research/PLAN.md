@@ -9,6 +9,33 @@ Source: https://iclr.cc/Conferences/2027/AuthorGuidelines (checked September 8).
 Target an internal evidence decision by September 15 and a full draft by
 September 20. Submit only claims supported by completed experiments.
 
+## Updated execution checkpoint — September12 UTC
+
+Official Dates and Author Guidelines were checked again: abstract September18,
+full paper September25, both23:59 AoE; main text at most9 pages. The new current
+manuscript is `paper/angular_working.tex`; `paper/main.tex` preserves the earlier
+exact-entropy study. The working angular paper contains the implemented method,
+proofs, completed controls and explicit negative evidence. It is not yet ready
+for scientific submission.
+
+- Finish and audit the masked-guide study: four training arms and both six-arm
+  sampling versions are complete. Force fit and angular acceptance improve, but
+  repeated graph mixing and full-cost advantage are still absent.
+- Next test the normalized joint graph/geometry proposal specified in
+  `notes/joint_graph_geometry_design.md`. Keep strong physical site and
+  deterministic-exchange controls; do not claim gains from a changed action list.
+- By September15, make an evidence-based decision about the method and required
+  independent molecular validation. Prepare a genuine abstract reflecting the
+  actual paper, rather than a placeholder or promised future results.
+- Before September18, provide the user with the current abstract, method/evidence
+  ledger and remaining limitations for their author/submission step.
+- Continue manuscript and reproducibility work alongside experiments through
+  September20--24. Full-cost controls, independent conditions and distribution
+  qualification are scientific gates, not formatting tasks.
+
+Current evidence is in `research/MASKED_ANGULAR_STATE_20260912.json` and
+`research/NEXT.md`. Older decision sequences below are historical.
+
 ## Current decision sequence — September 10 UTC
 
 The original method narrative is provisional. No repeatable larger-molecule
