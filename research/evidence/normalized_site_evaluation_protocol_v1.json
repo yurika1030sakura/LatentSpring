@@ -1,0 +1,63 @@
+{
+  "training_protocol_sha256": "1f8b0fc8174848f616dd1a1759b0d6e4e8ae562eb4ed90546dd9aa835a0f85fd",
+  "frozen_model_sha256": {
+    "vector": [
+      "91ed7b49f4f2334c0bd1bc20bb688bd48c2ccfcf832b8ecfc0b26b6405119374",
+      "3833cb4abf017019f72e853b30256325ac2543e519d419a64d0cb859c2f4c2c7"
+    ],
+    "mixture": [
+      "568887af341f6b152afdb7b7e13996bda6a6740d1e8b5b1cb2c550c03f22d76d",
+      "895d7f19dd24772c9e9a2ef3f4714e6e5e3c6ac4dd3bfc300dd5b9836a0acb51"
+    ]
+  },
+  "local_scales": [
+    0.1,
+    0.03,
+    0.01
+  ],
+  "frozen": true,
+  "version": 1,
+  "physical_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "table_results_sha256": "ae1d0748bbde7d6a6624ee05515ac1b996a10dcc6611302eb194b6f7a766fb8c",
+  "methods": [
+    "site",
+    "initial_mixture",
+    "learned_vector",
+    "learned_mixture"
+  ],
+  "replicas": [
+    0,
+    1
+  ],
+  "steps": 256,
+  "maximum_raw_queries_per_arm": 2056,
+  "maximum_new_raw_queries": 16448,
+  "evaluation_seeds": [
+    10931,
+    10933
+  ],
+  "scale_seed": 10941,
+  "schedule": [
+    "local",
+    "force_rotation",
+    "joint_exchange",
+    "local"
+  ],
+  "radial_width": 0.05,
+  "site_concentration": 10.0,
+  "concentrations": [
+    1.0,
+    10.0,
+    100.0
+  ],
+  "root_order": "Fair augmented order; retained on reversal.",
+  "angular_proposal": "Explicit normalized vMF mixture for learned component. Outer mixture is half WHOLE physical-site joint proposal and half learned joint proposal; evaluate both complete components in both directions.",
+  "support": "unchanged v1; desired exchanged bond matrix must match perceived matrix",
+  "eligibility": "unlike monovalent terminal leaves at DISTINCT anchors, including deterministic control",
+  "cost_contract": "No new physical calls during fitting; each learned method inherits all5564 training-preparation and4096 training-source queries. Development source512 and warm-up404 are common. Count all capped search attempts, neural/geometry time and physical queries separately.",
+  "new_training_queries": 0,
+  "stop_rule": "Do not claim novelty or full-cost advantage from training fit or short first passages. Compare to site and initialization controls, preserve transfer failures, and require independent conditions and distribution checks.",
+  "scope": "Frozen actual-density learned directions with continuous atomic descriptors. One repeatedly inspected DEVELOPMENT composition; no independent success claim. Pure site and untrained-mixture controls retain the actual source/preparation costs.",
+  "normalized_training_protocol_sha256": "d58aaac1caf3d89fd5732dcfc7bd0bbee60ea4f64160946ccfef2428564868be",
+  "physical_weight": 0.5
+}

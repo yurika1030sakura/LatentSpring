@@ -107,3 +107,62 @@ def test_sampler_moments_and_mixture_mh_preserve_known_directional_target():
         take = torch.rand(n, dtype=x.dtype, generator=generator).log() < ratio.clamp_max(0)
         x = torch.where(take[:, None], y, x)
     assert abs(float(x[:, 2].mean())-(1/math.tanh(2)-.5)) < .018
+
+
+def test_defensive_joint_uses_marginal_densities_and_reverses_both_orders():
+    from cfm_mol.chemical_moves import covalent_radii
+    from cfm_mol.chemical_path_guide import exchanged_bond_graph
+    from cfm_mol.joint_chemical_geometry import defensive_joint_proposal, joint_geometry_proposal
+    x, bonds, numbers, electronic, _, generator = fixture()
+    x, bonds = x[0], bonds[0]
+    action = (2, 6, 0, 1)
+    radii = covalent_radii(numbers)
+    model = NormalizedSiteGuide().double()
+    with torch.no_grad():
+        model.center_weight.weight.normal_(0, .8)
+    for order in [0, 1]:
+        kwargs = dict(order=order, model=model, radial_width=.15)
+        y, q, trace = defensive_joint_proposal(x, bonds, numbers, electronic, radii, action, generator=generator, **kwargs)
+        _, evaluated, _ = defensive_joint_proposal(x, bonds, numbers, electronic, radii, action, observed=y, **kwargs)
+        torch.testing.assert_close(evaluated, q)
+        qs = []
+        for kind in ['site', 'normalized_site']:
+            _, value, _ = joint_geometry_proposal(x, bonds, numbers, electronic, radii, action, observed=y, kind=kind, **kwargs)
+            qs.append(value)
+        torch.testing.assert_close(torch.logsumexp(torch.stack(qs), 0)-math.log(2), q)
+        assert float(q-qs[0]) >= -math.log(2)-1e-10
+        changed = exchanged_bond_graph(bonds, action)
+        recovered, qr, _ = defensive_joint_proposal(y, changed, numbers, electronic, radii, (2, 6, 1, 0), observed=x, **kwargs)
+        torch.testing.assert_close(recovered, x)
+        assert torch.isfinite(qr)
+        # Both directional laws and both augmented root orders transform with
+        # an atom permutation. This includes swapping the canonical leaf order.
+        perm = torch.tensor([6, 4, 2, 0, 5, 3, 1])
+        lookup = torch.argsort(perm)
+        i, j, k, l = [int(lookup[a]) for a in action]
+        perm_action = (j, i, l, k) if i > j else (i, j, k, l)
+        rotation = -torch.eye(3, dtype=x.dtype)
+        _, qt, _ = defensive_joint_proposal(x[perm]@rotation, bonds[perm][:, perm], numbers[perm], electronic,
+            radii[perm], perm_action, observed=y[perm]@rotation,
+            **dict(kwargs, order=1-order if i > j else order))
+        torch.testing.assert_close(qt, q, atol=1e-8, rtol=1e-9)
+
+
+def test_defensive_mh_probability_flow_dominates_physical_component():
+    torch.manual_seed(2205)
+    pi = torch.tensor([.05, .1, .15, .7], dtype=torch.float64)
+    physical = torch.rand(4, 4, dtype=pi.dtype)
+    physical /= physical.sum(1, keepdim=True)
+    poor = torch.full((4, 4), .001, dtype=pi.dtype)
+    poor[:, 0] = .997
+    def kernel(q):
+        flow = torch.minimum(pi[:, None]*q, pi[None, :]*q.T)
+        off_diagonal = flow/pi[:, None]
+        off_diagonal.fill_diagonal_(0.)
+        return off_diagonal+torch.diag(1-off_diagonal.sum(1))
+    mixed = kernel(.5*physical+.5*poor)
+    baseline = kernel(physical)
+    torch.testing.assert_close(pi@mixed, pi)
+    torch.testing.assert_close(mixed.sum(1), torch.ones_like(pi))
+    off = ~torch.eye(4, dtype=torch.bool)
+    assert (mixed[off] >= .5*baseline[off]-1e-12).all()
