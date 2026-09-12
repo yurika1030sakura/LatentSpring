@@ -201,3 +201,61 @@ charged twice. The preceding 36,864-call physical route pilot is separately
 recorded. Fitting and inference runtime, source failures, representative learned
 baselines and the broader prior-art boundary remain necessary for the intended
 submission claim.
+
+\subsection{Complete molecular comparison: no established learned gain}
+
+The frozen comparison now evaluates both scalar objectives on all 48 internally
+withheld parents: 16 each in conditions 0 and 7, and four each in conditions 1,
+2, 3 and 5. Each model seed has 128 inference calls per parent. Charging 14,862
+model-specific data calls gives 21,006 calls per method and seed before common
+costs. The physical site-arc control allocates 438 calls to 39 parents and 436 to
+nine, selected by a fixed hash, giving exactly the same declared method budget.
+All 36 arms reach their budgets. Independent replay verifies all trajectories,
+per-parent ledgers and 8,682 complete joint MH ratios.
+
+The primary result does not favor learning. Work-only minus physical potential
+is $+0.5453$\,eV, with descriptive fixed-composition parent-bootstrap 95\% interval
+$[0.3630,0.7590]$\,eV. Work-plus-force gives $+0.4929$\,eV,
+$[0.3099,0.7052]$\,eV. Every composition point estimate favors the physical control.
+At equal inference cost of 128 calls per parent, the differences are $+0.0469$\,eV
+($[-0.0577,0.1783]$) and $-0.0055$\,eV ($[-0.1499,0.1471]$), respectively.
+Thus the failure is not explained solely by amortizing data costs over a small
+cohort. Neither objective establishes average same-inference energy benefit;
+their mutual difference is also uncertain. Figure~\ref{fig:conditional-chain}
+retains both cost regimes. These are internal development comparisons, not the
+reserved final benchmark; intervals are descriptive and not multiplicity-adjusted.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/conditional_arc_controls_v1.pdf}
+\caption{The scalar predictor's internal work-error improvement does not establish
+complete-chain benefit against physical site arcs. Negative differences favor
+learning. The declared method budgets match after data costs; additional numerical
+repair expenditure is recorded separately.}
+\label{fig:conditional-chain}
+\end{figure}
+
+A post-hoc move diagnostic also provides no clear explanation in terms of more
+useful connectivity exploration. At 128 calls, expected accepted constitutional
+changes per parent, averaged equally over compositions, are 0.995 for physics,
+0.927 for work-only and 0.969 for work-plus-force. Actual mean visited
+connectivities are 1.927, 1.917 and 2.016, respectively. These short-path counts
+are not mixing or independent-sample estimates. A separate five-candidate
+energy-ranking diagnostic improves after learning, but its finite-set probability
+KL mostly worsens. That quantity is not continuous conditional KL. The observed
+prediction improvement is therefore insufficient to qualify the proposed sampler.
+
+\paragraph{Numerical repair and actual expenditure.}
+A near-pole subtraction produced a tangent orthogonality residual
+$1.72\times10^{-9}$ at angular sine $1.35\times10^{-7}$, triggering the unchanged
+$10^{-9}$ frame check. Reorthogonalization fixes the cancellation without loosening
+that check. The failed learner resumes by replaying all 352 previously completed
+raw calls; its earlier states and transitions match. Independent replay additionally
+finds one physical-control proposal previously rejected by the same reverse-frame
+error. To use consistent arithmetic, that control reuses its 358-call common
+prefix and regenerates the affected suffix, costing 1,392 additional raw calls.
+The corrected trajectories use 66,588 calls; actual research expenditure including
+the discarded control suffix is 67,980. Original failures and prefixes are retained.
+The recovered partial arm's previous failed-attempt runtime is separately recorded,
+so these timing records cannot support a matched-wall-time superiority claim.
+The scientific comparisons above use the corrected, replayed trajectories.

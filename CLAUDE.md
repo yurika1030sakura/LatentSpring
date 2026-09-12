@@ -18,7 +18,7 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/CONDITIONAL_NONLOCAL_STATE_20260912.json` first. They record the current method,
+`research/CONDITIONAL_CHAIN_RESULT_20260912.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
@@ -68,18 +68,35 @@ models. All four improve internally withheld nonlocal work prediction by roughly
 The protected438-context data and all final model/baseline metrics are replayed.
 The added928 withheld endpoints use1,856 raw calls; training uses no new oracle.
 All jobs are terminal:46178737/46178918 and46179382/46180176. Read
-`research/CONDITIONAL_NONLOCAL_STATE_20260912.json`,
+`research/CONDITIONAL_CHAIN_RESULT_20260912.json`,
 `notes/conditional_nonlocal_arc_learning_v1.md` and the updated NEXT before action.
 
-The next full-chain pilot must compare both learned objectives with physical site
-arcs on the48 internally withheld parents, including all data costs. Shared warm
-preparation is6,088 raw calls; model-specific data overhead is14,862, after removing
-that shared preparation from20,950 total label/preparation calls. Count common
-costs once. Reserved722 outcomes and the old evaluated six-composition coordinates
-remain excluded from fitting. Learning a cheap energy and MH correction have
-extensive prior art; `notes/nonlocal_arc_prior_art_20260912.md` records the boundary.
-Equilibrium, competitive learned-generator and matched-wall-time superiority
-remain unqualified. The project is not scientifically submission ready.
+The scalar learned-chain comparison is now COMPLETE on48 internally withheld
+parents and six compositions. All36 arms reach their declared caps and8,682
+joint MH ratios pass independent checks. Work and work-plus-force lose the
+model-data-cost comparison by+0.5453 and+0.4929 eV, respectively; both intervals
+exclude zero. At equal128-call inference, differences are+0.0469 and-0.0055 eV,
+with intervals crossing zero. The force-loss addition has no established gain.
+Do not scale these frozen models or call their19--24% work-prediction improvement
+an effective sampler. Canonical-move diagnostics also show no clear benefit.
+
+A near-pole cancellation was repaired without relaxing the frame check. The
+failed learner reuses352 cached calls. One affected physical-control suffix had
+to be regenerated for consistent arithmetic, adding1,392 calls. Corrected
+trajectories use66,588 calls; actual research expenditure is67,980. Original
+failures and discarded suffixes remain preserved. Partial-arm timing excludes
+its previous failed-attempt time, which is separately recorded; no matched-wall-
+time claim follows. See `research/CONDITIONAL_CHAIN_RESULT_20260912.json`.
+
+The next bounded candidate is direct accepted-utility learning from recorded
+FIT-parent physical proposal pairs. First implement differentiable OBSERVED
+joint densities, test the actual forward/reverse objective and audit importance
+weights. `notes/accepted_utility_learning_candidate_v1.md` gives the standard
+identity, support/denominator requirements and limits. It is not an implemented
+replacement or a novelty result. Do not fit on the evaluated48 withheld parents,
+old six-composition test coordinates, or722 reserved outcomes. Read NEXT.
+Equilibrium, competitive learned-generator and scientific submission readiness
+remain unqualified. Keep the full goal active.
 The previous manuscript is `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
 exact-entropy refinement candidate. It is explicitly a development draft.

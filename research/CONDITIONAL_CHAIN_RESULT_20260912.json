@@ -1,0 +1,255 @@
+{
+  "updated_at_utc": "2026-09-12T19:20:28.982571+00:00",
+  "goal_status": "active",
+  "scientific_submission_ready": false,
+  "previous_checkpoint": "research/CONDITIONAL_NONLOCAL_STATE_20260912.json",
+  "conclusion": "The scalar-energy predictor improves internal work prediction but neither objective establishes average full-chain energy benefit at equal inference. Both lose the declared data-cost comparison to physical site arcs. Do not scale or repeat these frozen models.",
+  "summary": {
+    "path": "runs/conditional_arc_chain_summary_v1/results.json",
+    "sha256": "062464eb14a3ceae4dd424ae51fc5a593c30146a128058514767e2357f7b9141"
+  },
+  "conditions": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    7
+  ],
+  "parents": 48,
+  "replicas": 2,
+  "arms": 36,
+  "audited_joint_MH_ratios": 8682,
+  "all_declared_caps_reached": true,
+  "audits": [
+    {
+      "index": 0,
+      "path": "runs/conditional_arc_chain_audit_v2/condition_00/results.json",
+      "sha256": "ada775accd67c4d25dfae8f8d2f5e50a0c5aa7abc8149909a85aab9b610e48f5",
+      "independent_joint_MH": 2939
+    },
+    {
+      "index": 1,
+      "path": "runs/conditional_arc_chain_audit_v2/condition_01/results.json",
+      "sha256": "122141da8b088b0120e51ed38f9ba7a48e2953dbfa5f580ccd2a2fc5cb5ddc3f",
+      "independent_joint_MH": 690
+    },
+    {
+      "index": 2,
+      "path": "runs/conditional_arc_chain_audit_v2/condition_02/results.json",
+      "sha256": "1077bc81fbd161fa213672e01715e7ac18f2ba1791932f15e297c8797a13b833",
+      "independent_joint_MH": 666
+    },
+    {
+      "index": 3,
+      "path": "runs/conditional_arc_chain_audit_v2/condition_03/results.json",
+      "sha256": "60c543c112e192eadc1002a81716753f467a43f6fed133ab109b6c16c04e545b",
+      "independent_joint_MH": 695
+    },
+    {
+      "index": 5,
+      "path": "runs/conditional_arc_control_audit_v1/condition_05/results.json",
+      "sha256": "7a994ebf061c7706428458554788d9c0118900a9dc389278ec1eb690422fb09f",
+      "independent_joint_MH": 709
+    },
+    {
+      "index": 7,
+      "path": "runs/conditional_arc_chain_audit_v2/condition_07/results.json",
+      "sha256": "75e3f84480736040584b97a0c2058935bb76ed7d0add8b11b98b8fd0375aa24a",
+      "independent_joint_MH": 2983
+    }
+  ],
+  "equal_inference_128": {
+    "learned_work_minus_arc_site": {
+      "available": true,
+      "mean": 0.04690241549246821,
+      "fixed_composition_parent_bootstrap_95_percent_interval": [
+        -0.05767444419507228,
+        0.17834950294093233
+      ],
+      "parents": 48,
+      "per_condition_mean": {
+        "0": 0.056076047070064305,
+        "1": -0.038557709058295586,
+        "2": 0.3539717946714518,
+        "3": -0.021527831186176627,
+        "5": 0.025078857200242055,
+        "7": -0.09362666574247669
+      },
+      "inference_scope": "INTERNAL development: composition identities fixed, seeds averaged within parent; descriptive unadjusted parent intervals. Not a reserved final benchmark."
+    },
+    "learned_work_force_minus_arc_site": {
+      "available": true,
+      "mean": -0.0055337942170391825,
+      "fixed_composition_parent_bootstrap_95_percent_interval": [
+        -0.14991144610176357,
+        0.14708502815902116
+      ],
+      "parents": 48,
+      "per_condition_mean": {
+        "0": -0.03565703340541404,
+        "1": -0.02264644659589976,
+        "2": 0.2814785476130055,
+        "3": -0.2659965041275427,
+        "5": 0.09211798026899487,
+        "7": -0.08249930905537894
+      },
+      "inference_scope": "INTERNAL development: composition identities fixed, seeds averaged within parent; descriptive unadjusted parent intervals. Not a reserved final benchmark."
+    },
+    "learned_work_force_minus_learned_work": {
+      "available": true,
+      "mean": -0.05243620970950739,
+      "fixed_composition_parent_bootstrap_95_percent_interval": [
+        -0.1527014619870594,
+        0.03313861799205142
+      ],
+      "parents": 48,
+      "per_condition_mean": {
+        "0": -0.09173308047547835,
+        "1": 0.015911262462395825,
+        "2": -0.07249324705844629,
+        "3": -0.2444686729413661,
+        "5": 0.06703912306875282,
+        "7": 0.011127356687097745
+      },
+      "inference_scope": "INTERNAL development: composition identities fixed, seeds averaged within parent; descriptive unadjusted parent intervals. Not a reserved final benchmark."
+    }
+  },
+  "declared_total_cost": {
+    "learned_work_minus_arc_site": {
+      "available": true,
+      "mean": 0.5453040296212635,
+      "fixed_composition_parent_bootstrap_95_percent_interval": [
+        0.36301291751635745,
+        0.7589500502986842
+      ],
+      "parents": 48,
+      "per_condition_mean": {
+        "0": 0.19549030533471523,
+        "1": 0.18652828210724692,
+        "2": 0.7431030449570244,
+        "3": 0.7140776411961269,
+        "5": 0.7077133829525337,
+        "7": 0.7249115211799335
+      },
+      "inference_scope": "INTERNAL development: composition identities fixed, seeds averaged within parent; descriptive unadjusted parent intervals. Not a reserved final benchmark."
+    },
+    "learned_work_force_minus_arc_site": {
+      "available": true,
+      "mean": 0.49286781991175604,
+      "fixed_composition_parent_bootstrap_95_percent_interval": [
+        0.3099133771600198,
+        0.7052489795961302
+      ],
+      "parents": 48,
+      "per_condition_mean": {
+        "0": 0.10375722485923689,
+        "1": 0.20243954456964275,
+        "2": 0.6706097978985781,
+        "3": 0.46960896825476084,
+        "5": 0.7747525060212865,
+        "7": 0.7360388778670313
+      },
+      "inference_scope": "INTERNAL development: composition identities fixed, seeds averaged within parent; descriptive unadjusted parent intervals. Not a reserved final benchmark."
+    },
+    "learned_work_force_minus_learned_work": {
+      "available": true,
+      "mean": -0.05243620970950739,
+      "fixed_composition_parent_bootstrap_95_percent_interval": [
+        -0.1527014619870594,
+        0.03313861799205142
+      ],
+      "parents": 48,
+      "per_condition_mean": {
+        "0": -0.09173308047547835,
+        "1": 0.015911262462395825,
+        "2": -0.07249324705844629,
+        "3": -0.2444686729413661,
+        "5": 0.06703912306875282,
+        "7": 0.011127356687097745
+      },
+      "inference_scope": "INTERNAL development: composition identities fixed, seeds averaged within parent; descriptive unadjusted parent intervals. Not a reserved final benchmark."
+    }
+  },
+  "method_replica_costs": {
+    "arc_site_s0": {
+      "inference_raw_calls": 21006,
+      "model_specific_data_raw_calls": 0,
+      "comparable_total_raw_calls": 21006,
+      "shared_preparation_raw_calls": 6088,
+      "total_with_shared_preparation": 27094,
+      "all_caps_reached": true
+    },
+    "arc_site_s1": {
+      "inference_raw_calls": 21006,
+      "model_specific_data_raw_calls": 0,
+      "comparable_total_raw_calls": 21006,
+      "shared_preparation_raw_calls": 6088,
+      "total_with_shared_preparation": 27094,
+      "all_caps_reached": true
+    },
+    "learned_work_s0": {
+      "inference_raw_calls": 6144,
+      "model_specific_data_raw_calls": 14862,
+      "comparable_total_raw_calls": 21006,
+      "shared_preparation_raw_calls": 6088,
+      "total_with_shared_preparation": 27094,
+      "all_caps_reached": true
+    },
+    "learned_work_s1": {
+      "inference_raw_calls": 6144,
+      "model_specific_data_raw_calls": 14862,
+      "comparable_total_raw_calls": 21006,
+      "shared_preparation_raw_calls": 6088,
+      "total_with_shared_preparation": 27094,
+      "all_caps_reached": true
+    },
+    "learned_work_force_s0": {
+      "inference_raw_calls": 6144,
+      "model_specific_data_raw_calls": 14862,
+      "comparable_total_raw_calls": 21006,
+      "shared_preparation_raw_calls": 6088,
+      "total_with_shared_preparation": 27094,
+      "all_caps_reached": true
+    },
+    "learned_work_force_s1": {
+      "inference_raw_calls": 6144,
+      "model_specific_data_raw_calls": 14862,
+      "comparable_total_raw_calls": 21006,
+      "shared_preparation_raw_calls": 6088,
+      "total_with_shared_preparation": 27094,
+      "all_caps_reached": true
+    }
+  },
+  "corrected_trajectory_raw_calls": 66588,
+  "actual_research_raw_calls_including_discarded_control": 67980,
+  "additional_control_repair_raw_calls": 1392,
+  "cost_scope": "Declared corrected method trajectories are matched. Actual research spending also includes1392 calls from the discarded numerical-control suffix; it is explicitly reported as repair overhead.",
+  "source_runs": {
+    "original": "runs/conditional_arc_chain_v1",
+    "recovered_learner": "runs/conditional_arc_chain_recovery_v1",
+    "corrected_condition5": "runs/conditional_arc_control_repair_v1"
+  },
+  "jobs": {
+    "original_worker0": "46181560_0 FAILED",
+    "original_worker1": "46181560_1 COMPLETED",
+    "first_audit": "46181692 CANCELLED",
+    "recovery": "46182765 COMPLETED",
+    "audits": "46182808: five cases COMPLETED, condition5 failed consistency check",
+    "control_repair": "46183584 COMPLETED",
+    "final_condition5_audit": "46183645 COMPLETED"
+  },
+  "all_current_work_terminal": true,
+  "diagnostics": {
+    "candidate_confidence": "runs/conditional_arc_candidate_diagnostic_v1/results.json",
+    "canonical_moves": "runs/conditional_arc_chain_move_diagnostic_v1/results.json",
+    "interpretation": "Finite-candidate ranking improves but confidence KL mostly worsens. At128 calls the expected constitutional-change counts are0.995 physics,0.927 work,0.969 work-plus-force; no clear useful exploration gain. These are post-hoc diagnostics, not continuous KL or mixing estimates."
+  },
+  "next": "Implement and test differentiable observed joint densities and an accepted-utility objective on existing FIT-parent physical site-arc proposal pairs. Audit behavioral support, all failed-attempt denominators and importance weights before fitting. Do not use evaluated withheld trajectories for weights.",
+  "candidate_note": "notes/accepted_utility_learning_candidate_v1.md",
+  "reserved_outcomes_untouched": 722,
+  "figure": "runs/conditional_arc_chain_figure_v1/conditional_arc_controls.pdf",
+  "paper_entrypoint": "paper/angular_working.tex",
+  "paper_build": "runs/verification/conditional_chain_completed_20260912/main.pdf",
+  "paper_build_evidence": "research/evidence/conditional_chain_completed_build_20260912.json"
+}

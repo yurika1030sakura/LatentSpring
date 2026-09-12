@@ -1,64 +1,46 @@
 # Next research actions — September 12, 2026
 
-Read `research/CONDITIONAL_NONLOCAL_STATE_20260912.json` and `research/STATUS.md`.
-Use `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`. Never write into the home
-checkout. The ICLR goal remains active and scientifically unachieved.
+Read `research/CONDITIONAL_CHAIN_RESULT_20260912.json` and `research/STATUS.md`.
+Use `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`; never write to the home
+checkout. The ICLR objective remains active and scientifically unachieved.
 
-1. The scalar model,438-context dataset, four800-step trainings and independent
-   learning audit are COMPLETE. Do not retrain or repeat the physical pilot.
-   Training: `runs/conditional_arc_train_v1/{work,work_force}_s{0,1}`.
-   Audit: `runs/conditional_arc_learning_audit_v1/results.json`.
-   The `arc_energy` complete joint decoder is implemented with independently
-   checked scalar energy readout and forward/reverse normalization.
-2. **Recovery update:** original worker46181560_0 failed at a reproduced near-pole
-   tangent cancellation; worker1 completed. The original audit46181692 was
-   cancelled. The frame is reorthogonalized without relaxing checks; all47 cached
-   requests/352 calls and prior states/transitions replay identically. Recovery
-   producer46182765 uses `runs/conditional_arc_chain_recovery_v1` for condition5,
-   reusing its completed physical arm and cached partial learner. Maximum
-   additional recovery cost is3,446 calls; the overall66,588-call budget is unchanged.
-   Preserve the original failure and its runtime. Follow the replacement audit,
-   and supply `--recovery-run` to the summary. Do not rerun completed conditions.
+1. The scalar learned-chain comparison and all audits are COMPLETE. The summary
+   is `runs/conditional_arc_chain_summary_v1/results.json`. Both objectives lose
+   the declared data-cost comparison; neither has an established same-inference
+   energy gain. Canonical-move diagnostics are also unconvincing. Do not retrain,
+   scale, or re-run these frozen models merely because prediction error improved.
+2. Implement the bounded candidate in
+   `notes/accepted_utility_learning_candidate_v1.md`: differentiable OBSERVED
+   joint densities and direct actual-MH accepted utility. Keep the sampling
+   no-gradient boundary. First test exact finite-state behavior, actual-map finite
+   differences, all circle/order/radius factors and support. This is currently a
+   plan, not an implemented or successful learner; the identity is established
+   mathematics, not a new general MH theorem.
+3. Audit only the already available FIT-parent physical site-arc trajectories
+   from `runs/joint_arc_budget_v1` as candidate training pairs. Keep every failed
+   attempt in denominators and verify behavioral coverage. Freeze hashes, an
+   energy-blind internal parent split and a small two-seed protocol before fitting.
+   Start from the physical proposal rather than transferring the failed scalar
+   checkpoint. Bound residual proposal scores and inspect importance weights/ESS;
+   do not manufacture improvement from a few high-weight recorded edges.
+4. This candidate requires no new physical queries for initial mathematical and
+   offline checks. If its physical trajectories become training data, charge their
+  12,288 raw calls plus relevant preparation. Do not reuse the old14,862 model
+   overhead unchanged for a different data recipe. Compare actual accepted work
+   and constitutional-change utility as distinct declared quantities.
+5. Only after internal qualification freeze a fresh learned-chain comparison and
+   suitable learned/physical controls. Keep prior evaluated six-composition
+   coordinates and the newly evaluated48 withheld-parent trajectories out of
+   fitting. Leave722 reserved outcomes untouched until method/scope freeze.
 
-   The frozen `research/evidence/conditional_arc_chain_protocol_v1.json`
-   complete-chain pilot is submitted as46181560, with independent audit46181692.
-   The unique outputs are `runs/conditional_arc_chain_v1` and
-   `runs/conditional_arc_chain_audit_v1`. Re-query these jobs and consume all36
-   arms; do not launch duplicates. The pilot covers all48 withheld parents:16 each
-   in conditions0 and7, four each in1,2,3,5. Their IDs are the union of the two
-   withheld lists in `multicomposition_angular_probe_protocol_v1.json`. Keep both
-   learned objectives/seeds and a physical site-arc control; no favorable-seed
-   selection. These are internal development outcomes, not the reserved benchmark.
-3. Include128-call learned readouts and a precisely cost-matched physical budget.
-   Shared warm preparation is6,088 calls. Model-specific data overhead is14,862
-   calls (5,822 FIT-parent preparation+5,536 probes+1,648 FIT endpoints+1,856
-   validation endpoints). Thus each learned method/replica costs21,006 calls plus
-   common costs. A physical control with39 parents at438 calls and9 at436 costs
-   exactly21,006; assign the extra pair of calls by a prospectively fixed hash.
-   Retain same-inference32/64/128-call readouts and measured runtime. Maximum new
-   production cost for three methods and two replicas is66,588 raw calls.
-   Per-parent caps and scalar-model loading are implemented and tested. Nine
-   targeted tests pass; old real physical trajectories and their summary replay
-   unchanged under the generalized driver.
-4. Consume every chain replay, all raw-call ledgers and independent joint MH ratios before
-   interpretation. Predictive error improvement alone is insufficient. If learning
-   adds useful sampling, test a broader frozen reuse cohort and appropriate
-   learned baselines; preserve every adverse cost regime and composition.
-5. Address the prior-art boundary in `notes/nonlocal_arc_prior_art_20260912.md`.
-   Classical biased regrowth, self-learning MC, learned decoders and geodesic
-   sampling already exist. The intended contribution is a useful learned coupling
-   of molecular connectivity/geometry and feasible conditional proposals. Consider
-   classical multi-trial regrowth and same-score local proposals as discriminating
-   controls; generic force fitting or a cheap neural potential is not enough.
+For reproduction of the completed result, use the original producer directory,
+five audits in `runs/conditional_arc_chain_audit_v2`, corrected condition5 in
+`runs/conditional_arc_control_repair_v1`, and its final audit in
+`runs/conditional_arc_control_audit_v1/condition_05`. The summary accepts both
+`--recovery-run` and `--recovery-audit-run`. Corrected trajectories use66,588 calls;
+actual research spending is67,980 after the explicitly retained1,392-call control
+repair. All current jobs are terminal; do not restart cancelled dependencies.
 
-Do not fit on the previously evaluated six-composition coordinates. Keep722
-reserved outcomes untouched until the method, scope and final benchmark are
-frozen. Authors and actual submission remain with the user. No new permission is
-required for authorized research work. Prior NEXT:
-`notes/archive/next_through_geodesic_physics_20260912.md`.
-
-A supplementary, post-training five-candidate diagnostic is in
-`runs/conditional_arc_candidate_diagnostic_v1/results.json`. Learned energy
-ranking improves, but most finite-set probability KL values worsen. These are
-not continuous conditional distributions: no quadrature/proposal-volume weights
-enter that diagnostic. It does not change the running frozen experiment.
+Continue the full ICLR goal. A scoped useful AI contribution is required;
+universal perfection and a new physical law are not. Prior NEXT:
+`notes/archive/next_through_scalar_prediction_20260912.md`.

@@ -1,77 +1,65 @@
 # Current research status — September 12, 2026
 
-Current checkpoint: `research/CONDITIONAL_NONLOCAL_STATE_20260912.json`.
-The ICLR goal remains active and scientifically unachieved. Read
-`research/CLAIM_AND_BENCHMARK_SCOPE.md` for the user's intended standard.
+Authoritative checkpoint: `research/CONDITIONAL_CHAIN_RESULT_20260912.json`.
+The ICLR goal is active and scientifically unachieved. The latest scalar predictor
+has no established molecular sampling advantage and should not be scaled.
 
-The new scalar conditional energy model is implemented, trained and independently
-checked. It predicts context-conditioned root-to-passive interaction curves,
-learns potential differences and optional tangential forces, and supplies an
-exactly evaluated interpolated-circle proposal through `arc_energy`. All actual
-partial contexts, both decoder orders, radius factors and circle preimages enter
-the forward/reverse density. The old one-vector `arc_model` has separate semantics.
+The complete comparison covers48 internally withheld parents in six compositions,
+three methods and two seeds. All36 arms reach their budgets. Independent audits
+replay every trajectory and8,682 joint MH ratios. At the declared method/data cost
+of21,006 calls per replica (plus6,088 common preparation calls), work-only minus
+physical potential is+0.5453 eV, descriptive95% parent interval[0.3630,0.7590].
+Work-plus-force is+0.4929 eV,[0.3099,0.7052]. All six composition point estimates
+favor physical site arcs. These are internal development comparisons.
 
-Training data contain438 contexts:206 FIT,76 withheld-parent and156 withheld-
-composition. FIT local-check directions and all withheld labels stay excluded
-from fitting. Four fixed800-step trainings compare work-only versus work-plus-
-force, with two seeds each and no early checkpoint selection. No new physical
-calls are needed for fitting. The928 extra withheld arc endpoints cost1,856 raw
-calls; their full independent replay is complete.
+At equal128-call inference, the differences are+0.0469 eV,[-0.0577,0.1783], and
+-0.0055 eV,[-0.1499,0.1471]. Neither establishes average energy benefit. The
+force-versus-work difference is also uncertain. These findings are stronger than
+merely failing to amortize training on a small cohort: the same-inference signal
+is unqualified as well. The19--24% internal work-prediction improvement remains
+true but does not constitute a useful sampler result.
 
-All four final models improve internal nonlocal work prediction over the physical
-site64 score. Withheld-parent MAE falls from0.37036 eV to0.28675--0.29839 eV;
-withheld-composition MAE falls from0.58831 eV to0.44725--0.47630 eV. Tangential
-force errors also improve. These are conditional prediction diagnostics, not
-complete-chain efficiency, blind final evaluation or established AI novelty.
-The force-loss addition has no demonstrated decisive benefit over work-only.
+A post-hoc constitutional-move diagnostic gives expected accepted changes per
+parent at128 calls of0.995 (physics),0.927 (work),0.969 (work-plus-force), averaged
+equally over compositions. Mean visited connectivities are1.927,1.917,2.016.
+There is no clear exploration benefit. These counts do not measure independent
+samples or mixing; same-connectivity moves may still alter conformations. The
+separate five-candidate diagnostic improves energy ranking but mostly worsens
+confidence KL; it is not a continuous conditional-KL estimate or a proven cause.
 
-The learning audit rebuilds all438 contexts and split masks, reloads every model,
-reproduces every final context metric and both physical baselines, and checks
-actual trained-loss finite differences (maximum error1.19e-8). The optimizer's
-full trajectory has not been replayed. Source and model hashes are frozen.
-Audit: `runs/conditional_arc_learning_audit_v1/results.json`.
+Summary: `runs/conditional_arc_chain_summary_v1/results.json`.
+Figure: `runs/conditional_arc_chain_figure_v1/conditional_arc_controls.pdf`.
+Move diagnostic: `runs/conditional_arc_chain_move_diagnostic_v1/results.json`.
 
-| Completed work | Producer | Independent audit |
-|---|---|---|
-| Internal withheld arc labels | 46178737 | 46178918 |
-| Four scalar-energy trainings | 46179382 | 46180176 |
-| Complete physical site/uniform arc chains | 46176878 | 46176906 |
-| Real complete joint support | 46174307 | 46176033 |
+## Numerical repair and provenance
 
-Those training/validation jobs are terminal. The new complete-chain experiment
-is now submitted as46181560, with independent audit46181692. It contains36 arms
-on48 internally withheld parents across six compositions, at most66,588 new raw
-calls. The generalized driver supports the exact436/438 physical caps and128
-learned caps, with21,006 counted calls per method/replica after model data costs.
-Nine budget tests pass and the old physical trajectories/summary replay unchanged.
-Re-query Slurm before status or result claims; partial arms are not conclusions.
+Original worker46181560_0 failed on near-pole tangent cancellation; worker1
+completed. The dependent audit46181692 was cancelled. Reorthogonalization fixes
+the numerical residual without weakening checks. Recovery46182765 replays all47
+cached requests/352 raw calls and preserves earlier states/transitions. Audit
+46182808 passes five conditions but detects a previously rejected reverse-frame
+error in one physical control. Only that control suffix is regenerated as46183584,
+reusing its358-call prefix and adding1,392 new calls. Final condition5 audit
+46183645 completes. All current work is terminal.
 
-A supplementary five-candidate diagnostic shows better energy ranking but mostly
-worse finite-set probability KL after learning. It exposes potential overconfidence;
-it is neither continuous conditional KL nor evidence of molecular sampling failure.
-It uses existing labels, adds no physical calls and does not alter the frozen pilot.
+Corrected method trajectories contain66,588 calls; actual physical research
+spending, including the discarded numerical-control suffix, is67,980. Both are
+reported. The recovered partial arm's earlier failure time is retained separately,
+so per-method timing does not support a matched-wall-time claim. No old evidence
+is overwritten. The corrected condition5 is `runs/conditional_arc_control_repair_v1`;
+use its audit with the other five completed audits from46182808.
 
-The preceding physical arc result remains useful: on48 FIT parents, site arcs
-improve the128-call potential-change readout by0.07615 eV against legacy site64,
-with22.4% more sampling runtime. Uniform arcs show no established average chain
-benefit. This does not overturn the previous learner's failure against strong
-concentration64/400 controls or establish transfer of that old learner.
+All source zeros and prior negative controls remain. Training support counts are
+45,32,106,99,0,19,0,96 out of256 each. Condition6 has empty connected support under
+the pinned builder; condition4 remains unresolved. Original charge/spin and722
+reserved outcomes are preserved. The old vector learner's failure against
+concentration64/400 controls is not overturned.
 
-All training-source support counts remain45,32,106,99,0,19,0,96 out of256 each.
-Both zeros are retained; condition6 has empty connected support under the pinned
-builder's necessary degree bound, while condition4 remains unresolved. Do not
-replace them. Original charge/spin, all failed attempts and negative controls stay
-in the evidence. The722 reserved outcomes remain untouched.
-
-Raw cost accounting for the next internally withheld-parent pilot:20,950 total
-preparation/probe/label calls, of which6,088 are preparation shared with its48
-starts. The model-specific overhead is14,862 calls. Count shared preparation
-once; record the previous36,864-call physical route pilot separately. FM/source
-and fitting/runtime costs remain explicit in the final benchmark.
-
-The latest reviewed PDF is
-`runs/verification/conditional_nonlocal_20260912/main.pdf`, eight main pages
-and18 total. It contains both the physical reconstruction and the new scalar
-learning diagnostics, with prior-art citations, cost accounting and limitations.
-The new table is visually checked; page, citation and layout checks pass. Prior status is in
-`notes/archive/status_through_geodesic_physics_20260912.md`.
+The development manuscript includes the scalar prediction and complete-chain
+negative results, recovery costs and limits. Current build:
+`runs/verification/conditional_chain_completed_20260912/main.pdf` (eight main
+pages,19 total; no unresolved references or overfull boxes; result pages visually
+checked).
+NEXT specifies a bounded accepted-utility investigation using FIT-parent data,
+not another run of the failed frozen learner. Historical status:
+`notes/archive/status_through_scalar_prediction_20260912.md`.
