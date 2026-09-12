@@ -158,3 +158,39 @@ def test_known_full_com_gaussian_with_action_label_and_negative_control():
         assert abs(float(good[labels == label].square().sum((1, 2)).mean())-dimension) < .35
     bad, _ = run(True)
     assert abs(float(bad.square().sum((1, 2)).mean())-dimension) > .5
+
+
+def test_chemical_transition_oracle_pair_accounting_and_mh_ratio():
+    from rdkit import Chem
+    from rdkit.Chem import AllChem
+    from cfm_mol.chemical_sampler import ChemicalTarget
+    from cfm_mol.fragment_sampler import fragment_transition
+    molecule = Chem.AddHs(Chem.MolFromSmiles('CCCO'))
+    assert AllChem.EmbedMolecule(molecule, randomSeed=2303) == 0
+    positions = torch.tensor(molecule.GetConformer().GetPositions(), dtype=torch.float64)
+    positions -= positions.mean(0)
+    class Oracle:
+        evaluated = 0
+        def evaluate_chunked(self, x, max_request):
+            self.evaluated += len(x)
+            return .5*x.square().sum((1, 2)), -x
+    oracle = Oracle()
+    condition = dict(numbers=[a.GetAtomicNum() for a in molecule.GetAtoms()], charge=0, spin_multiplicity=1)
+    target = ChemicalTarget(oracle, condition, 1., .1)
+    states = target.evaluate([target.coordinate_state(positions), target.coordinate_state(-positions)], phase='initial')
+    rng = torch.Generator().manual_seed(2304)
+    valid = 0
+    for step in range(8):
+        before = list(states)
+        states, rows = fragment_transition(target, states, method='fragments4', generator=rng, phase=str(step))
+        for old, row in zip(before, rows):
+            if not row['valid']:
+                assert not row['accepted']
+                continue
+            valid += 1
+            new = target.states[row['new_state_id']]
+            physical = -.55*float(new['positions'].square().sum()-old['positions'].square().sum())
+            ratio = physical+float(row['proposal']['log_reverse']-row['proposal']['log_forward'])+math.log(row['forward_count']/row['reverse_count'])
+            assert abs(ratio-row['log_acceptance_ratio']) < 1e-8
+            assert row['accepted'] == (row['log_uniform'] < min(0., ratio))
+    assert valid > 0 and oracle.evaluated == 4+2*valid

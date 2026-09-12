@@ -1,0 +1,56 @@
+{
+  "frozen": true,
+  "version": 1,
+  "coverage_results_sha256": "62a7150e33c20a59f97622498dafc9967c218aaa4347e55fca54ba607a7499d6",
+  "census_sha256": "58aac86ad7585243588ddf225b70c5757d01a9b61f67ea93bf3d94cab7aeaa2f",
+  "physical_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "condition_indices": [
+    1,
+    2,
+    4,
+    6
+  ],
+  "condition_selection": "All prescribed compositions with supported multiatom and backbone-changing proposals in the frozen TRAINING-geometry screen; no energy ranking.",
+  "methods": [
+    "local_only",
+    "all_singletons",
+    "fragments4"
+  ],
+  "replicas": [
+    0,
+    1
+  ],
+  "chains": 4,
+  "parent_selection": "First4 chemically supported DEVELOPMENT source parents, without further filtering or energy ranking.",
+  "warm_steps": 32,
+  "evaluation_steps": 128,
+  "warm_seed": 23111,
+  "evaluation_seeds": [
+    23131,
+    23133
+  ],
+  "scale_seed": 23141,
+  "local_scales": [
+    0.1,
+    0.03,
+    0.01
+  ],
+  "schedule": [
+    "local",
+    "force_rotation",
+    "fragment_exchange",
+    "local"
+  ],
+  "max_fragment_atoms": 4,
+  "radial_width": 0.05,
+  "site_concentration": 10.0,
+  "maximum_warm_queries_per_condition": 264,
+  "maximum_eval_queries_per_arm": 1032,
+  "maximum_new_raw_queries": 25824,
+  "physical_control_only": true,
+  "training_on_pilot_data_allowed": false,
+  "reserved_outcomes_allowed": false,
+  "target_support_changed": false,
+  "cost_contract": "Actual paired oracle calls and source512 plus shared warm preparation per condition. Initial warm endpoints are rechecked in each arm. Equal step and maximum-query caps are not exact actual-cost matching.",
+  "stop_rule": "This physical feasibility pilot must establish whether valid backbone edits survive energy correction. No AI novelty, equilibrium, independent sampling efficiency or broad chemistry claim follows from a support/acceptance count."
+}
