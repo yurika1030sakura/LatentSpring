@@ -1,6 +1,9 @@
 # Next bounded test: normalized joint graph and geometry proposal
 
-Status: design only. The masked tensor guide now generates valid angular
+Status: implemented and tested in `cfm_mol/joint_chemical_geometry.py`.
+Source commit d3c2d8c freezes protocol v1 and its ten-arm experiment, Slurm46110667.
+The dated research checkpoint records execution/audit status; submission here is
+a historical event, not a live scheduler assertion. The masked tensor guide now generates valid angular
 candidates efficiently and accepts75/256 and58/256 updates, but neither replica
 crosses the difficult graph barrier. Further changes to angular acceptance alone
 do not address this outcome. Preserve both envelope versions and their controls.

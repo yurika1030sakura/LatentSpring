@@ -149,6 +149,58 @@ Eq.~\eqref{eq:angular-mh} remains valid under the cap. Eigenvector sign changes
 exchange mixture components; when $d=0$, the axis disappears. We treat this as
 an exact implementation improvement, not an established new distributional theorem.
 
+\section{Joint graph and geometry proposal}
+The fixed-radius angular kernel cannot directly repair a coupling between
+connectivity and bond strain. We therefore implement a separate, normalized
+proposal that exchanges two unlike terminal leaves at distinct anchors while
+regenerating both bond lengths and directions. It retains the same target in
+Eq.~\eqref{eq:angular-target}. The desired graph $G'$ exchanges the two attachments;
+the final perceived bond matrix must equal $G'$, otherwise the proposal is rejected
+before querying the physical oracle.
+
+For each new attachment, draw $\ell=\log r\sim\mathcal N(\mu,\sigma^2)$, with
+$\mu$ the log sum of the corresponding covalent radii. A deterministic template
+uses these radii and directions transported from the source's partner leaves.
+Choose one of the two root orders $o$ with equal probability and then generate
+directions sequentially, conditioning the second decoder on the first output.
+The first decoder sees the second leaf's template, not its eventual output.
+In this experiment $\sigma=0.05$, frozen before evaluation.
+
+Unlike the invariant-context angular update, this proposal changes its graph and
+radial context. Its directional density must therefore be explicitly normalized.
+We use the two-vMF mixture itself, without rejection to the quadratic score:
+\begin{equation}
+ \log h_\theta(u;c)=\eta^\top u+\log\cosh(dv^\top u)-\log H(c).
+\end{equation}
+Uniform directions and a fixed vMF coordination-site prior are physical controls.
+The latter points away from the sum of the other bonded neighbors' unit vectors,
+with concentration10, or is uniform when that sum is zero. Vector and tensor
+decoders reuse the frozen angular guides without new fitting.
+
+Writing $c_m$ for the sequential template context, the coordinate density is,
+up to a constant common COM chart factor,
+\begin{equation}
+ \log q_o(y\mid x,a)=\sum_{m=1}^2
+ \left[\log\phi_\sigma(\ell_m-\mu_m)-3\ell_m
+       +\log h_\theta(u_m;c_m)\right].
+ \label{eq:joint-q}
+\end{equation}
+The factor $r^3$ combines spherical volume with $dr=r\,d\ell$. It is not the
+Jacobian of the earlier deterministic site exchange. Reverse evaluation rebuilds
+the reverse template from $y$, injects the observed radii and directions from $x$
+in the same augmented order, and uses the inverse graph action $\bar a$.
+The corrected log acceptance is
+\begin{equation}
+ \log R=-\frac{U(y)-U(x)}{kT}
+ +\log\frac{q_o(x\mid y,\bar a)}{q_o(y\mid x,a)}
+ +\log\frac{p(\bar a\mid y)}{p(a\mid x)}.
+ \label{eq:joint-mh}
+\end{equation}
+The equal order probabilities cancel. The deterministic control uses the same
+distinct-anchor action list, so restricting that list cannot be credited to
+learned geometry. This is an evaluated development extension, not a new claim
+that generic autoregressive densities or Metropolis correction are novel.
+
 \section{Training and experimental contract}
 The physical angular score at a supported point is
 \begin{equation}

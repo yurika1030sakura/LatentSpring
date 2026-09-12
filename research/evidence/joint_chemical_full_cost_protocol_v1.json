@@ -1,0 +1,38 @@
+{
+  "frozen": true,
+  "version": 1,
+  "original_protocol_sha256": "fd473684cca0eeb3309367f611dbd111b55ccacb9171dc243a7b568f7db628d3",
+  "original_audit_sha256": "a84c36bf67763268dabc27fdfb5d72730aecdda7409fe9e653acf8965cf390ec",
+  "parent_results_sha256": {
+    "deterministic_s0": "e7b45488d395a90fa1505848439b2974e20a80d2cb97444db71b221a42a435c1",
+    "uniform_s0": "e910b53bf5dbb8f570c5c1d0f3f092ae4c539b638f0a9fd99c6a6675f004f7a5",
+    "site_s0": "962ef2bb649601fcd3dc2687368baa0c648471fff84f5d9a7f2dd0b60ba2f7df",
+    "deterministic_s1": "0f86d5428a9a5c3aece14f3b6d7ea4d17bafdf5bbf304eead4d864d3cd5d8f4a",
+    "uniform_s1": "7d48d928cc09a762637f09f3ef3bf7c2b32d8b33256f3de5e311950246f8e94f",
+    "site_s1": "ec0f1bda766b8b4064f6c89385129b246644a46a0233ab1e8a817b2f4eec6297"
+  },
+  "learned_target_results_sha256": {
+    "tensor_s0": "bdc8e33572962f0212a48b0686619b18bcc2f395bad3a078e302cf3d055230ff",
+    "tensor_s1": "a69628d614500d438410b39c031aa0e9b89199046186ab512954402e86911438"
+  },
+  "target_total_raw_queries": [
+    12310,
+    12460
+  ],
+  "maximum_total_steps": 2560,
+  "maximum_additional_raw_queries": 58964,
+  "methods": [
+    "deterministic",
+    "uniform",
+    "site"
+  ],
+  "replicas": [
+    0,
+    1
+  ],
+  "rationale": "Tensor joint proposal first hits the diagnostic graph for all four starts in both seeds, but inherited total cost is about four times the short physical controls. Continue the exact frozen physical chains and RNGs, without changing kernels, until within one whole microstep of the paired tensor total cost.",
+  "prefix_policy": "Reuse audited physical states and RNG; preserve and include full original prefix. Stop before a whole four-chain microstep could exceed the budget. Report an even gap of at most6 if the step cap does not bind.",
+  "scope": "Prospective bounded additional evaluation on the already inspected DEVELOPMENT composition, prompted by pilot results; not preregistered independent confirmation or equilibrium qualification.",
+  "reserved_evaluation_used": false,
+  "new_training_queries": 0
+}

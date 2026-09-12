@@ -50,6 +50,39 @@ On identical saved development contexts, median per-trial factors are183.6/265.4
 for the two tensor models and86.4/85.7 for vector models. These are internal
 rejection-success factors, not runtime speedups or reductions in equilibrium error.
 
+\section{Joint coordinate volume and reversibility}
+Fix two moved roots and the relative positions of the passive atoms. Let
+$P=I-\mathbf1\mathbf1^\top/N$. Changes to the two Cartesian root vectors followed
+by COM projection have derivative columns $Pe_i$ and $Pe_j$ in each spatial
+component. Their Gram matrix has diagonal $1-1/N$ and off-diagonal $-1/N$.
+The induced six-dimensional volume factor is therefore
+$[(N-2)/N]^{3/2}$, independent of the anchor assignment or endpoint. Equivalently,
+a full chart including the passive relative coordinates is linear with constant
+Jacobian. Either construction yields a common factor in the conditional
+forward/reverse ratio. Each moved vector contributes
+$r^2dr\,d\Omega=r^3d\ell\,d\Omega$, proving the radial term in
+Eq.~\eqref{eq:joint-q}.
+
+For fixed source, action and order, the two radial laws are normalized; the two
+angular conditionals are normalized in their sequentially constructed contexts.
+Their autoregressive product is thus a normalized proposal on the six-dimensional
+conditional coordinate chart. The graph/geometry check is applied only after this
+single draw. Its failures produce self-transitions rather than an unknown
+support-conditioned proposal normalization. For an eligible endpoint, the inverse
+attachment action exists and uses the same augmented order with probability$1/2$.
+Applying the minimum forward/reverse probability flow gives
+Eq.~\eqref{eq:joint-mh} and detailed balance for each paired action/order. Summing
+over these pairs preserves detailed balance. Mixing both orders also prevents
+the canonical ordering of atom indices from introducing a permutation preference.
+
+Re-evaluating the first conditional using both final root positions would not
+evaluate this autoregressive proposal. Tests reconstruct both source-dependent
+templates explicitly and include a negative check distinguishing the completed
+endpoint context. A correlated log-normal radial target checks stationary radial
+and Cartesian moments with nontrivial radial proposals; removing the$r^3$ term
+produces detectable bias. This known-target check supplements, rather than
+replaces, molecular proposal and physical-query replay.
+
 \section{Implementation verification and interpretation}
 Tests check masked-context equality under leaf motion and COM recentering,
 orthogonal and permutation covariance, batch independence, surface derivatives,
