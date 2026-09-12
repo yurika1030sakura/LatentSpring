@@ -1,0 +1,38 @@
+{
+  "table_results_sha256": "ae1d0748bbde7d6a6624ee05515ac1b996a10dcc6611302eb194b6f7a766fb8c",
+  "training_artifact_sha256": "ba15594f8bee4210badc01dfaf8691f14720b4af09096e7deedf3ea01809e2e1",
+  "source_table_protocol_sha256": "1f8b0fc8174848f616dd1a1759b0d6e4e8ae562eb4ed90546dd9aa835a0f85fd",
+  "training_steps": 1000,
+  "batch_size": 64,
+  "learning_rate": 0.002,
+  "score_clip": 100.0,
+  "coefficient_regularization": 0.0001,
+  "training_sampling": "Uniform original parent, then uniform scored-state/eligible-leaf example within that parent. All graph-supported training proposals are eligible, including rejected local and exchange proposals.",
+  "cost_contract": "No new physical calls during fitting; each learned method inherits all5564 training-preparation and4096 training-source queries. Development source512 and warm-up404 are common. Count all capped search attempts, neural/geometry time and physical queries separately.",
+  "frozen": true,
+  "version": 1,
+  "architecture": {
+    "hidden": 16,
+    "radial": 16,
+    "bound": 64.0,
+    "site_concentration": 10.0
+  },
+  "models": [
+    "mixture",
+    "vector"
+  ],
+  "model_seeds": [
+    10911,
+    10913
+  ],
+  "data_seeds": [
+    10921,
+    10923
+  ],
+  "new_training_physical_queries": 0,
+  "scope": "Normalized passive-atom vMF mixture with continuous atomic descriptors and physical-site center. Fit the actual normalized learned directional score; the optional outer defensive joint mixture is a separate corrected proposal.",
+  "development_coordinates_allowed_for_training": false,
+  "reference_coordinates_allowed_for_training": false,
+  "reserved_outcomes_allowed": false,
+  "stop_rule": "Training fit and correctness do not establish novelty or efficiency. Require molecular and strong physical controls including preparation and independent conditions."
+}
