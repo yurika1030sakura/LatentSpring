@@ -1,0 +1,142 @@
+{
+  "frozen": true,
+  "frozen_at_utc": "2026-09-12T17:03:21.783610+00:00",
+  "preparation_run": "runs/proposal_training_preparation_v1",
+  "preparation_audit": "runs/proposal_training_preparation_audit_v1/results.json",
+  "joint_support_audit": "runs/joint_arc_audit_v1/results.json",
+  "split_protocol_sha256": "7b1e211e0b76923890ec841b48ae18296e541de11b7ab7630ab4c51567a7f702",
+  "physical_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "condition_indices": [
+    1,
+    2,
+    3,
+    5
+  ],
+  "parent_ids_by_condition": {
+    "1": [
+      5,
+      28,
+      35,
+      55,
+      58,
+      59,
+      63,
+      68,
+      80,
+      88,
+      91,
+      94
+    ],
+    "2": [
+      0,
+      1,
+      4,
+      12,
+      15,
+      16,
+      18,
+      23,
+      27,
+      29,
+      30,
+      39
+    ],
+    "3": [
+      14,
+      16,
+      17,
+      20,
+      29,
+      34,
+      37,
+      38,
+      45,
+      47,
+      49,
+      50
+    ],
+    "5": [
+      3,
+      12,
+      36,
+      47,
+      48,
+      68,
+      103,
+      111,
+      127,
+      148,
+      176,
+      190
+    ]
+  },
+  "methods": [
+    "legacy_site64",
+    "arc_uniform",
+    "arc_site"
+  ],
+  "replicas": [
+    0,
+    1
+  ],
+  "joint_decoders": {
+    "legacy_site64": "site",
+    "arc_uniform": "arc_uniform",
+    "arc_site": "arc_site"
+  },
+  "query_caps": {
+    "legacy_site64": 128,
+    "arc_uniform": 128,
+    "arc_site": 128
+  },
+  "readout_raw_queries": [
+    32,
+    64,
+    128
+  ],
+  "maximum_microsteps": 1024,
+  "evaluation_seeds": [
+    25451,
+    25453
+  ],
+  "scale_seeds": [
+    25461,
+    25463
+  ],
+  "maximum_total_new_raw_queries": 36864,
+  "shared": {
+    "local_scales": [
+      0.1,
+      0.03,
+      0.01
+    ],
+    "schedule": [
+      "local",
+      "force_rotation",
+      "joint_exchange",
+      "local"
+    ],
+    "radial_width": 0.05,
+    "site_concentration": 64.0
+  },
+  "arc_options": {
+    "margin": 1e-08,
+    "max_segment_width": 0.04908738521234052
+  },
+  "all_eight_source_attempts_retained": 2048,
+  "zero_support_conditions_retained": [
+    4,
+    6
+  ],
+  "common_preparation_raw_queries_all_96_parents": 11910,
+  "new_training_raw_queries": 0,
+  "new_model_fitting": false,
+  "selection": "All48 previously frozen FIT parents, four compositions, two algorithm seeds. No selection by new outcomes.",
+  "readout": "Final potential and graph diversity at32/64/128 raw calls including initialization. No extrapolation for capped or failed chains. Parent then composition averaging; seeds are not independent parents.",
+  "limits": "Training-only route diagnostic. Correct MH and fixed-query output do not establish equilibration or a learned advantage. All failed attempts, requested queries, source failures and measured runtime retained.",
+  "objective": "Test whether the complete reversible constrained joint proposal improves finite-cost progress over strong legacy site64 before fitting a new neural score.",
+  "reserved_outcomes_allowed": false,
+  "reference_coordinates_allowed": false,
+  "preparation_audit_sha256": "ac67d8681076722265901d6f12b1edd844a7742d17f6eff8aba4fc65003b8bf4",
+  "joint_support_audit_sha256": "8931ed83e94e20614c0a0b37f38feeb2065890348aa4327e088e825929d1a05f"
+}

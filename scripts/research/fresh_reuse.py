@@ -60,9 +60,12 @@ def run_budget(target, positions, parent_ids, model, method, replica, batch_inde
         elif kind == 'force_rotation':
             proposed, rows = uniform_internal_transition(target, current, kind=kind, generator=rng, phase=phase)
         else:
+            decoder = protocol.get('joint_decoders', {}).get(
+                method, 'site' if method == 'site' else 'defensive_site')
             proposed, rows = joint_chemical_transition(target, current,
-                kind='site' if method == 'site' else 'defensive_site', generator=rng, phase=phase,
-                model=model, radial_width=shared['radial_width'], site_concentration=shared['site_concentration'])
+                kind=decoder, generator=rng, phase=phase,
+                model=model, radial_width=shared['radial_width'], site_concentration=shared['site_concentration'],
+                arc_options=protocol.get('arc_options'))
         update_query_counts(counts, indices, rows, target.oracle.evaluated-before, cap)
         for index, new in zip(indices, proposed):
             states[index] = new
