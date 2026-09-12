@@ -28,6 +28,12 @@ def main():
     root = Path(__file__).resolve().parents[2]
     pp = args.protocol or root/'research/evidence/geometry_only_source_protocol_v1.json'
     protocol = json.loads(pp.read_text())
+    stream = protocol.get('stream', 'fresh_development')
+    assert stream in {'fresh_development', 'fresh_training'}
+    if stream == 'fresh_training':
+        manifest = json.loads(args.manifest.read_text())
+        assert manifest.get('intended_use') == 'proposal_training'
+        assert manifest.get('excluded_evaluation_manifest_sha256')
     parent_path = root/'research/evidence/species_breadth_source_protocol_v2.json'
     assert sha(parent_path) == protocol['parent_source_protocol_sha256']
     parent = json.loads(parent_path.read_text())
@@ -90,7 +96,7 @@ def main():
     chunks.mkdir(exist_ok=False)
     report = dict(complete=False, protocol_sha256=sha(pp), parent_source_protocol_sha256=sha(parent_path),
         checkpoint_sha256=sha(args.checkpoint), config_sha256=sha(args.config), manifest_sha256=sha(args.manifest),
-        condition=condition, stream='fresh_development', count=count, batch=batch, batch_seeds=seeds,
+        condition=condition, stream=stream, count=count, batch=batch, batch_seeds=seeds,
         original_source_results_sha256=original_hash,
         condition_index=index, seed_namespace=protocol['seed_namespace'],
         no_seed_overlap_with_original_streams=True, source_sampler='64-step midpoint displacement FM at T=1 plus .025-A COM Gaussian noise',
@@ -123,7 +129,7 @@ def main():
                 assert torch.isfinite(x).all() and float(x.mean(1).abs().max()) < 1e-8
                 file = chunks/f'positions_{number:05d}.pt'
                 saved_chunk = dict(positions=x.cpu(), condition=condition, seed=seed,
-                    sample_ids=list(range(number*batch, (number+1)*batch)), stream='fresh_development')
+                    sample_ids=list(range(number*batch, (number+1)*batch)), stream=stream)
                 torch.save(saved_chunk, file)
                 samples.append(saved_chunk['positions'])
                 report['chunks'][file.name] = sha(file)
@@ -134,7 +140,7 @@ def main():
                     print(json.dumps(dict(completed_samples=report['completed_samples'], seconds=report['seconds'], physical_queries=0)), flush=True)
         path = args.out/'samples.pt'
         torch.save(dict(positions=torch.cat(samples), condition=condition, sample_ids=list(range(count)),
-            batch_seeds=seeds, stream='fresh_development', protocol_sha256=sha(pp)), path)
+            batch_seeds=seeds, stream=stream, protocol_sha256=sha(pp)), path)
         report.update(complete=True, samples_sha256=sha(path), generation_neural_field_calls=count*128,
             additional_replay_neural_field_calls=batch*128, seconds=time.perf_counter()-started,
             global_rng_unchanged=True, input_positions_unchanged=True,

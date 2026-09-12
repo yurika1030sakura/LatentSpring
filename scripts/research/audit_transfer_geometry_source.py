@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit all six prospective transfer sources, including zero-support conditions."""
+"""Audit a frozen geometry-only panel, including zero-support conditions."""
 import argparse
 from collections import Counter
 import json
@@ -15,11 +15,13 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['project','run','out']:
         p.add_argument('--'+name,type=Path,required=True)
+    p.add_argument('--protocol',type=Path)
+    p.add_argument('--manifest',type=Path)
     args=p.parse_args()
     root=Path(__file__).resolve().parents[2]
-    pp=root/'research/evidence/transfer_geometry_source_protocol_v1.json'
+    pp=args.protocol or root/'research/evidence/transfer_geometry_source_protocol_v1.json'
     protocol=json.loads(pp.read_text())
-    mp=root/'research/evidence/transfer_development_panel_v1.json'
+    mp=args.manifest or root/'research/evidence/transfer_development_panel_v1.json'
     manifest=json.loads(mp.read_text())
     assert sha(mp)==protocol['manifest_sha256'] and manifest['complete'] and manifest['role']=='new_development'
     candidate_path=root/'research/evidence/official_development_candidates.json'
@@ -27,23 +29,36 @@ def main():
     candidates=json.loads(candidate_path.read_text())
     old=json.loads((root/'research/evidence/development_panel_v1.json').read_text())
     old_compositions={r['composition_hex'] for r in old['rows']}
+    stream=protocol.get('stream','fresh_development')
+    assert stream in {'fresh_training','fresh_development'}
+    excluded_compositions=set(old_compositions)
+    if stream=='fresh_training':
+        assert manifest['intended_use']=='proposal_training'
+        ep=root/'research/evidence/transfer_development_panel_v1.json'
+        assert sha(ep)==manifest['excluded_evaluation_manifest_sha256']
+        excluded_compositions.update(r['composition_hex'] for r in json.loads(ep.read_text())['rows'])
+        # Reproduce the frozen metadata-only selection before auditing geometry.
+        from scripts.research.freeze_proposal_training_panel import select
+        selected,counts=select(candidates['rows'],excluded_compositions,manifest['seed'])
+        assert selected==manifest['rows'] and counts==manifest['eligible_compositions_by_size']
+    assert len(manifest['rows'])==len(protocol['condition_indices'])
     rows=[];all_seeds=[]
     for index in protocol['condition_indices']:
         directory=args.run/f'condition_{index:02d}'
         report=json.loads((directory/'results.json').read_text())
-        assert report['complete'] and report['protocol_sha256']==sha(pp)
+        assert report['complete'] and report['protocol_sha256']==sha(pp) and report['stream']==stream
         assert report['physical_queries']==0 and not report['energy_labels_computed'] and not report['source_density_available']
         assert report['prefix_replay_max_error_A']==0 and report['global_rng_unchanged'] and report['input_positions_unchanged']
         condition=load_condition(mp,index)
         condition.update(requested_kT_eV=1.,numbers=condition['atomic_numbers'])
         assert condition==report['condition'] and 'energy_eV' not in condition
         original=candidates['rows'][condition['candidate_index']]
-        assert original['partition']=='new_development' and original['composition_hex'] not in old_compositions
+        assert original['partition']=='new_development' and original['composition_hex'] not in excluded_compositions
         for key,value in original.items():
             if key!='energy_eV':assert condition[key]==value
         assert sha(directory/'samples.pt')==report['samples_sha256']
         data=torch.load(directory/'samples.pt',map_location='cpu',weights_only=False)
-        assert data['condition']==condition and data['stream']=='fresh_development'
+        assert data['condition']==condition and data['stream']==stream
         assert not set(data).intersection(['energy_eV','log_q','importance_weights','work'])
         assert data['sample_ids']==list(range(protocol['count']))
         seeds=[1000000000*protocol['seed_namespace']+100003*condition['candidate_index']+100000003*protocol['stream_number']+i for i in range(protocol['count']//protocol['batch'])]
@@ -55,7 +70,7 @@ def main():
             chunk=torch.load(path,map_location='cpu',weights_only=False)
             begin=chunk_index*protocol['batch'];end=begin+protocol['batch']
             assert chunk['seed']==seed and chunk['sample_ids']==list(range(begin,end))
-            assert chunk['condition']==condition
+            assert chunk['condition']==condition and chunk['stream']==stream
             torch.testing.assert_close(chunk['positions'],data['positions'][begin:end],atol=0,rtol=0)
         x=data['positions'];assert torch.isfinite(x).all() and float(x.mean(1).abs().max())<1e-8
         geometric=connected_nonoverlapping(x,covalent_radii(condition['numbers']))
@@ -81,10 +96,11 @@ def main():
             generation_seconds=report['seconds'],neural_molecule_evaluations=report['generation_neural_field_calls'],
             additional_replay_neural_molecule_evaluations=report['additional_replay_neural_field_calls']))
         print(json.dumps({k:rows[-1][k] for k in ['index','attempted','chemically_supported','with_eligible_exchange','validator_errors']}),flush=True)
-    assert len(all_seeds)==len(set(all_seeds)) and len({r['condition']['composition_hex'] for r in rows})==6
+    assert len(all_seeds)==len(set(all_seeds)) and len({r['condition']['composition_hex'] for r in rows})==len(protocol['condition_indices'])
     result=dict(complete=True,protocol_sha256=sha(pp),manifest_sha256=sha(mp),rows=rows,
-        all_six_conditions_retained=True,all_chunk_rows_verified=True,new_physical_queries=0,
-        scientific_submission_ready=False,scope='Six additional development compositions selected before geometry/energy outcomes. No learned method outcome is assessed here; preserve every zero-support composition and validator failure.')
+        all_conditions_retained=True,all_chunk_rows_verified=True,new_physical_queries=0,stream=stream,
+        scientific_submission_ready=False,scope='Frozen development-pool compositions with explicit stream role, selected before geometry/energy outcomes. No learned method outcome is assessed here; preserve every zero-support composition and validator failure.')
+    if len(rows)==6:result['all_six_conditions_retained']=True
     if args.out.exists():raise FileExistsError(args.out)
     args.out.parent.mkdir(parents=True,exist_ok=True)
     args.out.write_text(json.dumps(result,indent=2)+'\n')

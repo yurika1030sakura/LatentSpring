@@ -1,0 +1,30 @@
+#!/bin/bash
+#SBATCH -J bgfm-proposal-training-source
+#SBATCH -A ryl_lab
+#SBATCH -p gpu_test
+#SBATCH --gres=gpu:1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=32G
+#SBATCH --time=00:30:00
+#SBATCH --array=0-1%2
+#SBATCH -o /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/logs/%x-%A_%a.out
+#SBATCH -e /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/logs/%x-%A_%a.err
+set -euo pipefail
+SOURCE_ROOT="${1:?source required}"
+RUN_ROOT="${2:?unique output required}"
+PROJECT="${3:?project required}"
+STORE=/n/holylabs/woo_lab/Lab/yulili/bgfm
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH="$SOURCE_ROOT"
+export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2
+export LD_LIBRARY_PATH="$STORE/envs/flowmol/lib:${LD_LIBRARY_PATH:-}"
+cd "$SOURCE_ROOT"
+for INDEX in "$SLURM_ARRAY_TASK_ID" "$((SLURM_ARRAY_TASK_ID+2))" "$((SLURM_ARRAY_TASK_ID+4))" "$((SLURM_ARRAY_TASK_ID+6))"; do
+  printf -v PAD '%02d' "$INDEX"
+  ARM="$RUN_ROOT/condition_$PAD"
+  export TMPDIR="$ARM/runtime/tmp" MPLCONFIGDIR="$ARM/runtime/mpl" XDG_CACHE_HOME="$ARM/runtime/cache" CUDA_CACHE_PATH="$ARM/runtime/cuda"
+  mkdir -p "$TMPDIR" "$MPLCONFIGDIR" "$XDG_CACHE_HOME" "$CUDA_CACHE_PATH"
+  "$STORE/envs/flowmol/bin/python" -u scripts/research/prepare_geometry_only_source.py \
+    --config configs/sweep/a1_fm_only_s2.yaml --checkpoint "$PROJECT/runs/electronic_fm_global_v1/last.ckpt" \
+    --manifest research/evidence/proposal_training_panel_v1.json --condition-index "$INDEX" \
+    --protocol research/evidence/proposal_training_source_protocol_v1.json --out "$ARM"
+done
