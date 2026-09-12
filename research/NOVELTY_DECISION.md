@@ -14,7 +14,9 @@ accepted-movement objectives have prior art. The importance-flow identity and
 bounded-score ratio bounds are elementary mathematics, not new general theorems.
 See `notes/nonlocal_arc_prior_art_20260912.md`.
 
-Next investigate conditional action selection together with feasible placement.
+Conditional action selection together with feasible placement is now implemented;
+the frozen six-arm comparison and independent audits are running. Read
+`research/ACTION_GEOMETRY_STATE_20260912.json`. No advantage follows yet.
 This differs from the earlier failed selector only if it keeps the move-family
 schedule fixed, uses audited regrowth geometry, trains signed cost-adjusted
 accepted utility and includes the full inverse-action probability. Read
@@ -22,8 +24,8 @@ accepted utility and includes the full inverse-action probability. Read
 capacity alone does not establish novelty or resolve a geometry bottleneck.
 
 A matched action-only / geometry-only / joint comparison can test whether the
-coupling is useful. Freeze equal likelihood-ratio bounds, data and optimizer
-budgets before fitting; preserve every failed attempt in denominators. No
+coupling is useful. Equal likelihood-ratio bounds, data and optimizer
+budgets are frozen; preserve every failed attempt in denominators. No
 fitting on fresh validation outcomes, either evaluated molecular cohort or the
 722 reserved conditions. A positive empirical one-step proxy still needs fresh
 sampling validation, strong physical and representative learned baselines,

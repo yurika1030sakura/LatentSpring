@@ -2,7 +2,7 @@
 
 Active checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
 `iclr2027-arch-fix`. Read `CLAUDE.md`, `research/NEXT.md`,
-`research/STATUS.md` and `research/ACCEPTED_UTILITY_STATE_20260912.json`.
+`research/STATUS.md` and `research/ACTION_GEOMETRY_STATE_20260912.json`.
 Keep the environments separate and do not write to the home checkout.
 
 The bounded geometric accepted-utility learner is implemented, trained with two
@@ -16,15 +16,18 @@ The fresh-proposal follow-up is COMPLETE: 72 fixed internal source states,
 differences are near zero and both parent intervals span zero. Small effects
 remain possible; no fresh-proposal gain or complete-chain benefit is established.
 Do not scale this frozen geometry-only recipe. Jobs 46186496, 46186856, 46186968,
-46189583 and 46189707 are terminal; re-query Slurm before action.
+46189583 and 46189707 from that preceding experiment are terminal. The new
+comparison is active; re-query Slurm before action.
 
-Next implement the bounded conditional action/geometry comparison in
+The bounded conditional action/geometry comparison is now implemented as described in
 `notes/bounded_action_geometry_candidate_v1.md`. Read the old
 `cfm_mol/chemical_policy.py` and `notes/chemical_policy_decision_v2.md` first:
 the earlier selector failed its sampling/cost gate. Keep the move-family schedule
 fixed, compute full forward/reverse action probabilities, and match total
 likelihood-ratio bounds across ablations. This is a hypothesis, not established
-novelty. Freeze the protocol before fitting. Initial work needs no new oracle.
+novelty. Its frozen six-arm training is running as 46192301, with independent
+audit 46192339. Follow NEXT; no new oracle calls are used. Complete every arm and
+audit before interpreting component versus joint differences.
 
 Use only the existing 36 FIT parents; retain the frozen 12-parent internal
 selection split. Do not fit on fresh follow-up outcomes, either evaluated

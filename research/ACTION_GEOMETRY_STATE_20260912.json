@@ -1,0 +1,64 @@
+{
+  "updated_at_utc": "2026-09-12T21:17:42.987034+00:00",
+  "goal_status": "active",
+  "scientific_submission_ready": false,
+  "previous_goal_turn_classification": "progress: committed current evidence/manuscript and exact summary replay",
+  "previous_checkpoint": "research/ACCEPTED_UTILITY_STATE_20260912.json",
+  "implementation": "cfm_mol/bounded_action_geometry.py",
+  "protocol": "research/evidence/action_geometry_training_protocol_v1.json",
+  "protocol_sha256": "d33100459df329f4f9f270e1e17eff60c090e408c693a2568de235ad19585f93",
+  "source_commit": "8a520ef700998bb2a35fbd561e24b78f9b250a08",
+  "implementation_evidence": "research/evidence/action_geometry_implementation_v1.json",
+  "variants": [
+    "action",
+    "geometry",
+    "joint"
+  ],
+  "seeds": [
+    25621,
+    25623
+  ],
+  "steps": 300,
+  "data_attempts": 1671,
+  "scored_attempts": 1597,
+  "fit_parents": 36,
+  "internal_selection_parents": 12,
+  "complete_log_ratio_bound": 2,
+  "new_physical_queries": 0,
+  "data_construction_raw_queries": 18110,
+  "training_run": "runs/action_geometry_train_v1",
+  "audit_run": "runs/action_geometry_audit_v1",
+  "jobs": {
+    "training": "46192301",
+    "audit": "46192339"
+  },
+  "scheduler_observed_at_utc": "2026-09-12T21:16:18.681918+00:00",
+  "scheduler_snapshot": [
+    "46192301_2|bgfm-action-geometry-train|RUNNING|holy8a24105",
+    "46192301_3|bgfm-action-geometry-train|RUNNING|holy8a24106",
+    "46192301_[4-5%2]|bgfm-action-geometry-train|PENDING|(JobArrayTaskLimit)",
+    "46192339_[0-5%2]|bgfm-action-geometry-audit|PENDING|(Dependency)"
+  ],
+  "current_conclusion": "Implementation is qualified; six-arm offline comparison is running. The action-only arms have completed and their unaudited internal utility rates are below physical initialization. Await all frozen arms and independent audits; no new sampling advantage is established.",
+  "next": "Finish six frozen arms and independent audits, then summarize all pairwise internal comparisons without outcome-based retraining. Do not release molecular scale-up or reserved evaluation based on an offline proxy alone.",
+  "summary_command": "python scripts/research/summarize_action_geometry.py --project \"$PWD\" --run runs/action_geometry_train_v1 --audit runs/action_geometry_audit_v1 --out runs/action_geometry_summary_v1/results.json",
+  "reserved_conditions_unqueried": 722,
+  "interim_action_only_unaudited": [
+    {
+      "replica": 0,
+      "complete": true,
+      "baseline_rate": 0.0032255650197107553,
+      "final_internal_rate": 0.003162878536771486,
+      "relative_difference": -0.019434264247102595,
+      "audited": false
+    },
+    {
+      "replica": 1,
+      "complete": true,
+      "baseline_rate": 0.0032255650197107553,
+      "final_internal_rate": 0.003169538673105658,
+      "relative_difference": -0.01736946744608525,
+      "audited": false
+    }
+  ]
+}

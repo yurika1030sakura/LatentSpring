@@ -18,7 +18,7 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/ACCEPTED_UTILITY_STATE_20260912.json` first. They record the current method,
+`research/ACTION_GEOMETRY_STATE_20260912.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
@@ -98,16 +98,18 @@ The fresh actual-oracle check is COMPLETE: 72 internal source states, 3,456
 attempts, 6,708 raw calls and 3,354 independently replayed MH ratios. Actual
 utility differences are near zero and both parent intervals span zero. Small
 effects remain possible, but no fresh-proposal or full-chain benefit is
-established. Do not scale this frozen geometry-only recipe. All current jobs
-are terminal; re-query Slurm before action. Read
+established. Do not scale this frozen geometry-only recipe. Those preceding geometric-utility jobs
+are terminal; the new comparison below is active. Re-query Slurm. Read
 `research/ACCEPTED_UTILITY_STATE_20260912.json`.
 
-Next investigate bounded CONDITIONAL action selection together with placement,
+Bounded CONDITIONAL action selection together with placement is now implemented,
 keeping the move-family schedule fixed and all forward/reverse probabilities.
 Read `notes/bounded_action_geometry_candidate_v1.md` and the old selector's
-failure in `notes/chemical_policy_decision_v2.md`. This is a candidate to
-implement, not established novelty. Freeze matched action-only, geometry-only
-and joint ablations before optimization. Initial work needs no new oracle.
+failure in `notes/chemical_policy_decision_v2.md`. The six-arm protocol is frozen and training
+is running as 46192301 with dependent independent audit 46192339. The action-only,
+geometry-only and joint variants have matched total likelihood-ratio bounds.
+Read `research/ACTION_GEOMETRY_STATE_20260912.json` and NEXT. This uses no new
+oracle queries and is not established novelty.
 Do not fit on fresh validation outcomes, either evaluated molecular cohort or
 722 reserved outcomes. Equilibrium, competitive learned-generator advantage
 and scientific submission readiness remain unqualified. Keep the full goal active.

@@ -23,7 +23,9 @@ The next hypothesis is that learning which chemical exchange to attempt together
 with its feasible geometric placement can help. This requires a separate bounded
 conditional-action comparison, fixed move-family schedule, correct inverse
 probabilities, and action-only / geometry-only / joint ablations. The old
-selector's negative result is relevant; this candidate is not yet implemented.
+selector's negative result is relevant. This candidate is now implemented, with
+six frozen offline training arms (46192301) and independent audit (46192339).
+No completed comparative result is available yet.
 See `notes/bounded_action_geometry_candidate_v1.md`.
 
 AI novelty remains unestablished. Generic MH, regrowth, neural surrogates and
@@ -32,7 +34,8 @@ useful coupling for this molecular task against suitable learned and strong
 physical controls, with honest costs and independent evaluation. No additional
 physical law is required, and none is claimed.
 
-Current evidence: `research/ACCEPTED_UTILITY_STATE_20260912.json`.
+Current execution: `research/ACTION_GEOMETRY_STATE_20260912.json`.
+Preceding completed evidence: `research/ACCEPTED_UTILITY_STATE_20260912.json`.
 Development manuscript: `paper/angular_working.tex`, including
 `paper/sections/A5_accepted_utility.tex`.
 Current PDF: `runs/verification/accepted_utility_20260912/main.pdf`

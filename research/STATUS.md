@@ -1,11 +1,20 @@
 # Current research status — September 12, 2026
 
-Authoritative checkpoint: `research/ACCEPTED_UTILITY_STATE_20260912.json`.
-The ICLR goal remains active and scientifically unachieved. The latest bounded
+Authoritative checkpoint: `research/ACTION_GEOMETRY_STATE_20260912.json`.
+The ICLR goal remains active and scientifically unachieved. The preceding bounded
 geometric learner has a small offline proxy gain but no established
 fresh-proposal sampling advantage. Do not scale its frozen weights.
 
-## Implemented and audited
+## Active conditional action/geometry comparison
+
+The conditional action model, full observed-density objective and production
+forward/reverse action correction are implemented. Six fixed offline arms are
+running as 46192301; independent audit 46192339 follows. The action-only arms
+have finished with internal rates below initialization; these interim outcomes
+are not yet independently audited. Finish the geometry/joint arms and all audits
+before judging the coupling. No new physical queries are used. See NEXT.
+
+## Preceding geometric utility result: implemented and audited
 
 The bounded guide directly trains signed actual-MH accepted potential decrease
 with query costs, using differentiable observed forward/reverse joint densities.
@@ -63,13 +72,13 @@ six-composition transfer remain unchanged. Source support counts remain
 under the pinned builder; condition 4 remains unresolved. This is algorithmic
 support, not a physical chemistry impossibility claim.
 
-Next: bounded conditional action selection together with placement, keeping the
+Active: bounded conditional action selection together with placement, keeping the
 move-family schedule fixed. The old selector's failure must inform this distinct
 comparison. See `notes/bounded_action_geometry_candidate_v1.md` and NEXT.
 No fitting on fresh validation outcomes, either evaluated molecular cohort or
 the 722 reserved conditions.
 
-All current BGFM jobs are terminal, verified with Slurm accounting:
+All preceding geometric-utility jobs are terminal, verified with Slurm accounting:
 46186496, 46186856, 46186968, 46189583 and 46189707. The manuscript includes the
 offline signal and fresh-proposal null result:
 `runs/verification/accepted_utility_20260912/main.pdf` (8 main pages, 20 total).
