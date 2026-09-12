@@ -1,0 +1,150 @@
+{
+  "updated_at_utc": "2026-09-12T17:58:17.047595+00:00",
+  "goal_status": "active",
+  "scientific_submission_ready": false,
+  "supersedes_current_pointer": "research/GEODESIC_RECONSTRUCTION_STATE_20260912.json",
+  "conclusion": "Both scalar-energy objectives and both seeds improve internal withheld work prediction against the physical score. Every final metric and the protected data were replayed. No learned molecular sampling benefit is established yet.",
+  "model": "cfm_mol/conditional_arc_energy.py",
+  "joint_decoder": "arc_energy",
+  "data": {
+    "run": "runs/conditional_arc_data_v1",
+    "results_sha256": "182d0f250f80873fafd44a28abc2d136bae764597430ac0382cbf0a8d34ce97d",
+    "contexts": 438,
+    "fit_contexts": 206,
+    "withheld_parent_contexts": 76,
+    "withheld_composition_contexts": 156
+  },
+  "jobs": {
+    "withheld_oracle": "46178737",
+    "withheld_oracle_audit": "46178918",
+    "training": "46179382",
+    "learning_audit": "46180176",
+    "all_terminal_completed": true
+  },
+  "training": {
+    "protocol": "research/evidence/conditional_arc_training_protocol_v1.json",
+    "source_commit": "27dca3fd5b37fdad5daedb98d1d8c5d4ad0c4d33",
+    "run": "runs/conditional_arc_train_v1",
+    "objectives": [
+      "work",
+      "work_force"
+    ],
+    "replicas": 2,
+    "steps": 800,
+    "parameters": 5689,
+    "early_selection": false
+  },
+  "audit": {
+    "path": "runs/conditional_arc_learning_audit_v1/results.json",
+    "sha256": "eb05bc3f17deaf63f3f6a6daea96c0a9b235b17fb3b64b341df55942b07518dc",
+    "all438_contexts_rebuilt": true,
+    "all_final_metrics_replayed": true,
+    "optimizer_trajectory_replayed": false,
+    "maximum_actual_loss_fd_gradient_error": 1.1827457235824568e-08
+  },
+  "models": [
+    {
+      "name": "work_s0",
+      "results_sha256": "3d6eef5e891b5e65c5c79b5c0bdc0091ebb74b8803c007aeec4b911a7b53e0b6",
+      "model_sha256": "d45498588c193ccd6cbb0cc7edb5f75274fe165b243e87624ac00890de543f93",
+      "all_final_context_metrics_replayed": true,
+      "baseline_metrics_replayed": true,
+      "actual_loss_fd_gradient_error": 1.2292942219715997e-09
+    },
+    {
+      "name": "work_s1",
+      "results_sha256": "293c49680a723557a0ff729b785318a85b8fcede074c36cce72f63159620d512",
+      "model_sha256": "40e6c0285ab85716a1b36a22a7ff6a39d9695b532b10bfb00284d2e5eb520609",
+      "all_final_context_metrics_replayed": true,
+      "baseline_metrics_replayed": true,
+      "actual_loss_fd_gradient_error": 1.1827457235824568e-08
+    },
+    {
+      "name": "work_force_s0",
+      "results_sha256": "f18ca31f22c21d59e65d5ac3766b871f1337a52f2018d1b88256046bd9e708fa",
+      "model_sha256": "d2f33c83759bcb8eb83c50dfdf17a1a8c91acb2e7f8501b01d7f8a0b00b01079",
+      "all_final_context_metrics_replayed": true,
+      "baseline_metrics_replayed": true,
+      "actual_loss_fd_gradient_error": 4.724224123009435e-09
+    },
+    {
+      "name": "work_force_s1",
+      "results_sha256": "68409822423baa11083cd8403e3429a25c8b270bebf0bb27fe00029a89879ca8",
+      "model_sha256": "c4ec943b20e7817e2fc8b24aa9d49d116f264603a5b8cd14bf8df0d10d9e6e96",
+      "all_final_context_metrics_replayed": true,
+      "baseline_metrics_replayed": true,
+      "actual_loss_fd_gradient_error": 1.042523312122512e-08
+    }
+  ],
+  "internal_work_predictions": {
+    "work_s0": {
+      "withheld_parent/arc": {
+        "physical_site_MAE_eV": 0.3703567172940158,
+        "learned_MAE_eV": 0.2940736250770307,
+        "relative_reduction": 0.2059719417926099
+      },
+      "withheld_composition/arc": {
+        "physical_site_MAE_eV": 0.5883089680931671,
+        "learned_MAE_eV": 0.47629817721395457,
+        "relative_reduction": 0.19039449839131817
+      }
+    },
+    "work_s1": {
+      "withheld_parent/arc": {
+        "physical_site_MAE_eV": 0.3703567172940158,
+        "learned_MAE_eV": 0.2901481180644967,
+        "relative_reduction": 0.21657120145020559
+      },
+      "withheld_composition/arc": {
+        "physical_site_MAE_eV": 0.5883089680931671,
+        "learned_MAE_eV": 0.46619801791830207,
+        "relative_reduction": 0.20756261895964678
+      }
+    },
+    "work_force_s0": {
+      "withheld_parent/arc": {
+        "physical_site_MAE_eV": 0.3703567172940158,
+        "learned_MAE_eV": 0.28674893224584674,
+        "relative_reduction": 0.22574934149714687
+      },
+      "withheld_composition/arc": {
+        "physical_site_MAE_eV": 0.5883089680931671,
+        "learned_MAE_eV": 0.44724859954635804,
+        "relative_reduction": 0.23977259602894607
+      }
+    },
+    "work_force_s1": {
+      "withheld_parent/arc": {
+        "physical_site_MAE_eV": 0.3703567172940158,
+        "learned_MAE_eV": 0.2983891079332607,
+        "relative_reduction": 0.19431970854094716
+      },
+      "withheld_composition/arc": {
+        "physical_site_MAE_eV": 0.5883089680931671,
+        "learned_MAE_eV": 0.47392250089225074,
+        "relative_reduction": 0.19443264237780866
+      }
+    }
+  },
+  "costs": {
+    "new_withheld_oracle_raw_queries": 1856,
+    "new_training_physical_queries": 0,
+    "label_construction_and_validation_including_all_preparation": 20950,
+    "preparation_shared_with_next_withheld_parent_pilot": 6088,
+    "fit_parent_preparation": 5822,
+    "model_specific_raw_overhead_for_next_withheld_parent_pilot": 14862,
+    "previous_shared_physical_route_pilot": 36864
+  },
+  "next": "Freeze a complete-chain comparison of both learned objectives against physical site arcs on all48 internally withheld parents. Count common initialization/preparation once, use exact per-parent physical prefixes to match model-specific data cost, and preserve same-inference readouts, runtime and all failures. Do not call internal development a blind final benchmark.",
+  "references": "notes/nonlocal_arc_prior_art_20260912.md",
+  "paper_updated_for_new_scalar_learning": true,
+  "next_protocol": "research/evidence/conditional_arc_chain_protocol_v1.json",
+  "next_protocol_sha256": "5f69ffae6d7f88f73c89c81019dad3d83e6d78514ce04f6c182e77b6df49fc46",
+  "next_protocol_submitted": false,
+  "paper": {
+    "pdf": "runs/verification/conditional_nonlocal_20260912/main.pdf",
+    "build_evidence": "research/evidence/conditional_nonlocal_paper_build_20260912.json",
+    "main_pages": 8,
+    "total_pages": 18
+  }
+}

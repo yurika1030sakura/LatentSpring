@@ -21,9 +21,11 @@ At inference the actual log score is minus surrogate energy divided by kT.
 The circle code evaluates this score at every interpolation endpoint, retaining
 exact segment masses, both oriented-circle preimages and their source-dependent
 normalizers. Generic scalar-score support is implemented and tested. The new
-model has not yet been integrated into the complete joint chemical transition;
-that integration needs independent forward/reverse-context and density checks.
-Do not pass it through the old one-vector `arc_model` interface.
+model is now integrated through the separate `arc_energy` complete joint decoder.
+Every root/order uses its actual context, with independent NumPy energy readout
+and density quadrature checks. The known joint-target check exercises accepted
+movement and preserves its tested observables. Do not pass the scalar model
+through the old one-vector `arc_model` interface.
 
 The dataset contains438 audited contexts:206 FIT,76 withheld-parent and156
 withheld-composition contexts. Every context contains its center, all supported
@@ -48,3 +50,11 @@ successful learner. Internal work prediction cannot establish sampling efficienc
 a promising frozen model must still beat the stronger physical arc baseline in
 complete-chain experiments, with all preparation, probe, fitting and inference
 costs. Any failed objective/seed and adverse held-out result remains recorded.
+
+The first four trainings and their independent audit are complete. All438 data
+contexts and split masks are rebuilt; every final metric and both physical-score
+baselines are replayed. Actual trained-loss finite differences agree to1.19e-8.
+Both objectives and seeds improve nonlocal work prediction on withheld parents
+and compositions (about19--24%). The added force loss has no established decisive
+advantage over work alone. No learned complete-chain result is available yet.
+See `research/CONDITIONAL_NONLOCAL_STATE_20260912.json` for exact values and costs.

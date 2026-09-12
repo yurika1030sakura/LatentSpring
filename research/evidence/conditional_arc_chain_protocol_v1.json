@@ -1,0 +1,245 @@
+{
+  "frozen": true,
+  "frozen_at_utc": "2026-09-12T17:56:57.430138+00:00",
+  "preparation_run": "runs/proposal_training_preparation_v1",
+  "preparation_audit": "runs/proposal_training_preparation_audit_v1/results.json",
+  "joint_support_audit": "runs/joint_arc_audit_v1/results.json",
+  "split_protocol_sha256": "7b1e211e0b76923890ec841b48ae18296e541de11b7ab7630ab4c51567a7f702",
+  "physical_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "condition_indices": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    7
+  ],
+  "parent_ids_by_condition": {
+    "0": [
+      1,
+      4,
+      12,
+      20,
+      24,
+      25,
+      26,
+      28,
+      38,
+      46,
+      62,
+      63,
+      71,
+      80,
+      89,
+      93
+    ],
+    "1": [
+      14,
+      46,
+      71,
+      77
+    ],
+    "2": [
+      6,
+      17,
+      20,
+      42
+    ],
+    "3": [
+      1,
+      12,
+      24,
+      41
+    ],
+    "5": [
+      70,
+      194,
+      201,
+      207
+    ],
+    "7": [
+      3,
+      7,
+      8,
+      9,
+      12,
+      17,
+      20,
+      23,
+      24,
+      25,
+      26,
+      36,
+      38,
+      42,
+      43,
+      50
+    ]
+  },
+  "methods": [
+    "arc_site",
+    "learned_work",
+    "learned_work_force"
+  ],
+  "replicas": [
+    0,
+    1
+  ],
+  "joint_decoders": {
+    "arc_site": "arc_site",
+    "learned_work": "arc_energy",
+    "learned_work_force": "arc_energy"
+  },
+  "query_caps": {
+    "arc_site": 438,
+    "learned_work": 128,
+    "learned_work_force": 128
+  },
+  "readout_raw_queries": [
+    32,
+    64,
+    128,
+    "final"
+  ],
+  "maximum_microsteps": 4096,
+  "evaluation_seeds": [
+    25581,
+    25583
+  ],
+  "scale_seeds": [
+    25591,
+    25593
+  ],
+  "maximum_total_new_raw_queries": 66588,
+  "shared": {
+    "local_scales": [
+      0.1,
+      0.03,
+      0.01
+    ],
+    "schedule": [
+      "local",
+      "force_rotation",
+      "joint_exchange",
+      "local"
+    ],
+    "radial_width": 0.05,
+    "site_concentration": 64.0
+  },
+  "arc_options": {
+    "margin": 1e-08,
+    "max_segment_width": 0.04908738521234052
+  },
+  "all_eight_source_attempts_retained": 2048,
+  "zero_support_conditions_retained": [
+    4,
+    6
+  ],
+  "common_preparation_raw_queries_all_96_parents": 11910,
+  "selection": "All48 previously frozen internal withheld parents; no selection by new sampling outcomes.",
+  "readout": "Retain32/64/128 same-inference endpoints plus final exactly matched-total endpoints. Final raw caps differ by method and physical parent. Never extrapolate missing/censored readouts. Report all methods/seeds and measured runtime.",
+  "limits": "Training-only route diagnostic. Correct MH and fixed-query output do not establish equilibration or a learned advantage. All failed attempts, requested queries, source failures and measured runtime retained.",
+  "objective": "Test whether learned nonlocal energy improves full molecular sampling over the stronger physical site-arc baseline after actual data costs.",
+  "reserved_outcomes_allowed": false,
+  "reference_coordinates_allowed": false,
+  "preparation_audit_sha256": "ac67d8681076722265901d6f12b1edd844a7742d17f6eff8aba4fc65003b8bf4",
+  "joint_support_audit_sha256": "8931ed83e94e20614c0a0b37f38feeb2065890348aa4327e088e825929d1a05f",
+  "selection_role": "internal_withheld_parent_or_composition",
+  "query_caps_by_parent": {
+    "arc_site": {
+      "0": {
+        "1": 436,
+        "4": 438,
+        "12": 438,
+        "20": 436,
+        "24": 438,
+        "25": 438,
+        "26": 438,
+        "28": 438,
+        "38": 438,
+        "46": 438,
+        "62": 438,
+        "63": 438,
+        "71": 436,
+        "80": 438,
+        "89": 438,
+        "93": 438
+      },
+      "1": {
+        "14": 438,
+        "46": 438,
+        "71": 438,
+        "77": 438
+      },
+      "2": {
+        "6": 438,
+        "17": 438,
+        "20": 438,
+        "42": 438
+      },
+      "3": {
+        "1": 438,
+        "12": 436,
+        "24": 438,
+        "41": 436
+      },
+      "5": {
+        "70": 438,
+        "194": 438,
+        "201": 436,
+        "207": 438
+      },
+      "7": {
+        "3": 436,
+        "7": 438,
+        "8": 438,
+        "9": 438,
+        "12": 438,
+        "17": 438,
+        "20": 438,
+        "23": 438,
+        "24": 436,
+        "25": 438,
+        "26": 438,
+        "36": 438,
+        "38": 438,
+        "42": 436,
+        "43": 438,
+        "50": 438
+      }
+    }
+  },
+  "cost_assignment_seed": 25571,
+  "model_methods": {
+    "learned_work": "work",
+    "learned_work_force": "work_force"
+  },
+  "models": {
+    "work_s0": {
+      "path": "runs/conditional_arc_train_v1/work_s0/model.pt",
+      "sha256": "d45498588c193ccd6cbb0cc7edb5f75274fe165b243e87624ac00890de543f93"
+    },
+    "work_s1": {
+      "path": "runs/conditional_arc_train_v1/work_s1/model.pt",
+      "sha256": "40e6c0285ab85716a1b36a22a7ff6a39d9695b532b10bfb00284d2e5eb520609"
+    },
+    "work_force_s0": {
+      "path": "runs/conditional_arc_train_v1/work_force_s0/model.pt",
+      "sha256": "d2f33c83759bcb8eb83c50dfdf17a1a8c91acb2e7f8501b01d7f8a0b00b01079"
+    },
+    "work_force_s1": {
+      "path": "runs/conditional_arc_train_v1/work_force_s1/model.pt",
+      "sha256": "c4ec943b20e7817e2fc8b24aa9d49d116f264603a5b8cd14bf8df0d10d9e6e96"
+    }
+  },
+  "learning_audit": "runs/conditional_arc_learning_audit_v1/results.json",
+  "learning_audit_sha256": "eb05bc3f17deaf63f3f6a6daea96c0a9b235b17fb3b64b341df55942b07518dc",
+  "training_protocol_sha256": "bcb8fc36f23b73221d6e4936c4b487b44261f35810f09c32a8a50671cbe951a4",
+  "model_specific_raw_overhead_per_method_replica": 14862,
+  "common_selected_preparation_raw_queries": 6088,
+  "primary_total_raw_calls_per_method_replica": 21006,
+  "cost_contract": "All inference calls including re-evaluated initial energies count. Learned128 per parent plus14862 model-specific data calls equals physical39*438+9*436=21006 per method/replica. Shared6088 preparation calls and source overhead are counted once equally; the preceding shared physical route pilot is recorded separately. No duplicate preparation charge.",
+  "primary": "Final per-parent endpoint at exactly matched total raw oracle cost; each seed uses its correspondingly frozen trained model. Average seeds within parent then parents within each of six fixed compositions; report all condition effects and failures.",
+  "scope": "INTERNAL DEVELOPMENT withheld parents and compositions only, no favorable checkpoint/seed selection. Correctness and prediction improvement do not prove chain benefit. Reserved final outcomes remain untouched.",
+  "implementation_status": "Protocol frozen; driver per-parent caps and scalar-model loading must be implemented and tested before submission."
+}

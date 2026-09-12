@@ -1,53 +1,44 @@
 # Current contribution decision — September 12, 2026
 
-There is an implemented, independently audited framework for reversible joint
-molecular connectivity and geometry proposals. There is not yet an established
-competitive learned contribution. The constrained arc decoder is the newest
-foundation; `research/GEODESIC_RECONSTRUCTION_STATE_20260912.json` records its
-exact evidence. The old normalized-site learner should not be scaled again.
+There is a concrete learned-method candidate, with a positive internal prediction
+signal and an independently checked complete proposal implementation. There is
+not yet a demonstrated learned molecular sampling advantage or an established
+ICLR contribution. Read `research/CONDITIONAL_NONLOCAL_STATE_20260912.json`.
 
-The intended contribution is useful learning of conditional geometric proposals
-for molecular connectivity changes, with exact computable correction and measured
-benefits under realistic costs. No new physical law is required. MH, vMF fitting,
-force/work labels, masking, equivariance, generic geodesic walks and decoder-order
-mixtures are established ingredients. A geometric validity repair alone is not
-AI novelty. See `notes/support_constrained_geodesic_proposal.md` for the new
-construction and geodesic prior art, and `notes/normalized_site_novelty_review.md`
-for the previous learner's nearest methods.
+The new masked conditional scalar model predicts nonlocal placement work and
+supplies scores on analytically feasible circle arcs. Both work-only and work-
+plus-force objectives improve held-out work prediction across two seeds. The
+added force loss has no demonstrated decisive advantage over work alone; do not
+turn that extra term into the paper's novelty claim. A useful learned coupling
+of molecular connectivity changes,3D placement and tractable support-restricted
+conditional probabilities is the intended contribution.
 
-The completed strong concentration-64/400 controls remove the original learner's
-demonstrated benefit. Its old concentration-10 GFN2 endpoint check cannot qualify
-new physical endpoints, and frozen transfer has no average demonstrated advantage.
-All negative controls and initialization failures remain part of the evidence.
+The relevant ingredients already have precedents: classical configurational-bias
+regrowth, self-learning MC with effective neural Hamiltonians, learned probabilistic
+decoders, and geodesic sphere sampling. The primary sources and exact boundaries
+are in `notes/nonlocal_arc_prior_art_20260912.md`. A cheap learned potential plus
+MH correction alone is not novel. Differences from recent graph-energy models
+and learned molecular MCMC need representative empirical comparisons as well as
+clear task/target distinctions. A failed repurposed EACF refiner is not a native
+EACF benchmark.
 
-The new local force/work surrogate is accurate near its fit points but fails as
-an unrestricted probability teacher. Constraining its support fixes geometric
-validity; it still yields less expected single-step energy decrease than uniform
-arcs, despite higher acceptance. Do not equate fit, normalization or acceptance
-with useful exploration. The next neural representation must be tested on actual
-nonlocal work and complete-chain progress, not only local teacher imitation.
+The previous vector learner still loses its demonstrated advantage to stronger
+physical concentration64/400 controls. Its original GFN2 result covers only its
+old concentration10 comparison. Keep all adverse transfer, initialization and
+cost results. The new scalar predictor does not retroactively repair them.
 
-Producer46176878 and audit46176906 are complete on48 fixed FIT parents.
-At128 calls, physical site arcs improve mean potential change by0.07615 eV over
-legacy site64, with22.4% greater measured sampling runtime. All24 arms and4,668
-joint MH ratios are verified. Uniform arcs show no established full-chain gain.
-These outcomes guide design; no new learned model or blind benchmark is involved. The evaluated six-composition set cannot fit weights,
-and722 reserved outcomes remain untouched. A final scoped claim must include
-representative learned-generator/MCMC baselines as well as strong physics,
-held-out compositions, full costs, ablations and relevant distributional checks.
+Next evaluate both scalar objectives in complete chains on48 internally withheld
+parents, at exact accounted data costs and same-inference readouts against physical
+site arcs. Internal prediction improvement cannot substitute for that test.
+After a useful signal, include stronger biased-regrowth/same-score local controls
+and appropriate learned baselines on a frozen broader scope. Do not imply that
+terminal H/halogen exchanges cover all molecular connectivity changes.
 
-Terminal unlike H/halogen exchanges still limit learned connectivity coverage.
-The broader audited physical fragment maps exist but have no trained fragment
-proposal model; do not imply their success is evidence for singleton learning.
-Do not infer universal coverage from OMol25 or from a locally accepted move.
+Keep both zero-support training conditions. One has empty connected support under
+the pinned builder; that is target incompatibility, not chemical impossibility.
+Do not fit on prior evaluated-six-composition coordinates or query722 reserved
+outcomes before final method/scope freeze. The user's standard does not require
+universal perfection or a new physical law, but it does require correct and useful
+evidence for the actual claims. The project remains scientifically unready.
 
-The target itself must have support. The pinned RDKit connected validator rules
-out training condition6 by a necessary degree bound; retain its zero denominator
-and diagnose it as target incompatibility. The other zero condition remains
-unresolved. A future scope precheck must precede outcomes and is not sufficient
-to prove positive support.
-
-The goal remains active and scientifically unachieved. Read
-`research/CLAIM_AND_BENCHMARK_SCOPE.md` for the user's standard; perfection is not
-required, but correct and useful evidence for the claimed contribution is.
-Previous decision: `notes/archive/novelty_decision_through_sharp_training_20260912.md`.
+Prior decision: `notes/archive/novelty_decision_through_geodesic_physics_20260912.md`.

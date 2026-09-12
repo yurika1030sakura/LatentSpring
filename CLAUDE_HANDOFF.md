@@ -1,23 +1,23 @@
 # Claude continuation — September 12, 2026
 
-Use `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch`iclr2027-arch-fix`.
-Read `CLAUDE.md`, `research/NEXT.md`, `research/STATUS.md`, then the machine-readable
-`research/GEODESIC_RECONSTRUCTION_STATE_20260912.json`. The old home checkout is
-not the active project and must not receive writes. Keep the two environments.
+Active checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
+`iclr2027-arch-fix`. Read `CLAUDE.md`, `research/NEXT.md`, `research/STATUS.md` and
+`research/CONDITIONAL_NONLOCAL_STATE_20260912.json`. Do not write to the old home
+checkout or merge the two Python environments.
 
-The constrained root and complete joint kernels now pass real independent replay
-and density quadrature. The old learner loses its demonstrated advantage against
-stronger physical controls; no new learned advantage is established. The local
-force/work teacher is invalid globally and its constrained version yields less
-single-step energy progress than uniform arcs. Do not launch the superseded
-unrestricted teacher-KL plan. The new learned score is still to be built.
+The new scalar conditional energy is implemented, trained and audited. All four
+fixed800-step models improve internal withheld nonlocal work prediction by about
+19--24%, with no optimizer checkpoint selection. Full dataset and metric replay
+pass. The separate `arc_energy` decoder integrates the actual scalar law into
+complete joint graph/radius/two-root updates. It passes independent density and
+public MH checks. Do not pass this model through the old vector `arc_model`.
 
-The bounded training full-chain pilot46176878 and audit46176906 are COMPLETE,
-sourcebde3590,36,864 raw calls. Site arcs give a promising query-efficiency signal
-against legacy site64 but take22.4% more sampling time. No AI advantage follows.
-Do not start duplicates. NEXT contains the exact results and next score-design task.
-All source zeros, target incompatibility and negative controls must remain visible.
-Authors and actual submission are handled by the user. Continue authorized work.
-The project is not scientifically ready for ICLR submission.
+All this round's jobs are terminal:46178737/46178918 and46179382/46180176.
+There is no learned complete-chain result yet. NEXT specifies the48 internally
+withheld-parent comparison, exact21,006-call method/replica accounting and66,588
+maximum new raw calls. Implement per-parent physical caps before launching it.
+Do not retrain completed models, restart completed jobs, or call prediction gains
+an ICLR-ready sampling contribution. The prior physical site-arc benefit and all
+negative controls remain recorded. Keep reserved722 outcomes untouched.
 
-Historical handoff: `notes/archive/claude_handoff_through_sharp_training_20260912.md`.
+Prior handoff: `notes/archive/claude_handoff_through_geodesic_physics_20260912.md`.

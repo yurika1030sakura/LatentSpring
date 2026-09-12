@@ -126,3 +126,78 @@ builder: maximum degree sum 31 is smaller than the 32 required for a connected
 17-atom graph. Its 256 source failures remain in the denominator. This is an
 incompatibility with this algorithmic target, not a statement that the composition
 is chemically impossible. The other zero-support case remains unresolved.
+
+\subsection{Conditional nonlocal energy learning}
+\label{app:nonlocal-arc-learning}
+
+We next replace the one-vector surrogate by a conditional scalar energy. Masked
+message passing uses passive geometry, the desired graph, root radius, atomic
+features and the original electronic condition. It predicts bounded coefficients
+of radial basis functions of candidate root-to-passive distances. Their sum,
+with a smooth distance cutoff, gives a residual energy in eV. The physical site
+score converted to energy and the analytic COM confinement term are added.
+The root direction is absent from all context features; only the candidate
+readout receives it. Tests check O(3), translation and atom-reordering invariance.
+This is a conditional neural energy construction, not a new physical law.
+Learning an effective model to accelerate corrected Monte Carlo has established
+precedents~\citep{liu2017slmc,shen2018slmc}.
+
+Within each fixed context we fit potential differences relative to its center.
+A second objective adds the tangential derivative of that same scalar energy,
+using the supplied physical forces with the COM correction. Both errors use
+Huber losses at a 0.1\,eV scale; the derivative term has weight 0.1. At inference,
+the score is minus the surrogate energy divided by $kT$. Every interpolation
+endpoint uses this actual scalar score. The complete joint decoder recomputes
+all partial contexts in both orders and both directions; independent NumPy
+readout and interval quadrature check the resulting densities. The scalar model
+is never reinterpreted as a one-vector vMF proposal.
+
+The fixed dataset contains 438 contexts: 206 FIT, 76 from withheld parents and
+156 from withheld compositions. Every context includes the center, all supported
+local probes and four already frozen feasible-arc endpoints. The two local
+check directions on FIT parents are also excluded from training. The additional
+928 withheld endpoints cost 1,856 raw calls and have full independent oracle
+replay. None of the 722 reserved final outcomes is queried.
+
+Two objectives and two seeds each run 800 fixed optimizer steps with the same
+parent-balanced minibatch streams. We evaluate the final checkpoint without
+selecting a favorable intermediate checkpoint. The model has 5,689 parameters.
+Table~\ref{tab:nonlocal-prediction} reports nonlocal work prediction after
+averaging contexts within parent, parents within composition, then compositions.
+All four models improve on the physical score. The added force loss has no
+established decisive advantage over work-only training. An independent audit
+rebuilds all data and split masks, re-evaluates every final context metric and
+both physical baselines, and checks finite differences of the actual trained
+loss (maximum gradient error $1.19\times10^{-8}$). The complete optimizer
+trajectory has not been independently replayed.
+
+\begin{table}[t]
+\centering
+\caption{Internal nonlocal work-prediction MAE (eV). These labels are excluded
+from fitting; their group identities remain part of development. Prediction
+improvements do not establish molecular sampling efficiency or final-test gains.}
+\label{tab:nonlocal-prediction}
+\small
+\begin{tabular}{lrr}
+\toprule
+Score / fitted objective & Withheld parents & Withheld compositions\\
+\midrule
+Physical site64 & 0.37036 & 0.58831\\
+Site64 plus confinement (initialization) & 0.36935 & 0.59036\\
+Work, seed0 & 0.29407 & 0.47630\\
+Work, seed1 & 0.29015 & 0.46620\\
+Work plus force, seed0 & 0.28675 & 0.44725\\
+Work plus force, seed1 & 0.29839 & 0.47392\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Residual errors remain many thermal units, so complete-chain performance must
+be measured directly. No learned molecular-chain advantage is established by
+this table. Total preparation/probe/label cost is 20,950 raw calls. For the next
+48 internally withheld starting parents, 6,088 preparation calls are common to
+all methods, leaving 14,862 model-specific calls; common preparation must not be
+charged twice. The preceding 36,864-call physical route pilot is separately
+recorded. Fitting and inference runtime, source failures, representative learned
+baselines and the broader prior-art boundary remain necessary for the intended
+submission claim.

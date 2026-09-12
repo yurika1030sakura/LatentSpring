@@ -1,36 +1,44 @@
 # Next research actions — September 12, 2026
 
-Read `research/GEODESIC_RECONSTRUCTION_STATE_20260912.json` and `research/STATUS.md`.
-Use `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`; never write into the home
+Read `research/CONDITIONAL_NONLOCAL_STATE_20260912.json` and `research/STATUS.md`.
+Use `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`. Never write into the home
 checkout. The ICLR goal remains active and scientifically unachieved.
 
-1. The physical full-chain pilot46176878 and audit46176906 are COMPLETE.
-   `runs/joint_arc_budget_summary_v1/results.json` includes all24 arms,48 parents,
-   two seeds and36,864 calls. Site arcs improve the fixed-training-panel128-call
-   potential readout by0.07615 eV against legacy site64, with22.4% extra sampling
-   time; uniform arcs do not establish an average full-chain gain. Preserve all
-   three query readouts and composition estimates. Do not rerun these paths.
-2. Implement a masked conditional score of nonlocal energy/work along feasible
-   arcs. First use existing audited FIT-context force/work and valid arc endpoint
-   labels; local fit accuracy alone does not qualify long-arc probabilities.
-   Freeze the feature/score and internal validation design before fitting. This
-   new score is not implemented or trained yet. Keep the physical site-arc score
-   as the mandatory baseline and preserve exact density evaluation on reversal.
-3. Check withheld internal parents/compositions for conditional work and proposal
-   quality before a bounded learned complete-chain experiment. Any extra physical
-   labels need their own frozen budget/protocol. The unrestricted local teacher
-   fails support, and uniform arcs' root-only signal did not carry over to full
-   chains; do not use teacher imitation or acceptance alone as a release gate.
-4. After an internally qualified model, freeze a matched-cost test against strong
-   physical AND appropriate learned baselines. Re-account all development/training
-   costs and initializer failures. Old legacy physical paths cannot be described
-   as if produced by the new arc kernel. Keep the evaluated six compositions out
-   of training and722 reserved outcomes untouched until final method/scope freeze.
+1. The scalar model,438-context dataset, four800-step trainings and independent
+   learning audit are COMPLETE. Do not retrain or repeat the physical pilot.
+   Training: `runs/conditional_arc_train_v1/{work,work_force}_s{0,1}`.
+   Audit: `runs/conditional_arc_learning_audit_v1/results.json`.
+   The `arc_energy` complete joint decoder is implemented with independently
+   checked scalar energy readout and forward/reverse normalization.
+2. Implement the frozen `research/evidence/conditional_arc_chain_protocol_v1.json`
+   complete-chain pilot on all48 internally withheld parents:16 each
+   in conditions0 and7, four each in1,2,3,5. Their IDs are the union of the two
+   withheld lists in `multicomposition_angular_probe_protocol_v1.json`. Keep both
+   learned objectives/seeds and a physical site-arc control; no favorable-seed
+   selection. These are internal development outcomes, not the reserved benchmark.
+3. Include128-call learned readouts and a precisely cost-matched physical budget.
+   Shared warm preparation is6,088 calls. Model-specific data overhead is14,862
+   calls (5,822 FIT-parent preparation+5,536 probes+1,648 FIT endpoints+1,856
+   validation endpoints). Thus each learned method/replica costs21,006 calls plus
+   common costs. A physical control with39 parents at438 calls and9 at436 costs
+   exactly21,006; assign the extra pair of calls by a prospectively fixed hash.
+   Retain same-inference32/64/128-call readouts and measured runtime. Maximum new
+   production cost for three methods and two replicas is66,588 raw calls.
+   The driver needs explicit per-parent caps and scalar-model loading; do not
+   silently reuse the old fixed-cap/FIT-only driver with mismatched semantics.
+4. Replay every chain, all raw-call ledgers and independent joint MH ratios before
+   interpretation. Predictive error improvement alone is insufficient. If learning
+   adds useful sampling, test a broader frozen reuse cohort and appropriate
+   learned baselines; preserve every adverse cost regime and composition.
+5. Address the prior-art boundary in `notes/nonlocal_arc_prior_art_20260912.md`.
+   Classical biased regrowth, self-learning MC, learned decoders and geodesic
+   sampling already exist. The intended contribution is a useful learned coupling
+   of molecular connectivity/geometry and feasible conditional proposals. Consider
+   classical multi-trial regrowth and same-score local proposals as discriminating
+   controls; generic force fitting or a cheap neural potential is not enough.
 
-The geometric kernel and exact normalization are foundations, not established AI
-novelty. A scoped useful learning contribution is the goal; universal perfection
-and a new physics law are not requirements. See `research/CLAIM_AND_BENCHMARK_SCOPE.md`.
-
-Theory: `notes/support_constrained_geodesic_proposal.md`.
-New protocol: `research/evidence/joint_arc_budget_protocol_v1.json`.
-Prior execution list: `notes/archive/next_through_sharp_training_20260912.md`.
+Do not fit on the previously evaluated six-composition coordinates. Keep722
+reserved outcomes untouched until the method, scope and final benchmark are
+frozen. Authors and actual submission remain with the user. No new permission is
+required for authorized research work. Prior NEXT:
+`notes/archive/next_through_geodesic_physics_20260912.md`.

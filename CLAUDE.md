@@ -18,7 +18,7 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/GEODESIC_RECONSTRUCTION_STATE_20260912.json` first. They record the current method,
+`research/CONDITIONAL_NONLOCAL_STATE_20260912.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
@@ -53,18 +53,33 @@ and750 independent forward/reverse densities agree. This is geometric progress,
 not a demonstrated learned advantage. Local force/work fits fail as unrestricted
 probability teachers. On valid arcs their higher acceptance still gives less
 expected one-step energy decrease than uniform arcs; do not blindly distill them.
-No new model is fitted. The complete-chain TRAINING pilot46176878 and audit46176906
-are complete:48 FIT parents,36,864 calls,4,668 independently checked joint ratios.
-Site arcs improve the128-call training potential-change readout by0.07615 eV over
-legacy site64, with22.4% more sampling runtime. Uniform arcs do not establish
-average full-chain gain. This is a promising physical baseline, not an AI result.
-Start with `research/GEODESIC_RECONSTRUCTION_STATE_20260912.json` and
-`notes/support_constrained_geodesic_proposal.md`. The prior conditional-learning
-plan is partly superseded. The pinned connected validator has empty support for
-training condition6 by a necessary degree bound; preserve that failure and the
-other unresolved source zero. Do not scale the old learner or claim a successful
-AI repair. Equilibrium, competitive learned-generator and matched-wall-time
-superiority remain unqualified.
+The complete physical-chain pilot46176878 and audit46176906 are complete:
+48 FIT parents,36,864 calls,4,668 independently checked joint ratios. Site arcs
+improve the128-call training potential-change readout by0.07615 eV over legacy
+site64, with22.4% more sampling runtime. Uniform arcs do not establish average
+full-chain gain. This remains a physical baseline result.
+
+The new scalar conditional energy module is now implemented, trained and audited.
+`cfm_mol/conditional_arc_energy.py` predicts masked-context radial interaction
+curves; `arc_energy` integrates its actual scalar score into the full joint
+proposal. Work-only and work-plus-force objectives each have two frozen800-step
+models. All four improve internally withheld nonlocal work prediction by roughly
+19--24% relative to the physical site score; this is not a molecular sampling gain.
+The protected438-context data and all final model/baseline metrics are replayed.
+The added928 withheld endpoints use1,856 raw calls; training uses no new oracle.
+All jobs are terminal:46178737/46178918 and46179382/46180176. Read
+`research/CONDITIONAL_NONLOCAL_STATE_20260912.json`,
+`notes/conditional_nonlocal_arc_learning_v1.md` and the updated NEXT before action.
+
+The next full-chain pilot must compare both learned objectives with physical site
+arcs on the48 internally withheld parents, including all data costs. Shared warm
+preparation is6,088 raw calls; model-specific data overhead is14,862, after removing
+that shared preparation from20,950 total label/preparation calls. Count common
+costs once. Reserved722 outcomes and the old evaluated six-composition coordinates
+remain excluded from fitting. Learning a cheap energy and MH correction have
+extensive prior art; `notes/nonlocal_arc_prior_art_20260912.md` records the boundary.
+Equilibrium, competitive learned-generator and matched-wall-time superiority
+remain unqualified. The project is not scientifically submission ready.
 The previous manuscript is `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
 exact-entropy refinement candidate. It is explicitly a development draft.
