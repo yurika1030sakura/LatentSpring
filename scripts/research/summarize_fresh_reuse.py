@@ -126,6 +126,7 @@ def main():
         source_validity_fraction=source['chemically_supported']/source['attempted'],
         source_generation_seconds=source['generation_seconds'],source_neural_field_calls=source['neural_field_calls'],
         source_validator_errors=source['validator_errors'],preparation_raw_queries=prepared['new_raw_queries'],
+        preparation_seconds=prepared['seconds'],one_time_fit_seconds=protocol['one_time_fit_seconds'],
         total_new_physical_queries=prepared['new_raw_queries']+sum(a['raw_queries'] for a in arms),
         new_physical_queries_in_summary=0,scientific_submission_ready=False,
         inference='Paired finite-cost readout on one development composition. Source parents are bootstrap clusters; algorithm seeds are averaged within parent. Prefix/budget intervals are descriptive and not corrected for multiple comparisons. Unsupported/censored endpoints are not dropped to produce a favorable estimate. Per-query stopping does not establish stationary sampling.')

@@ -57,3 +57,38 @@ cheaper after preparation; longer physical controls also remain relevant.
 Fresh-parent reuse and independent compositions are needed before promoting the
 learned-vector pilot to a competitive sampling claim. No equilibrium distribution
 or new chemical-discovery claim follows from these graph first hits.
+
+\subsection{Prospective fresh-parent reuse test}
+
+A fresh geometry-only FM source uses 8,192 independent random draws with seeds
+disjoint from the previous training and development streams. All source chunks,
+input immutability and a repeated first batch are checked. Of 8,192 attempts,
+72 pass the declared structural support (0.88\%), spanning four perceived
+connectivities; 27 already have the diagnostic reference connectivity. No energy
+ranking selects these parents, and no energy calls are used to generate or
+screen this source. The low support rate remains a limitation of the initializer.
+All 72 parents undergo the same 64-step physical preparation, with 9,360 raw
+energy/force calls counting both orientations; the preparation and random stream replay.
+
+Before evaluating the learned sampler, we fix a paired finite-cost comparison.
+Each physical-site trajectory receives at most 1,024 raw calls, and each learned
+trajectory at most 512, including initialization. Rejected supported proposals
+still cost two calls; unsupported proposals remain recorded. A 1,024-microstep
+cap retains any trajectory that cannot reach its query budget as censored.
+For $N$ parents and learned inference budget $B$ per parent, let
+$(q,r)=\operatorname{divmod}(9660/2,N)$. A measured physical control at budgets
+$B+2q+2\mathbf 1[i<r]$ has exactly the same total raw-call cost as learning at $B$
+plus its one-time 9,660-call training preparation. Comparisons outside the
+recorded physical paths are unavailable, not extrapolated. Recorded generation,
+fitting and sampling wall times are reported separately; the complete 8,192
+source attempts remain explicit.
+
+The prespecified primary comparison uses the entire eligible cohort at $B=512$,
+with a paired mean restrained-potential difference and a parent-cluster bootstrap
+after averaging the two algorithm replicas within each parent. Other budgets,
+prefix sizes and diagnostic graph first hits are secondary. Initially-reference
+parents are separated from later first hits. Evaluation and its independent
+audit are pending in this development checkpoint. Stopping at a query count is
+a finite-cost performance readout, not an equilibrium-preserving stopping rule;
+even a positive result would not establish a stationary Boltzmann ensemble or
+independent-composition generalization.
