@@ -113,6 +113,31 @@ def draw_angle(law,*,generator):
     return theta,dict(segment=i,uniform=uniform,fraction=fraction)
 
 
+def exponential_fraction_mean(delta):
+    """Mean coordinate under a density proportional to exp(delta*t), 0<t<1."""
+    size=delta.abs().clamp_min(1e-12)
+    positive=-1/torch.expm1(-size)-1/size
+    regular=torch.where(delta>=0,positive,1-positive)
+    series=.5+delta/12-delta.pow(3)/720+delta.pow(5)/30240
+    return torch.where(delta.abs()<1e-3,series,regular)
+
+
+def arc_teacher_kl(teacher,student):
+    """Exact KL between two implemented angle laws on a common geometric grid.
+
+    Averaging this conditional KL over the shared random-circle law bounds the
+    KL of their marginal direction kernels by data processing. This is not a
+    bound on the molecular target error or on a coupled graph-exchange kernel.
+    """
+    if teacher is None or student is None:raise ValueError('Nonempty common angle support required')
+    torch.testing.assert_close(teacher['edges'],student['edges'],atol=0,rtol=0)
+    probabilities=torch.softmax(teacher['log_masses'].detach(),0)
+    mean=exponential_fraction_mean(teacher['delta'].detach())
+    difference=teacher['heights'][:,0].detach()-student['heights'][:,0]
+    difference=difference+(teacher['delta'].detach()-student['delta'])*mean
+    return (probabilities*difference).sum()-teacher['log_normalizer'].detach()+student['log_normalizer']
+
+
 def direction_log_prob(observed,base,normals,limits,eta,*,max_segment_width=math.pi/64,chart_tolerance=1e-10):
     """Sphere density includes BOTH oriented-circle preimages and |sin theta|."""
     torch.testing.assert_close(observed.norm(),observed.new_tensor(1.),atol=1e-9,rtol=0)

@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 import torch
 from rdkit import Chem
@@ -6,7 +7,7 @@ from rdkit.Chem import AllChem
 
 from cfm_mol.chemical_moves import covalent_radii,infer_chemical_graph
 from cfm_mol.geodesic_arc_proposal import (TAU,intersect_arcs,root_distance_constraints,
-    inverse_exponential_fraction,direction_log_prob,draw_direction)
+    inverse_exponential_fraction,direction_log_prob,draw_direction,circle_law,arc_teacher_kl)
 
 
 def test_exact_arc_intersections_match_pointwise_halfspaces_and_empty_domain():
@@ -68,6 +69,29 @@ def test_density_parameter_gradient_matches_finite_difference():
         a,_=direction_log_prob(y,base,normals,limits,eta.detach()+perturb)
         b,_=direction_log_prob(y,base,normals,limits,eta.detach()-perturb)
         assert abs(float((a-b)/(2e-5)-gradient[i]))<1e-8
+
+
+def test_arc_kl_matches_independent_quadrature_and_has_stationary_matching_gradient():
+    base=torch.tensor([0.,0.,1.],dtype=torch.float64);tangent=torch.tensor([1.,0.,0.],dtype=torch.float64)
+    normals=torch.tensor([[0.,0.,-1.]],dtype=torch.float64);limits=torch.tensor([-.95],dtype=torch.float64)
+    teacher_eta=torch.tensor([5.,1.,-200.],dtype=torch.float64)
+    student_eta=torch.tensor([3.,2.,100.],dtype=torch.float64)
+    teacher=circle_law(base,tangent,normals,limits,teacher_eta)
+    student=circle_law(base,tangent,normals,limits,student_eta)
+    exact=float(arc_teacher_kl(teacher,student))
+    nodes,weights=np.polynomial.legendre.leggauss(64);fraction=(nodes+1)/2
+    integral=0.;mass=0.
+    for i in range(len(teacher['edges'])):
+        logt=float(teacher['heights'][i,0])+float(teacher['delta'][i])*fraction-float(teacher['log_normalizer'])
+        logs=float(student['heights'][i,0])+float(student['delta'][i])*fraction-float(student['log_normalizer'])
+        w=weights*float(teacher['width'][i])/2
+        integral+=float(np.sum(w*np.exp(logt)*(logt-logs)))
+        mass+=float(np.sum(w*np.exp(logt)))
+    assert abs(mass-1)<1e-10 and abs(integral-exact)<1e-9 and exact>0
+    matching=teacher_eta.clone().requires_grad_()
+    loss=arc_teacher_kl(teacher,circle_law(base,tangent,normals,limits,matching))
+    gradient=torch.autograd.grad(loss,matching)[0]
+    assert abs(float(loss))<1e-10 and float(gradient.abs().max())<1e-10
 
 
 def test_known_cap_target_is_preserved_with_mh_but_not_without_correction():
