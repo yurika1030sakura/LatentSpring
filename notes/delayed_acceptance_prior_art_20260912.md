@@ -4,7 +4,10 @@ The completed action/geometry training gives no positive joint internal point
 estimate. Independent audits have completed and confirm these metrics. Do not change those
 models or their frozen comparison. A separate possible investigation is reducing
 expensive energy calls for proposals that a cheap model can screen, while
-retaining an exact correction. No such new molecular method is implemented here.
+retaining an exact correction. The bounded implementation and four-arm comparison are now complete; see
+`research/DELAYED_SCREEN_STATE_20260912.json`. No added neural advantage is
+established. The source-force successor is described separately in
+`cached_force_screen_candidate_v1.md`.
 
 ## Primary literature checked September 12, 2026
 

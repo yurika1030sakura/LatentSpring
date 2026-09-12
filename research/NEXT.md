@@ -1,47 +1,50 @@
 # Next research actions — September 12, 2026
 
-Read `research/ACTION_GEOMETRY_STATE_20260912.json`. Use the laboratory checkout;
-never write to home. The ICLR objective remains active and scientifically unachieved.
+Read `research/DELAYED_SCREEN_STATE_20260912.json`. Use the laboratory checkout;
+never write to home. The full ICLR goal remains active and scientifically unachieved.
 
-1. The six frozen action/geometry arms and all independent audits are COMPLETE.
-   Read `runs/action_geometry_summary_v1/results.json`. Neither action-only nor
-   joint establishes improvement over physics. Geometry-only reproduces its
-   prior offline proxy but has no established fresh-proposal advantage. Do not
-   rerun, enlarge the networks, or scale the frozen weights based on these results.
-2. Read `notes/delayed_acceptance_prior_art_20260912.md` and the FIT-only
-   `runs/joint_query_cost_diagnostic_v1/results.json`. Scored joint proposals have
-   5.35% balanced expected acceptance; expected rejected joint calls account for
-   24.35% of recorded complete-trajectory calls. Preparation and learning costs
-   are additional. An oracle-informed screen is only an inadmissible information
-   diagnostic. Actual saved calls are zero; separate RPC/geometry timing is absent.
-3. A next bounded investigation can test cheap pre-screening with the exact
-   two-stage correction. First implement finite antisymmetric factors and prove
-   the actual transition's reverse pairing numerically on finite and molecular
-   examples. Preserve the base proposal and fixed move-family schedule. Starting
-   with factor zero must recover ordinary MH. Never discard proposals using an
-   uncorrected classifier or use the candidate's expensive energy before deciding
-   whether to request it. This is established delayed-acceptance mathematics.
-4. If the implementation/cost case warrants fitting, freeze a small comparison of
-   a cheap physical surrogate, a simple fitted screen and a neural paired-state
-   screen, with common bounds/data/objective. Use only the 36 FIT parents and the
-   fixed 12-parent internal-selection split. Retain failures and signed work;
-   do not switch to acceptance alone after outcomes. No new physical queries are
-   needed initially. Existing energy models trained on selection parents cannot
-   be silently reused as held-out predictors. No screening protocol is frozen yet.
-5. Any useful offline signal still needs fresh measured chain utility, query and
-   complete wall-time costs. Standard delayed acceptance alone does not establish
-   ICLR novelty. Strong physical and representative learned-generator baselines,
-   realistic reuse costs and independent final evaluation remain required on the
-   declared scope. Do not fit on fresh follow-up outcomes, prior six-composition
-   coordinates, the 48-parent scalar-chain cohort or any of 722 reserved outcomes.
+1. The four learned delayed-screen arms and independent audits are COMPLETE.
+   Summary: `runs/delayed_screen_summary_v2/results.json` (v1 is retained).
+   Learned internal rates improve 31% / 43% over no screening, but the fixed
+   physical control has a higher 93% point improvement. Neural versus linear
+   intervals span zero. No achieved savings or whole-chain gain follows. Do not
+   scale the neural weights or claim a new AI contribution from this result.
+2. Read `notes/cached_force_screen_candidate_v1.md`. The force-augmented pair
+   dataset is ready in `runs/screen_force_pairs_v1`: all 1,671 attempts, original
+   36 FIT / 12 internal-selection split, 3,233 force states reconstructed exactly
+   from raw/inverted queries. Source force is already cached sampler state.
+   Candidate force is unavailable before querying it and must never enter the
+   forward screen. No new oracle calls were used; no force-screen model is trained.
+3. First implement and test the GENERAL screened-proposal correction:
+   log alpha_2 = min(0, R + log g_reverse - log g_forward). A source-only force
+   work estimate is not antisymmetric; do not reuse R-s without qualification.
+   Test finite-state balance, actual molecular reversal, zero-screen RNG/query
+   equivalence, pre-query information access and paid-query error accounting.
+4. Before fitting, freeze a small comparison with no screening, the completed
+   fixed physical screen, a source-work physical control, a simple fitted screen
+   and any neural addition. Keep the base proposal and move-family schedule.
+   Add constant random thinning when interpreting complete-chain gains. Include
+   whole-kernel costs; joint-query rates alone can exaggerate practical benefit.
+   No force-screen model/protocol is implemented or frozen yet.
+5. Existing `utility_onpolicy_v1` PHYSICAL proposals provide a separate internal
+   recorded-proposal check of frozen screens without new oracle calls. Freeze
+   that analysis before evaluating the models there and retain all 1,152 physical
+   attempts. Report expected utility/cost, not actual savings or a screened-chain
+   result. Never fit on these outcomes.
+6. Keep every failure and prior negative result. No fitting on internal selection
+   outcomes, fresh follow-up outcomes, the old six-composition evaluation, the
+   48-parent scalar-chain cohort or the 722 reserved conditions. A useful method
+   still needs real chain gains, complete timing/data costs, strong physical and
+   representative learned-generator baselines and an independent final cohort.
+   Generic delayed acceptance and force Taylor estimates are not new principles.
 
-All current BGFM jobs are terminal: training 46192301 and audit 46192339.
-Re-query Slurm before action. The scalar-chain, old vector/strong-control and
-geometric fresh-proposal failures remain. The new appendix is
-`paper/sections/A6_action_geometry.tex`; see STATUS for the verified build.
-Prior NEXT: `notes/archive/next_through_action_geometry_running_20260912.md`.
+Training 46196124 and audit 46196212 are terminal. Re-query Slurm before action.
+The tensor oracle's noisy-output buffering failure is reproduced and repaired;
+energy RPC time is now recorded separately. Existing runs keep their original
+records and cannot acquire retroactive timing. See STATUS for the latest PDF.
+Prior NEXT: `notes/archive/next_through_action_geometry_complete_20260912.md`.
 
-Verified development PDF: `runs/verification/action_geometry_completed_20260912/main.pdf`
-(9 main pages, 21 total). Build record:
-`research/evidence/action_geometry_completed_build_20260912.json`. Scientific
-submission readiness remains false.
+Verified development PDF: `runs/verification/delayed_screen_completed_20260912/main.pdf`
+(9 main pages, 22 total). Build record:
+`research/evidence/delayed_screen_completed_build_20260912.json`. This does not
+establish scientific submission readiness.

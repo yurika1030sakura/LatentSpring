@@ -1,47 +1,40 @@
 # Current paper story — September 12, 2026
 
 The problem remains joint molecular connectivity and compatible 3D generation.
-A frozen OMol25 flow-matching initializer supplies coordinates; reversible
-geometry/connectivity proposals and explicit MH correction target the stated
-restrained, inversion-averaged eSEN distribution on algorithmic molecular support.
-Finite-cost chains are not established equilibrium samples.
+A frozen OMol25 flow-matching initializer supplies coordinates. Explicit
+reversible proposals and MH correction target the declared restrained,
+inversion-averaged eSEN distribution on algorithmic support. Finite-query output
+is not established equilibrium sampling.
 
-The latest implemented AI candidate learns a bounded conditional placement
-log-score directly from signed accepted potential decrease and expected query
-cost. Observed-density differentiation includes all normalizers and actual
-reverse contexts; production draws remain no-grad. This is a proposal model,
-not a physical-energy predictor.
+The latest completed component is a bounded delayed screen for the physical
+site-arc proposal. Two-stage acceptance permits cheap rejection before energy
+queries while retaining the target correction. Linear and neural learned screens
+improve the internal expected utility-per-call proxy over no screening, but the
+fixed physical screen has a higher point estimate and the neural addition has
+no established value over four fitted coefficients. These are recorded-pair
+expectations: no actual queries have been saved and no complete-chain benefit
+is established. The main-text interpretation and appendix preserve this result.
 
-Two seeds improve the internal offline proxy by about 2.7%, with stable recorded
-importance weights. A fresh-oracle follow-up on 72 internal source states,
-3,456 attempts and 6,708 raw calls does not establish actual utility gain.
-Its uncertainty still allows small effects. Both results belong in the paper;
-neither constitutes a complete-chain, final-test or equilibrium advantage.
-The earlier scalar predictor's failed molecular comparison is also retained.
+Cached source forces are a possible next input. Their provenance is now audited
+for all existing pairs. A first-order source-work screen requires general
+forward/reverse gate correction, with candidate force used only after its query.
+This candidate is not implemented, fitted or a new paper story yet. Standard
+delayed acceptance and force Taylor estimates have prior art. Read
+`notes/cached_force_screen_candidate_v1.md`.
 
-The proposed coupling of chemical exchange selection and geometric placement
-has now been tested in six fixed offline arms. Neither action-only nor joint
-establishes a proxy gain over physics. Joint does better than action-only but
-has no established improvement over geometry alone. All metrics and 576 full
-densities replay independently. The completed negative comparison is included
-in the manuscript, not presented as an ongoing hopeful result.
+The intended useful AI contribution remains unestablished. Earlier scalar
+prediction, bounded geometric utility, action/geometry, strong-control and
+transfer negatives are retained. The final method still needs competitive real
+sampling evidence, honest complete costs, representative learned baselines and
+independent evaluation. No new physical law is required or claimed.
 
-A FIT-only cost census suggests investigating corrected cheap query screening.
-Only 24.35% of recorded complete-trajectory calls are associated, in expectation,
-with rejected joint proposals; this is not an achievable saving. Classical and
-learned delayed acceptance have substantial prior art. This possible next
-component is not implemented or a new paper story yet.
+Current evidence: `research/DELAYED_SCREEN_STATE_20260912.json`.
+Development entrypoint: `paper/angular_working.tex`, including
+`paper/sections/A7_delayed_screen.tex`. Read STATUS for the latest verified PDF.
+The paper remains scientifically unready. Prior story:
+`notes/archive/paper_story_current_through_action_geometry_complete_20260912.md`.
 
-AI novelty remains unestablished. Generic MH, regrowth, neural surrogates and
-accepted-utility identities are prior art. A credible contribution must show
-useful coupling for this molecular task against suitable learned and strong
-physical controls, with honest costs and independent evaluation. No additional
-physical law is required, and none is claimed.
-
-Current execution: `research/ACTION_GEOMETRY_STATE_20260912.json`.
-Preceding completed evidence: `research/ACCEPTED_UTILITY_STATE_20260912.json`.
-Development manuscript: `paper/angular_working.tex`, including
-`paper/sections/A5_accepted_utility.tex` and `paper/sections/A6_action_geometry.tex`.
-Current PDF: `runs/verification/action_geometry_completed_20260912/main.pdf`
-(9 main pages, 21 total). Formatting passes; scientific readiness is false.
-Prior story: `notes/archive/paper_story_current_through_scalar_chain_20260912.md`.
+Verified development PDF: `runs/verification/delayed_screen_completed_20260912/main.pdf`
+(9 main pages, 22 total). Build record:
+`research/evidence/delayed_screen_completed_build_20260912.json`. This does not
+establish scientific submission readiness.

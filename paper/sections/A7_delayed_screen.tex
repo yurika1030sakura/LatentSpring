@@ -1,0 +1,70 @@
+\section{Bounded delayed-screen comparison}
+\label{app:delayed-screen}
+
+We next test an established delayed-acceptance construction~\citep{banterle2019delayed}
+while keeping the physical site-arc proposal and move-family schedule fixed.
+For its complete MH log ratio $R$, choose a cheap bounded antisymmetric factor
+$s(x,y,a)=-s(y,x,\bar a)$. The two acceptance probabilities are
+\begin{equation}
+ \alpha_1=\exp[\min(0,s)],\qquad
+ \alpha_2=\exp[\min(0,R-s)].
+\end{equation}
+The potential is queried only after the first test passes. The product is no
+larger than ordinary MH acceptance, but its forward/reverse ratio is $e^R$.
+This standard correction preserves target invariance; it does not establish
+mixing or the output law of a query-budget stopping rule. A zero factor exactly
+recovers the previous random streams, queries and states. Geometry-valid
+proposals and physically scored proposals are recorded separately.
+
+The fixed cheap control uses squared covalent-radius-normalized bond stretch
+with coefficient 10\,eV, nonbonded inverse-distance-power-12 repulsion with
+coefficient 1\,eV, the declared COM restraint, and the known complete proposal
+ratio. These define heuristic surrogate energies, not an additional physical
+oracle. A linear screen fits four coefficients from zero; the neural screen
+adds the difference of shared symmetric action-encoder readouts. An odd tanh
+bounds all factors by $\log16$. Neither learned model loads earlier weights.
+Two seeds each train for 300 steps with batch eight, using the same 36 fitting
+parents, 12 internal-selection parents and all 1,671 attempts. No new physical
+queries are used; inherited data construction still costs 18,110 raw calls.
+
+The objective uses signed expected accepted potential decrease $J$ and expected
+raw cost $C=\mathbb E[2\alpha_1]$, optimizing $J-\eta_0C$ with the original FIT
+rate fixed. Both acceptance stages enter its gradient. Unsupported attempts
+remain zero contributions in the full denominator. All final and control metrics
+replay. Independent NumPy checks cover all 1,597 scored pairs for each of four
+models, including both factors and their balance relation (maximum error
+$3.09\times10^{-14}$). Six sensitive trained-head finite differences have maximum
+error $4.93\times10^{-10}$.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{lrrr}
+\toprule
+Screen & $J$ (eV/attempt) & $C$ (calls/attempt) & $10^3 J/C$ \\
+\midrule
+No screen & 0.006182 & 1.9166 & 3.2256 \\
+Fixed physical & 0.004513 & 0.7250 & 6.2251 \\
+Linear, seed 0 & 0.005857 & 1.3861 & 4.2255 \\
+Linear, seed 1 & 0.005896 & 1.2798 & 4.6073 \\
+Neural, seed 0 & 0.005857 & 1.3861 & 4.2259 \\
+Neural, seed 1 & 0.005896 & 1.2798 & 4.6073 \\
+\bottomrule
+\end{tabular}
+\caption{Internal recorded-proposal estimates, retaining every failed attempt.
+The last column is in $10^{-3}$\,eV per expected raw call. These are not achieved
+query savings or measurements of screened chains.}
+\label{tab:delayed-screen}
+\end{table}
+
+The learned screens improve the internal per-query proxy by about 31\% and
+43\% over no screening; the fixed physical control's point improvement is 93\%.
+Their learned-minus-physical intervals span zero and do not establish an
+advantage. Neural-minus-linear differences are only $3.42\times10^{-7}$ and
+$-4.81\times10^{-8}$\,eV per call, with intervals spanning zero. The additional
+neural representation therefore has no established value in this comparison.
+Intervals resample parents within four fixed compositions and are descriptive,
+not multiplicity-adjusted. No complete-chain or wall-time benefit follows.
+Expected rejected joint calls account for only 24.35\% of recorded FIT
+complete-trajectory calls, before preparation and learning overhead; the large
+conditional query-rate changes cannot be presented as a whole-sampler speedup.
+The tested neural weights do not justify molecular scale-up.

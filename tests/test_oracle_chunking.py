@@ -48,6 +48,7 @@ for line in sys.stdin:
     data=json.loads(line);x=data['positions'];n=len(x)
     result={'ok':True,'energies_eV':[sum(v*v for atom in r for v in atom)/2 for r in x],
             'forces_eV_A':[[[-v for v in atom] for atom in r] for r in x],'attempted_evaluations':n}
+    if x[0][0][0]<-1e6:result={'ok':False,'error':'physical worker failure','attempted_evaluations':1}
     print('noise\\nBGFM_ORACLE_JSON '+json.dumps(result),flush=True)
 """)
     x=torch.arange(18,dtype=torch.float64).reshape(3,2,3)
@@ -58,3 +59,8 @@ for line in sys.stdin:
         torch.testing.assert_close(force,-x)
         assert oracle.evaluated==oracle.requested_evaluations==3
         assert oracle.evaluation_seconds>0
+        before=oracle.evaluation_seconds
+        with pytest.raises(RuntimeError,match='physical worker failure'):
+            oracle.evaluate(torch.full((2,2,3),-2e6))
+        assert oracle.evaluation_seconds>before
+        assert oracle.requested_evaluations==5 and oracle.evaluated==4

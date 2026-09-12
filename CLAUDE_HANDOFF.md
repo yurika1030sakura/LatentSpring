@@ -2,46 +2,45 @@
 
 Active checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
 `iclr2027-arch-fix`. Read `CLAUDE.md`, `research/NEXT.md`, `research/STATUS.md` and
-`research/ACTION_GEOMETRY_STATE_20260912.json`. Keep environments separate and
+`research/DELAYED_SCREEN_STATE_20260912.json`. Keep environments separate and
 never write to the home checkout.
 
-The six-arm conditional action/geometry comparison is COMPLETE and independently
-audited. Action-only internal rates fall 1.94% / 1.74%; joint rates fall
-0.21% / 0.18%. Both variants' intervals versus physics span zero. Geometry-only
-reproduces the preceding +2.7% offline proxy; its actual fresh-proposal benefit
-remains unestablished. Joint has no demonstrated gain over geometry alone.
-Do not scale these weights. All source failures and previous negatives remain.
+The four delayed-screen training arms and independent audits are complete.
+They use the fixed physical site-arc proposal and exact two-stage correction.
+Internal learned query-rate gains over no screen are 31% / 43%, while the fixed
+physical control's point gain is 93%. Neural and four-parameter linear results
+are nearly identical; their difference intervals span zero. No useful neural
+advantage, achieved query saving, full-chain or wall-time benefit is established.
+Do not scale those neural weights. All prior negatives remain.
 
-Every final/baseline metric replays, with 576 independent full density checks
-(max error 4.98e-14) and eight trained-head finite differences (max error
-3.17e-10). Production tests cover simultaneous learned action and geometry,
-NumPy action probabilities, arc quadrature and trajectory replay. Geometry-only
-parameters reproduce the prior models within 7.8e-16. Jobs 46192301 and 46192339
-are terminal; re-query Slurm before action. Summary:
-`runs/action_geometry_summary_v1/results.json`.
+Summary: `runs/delayed_screen_summary_v2/results.json`; v1 is retained. Every
+model/control metric and 6,388 supported-pair cases are independently checked,
+with both orientations, factor balance and costs. Maximum discrepancy is
+3.09e-14; six trained-head finite differences have maximum error 4.93e-10.
+Jobs 46196124 and 46196212 are terminal; re-query Slurm before action.
 
-A FIT-only cost census finds that expected rejected joint calls account for
-24.35% of the recorded complete-trajectory call budget. This is not an achievable
-saving or a wall-time prediction. The oracle-informed screening diagnostic is
-explicitly inadmissible as a cheap algorithm. Next read
-`notes/delayed_acceptance_prior_art_20260912.md` and NEXT before implementing any
-screen. Delayed acceptance, including neural and structural-move variants, has
-prior art. It cannot be renamed as our novelty.
+The next bounded candidate may use the source force already cached by the
+sampler. `runs/screen_force_pairs_v1` contains all 1,671 old pairs/failures and
+unchanged splits, with 3,233 used states' forces reconstructed exactly from raw
+and inverted oracle forces. No new physical calls were used. Candidate force
+is available only after its query: it must never be fed into a forward screen.
+Read `notes/cached_force_screen_candidate_v1.md` and NEXT. Source-force gates
+need the general reverse/forward gate correction, not an assumed antisymmetric
+R-s formula. No force-screen model or protocol is implemented or frozen yet.
 
-A possible bounded comparison must preserve exact reverse pairing, original
-charge/spin/support and the paired oracle, start at the physical kernel, and
-include cheap physical and simple learned screens. Only the 36 FIT parents may
-enter fitting; retain the 12 internal-selection parents and all failed attempts.
-No fitting on fresh follow-up outcomes, either prior evaluated molecular cohort
-or the 722 reserved conditions. No new physical queries were used in this round.
-Data construction still costs 18,110 raw calls.
+The tensor EnergyOracle's buffered noisy-output timeout was reproduced with a
+fake worker and fixed using the existing NumPy oracle's byte-buffer reader.
+Values and requested/acknowledged counts still pass tests; RPC wall time is now
+recorded separately. This does not retroactively time or invalidate prior runs.
 
-The development manuscript now includes the six-arm negative result in its
-main-text interpretation and appendix. The ICLR goal remains active and the
-paper scientifically unready. Authors and actual submission remain with the user.
-Prior handoff: `notes/archive/claude_handoff_through_action_geometry_running_20260912.md`.
+Keep only 36 FIT parents in optimization; retain the 12 internal-selection
+parents and all failures. Never fit on fresh follow-up outcomes, either prior
+molecular evaluation cohort, or the 722 reserved conditions. Inherited data
+construction costs remain 18,110 raw calls. The ICLR goal remains active and the
+paper scientifically unready; authors and actual submission remain with the user.
+Prior handoff: `notes/archive/claude_handoff_through_action_geometry_complete_20260912.md`.
 
-Verified development PDF: `runs/verification/action_geometry_completed_20260912/main.pdf`
-(9 main pages, 21 total). Build record:
-`research/evidence/action_geometry_completed_build_20260912.json`. Scientific
-submission readiness remains false.
+Verified development PDF: `runs/verification/delayed_screen_completed_20260912/main.pdf`
+(9 main pages, 22 total). Build record:
+`research/evidence/delayed_screen_completed_build_20260912.json`. This does not
+establish scientific submission readiness.

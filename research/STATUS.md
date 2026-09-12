@@ -1,76 +1,81 @@
 # Current research status — September 12, 2026
 
-Authoritative checkpoint: `research/ACTION_GEOMETRY_STATE_20260912.json`.
-The ICLR goal remains active and scientifically unachieved. The completed
-conditional action/geometry comparison has no established combined advantage.
+Authoritative checkpoint: `research/DELAYED_SCREEN_STATE_20260912.json`.
+The full ICLR goal remains active and scientifically unachieved. Delayed
+screening has a positive internal query-rate proxy, but no learned advantage
+over suitable cheap controls or actual molecular efficiency gain is established.
 
-## Six-arm comparison completed
+## Completed bounded delayed-screen comparison
 
-Three variants (action-only, geometry-only, joint), two seeds, 300 fixed steps,
-and the same 36 FIT / 12 internal-selection parents use identical data,
-minibatch draws, optimizer and complete likelihood-ratio bound exp(2). The
-move-family schedule is fixed. Active parameter counts/runtime are reported
-separately. All 1,671 attempts, including 74 failures, remain. Training and
-audits use no new physical queries; inherited data construction costs 18,110.
+The physical site-arc proposal and move-family schedule are fixed. Zero and
+physical screens are fixed controls; linear and neural screens each have two
+300-step models trained only on 36 FIT parents. The same 12 internal-selection
+parents, 1,671 attempts and 74 failed attempts remain. Antisymmetric factors are
+bounded by log(16); the exact second acceptance step corrects the cheap screen.
+A zero screen reproduces original RNG streams, queries and trajectories exactly.
+The screen sees no candidate oracle values before the first decision.
 
-Internal utility-rate differences versus physical initialization, in
-1e-5 eV per expected raw call, with descriptive 95% parent-bootstrap intervals:
+Internal expected utility per raw call (eV):
 
-| Variant | Seed 0 | Seed 1 |
+| Screen | Seed 0 | Seed 1 |
 | --- | --- | --- |
-| Action only | -6.27 [-17.11, 3.62] | -5.60 [-16.28, 4.07] |
-| Geometry only | +8.82 [3.55, 15.61] | +8.76 [3.12, 15.59] |
-| Joint | -0.68 [-11.02, 9.54] | -0.59 [-9.12, 8.85] |
+| No screen | 0.003225565 | same fixed control |
+| Fixed physical | 0.006225109 | same fixed control |
+| Linear | 0.004225544 | 0.004607301 |
+| Neural | 0.004225887 | 0.004607253 |
 
-The physical rate is 0.003225565 eV per expected raw call. Action-only and joint
-point changes are -1.94% / -1.74% and -0.21% / -0.18%; their intervals span zero.
-Joint improves on action-only in this proxy but does not establish improvement
-on geometry alone or physics. The allocation of the common bound limits this
-conclusion; it is not a theorem excluding every joint policy. Intervals are
-internal, descriptive, fixed-composition and not multiplicity-adjusted.
+The learned gains over no screening are about 31% / 43%; their descriptive
+parent intervals exclude zero. The fixed physical control's point gain is 93%,
+with difference interval [0.0003541, 0.0059175] eV per expected call. Learned-minus-
+physical intervals span zero and do not establish a learned advantage. Neural-
+minus-linear differences are +3.42e-7 / -4.81e-8, with intervals spanning zero.
+The extra neural model has no established value in this comparison.
 
-All final/baseline metrics replay. Six audits check 576 independent full
-forward/reverse densities (maximum error 4.98e-14) and eight trained-head finite
-differences (maximum error 3.17e-10). Geometry-only parameters reproduce previous
-models within 7.8e-16; its roughly 2.7% offline gain is unchanged. Old and new
-intervals use different fixed bootstrap draws, so finite-bootstrap endpoints
-differ slightly. Summary: `runs/action_geometry_summary_v1/results.json`.
-Training 46192301 and audit 46192339 are complete with exit code zero.
+Learned screens retain about 94.7% / 95.4% of signed utility while expected joint
+query cost falls to 72.3% / 66.8% of no screening. These are recorded-pair
+expectations, not actual saved calls or screened-chain results. Expected rejected
+joint calls occupy only 24.35% of the preceding complete FIT trajectory budget;
+large conditional query-rate changes cannot be called whole-sampler speedups.
+Preparation and learning costs are additional. All intervals fix four
+compositions, resample parents with both trajectories and are not multiplicity-
+adjusted. Summary: `runs/delayed_screen_summary_v2/results.json`; v1 is retained.
 
-## Existing molecular negatives remain
+Every final/fixed-control metric replays. Independent NumPy checks cover 1,597
+supported pairs per model, including both orientations and balance: 6,388 pair
+cases, maximum discrepancy 3.09e-14. Six sensitive trained-head finite differences
+have maximum error 4.93e-10. Training 46196124 and audit 46196212 are complete.
+No new physical queries or actual query savings were produced by this experiment.
+Data construction costs remain 18,110 raw calls.
 
-The preceding geometry-only fresh-proposal check (3,456 attempts, 6,708 calls)
-does not establish actual utility gain. Its intervals still allow small effects;
-the population differs from the full offline proxy. The scalar work and
-work-plus-force models fail the 48-parent complete-chain comparison after data
-costs, and neither establishes same-inference energy benefit. The old vector
-learner's stronger-control and transfer failures are unchanged. See
+## Implementation and next information source
+
+Actual screened dispatch distinguishes geometry validity from scored proposals;
+first-stage rejects do not query the candidate potential. Mathematical/sampler
+checks passed 22 tests, followed by 17 screen/oracle/joint regressions. A fake
+worker exposed a buffered-stdout timeout in the tensor oracle. Reusing the
+NumPy oracle byte-buffer reader fixes it; numeric values and counters pass.
+Energy RPC time is recorded separately, including failed calls. Old runs retain
+original timing; no historical failure is inferred from the fake-worker test.
+
+`runs/screen_force_pairs_v1` now attaches already-paid source forces to all 1,671
+attempts and candidate forces to 1,597 scored pairs. Original split, charge/spin,
+positions and trace hashes are preserved. All 3,233 distinct used force states
+and projected scores reconstruct exactly from raw/inverted outputs. No new
+queries or fitting were used. Candidate force must remain unavailable to the
+forward pre-query screen. A source-force candidate needs a general nonsymmetric
+screen correction; it is not yet implemented or frozen. Read
+`notes/cached_force_screen_candidate_v1.md` and NEXT.
+
+The action/geometry null result, scalar-chain failure, old vector/strong-control
+and transfer negatives, and geometric fresh-proposal null result remain unchanged.
+Their complete checkpoints are `research/ACTION_GEOMETRY_STATE_20260912.json`,
 `research/ACCEPTED_UTILITY_STATE_20260912.json` and
 `research/CONDITIONAL_CHAIN_RESULT_20260912.json`. Do not scale those weights.
+Keep every evaluated cohort and the 722 reserved outcomes out of fitting.
 
-## FIT-only query-cost diagnosis
+Historical status: `notes/archive/status_through_action_geometry_complete_20260912.md`.
 
-The 36 FIT parents contribute 1,242 joint attempts, 1,186 scored, costing 2,372
-calls out of 9,216 complete-trajectory calls. Balanced expected acceptance among
-scored joint proposals is 5.35%. Expected calls associated with rejected joint
-moves total 2,244.0, or 24.35% of recorded trajectory calls. This describes this
-move family and fixed empirical prefix; it does not predict achievable savings
-or a changed chain's behavior. Preparation and learning costs are additional.
-An oracle-informed screening diagnostic uses the unseen candidate energy and
-is explicitly not deployable. Actual saved calls are zero. Separate oracle and
-geometry timings are unavailable, so no wall-time claim follows.
-
-Read `notes/delayed_acceptance_prior_art_20260912.md` before the next bounded
-screening investigation. Classical, neural and structural-move delayed acceptance
-already exist. A corrected cheap screen may be worth testing; generic screening
-cannot supply novelty by renaming it. No new screen or protocol is implemented
-or frozen yet. Leave all evaluated outcomes and the 722 reserved conditions out
-of fitting. The development manuscript includes the completed negative result;
-formatting completion does not establish scientific readiness.
-
-Historical status: `notes/archive/status_through_action_geometry_running_20260912.md`.
-
-Verified development PDF: `runs/verification/action_geometry_completed_20260912/main.pdf`
-(9 main pages, 21 total). Build record:
-`research/evidence/action_geometry_completed_build_20260912.json`. Scientific
-submission readiness remains false.
+Verified development PDF: `runs/verification/delayed_screen_completed_20260912/main.pdf`
+(9 main pages, 22 total). Build record:
+`research/evidence/delayed_screen_completed_build_20260912.json`. This does not
+establish scientific submission readiness.

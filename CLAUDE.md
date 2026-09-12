@@ -18,7 +18,7 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/ACTION_GEOMETRY_STATE_20260912.json` first. They record the current method,
+`research/DELAYED_SCREEN_STATE_20260912.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
@@ -110,16 +110,31 @@ replay; eight trained-head gradients pass finite differences. Jobs46192301 and
 46192339 are terminal. Read `research/ACTION_GEOMETRY_STATE_20260912.json`.
 Do not scale these frozen weights or claim useful coupling from the architecture.
 
-A FIT-only query-cost census records expected rejected joint calls equal to
-24.35% of complete-trajectory calls, excluding preparation/learning overhead.
-This is not an achievable saving or a wall-time prediction. Before any bounded
-pre-screen experiment, read `notes/delayed_acceptance_prior_art_20260912.md`:
-classical, neural and structural-move delayed acceptance already exist. The
-next screen must have exact reverse correction and suitable cheap controls;
-no screening model or frozen protocol exists yet. No new physical queries were
-used in this round. Exclude every evaluated cohort and722 reserved outcomes from
-fitting. Competitive sampling, equilibrium and scientific submission readiness
-remain unqualified. Keep the full ICLR goal active.
+The bounded delayed-screen comparison is now COMPLETE: two linear and two
+neural300-step models with fixed zero/physical controls. All metrics and6,388
+supported-pair cases pass independent checks. Learned internal query-rate gains
+are31/43% over no screening, but the fixed physical screen has a higher93% point
+gain and neural-minus-linear intervals span zero. No useful neural contribution,
+actual saved calls, complete-chain or wall-time gain follows. Jobs46196124 and
+46196212 are terminal. Read `research/DELAYED_SCREEN_STATE_20260912.json`.
+
+Actual dispatch screens before the candidate oracle query and distinguishes
+valid geometry from scored proposals. The zero screen reproduces previous RNG
+streams, queries and states. A fake-worker test exposed buffered stdout hiding
+an oracle response; the byte-buffer reader fixes it, and RPC wall time is now
+recorded separately. Original physical results and old timing are retained.
+
+Cached force inputs are now audited in `runs/screen_force_pairs_v1`: all1,671
+attempts, unchanged36/12 split and3,233 force states reconstruct exactly from
+raw/inverted outputs. No new physical queries were used. Candidate force must
+never enter a forward pre-query decision. A source-force gate needs general
+reverse/forward probability correction, not automatically R-s. Read
+`notes/cached_force_screen_candidate_v1.md` and NEXT; this new model/protocol is
+not implemented or frozen. Classical/learned screening and force work estimates
+have prior art and do not by themselves supply novelty. Exclude all evaluated
+cohorts and722 reserved outcomes from fitting. The ICLR goal remains active;
+competitive sampling, equilibrium and scientific submission readiness are
+unqualified. Do not scale the failed neural weights.
 The previous manuscript is `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
 exact-entropy refinement candidate. It is explicitly a development draft.
