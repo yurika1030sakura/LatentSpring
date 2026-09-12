@@ -28,6 +28,7 @@ def main():
     for name in ['project','run','audit','out']:p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--protocol',type=Path)
     p.add_argument('--recovery-run',type=Path)
+    p.add_argument('--recovery-audit-run',type=Path)
     args=p.parse_args();root=Path(__file__).resolve().parents[2]
     pp=args.protocol or root/'research/evidence/joint_arc_budget_protocol_v1.json';protocol=json.loads(pp.read_text())
     arms={};evidence={};source_cost=0;timing={};counts={};startup={};loading={}
@@ -36,6 +37,7 @@ def main():
         if args.recovery_run is not None and index==5:
             old=rp
             rp=args.recovery_run/'results.json'
+            if args.recovery_audit_run is not None:ap=args.recovery_audit_run/'results.json'
             recovered=json.loads(rp.read_text())
             assert recovered['recovery']['source_results_sha256']==sha(old)
             assert recovered['recovery']['all_cached_requests_replayed']
