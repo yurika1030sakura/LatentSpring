@@ -112,6 +112,39 @@ while claiming to evaluate the marginal mixture. The inequality concerns
 off-diagonal flow, not a uniform bound on every diagonal self probability,
 wall-clock cost, training cost or generalization quality.
 
+\section{Pendant-fragment augmented map}
+Use a linear COM chart comprising passive relative coordinates, the two old root
+vectors and root-relative internal offsets of both disjoint fragments. Add six
+Cartesian root auxiliaries and two circular torsion auxiliaries. The map swaps
+old/new root vectors, rotates every internal offset properly and negates the
+torsions. In a suitable variable ordering its derivative is block triangular
+apart from coordinate swaps: the internal diagonal blocks are proper rotations,
+the swaps have unit absolute determinant, and the two angle derivatives are $-1$.
+Dependence of the rotation on old/new root vectors occurs off the diagonal.
+The common linear COM chart factors cancel, giving augmented absolute Jacobian 1.
+
+With $A(b,a)=A(a,b)^\top$ and alignment conjugating rotations about their axes,
+\[
+ R(a,-\delta)A(b,a)=[R(b,\delta)A(a,b)]^{-1}.
+\]
+Hence the inverse action, old root-vector auxiliaries and negated angles recover
+every coordinate. Near-antipodal alignment is excluded symmetrically, producing
+self-transitions without renormalizing the auxiliary law. Under improper
+orthogonal transformations the circular auxiliary changes sign; its uniform law
+is invariant. The root-density ratio retains the $r^{-3}$ factors already derived.
+
+Tests cover unequal fragment sizes, the singleton limit, the full COM-plus-auxiliary
+Jacobian, graph inverses, reflections/permutations and a known Gaussian target with
+a paired action label. Omitting the proposal-density ratio biases the known-target
+test. Independent molecular replay reconstructs rotations using vector Rodrigues
+formulas and recalculates root densities and MH ratios.
+
+For future learning, the infinitesimal direction response at the current anchor
+is $P_a[r\sum_{j\in F}F_{\HH,j}+\tau_F\times a]/(kT)$, with
+$\tau_F=\sum_{j\in F}(x_j-x_i)\times F_{\HH,j}$, and the torsional derivative is
+$\tau_F^\top a/(kT)$. These identities were checked by independent differentiation
+of the full coordinate update. They are not yet used by a trained fragment guide.
+
 \section{Implementation verification and interpretation}
 Tests check masked-context equality under leaf motion and COM recentering,
 orthogonal and permutation covariance, batch independence, surface derivatives,

@@ -18,18 +18,27 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/NORMALIZED_SITE_STATE_20260912.json` first. They record the current method,
+`research/FRAGMENT_AND_BENCHMARK_STATE_20260912.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
 verification. `research/NEXT.md` is the current action list.
 
+The user's September12 scope clarification is authoritative for this campaign:
+read `research/CLAIM_AND_BENCHMARK_SCOPE.md`. Include learned-generator baselines
+as well as physical controls and evaluate realistic reuse costs. Universal
+perfection, success on every element and an independent new physics law are not
+submission requirements. Correctness and evidence for the actual claims remain
+mandatory; a four-parent all-cost stress test is not the sole readiness criterion.
+
 The current learned-guide manuscript is `paper/angular_working.tex`, with its
 own angular/joint-geometry methods, proofs and completed pilot evidence. It is an
 explicit development draft. Normalized learned proposals repeat short graph first
 passages, but strong physical controls, preparation cost and poor distribution
-diagnostics prevent a superiority claim. `notes/fragment_exchange_design.md` gives
-the next bounded coverage/preparation work; its fragment map is not yet implemented.
+diagnostics prevent a superiority claim. Pendant-fragment maps are implemented
+and their physical pilot is audited, including a preserved Al validator failure.
+The current next action is a comparable direction-augmented EACF MH baseline;
+see `notes/fragment_and_benchmark_decision_v1.md` for exact interfaces and remaining gates.
 The previous manuscript is `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
 exact-entropy refinement candidate. It is explicitly a development draft.

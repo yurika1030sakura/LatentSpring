@@ -436,7 +436,66 @@ zero-validity failure is absent. The physical component and initialization accou
 for much of this support, so the result does not establish learned transfer
 superiority or an energy-distribution guarantee.
 
+\section{Beyond singleton exchanges and physical-only comparisons}
+The singleton H/halogen move has limited structural reach. We implement a
+physical pendant-fragment extension: cut two single bridge bonds, require
+disjoint root-side components and passive distinct anchors, and exchange their
+attachments while retaining internal fragment geometry. Draw two root vectors
+with the existing normalized radial/site laws and two uniform torsion angles.
+For a fragment rooted at $i$, old anchor $k$ and new anchor $l$, write
+$a=(x_i-x_k)/\|x_i-x_k\|$, $b=v/\|v\|$ and
+\begin{equation}
+ y_j=x_l+v+R(b,\delta)A(a,b)(x_j-x_i),\qquad j\in F_i,
+\end{equation}
+then recenter COM. Here $A$ aligns unit vectors and $R$ rotates about the new axis.
+The reverse auxiliaries are the old root vectors and negated torsions. The full
+augmented Jacobian has absolute determinant one; this includes coordinate and
+auxiliary derivatives, not just the rotation determinants. Endpoints must match
+the desired perceived graph and recover the inverse fragment sets. This is a
+physical proposal prototype, with no fragment-specific learner yet.
+
+An eight-composition geometry screen retains zero-support strata and validator
+errors. A physical pilot selected all four compositions with supported multiatom
+backbone-changing proposals, without energy ranking, then used the first four
+supported development parents of each composition. Of 24 planned sampling arms,
+18 complete, one Al-containing control aborts in the existing bond validator and
+five subsequent Al arms remain unstarted. The other compositions continue under
+the original protocol. All completed paths and the failed prefix replay, including
+the exact validator exception. This round uses 18,732 raw physical evaluations.
+
+\begin{table}[t]
+\centering\small
+\caption{Accepted perceived backbone-adjacency changes accompanied by canonical
+SMILES changes, counted across \emph{all} move families. Each cell lists two
+replicas with four starts and 128 microsteps. Step and maximum-query caps match;
+actual query counts differ. These are transition diagnostics, not reaction rates,
+independent discoveries or equilibrium evidence.}
+\label{tab:fragment-physical}
+\begin{tabular}{lrrr}
+\toprule
+Composition & Local control & All singletons & Fragments up to 4 atoms\\
+\midrule
+12 atoms, neutral triplet & (0,0) & (0,0) & (2,2)\\
+17 atoms, neutral singlet & (0,0) & (0,0) & (0,1)\\
+14 atoms, charge $+1$ singlet & (0,0) & (1,1) & (3,2)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Physical controls test learning's incremental value but cannot replace learned
+generator comparisons. We have also applied a common structural readout to all
+512 shared development parents of earlier frozen generator baselines. On the
+10-atom composition, supported counts out of 512 attempts are $(4,4)$ for FM64,
+$(4,5)$ for the previous convex adapter, $(15,14)$ for published-capacity EACF,
+and $(4,6)$ for compact EACF, with each pair denoting two replicas. Their original
+training targets remain unchanged. This is a generator
+baseline diagnostic, not a complete comparison with current MCMC output; matching
+output count, source attempts, correlation and costs remains necessary. Training,
+inference and measured amortization should be reported separately. The fully
+charged four-parent stress test is not the only meaningful usage regime.
+
 \section{Related work and position}
+\label{sec:related-position}
 Learned molecular proposals with Metropolis correction already appear in
 Timewarp~\citep{klein2023timewarp}, and flow-based MCMC acceleration is addressed
 by Markovian flow matching~\citep{cabezas2024markovian}. Masked conditionals used

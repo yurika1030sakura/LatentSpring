@@ -1,5 +1,21 @@
 # Claude handoff — BGFM / ICLR 2027
 
+**Newest fragment/benchmark checkpoint:** read
+`research/FRAGMENT_AND_BENCHMARK_STATE_20260912.json`,
+`notes/fragment_and_benchmark_decision_v1.md` and
+`research/CLAIM_AND_BENCHMARK_SCOPE.md`. The user clarified that the goal is a
+convincing scoped contribution, not a perfect generator or universal superiority;
+include learned generators and realistic cost amortization, not only physics.
+Fragment maps are implemented/tested. Eighteen physical arms complete; the Al
+validator failure and five unstarted arms are preserved, with exact failed-prefix
+replay. Remaining compositions complete and all job handles are terminal at this
+checkpoint. New physical calls18732. Generator-output support for FM64/convex/
+published+compact EACF is assessed on the same512 parents. No AI advantage or
+equilibrium qualification is claimed. Next implement/test the direction-augmented
+EACF MH comparison described in the decision note. Current manuscript: eight pages.
+Re-query scheduler state before new action; older pending/next statements below
+are historical. The ICLR goal remains active and unachieved.
+
 **Newest checkpoint:** `research/NORMALIZED_SITE_STATE_20260912.json` and
 `notes/normalized_site_decision_v1.md`. The actual-normalized-density learner is
 implemented, trained at four settings and evaluated in eight fully audited arms.

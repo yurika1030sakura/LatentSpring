@@ -1,8 +1,13 @@
 # Next coverage test: lift terminal exchanges to pendant fragments
 
-Status: concrete design, NOT implemented or validated. The normalized-site guide
-and its completed eight-arm audit are the current implementation. This next
-work addresses a coverage gap: unlike terminal H/halogen exchanges occur only in
+Status: IMPLEMENTED in `cfm_mol/fragment_exchange.py` and `fragment_sampler.py`.
+Six targeted tests pass, including the full augmented Jacobian, known target,
+force responses and physical-query accounting. The geometry screen and physical
+pilot are recorded in `research/FRAGMENT_AND_BENCHMARK_STATE_20260912.json`.
+The physical pilot includes a preserved Al validator failure; no fragment-specific
+learner is trained yet. The design below records the implemented construction
+and remaining learning/preparation work. It addresses a coverage gap: unlike
+terminal H/halogen exchanges occur only in
 development conditions0/4 and preserve the heavy-atom skeleton in practice.
 Do not change the physical target to a fixed-skeleton target to hide that gap.
 

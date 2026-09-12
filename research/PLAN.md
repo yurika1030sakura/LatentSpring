@@ -4,6 +4,14 @@ Owner: Codex, taking over at the user's request on 2026-09-08. The user has
 authorised framework changes and execution; authors/submission accounts are
 handled by the user. This document records plans, not achieved results.
 
+**User clarification September12:** read `research/CLAIM_AND_BENCHMARK_SCOPE.md`.
+The goal is a convincing scoped contribution, not universal perfection. Add
+representative learned-generator comparisons and keep physical controls to test
+learning's incremental value. Report training, inference and measured amortization
+separately; the fully charged four-parent stress test is not the only gate.
+A new physical law and success on every element are not required. Actual claims
+still need evidence, and acceptance cannot be promised.
+
 Deadline: abstract September 18; paper September 25, 2026, 23:59 AoE.
 Source: https://iclr.cc/Conferences/2027/AuthorGuidelines (checked September 8).
 Target an internal evidence decision by September 15 and a full draft by

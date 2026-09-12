@@ -1,5 +1,29 @@
 # Next research decision — 2026-09-12
 
+## Latest fragment and benchmark checkpoint
+
+Read `research/FRAGMENT_AND_BENCHMARK_STATE_20260912.json`,
+`notes/fragment_and_benchmark_decision_v1.md` and the user-authorized scope in
+`research/CLAIM_AND_BENCHMARK_SCOPE.md`. Fragment maps and their augmented-volume
+tests are IMPLEMENTED. The physical pilot has18 completed arms, one reproducibly
+failed Al control and five unstarted Al arms; remaining compositions were safely
+continued. All completed paths and the failed prefix/exception are audited.
+New raw calls18732. All job handles are terminal at the checkpoint.
+
+Fragment moves yield energy-corrected backbone changes in multiple compositions;
+this is physical feasibility, not learned superiority. A common512-parent
+generator-output comparison now includes FM64, convex, published and compact EACF.
+The new submission standard does not require perfection or a new physical law:
+prioritize a clear contribution, representative learned and physical baselines,
+and realistic inference/training/amortized costs with honest limitations.
+
+NEXT implement/test the direction-augmented EACF MH baseline using the verified
+real interfaces and auxiliary law listed in the decision note. It needs no FM
+source likelihood. Then freeze the representative generator/corrector benchmark
+and measured reuse regime. Current paper: eight pages; submission readiness false.
+
+Earlier checkpoint next-action statements below are historical when superseded.
+
 ## Latest normalized-site checkpoint
 
 Read `research/NORMALIZED_SITE_STATE_20260912.json` and
