@@ -46,8 +46,8 @@ class ConditionalArcEnergy(LocalSiteGuide):
         return dict(masked=masked,radius=radius,roles=roles,coefficients=coeff,pair_radii=pair_radii,
             linear_energy_parameter=-electronic[:,2:3]*(site+harmonic))
 
-    def energy(self,directions,context):
-        """directions[B,...,3] -> energy[B,...]; context has no root direction."""
+    def radial_readout(self,directions,context):
+        """Context-conditioned radial readout before the linear physical term."""
         if directions.shape[0]!=len(context['radius']) or directions.shape[-1]!=3:
             raise ValueError('One direction array per encoded context required')
         original=directions.shape[:-1]
@@ -60,8 +60,14 @@ class ConditionalArcEnergy(LocalSiteGuide):
         gate=smooth_cutoff(distance,self.cutoff)*(context['roles']!=1)[:,None]
         residual=(radial*context['coefficients'][:,None]).sum(-1)
         residual=(residual*gate).sum(-1)/((context['roles']!=1).sum(1).to(u.dtype).sqrt()[:,None])
-        energy=(u*context['linear_energy_parameter'][:,None]).sum(-1)+residual
-        return energy.reshape(original)
+        return residual.reshape(original)
+
+    def energy(self,directions,context):
+        """directions[B,...,3] -> energy[B,...]; context has no root direction."""
+        shape=directions.shape[:-1]
+        u=directions.reshape(len(directions),-1,3)
+        linear=(u*context['linear_energy_parameter'][:,None]).sum(-1).reshape(shape)
+        return linear+self.radial_readout(directions,context)
 
     def forward(self,x,bonds,numbers,electronic,roots,directions):
         return self.energy(directions,self.encode(x,bonds,numbers,electronic,roots))

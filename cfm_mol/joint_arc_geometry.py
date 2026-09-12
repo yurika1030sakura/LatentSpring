@@ -22,7 +22,7 @@ def passive_geometry_supported(x,bonds,radii,leaf,*,margin=1e-8):
 
 
 def arc_score_parameter(context,desired,numbers,electronic,root,kind,model,site_concentration,restraint):
-    if kind in {'arc_uniform','arc_energy'}:return context.new_zeros(3)
+    if kind in {'arc_uniform','arc_energy','arc_bounded'}:return context.new_zeros(3)
     roots=torch.tensor([root],dtype=torch.long,device=context.device)
     if kind=='arc_model':
         if model is None:raise ValueError('An explicit frozen score model is required')
@@ -38,8 +38,7 @@ def arc_score_parameter(context,desired,numbers,electronic,root,kind,model,site_
     raise ValueError('Unknown arc score family')
 
 
-@torch.no_grad()
-def joint_arc_proposal(x,bonds,numbers,electronic,radii,action,*,kind,order,
+def _joint_arc_impl(x,bonds,numbers,electronic,radii,action,*,kind,order,
                        generator=None,observed=None,model=None,radial_width=.05,
                        site_concentration=64.,restraint=.1,max_segment_width=math.pi/64,
                        margin=1e-8,chart_tolerance=1e-10):
@@ -50,11 +49,14 @@ def joint_arc_proposal(x,bonds,numbers,electronic,radii,action,*,kind,order,
     or numerical chart produces one failed attempt, never conditional resampling.
     The constant COM chart volume cancels between source/target assignments.
     """
-    if kind not in {'arc_uniform','arc_site','arc_site_confinement','arc_model','arc_energy'}:
+    if kind not in {'arc_uniform','arc_site','arc_site_confinement','arc_model','arc_energy','arc_bounded'}:
         raise ValueError('Unknown arc proposal')
-    if kind=='arc_energy':
+    if kind in {'arc_energy','arc_bounded'}:
         from cfm_mol.conditional_arc_energy import ConditionalArcEnergy
         if not isinstance(model,ConditionalArcEnergy):raise ValueError('Conditional scalar energy model required')
+        semantics=getattr(model,'score_semantics','energy')
+        if semantics!=('bounded_log_score' if kind=='arc_bounded' else 'energy'):
+            raise ValueError('Scalar score semantics differ from the selected decoder')
         if model.restraint!=restraint or model.site_concentration!=site_concentration:
             raise ValueError('Energy model must match the declared restraint and site prior')
     if order not in (0,1) or action not in distinct_anchor_actions(numbers,bonds):
@@ -92,7 +94,7 @@ def joint_arc_proposal(x,bonds,numbers,electronic,radii,action,*,kind,order,
         normals,limits=root_distance_constraints(context,roots[n],radius[n],radii,margin=margin)
         eta=arc_score_parameter(context,desired,numbers,electronic,roots[n],kind,model,site_concentration,restraint)
         score=None;energy_score=None
-        if kind=='arc_energy':
+        if kind in {'arc_energy','arc_bounded'}:
             encoded=model.encode(context[None],desired[None],numbers,electronic,
                 torch.tensor([roots[n]],dtype=torch.long,device=x.device))
             score=model.circle_log_score(encoded,electronic[2])
@@ -107,16 +109,18 @@ def joint_arc_proposal(x,bonds,numbers,electronic,radii,action,*,kind,order,
                 max_segment_width=max_segment_width,chart_tolerance=chart_tolerance,score=score)
         trace['steps'].append(dict(root=roots[n],context=context,base_direction=base,eta=eta,
             normals=normals,limits=limits,direction=direction,angular_log_density=angular_log,random=random))
-        if energy_score is not None:trace['steps'][-1]['energy_score']=energy_score
+        if energy_score is not None:
+            key='bounded_score' if kind=='arc_bounded' else 'energy_score'
+            if kind=='arc_bounded':energy_score['log_score_bound']=model.log_score_bound
+            trace['steps'][-1][key]=energy_score
         if direction is None or not torch.isfinite(angular_log):return failed('No supported angular draw or observed density')
-        logq+=angular_log;y[leaf]=y[anchor]+radius[n]*direction;y-=y.mean(0)
+        logq=logq+angular_log;y[leaf]=y[anchor]+radius[n]*direction;y-=y.mean(0)
     if observed is not None:torch.testing.assert_close(y,observed-observed.mean(0),atol=1e-9,rtol=1e-9)
     trace['log_coordinate_density']=logq
     return y,logq,trace
 
 
-@torch.no_grad()
-def marginal_joint_arc_proposal(x,bonds,numbers,electronic,radii,action,*,kind,order,
+def _marginal_joint_arc_impl(x,bonds,numbers,electronic,radii,action,*,kind,order,
                                 generator=None,observed=None,**kwargs):
     """Marginalize the fair decoder-order coin in both proposal directions.
 
@@ -127,7 +131,7 @@ def marginal_joint_arc_proposal(x,bonds,numbers,electronic,radii,action,*,kind,o
     inputs=(x,bonds,numbers,electronic,radii,action)
     logs=[None,None];components=[None,None]
     if observed is None:
-        y,logs[order],components[order]=joint_arc_proposal(*inputs,kind=kind,order=order,
+        y,logs[order],components[order]=_joint_arc_impl(*inputs,kind=kind,order=order,
             generator=generator,**kwargs)
         if y is None:
             return None,x.new_tensor(-torch.inf),dict(order=order,order_marginalized=True,failed=True,
@@ -135,10 +139,32 @@ def marginal_joint_arc_proposal(x,bonds,numbers,electronic,radii,action,*,kind,o
     else:y=observed
     for index in [0,1]:
         if logs[index] is None:
-            _,logs[index],components[index]=joint_arc_proposal(*inputs,kind=kind,order=index,observed=y,**kwargs)
+            _,logs[index],components[index]=_joint_arc_impl(*inputs,kind=kind,order=index,observed=y,**kwargs)
     logq=torch.logsumexp(torch.stack(logs),0)-math.log(2)
     trace=dict(order=order,order_marginalized=True,failed=not bool(torch.isfinite(logq)),
         order_log_densities=torch.stack(logs),components=components,log_coordinate_density=logq)
     if trace['failed']:
         trace['failure']='No density under either decoder order';return None,logq,trace
     return y,logq,trace
+
+
+@torch.no_grad()
+def joint_arc_proposal(*args, **kwargs):
+    """Production draw/evaluation interface retains its no-gradient boundary."""
+    return _joint_arc_impl(*args, **kwargs)
+
+
+@torch.no_grad()
+def marginal_joint_arc_proposal(*args, **kwargs):
+    return _marginal_joint_arc_impl(*args, **kwargs)
+
+
+def observed_joint_arc_density(x, observed, bonds, numbers, electronic, radii, action, *, kind, model=None, **kwargs):
+    """Differentiate parameter density at a FIXED endpoint without drawing or oracle."""
+    if x.requires_grad or observed.requires_grad:
+        raise ValueError('Only parameter gradients are supported; coordinate inputs must be fixed')
+    if 'generator' in kwargs or 'order' in kwargs:
+        raise ValueError('Observed marginal density needs neither RNG nor a selected order')
+    _, logq, trace = _marginal_joint_arc_impl(x,bonds,numbers,electronic,radii,action,
+        kind=kind,order=0,observed=observed,model=model,**kwargs)
+    return logq, trace
