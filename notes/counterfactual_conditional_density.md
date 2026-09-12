@@ -110,11 +110,18 @@ regression replay of the previous six source audits passed (job 46149458).
 
 ## Next decisions
 
-Physical controls with concentrations64 and400 are frozen and running across
-the original72 parents and all96 transfer parents. They test whether a simple
-width correction explains the apparent neural benefit. Both incremental reuse
-and fully charged10108-call calibration scenarios must be shown for400; the64
-control uses the pre-existing bound and no new physical calibration.
+Physical controls with concentrations 64 and 400 are complete and fully audited
+across the original 72 parents and all 96 transfer parents. They remove the
+demonstrated neural advantage: the original-composition matched-total difference
+against 64 is +0.0320 eV, with interval [-0.0002, +0.0673]. Both accounting regimes
+for 400 and all transfer comparisons are retained; none establishes a competitive
+learned benefit. See `runs/site_concentration_summary_v1/results.json`.
+
+The new training-source and physical-preparation rounds are also complete and
+fully audited. Support counts are 45, 32, 106, 99, 0, 19, 0, 96 out of 256 each;
+96 parents from the six nonempty cases use 11,910 raw preparation calls. Both
+zero-support cases remain. No new model is fitted. The next bounded implementation
+is `notes/conditional_learning_after_sharp_controls_v1.md`.
 
 Before further sampling claims, compare controlled changes in representation,
 training coverage and concentration regularization. Broader training must use

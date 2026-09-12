@@ -170,5 +170,60 @@ aggregate difference is $+0.0042$\,eV with interval $[-0.0897,0.0989]$\,eV.
 Neither comparison demonstrates average transfer benefit. All 24 trajectories
 and their random streams and joint MH ratios are audited; this round uses
 306,858 new raw calls. These outcomes limit the earlier one-composition result.
-Stronger physical concentration controls are now prospectively specified;
-the current neural advantage cannot be generalized to tuned physical proposals.
+The stronger physical concentration controls below further limit the original
+baseline-specific gain.
+
+\subsection{Completed stronger physical-width controls}
+\label{app:sharp-controls}
+
+We freeze physical-site concentrations 64 and 400 on both the original 72 parents
+and the 96 transfer parents, with two algorithm replicas. All other proposal,
+target and local-update settings are unchanged. Concentration 64 uses the earlier
+model's pre-existing parameter bound as a control setting; concentration 400 is a
+rounded scale suggested by training-only angular-curvature probes. We report
+both zero-incremental calibration reuse and a fully charged 10,108-call
+calibration scenario for 400 (9,660 inherited preparation calls plus 448 probe
+calls). The 28 physical-control arms use 688,128 new raw calls; every trajectory,
+random stream, per-parent ledger and joint MH ratio is audited. No endpoints are
+missing from these comparisons.
+
+\begin{table}[h]
+\centering\small
+\caption{Matched-total-cost differences, learned minus physical potential in eV.
+Brackets give parent-bootstrap intervals for the original composition and
+hierarchical composition/parent intervals for transfer. ``Charged'' includes the
+10,108-call calibration cost; other new rows use zero-incremental reuse. All
+intervals are conditional on the fixed checkpoints.}
+\begin{tabular}{lcc}
+\toprule
+Physical control & Original composition & Six-composition transfer\\
+\midrule
+$\kappa=10$ (original) & $-0.1735\ [-0.2595,-0.0994]$ & $+0.0978\ [-0.0161,0.2141]$\\
+$\kappa=64$ & $+0.0320\ [-0.0002,0.0673]$ & $+0.0827\ [-0.0575,0.2268]$\\
+$\kappa=400$ (reuse) & $+0.0319\ [0.0003,0.0663]$ & $-0.0682\ [-0.3597,0.1537]$\\
+$\kappa=400$ (charged) & $-0.0149\ [-0.0486,0.0211]$ & $-0.1441\ [-0.4237,0.0541]$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At equal inference calls, the original-composition differences are
+$-0.0185$\,eV for 64 and $-0.0093$\,eV for 400, with intervals
+$[-0.0531,0.0172]$ and $[-0.0425,0.0254]$\,eV. The corresponding transfer means
+are $+0.0091$ and $-0.1401$\,eV, with intervals $[-0.1057,0.1330]$ and
+$[-0.4248,0.0614]$\,eV. These outcomes do not establish a learned advantage over
+the stronger physical proposals. They also do not establish equivalence or a
+universally optimal physical width. In particular, the favorable transfer mean
+against 400 is uncertain and strongly influenced by one composition.
+The GFN2 check above compares the earlier concentration-10 endpoints; it does not
+evaluate these new physical endpoints. The original registered comparison remains
+reproducible, but cannot support a general competitive-benefit claim.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/site_concentration_controls_v1.pdf}
+\caption{All matched-total physical-width comparisons on both cohorts. Negative
+values favor learning. The original one-composition benefit does not remain
+established with stronger physical widths. The two calibration-accounting regimes
+are explicit; no equilibrium or matched-wall-time conclusion follows.}
+\label{fig:sharp-controls}
+\end{figure}

@@ -17,7 +17,7 @@ A new physical law and universal perfection are not submission requirements.
 
 ## Evidence that controls the next decision
 
-Read research/TRANSFER_AND_CURVATURE_STATE_20260912.json and refresh its live
+Read research/SHARP_CONTROLS_AND_TRAINING_STATE_20260912.json and refresh its live
 Slurm handles. The old four-parent graph first-hit signal
 repeats, but fully charged physical controls are strong. Repurposed frozen EACF
 refiners accept no direction-MH flow moves; they were not trained for that use,
@@ -53,12 +53,29 @@ new learner benefit. The identifiability algebra and vMF identities are establis
 mathematics. A successful local oracle fit is not an AI contribution by itself.
 Read notes/counterfactual_conditional_density.md for the exact scope and failures.
 
-Physical concentrations 64 and 400 are now frozen and running on both cohorts,
-with independent audit and cost-accounted summary jobs queued. Their completed
-results must determine whether a simple physical width change explains the old
-neural advantage. Show both incremental reuse and fully charged calibration.
-Do not expand the failed student or advertise an architectural repair before
-these controls and a useful learning test support it.
+The physical concentration-64/400 controls are now COMPLETE and fully audited.
+The original one-composition advantage does not remain established: at matched
+total cost, learned minus concentration-64 physical potential is +0.0320 eV,
+parent 95% interval [-0.0002, +0.0673]. Concentration 400 also removes the
+demonstrated benefit, including when calibration is fully charged. All new
+six-composition comparisons have intervals crossing zero. The negative mean
+against 400 is not a transfer-success claim; one composition strongly influences
+it. The old GFN2 check has not evaluated these new physical endpoints.
+
+Do not scale or repeat the frozen normalized-site weights as a competitive
+candidate. The original result is baseline-specific. Correct MH and a normalized
+proposal remain useful foundations, but do not complete the intended contribution.
+
+The stiffness diagnostic identifies direction-driven overconfidence: over 98% of
+withheld-parent local-teacher KL comes from direction error in both seeds, despite
+small width KL. Eight disjoint training-source compositions are now generated and
+audited, with two zero-support cases preserved. The six supported compositions
+supply 96 physically prepared training parents, fully replayed at 11,910 raw calls.
+No new learner is fitted. Implement the bounded conditional-probe and same-data
+learning comparison in notes/conditional_learning_after_sharp_controls_v1.md;
+freeze its protocol and internal splits before new queries. Data preparation,
+regularization and the local vMF identifiability identity are not themselves
+established AI novelty or a successful method repair.
 
 ## Coverage and learning gaps
 

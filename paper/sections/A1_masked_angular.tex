@@ -14,11 +14,14 @@ prospectively specified reuse test on 72 fresh starts of one composition, howeve
 the learned vector lowers mean restrained potential by 0.174\,eV at equal total
 physical-call cost including training (parent-bootstrap 95\% interval:
 0.099--0.260\,eV). Both replicas favor learning. We retain the adverse small-budget
-results and the low source support rate of 72/8,192. This establishes a scoped
-finite-cost benefit; independent-composition transfer and calibrated equilibrium
-ensembles remain unestablished. A frozen six-composition transfer test does not
-show average benefit at matched total cost, despite independent GFN2 energy
-support for the original one-composition result.
+results and the low source support rate of 72/8,192. This gain is specific to the
+original physical prior: subsequent controls with narrower angular proposals
+remove the evidence for a learned advantage. At matched total cost, the learned
+minus physical difference is $+0.032$\,eV for concentration 64, with a 95\%
+interval crossing zero. A frozen six-composition transfer test also fails to
+show average benefit. Independent GFN2 checks support the ordering against the
+original baseline, but do not qualify the stronger comparisons. Competitive
+learned sampling and calibrated equilibrium ensembles remain unestablished.
 \end{abstract}
 
 \section{Problem and scope}
@@ -509,11 +512,21 @@ A prospectively specified follow-up generates 8,192 new FM draws and retains
 all 72 supported parents, with no energy selection. At equal total raw-call
 cost including training, the learned vector lowers mean restrained potential
 by 0.174\,eV relative to site (parent-bootstrap 95\% interval: 0.099--0.260\,eV);
-both algorithm replicas favor learning. This establishes a finite-cost benefit
-on new starts for this composition. The source support rate is only 0.88\%,
+both algorithm replicas favor learning. This measures a gain against the original
+concentration-10 physical prior on new starts. The source support rate is only 0.88\%,
 and neither other-composition performance nor equilibrium calibration follows.
 The complete protocol, adverse secondary budget and outcomes are in
 Appendix~\ref{app:eacf-directional}.
+
+The completed stronger physical-width controls change this interpretation.
+With concentration 64, the primary learned-minus-physical difference is
+$+0.0320$\,eV, with parent-bootstrap interval $[-0.0002,0.0673]$\,eV.
+Concentration 400 also removes the demonstrated advantage, including when its
+calibration cost is fully charged. Equal-inference comparisons have intervals
+crossing zero. Neither width produces a qualified average transfer advantage for
+learning. Figure~\ref{fig:sharp-controls} retains both calibration-accounting
+regimes and both cohorts. The frozen learner has no established competitive
+benefit against this stronger physical baseline family.
 
 A subsequent frozen test on six additional compositions does not reproduce an
 average benefit: the matched-total-cost difference is $+0.098$\,eV, with a
