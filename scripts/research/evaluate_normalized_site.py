@@ -42,6 +42,8 @@ def main():
     root = Path(__file__).resolve().parents[2]
     pp = root/'research/evidence/normalized_site_evaluation_protocol_v1.json'
     protocol = json.loads(pp.read_text())
+    if protocol['physical_weight'] != .5:
+        raise ValueError('This frozen transition uses a half-physical joint mixture')
     training_protocol = root/'research/evidence/chemical_policy_protocol_v1.json'
     physical_path = root/'research/evidence/parity_training_protocol_v1.json'
     physical = json.loads(physical_path.read_text())

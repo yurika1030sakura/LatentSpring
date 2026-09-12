@@ -83,6 +83,35 @@ and Cartesian moments with nontrivial radial proposals; removing the $r^3$ term
 produces detectable bias. This known-target check supplements, rather than
 replaces, molecular proposal and physical-query replay.
 
+\section{Normalized passive-atom mixtures and defensive correction}
+Each vMF component integrates to one on $\sphere$, and its invariant mixing
+probabilities sum to one. Marginalization gives the explicitly normalized
+directional law used by the implementation. Differentiating its log density with
+respect to the direction gives a posterior-weighted sum of natural parameters;
+projecting onto the sphere gives the surface-score formula in the main text.
+The conditioning context remains masked and fixed during this derivative.
+
+Passive-atom permutations permute component pairs; orthogonal transformations
+rotate their natural parameters. The scalar density is consequently invariant.
+For a two-atom system the only passive vector is the zero anchor vector, so the
+guide becomes uniform and does not introduce a preferred spatial axis. Tests
+cover this limit, zero-concentration parameter derivatives, normalized quadrature,
+sampling moments, both joint root orders and full reverse-template reconstruction.
+
+Fix a paired action/order and absorb its selection probability and the common
+coordinate chart factors into proposal densities. For $q=wq_0+(1-w)q_1$ with
+constant $0<w<1$, the accepted off-diagonal probability flow is
+\[
+ \min\{\pi(x)q(y\mid x),\pi(y)q(x\mid y)\}
+ \ge w\min\{\pi(x)q_0(y\mid x),\pi(y)q_0(x\mid y)\}.
+\]
+This follows by discarding the nonnegative second-component contributions in
+both arguments of the minimum. The implementation uses $w=1/2$ and evaluates
+both whole-joint component densities; it does not score only the drawn component
+while claiming to evaluate the marginal mixture. The inequality concerns
+off-diagonal flow, not a uniform bound on every diagonal self probability,
+wall-clock cost, training cost or generalization quality.
+
 \section{Implementation verification and interpretation}
 Tests check masked-context equality under leaf motion and COM recentering,
 orthogonal and permutation covariance, batch independence, surface derivatives,

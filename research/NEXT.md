@@ -1,5 +1,29 @@
 # Next research decision — 2026-09-12
 
+## Latest normalized-site checkpoint
+
+Read `research/NORMALIZED_SITE_STATE_20260912.json` and
+`notes/normalized_site_decision_v1.md`. The4531-parameter normalized guide,
+continuous atomic descriptors and complete defensive joint mixture are implemented.
+Training46114318, all eight sampling arms46114697 and audit46114876 are COMPLETE.
+This round adds14820 physical calls; training, transfer and audits add none.
+Both learned variants reach all four diagnostic graphs in both pilots. Mixtures
+do not beat vectors on training fit, full preparation remains expensive and
+equilibrium/independent sampling transfer are unqualified. The17-atom support
+repair is already visible in untrained/physical controls. Do not call it a learned
+generalization win. Read `notes/normalized_site_novelty_review.md` for close prior
+art, including VonMisesNet. Current working paper: seven main-text pages.
+
+NEXT: implement and test the augmented pendant-fragment exchange map in
+`notes/fragment_exchange_design.md` before any new molecular energy evaluation.
+This addresses the restricted heavy-graph coverage of singleton H/halogen moves.
+Separately qualify a fresh geometry-only source/preparation protocol; the old
+producer already saves coordinates before costly energy scoring. Preserve its
+historical costs. Do not enlarge the current singleton mixture or redefine the
+physical target to hide missing molecular coverage.
+
+The dated checkpoints below are historical where superseded.
+
 ## Latest joint-geometry checkpoint
 
 Read `research/JOINT_GEOMETRY_STATE_20260912.json` and

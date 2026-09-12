@@ -1,5 +1,19 @@
 # Claude handoff — BGFM / ICLR 2027
 
+**Newest checkpoint:** `research/NORMALIZED_SITE_STATE_20260912.json` and
+`notes/normalized_site_decision_v1.md`. The actual-normalized-density learner is
+implemented, trained at four settings and evaluated in eight fully audited arms.
+All jobs46114318/46114697/46114876 are complete at this checkpoint. The two learned
+variants repeat graph first passages but have no established full-cost or
+equilibrium advantage; the17-atom support repair also occurs without training.
+This round adds14820 raw physical queries and no new training queries.
+Next implement/test `notes/fragment_exchange_design.md`, including the full
+augmented Jacobian and a geometry-only source/preparation repair. The current
+singleton mixture should not be enlarged. Working paper: seven main-text pages,
+with exact normalized-mixture methods/proofs and VonMisesNet/other prior art.
+Scientific submission readiness remains false. Older pending/next statements
+below are historical; refresh Slurm before acting.
+
 **Latest September12 continuation:** start with
 `research/JOINT_GEOMETRY_STATE_20260912.json` and
 `notes/joint_geometry_decision_v1.md`. The normalized joint graph/geometry proposal,

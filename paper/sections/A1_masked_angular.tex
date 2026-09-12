@@ -4,7 +4,7 @@ proposals that respect its geometric support. A flow-matching generator can supp
 initial states while leaving its finite-step density unknown, and correct
 Metropolis acceptance does not by itself make local moves efficient. We study
 learned geometry proposals for reversible molecular graph exchanges. A masked
-graph network predicts equivariant vector and tensor coefficients from physical
+graph network learns equivariant directional distributions from physical
 angular-force examples. Fixed-geometry angular updates can cancel unknown
 support normalizers but leave graph/geometry barriers unresolved. Our joint update
 instead regenerates two radii and directions after an attachment exchange, using
@@ -204,6 +204,47 @@ distinct-anchor action list, so restricting that list cannot be credited to
 learned geometry. This is an evaluated development extension, not a new claim
 that generic autoregressive densities or Metropolis correction are novel.
 
+\subsection{Learning the actual normalized directional law}
+The quadratic-score guide and its normalized envelope have different surface
+scores. We therefore also implement a guide that directly models the normalized
+directional distribution. Continuous atomic-number and covalent-radius features
+replace element-specific embedding rows. Two masked message-passing blocks predict
+an equivariant correction $\delta_\theta$ to the physical-site center and paired
+offsets associated with passive atoms:
+\begin{equation}
+ \begin{aligned}
+ h_\theta(u;c)&=\sum_j\sum_{\epsilon\in\{-1,1\}}
+ w_{\theta,j,\epsilon}(c) C(\|\eta_{\theta,j,\epsilon}\|)
+ \exp(\eta_{\theta,j,\epsilon}^{\top}u),\\
+ \eta_{\theta,j,\epsilon}&=\eta_{\rm site}+\delta_\theta+
+ \epsilon a_{\theta,j}\widetilde v_j.
+ \end{aligned}
+\end{equation}
+Here $\widetilde v_j$ are bounded masked passive vectors, $a_{\theta,j}>0$ are
+bounded scales and paired component probabilities share invariant node logits.
+These probabilities sum to one; they are not inverse-normalizer weights of an
+unnormalized quadratic score. The moving leaf is excluded from component weights.
+A vector ablation uses just the corrected center. The mixture has 4,531 parameters;
+the ablation uses 4,497 active parameters in the same implementation.
+
+If $\rho_k(u;c)$ denotes a component's posterior responsibility, the surface
+score fitted to physical angular forces is exactly
+\begin{equation}
+ \nabla_{\sphere}\log h_\theta(u;c)
+ =(I-uu^\top)\sum_k\rho_k(u;c)\eta_k(c).
+\end{equation}
+Thus fitting and evaluation use the same learned directional law. This remains
+pointwise force regression on generated training states, not a claim that the
+finite-dimensional model recovers a supported equilibrium conditional exactly.
+
+For molecular use, we mix the \emph{whole} joint learned proposal with the physical
+site proposal: $q_{\rm mix}=\tfrac12 q_{\rm site}+\tfrac12 q_\theta$. A coin chooses
+the generating component, while MH uses the full logsumexp of both component
+densities in each direction. This retains an explicit physical component under
+transfer. For the same paired action and root order, its off-diagonal accepted
+probability flow is at least half the physical proposal's flow. This standard
+mixture bound does not establish a speedup or finite-time equilibrium accuracy.
+
 \section{Training and experimental contract}
 The physical angular score at a supported point is
 \begin{equation}
@@ -212,8 +253,10 @@ The physical angular score at a supported point is
 \end{equation}
 where $F_\HH$ includes the restraint and COM projection. We regress the latter
 against a norm-capped version of $g$. This is supervised pointwise force fitting,
-not an equilibrium score-matching theorem. It requires neither oracle Hessians
-nor normalized guide densities. Our finite-time training states need not be
+not an equilibrium score-matching theorem. For the normalized guide we instead
+use its responsibility-weighted surface score above, including the explicit
+vMF normalizers. The original quadratic-score fit requires no angular normalizer;
+neither fit requires oracle Hessians. Our finite-time training states need not be
 equilibrium samples for this regression objective; generalization and useful
 sampling nevertheless require separate evidence.
 
@@ -225,7 +268,7 @@ audited physical forces are used. The four generated development starts are
 separate. A reference connectivity is used as a diagnostic, not as a known
 equilibrium point mass or a training label.
 
-The two-layer guide has 6,082 parameters. We fit tensor and vector variants at
+The original two-layer quadratic-score guide has 6,082 parameters. We fit its tensor and vector variants at
 two seeds for 1,000 updates of 64 examples. The in-sample MSE of the norm-capped,
 dimensionless angular-score labels is
 439.7/475.0 for the tensor variant and 639.8/623.7 for the vector ablation, versus
@@ -370,6 +413,29 @@ composition includes O, P and Cl, absent from the guide's training composition.
 The screen identifies a transfer limitation; it measures neither Metropolis
 acceptance nor the energy distribution of that composition.
 
+\paragraph{Normalized site-guide follow-up.}
+We fit both new variants on the same training artifact for two fixed seeds,
+using no additional physical queries. Training MSE is 558.8/545.6 for the vector
+model and 571.6/549.6 for the mixture, versus 708.1 for the physical site prior.
+The more complex directional mixture does not improve this training comparison.
+Eight frozen sampling arms add 14,820 raw physical evaluations. Both learned
+variants reach all four diagnostic graphs in both 256-step pilots; the site
+control reaches three/two and the untrained mixture two/three. All complete
+trajectories, physical pairs, random streams and marginal-mixture MH ratios replay.
+Total costs remain 12,446/12,456 for vector and 12,460/12,452 for mixture, versus
+2,734/2,756 for the short site controls. These endpoints have different cumulative
+costs; the earlier full-cost physical continuation remains relevant adverse evidence.
+Final-half restrained-potential rank/folded split $\widehat R$ is 1.950/1.658 for
+the vector models and 1.677/1.808 for the mixtures. The new first passages also
+leave molecular equilibrium unqualified.
+
+On the identical 17-atom geometry screen, learned mixtures pass 99/128 and 86/128
+proposals; vectors pass 92/128 and 85/128. The untrained mixture passes 93/128 and
+94/128, and the unchanged physical site prior 101/128 and 96/128. The previous
+zero-validity failure is absent. The physical component and initialization account
+for much of this support, so the result does not establish learned transfer
+superiority or an energy-distribution guarantee.
+
 \section{Related work and position}
 Learned molecular proposals with Metropolis correction already appear in
 Timewarp~\citep{klein2023timewarp}, and flow-based MCMC acceleration is addressed
@@ -384,3 +450,8 @@ physical sampling with deterministic graph perception and joint geometry
 regeneration after attachment exchanges. The implementation and limited
 development evidence qualify this proposed kernel. A competitive learned sampler,
 broad generalization and useful equilibrium ensembles remain to be demonstrated.
+VonMisesNet already uses graph-predicted von Mises mixtures for molecular torsions
+and Boltzmann-oriented conformation generation~\citep{swanson2023vonmises}.
+Equivariant VFM studies molecular generation and post-hoc conditional control
+within variational flow matching~\citep{eijkelboom2025controlled}. Neither directional
+mixtures nor generic symmetry-aware post-hoc control constitute novelty here.

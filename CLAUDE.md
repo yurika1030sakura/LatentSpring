@@ -18,16 +18,19 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/MASKED_ANGULAR_STATE_20260912.json` first. They record the current method,
+`research/NORMALIZED_SITE_STATE_20260912.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
 verification. `research/NEXT.md` is the current action list.
 
 The current learned-guide manuscript is `paper/angular_working.tex`, with its
-own masked-angular methods/proofs and completed pilot evidence. It is an explicit
-development draft: angular acceptance improves but graph mixing and total-cost
-advantage remain unestablished. The previous manuscript is `paper/main.tex` with
+own angular/joint-geometry methods, proofs and completed pilot evidence. It is an
+explicit development draft. Normalized learned proposals repeat short graph first
+passages, but strong physical controls, preparation cost and poor distribution
+diagnostics prevent a superiority claim. `notes/fragment_exchange_design.md` gives
+the next bounded coverage/preparation work; its fragment map is not yet implemented.
+The previous manuscript is `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
 exact-entropy refinement candidate. It is explicitly a development draft.
 `paper/legacy_audit.tex` preserves the historical audit entrypoint. The build

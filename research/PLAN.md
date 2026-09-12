@@ -11,6 +11,14 @@ September 20. Submit only claims supported by completed experiments.
 
 ## Updated execution checkpoint — September12 UTC
 
+The newest completed phase is `research/NORMALIZED_SITE_STATE_20260912.json`:
+four actual-density training arms, eight frozen sampling arms and independent
+replay are complete. The singleton method's preparation/coverage limits remain.
+Next follow `notes/fragment_exchange_design.md` for bounded fragment-map testing
+and separately measured geometry-only preparation. Preserve the strong site prior
+and the requirement for independent molecular and distribution evidence. The
+earlier checkpoint bullets below are historical when superseded by NEXT.
+
 Official Dates and Author Guidelines were checked again: abstract September18,
 full paper September25, both23:59 AoE; main text at most9 pages. The new current
 manuscript is `paper/angular_working.tex`; `paper/main.tex` preserves the earlier
