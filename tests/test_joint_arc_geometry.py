@@ -1,4 +1,5 @@
 import math
+import pytest
 import itertools
 import torch
 from rdkit import Chem
@@ -133,7 +134,8 @@ def test_public_joint_transition_preserves_graph_and_charges_only_scored_endpoin
     assert scored>10
 
 
-def test_complete_joint_kernel_preserves_exact_geometry_conditioned_target():
+@pytest.mark.parametrize('kind',['arc_uniform','arc_energy'])
+def test_complete_joint_kernel_preserves_exact_geometry_conditioned_target(kind):
     # Exact joint rejection sampling chooses an assignment BEFORE each trial;
     # it never normalizes each graph separately. Both graph populations and all
     # six terminal Cartesian vectors therefore start from the stated target.
@@ -181,7 +183,14 @@ def test_complete_joint_kernel_preserves_exact_geometry_conditioned_target():
             return energy.detach(),force.detach()
     target=ChemicalTarget(Oracle(),dict(numbers=numbers.tolist(),charge=0,spin_multiplicity=1),.026,0.)
     states=target.evaluate([target.coordinate_state(z) for z in initial],phase='exact_initial')
-    final,rows=joint_chemical_transition(target,states,kind='arc_uniform',generator=rng,phase='joint',site_concentration=64.)
+    model=None
+    if kind=='arc_energy':
+        from cfm_mol.conditional_arc_energy import ConditionalArcEnergy
+        # Use the known target's broad scale so this stationarity check has
+        # accepted movement; the separate real-kernel density test uses64.
+        torch.manual_seed(25547);model=ConditionalArcEnergy(restraint=0.,site_concentration=concentration).double()
+        with torch.no_grad():model.query_head[-1].weight.normal_(0,.1)
+    final,rows=joint_chemical_transition(target,states,kind=kind,generator=rng,phase='joint',site_concentration=concentration if model else 64.,model=model)
     assert sum(r['accepted'] for r in rows)>=20
     final=torch.stack([s['positions'] for s in final])
     def observables(poses):

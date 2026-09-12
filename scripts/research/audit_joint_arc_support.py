@@ -16,6 +16,19 @@ from scripts.research.audit_joint_chemical import independent_log_q
 from scripts.research.audit_masked_angular import equal,sha
 
 
+def independent_energy_log_score(directions,record):
+    """NumPy evaluation of the serialized conditional radial energy readout."""
+    c={k:v.detach().cpu().numpy() for k,v in record['context'].items()}
+    point=float(c['radius'])*directions
+    distance=np.sqrt(np.sum((point[...,None,:]-c['masked'])**2,axis=-1)+1e-12)
+    scaled=distance/c['pair_radii']
+    radial=np.exp(-.5*((scaled[...,None]-record['query_centers'].detach().cpu().numpy())/record['query_width'])**2)
+    gate=np.where(distance<record['cutoff'],.5*(1+np.cos(np.pi*distance/record['cutoff'])),0.)*(c['roles']!=1)
+    residual=np.sum(np.sum(radial*c['coefficients'],axis=-1)*gate,axis=-1)/np.sqrt(np.sum(c['roles']!=1))
+    energy=np.sum(directions*c['linear_energy_parameter'],axis=-1)+residual
+    return -energy/record['kT']
+
+
 def independent_arc_q(trace):
     values=[]
     for component in trace['components']:
@@ -24,8 +37,9 @@ def independent_arc_q(trace):
         ell=component['log_radii'].numpy();mean=component['radial_means'].numpy();sigma=component['radial_width']
         value=float(np.sum(-.5*((ell-mean)/sigma)**2-math.log(sigma*math.sqrt(2*math.pi))-3*ell))
         for step in component['steps']:
+            score=(lambda u:independent_energy_log_score(u,step['energy_score'])) if 'energy_score' in step else None
             value+=independent_direction_logp(step['direction'].numpy(),step['base_direction'].numpy(),
-                step['normals'].numpy(),step['limits'].numpy(),step['eta'].numpy(),component['max_segment_width'])
+                step['normals'].numpy(),step['limits'].numpy(),step['eta'].numpy(),component['max_segment_width'],score=score)
         assert abs(value-float(component['log_coordinate_density']))<1e-7
         values.append(value)
     return float(np.logaddexp(*values)-math.log(2))

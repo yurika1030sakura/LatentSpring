@@ -83,3 +83,51 @@ def test_nonlinear_circle_score_has_exact_interpolated_mass_and_gradient():
         drawn,q,_=draw_direction(base,normals,limits,eta,generator=rng,score=score)
         observed,_=direction_log_prob(drawn,base,normals,limits,eta,score=score)
         torch.testing.assert_close(q,observed)
+
+
+def test_complete_scalar_joint_density_reversal_and_public_query_ledger():
+    from cfm_mol.chemical_moves import covalent_radii
+    from cfm_mol.chemical_sampler import ChemicalTarget
+    from cfm_mol.joint_arc_geometry import marginal_joint_arc_proposal
+    from cfm_mol.joint_chemical_geometry import distinct_anchor_actions,joint_chemical_transition
+    from scripts.research.audit_joint_arc_support import independent_arc_q,independent_energy_log_score
+    x,bonds,z,roots,e=fixture();torch.manual_seed(25541)
+    model=ConditionalArcEnergy().double()
+    with torch.no_grad():model.query_head[-1].weight.normal_(0,.15)
+    radii=covalent_radii(z);rng=torch.Generator().manual_seed(25543);checked=0
+    action=distinct_anchor_actions(z,bonds)[0];i,j,k,l=action
+    for order in [0,1]:
+        for _ in range(8):
+            y,q,trace=marginal_joint_arc_proposal(x,bonds,z,e,radii,action,kind='arc_energy',order=order,model=model,generator=rng)
+            if y is None:continue
+            new=infer_chemical_graph(y,z.tolist(),0)['bond_orders']
+            _,qr,reverse=marginal_joint_arc_proposal(y,new,z,e,radii,(i,j,l,k),kind='arc_energy',order=order,model=model,observed=x)
+            assert abs(independent_arc_q(trace)-float(q))<1e-7
+            if torch.isfinite(qr):assert abs(independent_arc_q(reverse)-float(qr))<1e-7
+            for component in trace['components']:
+                if component['failed']:continue
+                for step in component['steps']:
+                    u=step['direction'];root=torch.tensor([step['root']])
+                    actual=-model(step['context'][None],component['desired_bonds'][None],z,e,root,u[None])/e[2]
+                    assert abs(float(actual)-float(independent_energy_log_score(u.numpy(),step['energy_score'])))<1e-8
+            checked+=1
+    assert checked>=8
+    class Oracle:
+        evaluated=0
+        def evaluate_chunked(self,positions,max_request):
+            self.evaluated+=len(positions);return .01*positions.square().sum((1,2)),-.02*positions
+    target=ChemicalTarget(Oracle(),dict(numbers=z.tolist(),charge=0,spin_multiplicity=1),.026,.1)
+    states=target.evaluate([target.coordinate_state(x),target.coordinate_state(-x)],phase='initial')
+    total=0
+    for _ in range(8):
+        before=target.oracle.evaluated
+        states,rows=joint_chemical_transition(target,states,kind='arc_energy',generator=rng,phase='scalar',model=model,site_concentration=64.)
+        assert target.oracle.evaluated-before==2*sum(r['valid'] for r in rows)
+        total+=sum(r['valid'] for r in rows)
+        for row in rows:
+            if not row['valid']:continue
+            old=target.states[row['old_state_id']];new=target.states[row['new_state_id']]
+            ratio=-float(new['potential_eV']-old['potential_eV'])/target.kT+independent_arc_q(row['reverse'])-independent_arc_q(row['forward'])+row['action_log_ratio']
+            assert abs(ratio-row['log_acceptance_ratio'])<1e-7
+            assert row['accepted']==(row['log_uniform']<min(0.,ratio))
+    assert total>=8

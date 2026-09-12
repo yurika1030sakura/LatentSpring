@@ -173,7 +173,7 @@ def joint_chemical_transition(target, states, *, kind, generator, phase,
     numbers = torch.tensor(target.numbers, dtype=torch.long)
     electronic = torch.tensor([target.condition['charge'], target.condition['spin_multiplicity'], target.kT], dtype=torch.float64)
     rows, candidates = [], []
-    is_arc=kind in {'arc_uniform','arc_site','arc_site_confinement','arc_model'}
+    is_arc=kind in {'arc_uniform','arc_site','arc_site_confinement','arc_model','arc_energy'}
     options={}
     if is_arc:
         from cfm_mol.joint_arc_geometry import marginal_joint_arc_proposal

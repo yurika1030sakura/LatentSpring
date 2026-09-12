@@ -22,7 +22,7 @@ def passive_geometry_supported(x,bonds,radii,leaf,*,margin=1e-8):
 
 
 def arc_score_parameter(context,desired,numbers,electronic,root,kind,model,site_concentration,restraint):
-    if kind=='arc_uniform':return context.new_zeros(3)
+    if kind in {'arc_uniform','arc_energy'}:return context.new_zeros(3)
     roots=torch.tensor([root],dtype=torch.long,device=context.device)
     if kind=='arc_model':
         if model is None:raise ValueError('An explicit frozen score model is required')
@@ -50,8 +50,13 @@ def joint_arc_proposal(x,bonds,numbers,electronic,radii,action,*,kind,order,
     or numerical chart produces one failed attempt, never conditional resampling.
     The constant COM chart volume cancels between source/target assignments.
     """
-    if kind not in {'arc_uniform','arc_site','arc_site_confinement','arc_model'}:
+    if kind not in {'arc_uniform','arc_site','arc_site_confinement','arc_model','arc_energy'}:
         raise ValueError('Unknown arc proposal')
+    if kind=='arc_energy':
+        from cfm_mol.conditional_arc_energy import ConditionalArcEnergy
+        if not isinstance(model,ConditionalArcEnergy):raise ValueError('Conditional scalar energy model required')
+        if model.restraint!=restraint or model.site_concentration!=site_concentration:
+            raise ValueError('Energy model must match the declared restraint and site prior')
     if order not in (0,1) or action not in distinct_anchor_actions(numbers,bonds):
         raise ValueError('Eligible action and binary order required')
     i,j,k,l=action;desired=exchanged_bond_graph(bonds,action);roots=[(i,l),(j,k)]
@@ -86,15 +91,23 @@ def joint_arc_proposal(x,bonds,numbers,electronic,radii,action,*,kind,order,
         base=context[leaf]-context[anchor];base/=base.norm()
         normals,limits=root_distance_constraints(context,roots[n],radius[n],radii,margin=margin)
         eta=arc_score_parameter(context,desired,numbers,electronic,roots[n],kind,model,site_concentration,restraint)
+        score=None;energy_score=None
+        if kind=='arc_energy':
+            encoded=model.encode(context[None],desired[None],numbers,electronic,
+                torch.tensor([roots[n]],dtype=torch.long,device=x.device))
+            score=model.circle_log_score(encoded,electronic[2])
+            energy_score=dict(context={k:v[0] for k,v in encoded.items()},query_centers=model.query_centers,
+                query_width=model.query_width,cutoff=model.cutoff,kT=float(electronic[2]))
         if observed is None:
             direction,angular_log,random=draw_direction(base,normals,limits,eta,generator=generator,
-                max_segment_width=max_segment_width,chart_tolerance=chart_tolerance)
+                max_segment_width=max_segment_width,chart_tolerance=chart_tolerance,score=score)
         else:
             direction=(observed[leaf]-observed[anchor])/radius[n]
             angular_log,random=direction_log_prob(direction,base,normals,limits,eta,
-                max_segment_width=max_segment_width,chart_tolerance=chart_tolerance)
+                max_segment_width=max_segment_width,chart_tolerance=chart_tolerance,score=score)
         trace['steps'].append(dict(root=roots[n],context=context,base_direction=base,eta=eta,
             normals=normals,limits=limits,direction=direction,angular_log_density=angular_log,random=random))
+        if energy_score is not None:trace['steps'][-1]['energy_score']=energy_score
         if direction is None or not torch.isfinite(angular_log):return failed('No supported angular draw or observed density')
         logq+=angular_log;y[leaf]=y[anchor]+radius[n]*direction;y-=y.mean(0)
     if observed is not None:torch.testing.assert_close(y,observed-observed.mean(0),atol=1e-9,rtol=1e-9)

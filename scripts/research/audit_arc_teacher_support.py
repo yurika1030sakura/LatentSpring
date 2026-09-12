@@ -40,7 +40,7 @@ def independent_intervals(base,tangent,normals,limits):
     return intervals
 
 
-def quadrature_angle_logp(theta,base,tangent,normals,limits,eta,width):
+def quadrature_angle_logp(theta,base,tangent,normals,limits,eta,width,score=None):
     arcs=independent_intervals(base,tangent,normals,limits);segments=[]
     for left,right in arcs:
         n=max(1,math.ceil((right-left)/width))
@@ -48,7 +48,7 @@ def quadrature_angle_logp(theta,base,tangent,normals,limits,eta,width):
     if not segments:return -math.inf
     edges=np.array(segments)
     directions=np.cos(edges)[...,None]*base+np.sin(edges)[...,None]*tangent
-    heights=directions@eta;delta=heights[:,1]-heights[:,0];peak=float(heights.max())
+    heights=directions@eta if score is None else score(directions);delta=heights[:,1]-heights[:,0];peak=float(heights.max())
     # Independent Gauss-Legendre integration of the implemented interpolant.
     density=np.exp(heights[:,0,None]+delta[:,None]*FRACTIONS-peak)
     integrals=(edges[:,1]-edges[:,0])*(density@WEIGHTS)/2
@@ -58,12 +58,12 @@ def quadrature_angle_logp(theta,base,tangent,normals,limits,eta,width):
     return -math.inf
 
 
-def independent_direction_logp(observed,base,normals,limits,eta,width):
+def independent_direction_logp(observed,base,normals,limits,eta,width,score=None):
     cosine=float(observed@base);v=observed-cosine*base;sine=float(np.linalg.norm(v))
     assert sine>1e-10
     tangent=v/sine;theta=math.atan2(sine,cosine)
-    first=quadrature_angle_logp(theta,base,tangent,normals,limits,eta,width)
-    second=quadrature_angle_logp(TAU-theta,base,-tangent,normals,limits,eta,width)
+    first=quadrature_angle_logp(theta,base,tangent,normals,limits,eta,width,score=score)
+    second=quadrature_angle_logp(TAU-theta,base,-tangent,normals,limits,eta,width,score=score)
     return float(np.logaddexp(first,second)-math.log(TAU)-math.log(sine))
 
 
