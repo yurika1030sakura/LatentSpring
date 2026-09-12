@@ -1,4 +1,27 @@
-# Next research decision — 2026-09-11
+# Next research decision — 2026-09-12
+
+## Latest joint-geometry checkpoint
+
+Read `research/JOINT_GEOMETRY_STATE_20260912.json` and
+`notes/joint_geometry_decision_v1.md` first. The joint normalized graph/radius/
+direction proposal is IMPLEMENTED. All ten pilot arms46110667 and six full-cost
+control continuations46111148 are COMPLETE and fully replayed (CPU audit46111921).
+This round adds75960 physical calls, with no new training calls.
+
+Tensor models reach all four diagnostic reference graphs in both pilots. After
+preparation costs, however, the physical site prior reaches all four for6380/2994
+calls versus tensor11296/11076. The learned full-cost advantage is not established.
+Potential Rhat1.802/1.906 and a17-atom screen with tensor44/128 and0/128 supported
+proposals also prevent equilibrium/transfer claims. All negative evidence remains.
+
+NEXT: `notes/normalized_joint_learning_next.md` specifies learning the actual
+normalized directional density with a robust physical prior and a representation
+that addresses untrained elements. Do not repeat or scale the frozen guide. Keep
+the full-cost site control, source denominators, independent-composition gates
+and reserved evaluation separation. The current six-page paper is
+`paper/angular_working.tex`; scientific submission readiness remains false.
+
+The checkpoints and next-action statements below are historical where superseded.
 
 The ICLR goal remains ACTIVE and unachieved. The latest turn made substantial
 progress: the original48-arm campaign closed, a new conditional proposal and

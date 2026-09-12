@@ -1,0 +1,122 @@
+{
+  "at_utc": "2026-09-12T02:17:55.640874+00:00",
+  "complete": true,
+  "scientific_submission_ready": false,
+  "jobs": {
+    "pilot": "46110667",
+    "full_cost_controls": "46111148",
+    "full_cost_cpu_audit": "46111921"
+  },
+  "all_jobs_complete": true,
+  "all_sixteen_sampling_arms_fully_audited": true,
+  "new_physical_queries": {
+    "pilot": 17014,
+    "continuation": 58946,
+    "total": 75960,
+    "training": 0,
+    "transfer_screen": 0,
+    "audits": 0
+  },
+  "maximum_replay_position_error_A": 0.0,
+  "all_four_first_passages": [
+    {
+      "method": "tensor",
+      "replica": 0,
+      "step": 107,
+      "sampling_raw_queries": 720,
+      "total_raw_queries": 11296
+    },
+    {
+      "method": "tensor",
+      "replica": 1,
+      "step": 67,
+      "sampling_raw_queries": 500,
+      "total_raw_queries": 11076
+    },
+    {
+      "method": "site",
+      "replica": 0,
+      "step": 751,
+      "sampling_raw_queries": 5464,
+      "total_raw_queries": 6380
+    },
+    {
+      "method": "site",
+      "replica": 1,
+      "step": 287,
+      "sampling_raw_queries": 2078,
+      "total_raw_queries": 2994
+    }
+  ],
+  "tensor_difficult_parent_first_hit_steps": [
+    91,
+    23
+  ],
+  "site_difficult_parent_first_hit_steps": [
+    751,
+    287
+  ],
+  "physical_control_budget_gaps": [
+    {
+      "method": "deterministic",
+      "replica": 0,
+      "gap": 4
+    },
+    {
+      "method": "deterministic",
+      "replica": 1,
+      "gap": 6
+    },
+    {
+      "method": "uniform",
+      "replica": 0,
+      "gap": 2
+    },
+    {
+      "method": "uniform",
+      "replica": 1,
+      "gap": 2
+    },
+    {
+      "method": "site",
+      "replica": 0,
+      "gap": 0
+    },
+    {
+      "method": "site",
+      "replica": 1,
+      "gap": 4
+    }
+  ],
+  "learned_full_cost_advantage_established": false,
+  "learned_amortized_advantage_measured": false,
+  "transfer_tensor_valid": [
+    44,
+    0
+  ],
+  "transfer_site_valid": [
+    101,
+    96
+  ],
+  "transfer_attempts_per_arm": 128,
+  "transfer_new_elements": [
+    8,
+    15,
+    17
+  ],
+  "transfer_only_geometry": true,
+  "density_and_sampler_tests_passed": 18,
+  "tests_scope": "Joint coordinate measure/reversal/covariance/known radial target, masked guide, angular envelope, spherical proposals, rotations and chemical exchange; not the entire repository test suite.",
+  "qualified_equilibrium_reference": false,
+  "original_source_likelihood_available": false,
+  "reserved_evaluation_outcomes_used": false,
+  "evidence": {
+    "research/evidence/joint_chemical_audit_v1.json": "a84c36bf67763268dabc27fdfb5d72730aecdda7409fe9e653acf8965cf390ec",
+    "research/evidence/joint_chemical_full_cost_audit_v1.json": "c928dcb7a9c88a1d00f76b9a300e497b9b04dd6bf0fb007291d50a7729151f58",
+    "research/evidence/joint_geometry_transfer_screen_v1.json": "2edb84b28423dbca0dec3d3e5290e5f469f52d6bac7c4d1f6fcba206a86583ea",
+    "research/evidence/joint_history_diagnostics_v1.json": "5c81b3d7fd18ad00b0fc28d70ce9d0386e0b05846e6000c75ef85fad8d678a41"
+  },
+  "decision": "Retain the exact joint geometry framework and strong physical site prior. Do not expand frozen guide scale or claim total-cost advantage. Test learning the actual normalized density with a robust physical prior, then independent composition and equilibrium gates.",
+  "next_design": "notes/normalized_joint_learning_next.md",
+  "manuscript": "paper/angular_working.tex"
+}

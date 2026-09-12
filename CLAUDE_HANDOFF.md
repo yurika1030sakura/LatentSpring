@@ -1,5 +1,19 @@
 # Claude handoff — BGFM / ICLR 2027
 
+**Latest September12 continuation:** start with
+`research/JOINT_GEOMETRY_STATE_20260912.json` and
+`notes/joint_geometry_decision_v1.md`. The normalized joint graph/geometry proposal,
+ten-arm pilot and six full-cost physical continuations are complete and fully
+audited. Tensor first passages repeat, but the site prior wins total first-passage
+cost after training preparation. Molecular equilibrium and transfer remain
+unqualified. This round adds75960 raw physical calls; no jobs from this round remain
+pending at the recorded checkpoint. Re-query Slurm before new work.
+Next implement/test `notes/normalized_joint_learning_next.md`, preserving the
+strong site prior. Do not relaunch the frozen pilot or claim ICLR readiness.
+Current draft: `paper/angular_working.tex`, six main-text pages with full-cost
+figure, proofs, adverse controls and updated related work. Older next-action and
+pending-job statements below are historical.
+
 **September12 latest:** `research/MASKED_ANGULAR_STATE_20260912.json` and
 `research/NEXT.md` supersede the older checkpoints below. The masked vector/tensor
 guide is implemented, trained and evaluated. The efficient envelope improves

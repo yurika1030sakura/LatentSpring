@@ -13,9 +13,11 @@ Cartesian volume factors. Complete reverse densities permit Metropolis correctio
 without a source likelihood or equilibrium training coordinates. In a development
 study, both frozen tensor models reach a diagnostic reference connectivity from
 all four generated starts, while matched short physical controls retain failures.
-We preserve every rejected proposal and all preparation costs. This repeated
-first-passage signal does not yet establish equilibrium mixing, a total-cost
-learned advantage or calibrated molecular equilibrium ensembles.
+Continuing the physical controls to the same total cost shows that a simple
+coordination-site prior reaches the diagnostic graph earlier once learning
+preparation is counted. We preserve these adverse controls, all rejected proposals
+and a failed transfer screen. Equilibrium mixing, a total-cost learned advantage
+and calibrated molecular equilibrium ensembles remain unestablished.
 \end{abstract}
 
 \section{Problem and scope}
@@ -281,9 +283,8 @@ schedule. The two tensor replicas reach the diagnostic graph from the difficult
 parent at steps 91 and 23; the vector replicas do so in only one seed, and none of
 the three physical controls do so within this 256-step pilot. This is a useful
 repeated development first-passage signal. The tensor arms nevertheless inherit
-roughly four times the total raw-query cost of the short physical controls. A
-prospectively bounded continuation of the unchanged physical chains tests the
-same total costs; the short-pilot comparison alone cannot establish superiority.
+roughly four times the total raw-query cost of the short physical controls.
+The completed cost comparison below changes the interpretation of this signal.
 
 \begin{table}[t]
 \centering\small
@@ -303,6 +304,38 @@ Frozen tensor & (180/5,256/7) & (4,4) & (12310,12460)\\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\paragraph{Completed comparison including preparation.}
+We continued all six physical-control chains with unchanged states, kernels and
+random streams to the corresponding tensor arm's cumulative query budget. All
+original prefixes and complete continuations replay. The final budgets differ
+from the tensor targets by at most six raw queries, with every residual reported.
+The site prior reaches all four reference graphs at total costs 6,380/2,994;
+the tensor models require 11,296/11,076 including preparation
+(Figure~\ref{fig:joint-cost}). Deterministic controls still fail the difficult
+parent and uniform geometry reaches none of the reference graphs. Thus learning
+improves this particular fixed-step pilot but loses to the strong physical prior
+on total first-passage cost. The continuation adds 58,946 raw evaluations to the
+pilot's 17,014. A claim based on amortized reuse would require additional independent
+parent batches; extrapolation from these four starts is insufficient.
+
+First passage also does not resolve distributional convergence. In a secondary
+diagnostic of the final half of each history, the maximum rank/folded split
+$\widehat R$ for restrained potential is 1.802/1.906 for the tensor models and
+1.126/1.208 for the site controls. Radius-of-gyration diagnostics also retain
+substantial disagreement. These short histories do not qualify molecular
+equilibrium ensembles, even after all four chains reach the reference graph.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/joint_first_passage.pdf}
+\caption{First-passage coverage at actual cumulative costs. These four starts are
+the support-qualified subset of 512 generated development attempts; learning also
+inherits training-source and force-table preparation. Both repeated successes and
+failures remain visible. Reaching a reference connectivity is a diagnostic, not
+an estimate of its equilibrium mass or of conformational mixing.}
+\label{fig:joint-cost}
+\end{figure}
 
 The tensor coefficients were fitted to the quadratic score, whereas joint proposals
 use the normalized mixture. Its actual training angular-score MSE is 575.2/602.7,
@@ -329,6 +362,14 @@ Independent molecular generalization, reference-distribution convergence, practi
 scaling and an anonymous reproducibility package remain outstanding. The reserved
 evaluation conditions remain unused.
 
+A geometry-only screen on the next eligible, 17-atom composition uses the first
+32 supported training parents and four proposals per parent. It introduces no
+new physical queries or fitting. Tensor models pass the specified graph check in
+44/128 and 0/128 attempts, versus 101/128 and 96/128 for the site prior. This
+composition includes O, P and Cl, absent from the guide's training composition.
+The screen identifies a transfer limitation; it measures neither Metropolis
+acceptance nor the energy distribution of that composition.
+
 \section{Related work and position}
 Learned molecular proposals with Metropolis correction already appear in
 Timewarp~\citep{klein2023timewarp}, and flow-based MCMC acceleration is addressed
@@ -336,7 +377,10 @@ by Markovian flow matching~\citep{cabezas2024markovian}. Masked conditionals use
 as MH proposals are also established outside molecular sampling, including
 \citet{goyal2022maskedmh}. We do not claim masking, conditional MH, directional
 distributions, tensor covariance or force regression as new general ideas.
-The candidate contribution is their concrete combination for invariant-context,
-validity-conditioned molecular angular updates, together with a demonstrated
-cost/quality advantage if subsequent experiments establish one. The current
-development evidence is insufficient for that final empirical claim.
+Graph-editing MCMC with learned proposals is established by MARS~\citep{xie2021mars};
+MOSAiCS applies evolutionary Monte Carlo to quantum-property optimization over
+chemical space~\citep{karandashev2023mosaics}. Here we evaluate coordinate-space
+physical sampling with deterministic graph perception and joint geometry
+regeneration after attachment exchanges. The implementation and limited
+development evidence qualify this proposed kernel. A competitive learned sampler,
+broad generalization and useful equilibrium ensembles remain to be demonstrated.

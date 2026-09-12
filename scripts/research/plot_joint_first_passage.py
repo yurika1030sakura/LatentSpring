@@ -45,20 +45,19 @@ def main():
             costs, coverage = [], []
             for h in report['history']:
                 reached = [a or b == reference for a, b in zip(reached, h['smiles'])]
-                costs.append(h['total_raw_queries'])
+                costs.append(h['total_raw_queries']/1000)
                 coverage.append(sum(reached))
             assert sum(reached) == sum(hit is not None for hit in row['reference_connectivity_first_hit_step'])
             ax.step(costs, coverage, where='post', color=color, label=label,
                     linewidth=1.8 if method == 'tensor' else 1.25)
             ax.plot(costs[-1], coverage[-1], 'o', color=color, markersize=3)
             inputs.append(dict(method=method, replica=replica, results_sha256=sha(path),
-                               final_coverage=sum(reached), final_total_raw_queries=costs[-1]))
+                               final_coverage=sum(reached), final_total_raw_queries=report['history'][-1]['total_raw_queries']))
         ax.set_title(f'Replica {replica}')
-        ax.set_xlim(0, 12600)
+        ax.set_xlim(0, 12.6)
         ax.set_ylim(-.12, 4.18)
         ax.set_yticks(range(5))
-        ax.ticklabel_format(axis='x', style='sci', scilimits=(3, 3))
-        ax.set_xlabel('Total raw queries, including preparation')
+        ax.set_xlabel('Total raw queries, including preparation ($10^3$)')
         ax.grid(axis='y', alpha=.18)
     axes[0].set_ylabel('Starts ever reaching\nreference connectivity (of 4)')
     handles, legend = axes[0].get_legend_handles_labels()
