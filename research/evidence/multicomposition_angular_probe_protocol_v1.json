@@ -1,0 +1,199 @@
+{
+  "frozen": true,
+  "frozen_at_utc": "2026-09-12T11:05:06.886530+00:00",
+  "preparation_run": "runs/proposal_training_preparation_v1",
+  "preparation_audit": "runs/proposal_training_preparation_audit_v1/results.json",
+  "preparation_audit_sha256": "ac67d8681076722265901d6f12b1edd844a7742d17f6eff8aba4fc65003b8bf4",
+  "preparation_protocol_sha256": "f619a98879ef0908b0cc875dd381576a0051cd7cc99f449858f77bdbaab30b94",
+  "physical_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "condition_indices": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "condition_splits": {
+    "0": {
+      "role": "withheld_composition",
+      "fit_parent_ids": [],
+      "withheld_parent_ids": [],
+      "withheld_composition_parent_ids": [
+        1,
+        4,
+        12,
+        20,
+        24,
+        25,
+        26,
+        28,
+        38,
+        46,
+        62,
+        63,
+        71,
+        80,
+        89,
+        93
+      ]
+    },
+    "1": {
+      "role": "fit_composition",
+      "fit_parent_ids": [
+        5,
+        28,
+        35,
+        55,
+        58,
+        59,
+        63,
+        68,
+        80,
+        88,
+        91,
+        94
+      ],
+      "withheld_parent_ids": [
+        14,
+        46,
+        71,
+        77
+      ],
+      "withheld_composition_parent_ids": []
+    },
+    "2": {
+      "role": "fit_composition",
+      "fit_parent_ids": [
+        0,
+        1,
+        4,
+        12,
+        15,
+        16,
+        18,
+        23,
+        27,
+        29,
+        30,
+        39
+      ],
+      "withheld_parent_ids": [
+        6,
+        17,
+        20,
+        42
+      ],
+      "withheld_composition_parent_ids": []
+    },
+    "3": {
+      "role": "fit_composition",
+      "fit_parent_ids": [
+        14,
+        16,
+        17,
+        20,
+        29,
+        34,
+        37,
+        38,
+        45,
+        47,
+        49,
+        50
+      ],
+      "withheld_parent_ids": [
+        1,
+        12,
+        24,
+        41
+      ],
+      "withheld_composition_parent_ids": []
+    },
+    "4": {
+      "role": "zero_support",
+      "fit_parent_ids": [],
+      "withheld_parent_ids": [],
+      "withheld_composition_parent_ids": []
+    },
+    "5": {
+      "role": "fit_composition",
+      "fit_parent_ids": [
+        3,
+        12,
+        36,
+        47,
+        48,
+        68,
+        103,
+        111,
+        127,
+        148,
+        176,
+        190
+      ],
+      "withheld_parent_ids": [
+        70,
+        194,
+        201,
+        207
+      ],
+      "withheld_composition_parent_ids": []
+    },
+    "6": {
+      "role": "zero_support",
+      "fit_parent_ids": [],
+      "withheld_parent_ids": [],
+      "withheld_composition_parent_ids": []
+    },
+    "7": {
+      "role": "withheld_composition",
+      "fit_parent_ids": [],
+      "withheld_parent_ids": [],
+      "withheld_composition_parent_ids": [
+        3,
+        7,
+        8,
+        9,
+        12,
+        17,
+        20,
+        23,
+        24,
+        25,
+        26,
+        36,
+        38,
+        42,
+        43,
+        50
+      ]
+    }
+  },
+  "split_seeds": {
+    "composition": 25201,
+    "parent": 25203
+  },
+  "probe_seed": 25211,
+  "exchange_trials_per_parent": 2,
+  "warm_roots_per_parent": 1,
+  "site_concentration": 64.0,
+  "radial_width": 0.05,
+  "fit_angle_rad": 0.15,
+  "check_angle_rad": 0.1,
+  "rank_threshold": 1e-05,
+  "maximum_contexts_per_parent": 5,
+  "maximum_new_raw_queries_per_parent": 64,
+  "maximum_total_new_raw_queries": 6144,
+  "inherit_warm_forces": true,
+  "physical_target": "Same paired inversion-averaged eSEN plus gamma/2 COM restraint as audited preparation.",
+  "selection": "One uniform warm root and two independent uniform different-anchor exchange actions per training parent. Single-draw site proposals; no validity-conditioned resampling. Both roots of supported exchanged centers receive fixed-context probes. Four signed fit angles and two diagonal checks. Retain all failures and both zero-support conditions.",
+  "evaluation_coordinates_allowed": false,
+  "reference_coordinates_allowed": false,
+  "reserved_outcomes_allowed": false,
+  "model_fitting_in_this_phase": false,
+  "scope": "TRAINING-only conditional-density identification data. Internal held-out compositions/parents are frozen before these new probe values; not blind final molecular evaluation.",
+  "training_manifest_sha256": "baefdca3f241d06bf12d6592029d74001f3bdfbb90307469655f4a060e5b3584"
+}
