@@ -26,6 +26,7 @@ def main():
     p.add_argument('--table',type=Path,required=True);p.add_argument('--policies',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True);p.add_argument('--replica',type=int,choices=[0,1],required=True)
     p.add_argument('--method',choices=['uniform','uniform_exchange','uniform_multiscale','uniform_angular','force_angular','learned','masked_tensor','masked_vector','masked_zero'],required=True)
+    p.add_argument('--evaluation-protocol',type=Path)
     p.add_argument('--oracle-python',type=Path,required=True);p.add_argument('--oracle-checkpoint',type=Path,required=True)
     args=p.parse_args();root=Path(__file__).resolve().parents[2]
     protocol_path=root/'research/evidence/chemical_policy_protocol_v1.json';protocol=json.loads(protocol_path.read_text())
@@ -33,6 +34,7 @@ def main():
     angular=masked or args.method in ('uniform_angular','force_angular');multiscale=angular or args.method=='uniform_multiscale'
     evaluation_path=root/'research/evidence'/('masked_angular_evaluation_protocol_v1.json' if masked else 'force_angular_protocol_v1.json' if args.method=='force_angular' else 'angular_chemical_protocol_v1.json' if angular else
         'multiscale_chemical_protocol_v1.json' if multiscale else 'chemical_policy_evaluation_protocol_v2.json')
+    if args.evaluation_protocol is not None:evaluation_path=args.evaluation_protocol
     evaluation=json.loads(evaluation_path.read_text())
     if evaluation['training_protocol_sha256']!=sha(protocol_path):raise ValueError('Changed training protocol')
     header=json.loads((args.table/'results.json').read_text());data_path=args.table/'development.pt'
@@ -117,7 +119,8 @@ def main():
                 scale_history.append(choices.tolist())
             if masked and scheduled=='masked_angle':
                 states,records,search=masked_angular_transition(target,states,guide_model,
-                    max_trials=evaluation['capped_direction_trials'],generator=generator,phase=f'evaluation_{step}')
+                    max_trials=evaluation['capped_direction_trials'],generator=generator,phase=f'evaluation_{step}',
+                    proposal=evaluation.get('proposal','uniform'))
                 searches.append(search)
             elif angular and scheduled!='local':
                 states,records=uniform_internal_transition(target,states,kind=scheduled,generator=generator,phase=f'evaluation_{step}')

@@ -3,10 +3,11 @@ import math
 import torch
 from cfm_mol.masked_angular_guide import masked_angular_context,angular_log_score
 from cfm_mol.terminal_rotation import terminal_rotation_actions
+from cfm_mol.angular_envelope import envelope_draw
 
 
 @torch.no_grad()
-def capped_directions(eta,matrix,envelope,valid,*,max_trials,generator):
+def capped_directions(eta,matrix,envelope,valid,*,max_trials,generator,proposal='uniform'):
     if (eta.ndim!=2 or eta.shape[1]!=3 or matrix.shape!=(len(eta),3,3)
             or envelope.shape!=(len(eta),) or not isinstance(max_trials,int) or max_trials<1):
         raise ValueError('Valid angular coefficients and positive trial cap required')
@@ -15,9 +16,15 @@ def capped_directions(eta,matrix,envelope,valid,*,max_trials,generator):
     for trial in range(max_trials):
         active=(~success).nonzero().flatten()
         if len(active)==0:break
-        noise=torch.randn((len(active),3),dtype=eta.dtype,device=eta.device,generator=generator)
-        u=noise/noise.norm(dim=1,keepdim=True)
-        score=angular_log_score(u,eta[active],matrix[active]);logp=score-envelope[active]
+        auxiliary=None;noise=None
+        if proposal=='uniform':
+            noise=torch.randn((len(active),3),dtype=eta.dtype,device=eta.device,generator=generator)
+            u=noise/noise.norm(dim=1,keepdim=True)
+            score=angular_log_score(u,eta[active],matrix[active]);logp=score-envelope[active]
+        elif proposal=='vmf_envelope':
+            u,logp,auxiliary=envelope_draw(eta[active],matrix[active],generator=generator)
+            score=angular_log_score(u,eta[active],matrix[active])
+        else:raise ValueError('Unknown angular rejection base')
         if (logp>1e-8).any():raise ValueError('Angular rejection envelope violated')
         logu=torch.rand(len(active),dtype=eta.dtype,device=eta.device,generator=generator).log()
         passed=logu<logp.clamp_max(0);supported=torch.zeros_like(passed)
@@ -26,13 +33,15 @@ def capped_directions(eta,matrix,envelope,valid,*,max_trials,generator):
             if checked.shape!=(int(passed.sum()),) or checked.dtype!=torch.bool:raise ValueError('Invalid support callback')
             supported[passed]=checked
         take=passed&supported;success[active[take]]=True;directions[active[take]]=u[take]
-        trace.append(dict(trial=trial,indices=active,noise=noise,directions=u,log_uniform=logu,
-            score=score,score_passed=passed,geometry_checked=passed,geometry_valid=supported,accepted=take))
+        row=dict(trial=trial,indices=active,noise=noise,directions=u,log_uniform=logu,
+            score=score,score_passed=passed,geometry_checked=passed,geometry_valid=supported,accepted=take)
+        if proposal!='uniform':row.update(proposal=proposal,proposal_auxiliary=auxiliary,log_rejection_probability=logp)
+        trace.append(row)
     return directions,success,trace
 
 
 @torch.no_grad()
-def masked_angular_transition(target,states,model,*,max_trials,generator,phase):
+def masked_angular_transition(target,states,model,*,max_trials,generator,phase,proposal='uniform'):
     roots=[];choices=[];counts=[]
     for s in states:
         actions=terminal_rotation_actions(target.numbers,s['graph']['bond_orders'])
@@ -65,7 +74,7 @@ def masked_angular_transition(target,states,model,*,max_trials,generator,phase):
             except ValueError as exc:check['rejection_reason']=str(exc)
             checks.append(check);values.append(check['valid'])
         return torch.tensor(values,dtype=torch.bool)
-    direction,success,trials=capped_directions(eta,matrix,envelope,valid,max_trials=max_trials,generator=generator)
+    direction,success,trials=capped_directions(eta,matrix,envelope,valid,max_trials=max_trials,generator=generator,proposal=proposal)
     target.evaluate([c for c in candidates if c is not None],phase=phase)
     old_scores=angular_log_score(old_direction,eta,matrix);new_scores=angular_log_score(direction,eta,matrix)
     logu=torch.rand(len(states),dtype=x.dtype,generator=generator).log();rows=[];updated=list(states)

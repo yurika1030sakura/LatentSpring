@@ -8,17 +8,21 @@ import math
 import torch
 
 
+def vmf_log_normalizer(natural_parameter):
+    k=natural_parameter.norm(dim=1);safe=k.clamp_min(1e-12)
+    regular=safe.log()-math.log(2*math.pi)-safe-(-torch.expm1(-2*safe)).log()
+    series=-math.log(4*math.pi)-k.square()/6+k.pow(4)/180-k.pow(6)/2835
+    log_constant=torch.where(k<1e-3,series,regular)
+    return log_constant
+
+
 def vmf_log_prob(direction,natural_parameter):
     if direction.shape!=natural_parameter.shape or direction.ndim!=2 or direction.shape[1]!=3:
         raise ValueError('Matched batches of three-dimensional vectors required')
     if (not torch.isfinite(direction).all() or not torch.isfinite(natural_parameter).all()
             or not torch.allclose(direction.norm(dim=1),torch.ones(len(direction),dtype=direction.dtype,device=direction.device),atol=1e-8,rtol=0)):
         raise ValueError('Finite natural parameters and unit directions required')
-    k=natural_parameter.norm(dim=1);safe=k.clamp_min(1e-12)
-    regular=safe.log()-math.log(2*math.pi)-safe-(-torch.expm1(-2*safe)).log()
-    series=-math.log(4*math.pi)-k.square()/6+k.pow(4)/180-k.pow(6)/2835
-    log_constant=torch.where(k<1e-3,series,regular)
-    return log_constant+(natural_parameter*direction).sum(1)
+    return vmf_log_normalizer(natural_parameter)+(natural_parameter*direction).sum(1)
 
 
 @torch.no_grad()
