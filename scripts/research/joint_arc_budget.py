@@ -185,6 +185,29 @@ def audit_ratios(saved, target, decoder, shared):
     return checked
 
 
+def verify_recovery_prefix(run, source):
+    if 'recovery' not in source: return False
+    info = source['recovery']; previous = Path(info['source'])
+    assert sha(previous/'results.json') == info['source_results_sha256']
+    old = json.loads((previous/'results.json').read_text())
+    assert old['failure'] == info['source_failure'] == 'ValueError: Orthogonal circle frame required'
+    assert old['new_raw_queries'] == old['requested_raw_queries'] == info['previous_physical_calls']
+    partial_path = previous/'learned_work_s0_failed_trace.pt'
+    assert sha(partial_path) == info['source_failed_trace_sha256']
+    partial = torch.load(partial_path, map_location='cpu', weights_only=False)
+    row = next(r for r in source['arms'] if r['name'] == 'learned_work_s0')
+    continued = torch.load(run/row['file'], map_location='cpu', weights_only=False)
+    equal(continued['query_trace'][:len(partial['query_trace'])], partial['query_trace'])
+    cached = partial['query_trace'][-1]['raw_queries_after']-partial['raw_query_offset']
+    assert cached == info['cached_partial_calls'] == info['expected_cached_partial_calls']
+    assert info['all_cached_requests_replayed']
+    for old_row,new_row in zip(old['arms'],source['arms']):
+        assert old_row['name'] == new_row['name'] and old_row['trace_sha256'] == new_row['trace_sha256']
+    assert source['new_raw_queries'] == info['previous_physical_calls']+info['additional_physical_calls']
+    assert info['additional_physical_calls'] == info['additional_requested_calls']
+    return True
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--phase', choices=['evaluate', 'audit'], required=True)
@@ -218,6 +241,7 @@ def main():
             assert source['parent_ids'] == ids and source['condition'] == header['condition']
             assert len(source['arms']) == len(protocol['methods'])*len(protocol['replicas'])
             report['producer_results_sha256'] = sha(args.run/'results.json')
+            if 'recovery' in source: report['recovery_prefix_verified'] = verify_recovery_prefix(args.run, source)
         for replica in protocol['replicas']:
             for method in protocol['methods']:
                 name = f'{method}_s{replica}'

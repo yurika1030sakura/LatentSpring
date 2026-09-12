@@ -146,7 +146,16 @@ def direction_log_prob(observed,base,normals,limits,eta,*,max_segment_width=math
     torch.testing.assert_close(observed.norm(),observed.new_tensor(1.),atol=1e-9,rtol=0)
     cosine=base@observed;perpendicular=observed-cosine*base;sine=perpendicular.norm()
     if float(sine)<=chart_tolerance:return observed.new_tensor(-torch.inf),dict(chart_rejected=True)
-    tangent=perpendicular/sine;theta=torch.atan2(sine,cosine)
+    tangent=perpendicular/sine
+    if abs(float(base@tangent))>1e-9:
+        # Near a circle pole, subtraction leaves a parallel roundoff residual
+        # amplified by1/sin(theta). Reorthogonalize without relaxing the frame
+        # check or changing the ordinary, already audited code path.
+        perpendicular=perpendicular-(perpendicular@base)/(base@base)*base
+        sine=perpendicular.norm()
+        if float(sine)<=chart_tolerance:return observed.new_tensor(-torch.inf),dict(chart_rejected=True)
+        tangent=perpendicular/sine
+    theta=torch.atan2(sine,cosine)
     logs=[]
     for sign,angle in [(1,theta),(-1,TAU-theta)]:
         law=circle_law(base,sign*tangent,normals,limits,eta,max_segment_width=max_segment_width,score=score)

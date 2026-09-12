@@ -140,3 +140,18 @@ def test_molecular_distance_arcs_preserve_graph_and_transform_equivariantly():
             nn,cc=root_distance_constraints(x[permutation],(int(inverse[0]),int(inverse[1])),radius,radii[permutation])
             newq,_=direction_log_prob(u,base,nn,cc,eta)
             assert abs(float(newq-logq))<1e-8
+
+
+def test_near_pole_density_reorthogonalizes_without_weakening_frame_check():
+    from scripts.research.audit_arc_teacher_support import independent_direction_logp
+    base=torch.tensor([-.33645891068101025,-.8750305875573113,.348018494138536],dtype=torch.float64)
+    observed=torch.tensor([-.33645891845714837,-.8750305351865997,.3480186182974966],dtype=torch.float64)
+    normal=torch.empty(0,3,dtype=base.dtype);limit=torch.empty(0,dtype=base.dtype)
+    perpendicular=observed-(base@observed)*base
+    assert abs(float(base@(perpendicular/perpendicular.norm())))>1e-9
+    eta=torch.tensor([50.,-40.,70.],dtype=base.dtype)
+    value,trace=direction_log_prob(observed,base,normal,limit,eta)
+    assert torch.isfinite(value) and abs(float(base@trace['tangent']))<1e-12
+    assert abs(float(trace['tangent'].norm())-1)<1e-12
+    independent=independent_direction_logp(observed.numpy(),base.numpy(),normal.numpy(),limit.numpy(),eta.numpy(),math.pi/64)
+    assert abs(float(value)-independent)<1e-7

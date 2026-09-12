@@ -61,6 +61,10 @@ def quadrature_angle_logp(theta,base,tangent,normals,limits,eta,width,score=None
 def independent_direction_logp(observed,base,normals,limits,eta,width,score=None):
     cosine=float(observed@base);v=observed-cosine*base;sine=float(np.linalg.norm(v))
     assert sine>1e-10
+    if sine<1e-5:
+        # Independent second projection in the numerically sensitive pole chart.
+        v=v-float(v@base)/float(base@base)*base
+        sine=float(np.linalg.norm(v))
     tangent=v/sine;theta=math.atan2(sine,cosine)
     first=quadrature_angle_logp(theta,base,tangent,normals,limits,eta,width,score=score)
     second=quadrature_angle_logp(TAU-theta,base,-tangent,normals,limits,eta,width,score=score)

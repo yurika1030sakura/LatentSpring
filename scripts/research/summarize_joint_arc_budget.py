@@ -27,13 +27,22 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['project','run','audit','out']:p.add_argument('--'+name,type=Path,required=True)
     p.add_argument('--protocol',type=Path)
+    p.add_argument('--recovery-run',type=Path)
     args=p.parse_args();root=Path(__file__).resolve().parents[2]
     pp=args.protocol or root/'research/evidence/joint_arc_budget_protocol_v1.json';protocol=json.loads(pp.read_text())
     arms={};evidence={};source_cost=0;timing={};counts={};startup={};loading={}
     for index in protocol['condition_indices']:
         rp=args.run/f'condition_{index:02d}/results.json';ap=args.audit/f'condition_{index:02d}/results.json'
+        if args.recovery_run is not None and index==5:
+            old=rp
+            rp=args.recovery_run/'results.json'
+            recovered=json.loads(rp.read_text())
+            assert recovered['recovery']['source_results_sha256']==sha(old)
+            assert recovered['recovery']['all_cached_requests_replayed']
+            assert recovered['new_raw_queries']==recovered['recovery']['previous_physical_calls']+recovered['recovery']['additional_physical_calls']
         report=json.loads(rp.read_text());audit=json.loads(ap.read_text())
         assert report['complete'] and audit['complete'] and audit['full_producer_replay']
+        if 'recovery' in report: assert audit['recovery_prefix_verified']
         assert report['protocol_sha256']==audit['protocol_sha256']==sha(pp)
         assert audit['producer_results_sha256']==sha(rp)
         assert report['parent_ids']==audit['parent_ids']==protocol['parent_ids_by_condition'][str(index)]
@@ -112,6 +121,11 @@ def main():
         result.update(method_replica_costs=budgets,all_primary_budgets_matched=all(v['all_caps_reached'] for v in budgets.values()),
             model_loading_seconds_by_method={m:sum(v) for m,v in loading.items()},
             final_readout='Physical parent-specific436/438 versus learned128; exact total raw calls including model data costs. Same-inference readouts remain separate.')
+    if args.recovery_run is not None:
+        recovered=json.loads((args.recovery_run/'results.json').read_text())
+        result['recovery']=dict(recovered['recovery'],results_sha256=sha(args.recovery_run/'results.json'),
+            source_run=str(args.recovery_run),per_method_timing_complete=False,
+            interpretation='The recovered partial arm sampling_seconds excludes its earlier failed-attempt time; previous elapsed time is retained in recovery provenance. No matched-wall-time claim is allowed. Raw-call accounting reuses the saved prefix once.')
     if args.out.exists():raise FileExistsError(args.out)
     args.out.parent.mkdir(parents=True,exist_ok=True);args.out.write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(result['readouts'].get('final',result['readouts']['128']),indent=2))
