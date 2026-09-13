@@ -124,3 +124,27 @@ def test_resume_preserves_terminal_boundary_stops_and_rejects_same_cap():
     capped=copy.deepcopy(prefix);capped[0]['status']='budget_exhausted'
     with pytest.raises(ValueError,match='cap must increase'):
         relax_arms(target,pairs,options(max_evaluations=capped[0]['evaluations']),resume_arms=capped)
+
+
+def test_boundary_step_energy_check_retains_failures_and_replays_physical_queries():
+    from scripts.research.evaluate_mobility_boundary_directions import run
+    from scripts.research.audit_masked_angular import ReplayOracle,equal
+    from cfm_mol.chemical_sampler import ChemicalTarget
+    from test_bounded_action_geometry import pair_record
+    row=pair_record();x=row['x'];condition=dict(numbers=row['numbers'].tolist(),charge=0,spin_multiplicity=1)
+    class Oracle:
+        evaluated=0
+        def evaluate_chunked(self,p,max_request):
+            self.evaluated+=len(p);return .01*p.square().sum((1,2)),-.02*p
+    def target(oracle):return ChemicalTarget(oracle,condition,.026,.1)
+    original=target(Oracle());initial=original.evaluate([original.coordinate_state(x)],phase='initial')[0]
+    source=dict(states=[initial],arms=[dict(pair_id=0,endpoint='source',mobility='collective',basis=mobility_basis(len(x),[0,1],'collective'))])
+    y=x*.999;delta=y-x;predicted=float((-.12*x*delta).sum())
+    base=dict(pair_id=0,parent=0,endpoint='source',mobility='collective',state_id=0)
+    rows=[dict(base,mode='force',feasible=None),dict(base,mode='distance_projected_force',feasible=dict(positions=y.tolist(),force_predicted_decrease_eV=predicted,max_atom_step_A=float(delta.norm(dim=1).max())))]
+    protocol=dict(energy_tolerance_eV=1e-10,force_tolerance_eV_A=1e-10)
+    physical=target(Oracle());saved=run(physical,source,rows,protocol)
+    assert physical.oracle.evaluated==6 and len(saved['rows'])==2 and not saved['rows'][0]['feasible']
+    assert saved['rows'][1]['actual_decrease_eV']>0
+    replay=ReplayOracle(saved['query_trace']);actual=run(target(replay),source,rows,protocol);equal(actual,saved)
+    assert replay.index==len(replay.queries)
