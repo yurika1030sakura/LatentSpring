@@ -1,0 +1,44 @@
+import torch
+import pytest
+from cfm_mol.chemical_moves import exchange_terminal_sites, covalent_radii
+from cfm_mol.chemical_edit_interaction import four_positions, mixed_difference, restraint_interaction
+
+
+def example():
+    torch.manual_seed(28701)
+    x=torch.randn(8,3,dtype=torch.float64);x-=x.mean(0)
+    radii=covalent_radii([1,17,1,9,6,7,8,16])
+    return x,radii,(0,1,4,5),(2,3,6,7)
+
+
+def test_commutation_inverse_intrinsic_jacobian():
+    x,r,a,b=example();corners,j,(ia,ib)=four_positions(x,r,a,b)
+    undo,jrev,_=four_positions(corners[3],r,ia,ib)
+    torch.testing.assert_close(undo[3],x,atol=1e-12,rtol=0)
+    torch.testing.assert_close(j+jrev,torch.tensor(0.,dtype=x.dtype),atol=1e-12,rtol=0)
+    basis=torch.linalg.qr(torch.cat([torch.eye(7,dtype=x.dtype),-torch.ones(1,7,dtype=x.dtype)]),mode='reduced')[0]
+    def transform(z):
+        y,_,_=exchange_terminal_sites(basis@z.reshape(7,3),r,a)
+        y,_,_=exchange_terminal_sites(y,r,b)
+        return (basis.T@y).flatten()
+    jac=torch.autograd.functional.jacobian(transform,(basis.T@x).flatten())
+    torch.testing.assert_close(torch.linalg.slogdet(jac)[1],j,atol=1e-10,rtol=0)
+
+
+def test_interaction_sign_and_exact_restraint_cross_term():
+    x,r,a,b=example();corners,_,(ia,ib)=four_positions(x,r,a,b)
+    # A coupled physical toy; an additive single-edit oracle is insufficient.
+    energy=lambda p: .7*(p[0]-p[2]).square().sum()+.3*(p[1]-p[3]).square().sum()
+    val=mixed_difference(torch.stack([energy(p) for p in corners]))
+    reverse_a,_,_=four_positions(corners[1],r,ia,b)
+    reverse_b,_,_=four_positions(corners[2],r,a,ib)
+    for square in [reverse_a,reverse_b]:
+        torch.testing.assert_close(mixed_difference(torch.stack([energy(p) for p in square])),-val)
+    expected=.1*((corners[1]-x)*(corners[2]-x)).sum()
+    torch.testing.assert_close(restraint_interaction(corners),expected,atol=1e-12,rtol=0)
+    assert abs(float(val))>.01
+
+
+def test_reject_overlapping_edits():
+    x,r,a,b=example()
+    with pytest.raises(ValueError):four_positions(x,r,a,(0,3,6,7))
