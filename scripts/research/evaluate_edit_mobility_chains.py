@@ -14,7 +14,7 @@ from scripts.research.audit_masked_angular import ReplayOracle,equal,sha
 from scripts.research.evaluate_chemical_policy import write
 
 
-def run_chain(target,model,sources,method,model_name,replica,index,protocol):
+def run_chain(target,model,sources,method,model_name,replica,index,protocol,*,joint_kernel=None):
     start_count=target.oracle.evaluated
     states=target.evaluate([target.coordinate_state(s['positions']) for spec,s in sources],phase=f'{model_name}/r{replica}/initial')
     for state,(spec,old) in zip(states,sources):
@@ -42,6 +42,11 @@ def run_chain(target,model,sources,method,model_name,replica,index,protocol):
                 choice=int(torch.randint(len(protocol['local_scales']),(1,),generator=g));std=protocol['local_scales'][choice]*target.kT**.5
                 new,row=target.propose(old,0,g,std);logu=float(torch.rand((),dtype=torch.float64,generator=g).log())
                 row.update(local_scale_choice=choice,proposal_std=std)
+            elif joint_kernel is not None:
+                # The acceptance draw is independent of variable catalogue/panel
+                # construction and common across all new comparison arms.
+                logu=float(torch.rand((),dtype=torch.float64,generator=g).log())
+                new,row=joint_kernel.propose(target,old,g,seed)
             else:
                 actions=distinct_anchor_actions(target.numbers,old['graph']['bond_orders'])
                 if actions:
