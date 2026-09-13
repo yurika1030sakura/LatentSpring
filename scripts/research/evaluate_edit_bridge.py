@@ -6,7 +6,7 @@ import torch
 from cfm_mol.chemical_sampler import ChemicalTarget
 from cfm_mol.energy_oracle import EnergyOracle
 from cfm_mol.edit_conditioned_bridge import EditBridgeField,edit_bridge,center
-from cfm_mol.edit_bridge_sampler import ZeroBridgeField,AnalyticBridgeField,propose_edit,finish_edit
+from cfm_mol.edit_bridge_sampler import ZeroBridgeField,RootZeroBridgeField,AnalyticBridgeField,propose_edit,finish_edit
 from cfm_mol.joint_chemical_geometry import distinct_anchor_actions
 from scripts.research.audit_masked_angular import ReplayOracle,equal,sha
 from scripts.research.audit_joint_arc_support import independent_arc_q
@@ -43,7 +43,8 @@ def inputs(root,project,index,protocol_path=None):
         if condition is None:condition=c
         assert condition==c;selected.append((spec,state))
     assert len(selected)==3
-    models={'physical_arc':None,'zero_bridge':ZeroBridgeField(),'analytic_bridge':AnalyticBridgeField(**protocol['analytic_field'])}
+    models={'physical_arc':None,'zero_bridge':ZeroBridgeField(),'analytic_bridge':AnalyticBridgeField(**protocol['analytic_field']),
+        'bare_edit':ZeroBridgeField(),'root_noise':RootZeroBridgeField()}
     for name,spec in protocol['models'].items():
         path=project/spec['path'];assert sha(path)==spec['sha256'];saved=torch.load(path,map_location='cpu',weights_only=False)
         if spec.get('architecture')=='mobility':
@@ -99,7 +100,7 @@ def audit_arithmetic(saved,target,models,protocol):
             if count<protocol['inverse_checks_per_method_condition']:
                 recovered,p,_=edit_bridge(new['positions'],row['output_momentum'],new['graph']['bond_orders'],old['graph']['bond_orders'],
                     torch.tensor(target.numbers),old['positions'].new_tensor([old['charge'],old['spin_multiplicity'],target.kT]),
-                    row['inverse_action'],models[row['method']],**protocol['bridge'])
+                    row['inverse_action'],models[row['method']],**dict(protocol['bridge'],**protocol.get('bridge_by_method',{}).get(row['method'],{})))
                 torch.testing.assert_close(recovered,old['positions'],atol=1e-9,rtol=0);torch.testing.assert_close(p,row['input_momentum'],atol=1e-9,rtol=0);inverses+=1
             by_method[row['method']]=count+1
         forward=len(distinct_anchor_actions(target.numbers,old['graph']['bond_orders']));reverse=len(distinct_anchor_actions(target.numbers,new['graph']['bond_orders']))

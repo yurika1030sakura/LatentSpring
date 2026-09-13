@@ -14,6 +14,10 @@ class ZeroBridgeField(nn.Module):
     def forward(self,x,*args):return torch.zeros_like(x)
 
 
+class RootZeroBridgeField(ZeroBridgeField):
+    roots_only=True
+
+
 class AnalyticBridgeField(nn.Module):
     """Fixed dimensionless graph springs; a control field, not the target energy."""
     roots_only=False

@@ -47,7 +47,8 @@ def run_chain(target,model,sources,method,model_name,replica,index,protocol):
                 if actions:
                     action=actions[int(torch.randint(len(actions),(1,),generator=g))];p=center(torch.randn(old['positions'].shape,dtype=torch.float64,generator=g))
                     order=int(torch.randint(2,(1,),generator=g));logu=float(torch.rand((),dtype=torch.float64,generator=g).log())
-                    new,row=propose_edit(target,old,action,p,order,seed+100000000,method=model_name,field=model,bridge_options=protocol['bridge'],arc_options=protocol['arc_options'])
+                    new,row=propose_edit(target,old,action,p,order,seed+100000000,method=model_name,field=model,
+                        bridge_options=dict(protocol['bridge'],**protocol.get('bridge_by_method',{}).get(model_name,{})),arc_options=protocol['arc_options'])
                 else:
                     new=None;logu=float(torch.rand((),dtype=torch.float64,generator=g).log())
                     row=dict(method=model_name,old_state_id=old['state_id'],new_state_id=-1,valid=False,scored=False,accepted=False,raw_cost=0,failure_reason='No eligible chemical edit')
@@ -75,7 +76,7 @@ def run_chain(target,model,sources,method,model_name,replica,index,protocol):
 def run(target,models,sources,protocol,index):
     chains=[];timing={}
     for spec in protocol['arm_order'][str(index)]:
-        method=spec['method'];replica=spec['replica'];name='physical_arc' if method=='physical_arc' else f'mobility_{method}_s{replica}'
+        method=spec['method'];replica=spec['replica'];name=method if method in models else f'mobility_{method}_s{replica}'
         chain,seconds=run_chain(target,models[name],sources,method,name,replica,index,protocol)
         chains.append(chain);timing[f'{method}_s{replica}']=seconds
     return dict(chains=chains,states=target.states,query_trace=target.query_trace),timing
