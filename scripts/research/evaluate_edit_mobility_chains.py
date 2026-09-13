@@ -115,8 +115,9 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['project','out']:p.add_argument('--'+name,type=Path,required=True)
     for name in ['run','oracle-python','oracle-checkpoint']:p.add_argument('--'+name,type=Path)
+    p.add_argument('--protocol',type=Path,default=Path('research/evidence/edit_mobility_chain_protocol_v1.json'))
     p.add_argument('--index',type=int,required=True);p.add_argument('--phase',choices=['evaluate','audit'],required=True)
-    a=p.parse_args();root=Path(__file__).resolve().parents[2];pp=root/'research/evidence/edit_mobility_chain_protocol_v1.json'
+    a=p.parse_args();root=Path(__file__).resolve().parents[2];pp=root/a.protocol
     _,protocol,physical,models,condition,sources=inputs(root,a.project,a.index,pp)
     a.out.mkdir(parents=True,exist_ok=True);output=a.out/'results.json'
     if output.exists():raise FileExistsError(output)
@@ -131,7 +132,7 @@ def main():
             oracle=EnergyOracle(a.oracle_python,root/'scripts/research/oracle_worker.py',a.oracle_checkpoint,numbers=condition['numbers'],charge=condition['charge'],spin_multiplicity=condition['spin_multiplicity'],device='cuda',batch_size=32)
             assert oracle.handshake['base_precision_dtype']=='torch.float32' and not oracle.handshake['tf32']
         target=ChemicalTarget(oracle,condition,physical['kT_eV'],physical['restraint_eV_A2']);actual,timing=run(target,models,sources,protocol,a.index)
-        assert oracle.evaluated==sum(sum(c['queries_per_parent']) for c in actual['chains'])<=protocol['maximum_new_raw_queries']//4
+        assert oracle.evaluated==sum(sum(c['queries_per_parent']) for c in actual['chains'])<=protocol['maximum_new_raw_queries']//len(protocol['condition_indices'])
         if a.phase=='audit':
             equal(actual,expected);assert oracle.index==len(oracle.queries) and oracle.evaluated==producer['new_raw_queries']
             report.update(complete=True,full_replay=True,source_results_sha256=sha(a.run/'results.json'),trace_sha256=producer['trace_sha256'],raw_queries_in_producer=oracle.evaluated,**audit_chains(actual,target,models,protocol))

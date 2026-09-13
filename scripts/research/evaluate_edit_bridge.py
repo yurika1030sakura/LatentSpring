@@ -16,9 +16,23 @@ from scripts.research.evaluate_chemical_policy import write
 def inputs(root,project,index,protocol_path=None):
     pp=protocol_path or root/'research/evidence/edit_bridge_evaluation_protocol_v1.json';protocol=json.loads(pp.read_text());assert protocol['frozen']
     physical_path=root/protocol['physical_protocol'];assert sha(physical_path)==protocol['physical_protocol_sha256'];physical=json.loads(physical_path.read_text())
-    dp=project/protocol['data_run'];assert sha(dp/'data.pt')==protocol['data_sha256'];data=torch.load(dp/'data.pt',map_location='cpu',weights_only=False)
+    data=None
+    if protocol.get('source_kind')!='prepared_evaluation':
+        dp=project/protocol['data_run'];assert sha(dp/'data.pt')==protocol['data_sha256'];data=torch.load(dp/'data.pt',map_location='cpu',weights_only=False)
     selected=[];condition=None;cache={}
     for spec in protocol['sources'][str(index)]:
+        if protocol.get('source_kind')=='prepared_evaluation':
+            path=project/spec['trace'];rp=path.parent/'results.json';ap=project/spec['audit']
+            r=json.loads(rp.read_text());audit=json.loads(ap.read_text())
+            assert r['complete'] and r['assigned_role']=='evaluation_only' and audit['complete'] and audit['full_replay']
+            assert sha(rp)==spec['results_sha256']==audit['source_results_sha256'] and sha(ap)==spec['audit_sha256']
+            assert sha(path)==spec['trace_sha256']==audit['trace_sha256']
+            if path not in cache:cache[path]=torch.load(path,map_location='cpu',weights_only=False)
+            source=cache[path];assert source['parent_ids'][spec['parent_offset']]==spec['parent']
+            assert source['history_state_ids'][-1][spec['parent_offset']]==spec['state_id']
+            state=source['states'][spec['state_id']];c=r['condition']
+            if condition is None:condition=c
+            assert condition==c;selected.append((spec,state));continue
         row=data[spec['data_index']];assert row['role']=='withheld_parent' and row['index']==index and row['parent']==spec['parent'] and row['replica']==0
         assert row['step']==spec['step'] and row['force_source_trace']==spec['trace'] and row['source_force_provenance']['state_id']==spec['state_id']
         path=project/spec['trace']

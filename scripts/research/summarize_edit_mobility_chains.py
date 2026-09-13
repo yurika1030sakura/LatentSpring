@@ -9,7 +9,8 @@ from scripts.research.audit_masked_angular import sha
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['project','run','audit','out']:p.add_argument('--'+name,type=Path,required=True)
-    a=p.parse_args();root=a.project;pp=root/'research/evidence/edit_mobility_chain_protocol_v1.json';protocol=json.loads(pp.read_text())
+    p.add_argument('--protocol',type=Path,default=Path('research/evidence/edit_mobility_chain_protocol_v1.json'))
+    a=p.parse_args();root=a.project;pp=root/a.protocol;protocol=json.loads(pp.read_text())
     values={};cost=0;provenance={};counts={};timings={};checked=dict(local=0,rotation=0,joint=0,inverse=0);all_caps=True
     for index in protocol['condition_indices']:
         rp=a.run/f'condition_{index:02d}/results.json';ap=a.audit/f'condition_{index:02d}/results.json';r=json.loads(rp.read_text());audit=json.loads(ap.read_text())
@@ -25,9 +26,10 @@ def main():
             entry['raw_calls']+=sum(c['queries_per_parent']);timings[key]=timings.get(key,0)+r['method_seconds'][key]
             for cap,rows in c['readouts'].items():
                 for row in rows:values[index,row['parent'],c['method'],c['replica'],int(cap)]=row
-    assert cost<=protocol['maximum_new_raw_queries'] and len(values)==12*4*2*len(protocol['readouts'])
+    nparents=3*len(protocol['condition_indices']);nmethods=len(protocol['methods']);nreplicas=len(protocol['replicas'])
+    assert cost<=protocol['maximum_new_raw_queries'] and len(values)==nparents*nmethods*nreplicas*len(protocol['readouts'])
     if not all_caps:raise ValueError('Some chains missed their cap; inspect complete failure denominators before a matched-budget summary')
-    assert cost==protocol['maximum_new_raw_queries']==12288
+    assert cost==protocol['maximum_new_raw_queries']==nparents*nmethods*nreplicas*protocol['query_cap_per_parent']
     ordered=[];groups=[]
     for index in protocol['condition_indices']:
         parents=sorted({pid for i,pid,m,s,c in values if i==index});assert len(parents)==3
@@ -36,22 +38,24 @@ def main():
     results={}
     for cap in protocol['readouts']:
         array=np.array([[[values[i,pid,m,s,cap]['potential_change_eV'] for s in protocol['replicas']] for m in protocol['methods']] for i,pid in ordered])
-        assert array.shape==(12,4,2)
+        assert array.shape==(nparents,nmethods,nreplicas)
         means={m:dict(mean_potential_change_eV=float(array[:,j].mean()),per_replica_mean_eV=array[:,j].mean(0).tolist(),
             mean_distinct_connectivities=float(np.mean([values[i,pid,m,s,cap]['distinct_connectivities'] for i,pid in ordered for s in protocol['replicas']]))) for j,m in enumerate(protocol['methods'])}
         comparisons={}
         for method,controls in [('collective',['physical_arc','scalar','fixed']),('scalar',['physical_arc','fixed']),('fixed',['physical_arc'])]:
+            if method not in protocol['methods']:continue
             for control in controls:
+                if control not in protocol['methods']:continue
                 delta=array[:,protocol['methods'].index(method)]-array[:,protocol['methods'].index(control)]
                 bootstrap=np.sort(delta[samples].mean((1,2)))
                 comparisons[method+' minus '+control]=dict(potential_change_difference_eV=float(delta.mean()),per_replica_difference_eV=delta.mean(0).tolist(),
                     descriptive_fixed_composition_parent_bootstrap95=bootstrap[[125,4875]].tolist(),lower_is_better=True)
         results[str(cap)]=dict(methods=means,comparisons=comparisons,
             per_condition={str(i):{m:float(array[[j for j,(ii,pid) in enumerate(ordered) if ii==i],k].mean()) for k,m in enumerate(protocol['methods'])} for i in protocol['condition_indices']})
-    report=dict(complete=True,protocol_sha256=sha(pp),provenance=provenance,new_raw_queries=cost,all96_chains_reached128_queries=True,
+    report=dict(complete=True,protocol_sha256=sha(pp),provenance=provenance,new_raw_queries=cost,all_chains_reached_declared_cap=True,trajectories=nparents*nmethods*nreplicas,
         checks=checked,counts=counts,chain_loop_seconds=timings,readouts=results,per_parent=[dict(index=i,parent=pid,
             data={str(cap):{m:[values[i,pid,m,s,cap] for s in protocol['replicas']] for m in protocol['methods']} for cap in protocol['readouts']}) for i,pid in ordered],
-        scientific_submission_ready=False,scope='Strict128 actual raw calls per trajectory including fresh initialization. All12 INTERNAL parents and both paired model/sampling replicas retained. Same local MALA/force-vMF background; only joint edit differs. Query-index endpoints are not equilibrium samples. Training/preparation cost, amortized generation, fresh-composition transfer and final-test claims are not established. Descriptive intervals fix four compositions and resample parents with both replicas, without multiplicity correction.')
+        scientific_submission_ready=False,scope=f"Strict{protocol['query_cap_per_parent']} actual raw calls per trajectory including fresh initialization. All{nparents} declared evaluation parents and both paired model/sampling replicas retained. Same local MALA/force-vMF background; only joint edit differs. Query-index endpoints are not equilibrium samples. Training/preparation cost, amortized generation and final-test claims are not established. Descriptive intervals fix{len(protocol['condition_indices'])} compositions and resample parents with both replicas, without multiplicity correction.")
     if a.out.exists():raise FileExistsError(a.out)
     a.out.parent.mkdir(parents=True,exist_ok=True);a.out.write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps(dict(new_raw_queries=cost,checks=checked,counts=counts,final128=results['128']),indent=2))
