@@ -1,0 +1,48 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-13T01:37:25.740230+00:00",
+  "selection_seed": 26101,
+  "condition_indices": [
+    1,
+    2,
+    3,
+    5
+  ],
+  "parents_per_condition": 8,
+  "data_run": "runs/screen_force_pairs_v1",
+  "data_sha256": "bb72dae72f7da000bf685d2a7fc7f135e2ed57db142d16df48dc84061a25e1f9",
+  "data_results_sha256": "01eb07b9ced90be22702caeeec4ebc73cb85e6549bf77b40d28aa5476190508b",
+  "physical_protocol": "research/evidence/parity_training_protocol_v1.json",
+  "physical_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "options": {
+    "force_tolerance_eV_A": 0.05,
+    "initial_inverse_hessian_A2_eV": 0.01,
+    "max_atom_step_A": 0.05,
+    "minimum_atom_step_A": 1e-08,
+    "max_backtracks": 24,
+    "armijo_c1": 0.0001,
+    "energy_noise_tolerance_eV": 1e-05,
+    "curvature_relative_floor": 1e-10,
+    "history_size": 5,
+    "max_evaluations": 32,
+    "readouts": [
+      8,
+      16,
+      32
+    ]
+  },
+  "fresh_initial_repeats": 2,
+  "oracle_batch_size": 1,
+  "repeat_energy_tolerance_eV": 1e-05,
+  "repeat_force_tolerance_eV_A": 0.001,
+  "archived_gap_tolerance_eV": 0.001,
+  "archived_force_tolerance_eV_A": 0.01,
+  "maximum_initial_raw_calls": 256,
+  "maximum_optimization_raw_calls": 8192,
+  "maximum_total_new_raw_calls": 8448,
+  "source_control": "Relax BOTH original source and exchanged destination under roots-only and collective COM coordinates. Each endpoint retains its own original perceived bond graph, total charge and spin.",
+  "selection": "Eight of nine FIT parents per condition by fixed hash; one supported recorded pair per parent by a separate fixed hash. No energy/acceptance/connectivity outcome enters selection.",
+  "accounting": "Same cap32 candidate energy evaluations per arm, with shared freshly re-evaluated initial endpoints and duplicate repeatability checks. Early convergence or line-search blocking is retained; do not call unequal actual counts exactly matched costs.",
+  "interpretation": "Optimization teacher-feasibility diagnostic only. Finite endpoints are not global minima, equilibrium samples, a valid MH proposal, or evidence of a learned gain. Compare source-to-destination gaps under both mobility choices; retain force residuals, graph failures and every budget-exhausted arm.",
+  "scientific_submission_ready": false
+}

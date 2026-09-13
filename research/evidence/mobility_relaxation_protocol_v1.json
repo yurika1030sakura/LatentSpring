@@ -1,0 +1,514 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-13T01:37:25.740230+00:00",
+  "selection_seed": 26101,
+  "condition_indices": [
+    1,
+    2,
+    3,
+    5
+  ],
+  "parents_per_condition": 8,
+  "data_run": "runs/screen_force_pairs_v1",
+  "data_sha256": "bb72dae72f7da000bf685d2a7fc7f135e2ed57db142d16df48dc84061a25e1f9",
+  "data_results_sha256": "01eb07b9ced90be22702caeeec4ebc73cb85e6549bf77b40d28aa5476190508b",
+  "physical_protocol": "research/evidence/parity_training_protocol_v1.json",
+  "physical_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "options": {
+    "force_tolerance_eV_A": 0.05,
+    "initial_inverse_hessian_A2_eV": 0.01,
+    "max_atom_step_A": 0.05,
+    "minimum_atom_step_A": 1e-08,
+    "max_backtracks": 24,
+    "armijo_c1": 0.0001,
+    "energy_noise_tolerance_eV": 1e-05,
+    "curvature_relative_floor": 1e-10,
+    "history_size": 5,
+    "max_evaluations": 32,
+    "readouts": [
+      8,
+      16,
+      32
+    ]
+  },
+  "fresh_initial_repeats": 2,
+  "oracle_batch_size": 1,
+  "repeat_energy_tolerance_eV": 1e-05,
+  "repeat_force_tolerance_eV_A": 0.001,
+  "archived_gap_tolerance_eV": 0.001,
+  "archived_force_tolerance_eV_A": 0.01,
+  "maximum_initial_raw_calls": 256,
+  "maximum_optimization_raw_calls": 8192,
+  "maximum_total_new_raw_calls": 8448,
+  "source_control": "Relax BOTH original source and exchanged destination under roots-only and collective COM coordinates. Each endpoint retains its own original perceived bond graph, total charge and spin.",
+  "selection": "Eight of nine FIT parents per condition by fixed hash; one supported recorded pair per parent by a separate fixed hash. No energy/acceptance/connectivity outcome enters selection.",
+  "accounting": "Same cap32 candidate energy evaluations per arm, with shared freshly re-evaluated initial endpoints and duplicate repeatability checks. Early convergence or line-search blocking is retained; do not call unequal actual counts exactly matched costs.",
+  "interpretation": "Optimization teacher-feasibility diagnostic only. Finite endpoints are not global minima, equilibrium samples, a valid MH proposal, or evidence of a learned gain. Compare source-to-destination gaps under both mobility choices; retain force residuals, graph failures and every budget-exhausted arm.",
+  "scientific_submission_ready": false,
+  "settings_sha256": "85de8b39e67cade1e76f7382456c527c9c8b6c50b71a073dc55f364cdff6afa2",
+  "selections": {
+    "1": [
+      {
+        "pair_id": 0,
+        "data_index": 381,
+        "parent": 91,
+        "replica": 1,
+        "step": 50,
+        "action": [
+          4,
+          7,
+          1,
+          0
+        ],
+        "connectivity_changed": false
+      },
+      {
+        "pair_id": 1,
+        "data_index": 270,
+        "parent": 68,
+        "replica": 1,
+        "step": 14,
+        "action": [
+          2,
+          9,
+          1,
+          0
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 2,
+        "data_index": 423,
+        "parent": 58,
+        "replica": 1,
+        "step": 66,
+        "action": [
+          4,
+          7,
+          1,
+          0
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 3,
+        "data_index": 44,
+        "parent": 80,
+        "replica": 0,
+        "step": 14,
+        "action": [
+          4,
+          7,
+          0,
+          6
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 4,
+        "data_index": 63,
+        "parent": 55,
+        "replica": 0,
+        "step": 22,
+        "action": [
+          4,
+          7,
+          5,
+          0
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 5,
+        "data_index": 141,
+        "parent": 88,
+        "replica": 0,
+        "step": 46,
+        "action": [
+          4,
+          8,
+          1,
+          6
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 6,
+        "data_index": 48,
+        "parent": 5,
+        "replica": 0,
+        "step": 18,
+        "action": [
+          2,
+          8,
+          1,
+          0
+        ],
+        "connectivity_changed": false
+      },
+      {
+        "pair_id": 7,
+        "data_index": 400,
+        "parent": 59,
+        "replica": 1,
+        "step": 58,
+        "action": [
+          3,
+          7,
+          0,
+          1
+        ],
+        "connectivity_changed": true
+      }
+    ],
+    "2": [
+      {
+        "pair_id": 8,
+        "data_index": 635,
+        "parent": 30,
+        "replica": 0,
+        "step": 62,
+        "action": [
+          4,
+          10,
+          0,
+          2
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 9,
+        "data_index": 557,
+        "parent": 15,
+        "replica": 0,
+        "step": 38,
+        "action": [
+          4,
+          8,
+          2,
+          3
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 10,
+        "data_index": 592,
+        "parent": 12,
+        "replica": 0,
+        "step": 50,
+        "action": [
+          4,
+          9,
+          0,
+          2
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 11,
+        "data_index": 840,
+        "parent": 18,
+        "replica": 1,
+        "step": 66,
+        "action": [
+          4,
+          6,
+          2,
+          0
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 12,
+        "data_index": 772,
+        "parent": 27,
+        "replica": 1,
+        "step": 42,
+        "action": [
+          4,
+          5,
+          1,
+          3
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 13,
+        "data_index": 506,
+        "parent": 1,
+        "replica": 0,
+        "step": 22,
+        "action": [
+          4,
+          6,
+          1,
+          2
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 14,
+        "data_index": 740,
+        "parent": 0,
+        "replica": 1,
+        "step": 34,
+        "action": [
+          4,
+          10,
+          1,
+          2
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 15,
+        "data_index": 634,
+        "parent": 29,
+        "replica": 0,
+        "step": 62,
+        "action": [
+          4,
+          9,
+          2,
+          3
+        ],
+        "connectivity_changed": true
+      }
+    ],
+    "3": [
+      {
+        "pair_id": 16,
+        "data_index": 1187,
+        "parent": 47,
+        "replica": 1,
+        "step": 46,
+        "action": [
+          6,
+          9,
+          2,
+          8
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 17,
+        "data_index": 1249,
+        "parent": 20,
+        "replica": 1,
+        "step": 70,
+        "action": [
+          4,
+          11,
+          2,
+          3
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 18,
+        "data_index": 1102,
+        "parent": 45,
+        "replica": 1,
+        "step": 18,
+        "action": [
+          9,
+          11,
+          2,
+          0
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 19,
+        "data_index": 936,
+        "parent": 49,
+        "replica": 0,
+        "step": 30,
+        "action": [
+          4,
+          11,
+          7,
+          2
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 20,
+        "data_index": 895,
+        "parent": 34,
+        "replica": 0,
+        "step": 18,
+        "action": [
+          4,
+          6,
+          1,
+          8
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 21,
+        "data_index": 1220,
+        "parent": 37,
+        "replica": 1,
+        "step": 58,
+        "action": [
+          4,
+          9,
+          3,
+          1
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 22,
+        "data_index": 1228,
+        "parent": 17,
+        "replica": 1,
+        "step": 62,
+        "action": [
+          4,
+          6,
+          8,
+          1
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 23,
+        "data_index": 906,
+        "parent": 29,
+        "replica": 0,
+        "step": 22,
+        "action": [
+          6,
+          9,
+          3,
+          1
+        ],
+        "connectivity_changed": true
+      }
+    ],
+    "5": [
+      {
+        "pair_id": 24,
+        "data_index": 1283,
+        "parent": 12,
+        "replica": 0,
+        "step": 10,
+        "action": [
+          12,
+          23,
+          0,
+          2
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 25,
+        "data_index": 1359,
+        "parent": 68,
+        "replica": 0,
+        "step": 34,
+        "action": [
+          17,
+          23,
+          5,
+          6
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 26,
+        "data_index": 1444,
+        "parent": 103,
+        "replica": 0,
+        "step": 62,
+        "action": [
+          12,
+          23,
+          3,
+          6
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 27,
+        "data_index": 1607,
+        "parent": 190,
+        "replica": 1,
+        "step": 46,
+        "action": [
+          8,
+          23,
+          6,
+          3
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 28,
+        "data_index": 1366,
+        "parent": 3,
+        "replica": 0,
+        "step": 38,
+        "action": [
+          17,
+          23,
+          1,
+          3
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 29,
+        "data_index": 1409,
+        "parent": 111,
+        "replica": 0,
+        "step": 50,
+        "action": [
+          10,
+          20,
+          6,
+          5
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 30,
+        "data_index": 1387,
+        "parent": 148,
+        "replica": 0,
+        "step": 42,
+        "action": [
+          15,
+          22,
+          19,
+          1
+        ],
+        "connectivity_changed": true
+      },
+      {
+        "pair_id": 31,
+        "data_index": 1322,
+        "parent": 48,
+        "replica": 0,
+        "step": 22,
+        "action": [
+          12,
+          20,
+          6,
+          0
+        ],
+        "connectivity_changed": true
+      }
+    ]
+  },
+  "total_pairs": 32,
+  "total_arms": 128,
+  "prior_path_audits": {
+    "escorted_chemical_audit_v1.json": "87de2dbb807948778401e682afda3b35bab368ea683a06f51b21f1c0a92295b1",
+    "guided_escorted_chemical_audit_v2.json": "4560a4ab98f38799f5df8de3395ce4688bbce5a7a5657cc816145b20c3190852",
+    "composed_escorted_chemical_audit_v3.json": "0fc47a7042c6496c34f7517a7d2bdfd4aa1c24026791d323170c16903abcc1d4"
+  }
+}

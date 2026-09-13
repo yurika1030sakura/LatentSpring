@@ -56,3 +56,27 @@ states, max_atoms200, bond-free supervision and all prior failures. Keep every
 evaluated cohort and722 reserved outcomes out of fitting. The full ICLR goal is
 active; competitive AI benefit, real sampling gains and submission readiness
 remain unestablished.
+
+## Frozen paired mobility diagnostic
+
+The L-BFGS/Armijo diagnostic is implemented in `cfm_mol/mobility_relaxation.py`
+and `scripts/research/mobility_relaxation_pilot.py`. Roots-only and collective
+coordinates use orthonormal COM charts; accepted/trial graphs must retain the
+original endpoint bond orders. This is optimization, not a transition proposal.
+Analytic constrained minima, geometry backtracking, real-graph query replay and
+independent force/Armijo checks pass four tests.
+
+`research/evidence/mobility_relaxation_protocol_v1.json` freezes32 pairs from32
+FIT parents (eight per composition), selected by hashes without energy or
+acceptance outcomes. Thirty change canonical connectivity. Both source and
+destination are optimized with both mobility choices, with32 candidate energy
+queries per arm. Early convergence and line-search blocking remain explicit.
+The source/destination comparison must use both mobility choices; more endpoint
+relaxation alone is not evidence of a proposal advantage.
+
+Fresh initial energies/forces are shared across mobility arms and repeated to
+check numerical consistency. The oracle uses singleton internal batches;
+initial differences from archived values are retained. The total upper bound is
+8,448 raw calls (8,192 optimization plus256 initialization/repeatability), with
+both inversion orientations counted. No global-minimum, equilibrium, sampler or
+AI benefit follows from this diagnostic. Read NEXT for live job handles.
