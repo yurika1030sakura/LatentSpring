@@ -1,0 +1,493 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-13T05:08:01.157555+00:00",
+  "condition_indices": [
+    1,
+    2,
+    3,
+    5
+  ],
+  "data_run": "runs/screen_force_pairs_v1",
+  "data_sha256": "bb72dae72f7da000bf685d2a7fc7f135e2ed57db142d16df48dc84061a25e1f9",
+  "sources": {
+    "1": [
+      {
+        "parent": 28,
+        "data_index": 1,
+        "step": 2,
+        "trace": "runs/joint_arc_budget_v1/condition_01/arc_site_s0_trace.pt",
+        "trace_sha256": "7816da6b739aa5445a9adee95ce41c0f3d74a0f280417795224b9fd0e937af41",
+        "state_id": 24
+      },
+      {
+        "parent": 63,
+        "data_index": 6,
+        "step": 2,
+        "trace": "runs/joint_arc_budget_v1/condition_01/arc_site_s0_trace.pt",
+        "trace_sha256": "7816da6b739aa5445a9adee95ce41c0f3d74a0f280417795224b9fd0e937af41",
+        "state_id": 17
+      },
+      {
+        "parent": 94,
+        "data_index": 11,
+        "step": 2,
+        "trace": "runs/joint_arc_budget_v1/condition_01/arc_site_s0_trace.pt",
+        "trace_sha256": "7816da6b739aa5445a9adee95ce41c0f3d74a0f280417795224b9fd0e937af41",
+        "state_id": 22
+      }
+    ],
+    "2": [
+      {
+        "parent": 4,
+        "data_index": 447,
+        "step": 2,
+        "trace": "runs/joint_arc_budget_v1/condition_02/arc_site_s0_trace.pt",
+        "trace_sha256": "ea7371a64006478fe198c6daf79fe3bb87498a3de644d646560c36ec13b839ab",
+        "state_id": 24
+      },
+      {
+        "parent": 16,
+        "data_index": 450,
+        "step": 2,
+        "trace": "runs/joint_arc_budget_v1/condition_02/arc_site_s0_trace.pt",
+        "trace_sha256": "ea7371a64006478fe198c6daf79fe3bb87498a3de644d646560c36ec13b839ab",
+        "state_id": 26
+      },
+      {
+        "parent": 23,
+        "data_index": 452,
+        "step": 2,
+        "trace": "runs/joint_arc_budget_v1/condition_02/arc_site_s0_trace.pt",
+        "trace_sha256": "ea7371a64006478fe198c6daf79fe3bb87498a3de644d646560c36ec13b839ab",
+        "state_id": 19
+      }
+    ],
+    "3": [
+      {
+        "parent": 14,
+        "data_index": 842,
+        "step": 2,
+        "trace": "runs/joint_arc_budget_v1/condition_03/arc_site_s0_trace.pt",
+        "trace_sha256": "959eabfaf0900e360824a981a77e529452058cec649d22b8a8f10f68fdd80434",
+        "state_id": 24
+      },
+      {
+        "parent": 16,
+        "data_index": 843,
+        "step": 2,
+        "trace": "runs/joint_arc_budget_v1/condition_03/arc_site_s0_trace.pt",
+        "trace_sha256": "959eabfaf0900e360824a981a77e529452058cec649d22b8a8f10f68fdd80434",
+        "state_id": 1
+      },
+      {
+        "parent": 38,
+        "data_index": 849,
+        "step": 2,
+        "trace": "runs/joint_arc_budget_v1/condition_03/arc_site_s0_trace.pt",
+        "trace_sha256": "959eabfaf0900e360824a981a77e529452058cec649d22b8a8f10f68fdd80434",
+        "state_id": 19
+      }
+    ],
+    "5": [
+      {
+        "parent": 36,
+        "data_index": 1260,
+        "step": 2,
+        "trace": "runs/joint_arc_budget_v1/condition_05/arc_site_s0_trace.pt",
+        "trace_sha256": "b9ebb9517bf717027e8f468806e612c7bba22c3e8bf00dcc84765600af0097d8",
+        "state_id": 14
+      },
+      {
+        "parent": 47,
+        "data_index": 1261,
+        "step": 2,
+        "trace": "runs/joint_arc_budget_v1/condition_05/arc_site_s0_trace.pt",
+        "trace_sha256": "b9ebb9517bf717027e8f468806e612c7bba22c3e8bf00dcc84765600af0097d8",
+        "state_id": 15
+      },
+      {
+        "parent": 127,
+        "data_index": 1266,
+        "step": 2,
+        "trace": "runs/joint_arc_budget_v1/condition_05/arc_site_s0_trace.pt",
+        "trace_sha256": "b9ebb9517bf717027e8f468806e612c7bba22c3e8bf00dcc84765600af0097d8",
+        "state_id": 20
+      }
+    ]
+  },
+  "models": {
+    "initial_fixed_s0": {
+      "path": "runs/edit_mobility_work_v1/fixed_s0/initial_model.pt",
+      "sha256": "2f5c1ff4f150db6002a4c01224e534d83740418c8db2525d8516ce431bd98a41",
+      "architecture": "mobility"
+    },
+    "mobility_fixed_s0": {
+      "path": "runs/edit_mobility_work_v1/fixed_s0/model.pt",
+      "sha256": "8e4ff592a0494c50e099d2ce8795879392563c60c26cb2d6a2330d80c6170502",
+      "architecture": "mobility",
+      "training_audit_sha256": "c63cf7a4cf1109cc80b44aa04d6c75c05761be79c5ed7d82cef02e57b30f62d6"
+    },
+    "mobility_scalar_s0": {
+      "path": "runs/edit_mobility_work_v1/scalar_s0/model.pt",
+      "sha256": "75e42a95c9f744af6b97095010857ddf023353e32412d6dcc6d4cc092d21d11d",
+      "architecture": "mobility",
+      "training_audit_sha256": "8f3d136faa97b4de48f80a8e23b0181f79000dbcab166246902bc3a267fe1ea9"
+    },
+    "mobility_collective_s0": {
+      "path": "runs/edit_mobility_work_v1/collective_s0/model.pt",
+      "sha256": "9b206dcf7aec48ff82b9ff438db0abb9847cf8f7a848674dd1ad9f9041c25ae1",
+      "architecture": "mobility",
+      "training_audit_sha256": "40e327df8188a0b5d149ea6cbab2046f70db8eb65bcd8995f0049ba46c1e024b"
+    },
+    "initial_fixed_s1": {
+      "path": "runs/edit_mobility_work_v1/fixed_s1/initial_model.pt",
+      "sha256": "2f37cdd96cc2a7bf136bf4388b05bf66785c6efcb34f8f5ac49a31661622c0e0",
+      "architecture": "mobility"
+    },
+    "mobility_fixed_s1": {
+      "path": "runs/edit_mobility_work_v1/fixed_s1/model.pt",
+      "sha256": "680bf423b57f672c89b8ba98d3d7b1ee5af36b63feb41fa8ba4565d5013fc78b",
+      "architecture": "mobility",
+      "training_audit_sha256": "a084e223031768a450863c4f7f7356d48f1b1faf9280fc1473e233d56b74e48a"
+    },
+    "mobility_scalar_s1": {
+      "path": "runs/edit_mobility_work_v1/scalar_s1/model.pt",
+      "sha256": "6bd07524ffbb88fb8189f202d5679d315f08a2878a0008e2cd1d87654be9bbae",
+      "architecture": "mobility",
+      "training_audit_sha256": "b49dc420f29844e148fd93f11a153ea10b6e8534274b302feac6735df7150443"
+    },
+    "mobility_collective_s1": {
+      "path": "runs/edit_mobility_work_v1/collective_s1/model.pt",
+      "sha256": "6e07489101a2f6320ad7416a4da2a79fb99f9427c98cecc45505aa748e0c159b",
+      "architecture": "mobility",
+      "training_audit_sha256": "ef0fdfd56ef833d567b90dd25eb6f3f2a8f2b299afe130b2a0c52d7d04b87c72"
+    }
+  },
+  "methods": [
+    "physical_arc",
+    "fixed",
+    "scalar",
+    "collective"
+  ],
+  "method_order": {
+    "1": [
+      "mobility_fixed_s0",
+      "physical_arc",
+      "mobility_collective_s0",
+      "mobility_collective_s1",
+      "initial_fixed_s1",
+      "mobility_scalar_s0",
+      "mobility_fixed_s1",
+      "mobility_scalar_s1",
+      "initial_fixed_s0"
+    ],
+    "2": [
+      "mobility_fixed_s0",
+      "mobility_collective_s0",
+      "mobility_scalar_s1",
+      "mobility_collective_s1",
+      "initial_fixed_s1",
+      "mobility_fixed_s1",
+      "initial_fixed_s0",
+      "physical_arc",
+      "mobility_scalar_s0"
+    ],
+    "3": [
+      "mobility_scalar_s0",
+      "mobility_collective_s1",
+      "mobility_scalar_s1",
+      "mobility_collective_s0",
+      "mobility_fixed_s1",
+      "physical_arc",
+      "initial_fixed_s1",
+      "initial_fixed_s0",
+      "mobility_fixed_s0"
+    ],
+    "5": [
+      "mobility_scalar_s1",
+      "mobility_scalar_s0",
+      "mobility_collective_s1",
+      "mobility_fixed_s0",
+      "physical_arc",
+      "initial_fixed_s0",
+      "initial_fixed_s1",
+      "mobility_collective_s0",
+      "mobility_fixed_s1"
+    ]
+  },
+  "bridge": {
+    "steps_per_side": 2,
+    "kick_step": 0.2,
+    "drift_step": 0.02
+  },
+  "analytic_field": {
+    "bond_stiffness": 20.0,
+    "nonbond_stiffness": 100.0,
+    "nonbond_factor": 1.35,
+    "force_cap": 40.0
+  },
+  "arc_options": {
+    "radial_width": 0.05,
+    "max_segment_width": 0.04908738521234052,
+    "margin": 1e-08,
+    "chart_tolerance": 1e-10
+  },
+  "physical_protocol": "research/evidence/parity_training_protocol_v1.json",
+  "physical_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "training_protocol_sha256": "24777442ad1615802b6a431715a1f9a6292d45b2520021be2d67e111274715fd",
+  "trials_per_source": 32,
+  "seed": 28231,
+  "inverse_checks_per_method_condition": 8,
+  "source_energy_tolerance_eV": 0.0001,
+  "source_force_tolerance_eV_A": 0.001,
+  "maximum_new_raw_queries": 12288,
+  "total_attempts": 3456,
+  "initial_source_raw_queries": 24,
+  "primary": "Paired final-minus-initial potential change at exactly128 raw calls per parent, comparing collective with physical_arc, scalar and fixed controls. Lower final change is better. Preserve all parents, both seeds, failures and unreached caps.",
+  "secondary": [
+    "accepted canonical-connectivity changes",
+    "accepted typed-pair-distance movement",
+    "support fraction",
+    "proposal and physical-dispatch runtime"
+  ],
+  "accounting": "Fixed32 attempts per source per method. Unequal support means unequal actual oracle calls; this is a fixed-source efficiency pilot, not exactly matched-cost trajectories. Shared sources queried once physically, charged once to each compared method. Preparation/training costs remain additional; no amortized advantage claim yet.",
+  "interpretation": "Short INTERNAL chains at128 actual raw queries per parent including its own fresh initialization. Identical proven local MALA and force-vMF rotation background; only the joint edit method differs.32/64/128 query readouts frozen. Query-index stopping is not an equilibrium sample claim; no training-cost amortization or final-test claim. All12 parents and96 trajectories remain.",
+  "scientific_submission_ready": false,
+  "comparators": {
+    "initial_fixed_s0": [
+      "physical_arc"
+    ],
+    "mobility_fixed_s0": [
+      "physical_arc",
+      "initial_fixed_s0"
+    ],
+    "mobility_scalar_s0": [
+      "physical_arc",
+      "initial_fixed_s0",
+      "mobility_fixed_s0"
+    ],
+    "mobility_collective_s0": [
+      "physical_arc",
+      "initial_fixed_s0",
+      "mobility_fixed_s0",
+      "mobility_scalar_s0"
+    ],
+    "initial_fixed_s1": [
+      "physical_arc"
+    ],
+    "mobility_fixed_s1": [
+      "physical_arc",
+      "initial_fixed_s1"
+    ],
+    "mobility_scalar_s1": [
+      "physical_arc",
+      "initial_fixed_s1",
+      "mobility_fixed_s1"
+    ],
+    "mobility_collective_s1": [
+      "physical_arc",
+      "initial_fixed_s1",
+      "mobility_fixed_s1",
+      "mobility_scalar_s1"
+    ]
+  },
+  "training_audits": {
+    "mobility_fixed_s0": {
+      "results_sha256": "e31f089a0b450c46e60354f6d3c031c6e5c93235033f1d88e919c9692ccebc85",
+      "audit_sha256": "c63cf7a4cf1109cc80b44aa04d6c75c05761be79c5ed7d82cef02e57b30f62d6",
+      "raw_queries": 816
+    },
+    "mobility_scalar_s0": {
+      "results_sha256": "0aef92f59fa435d6d9e5f9fe723b0445c60e23c2669495778a16fd0425941e80",
+      "audit_sha256": "8f3d136faa97b4de48f80a8e23b0181f79000dbcab166246902bc3a267fe1ea9",
+      "raw_queries": 816
+    },
+    "mobility_collective_s0": {
+      "results_sha256": "8881d090a99bc20c20b02286f67c5ddee74ca4ad1ae4c0a938b7a63f657dc5b4",
+      "audit_sha256": "40e327df8188a0b5d149ea6cbab2046f70db8eb65bcd8995f0049ba46c1e024b",
+      "raw_queries": 816
+    },
+    "mobility_fixed_s1": {
+      "results_sha256": "08479d43f68e9eb55240806b2d7abc73805a56818a4a4e35fbaa49f00bc355bc",
+      "audit_sha256": "a084e223031768a450863c4f7f7356d48f1b1faf9280fc1473e233d56b74e48a",
+      "raw_queries": 816
+    },
+    "mobility_scalar_s1": {
+      "results_sha256": "e2e8c6dc0e99f23bd79841431529b01c5d7af52122305cc9c4943ab6aa716370",
+      "audit_sha256": "b49dc420f29844e148fd93f11a153ea10b6e8534274b302feac6735df7150443",
+      "raw_queries": 816
+    },
+    "mobility_collective_s1": {
+      "results_sha256": "4b65f38b0c088def818c529904fe5a9bc4f5439e5210200df28ab77067d04989",
+      "audit_sha256": "ef0fdfd56ef833d567b90dd25eb6f3f2a8f2b299afe130b2a0c52d7d04b87c72",
+      "raw_queries": 816
+    }
+  },
+  "new_work_training_raw_queries": 4896,
+  "prototype_summary": "runs/edit_mobility_evaluation_summary_v1/results.json",
+  "prototype_summary_sha256": "4d38b52d4bd6561867fc9197f2dad9d547eed81c11a659398174c83f0f813bce",
+  "arm_order": {
+    "1": [
+      {
+        "method": "collective",
+        "replica": 1
+      },
+      {
+        "method": "physical_arc",
+        "replica": 0
+      },
+      {
+        "method": "fixed",
+        "replica": 0
+      },
+      {
+        "method": "scalar",
+        "replica": 1
+      },
+      {
+        "method": "physical_arc",
+        "replica": 1
+      },
+      {
+        "method": "fixed",
+        "replica": 1
+      },
+      {
+        "method": "scalar",
+        "replica": 0
+      },
+      {
+        "method": "collective",
+        "replica": 0
+      }
+    ],
+    "2": [
+      {
+        "method": "scalar",
+        "replica": 1
+      },
+      {
+        "method": "fixed",
+        "replica": 0
+      },
+      {
+        "method": "scalar",
+        "replica": 0
+      },
+      {
+        "method": "collective",
+        "replica": 1
+      },
+      {
+        "method": "physical_arc",
+        "replica": 0
+      },
+      {
+        "method": "physical_arc",
+        "replica": 1
+      },
+      {
+        "method": "fixed",
+        "replica": 1
+      },
+      {
+        "method": "collective",
+        "replica": 0
+      }
+    ],
+    "3": [
+      {
+        "method": "physical_arc",
+        "replica": 0
+      },
+      {
+        "method": "physical_arc",
+        "replica": 1
+      },
+      {
+        "method": "scalar",
+        "replica": 1
+      },
+      {
+        "method": "collective",
+        "replica": 1
+      },
+      {
+        "method": "scalar",
+        "replica": 0
+      },
+      {
+        "method": "collective",
+        "replica": 0
+      },
+      {
+        "method": "fixed",
+        "replica": 0
+      },
+      {
+        "method": "fixed",
+        "replica": 1
+      }
+    ],
+    "5": [
+      {
+        "method": "physical_arc",
+        "replica": 0
+      },
+      {
+        "method": "scalar",
+        "replica": 1
+      },
+      {
+        "method": "fixed",
+        "replica": 0
+      },
+      {
+        "method": "fixed",
+        "replica": 1
+      },
+      {
+        "method": "scalar",
+        "replica": 0
+      },
+      {
+        "method": "physical_arc",
+        "replica": 1
+      },
+      {
+        "method": "collective",
+        "replica": 0
+      },
+      {
+        "method": "collective",
+        "replica": 1
+      }
+    ]
+  },
+  "replicas": [
+    0,
+    1
+  ],
+  "query_cap_per_parent": 128,
+  "maximum_microsteps": 512,
+  "readouts": [
+    32,
+    64,
+    128
+  ],
+  "evaluation_seeds": [
+    28421,
+    28422
+  ],
+  "schedule": [
+    "local",
+    "force_rotation",
+    "joint",
+    "local"
+  ],
+  "local_scales": [
+    0.1,
+    0.03,
+    0.01
+  ]
+}
