@@ -66,6 +66,7 @@ def run_chain(target,model,sources,method,model_name,replica,index,protocol,*,jo
             if kind=='local':
                 target.finish_record(old,new,row,row['proposal_std']);ratio=float(row['base_log_ratio'])
                 row.update(scored=new is not None,raw_cost=2*int(new is not None),log_acceptance_ratio=ratio,log_uniform=logu,accepted=new is not None and logu<min(0.,ratio))
+            elif joint_kernel is not None:joint_kernel.finish(target,old,new,row,logu)
             else:finish_edit(target,old,new,row,logu)
             if row['accepted']:states[j]=new
             counts[j]+=row['raw_cost'];assert counts[j]<=cap

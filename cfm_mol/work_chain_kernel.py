@@ -4,7 +4,7 @@ import math
 import torch
 from cfm_mol.chemical_work_policy import catalogue as single_catalogue, policy as single_policy
 from cfm_mol.cooperative_edit_policy import sample_root_blocks,panel_catalogue,block_policy,reverse_index,terminal_roots
-from cfm_mol.edit_bridge_sampler import RootZeroBridgeField,propose_edit
+from cfm_mol.edit_bridge_sampler import RootZeroBridgeField,propose_edit,finish_edit
 from cfm_mol.edit_conditioned_bridge import center
 from cfm_mol.joint_chemical_geometry import distinct_anchor_actions
 
@@ -35,19 +35,34 @@ class WorkChainKernel:
         options=single_catalogue(target,old)
         if not options['valid']:return empty(old,'No valid single edit')
         forward=single_policy(target,old,options,self.backbone,self.policy_options['uniform_fraction'])
+        if self.backbone=='uniform':forward['uniform_policy']=True
         j=choose(forward['log_probability'],generator);item=options['valid'][j]
         new=copy.deepcopy(item['candidate']);row=copy.deepcopy(item['record'])
+        row.update(kernel_type='single',type_fallback=fallback,forward_selected=j,
+            forward=record_probability(forward,options['valid']),coordinate_log_ratio=row['log_volume'])
+        if self.backbone=='force':
+            row['pending_force_reverse']=True
+        else:self.single_reverse(target,old,new,row)
+        return new,row
+
+    @torch.no_grad()
+    def single_reverse(self,target,old,new,row):
         reverse=single_catalogue(target,new);inverse=tuple(row['inverse_action'])
         indices=[i for i,r in enumerate(reverse['valid']) if tuple(r['action'])==inverse]
         if len(indices)!=1:raise ValueError('Reverse single catalogue lacks unique inverse')
         k=indices[0];torch.testing.assert_close(reverse['valid'][k]['candidate']['positions'],old['positions'],atol=1e-9,rtol=0)
         backward=single_policy(target,new,reverse,self.backbone,self.policy_options['uniform_fraction'])
+        if self.backbone=='uniform':backward['uniform_policy']=True
         assert terminal_roots(target.numbers,new['graph']['bond_orders'])==terminal_roots(target.numbers,old['graph']['bond_orders'])
-        row.update(kernel_type='single',type_fallback=fallback,forward_selected=j,reverse_selected=k,
-            forward=record_probability(forward,options['valid']),reverse=record_probability(backward,reverse['valid']),
-            action_log_ratio=float(backward['log_probability'][k]-forward['log_probability'][j]),
-            coordinate_log_ratio=row['log_volume'])
-        return new,row
+        row.update(reverse_selected=k,reverse=record_probability(backward,reverse['valid']),
+            action_log_ratio=float(backward['log_probability'][k]-row['forward']['log_probability'][row['forward_selected']]))
+
+    @torch.no_grad()
+    def finish(self,target,old,new,row,log_uniform):
+        if new is not None and row.get('pending_force_reverse'):
+            self.single_reverse(target,old,new,row)
+            row['pending_force_reverse']=False
+        return finish_edit(target,old,new,row,log_uniform)
 
     @torch.no_grad()
     def propose(self,target,old,generator,seed):
@@ -87,6 +102,7 @@ class WorkChainKernel:
 def independently_normalized(record,kT,uniform_fraction):
     """Independent scalar arithmetic for logged full valid-catalogue weights."""
     work=record.get('work',record.get('predicted_linear_work_eV'))
+    if record.get('uniform_policy'):return [-math.log(len(work))]*len(work)
     affinity=record.get('log_affinity',torch.zeros_like(work))
     weights=[]
     for w,j,h in zip(work,record['log_volumes'],affinity):

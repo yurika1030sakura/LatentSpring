@@ -22,6 +22,8 @@ def make_kernels(project,protocol):
         for method in protocol['methods']:
             common=dict(backbone=base,panel_size=protocol['panel_size'],policy_options=protocol['policy'],root_noise_options=protocol['bridge_by_method']['root_noise'])
             if method=='root_noise':kernel=WorkChainKernel('root_noise',**common)
+            elif method in ('single_uniform','single_force'):
+                kernel=WorkChainKernel('single',**dict(common,backbone=method.split('_')[1]))
             elif method=='single_linear':kernel=WorkChainKernel('single',**common)
             elif method=='panel_linear':kernel=WorkChainKernel('panel',**common)
             elif method=='panel_restraint':kernel=WorkChainKernel('panel',use_affinity=True,**common)
