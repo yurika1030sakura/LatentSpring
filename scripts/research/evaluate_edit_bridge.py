@@ -13,8 +13,8 @@ from scripts.research.audit_joint_arc_support import independent_arc_q
 from scripts.research.evaluate_chemical_policy import write
 
 
-def inputs(root,project,index):
-    pp=root/'research/evidence/edit_bridge_evaluation_protocol_v1.json';protocol=json.loads(pp.read_text());assert protocol['frozen']
+def inputs(root,project,index,protocol_path=None):
+    pp=protocol_path or root/'research/evidence/edit_bridge_evaluation_protocol_v1.json';protocol=json.loads(pp.read_text());assert protocol['frozen']
     physical_path=root/protocol['physical_protocol'];assert sha(physical_path)==protocol['physical_protocol_sha256'];physical=json.loads(physical_path.read_text())
     dp=project/protocol['data_run'];assert sha(dp/'data.pt')==protocol['data_sha256'];data=torch.load(dp/'data.pt',map_location='cpu',weights_only=False)
     selected=[];condition=None;cache={}
@@ -32,7 +32,11 @@ def inputs(root,project,index):
     models={'physical_arc':None,'zero_bridge':ZeroBridgeField(),'analytic_bridge':AnalyticBridgeField(**protocol['analytic_field'])}
     for name,spec in protocol['models'].items():
         path=project/spec['path'];assert sha(path)==spec['sha256'];saved=torch.load(path,map_location='cpu',weights_only=False)
-        model=EditBridgeField(**saved['configuration']).double();model.load_state_dict(saved['state_dict']);model.eval();model.requires_grad_(False);models[name]=model
+        if spec.get('architecture')=='mobility':
+            from cfm_mol.edit_mobility import MobilizedEditField
+            model=MobilizedEditField(**saved['configuration']).double()
+        else:model=EditBridgeField(**saved['configuration']).double()
+        model.load_state_dict(saved['state_dict']);model.eval();model.requires_grad_(False);models[name]=model
     return pp,protocol,physical,models,condition,selected
 
 
@@ -96,8 +100,9 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['project','out']:p.add_argument('--'+name,type=Path,required=True)
     for name in ['run','oracle-python','oracle-checkpoint']:p.add_argument('--'+name,type=Path)
+    p.add_argument('--protocol',type=Path)
     p.add_argument('--index',type=int,required=True);p.add_argument('--phase',choices=['evaluate','audit'],required=True)
-    a=p.parse_args();root=Path(__file__).resolve().parents[2];pp,protocol,physical,models,condition,sources=inputs(root,a.project,a.index)
+    a=p.parse_args();root=Path(__file__).resolve().parents[2];pp,protocol,physical,models,condition,sources=inputs(root,a.project,a.index,root/a.protocol if a.protocol else None)
     a.out.mkdir(parents=True,exist_ok=True);output=a.out/'results.json'
     if output.exists():raise FileExistsError(output)
     report=dict(complete=False,index=a.index,phase=a.phase,protocol_sha256=sha(pp),condition=condition,sources=protocol['sources'][str(a.index)],new_raw_queries=0,

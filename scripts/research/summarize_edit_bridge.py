@@ -9,7 +9,8 @@ from scripts.research.audit_masked_angular import sha
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['project','run','audit','out']:p.add_argument('--'+name,type=Path,required=True)
-    a=p.parse_args();root=a.project;pp=root/'research/evidence/edit_bridge_evaluation_protocol_v1.json';protocol=json.loads(pp.read_text())
+    p.add_argument('--protocol',type=Path,default=Path('research/evidence/edit_bridge_evaluation_protocol_v1.json'))
+    a=p.parse_args();root=a.project;pp=root/a.protocol;protocol=json.loads(pp.read_text())
     methods=protocol['methods'];parents={};provenance={};calls=checks=inverses=0;timing={m:dict(proposal_seconds=0.,physical_dispatch_seconds=0.) for m in methods}
     counts={m:dict(attempts=0,geometry_valid=0,scored=0,accepted=0,candidate_raw_calls=0) for m in methods}
     for index in protocol['condition_indices']:
@@ -36,7 +37,7 @@ def main():
     for index in protocol['condition_indices']:
         ids=sorted({pid for i,pid,m in parents if i==index});assert len(ids)==3
         group_indices.append(list(range(len(ordered),len(ordered)+3)));ordered.extend((index,pid) for pid in ids)
-    array=np.array([[[parents[i,pid,m][k] for k in keys] for m in methods] for i,pid in ordered]);assert array.shape==(12,9,4)
+    array=np.array([[[parents[i,pid,m][k] for k in keys] for m in methods] for i,pid in ordered]);assert array.shape==(12,len(methods),4)
     def metrics(values):
         result=dict(zip(keys,map(float,values.sum(0))))
         result.update(utility_eV_per_charged_raw_call=result['expected_utility_eV']/result['charged_raw_calls'],
@@ -48,10 +49,13 @@ def main():
     totals=array[draws].sum(1);rates=totals[:,:,0]/totals[:,:,1]
     comparisons={}
     for method in methods:
-        if method in ['physical_arc','zero_bridge','analytic_bridge']:continue
-        controls=['physical_arc','zero_bridge','analytic_bridge']
-        if method.startswith('edit_collective'):
-            suffix=method.rsplit('_',1)[1];controls+=['blind_collective_'+suffix,'edit_roots_'+suffix]
+        if 'comparators' in protocol:
+            controls=protocol['comparators'].get(method,[])
+        else:
+            if method in ['physical_arc','zero_bridge','analytic_bridge']:continue
+            controls=['physical_arc','zero_bridge','analytic_bridge']
+            if method.startswith('edit_collective'):
+                suffix=method.rsplit('_',1)[1];controls+=['blind_collective_'+suffix,'edit_roots_'+suffix]
         for control in controls:
             delta=rates[:,methods.index(method)]-rates[:,methods.index(control)];interval=np.sort(delta)[[125,4875]].tolist()
             point=points[method]['utility_eV_per_charged_raw_call']-points[control]['utility_eV_per_charged_raw_call']
