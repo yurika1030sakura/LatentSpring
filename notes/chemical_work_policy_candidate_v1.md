@@ -94,3 +94,38 @@ quickly test corrected molecular proposals at matched budgets. Retain existing
 18-parent and12-parent evaluations as development cohorts; do not relabel repeated
 testing as untouched final evaluation. Keep722 reserved outcomes unqueried.
 Do not resume optimizer cleanup or demand perfect source geometries first.
+
+## Residual prototype and refreshed prior-art boundary (2026-09-13)
+
+`ResidualChemicalWork` now freezes the corresponding FIT-only typed-bond model
+and adds a paired graph/3D correction with zero restraint. Initialization exactly
+reproduces the baseline; its parameters stay bitwise fixed. Both seeds and both
+ablations use the original400-step schedule, same parent stream and same24/12
+internal split plus separate36-parent full fits. All8 models replay, including
+3,576 real-pair reversal checks. Nine focused model/catalogue tests pass.
+The new18-parent evaluation reuses all498 earlier raw responses with exact
+position-query matching and requires every old policy result to replay unchanged.
+No new physical labels or reserved/evaluation fitting are introduced.
+
+The plain idea of adding a learned correction to a cheap molecular predictor
+already appears in [Delta-machine learning](https://arxiv.org/abs/1503.04987).
+[Informed MCMC](https://arxiv.org/abs/1711.07424) and
+[LSB](https://openreview.net/pdf?id=WEKfdiZYZi-) also precede the use of target
+information or learned proposal adaptation. These primary sources were refreshed
+on September13. The residual prototype is therefore an architectural comparison,
+not a general novelty claim. A useful specific3D representation, its actual
+sampling behavior and its distinction from these precedents remain to establish.
+
+Residual result: both fitting/audit and18-parent re-evaluation are COMPLETE.
+The3D residual has mean one-step utility0.116046 eV versus linear0.121892;
+the paired difference interval crosses zero. The graph residual essentially
+reproduces linear. This closes the present residual-added-value hypothesis at
+this protocol, without claiming that all future3D models must fail. No further
+capacity/step tuning is justified by these held development outcomes.
+
+For any later coordinated-edit direction, [Path Auxiliary Proposal for MCMC in
+Discrete Space (ICLR2022)](https://openreview.net/pdf?id=JSR-YDImK95) is a direct
+precedent: it composes local moves and provides an energy-linearized fast variant.
+Merely composing our chemical maps with a pathwise MH ratio is not a new general
+algorithm. A learned interaction-work mechanism and useful molecular evidence
+would require separate formulation and validation; none is claimed yet.

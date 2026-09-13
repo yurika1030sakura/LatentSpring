@@ -1,5 +1,5 @@
 {
-  "updated_at_utc": "2026-09-13T15:35:41.655275+00:00",
+  "updated_at_utc": "2026-09-13T20:14:38.944771+00:00",
   "goal_status": "active",
   "scientific_submission_ready": false,
   "previous_goal_turn_classification": "progress",
@@ -97,7 +97,7 @@
   },
   "candidate": "Implemented masked passive-context paired finite-work predictor and exact finite-catalogue edit policy",
   "candidate_note": "notes/chemical_work_policy_candidate_v1.md",
-  "novelty_status": "The paired 3D model and corrected policy are implemented, trained and audited. Simple learned bond energies improve one-step utility over uniform/force selection, while the neural model has no established advantage over linear, graph-only, or uniform controls. Generic informed MCMC and residual learning are not novel general algorithms.",
+  "novelty_status": "Direct and frozen-backbone residual 3D work models are implemented and fully audited. Neither establishes added utility over the simple additive learned policy. Informed MCMC, Delta learning and compositions of local moves with path auxiliary MH are existing methods. Distinct useful AI novelty remains unestablished.",
   "catalogue": {
     "protocol": "research/evidence/chemical_work_catalogue_protocol_v1.json",
     "summary": "research/evidence/chemical_work_catalogue_summary_v1.json",
@@ -123,10 +123,13 @@
     "transfer_audit": "46223792 COMPLETED",
     "training": "46258095 COMPLETED",
     "policy_evaluation": "46258563 COMPLETED",
-    "policy_evaluation_audit": "46258596 COMPLETED"
+    "policy_evaluation_audit": "46258596 COMPLETED",
+    "residual_training": "46294068 COMPLETED",
+    "residual_evaluation": "46294447 COMPLETED",
+    "residual_evaluation_audit": "46294481 COMPLETED"
   },
   "all_current_work_terminal": true,
-  "next": "Retain typed linear work selection as the strong learned baseline. The next neural hypothesis should contain the successful additive predictor and learn non-additive 3D finite-work residuals; this architectural repair is not itself sufficient novelty. Use a bounded fixed-protocol test on existing labels and actual corrected edits before more scale or chains. Establish a useful representation contribution beyond the linear/graph controls; do not tune on evaluated outcomes or resume optimizer cleanup.",
+  "next": "Stop expanding the direct/residual one-edit networks. Keep the additive learned policy as the demonstrated one-step baseline. Specify a distinct useful AI mechanism beyond this baseline before new architecture runs; interaction-aware coordinated edits are a candidate to assess, with explicit comparison to ICLR2022 Path Auxiliary Proposal rather than calling multi-step MH novel. Use bounded FIT-only evidence and preserve all evaluated/reserved exclusions. No optimizer cleanup or universal-success prerequisite.",
   "optimizer_recovery_paused": true,
   "mobility_scaleup_stopped": true,
   "reserved_conditions_unqueried": 722,
@@ -270,5 +273,154 @@
       }
     },
     "scope": "Exact one-step expectation of actual corrected edits over complete valid catalogues on 18 existing evaluation-only parents. Forward probabilities frozen before candidate physical queries; all candidate labels used only for evaluation. This is not a chain, equilibrium validation, matched-wall-time result, or an inference gain after training cost. All methods retained, including unfavorable controls. No fitting on this cohort or 722 reserved outcomes."
+  },
+  "residual_training": {
+    "protocol": "research/evidence/chemical_work_residual_training_protocol_v1.json",
+    "run": "runs/chemical_work_residual_training_v1",
+    "summary": "research/evidence/chemical_work_residual_training_summary_v1.json",
+    "summary_sha256": "39ebde828292712ecd307fe5ad6a3945a18663b42c9e744cdd762ef157085022",
+    "models": 8,
+    "seeds": 2,
+    "steps_per_model": 400,
+    "frozen_backbones_unchanged": true,
+    "pair_reversal_checks": 3576,
+    "new_physical_queries": 0
+  },
+  "residual_evaluation": {
+    "protocol": "research/evidence/chemical_work_residual_evaluation_protocol_v1.json",
+    "run": "runs/chemical_work_residual_evaluation_v1",
+    "audit": "runs/chemical_work_residual_evaluation_audit_v1",
+    "summary": "research/evidence/chemical_work_residual_evaluation_summary_v1.json",
+    "summary_sha256": "09011a7308d26e1d0cf378523f889178e9f52461f361032ae43fdff5556a2f54",
+    "full_replay": true,
+    "unchanged_original_controls": true,
+    "new_raw_queries": 0,
+    "reused_raw_queries": 498,
+    "independent_MH_checks": 2772,
+    "mean_one_step": {
+      "uniform": {
+        "acceptance": 0.26525993877494636,
+        "utility_eV": 0.07062060882345975,
+        "constitutional_flow": 0.26435229001171817,
+        "proposed_work_eV": 0.588442258180646
+      },
+      "force": {
+        "acceptance": 0.2845163495872161,
+        "utility_eV": 0.0625081005239041,
+        "constitutional_flow": 0.2834103732604714,
+        "proposed_work_eV": 0.5728381422753956
+      },
+      "linear_s0": {
+        "acceptance": 0.39233399573574196,
+        "utility_eV": 0.12175586194956406,
+        "constitutional_flow": 0.3909412689717771,
+        "proposed_work_eV": 0.22007546163254169
+      },
+      "graph_s0": {
+        "acceptance": 0.2731570666859723,
+        "utility_eV": 0.08217228674919846,
+        "constitutional_flow": 0.2717643396294605,
+        "proposed_work_eV": 0.6484786806377176
+      },
+      "geometry_s0": {
+        "acceptance": 0.2849222573076457,
+        "utility_eV": 0.08728082341735399,
+        "constitutional_flow": 0.28088925946534027,
+        "proposed_work_eV": 0.3939504291166065
+      },
+      "linear_s1": {
+        "acceptance": 0.3949235781656424,
+        "utility_eV": 0.12202766186983045,
+        "constitutional_flow": 0.39353085140167754,
+        "proposed_work_eV": 0.2207658217986855
+      },
+      "graph_s1": {
+        "acceptance": 0.27312383063611834,
+        "utility_eV": 0.08216189687237588,
+        "constitutional_flow": 0.27173110387218474,
+        "proposed_work_eV": 0.6485742881472137
+      },
+      "geometry_s1": {
+        "acceptance": 0.3059832534825385,
+        "utility_eV": 0.08950035376696296,
+        "constitutional_flow": 0.3018206226736045,
+        "proposed_work_eV": 0.315164287090565
+      },
+      "graph_residual_s0": {
+        "acceptance": 0.39233607354364586,
+        "utility_eV": 0.12176184008919821,
+        "constitutional_flow": 0.3909433488535438,
+        "proposed_work_eV": 0.220065579085002
+      },
+      "geometry_residual_s0": {
+        "acceptance": 0.3438824869391354,
+        "utility_eV": 0.11074394254319128,
+        "constitutional_flow": 0.34247788476189306,
+        "proposed_work_eV": 0.15751640628702712
+      },
+      "graph_residual_s1": {
+        "acceptance": 0.3949235781656498,
+        "utility_eV": 0.12202766186983231,
+        "constitutional_flow": 0.3935308514016849,
+        "proposed_work_eV": 0.2207658217986753
+      },
+      "geometry_residual_s1": {
+        "acceptance": 0.38110080379724287,
+        "utility_eV": 0.12134857669573555,
+        "constitutional_flow": 0.3800018388064893,
+        "proposed_work_eV": 0.19060141240912615
+      }
+    },
+    "comparisons": {
+      "geometry_residual minus linear": {
+        "mean_utility_difference_eV": -0.005845502290233836,
+        "descriptive_parent_bootstrap95": [
+          -0.019162680524979193,
+          0.004944545725610962
+        ],
+        "parents_positive": 7
+      },
+      "geometry_residual minus graph_residual": {
+        "mean_utility_difference_eV": -0.005848491360051836,
+        "descriptive_parent_bootstrap95": [
+          -0.01916865721812196,
+          0.004944533036246204
+        ],
+        "parents_positive": 7
+      },
+      "geometry_residual minus geometry": {
+        "mean_utility_difference_eV": 0.027655671027304936,
+        "descriptive_parent_bootstrap95": [
+          -0.0006830777673366395,
+          0.06929154362025612
+        ],
+        "parents_positive": 11
+      },
+      "geometry_residual minus uniform": {
+        "mean_utility_difference_eV": 0.045425650796003685,
+        "descriptive_parent_bootstrap95": [
+          0.010396803085857503,
+          0.08958584054597149
+        ],
+        "parents_positive": 13
+      },
+      "geometry_residual minus force": {
+        "mean_utility_difference_eV": 0.05353815909555932,
+        "descriptive_parent_bootstrap95": [
+          0.013352178693097136,
+          0.10368170601675221
+        ],
+        "parents_positive": 10
+      },
+      "graph_residual minus linear": {
+        "mean_utility_difference_eV": 2.989069818001576e-06,
+        "descriptive_parent_bootstrap95": [
+          -6.741101123631718e-08,
+          8.899777725636285e-06
+        ],
+        "parents_positive": 9
+      }
+    },
+    "scope": "Exact one-step corrected policy expectations using the immutable prior 18-parent development catalogue and all its raw E/F responses. Zero new physical queries; all231 valid edits and20 failures retained. Original controls must replay unchanged. Residual models use FIT-only backbones and labels, with no evaluation-label fitting. Repeated development evaluation is not an untouched benchmark, chain result, equilibrium result or novelty certificate."
   }
 }

@@ -1,3 +1,51 @@
+# Current AI work — residual comparison closed, core added value unresolved
+
+LATEST (September13): the frozen-linear-backbone residual comparison is DONE.
+All8 residual models replay with unchanged additive coefficients and3,576 pair
+reversals. Re-evaluation uses ZERO new oracle queries, replaying the existing498
+raw responses on18 development parents. All old control outcomes match and all
+2,772 physical MH ratios replay. Jobs46294068/46294447/46294481 are COMPLETE0:0.
+
+The two-seed mean one-step utility is0.116046 eV for3D residual learning versus
+0.121892 for the additive linear model. Difference-0.005846 eV has descriptive
+parent interval[-0.019163,0.004945]. The graph residual is essentially identical
+to linear. Residual learning retains a gain over uniform/force selection but
+does not establish added neural value. Stop expanding these frozen one-edit
+networks. The successful simple policy remains a useful baseline; AI novelty,
+complete-chain gain and submission readiness remain unresolved. Read current
+`research/CHEMICAL_WORK_POLICY_STATE_20260913.json` and NEXT.
+
+The residual experiment formerly listed as NEXT is complete; do not rerun it.
+Current summary: `research/evidence/chemical_work_residual_evaluation_summary_v1.json`.
+Training: `runs/chemical_work_residual_training_v1/s{0,1}/full_fit/{graph_residual,geometry_residual}/model.pt`.
+Re-evaluation/audit: `runs/chemical_work_residual_evaluation{,_audit}_v1`.
+All sources, checkpoints, protocol hashes and unchanged controls replay. No jobs
+from this work are running now; verify Slurm before any recovery decision.
+
+Next bounded research task:
+1. Keep the demonstrated additive work selector as the strong learned baseline.
+   Stop adding capacity or generic residual losses to the same one-edit recipe.
+2. Define a useful AI mechanism beyond additive edit ranking. One candidate to
+   assess is learned coordination based on the interaction work of multiple
+   edits, where independent bond scores miss coupling. This is a proposed
+   direction, not an implemented or established novel method.
+3. Before claiming that direction, compare explicitly with the ICLR2022
+   [Path Auxiliary Proposal](https://openreview.net/pdf?id=JSR-YDImK95), which
+   already composes local moves and gives an efficient energy-linearized variant.
+   Generic multi-edit paths, endpoint MH and learned residuals are not new.
+   The required distinction must be the learned interaction mechanism and useful
+   real molecular behavior beyond a corresponding simple/path control.
+4. Specify one small FIT-only demonstration and its controls before more costly
+   training. No evaluated18/12 parents or722 reserved outcomes enter fitting.
+   No all-case optimization, full static map or new physics law is a prerequisite.
+   Do not present repeated development comparisons as untouched final tests.
+5. Preserve the positive simple-learning result and all negative neural results.
+   Later paper claims still need complete-chain and appropriate learned-generator
+   comparisons with data/preparation/inference cost accounting. Current one-step
+   potential reduction is not a certified molecular energy distribution.
+
+Previous completed-step details follow for reproducibility only:
+
 # Current AI-method work — a useful simple baseline, neural value unresolved
 
 Read `research/CHEMICAL_WORK_POLICY_STATE_20260913.json` and

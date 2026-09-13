@@ -1,5 +1,20 @@
 # Current contribution decision — September 13, 2026 UTC
 
+LATEST (September13): the frozen-linear-backbone residual comparison is DONE.
+All8 residual models replay with unchanged additive coefficients and3,576 pair
+reversals. Re-evaluation uses ZERO new oracle queries, replaying the existing498
+raw responses on18 development parents. All old control outcomes match and all
+2,772 physical MH ratios replay. Jobs46294068/46294447/46294481 are COMPLETE0:0.
+
+The two-seed mean one-step utility is0.116046 eV for3D residual learning versus
+0.121892 for the additive linear model. Difference-0.005846 eV has descriptive
+parent interval[-0.019163,0.004945]. The graph residual is essentially identical
+to linear. Residual learning retains a gain over uniform/force selection but
+does not establish added neural value. Stop expanding these frozen one-edit
+networks. The successful simple policy remains a useful baseline; AI novelty,
+complete-chain gain and submission readiness remain unresolved. Read current
+`research/CHEMICAL_WORK_POLICY_STATE_20260913.json` and NEXT.
+
 Current source of truth: `research/CHEMICAL_WORK_POLICY_STATE_20260913.json`.
 The new paired finite-work model and normalized forward/reverse edit policy are
 IMPLEMENTED, trained and fully audited. Both seeds and all linear/graph/3D
