@@ -1,48 +1,55 @@
-# Next research actions — September 13, 2026 UTC
+# Next research actions — AI framework priority
 
-Read `research/MOBILITY_CONTINUATION_RESULT_20260913.json` and
-`notes/mobility_relaxation_continuation_decision_v1.md`. Work in laboratory storage;
-never write home. The full ICLR objective is active and scientifically unachieved.
+Latest update: training46215808 is COMPLETE for all six models. Edit-conditioned
+and blind collective fitting errors are nearly equal; no clear conditioning
+benefit is established. Root-only fitting error is lower. Final model hashes and
+matched sampled-index/direction streams are checked. Next test actual molecular
+proposals; neither fitting MSE nor these core tests prove a useful AI contribution.
 
-1. The128-cap continuation and all audits are COMPLETE. All53 previously capped
-   arms were continued with cached-prefix replay; the other75 arms were retained.
-   Added cost3,768 raw calls, cumulative9,332. Root/collective convergence is now
-   63/64 and46/64, respectively;20/32 full pairs converge. Fourteen arms stop at
-   minimum step and five remain capped. All4,538 optimization trials are audited.
-2. The mean paired collective-minus-root gap change is -0.08786 eV with interval
-   [-0.23315,0.07213]. This does not establish an exchange-specific geometry gain.
-   Keep the all32-pair denominator and both source/destination controls. Shorter
-   results, actual costs, failed cases and unconverged residuals remain.
-3. All14 boundary stops and both raw/distance-adjusted force candidates were
-   frozen and checked with94 new raw calls. Four independent audits are complete.
-   Distance-adjusted directions give12 resolved decreases and2 increases. Raw
-   force gives0 resolved decreases,1 increase,4 unresolved changes and9 geometry
-   failures. The numerical threshold was frozen at1e-5 eV. All28 rows remain.
-4. Implement/test a constraint-aware optimizer recovery with actual-energy
-   Armijo backtracking. The finite candidates show why geometric feasibility and
-   force prediction alone are insufficient. Before new queries, freeze ONE bounded
-   recovery of all19 remaining arms, preserving histories/caches where applicable,
-   both mobility choices, both endpoints and all128 arms in the denominator. Keep
-   graph, electronic state and the declared physical target unchanged. No recovery
-   protocol or physical job is yet frozen/submitted.
-5. Explicitly distinguish full-force convergence, constrained stationarity and
-   an algorithmic stop. Do not declare success merely because steps become small
-   at the graph/domain boundary. Keep the paired diagnostic bounded; a useful
-   generative method does not require finding global minima for every molecule.
-6. Optimization is teacher feasibility. Existing whole-COM escorted paths failed
-   their useful acceptance/cost test. Any later learned transport requires its
-   actual density/Jacobian or a complete reversible auxiliary path. These classical
-   repairs do not themselves establish useful AI novelty or a valid new sampler.
-7. Screening-only scaling stays stopped. All prior scalar, geometry, action,
-   strong-control and transfer negatives remain. Keep evaluated cohorts and722
-   reserved conditions out of fitting. Real molecular gains, complete costs,
-   strong physical and representative learned baselines, realistic reuse and
-   independent final evaluation remain requirements of the full goal.
+Read `research/AI_FRAMEWORK_STATE_20260913.json` and
+`notes/edit_conditioned_bridge_v1.md` first. The user's latest correction is
+recorded in `research/CLAIM_AND_BENCHMARK_SCOPE.md`: prioritize the whole AI idea
+and a quick, credible demonstration. Further optimization of all difficult cases
+is not a prerequisite. The full ICLR goal remains active and unachieved.
 
-All new jobs46213860,46213924,46214280,46214323 are terminal; re-query Slurm before
-recovery. Summaries:
-`runs/mobility_relaxation_continuation_summary_v1/results.json` and
-`runs/mobility_boundary_energy_summary_v2/results.json`.
-Verified PDF: `runs/verification/mobility_continuation_boundary_20260913/main.pdf`
-(9 main pages,26 total). Scientific submission readiness is false.
-Prior NEXT: `notes/archive/next_through_mobility32_20260913.md`.
+1. The new edit-conditioned reversible transport is implemented. Its neural
+   field conditions on both molecular graphs and moves all atoms through
+   reversible phase-space shears around a chemical edit. Four essential tests
+   cover the inverse, actual intrinsic volume, MH-ratio reversal, symmetries,
+   gradients and the root-only ablation. Physical queries are endpoint-only
+   once a sampling caller is integrated; that caller is not implemented yet.
+2. Training46215808 is COMPLETE: two seeds, three variants,300 steps each.
+   Re-query Slurm. Do not restart from a missing observation or duplicate an
+   existing run. Models: edit_collective, blind_collective and edit_roots.
+   Data:192 paired bounded observations from32 FIT parents in four compositions;
+   all original parents and failures remain. No new physical labels are needed.
+3. Freeze the final checkpoints and promptly integrate the actual augmented-MH
+   molecular caller. Enforce expected endpoint graph and inverse-action
+   eligibility, include the momentum and chemical-map volume/action ratios,
+   and keep rejected/unsupported candidates. No unknown FM density is needed.
+4. Run the first real corrected-proposal pilot on the existing12 INTERNAL
+   evaluation parents, excluded from fitting. Use matched source states and
+   proposal/noise streams; include the physical site/arc and zero/analytic bridge
+   controls as well as both architectural ablations. Measure useful accepted
+   structural movement and energy-aware output at actual oracle/time costs.
+   Acceptance alone or training MSE is insufficient. This is internal evidence,
+   not the independent final benchmark.
+5. If signal supports edit conditioning and full-coordinate transport, run short
+   matched-budget chains and a small fresh-composition check. Then expand the
+   evidence around the observed claim. Do not wait for every optimizer/chemical
+   case to converge. If there is no signal, reconsider the framework rather than
+   adding another screen head or returning automatically to the19-arm repair.
+6. No further mobility/constraint-recovery jobs are planned. Completed results
+   remain in `research/MOBILITY_CONTINUATION_RESULT_20260913.json`; the old19-arm
+   recovery plan is superseded by this user priority. Preserve all negative data.
+7. Generic neural HMC, conditional flow proposals and learned nonequilibrium
+   protocols are prior art. The candidate contribution is a useful edit-conditioned
+   collective transport mechanism; its novelty and value are still hypotheses.
+   Keep flow matching as initializer, OMol25 primary, max_atoms200, bond-free
+   supervision, original electronic states and all evaluation splits. Never fit
+   on the722 reserved outcomes. Never write home or merge the environments.
+
+Training results: `runs/edit_bridge_training_v1/<variant>_s<replica>/results.json`.
+Prior NEXT: `notes/archive/next_before_ai_priority_20260913.md`.
+The prior26-page PDF records completed diagnostics, not a tested new bridge.
+Do not spend the next turn polishing that PDF before the AI pilot.

@@ -1,24 +1,5 @@
 # Current contribution decision — September 13, 2026 UTC
 
-Latest update: training46215808 is COMPLETE for all six models. Edit-conditioned
-and blind collective fitting errors are nearly equal; no clear conditioning
-benefit is established. Root-only fitting error is lower. Final model hashes and
-matched sampled-index/direction streams are checked. Next test actual molecular
-proposals; neither fitting MSE nor these core tests prove a useful AI contribution.
-
-Authoritative current entrypoint: `research/AI_FRAMEWORK_STATE_20260913.json`.
-The user's latest priority is AI framework novelty and a rapid real demonstration.
-The planned19-arm optimizer recovery is superseded and paused before submission.
-The implemented candidate learns edit-conditioned whole-molecule transport with
-reversal built into phase-space shears. Four core tests pass. Training46215808
-is complete for three architectural variants and two seeds; re-query Slurm.
-No molecular effectiveness or useful AI novelty is yet established. Next test
-actual corrected proposals; do not resume broad optimizer cleanup first.
-Read `notes/edit_conditioned_bridge_v1.md` and the current NEXT.
-
-The completed diagnostic checkpoints below are historical evidence, not the
-current work priority. The full ICLR goal remains active and scientifically unachieved.
-
 Latest evidence: `research/MOBILITY_CONTINUATION_RESULT_20260913.json`.
 The128-cap continuation improves collective convergence to46/64 but leaves the
 paired energy-gap contrast inconclusive. Actual boundary checks give12/14

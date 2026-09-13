@@ -1,0 +1,160 @@
+{
+  "updated_at_utc": "2026-09-13T03:04:20.772260+00:00",
+  "goal_status": "active",
+  "scientific_submission_ready": false,
+  "previous_goal_turn_classification": "progress",
+  "user_priority": "AI framework novelty and rapid real molecular evidence before broad detail/optimization work. No requirement that every case be perfect.",
+  "previous_checkpoint": "research/MOBILITY_CONTINUATION_RESULT_20260913.json",
+  "optimizer_recovery_paused_before_submission": true,
+  "candidate": "Edit-conditioned reversible collective molecular transport",
+  "candidate_note": "notes/edit_conditioned_bridge_v1.md",
+  "source_commit": "c0c7ff776115f200a46b69466a814d3974823324",
+  "core": "cfm_mol/edit_conditioned_bridge.py",
+  "essential_tests_passed": 4,
+  "novelty_status": "Concrete architectural hypothesis, not established AI novelty or molecular usefulness. Generic neural HMC and learned nonequilibrium work are prior art.",
+  "training_protocol": "research/evidence/edit_bridge_training_protocol_v1.json",
+  "training_protocol_sha256": "4cde8efd32d37878736aebd999f6090e69c3734c6e4034e92a733b7653b8a1af",
+  "data_run": "runs/edit_bridge_data_v1",
+  "fit_parents": 32,
+  "teacher_pairs": 192,
+  "conditions": 4,
+  "variants": [
+    "edit_collective",
+    "blind_collective",
+    "edit_roots"
+  ],
+  "replicas": 2,
+  "steps": 300,
+  "new_physical_queries_for_data_and_training": 0,
+  "inherited_mobility_teacher_raw_queries": 9332,
+  "inherited_source_and_proposal_data_costs_additional": true,
+  "jobs": {
+    "training": "46215808 COMPLETED 0:0, both tasks"
+  },
+  "scheduler_observed_at_utc": "2026-09-13T03:08:26.452882+00:00",
+  "scheduler_snapshot": [],
+  "next": "Freeze final checkpoints and run a small actual corrected-proposal comparison on12 internal evaluation parents excluded from training. Test edit conditioning and collective mobility against physical/zero-field controls; advance to short matched-budget chains if useful signal appears. Fitting error is not a molecular success metric.",
+  "optimizer_details_are_not_entry_gates": true,
+  "reserved_conditions_unqueried": 722,
+  "evaluated_cohorts_used_for_fitting": false,
+  "training_complete": true,
+  "training_fitting_only": {
+    "edit_collective_s0": {
+      "initial": {
+        "objective": 4.918682215087997,
+        "scaled_position_MSE": 4.894210777153411,
+        "momentum_energy_per_dimension": 0.48942875869171326,
+        "teacher_directions": 384,
+        "fit_only": true
+      },
+      "final": {
+        "objective": 4.903843316121094,
+        "scaled_position_MSE": 4.878722219393975,
+        "momentum_energy_per_dimension": 0.5024219345423659,
+        "teacher_directions": 384,
+        "fit_only": true
+      },
+      "elapsed_seconds": 12.80995075503597,
+      "model_sha256": "2bcfe8f787ae17f7b963cdfe05b022010f83d68033a0bc719b6122c62eb687cc",
+      "data_sha256": "93b8ba13ab8520e618483dabaf356e9ac509acfc29a27db49edb9f8d9ce73cba"
+    },
+    "edit_collective_s1": {
+      "initial": {
+        "objective": 4.918682215087997,
+        "scaled_position_MSE": 4.894210777153411,
+        "momentum_energy_per_dimension": 0.48942875869171326,
+        "teacher_directions": 384,
+        "fit_only": true
+      },
+      "final": {
+        "objective": 4.903056984840916,
+        "scaled_position_MSE": 4.8781949393439605,
+        "momentum_energy_per_dimension": 0.49724090993908887,
+        "teacher_directions": 384,
+        "fit_only": true
+      },
+      "elapsed_seconds": 14.169641119020525,
+      "model_sha256": "158a1aacd1460e39d9b90e3713dc3a8988fb9c836772e352748d9dc89db10aed",
+      "data_sha256": "93b8ba13ab8520e618483dabaf356e9ac509acfc29a27db49edb9f8d9ce73cba"
+    },
+    "blind_collective_s0": {
+      "initial": {
+        "objective": 4.918682215087997,
+        "scaled_position_MSE": 4.894210777153411,
+        "momentum_energy_per_dimension": 0.48942875869171326,
+        "teacher_directions": 384,
+        "fit_only": true
+      },
+      "final": {
+        "objective": 4.903521264173718,
+        "scaled_position_MSE": 4.878258479437997,
+        "momentum_energy_per_dimension": 0.5052556947144352,
+        "teacher_directions": 384,
+        "fit_only": true
+      },
+      "elapsed_seconds": 12.47786650195485,
+      "model_sha256": "4a857d109aa98b0510c20c7eb6a0e4444c8817bee4c386b7b5e14daad2bc258c",
+      "data_sha256": "93b8ba13ab8520e618483dabaf356e9ac509acfc29a27db49edb9f8d9ce73cba"
+    },
+    "blind_collective_s1": {
+      "initial": {
+        "objective": 4.918682215087997,
+        "scaled_position_MSE": 4.894210777153411,
+        "momentum_energy_per_dimension": 0.48942875869171326,
+        "teacher_directions": 384,
+        "fit_only": true
+      },
+      "final": {
+        "objective": 4.904935819807661,
+        "scaled_position_MSE": 4.87997759944653,
+        "momentum_energy_per_dimension": 0.4991644072226263,
+        "teacher_directions": 384,
+        "fit_only": true
+      },
+      "elapsed_seconds": 13.738131165970117,
+      "model_sha256": "7ae4295ed0e0e0d94c16f6ccedc3fb44d1ac0d823f1e19b2f5073ddace6f5783",
+      "data_sha256": "93b8ba13ab8520e618483dabaf356e9ac509acfc29a27db49edb9f8d9ce73cba"
+    },
+    "edit_roots_s0": {
+      "initial": {
+        "objective": 4.418777054808408,
+        "scaled_position_MSE": 4.394305616873822,
+        "momentum_energy_per_dimension": 0.48942875869171326,
+        "teacher_directions": 384,
+        "fit_only": true
+      },
+      "final": {
+        "objective": 4.401667247698303,
+        "scaled_position_MSE": 4.374151184588523,
+        "momentum_energy_per_dimension": 0.5503212621956176,
+        "teacher_directions": 384,
+        "fit_only": true
+      },
+      "elapsed_seconds": 13.416675970016513,
+      "model_sha256": "7e0ab39d93a33336d9e8aa4ca99cd5a0a3c070eac8d0c067f250d61ffead948f",
+      "data_sha256": "93b8ba13ab8520e618483dabaf356e9ac509acfc29a27db49edb9f8d9ce73cba"
+    },
+    "edit_roots_s1": {
+      "initial": {
+        "objective": 4.418777054808408,
+        "scaled_position_MSE": 4.394305616873822,
+        "momentum_energy_per_dimension": 0.48942875869171326,
+        "teacher_directions": 384,
+        "fit_only": true
+      },
+      "final": {
+        "objective": 4.400558320206282,
+        "scaled_position_MSE": 4.374274499866266,
+        "momentum_energy_per_dimension": 0.5256764068003248,
+        "teacher_directions": 384,
+        "fit_only": true
+      },
+      "elapsed_seconds": 14.417322065040935,
+      "model_sha256": "4bf303f55b851f428939734dc13c17717960eefcfabf8813484189dc4bfbf020",
+      "data_sha256": "93b8ba13ab8520e618483dabaf356e9ac509acfc29a27db49edb9f8d9ce73cba"
+    }
+  },
+  "matched_index_and_direction_streams_checked": true,
+  "initial_training_conclusion": "All six small pretraining runs complete. Edit-conditioned collective and blind collective have nearly equal fitting errors; no clear edit-conditioning advantage is established. Root-only fitting error is lower. These are fitting metrics, not actual corrected-proposal outcomes.",
+  "all_current_work_terminal": true
+}

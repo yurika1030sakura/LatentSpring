@@ -1,5 +1,11 @@
 # BGFM project guide
 
+Latest update: training46215808 is COMPLETE for all six models. Edit-conditioned
+and blind collective fitting errors are nearly equal; no clear conditioning
+benefit is established. Root-only fitting error is lower. Final model hashes and
+matched sampled-index/direction streams are checked. Next test actual molecular
+proposals; neither fitting MSE nor these core tests prove a useful AI contribution.
+
 Updated 2026-09-12 after bounded accepted-utility and fresh-proposal audits. Read
 `audit/20260908/REVIEW.md` before interpreting any result as Boltzmann sampling.
 
@@ -18,11 +24,20 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/MOBILITY_CONTINUATION_RESULT_20260913.json` first. They record the current method,
+`research/AI_FRAMEWORK_STATE_20260913.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
 verification. `research/NEXT.md` is the current action list.
+
+The user's latest priority correction takes precedence over older next-action
+lists: focus on AI framework novelty and a fast real molecular demonstration.
+Do not require all-case optimization or perfect mixing first. The19-arm optimizer
+recovery is paused before submission. A new edit-conditioned reversible transport
+is implemented and training46215808 is complete for two seeds and three model
+ablations. Read `notes/edit_conditioned_bridge_v1.md` and the current NEXT.
+Its usefulness and distinctive AI contribution remain unproven; test actual
+corrected proposals next. Keep essential correctness, costs and data isolation.
 
 The user's September12 scope clarification is authoritative for this campaign:
 read `research/CLAIM_AND_BENCHMARK_SCOPE.md`. Include learned-generator baselines
@@ -164,9 +179,8 @@ raw/distance-adjusted force steps, adding94 raw calls. Adjusted directions give
 and constraint-aware optimizer recovery, not a new sampler or AI novelty. Read
 `research/MOBILITY_CONTINUATION_RESULT_20260913.json` and
 `notes/mobility_relaxation_continuation_decision_v1.md`. All four new jobs are
-terminal. No next recovery protocol/job is frozen or submitted. Preserve all19
-remaining arms and the full128-arm denominator, target, graph and electronic
-state. Keep evaluated cohorts and722 reserved outcomes out of fitting. The full
+terminal. The former next recovery is paused by the user priority correction above.
+Preserve the128-arm record, target, graph and electronic state. Keep evaluated cohorts and722 reserved outcomes out of fitting. The full
 ICLR objective remains active and scientifically unachieved.
 The previous manuscript is `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual

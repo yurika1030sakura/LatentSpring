@@ -1,5 +1,19 @@
 # Claim and benchmark scope — user clarification, September12
 
+## User priority correction: framework and fast AI evidence first
+
+On September12 local time the user explicitly said that work had become too
+heavy on details and that AI novelty, the whole idea and a fast demonstration
+should take priority over making every case perfect. This overrides the former
+plan to require further optimizer recovery before learning. No additional
+mobility/constraint-recovery campaigns are prerequisites for the AI pilot.
+Focus on a differentiated architecture, key correctness checks, a small real
+molecular comparison and mechanism ablations; then deepen validation where the
+claimed result needs it. Do not replace these with endless local diagnostics.
+Data isolation, original electronic states, fair costs and honest limitations
+remain mandatory. The full ICLR goal is unchanged. Current candidate and work:
+`notes/edit_conditioned_bridge_v1.md`, `research/AI_FRAMEWORK_STATE_20260913.json`.
+
 The user clarified that ICLR readiness means a convincing scoped contribution,
 not a nearly perfect generator, universal physical superiority or an independent
 new physical law. Retain the actual goal: correct theory/code, auditable original

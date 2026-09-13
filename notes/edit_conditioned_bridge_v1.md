@@ -105,3 +105,14 @@ small composition check before broadening. Do not wait for perfect convergence,
 all elements or every old failure. If the edit/full-coordinate ablations do not
 support the mechanism, revise the framework; do not disguise a fitting improvement
 as molecular effectiveness. The722 reserved outcomes remain untouched.
+
+## First small training completed
+
+Job46215808 is COMPLETED0:0 for both tasks and all six models. Final teacher
+coordinate MSEs are4.87872/4.87819 for edit-conditioned collective,
+4.87826/4.87998 for blind collective, and4.37415/4.37427 for root-only,
+using the frozen0.1-A scaling. This does not establish an edit-conditioning
+benefit, and the different active-noise spaces mean root/full fitting errors
+are not a sampling-efficiency comparison. Every final checkpoint and matched
+sampled index/direction stream is recorded in the current state. Next run the
+actual molecular pilot, not another optimizer-convergence campaign.
