@@ -1,50 +1,41 @@
-# Claude continuation — finite chemical work and edit selection
-
-LATEST (September13): the frozen-linear-backbone residual comparison is DONE.
-All8 residual models replay with unchanged additive coefficients and3,576 pair
-reversals. Re-evaluation uses ZERO new oracle queries, replaying the existing498
-raw responses on18 development parents. All old control outcomes match and all
-2,772 physical MH ratios replay. Jobs46294068/46294447/46294481 are COMPLETE0:0.
-
-The two-seed mean one-step utility is0.116046 eV for3D residual learning versus
-0.121892 for the additive linear model. Difference-0.005846 eV has descriptive
-parent interval[-0.019163,0.004945]. The graph residual is essentially identical
-to linear. Residual learning retains a gain over uniform/force selection but
-does not establish added neural value. Stop expanding these frozen one-edit
-networks. The successful simple policy remains a useful baseline; AI novelty,
-complete-chain gain and submission readiness remain unresolved. Read current
-`research/CHEMICAL_WORK_POLICY_STATE_20260913.json` and NEXT.
+# Claude continuation — cooperative interaction learning
 
 Active checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
-`iclr2027-arch-fix`. Read `research/NEXT.md` and current state before action.
-Never write home or merge the FlowMol/oracle environments. User priority is AI
-framework plus rapid evidence; optimizer recovery remains paused.
+`iclr2027-arch-fix`. Never write home or merge the FlowMol/oracle environments.
+Read current NEXT, state and theory note before running anything.
 
-Current source of truth: `research/CHEMICAL_WORK_POLICY_STATE_20260913.json`.
-The new paired finite-work model and normalized forward/reverse edit policy are
-IMPLEMENTED, trained and fully audited. Both seeds and all linear/graph/3D
-controls are retained. On18 existing evaluation-only parents, exact one-step
-corrected utility is0.070621 eV for uniform selection,0.062508 for cached force,
-0.121892 for linear bond learning (seed mean), and0.088391 for3D learning.
-Linear-minus-uniform is+0.051271 eV, descriptive parent interval[0.011624,0.099495].
-The3D-minus-linear interval spans zero and its point is worse by0.033501 eV.
-No distinctive useful neural contribution is established. These are one-step
-expectations over actual molecular catalogues, NOT complete-chain, equilibrium,
-wall-time or data-cost superiority. The evaluation uses498 raw queries,231 valid
-edits and20 failed edits;1,848 physical MH ratios and the complete trace replay.
-No new training labels were queried. The training audit replays all12 models
-and5,364 pair reversals. Jobs46258095/46258563/46258596 are all COMPLETE0:0.
-Read current NEXT; retain the simple learned policy as a strong baseline. Stop
-scaling the frozen3D recipe. AI novelty remains the priority, optimizer recovery
-stays paused, and evaluated parents/722 reserved outcomes remain outside fitting.
-The full ICLR goal remains active and scientifically unachieved.
+CURRENT: read `research/EDIT_INTERACTION_STATE_20260913.json`, `research/NEXT.md`
+and `notes/cooperative_interaction_work_v1.md`.
 
-The next action is a bounded representation experiment that includes the
-successful additive work baseline and learns only the non-additive3D part.
-Do not call a generic neural residual or standard informed MCMC new by itself.
-All code, exact model paths, split restrictions and validation commands are in
-NEXT and `notes/chemical_work_policy_candidate_v1.md`. No fresh data is required
-to start. Keep every negative result. Do not fit the18 or original12 evaluation
-parents or query the722 reserved outcomes. Full-chain gains and relevant learned
-generator comparisons remain future evidence gates for the actual paper claims.
-Authors/submission stay with user. No ICLR acceptance/readiness claim is warranted.
+The cooperative-interaction prototype is implemented and fully tested. Four-state
+FIT data reveal real electronic coupling (parent-balanced mean absolute0.16419 eV).
+All12 interaction models train/replay; the internal diagnostic has18 fit/9 held
+parents, with9 original parents having no pair kept separately. Full models fit27
+parents. The3D radial-contrast representation learns coupling; environmental
+conditioning has no demonstrated advantage over simpler models.
+
+A fixed-root-block pilot is complete and retained: many matchings are equivalent
+under same-element atom relabelling, and utility differences are negligible.
+The retained-panel kernel now chooses across different root blocks, uses the
+SAME panel in the reverse normalizer, and treats coupling as a symmetric edge
+preference, NOT a directional total-work correction. All physical states and
+4,400 MH ratios replay. This gives small2--4% point improvements within the
+cooperative family, with uncertainty and no contextual-network superiority.
+The strongest single-edit learned method still has higher mean one-step utility.
+There is no overall generator/chain advantage or ICLR-readiness claim.
+
+All current jobs are COMPLETE0:0:46296885/46297013 labels/audit,46297734 training,
+46299227/46299395 fixed-block evaluation/audit,46299770/46299887 panel replay/audit.
+This stage used1,770 new raw calls (934 labels+836 endpoint evaluation); panel
+re-evaluation used zero. Keep722 reserved outcomes unqueried and evaluated parents
+out of fitting. Optimizer recovery and old single-edit neural scale-up stay paused.
+The full ICLR goal is active and scientifically unachieved.
+
+The concrete next task is the bounded complete-chain comparison in NEXT. The
+cooperative candidate is implemented and has a small within-family signal;
+it has not surpassed the strong single-edit energy-descent result. Preserve both
+facts. Do not invent a novel general principle from auxiliary MH, pairwise mixed
+differences or composed moves. Do not refit evaluated parents or cherry-pick
+neural comparisons over the stronger typed-radial control. Authors/submission
+stay with the user. The user prioritizes core AI value and fast evidence, with
+no universal-success or optimizer-cleanup prerequisite.

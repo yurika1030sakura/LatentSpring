@@ -1,5 +1,34 @@
 # Current research status — September 13, 2026 UTC
 
+CURRENT: read `research/EDIT_INTERACTION_STATE_20260913.json`, `research/NEXT.md`
+and `notes/cooperative_interaction_work_v1.md`.
+
+The cooperative-interaction prototype is implemented and fully tested. Four-state
+FIT data reveal real electronic coupling (parent-balanced mean absolute0.16419 eV).
+All12 interaction models train/replay; the internal diagnostic has18 fit/9 held
+parents, with9 original parents having no pair kept separately. Full models fit27
+parents. The3D radial-contrast representation learns coupling; environmental
+conditioning has no demonstrated advantage over simpler models.
+
+A fixed-root-block pilot is complete and retained: many matchings are equivalent
+under same-element atom relabelling, and utility differences are negligible.
+The retained-panel kernel now chooses across different root blocks, uses the
+SAME panel in the reverse normalizer, and treats coupling as a symmetric edge
+preference, NOT a directional total-work correction. All physical states and
+4,400 MH ratios replay. This gives small2--4% point improvements within the
+cooperative family, with uncertainty and no contextual-network superiority.
+The strongest single-edit learned method still has higher mean one-step utility.
+There is no overall generator/chain advantage or ICLR-readiness claim.
+
+All current jobs are COMPLETE0:0:46296885/46297013 labels/audit,46297734 training,
+46299227/46299395 fixed-block evaluation/audit,46299770/46299887 panel replay/audit.
+This stage used1,770 new raw calls (934 labels+836 endpoint evaluation); panel
+re-evaluation used zero. Keep722 reserved outcomes unqueried and evaluated parents
+out of fitting. Optimizer recovery and old single-edit neural scale-up stay paused.
+The full ICLR goal is active and scientifically unachieved.
+
+Earlier entries below are preserved historical checkpoints.
+
 LATEST (September13): the frozen-linear-backbone residual comparison is DONE.
 All8 residual models replay with unchanged additive coefficients and3,576 pair
 reversals. Re-evaluation uses ZERO new oracle queries, replaying the existing498

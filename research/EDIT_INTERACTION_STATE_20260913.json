@@ -1,0 +1,323 @@
+{
+  "updated_at_utc": "2026-09-13T21:12:29.658387+00:00",
+  "goal_status": "active",
+  "scientific_submission_ready": false,
+  "previous_checkpoint": "research/CHEMICAL_WORK_POLICY_STATE_20260913.json",
+  "user_priority": "AI framework and fast molecular evidence, not universal optimization or all-case perfection.",
+  "candidate": "Counterfactual four-state interaction learning for symmetric cooperative-edit preferences, selected across a retained random candidate panel",
+  "note": "notes/cooperative_interaction_work_v1.md",
+  "physical_interaction": {
+    "summary": "research/evidence/chemical_edit_interaction_summary_v1.json",
+    "sha256": "83a761e18db6b4390093a04160ab36dec59f9b1a4c30bf1ba20afd6ca17d8004",
+    "original_fit_parents": 36,
+    "parents_with_pairs": 27,
+    "zero_pair_parents": 9,
+    "selected_pairs": 450,
+    "valid_pairs": 440,
+    "invalid_pairs": 10,
+    "new_raw_queries": 934,
+    "parent_balanced_mean_abs_electronic_interaction_eV": 0.1641877371960632,
+    "electronic_sign_flips": 24,
+    "both_singles_uphill_joint_downhill": 1
+  },
+  "learning": {
+    "summary": "research/evidence/interaction_work_training_summary_v1.json",
+    "sha256": "5e62dcc062067a48190b6be7c6b342f5e0907ec04573db65126ac6e2e7adeb9e",
+    "models": 12,
+    "variants": [
+      "linear",
+      "blind",
+      "environment"
+    ],
+    "seeds": 2,
+    "diagnostic_fit_parents": 18,
+    "diagnostic_withheld_parents": 9,
+    "full_fit_parents": 27,
+    "reversal_checks": 5280,
+    "new_raw_queries": 0,
+    "diagnostic_zero_MAE_eV": 0.19950732349836459,
+    "diagnostic_models": [
+      {
+        "replica": 0,
+        "variant": "linear",
+        "diagnostic": {
+          "MAE_eV": 0.16672313279323114,
+          "MSE_eV2": 0.06654567918783942,
+          "oracle_single_joint_sign_accuracy": 0.9895833333333334
+        }
+      },
+      {
+        "replica": 0,
+        "variant": "blind",
+        "diagnostic": {
+          "MAE_eV": 0.15566307839557647,
+          "MSE_eV2": 0.07380812022995155,
+          "oracle_single_joint_sign_accuracy": 0.9710648148148149
+        }
+      },
+      {
+        "replica": 0,
+        "variant": "environment",
+        "diagnostic": {
+          "MAE_eV": 0.15492302017830073,
+          "MSE_eV2": 0.07094196716875616,
+          "oracle_single_joint_sign_accuracy": 0.9674805854241337
+        }
+      },
+      {
+        "replica": 1,
+        "variant": "linear",
+        "diagnostic": {
+          "MAE_eV": 0.17025048026849254,
+          "MSE_eV2": 0.08066195142652548,
+          "oracle_single_joint_sign_accuracy": 0.9605361409796893
+        }
+      },
+      {
+        "replica": 1,
+        "variant": "blind",
+        "diagnostic": {
+          "MAE_eV": 0.15545209724465395,
+          "MSE_eV2": 0.07321202803990186,
+          "oracle_single_joint_sign_accuracy": 0.9641203703703705
+        }
+      },
+      {
+        "replica": 1,
+        "variant": "environment",
+        "diagnostic": {
+          "MAE_eV": 0.15789516083490332,
+          "MSE_eV2": 0.07758150673924792,
+          "oracle_single_joint_sign_accuracy": 0.9675925925925927
+        }
+      }
+    ]
+  },
+  "transfer_error": {
+    "summary": "research/evidence/interaction_work_transfer_error_v1.json",
+    "sha256": "af309d3b9f25ed5c905946d410925222b9ebfcae38f467e737f339a4864a56d2",
+    "parents_with_observations": 15,
+    "original_evaluation_parents": 18,
+    "parent_balanced_MAE_eV": {
+      "blind_interaction_s0": 0.16734038640377352,
+      "blind_interaction_s1": 0.155781947636662,
+      "environment_interaction_s0": 0.17361088593463955,
+      "environment_interaction_s1": 0.15945008892639886,
+      "linear_interaction_s0": 0.14148604743164767,
+      "linear_interaction_s1": 0.13816068304294976,
+      "zero": 0.19222142467928457
+    },
+    "new_raw_queries": 0
+  },
+  "fixed_block_evaluation": {
+    "summary": "research/evidence/cooperative_edit_evaluation_summary_v1.json",
+    "sha256": "2710f24d295f796291df4184aa2162f0837bddb2bc63f7fae9d1bc56fadf6c62",
+    "parents": 18,
+    "new_raw_queries": 836,
+    "full_replay": true,
+    "independent_MH_checks": 4400,
+    "conclusion": "Negligible added interaction utility in the fixed-root-block comparison. Many matchings differ only by same-element atom labels; keep this complete negative result."
+  },
+  "panel_evaluation": {
+    "summary": "research/evidence/cooperative_panel_evaluation_summary_v1.json",
+    "sha256": "713cdb916df4865789ae7b7956e6ddb15dbb2da83d10a21ec47c734fd4f7835a",
+    "parents": 18,
+    "zero_eligible_parents": 3,
+    "valid_endpoints": 400,
+    "new_raw_queries": 0,
+    "reused_raw_queries": 836,
+    "full_replay": true,
+    "independent_MH_checks": 4400,
+    "mean_one_step": {
+      "uniform": {
+        "utility_eV": 0.05130366145172804,
+        "acceptance": 0.17076752649988003,
+        "constitutional_flow": 0.1638204650659979
+      },
+      "linear_s0": {
+        "utility_eV": 0.08767506892226884,
+        "acceptance": 0.28272718735149555,
+        "constitutional_flow": 0.2811406818325016
+      },
+      "restraint_s0": {
+        "utility_eV": 0.0876372026378043,
+        "acceptance": 0.28258256937275766,
+        "constitutional_flow": 0.281006668300199
+      },
+      "linear_interaction_s0": {
+        "utility_eV": 0.09129908955764085,
+        "acceptance": 0.29799705343622684,
+        "constitutional_flow": 0.2964607886170915
+      },
+      "blind_interaction_s0": {
+        "utility_eV": 0.09014432081159403,
+        "acceptance": 0.28770315076169084,
+        "constitutional_flow": 0.2863815802697075
+      },
+      "environment_interaction_s0": {
+        "utility_eV": 0.09031563818249456,
+        "acceptance": 0.28713285314133946,
+        "constitutional_flow": 0.28577261278385746
+      },
+      "linear_s1": {
+        "utility_eV": 0.08614437050303064,
+        "acceptance": 0.27830123548426927,
+        "constitutional_flow": 0.2767147336887318
+      },
+      "restraint_s1": {
+        "utility_eV": 0.08610552389119676,
+        "acceptance": 0.2781365468127288,
+        "constitutional_flow": 0.2765606493608552
+      },
+      "linear_interaction_s1": {
+        "utility_eV": 0.08855975053735796,
+        "acceptance": 0.2982868388071463,
+        "constitutional_flow": 0.29662115436185144
+      },
+      "blind_interaction_s1": {
+        "utility_eV": 0.08831683043972599,
+        "acceptance": 0.29013581101750224,
+        "constitutional_flow": 0.28829540990648583
+      },
+      "environment_interaction_s1": {
+        "utility_eV": 0.08789970372426961,
+        "acceptance": 0.28545737633465523,
+        "constitutional_flow": 0.2834712458188783
+      }
+    },
+    "family_seed_means": {
+      "linear": {
+        "utility_eV": 0.08690971971264974,
+        "acceptance": 0.2805142114178824,
+        "constitutional_flow": 0.2789277077606167
+      },
+      "restraint": {
+        "utility_eV": 0.08687136326450054,
+        "acceptance": 0.28035955809274327,
+        "constitutional_flow": 0.27878365883052714
+      },
+      "linear_interaction": {
+        "utility_eV": 0.0899294200474994,
+        "acceptance": 0.29814194612168654,
+        "constitutional_flow": 0.29654097148947145
+      },
+      "blind_interaction": {
+        "utility_eV": 0.08923057562566,
+        "acceptance": 0.2889194808895965,
+        "constitutional_flow": 0.28733849508809667
+      },
+      "environment_interaction": {
+        "utility_eV": 0.0891076709533821,
+        "acceptance": 0.28629511473799735,
+        "constitutional_flow": 0.28462192930136787
+      }
+    },
+    "comparisons": {
+      "linear minus uniform": {
+        "mean_utility_difference_eV": 0.0356060582609217,
+        "per_seed_difference_eV": [
+          0.0363714074705408,
+          0.0348407090513026
+        ],
+        "descriptive_parent_bootstrap95": [
+          0.005103508535732645,
+          0.07465960875785878
+        ]
+      },
+      "restraint minus linear": {
+        "mean_utility_difference_eV": -3.835644814919536e-05,
+        "per_seed_difference_eV": [
+          -3.78662844645275e-05,
+          -3.884661183387448e-05
+        ],
+        "descriptive_parent_bootstrap95": [
+          -0.00013322031199933192,
+          3.173313079425496e-05
+        ]
+      },
+      "linear_interaction minus restraint": {
+        "mean_utility_difference_eV": 0.0030580567829988662,
+        "per_seed_difference_eV": [
+          0.003661886919836541,
+          0.0024542266461611943
+        ],
+        "descriptive_parent_bootstrap95": [
+          -0.000289128439619391,
+          0.006913724900486849
+        ]
+      },
+      "blind_interaction minus restraint": {
+        "mean_utility_difference_eV": 0.0023592123611594577,
+        "per_seed_difference_eV": [
+          0.0025071181737897157,
+          0.002211306548529215
+        ],
+        "descriptive_parent_bootstrap95": [
+          0.0002870995709955047,
+          0.004939853281600449
+        ]
+      },
+      "environment_interaction minus restraint": {
+        "mean_utility_difference_eV": 0.002236307688881532,
+        "per_seed_difference_eV": [
+          0.002678435544690238,
+          0.0017941798330728394
+        ],
+        "descriptive_parent_bootstrap95": [
+          -3.178329921129061e-05,
+          0.005046331586135714
+        ]
+      },
+      "environment_interaction minus linear": {
+        "mean_utility_difference_eV": 0.002197951240732337,
+        "per_seed_difference_eV": [
+          0.0026405692602257105,
+          0.0017553332212389648
+        ],
+        "descriptive_parent_bootstrap95": [
+          -5.881900209008637e-05,
+          0.004999530941088691
+        ]
+      },
+      "environment_interaction minus linear_interaction": {
+        "mean_utility_difference_eV": -0.0008217490941173335,
+        "per_seed_difference_eV": [
+          -0.000983451375146303,
+          -0.0006600468130883547
+        ],
+        "descriptive_parent_bootstrap95": [
+          -0.003770962762791748,
+          0.0030251923017414763
+        ]
+      },
+      "environment_interaction minus blind_interaction": {
+        "mean_utility_difference_eV": -0.00012290467227792562,
+        "per_seed_difference_eV": [
+          0.00017131737090052247,
+          -0.0004171267154563751
+        ],
+        "descriptive_parent_bootstrap95": [
+          -0.0014122433504108777,
+          0.0008753753698537581
+        ]
+      }
+    },
+    "scope": "Choose the entire cooperative edit across a retained random panel of type-admissible root blocks; normalize over the same panel at both endpoints. The panel draw law is invariant under the edit. Reuse all836 physical responses from the fixed-block pilot with exact position-query matching; zero new oracle calls. Panels/data/models fixed, all18 evaluation parents and empty panels retained. One-step development evidence only, not complete-chain superiority or established AI novelty."
+  },
+  "interpretation": "Physical interactions are nonzero and learnable. Panel selection has small positive interaction signals within its cooperative family, with both seeds positive. Contextual neural coefficients do not outperform the simpler interaction models. The earlier strong single-edit linear policy has higher mean one-step utility (0.121892 eV versus about0.08993 for the best-point cooperative interaction model), so no overall generation/sampling advantage is established. Relative-family gains, repeated-development intervals and offline errors must not be presented as ICLR readiness.",
+  "novelty_status": "Specific interaction representation and proposal allocation remain candidate contributions. Mixed differences, Delta learning, auxiliary MH, locally informed weights and composed paths have prior art. No general new physics law or AI novelty certificate claimed.",
+  "new_raw_queries_this_stage": 1770,
+  "jobs": {
+    "interaction_labels": "46296885 COMPLETED",
+    "interaction_audit": "46297013 COMPLETED",
+    "learning": "46297734 COMPLETED",
+    "fixed_block": "46299227 COMPLETED",
+    "fixed_block_audit": "46299395 COMPLETED",
+    "panel": "46299770 COMPLETED",
+    "panel_audit": "46299887 COMPLETED"
+  },
+  "all_current_work_terminal": true,
+  "optimizer_recovery_paused": true,
+  "reserved_conditions_unqueried": 722,
+  "next": "Retain the simple learned interaction representation and all strong controls. Test cooperative moves in a bounded complete-chain comparison including the strong single-edit learned policy and cheap physical moves. Define the finite-temperature exploration/basin-transition hypothesis before outcomes; one-step energy descent is not evidence of mixing. Reuse existing audited starting states; no optimizer cleanup gate. Include compute and data costs; do not scale the contextual network or tune on evaluation labels."
+}

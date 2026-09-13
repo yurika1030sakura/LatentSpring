@@ -1,56 +1,33 @@
 # BGFM project guide
 
-LATEST (September13): the frozen-linear-backbone residual comparison is DONE.
-All8 residual models replay with unchanged additive coefficients and3,576 pair
-reversals. Re-evaluation uses ZERO new oracle queries, replaying the existing498
-raw responses on18 development parents. All old control outcomes match and all
-2,772 physical MH ratios replay. Jobs46294068/46294447/46294481 are COMPLETE0:0.
+CURRENT: read `research/EDIT_INTERACTION_STATE_20260913.json`, `research/NEXT.md`
+and `notes/cooperative_interaction_work_v1.md`.
 
-The two-seed mean one-step utility is0.116046 eV for3D residual learning versus
-0.121892 for the additive linear model. Difference-0.005846 eV has descriptive
-parent interval[-0.019163,0.004945]. The graph residual is essentially identical
-to linear. Residual learning retains a gain over uniform/force selection but
-does not establish added neural value. Stop expanding these frozen one-edit
-networks. The successful simple policy remains a useful baseline; AI novelty,
-complete-chain gain and submission readiness remain unresolved. Read current
-`research/CHEMICAL_WORK_POLICY_STATE_20260913.json` and NEXT.
+The cooperative-interaction prototype is implemented and fully tested. Four-state
+FIT data reveal real electronic coupling (parent-balanced mean absolute0.16419 eV).
+All12 interaction models train/replay; the internal diagnostic has18 fit/9 held
+parents, with9 original parents having no pair kept separately. Full models fit27
+parents. The3D radial-contrast representation learns coupling; environmental
+conditioning has no demonstrated advantage over simpler models.
 
-Current source of truth: `research/CHEMICAL_WORK_POLICY_STATE_20260913.json`.
-The new paired finite-work model and normalized forward/reverse edit policy are
-IMPLEMENTED, trained and fully audited. Both seeds and all linear/graph/3D
-controls are retained. On18 existing evaluation-only parents, exact one-step
-corrected utility is0.070621 eV for uniform selection,0.062508 for cached force,
-0.121892 for linear bond learning (seed mean), and0.088391 for3D learning.
-Linear-minus-uniform is+0.051271 eV, descriptive parent interval[0.011624,0.099495].
-The3D-minus-linear interval spans zero and its point is worse by0.033501 eV.
-No distinctive useful neural contribution is established. These are one-step
-expectations over actual molecular catalogues, NOT complete-chain, equilibrium,
-wall-time or data-cost superiority. The evaluation uses498 raw queries,231 valid
-edits and20 failed edits;1,848 physical MH ratios and the complete trace replay.
-No new training labels were queried. The training audit replays all12 models
-and5,364 pair reversals. Jobs46258095/46258563/46258596 are all COMPLETE0:0.
-Read current NEXT; retain the simple learned policy as a strong baseline. Stop
-scaling the frozen3D recipe. AI novelty remains the priority, optimizer recovery
-stays paused, and evaluated parents/722 reserved outcomes remain outside fitting.
-The full ICLR goal remains active and scientifically unachieved.
+A fixed-root-block pilot is complete and retained: many matchings are equivalent
+under same-element atom relabelling, and utility differences are negligible.
+The retained-panel kernel now chooses across different root blocks, uses the
+SAME panel in the reverse normalizer, and treats coupling as a symmetric edge
+preference, NOT a directional total-work correction. All physical states and
+4,400 MH ratios replay. This gives small2--4% point improvements within the
+cooperative family, with uncertainty and no contextual-network superiority.
+The strongest single-edit learned method still has higher mean one-step utility.
+There is no overall generator/chain advantage or ICLR-readiness claim.
 
-Current update: read `research/EDIT_MOBILITY_STATE_20260913.json`. The initial
-paired-regression bridge failed, while selective graph mobility with actual-work
-training has repeated one-step gains over scalar adaptation. Strict128-query
-chains do not yet establish a benefit. All96 chains are complete and replayed.
-Next evaluate frozen models on18 new physical starting states across six
-compositions; their preparation is frozen/submitted. No optimizer-cleanup
-prerequisite and no fitting on evaluated/722 reserved outcomes. Older current-
-status paragraphs below are historical where superseded.
+All current jobs are COMPLETE0:0:46296885/46297013 labels/audit,46297734 training,
+46299227/46299395 fixed-block evaluation/audit,46299770/46299887 panel replay/audit.
+This stage used1,770 new raw calls (934 labels+836 endpoint evaluation); panel
+re-evaluation used zero. Keep722 reserved outcomes unqueried and evaluated parents
+out of fitting. Optimizer recovery and old single-edit neural scale-up stay paused.
+The full ICLR goal is active and scientifically unachieved.
 
-Latest update: training46215808 is COMPLETE for all six models. Edit-conditioned
-and blind collective fitting errors are nearly equal; no clear conditioning
-benefit is established. Root-only fitting error is lower. Final model hashes and
-matched sampled-index/direction streams are checked. Next test actual molecular
-proposals; neither fitting MSE nor these core tests prove a useful AI contribution.
-
-Updated 2026-09-12 after bounded accepted-utility and fresh-proposal audits. Read
-`audit/20260908/REVIEW.md` before interpreting any result as Boltzmann sampling.
+Status statements in the historical milestones below are superseded by the current state file.
 
 ## Active takeover branch
 

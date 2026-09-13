@@ -1,107 +1,100 @@
-# Current AI work — residual comparison closed, core added value unresolved
+# Next — validate cooperative interaction learning in the full sampler
 
-LATEST (September13): the frozen-linear-backbone residual comparison is DONE.
-All8 residual models replay with unchanged additive coefficients and3,576 pair
-reversals. Re-evaluation uses ZERO new oracle queries, replaying the existing498
-raw responses on18 development parents. All old control outcomes match and all
-2,772 physical MH ratios replay. Jobs46294068/46294447/46294481 are COMPLETE0:0.
+CURRENT: read `research/EDIT_INTERACTION_STATE_20260913.json`, `research/NEXT.md`
+and `notes/cooperative_interaction_work_v1.md`.
 
-The two-seed mean one-step utility is0.116046 eV for3D residual learning versus
-0.121892 for the additive linear model. Difference-0.005846 eV has descriptive
-parent interval[-0.019163,0.004945]. The graph residual is essentially identical
-to linear. Residual learning retains a gain over uniform/force selection but
-does not establish added neural value. Stop expanding these frozen one-edit
-networks. The successful simple policy remains a useful baseline; AI novelty,
-complete-chain gain and submission readiness remain unresolved. Read current
-`research/CHEMICAL_WORK_POLICY_STATE_20260913.json` and NEXT.
+The cooperative-interaction prototype is implemented and fully tested. Four-state
+FIT data reveal real electronic coupling (parent-balanced mean absolute0.16419 eV).
+All12 interaction models train/replay; the internal diagnostic has18 fit/9 held
+parents, with9 original parents having no pair kept separately. Full models fit27
+parents. The3D radial-contrast representation learns coupling; environmental
+conditioning has no demonstrated advantage over simpler models.
 
-The residual experiment formerly listed as NEXT is complete; do not rerun it.
-Current summary: `research/evidence/chemical_work_residual_evaluation_summary_v1.json`.
-Training: `runs/chemical_work_residual_training_v1/s{0,1}/full_fit/{graph_residual,geometry_residual}/model.pt`.
-Re-evaluation/audit: `runs/chemical_work_residual_evaluation{,_audit}_v1`.
-All sources, checkpoints, protocol hashes and unchanged controls replay. No jobs
-from this work are running now; verify Slurm before any recovery decision.
+A fixed-root-block pilot is complete and retained: many matchings are equivalent
+under same-element atom relabelling, and utility differences are negligible.
+The retained-panel kernel now chooses across different root blocks, uses the
+SAME panel in the reverse normalizer, and treats coupling as a symmetric edge
+preference, NOT a directional total-work correction. All physical states and
+4,400 MH ratios replay. This gives small2--4% point improvements within the
+cooperative family, with uncertainty and no contextual-network superiority.
+The strongest single-edit learned method still has higher mean one-step utility.
+There is no overall generator/chain advantage or ICLR-readiness claim.
 
-Next bounded research task:
-1. Keep the demonstrated additive work selector as the strong learned baseline.
-   Stop adding capacity or generic residual losses to the same one-edit recipe.
-2. Define a useful AI mechanism beyond additive edit ranking. One candidate to
-   assess is learned coordination based on the interaction work of multiple
-   edits, where independent bond scores miss coupling. This is a proposed
-   direction, not an implemented or established novel method.
-3. Before claiming that direction, compare explicitly with the ICLR2022
-   [Path Auxiliary Proposal](https://openreview.net/pdf?id=JSR-YDImK95), which
-   already composes local moves and gives an efficient energy-linearized variant.
-   Generic multi-edit paths, endpoint MH and learned residuals are not new.
-   The required distinction must be the learned interaction mechanism and useful
-   real molecular behavior beyond a corresponding simple/path control.
-4. Specify one small FIT-only demonstration and its controls before more costly
-   training. No evaluated18/12 parents or722 reserved outcomes enter fitting.
-   No all-case optimization, full static map or new physics law is a prerequisite.
-   Do not present repeated development comparisons as untouched final tests.
-5. Preserve the positive simple-learning result and all negative neural results.
-   Later paper claims still need complete-chain and appropriate learned-generator
-   comparisons with data/preparation/inference cost accounting. Current one-step
-   potential reduction is not a certified molecular energy distribution.
+All current jobs are COMPLETE0:0:46296885/46297013 labels/audit,46297734 training,
+46299227/46299395 fixed-block evaluation/audit,46299770/46299887 panel replay/audit.
+This stage used1,770 new raw calls (934 labels+836 endpoint evaluation); panel
+re-evaluation used zero. Keep722 reserved outcomes unqueried and evaluated parents
+out of fitting. Optimizer recovery and old single-edit neural scale-up stay paused.
+The full ICLR goal is active and scientifically unachieved.
 
-Previous completed-step details follow for reproducibility only:
+Completed method and evidence:
+- `cfm_mol/chemical_edit_interaction.py`: commuting double edits, mixed electronic
+  work, known COM-restraint cross term and intrinsic map volume.
+- `cfm_mol/interaction_work_model.py`: four-corner radial contrasts with typed
+  linear, context-blind neural and environmental coefficients. Reversing one
+  edit negates interaction; reversing both preserves it. Do not add interaction
+  directly to directional work; use the symmetric affinity implementation.
+- `cfm_mol/cooperative_edit_policy.py`: type-admissible root blocks, complete valid
+  matchings and retained random panels. The panel draw law is invariant under
+  the prescribed edit, so it cancels. Forward/reverse catalogue probabilities
+  must still both be recomputed. Empty panels are self-loops.
+- `scripts/research/evaluate_cooperative_edits.py`: physical evaluation and
+  query-exact panel re-evaluation. `summarize_cooperative_edits.py` consumes only
+  complete audited outputs. The two scopes are different kernels; their physical
+  responses match, while their selection outcomes need not.
 
-# Current AI-method work — a useful simple baseline, neural value unresolved
+Latest quantitative limits:
+- Original36 FIT parents:27 have pairs,9 have none.450 selected pairs,440 valid,
+  10 failures.24/440 reverse the sign of an oracle-additive work estimate; only
+  one has both singles uphill and the joint edit downhill. This is mechanism
+  data, not evidence that all proposals bypass a barrier.
+- Internal zero-interaction MAE0.1995 eV; typed radial0.1667/0.1703; blind neural
+  0.1557/0.1555; environment0.1549/0.1579. On15 supported evaluation parents,
+  zero0.1922, typed radial0.1415/0.1382, blind0.1673/0.1558, environment0.1736/0.1595.
+  No evaluated endpoint label was fitted. Keep the simple radial model as a
+  strong control instead of selecting only a favorable neural comparison.
+- Mean panel one-step utility: uniform0.051304, additive linear0.086910,
+  restraint-only0.086871, radial interaction0.089929, blind interaction0.089231,
+  environment0.089108 eV. The blind-minus-restraint descriptive interval is
+  [0.000287,0.004940]; radial/environment intervals cross zero. These are small
+  repeatedly evaluated development signals, not a model-selection certificate.
+- Prior strong single-edit linear utility was0.121892 eV on the same18 starts.
+  The current cooperative operator does not win that energy-descent comparison.
+  The six-composition denominator retains three parents with no double edit.
 
-Read `research/CHEMICAL_WORK_POLICY_STATE_20260913.json` and
-`research/evidence/chemical_work_policy_evaluation_summary_v1.json`.
-User priority remains differentiated AI plus fast molecular evidence. No all-case
-perfection or optimizer recovery prerequisite. The ICLR goal remains active.
+Next bounded experiment (not yet implemented or submitted):
+1. Integrate the existing cooperative panel kernel into a short complete-chain
+   comparison with the same background moves, query caps and starting states.
+   Include strong single-edit linear selection and cheap physical root-noise
+   moves, cooperative linear selection, typed radial coupling and blind coupling.
+   Environmental-network scale-up is not the priority.
+2. State the finite-temperature exploration/basin-transition hypothesis before
+   seeing new outcomes, and also retain energy descent and query/wall-time costs.
+   A cooperative shortcut may affect exploration differently from early energy
+   descent, but that is presently a hypothesis, not a reason to discard the
+   negative single-edit comparison or select favorable molecules.
+3. Reuse audited existing source/late-chain checkpoints where appropriate;
+   no all-case optimizer cleanup or new static map is required. Freeze the
+   source role/selection and protocol before queries. Fit no evaluation parent
+   and query none of the722 reserved outcomes. Choose a small fixed budget,
+   two seeds and matched controls; no acceptance/ICLR promise.
+4. If no material complete-chain advantage emerges, stop scaling this recipe.
+   Generic mixed differences, composed paths, auxiliary MH and learned radial
+   coefficients are prior art building blocks. The useful learned mechanism and
+   comparisons must support the paper's actual novelty claim.
 
-1. The paired masked-context model is IMPLEMENTED in `cfm_mol/chemical_work.py`.
-   Both moved atoms are removed from passive encoding. A shared two-root decoder
-   evaluates both placements; their difference reverses sign. The graph-only
-   ablation removes geometric inputs except the known restraint. The additive
-   typed-bond model is a strong learned control. No one-pass cache across active
-   masks or global cycle consistency is claimed.
-2. Two seeds of all three variants each have24/12-parent diagnostic fits and
-   separate36-parent full fits,400 fixed steps each. All12 models and their
-   identical parent streams replay. No new labels:447 existing valid FIT edits.
-   Internal3D MAE0.683/0.704 eV loses to linear0.566/0.565 eV. Full models must
-   not be evaluated as held-out on the internal12, since those enter full fits.
-3. `cfm_mol/chemical_work_policy.py` enumerates the actual valid catalogue and
-   recomputes normalized reverse probabilities. Forward inference has no true
-   candidate E/F. The force control may use the physically scored selected
-   endpoint force for its reverse probability. Uniform mixture=.1; actual map
-   volume remains explicit. Eight focused tests pass.
-4. The18-parent molecular evaluation is COMPLETE,498 new raw calls,231 valid
-   and20 invalid actions. All catalogue endpoints were scored FOR EVALUATION;
-   no deployed oracle-assisted forward ranking is implied. Exact one-step
-   expected utility is0.070621 uniform,0.062508 force,0.121892 linear (two-seed
-   mean),0.082167 graph and0.0883913D. Linear beats uniform/force in this limited
-   comparison;3D has no established advantage over uniform, graph or linear.
-   Full replay and1,848 independent physical MH ratios pass. Keep all cases.
-5. Retain linear work selection as the strong learned baseline. The next compact
-   neural hypothesis should include that additive predictor explicitly and
-   learn the non-additive3D residual, using the same split and a frozen bounded
-   protocol. This is an architectural repair, not by itself a novelty claim.
-   Require a useful representation contribution beyond linear/graph controls
-   before expanding experiments or rewriting the paper around it. Do not tune
-   on evaluation labels. No further labels are needed to start that prototype.
-6. A later full-chain experiment must compare against valid-catalogue uniform,
-   cached force, linear work and the effective bare/root-noise controls, count
-   data/preparation and inference costs, and retain appropriate generator
-   comparisons for the paper. One-step work selection is not evidence of target
-   energy-distribution sampling or a complete generation improvement.
-7. Original12 and new18 evaluation parents are development/evaluation-only;
-   never fit them.722 reserved outcomes remain unqueried. The user's priority
-   does not require new physics laws, universal perfection or optimizer cleanup.
+Key artifacts:
+- State: `research/EDIT_INTERACTION_STATE_20260913.json`.
+- Data: `runs/chemical_edit_interaction_plan_v1`, `runs/chemical_edit_interaction_v1`,
+  `runs/chemical_edit_interaction_audit_v1`.
+- Models: `runs/interaction_work_training_v1/s{0,1}/full_fit/{linear,blind,environment}/model.pt`.
+- Fixed-block outputs: `runs/cooperative_edit_evaluation{,_audit}_v1`.
+- Panel outputs: `runs/cooperative_panel_evaluation{,_audit}_v1`.
+- Evidence summaries: `chemical_edit_interaction_summary_v1.json`,
+  `interaction_work_training_summary_v1.json`, `interaction_work_transfer_error_v1.json`,
+  `cooperative_edit_evaluation_summary_v1.json`, `cooperative_panel_evaluation_summary_v1.json`
+  under `research/evidence/`. All former results and source snapshots remain.
 
-Artifacts:
-- Training: `runs/chemical_work_training_v1`, protocol and summary named
-  `research/evidence/chemical_work_training_{protocol,summary}_v1.json`.
-- Molecular evaluation: `runs/chemical_work_policy_evaluation_v1`; full replay:
-  `runs/chemical_work_policy_evaluation_audit_v1`; protocol/summary in evidence.
-- Model files: `runs/chemical_work_training_v1/s{0,1}/full_fit/{linear,graph,geometry}/model.pt`.
-- Reproducible audit scripts: `scripts/research/audit_chemical_work_training.py`
-  and `scripts/research/summarize_chemical_work_policy.py`; use new output paths.
-
-All current jobs are terminal:46258095 training,46258563 evaluation,46258596 audit.
-Re-query Slurm before recovery. No automatic rerun or model scaling is authorized
-by a stale status paragraph. The old mobility result and manuscript stay archived;
-no PDF-formatting work is needed before useful AI evidence.
+No project jobs are running at this checkpoint; re-query Slurm before recovery.
+The old manuscript is a development draft and needs later rewriting around an
+actually supported method. Do not spend the next step polishing its layout.
