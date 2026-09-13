@@ -12,10 +12,11 @@ from scripts.research.audit_masked_angular import sha
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ['project','run','audit','out']:p.add_argument('--'+name,type=Path,required=True)
-    a=p.parse_args();root=Path(__file__).resolve().parents[2];pp=root/'research/evidence/mobility_relaxation_protocol_v1.json';protocol=json.loads(pp.read_text())
+    p.add_argument('--protocol',type=Path,default=Path('research/evidence/mobility_relaxation_protocol_v1.json'))
+    a=p.parse_args();root=Path(__file__).resolve().parents[2];pp=root/a.protocol;protocol=json.loads(pp.read_text())
     physical_path=root/protocol['physical_protocol'];assert sha(physical_path)==protocol['physical_protocol_sha256']
     restraint=json.loads(physical_path.read_text())['restraint_eV_A2']
-    pairs=[];arms=[];provenance={};calls=initial=checked=0
+    pairs=[];arms=[];provenance={};calls=initial=checked=new_calls=0
     numerical=[];readouts={str(cap):[] for cap in protocol['options']['readouts']}
     for index in protocol['condition_indices']:
         directory=a.run/f'condition_{index:02d}';rp=directory/'results.json';ap=a.audit/f'condition_{index:02d}/results.json'
@@ -23,9 +24,14 @@ def main():
         assert r['complete'] and audit['complete'] and audit['full_replay'] and audit['all_raw_potentials_and_forces_reconstructed']
         assert r['protocol_sha256']==audit['protocol_sha256']==sha(pp) and audit['source_results_sha256']==sha(rp)
         assert sha(directory/'trace.pt')==r['trace_sha256']==audit['trace_sha256']
-        assert r['new_raw_queries']==r['requested_raw_queries']==audit['raw_queries_in_producer']
+        assert r['new_raw_queries']==r['requested_raw_queries']
+        cumulative=r.get('cumulative_raw_queries',r['new_raw_queries'])
+        assert cumulative==r.get('requested_cumulative_raw_queries',r['requested_raw_queries'])==audit['raw_queries_in_producer']
+        if 'cumulative_raw_queries' in r:
+            assert r['original_prefix_replayed_and_preserved'] and audit['original_prefix_replayed_and_preserved']
+            assert cumulative==r['inherited_raw_queries']+r['new_raw_queries']
         saved=torch.load(directory/'trace.pt',map_location='cpu',weights_only=False)
-        calls+=r['new_raw_queries'];initial+=r['initial_raw_queries'];provenance[str(index)]=dict(results_sha256=sha(rp),audit_sha256=sha(ap),trace_sha256=r['trace_sha256'])
+        calls+=cumulative;new_calls+=r['new_raw_queries'];initial+=r['initial_raw_queries'];provenance[str(index)]=dict(results_sha256=sha(rp),audit_sha256=sha(ap),trace_sha256=r['trace_sha256'])
         checked+=audit['queried_trials_checked']
         numerical.append(dict(index=index,repeat_energy_error_eV=r['repeat_energy_error_eV'],repeat_force_error_eV_A=r['repeat_force_error_eV_A'],
             maximum_archived_gap_error_eV=max(v['archived_gap_error_eV'] for v in r['initial_comparisons']),
@@ -62,7 +68,8 @@ def main():
                     gap_change_collective_minus_roots_eV=collective_gap-root_gap,
                     optimization_raw_queries=2*sum(min(cap,v['evaluations']) for v in raw_group),
                     early_stopped_arms=sum(v['evaluations']<cap for v in raw_group)))
-    assert len(pairs)==32 and len(arms)==128 and calls<=protocol['maximum_total_new_raw_calls']
+    maximum=protocol.get('maximum_total_cumulative_raw_calls',protocol['maximum_total_new_raw_calls'])
+    assert len(pairs)==32 and len(arms)==128 and calls<=maximum and new_calls<=protocol['maximum_total_new_raw_calls']
     assert checked*2==calls-initial==sum(v['raw_calls'] for v in arms)
     keys=['initial_gap_eV','roots_gap_eV','collective_gap_eV','gap_change_collective_minus_roots_eV','source_collective_minus_roots_eV','destination_collective_minus_roots_eV']
     summaries={k:mean(p[k] for p in pairs) for k in keys};rng=random.Random(26111)
@@ -71,8 +78,9 @@ def main():
     intervals={}
     for key in keys:
         values=np.array([p[key] for p in pairs]);b=np.sort(values[samples].mean(1));intervals[key]=[float(b[125]),float(b[4875])]
-    result=dict(complete=True,protocol_sha256=sha(pp),provenance=provenance,new_raw_queries=calls,initial_repeat_raw_queries=initial,
-        optimization_raw_queries=calls-initial,maximum_raw_queries=protocol['maximum_total_new_raw_calls'],pairs=pairs,arms=arms,
+    result=dict(complete=True,protocol_sha256=sha(pp),provenance=provenance,new_raw_queries=new_calls,cumulative_raw_queries=calls,
+        inherited_raw_queries=calls-new_calls,initial_repeat_raw_queries=initial,
+        optimization_raw_queries=calls-initial,maximum_raw_queries=maximum,maximum_new_raw_queries=protocol['maximum_total_new_raw_calls'],pairs=pairs,arms=arms,
         independently_checked_optimization_queries=checked,numerical_consistency=numerical,
         cap_readouts={cap:dict(pairs=values,mean={key:mean(v[key] for v in values) for key in ['roots_gap_eV','collective_gap_eV','gap_change_collective_minus_roots_eV']},
             optimization_raw_queries=sum(v['optimization_raw_queries'] for v in values),early_stopped_arms=sum(v['early_stopped_arms'] for v in values)) for cap,values in readouts.items()},

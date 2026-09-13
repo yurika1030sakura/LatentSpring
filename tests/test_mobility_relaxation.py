@@ -1,4 +1,6 @@
 import torch
+import copy
+import pytest
 from cfm_mol.mobility_relaxation import mobility_basis,relax_arms
 
 
@@ -83,3 +85,42 @@ def test_real_graph_optimizer_replays_all_queries_and_independent_checks():
     equal(actual,saved);assert replay.index==len(replay.queries)
     checks=independent_audit(saved,.1,protocol['options'])
     assert checks['queried_trials_checked']==sum(a['evaluations'] for a in saved['arms'])>0
+    from scripts.research.continue_mobility_relaxation import resume
+    frozen=copy.deepcopy(saved);extended_options=dict(protocol['options'],max_evaluations=8,readouts=[2,4,8])
+    extended,counts=resume(first,saved,extended_options);assert counts['new_raw_queries']>0
+    replay=ReplayOracle(extended['query_trace']);replay_target=target(replay)
+    prefix=run(replay_target,rows,protocol);equal(prefix,frozen)
+    replayed,replayed_counts=resume(replay_target,prefix,extended_options)
+    equal(replayed,extended);equal(replayed_counts,counts)
+    assert replay.index==len(replay.queries)
+    independent_audit(extended,.1,extended_options)
+
+
+def test_resume_reaches_same_quadratic_points_without_repeating_prefix_queries():
+    from scripts.research.audit_masked_angular import equal
+    x=torch.tensor([[.15,.02,0],[-.02,.10,0],[-.03,-.05,.04],[-.1,-.07,-.04]],dtype=torch.float64)
+    def setup():
+        target=QuadraticTarget(torch.zeros_like(x));target.evaluate([target.coordinate_state(x),target.coordinate_state(x*.8)],phase='initial')
+        return target,[dict(pair_id=0,parent=0,roots=[0,1],source_state_id=0,destination_state_id=1)]
+    full,pairs=setup();reference=relax_arms(full,pairs,options())
+    target,pairs=setup();prefix=relax_arms(target,pairs,options(max_evaluations=2,readouts=[]));snapshot=copy.deepcopy(prefix)
+    before=target.oracle.evaluated;states=copy.deepcopy(target.states)
+    continued=relax_arms(target,pairs,options(),resume_arms=prefix)
+    equal(prefix,snapshot);equal(target.states[:len(states)],states)
+    assert target.oracle.evaluated-before==2*sum(a['evaluations']-b['evaluations'] for a,b in zip(continued,prefix))
+    for a,b in zip(continued,reference):
+        assert a['status']==b['status'] and a['evaluations']==b['evaluations']
+        torch.testing.assert_close(target.states[a['best_state_id']]['positions'],full.states[b['best_state_id']]['positions'],atol=1e-12,rtol=0)
+
+
+def test_resume_preserves_terminal_boundary_stops_and_rejects_same_cap():
+    from scripts.research.audit_masked_angular import equal
+    x=torch.zeros(4,3,dtype=torch.float64);centre=x.clone();centre[0,0]=.3;centre[1:,0]=-.1
+    target=QuadraticTarget(centre,limit=.03);target.evaluate([target.coordinate_state(x),target.coordinate_state(x)],phase='initial')
+    pairs=[dict(pair_id=0,parent=0,roots=[0,1],source_state_id=0,destination_state_id=1)]
+    prefix=relax_arms(target,pairs,options(max_evaluations=128));assert all(a['status'] in ['step_too_small','line_search_blocked'] for a in prefix)
+    before=target.oracle.evaluated;continued=relax_arms(target,pairs,options(max_evaluations=256),resume_arms=prefix)
+    equal(continued,prefix);assert target.oracle.evaluated==before
+    capped=copy.deepcopy(prefix);capped[0]['status']='budget_exhausted'
+    with pytest.raises(ValueError,match='cap must increase'):
+        relax_arms(target,pairs,options(max_evaluations=capped[0]['evaluations']),resume_arms=capped)

@@ -1,5 +1,6 @@
 """Bounded topology-preserving optimization diagnostics, NOT a sampler."""
 import math
+import copy
 import torch
 from cfm_mol.nonequilibrium import centered_orthonormal_basis
 
@@ -38,26 +39,39 @@ def lbfgs_direction(g,history,initial_scale):
 
 
 @torch.no_grad()
-def relax_arms(target,pairs,options):
+def relax_arms(target,pairs,options,*,resume_arms=None):
     """Batch Armijo trials across independent source/destination mobility arms.
 
     target.states must contain fresh initial energy/force states. All queried
     candidates remain in target.states/query_trace, including rejected trials.
     Geometry probes retain their positions/reasons and incur no oracle calls.
     """
-    arms=[]
-    for pair in pairs:
-        for endpoint in ['source','destination']:
-            initial_id=pair[endpoint+'_state_id'];initial=target.states[initial_id]
-            for mode in ['roots','collective']:
-                basis=mobility_basis(len(initial['positions']),pair['roots'],mode)
-                g,residual=gradient(initial,basis,target.restraint)
-                arms.append(dict(pair_id=pair['pair_id'],parent=pair['parent'],endpoint=endpoint,mobility=mode,
-                    initial_state_id=initial_id,current_state_id=initial_id,best_state_id=initial_id,
-                    basis=basis,origin=initial['positions'].clone(),frozen_bonds=initial['graph']['bond_orders'].clone(),
-                    history=[],search=None,evaluations=0,geometry_probes=0,accepted_steps=0,
-                    status='converged_initial' if residual<=options['force_tolerance_eV_A'] else 'active',events=[],checkpoints=[]))
-    round_index=0
+    if resume_arms is None:
+        arms=[]
+        for pair in pairs:
+            for endpoint in ['source','destination']:
+                initial_id=pair[endpoint+'_state_id'];initial=target.states[initial_id]
+                for mode in ['roots','collective']:
+                    basis=mobility_basis(len(initial['positions']),pair['roots'],mode)
+                    g,residual=gradient(initial,basis,target.restraint)
+                    arms.append(dict(pair_id=pair['pair_id'],parent=pair['parent'],endpoint=endpoint,mobility=mode,
+                        initial_state_id=initial_id,current_state_id=initial_id,best_state_id=initial_id,
+                        basis=basis,origin=initial['positions'].clone(),frozen_bonds=initial['graph']['bond_orders'].clone(),
+                        history=[],search=None,evaluations=0,geometry_probes=0,accepted_steps=0,
+                        status='converged_initial' if residual<=options['force_tolerance_eV_A'] else 'active',events=[],checkpoints=[]))
+        round_index=0
+    else:
+        arms=copy.deepcopy(resume_arms)
+        expected={(p['pair_id'],end,mode,p[end+'_state_id']) for p in pairs
+                  for end in ['source','destination'] for mode in ['roots','collective']}
+        actual={(a['pair_id'],a['endpoint'],a['mobility'],a['initial_state_id']) for a in arms}
+        if len(arms)!=len(expected) or actual!=expected:raise ValueError('Resume arms do not match declared pairs')
+        for arm in arms:
+            if arm['status']=='active':raise ValueError('Resume only a terminal bounded run')
+            if arm['status']=='budget_exhausted':
+                if options['max_evaluations']<=arm['evaluations']:raise ValueError('Continuation cap must increase')
+                arm['status']='active'
+        round_index=max((event['round'] for arm in arms for event in arm['events']),default=-1)+1
     while any(a['status']=='active' for a in arms):
         pending=[]
         for arm in arms:
