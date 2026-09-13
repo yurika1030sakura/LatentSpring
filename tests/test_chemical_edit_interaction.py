@@ -42,3 +42,27 @@ def test_interaction_sign_and_exact_restraint_cross_term():
 def test_reject_overlapping_edits():
     x,r,a,b=example()
     with pytest.raises(ValueError):four_positions(x,r,a,(0,3,6,7))
+
+
+@pytest.mark.parametrize('kind',['linear','blind','environment'])
+def test_interaction_representation_four_state_symmetries(kind):
+    from cfm_mol.chemical_edit_interaction import four_graphs
+    from cfm_mol.interaction_work_model import InteractionWorkModel
+    x,r,a,b=example();corners,_,(ia,ib)=four_positions(x,r,a,b)
+    numbers=torch.tensor([1,17,1,9,6,7,8,16]);electronic=torch.tensor([[0.,1.,.026]],dtype=x.dtype)
+    graph=torch.zeros(8,8,dtype=x.dtype)
+    for leaf,anchor in [(0,4),(1,5),(2,6),(3,7),(4,5),(5,6),(6,7)]:graph[leaf,anchor]=graph[anchor,leaf]=1.
+    graphs=four_graphs(graph,a,b);actions=torch.tensor([[a,b]])
+    m=InteractionWorkModel(sorted(set(numbers.tolist())),hidden=8,radial=6,linear=kind=='linear',environment=kind=='environment').double()
+    with torch.no_grad():
+        if kind=='linear':m.coefficients.normal_()
+        else:m.coefficient_head[-1].weight.normal_(0,.2)
+    value=m(corners[None],graphs[None],numbers,electronic,actions)
+    for order,aa in [([1,0,3,2],[ia,b]),([2,3,0,1],[a,ib])]:
+        torch.testing.assert_close(m(corners[order][None],graphs[order][None],numbers,electronic,torch.tensor([aa])),-value,atol=1e-10,rtol=0)
+    torch.testing.assert_close(m(corners[[0,2,1,3]][None],graphs[[0,2,1,3]][None],numbers,electronic,actions.flip(1)),value,atol=1e-10,rtol=0)
+    q=torch.linalg.qr(torch.randn(3,3,dtype=x.dtype))[0]
+    torch.testing.assert_close(m((corners@q+3)[None],graphs[None],numbers,electronic,actions),value,atol=1e-10,rtol=0)
+    perm=torch.tensor([4,2,7,0,6,3,5,1]);inv=perm.argsort()
+    torch.testing.assert_close(m(corners[:,perm][None],graphs[:,perm][:,:,perm][None],numbers[perm],electronic,inv[actions]),value,atol=1e-10,rtol=0)
+    value.sum().backward();assert any(p.grad is not None and bool((p.grad!=0).any()) for p in m.parameters())
