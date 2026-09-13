@@ -1,5 +1,9 @@
 # Paired mobility result and next decision
 
+Subsequent128-cap continuation and boundary energy results are complete; read
+`notes/mobility_relaxation_continuation_decision_v1.md` and the current NEXT.
+The original protocol and results below are retained.
+
 The frozen 32-pair, 128-arm diagnostic is complete. Producer46212367 and
 audit46212970 are COMPLETED 0:0, with 5,564 new raw physical calls versus the
 8,448 cap. Four full replays and independent force, geometry, COM, passive-

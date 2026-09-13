@@ -1,0 +1,10 @@
+{
+  "complete": true,
+  "analysis": "scripts/research/audit_mobility_boundaries.py",
+  "observed_error": "ValueError: Valence of atom 4 is 2, which is larger than the allowed maximum, 1",
+  "observation_source": "Execution output while auditing the completed128-cap traces; this record is a transcription, not an original stderr file.",
+  "cause": "The first boundary inspector assumed all geometry-supported rejected probes could be assigned a chemical graph. A newly encountered minimum-step stop fails chemical perception itself.",
+  "repair": "Retain chemical_perception_failure as an explicit category and reconstruct contact-threshold changes. Preserve all14 stopped arms.",
+  "completed_evidence": "research/evidence/mobility_relaxation_boundaries_v2.json",
+  "new_physical_queries": 0
+}

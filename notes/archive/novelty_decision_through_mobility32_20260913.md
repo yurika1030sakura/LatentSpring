@@ -1,16 +1,5 @@
 # Current contribution decision — September 13, 2026 UTC
 
-Latest evidence: `research/MOBILITY_CONTINUATION_RESULT_20260913.json`.
-The128-cap continuation improves collective convergence to46/64 but leaves the
-paired energy-gap contrast inconclusive. Actual boundary checks give12/14
-resolved decreases for distance-adjusted steps and2 increases, at94 raw calls.
-This identifies an optimizer repair opportunity, not useful AI novelty or a
-sampler advantage. Next qualify constraint-aware energy backtracking while
-retaining all19 remaining arms and the full128-arm denominator. Read
-`notes/mobility_relaxation_continuation_decision_v1.md`.
-
-The earlier checkpoints below retain the failed screen and32-cap evidence.
-
 Matched gate-target pretraining and a larger48-parent internal cohort are now
 complete and audited. Pretraining fails to improve the original selection result.
 On the larger cohort, no screen establishes a gain over no screening; slightly

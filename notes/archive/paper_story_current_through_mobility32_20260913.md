@@ -1,16 +1,5 @@
 # Current paper story — September 13, 2026 UTC
 
-Latest evidence: `research/MOBILITY_CONTINUATION_RESULT_20260913.json`.
-The128-cap continuation improves collective convergence to46/64 but leaves the
-paired energy-gap contrast inconclusive. Actual boundary checks give12/14
-resolved decreases for distance-adjusted steps and2 increases, at94 raw calls.
-This identifies an optimizer repair opportunity, not useful AI novelty or a
-sampler advantage. Next qualify constraint-aware energy backtracking while
-retaining all19 remaining arms and the full128-arm denominator. Read
-`notes/mobility_relaxation_continuation_decision_v1.md`.
-
-The earlier checkpoints below retain the failed screen and32-cap evidence.
-
 A frozen OMol25 flow-matching initializer supplies coordinates. Explicit
 reversible geometry/connectivity proposals and corrected acceptance target the
 declared restrained, inversion-averaged eSEN distribution on algorithmic support.
@@ -45,7 +34,7 @@ Development entrypoint: `paper/angular_working.tex`, including
 PDF. The paper remains scientifically unready. Prior story:
 `notes/archive/paper_story_current_through_source_force_screen_20260913.md`.
 
-Verified development PDF: `runs/verification/mobility_continuation_boundary_20260913/main.pdf`
-(9 main pages,26 total). Build evidence:
-`research/evidence/mobility_continuation_boundary_build_20260913.json`. Scientific
+Verified development PDF: `runs/verification/mobility_relaxation_20260913/main.pdf`
+(9 main pages,25 total). Build evidence:
+`research/evidence/mobility_relaxation_build_20260913.json`. Scientific
 submission readiness remains false.

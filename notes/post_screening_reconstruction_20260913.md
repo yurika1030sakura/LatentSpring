@@ -1,5 +1,9 @@
 # Decision after matched gate training and larger-cohort validation
 
+Subsequent128-cap continuation and boundary energy results are complete; read
+`notes/mobility_relaxation_continuation_decision_v1.md` and the current NEXT.
+The original protocol and results below are retained.
+
 The matched800-step gate experiment is complete. Pretraining loses to direct
 utility on the original12 selection parents. On the larger reused48-parent,
 six-composition cohort, the pretrained neural models have small positive point

@@ -1,36 +1,8 @@
 # Current research status — September 13, 2026 UTC
 
-Authoritative checkpoint: `research/MOBILITY_CONTINUATION_RESULT_20260913.json`.
+Authoritative checkpoint: `research/MOBILITY_RELAXATION_RESULT_20260913.json`.
 The full ICLR goal is active and scientifically unachieved. The completed matched
 training and larger-cohort checks establish no useful screening advantage.
-
-## Completed continuation and boundary check
-
-The128-cap continuation replays all original physical queries and extends all53
-budget-exhausted arms. It adds3,768 calls, for9,332 cumulative; all4,538 cumulative
-optimization trials pass full replay and independent checks. Root convergence
-is63/64, collective46/64, and20/32 pairs have all four arms converged. Fourteen
-minimum-step stops and five capped arms remain. The mean collective-minus-root
-paired gap is -0.08786 eV with interval [-0.23315,0.07213], still inconclusive.
-
-Boundary reconstruction identifies9 disconnection cases,4 graph changes and1
-chemical-perception failure. Both raw and distance-adjusted force directions are
-frozen for all14 stops. All28 rows are retained;19 geometry-feasible candidates
-and fresh/repeated source evaluations cost94 raw calls. Every query replays and
-all47 physical states are independently reconstructed. At the frozen1e-5 eV
-threshold, adjusted directions give12 decreases and2 increases. Raw force gives
-zero resolved decreases,one increase,four changes within tolerance andnine
-geometry failures. The adjusted mean decrease is0.06921 eV, but it is a diagnostic
-on selected optimizer failures, not a sampling or learning benchmark.
-
-These results support repairing boundary-aware search and actual-energy
-backtracking. They do not establish constrained stationarity, chemical minimum-
-energy gaps, a valid new sampler or useful AI novelty. All four new jobs are
-terminal:46213860,46213924,46214280,46214323. This turn adds3,862 physical calls;
-the cumulative mobility and boundary cost is9,426. Read
-`notes/mobility_relaxation_continuation_decision_v1.md` before further recovery.
-
-The following32-cap diagnostic is the retained earlier checkpoint.
 
 ## Paired mobility diagnostic
 
@@ -108,15 +80,19 @@ The larger-cohort ranking does not support raising confidence in ICLR readiness.
 
 ## Decision and next work
 
-Implement and test a constraint-aware optimizer recovery with real-energy
-backtracking; freeze one bounded recovery of all19 remaining arms before new
-queries. Preserve all128 arms, original data and failed candidates. The target
-and electronic states stay unchanged. No next recovery protocol/job is submitted.
-Optimization does not supply a valid sampling density. Screening-only scaling
-remains stopped; the full ICLR method and independent benchmark gates remain.
-Prior status: `notes/archive/status_through_mobility32_20260913.md`.
+Resolve optimization convergence and saved constraint stops before building a
+new learned transport. A continuation would require frozen caps and cached-prefix
+replay for all budget-exhausted arms; no continuation is submitted yet. Keep
+minimum-step failures and converged controls. Do not change the physical target
+or confuse uncontrolled relaxation with a valid MH proposal.
 
-Verified development PDF: `runs/verification/mobility_continuation_boundary_20260913/main.pdf`
-(9 main pages,26 total). Build evidence:
-`research/evidence/mobility_continuation_boundary_build_20260913.json`. Scientific
+Screening-only tuning remains stopped. The earlier gate/transfer round used
+zero new physical calls; the mobility diagnostic adds 5,564. All older negative
+evidence and costs remain. The 722 reserved outcomes and every evaluated cohort
+stay out of fitting. The paper remains scientifically unready. Prior status:
+`notes/archive/status_through_gate_transfer_20260913.md`.
+
+Verified development PDF: `runs/verification/mobility_relaxation_20260913/main.pdf`
+(9 main pages,25 total). Build evidence:
+`research/evidence/mobility_relaxation_build_20260913.json`. Scientific
 submission readiness remains false.

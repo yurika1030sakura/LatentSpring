@@ -63,3 +63,41 @@ Optimization alone is not a valid transition proposal: a subsequent sampler
 would require its actual proposal density and Jacobian or a fully accounted
 reversible auxiliary path. No learned sampling or equilibrium advantage is
 claimed from these endpoints.
+
+\paragraph{Frozen continuation.}
+We subsequently extend all 53 budget-exhausted arms to at most 128 cumulative
+candidate evaluations each. The other 75 arms remain unchanged. Cached physical
+queries are replayed, retaining optimizer histories and partial searches. The
+continuation uses 3,768 additional raw calls, for 9,332 cumulative calls; all
+4,538 cumulative queried optimization trials pass full replay and independent
+checks. Root-only convergence rises to 63/64 and collective convergence to
+46/64; all four arms converge for 20/32 pairs. Five collective arms remain
+budget-exhausted and 14 arms stop at the minimum step. The all-pair root-only
+and collective gaps are now 0.59453 and 0.50666\,eV. Their paired difference is
+$-0.08786$\,eV with descriptive interval $[-0.23315,0.07213]$. More optimization
+therefore improves convergence without establishing an exchange-specific
+collective advantage. Original shorter-budget results and costs are retained.
+
+\paragraph{Boundary stops are not convergence.}
+Saved rejected probes identify nine disconnection boundaries, four frozen-graph
+changes and one chemical-perception failure. We compare two deterministic
+directions at all 14 stops: projected COM force, and the same force with outward
+components removed at the observed active pair-distance boundaries. A small
+inward component and geometry-only step halving retain the original graph. This
+construction supplies candidate directions, not a new sampler or a stationarity
+certificate. Both directions and their exact coordinates are frozen before
+physical evaluation; no energy-based backtracking is used in this diagnostic.
+
+The distance-adjusted direction has a feasible candidate at all 14 stops, versus
+five for unadjusted force; nine infeasible rows remain in the denominator.
+Fresh and repeated evaluation of the 14 source states costs 56 raw calls, and
+the 19 feasible candidate evaluations cost 38, for 94 total. All four independent
+audits replay the queries and reconstruct every physical state. Using the frozen
+$10^{-5}$\,eV resolution threshold, 12/14 distance-adjusted candidates decrease
+the potential and two increase it. Unadjusted force has zero resolved decreases,
+one resolved increase and four changes within the tolerance. Thus 12 stops admit
+nearby feasible points with lower potential, while first-order force prediction alone is
+insufficient for finite steps. The two increases require preservation and actual
+energy backtracking in any subsequent optimizer. These classical diagnostic
+repairs do not establish useful AI novelty, converged chemical minima or a
+sampling advantage.
