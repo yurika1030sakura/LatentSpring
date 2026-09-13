@@ -102,7 +102,7 @@ def main():
     for name in ('project', 'out', 'protocol'): parser.add_argument('--'+name, type=Path, required=True)
     for name in ('run', 'oracle-python', 'oracle-checkpoint'): parser.add_argument('--'+name, type=Path)
     parser.add_argument('--index', type=int, required=True)
-    parser.add_argument('--phase', choices=['evaluate', 'audit'], required=True)
+    parser.add_argument('--phase', choices=['evaluate', 'reevaluate', 'audit'], required=True)
     args = parser.parse_args(); root = Path(__file__).resolve().parents[2]
     pp, protocol, physical, _, condition, sources = inputs(root, args.project, args.index, root/args.protocol)
     models = load_models(args.project, protocol)
@@ -112,9 +112,18 @@ def main():
                   scientific_submission_ready=False, scope=protocol['interpretation'])
     write(output, report); oracle = target = None; start = time.monotonic()
     try:
-        if args.phase == 'audit':
+        if args.phase in ('audit', 'reevaluate'):
             producer = json.loads((args.run/'results.json').read_text())
-            assert producer['complete'] and producer['protocol_sha256'] == sha(pp) and sha(args.run/'trace.pt') == producer['trace_sha256']
+            assert producer['complete'] and sha(args.run/'trace.pt') == producer['trace_sha256']
+            if args.phase == 'audit':
+                assert producer['protocol_sha256'] == sha(pp)
+            else:
+                prior_path = root/protocol['reused_evaluation_protocol']
+                assert sha(prior_path) == protocol['reused_evaluation_protocol_sha256'] == producer['protocol_sha256']
+                prior = json.loads(prior_path.read_text())
+                for key in ('physical_protocol', 'physical_protocol_sha256', 'sources', 'counts', 'uniform_fraction'):
+                    assert prior[key] == protocol[key]
+                for name, spec in prior['work_models'].items(): assert protocol['work_models'][name] == spec
             expected = torch.load(args.run/'trace.pt', map_location='cpu', weights_only=False)
             oracle = ReplayOracle(expected['query_trace'])
         else:
@@ -132,9 +141,18 @@ def main():
             report.update(complete=True, full_replay=True, source_results_sha256=sha(args.run/'results.json'),
                           trace_sha256=producer['trace_sha256'], producer_raw_queries=oracle.evaluated, independent_ratio_checks=checks)
         else:
-            assert oracle.evaluated == oracle.requested_evaluations
+            if args.phase == 'reevaluate':
+                assert oracle.index == len(oracle.queries)
+                equal(actual['states'], expected['states']); equal(actual['query_trace'], expected['query_trace'])
+                old_methods = set(prior['work_models']) | {'uniform', 'force'}
+                equal([row for row in actual['action_rows'] if row['method'] in old_methods], expected['action_rows'])
+                report.update(reused_raw_queries=oracle.evaluated, reused_trace_sha256=producer['trace_sha256'],
+                              reused_results_sha256=sha(args.run/'results.json'), unchanged_control_replay=True)
+            else:
+                assert oracle.evaluated == oracle.requested_evaluations
             torch.save(actual, args.out/'trace.pt')
-            report.update(complete=True, trace_sha256=sha(args.out/'trace.pt'), new_raw_queries=oracle.evaluated,
+            report.update(complete=True, trace_sha256=sha(args.out/'trace.pt'), physical_calls_in_trace=oracle.evaluated,
+                new_raw_queries=0 if args.phase == 'reevaluate' else oracle.evaluated,
                 rows=[{k:v for k,v in row.items() if k!='failed'} for row in actual['rows']], independent_ratio_checks=checks)
         report['elapsed_seconds'] = time.monotonic()-start; write(output, report)
         print(json.dumps({k:v for k,v in report.items() if k!='rows'}), flush=True)
