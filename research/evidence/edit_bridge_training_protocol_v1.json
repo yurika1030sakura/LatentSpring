@@ -1,0 +1,41 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-13T03:00:04.489362+00:00",
+  "data_run": "runs/edit_bridge_data_v1",
+  "data_sha256": "93b8ba13ab8520e618483dabaf356e9ac509acfc29a27db49edb9f8d9ce73cba",
+  "data_results_sha256": "753d7a11c13e82683112fbcf21dc83f26cb740d823d169beed5e3a2a8a957892",
+  "variants": [
+    "edit_collective",
+    "blind_collective",
+    "edit_roots"
+  ],
+  "seeds": [
+    28111,
+    28112
+  ],
+  "metric_seed": 28121,
+  "model": {
+    "hidden": 16,
+    "radial": 8,
+    "layers": 2,
+    "force_scale": 40.0
+  },
+  "bridge": {
+    "steps_per_side": 2,
+    "kick_step": 0.2,
+    "drift_step": 0.02
+  },
+  "steps": 300,
+  "batch_size": 2,
+  "learning_rate": 0.001,
+  "gradient_clip": 10.0,
+  "position_scale_A": 0.1,
+  "momentum_weight": 0.05,
+  "training_objective": "Bidirectional paired-coordinate regression plus auxiliary momentum regularization. Every selected FIT parent and six capped readouts retained. This is supervised transport pretraining, not a new objective theorem or a Boltzmann density fit.",
+  "selection": "All32 FIT parents in four compositions; no independent-evaluation or reserved outcomes. Identical sample/noise streams and initialization seed for the three ablations within each replica.",
+  "new_physical_queries": 0,
+  "inherited_mobility_teacher_raw_queries": 9332,
+  "inherited_source_and_proposal_data_costs_additional": true,
+  "success_gate": "Pretraining is a fast architecture screen only. Freeze final weights, then test actual corrected proposals on the pre-existing12 internal evaluation parents with all failures and true endpoint energy costs, followed by short chains if signal exists. No global optimization or perfect-case prerequisite.",
+  "scientific_submission_ready": false
+}
