@@ -1,33 +1,8 @@
 # Current research status — September 13, 2026 UTC
 
-Authoritative checkpoint: `research/MOBILITY_RELAXATION_RESULT_20260913.json`.
+Authoritative checkpoint: `research/GATE_DISTILLATION_RESULT_20260913.json`.
 The full ICLR goal is active and scientifically unachieved. The completed matched
 training and larger-cohort checks establish no useful screening advantage.
-
-## Paired mobility diagnostic
-
-All four producer cases and audits are complete: 32 FIT parents, 128 arms,
-5,564 raw calls (256 shared initial/repeat, 1,638 roots, 3,670 collective).
-The 8,448-call cap is respected. Full replay and independent physical/constraint/
-Armijo checks cover all 2,654 queried optimization trials; a separate compact-
-result reconstruction checks all pair contrasts, means, costs and stop counts.
-
-Initial mean destination-source gap is 1.30174 eV; best bounded root-only and
-collective gaps are 0.62051 and 0.54324 eV. Their paired difference is -0.07727 eV,
-with descriptive within-composition parent interval [-0.22250, 0.08523].
-Collective mobility lowers destinations an additional 1.10282 eV, but sources
-also improve by 1.02555 eV. This does not establish a specific exchange benefit.
-
-Root-only arms: 59 converged, four budget exhausted, one minimum-step stop.
-Collective arms: five converged, 49 budget exhausted, ten minimum-step stops.
-Only 2/32 pairs have all four arms converged. Equal caps do not mean equal actual
-cost or optimization accuracy. Neither intrinsic chemical minimum-energy gaps
-nor the usefulness of collective geometry is resolved. This is optimization,
-not a sampler, equilibrium result or AI contribution.
-
-Jobs46212367 and46212970 are terminal. Summary:
-`runs/mobility_relaxation_summary_v1/results.json`. Read
-`notes/mobility_relaxation_decision_v1.md` for the next bounded diagnostic.
 
 ## Matched gate pretraining
 
@@ -80,19 +55,23 @@ The larger-cohort ranking does not support raising confidence in ICLR readiness.
 
 ## Decision and next work
 
-Resolve optimization convergence and saved constraint stops before building a
-new learned transport. A continuation would require frozen caps and cached-prefix
-replay for all budget-exhausted arms; no continuation is submitted yet. Keep
-minimum-step failures and converged controls. Do not change the physical target
-or confuse uncontrolled relaxation with a valid MH proposal.
+Stop tuning/scaling the tested screening-only recipes. Inspect existing
+whole-COM escorted paths before another collective proposal: v1/v2 accepted
+only4/64 paths per replica even when the graph guide repaired endpoint support.
+A new diagnostic must separate intrinsic chemical energy gaps, geometry limits
+and path/proposal-density costs. Matched root-only versus collective relaxation
+of BOTH source and destination can be informative, but only as teacher feasibility
+with explicit convergence/support/failure accounting. No new protocol or physical
+job is frozen/submitted. See `notes/post_screening_reconstruction_20260913.md`.
 
-Screening-only tuning remains stopped. The earlier gate/transfer round used
-zero new physical calls; the mobility diagnostic adds 5,564. All older negative
-evidence and costs remain. The 722 reserved outcomes and every evaluated cohort
-stay out of fitting. The paper remains scientifically unready. Prior status:
-`notes/archive/status_through_gate_transfer_20260913.md`.
+Jobs46203103,46203225,46206100 and46206282 are complete. This round has zero new
+physical calls; prior data construction and numerical repair costs remain.
+All older scalar, geometry, action, strong-control and transfer negatives remain.
+The722 reserved outcomes and every evaluated cohort stay out of fitting. The
+paper remains scientifically unready. Prior status:
+`notes/archive/status_through_source_force_screen_20260913.md`.
 
-Verified development PDF: `runs/verification/mobility_relaxation_20260913/main.pdf`
-(9 main pages,25 total). Build evidence:
-`research/evidence/mobility_relaxation_build_20260913.json`. Scientific
+Verified development PDF: `runs/verification/gate_distillation_transfer_20260913/main.pdf`
+(9 main pages,24 total). Build evidence:
+`research/evidence/gate_distillation_transfer_build_20260913.json`. Scientific
 submission readiness remains false.

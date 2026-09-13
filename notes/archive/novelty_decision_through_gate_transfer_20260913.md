@@ -15,15 +15,14 @@ measured. The larger cohort is reused internal evaluation and must not enter
 fitting. The full goal still requires a distinct useful learned method with
 real sampling gains, complete costs and strong physical/learned baselines.
 
-The paired source/destination mobility diagnostic is now complete and audited.
-Its collective-minus-root gap change is -0.07727 eV with an interval spanning
-zero. Destination relaxation is accompanied by similar source relaxation, and
-only five of 64 collective arms converge under the 32-query cap. This is
-inconclusive teacher feasibility, not a collective sampler or useful AI result.
-Resolve optimization and constraint stops before choosing a new architecture.
-Read `research/MOBILITY_RELAXATION_RESULT_20260913.json` and
-`notes/mobility_relaxation_decision_v1.md`. Existing escorted-path failures remain;
-no extension or learned transport is qualified by this diagnostic.
+Next diagnose the proposal limitation before constructing another network.
+Whole-COM escorted paths already exist and their negative results remain.
+Separate geometry constraints, intrinsic chemical energy gaps and proposal/path
+probabilities; a matched source/destination mobility diagnostic may inform the
+choice. Large frozen-atom forces alone do not prove a bottleneck, and additional
+relaxation does not by itself define a valid sampler. See
+`notes/post_screening_reconstruction_20260913.md`. No new diagnostic protocol,
+physical run or learned transport method is yet qualified.
 
 Do not change the success metric, select a favorable control/condition, fit on
 evaluated cohorts or query the722 reserved outcomes merely to create a positive

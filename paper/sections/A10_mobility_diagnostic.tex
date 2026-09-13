@@ -1,0 +1,65 @@
+\section{Paired mobility diagnostic after the screening experiments}
+\label{app:mobility-diagnostic}
+
+To distinguish restricted proposal geometry from generic relaxation of imperfect
+initial states, we optimize both the source and exchanged destination of each
+recorded pair. Hash selection chooses one supported pair from each of 32 distinct
+fitting parents, eight in each of four compositions, without energy or acceptance
+selection. Thirty pairs change canonical connectivity; all 32 are retained.
+Each endpoint retains its own original perceived bond-order graph, charge and
+spin. The declared restrained, inversion-averaged potential is unchanged.
+
+Each source and destination has two optimization arms: moving the two exchanged
+terminal atoms in the COM subspace while preserving passive relative coordinates,
+or moving all COM degrees of freedom. Both use orthonormal charts, L-BFGS with
+Armijo backtracking, a 0.05\,\AA\ per-atom step cap and at most 32 candidate energy
+evaluations per arm. The projected force stopping threshold is
+0.05\,eV/\AA. Geometry and graph rejections, energy rejections and early stops are
+retained. Initial energies and forces are freshly evaluated, shared across the
+two mobility arms and repeated to check numerical consistency.
+
+For mobility choice $m$, define the bounded observed gap
+$\Delta_m=U(y_m)-U(x_m)$, using each arm's best feasible queried point, including
+its initial point. The contrast $\Delta_{\mathrm{collective}}-
+\Delta_{\mathrm{roots}}$ removes the source's generic relaxation improvement.
+It does not compare converged minima unless all contributing arms converge.
+
+\begin{center}
+\small
+\begin{tabular}{lrr}
+\toprule
+Quantity & Mean (eV) & Descriptive 95\% interval \\
+\midrule
+Initial destination--source gap & 1.3017 & [0.9787, 1.6823] \\
+Root-only relaxed gap & 0.6205 & [0.3967, 0.8560] \\
+Collective relaxed gap & 0.5432 & [0.3264, 0.7701] \\
+Collective minus root-only gap & $-0.0773$ & [$-0.2225$, 0.0852] \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Intervals resample the eight parents within each of the four fixed compositions
+5,000 times; they are descriptive internal evidence, not generalization intervals
+over chemical space. Collective motion lowers the destination an additional
+1.1028\,eV on average, but also lowers the source an additional 1.0256\,eV.
+Ignoring the source would substantially overstate the evidence for a limitation
+specific to the exchange. The paired contrast does not establish such a benefit.
+
+Convergence is incomplete: 59/64 root-only arms converge, four exhaust their
+query cap and one stops at the minimum step. Only 5/64 collective arms converge;
+49 exhaust the cap and ten stop at the minimum step. All four arms converge for
+only 2/32 pairs. Equal query caps therefore do not imply equal actual costs or
+comparable accuracy of the apparent minima. Optimization uses 1,638 raw calls
+for root-only and 3,670 for collective arms, plus 256 shared initialization and
+repeatability calls: 5,564 total, below the frozen 8,448 cap. Both inversion
+orientations count as raw calls. Four audits replay every arm and independently
+reconstruct all 2,654 queried optimization trials, physical forces, constraints
+and Armijo decisions, without additional physical queries.
+
+This bounded diagnostic neither establishes intrinsic chemical minimum-energy
+gaps nor rules out useful collective geometry. It motivates resolving optimization
+convergence and constraint stops before choosing another learned transport.
+Optimization alone is not a valid transition proposal: a subsequent sampler
+would require its actual proposal density and Jacobian or a fully accounted
+reversible auxiliary path. No learned sampling or equilibrium advantage is
+claimed from these endpoints.

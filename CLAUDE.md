@@ -18,7 +18,7 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/GATE_DISTILLATION_RESULT_20260913.json` first. They record the current method,
+`research/MOBILITY_RELAXATION_RESULT_20260913.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
@@ -155,13 +155,17 @@ jobs46203103,46203225,46206100 and46206282 are terminal; re-query Slurm before
 recovery. The larger cohort is evaluation-only and previously served scalar
 experiments; it is not an untouched final benchmark and must not enter fitting.
 
-Next inspect existing collective/escorted paths and distinguish geometric
-restriction, intrinsic chemical energy gaps and proposal/path-density costs.
-Read `notes/post_screening_reconstruction_20260913.md`. A matched source/destination
-root-only versus collective relaxation diagnostic may inform reconstruction,
-but no such new protocol or physical job is frozen/submitted. Existing whole-COM
-path failures remain. Keep every evaluated cohort and722 reserved outcomes out
-of fitting. The full ICLR goal is active and scientifically unachieved.
+The paired mobility diagnostic is now COMPLETE and independently audited:
+32 FIT parents,128 arms,5,564 raw calls. Collective-minus-root paired gap change
+is -0.07727 eV with an interval spanning zero. Only5/64 collective versus59/64
+root-only arms converge, so intrinsic chemical gaps and exchange-specific
+geometry remain unresolved. Read `research/MOBILITY_RELAXATION_RESULT_20260913.json`
+and `notes/mobility_relaxation_decision_v1.md`. Resolve optimization convergence
+and saved constraint stops before choosing a new learned architecture. Jobs46212367
+and46212970 are terminal. No continuation protocol/job is frozen or submitted.
+Existing whole-COM path failures remain; uncontrolled relaxation is not a valid
+MH proposal. Keep evaluated cohorts and722 reserved outcomes out of fitting.
+The full ICLR goal is active and scientifically unachieved.
 The previous manuscript is `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
 exact-entropy refinement candidate. It is explicitly a development draft.

@@ -44,8 +44,8 @@ label permutations or rigid motions are not new physical samples. Compare the
 source-to-destination gap after both mobility choices, rather than only showing
 that more degrees of freedom lower a destination's energy. Finite optimization
 is a teacher-feasibility diagnostic, not an equilibrium or sampling result.
-The exact selection, optimizer and bounded query protocol are not frozen yet;
-no new physical jobs are submitted for it.
+That prospective protocol was subsequently frozen and completed; see the
+section below and `notes/mobility_relaxation_decision_v1.md` for its audited outcome.
 
 If collective relaxation provides specific evidence, it can motivate a learned
 proposal that transports compatible geometry with an explicit density or fully
@@ -80,3 +80,11 @@ initial differences from archived values are retained. The total upper bound is
 8,448 raw calls (8,192 optimization plus256 initialization/repeatability), with
 both inversion orientations counted. No global-minimum, equilibrium, sampler or
 AI benefit follows from this diagnostic. Read NEXT for live job handles.
+
+## Completed result
+
+Producer46212367 and audit46212970 are complete. The paired gap contrast is
+-0.07727 eV with an interval spanning zero; collective convergence is only5/64.
+Do not infer intrinsic chemical minima or useful transport from this bounded
+diagnostic. Read `research/MOBILITY_RELAXATION_RESULT_20260913.json` and
+`notes/mobility_relaxation_decision_v1.md` before a continuation.

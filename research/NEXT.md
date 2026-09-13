@@ -1,51 +1,44 @@
 # Next research actions — September 13, 2026 UTC
 
-Read `research/GATE_DISTILLATION_RESULT_20260913.json`. Work in the laboratory
-checkout; never write to home. The full ICLR objective remains active and unachieved.
+Read `research/MOBILITY_RELAXATION_RESULT_20260913.json` and
+`notes/mobility_relaxation_decision_v1.md`. Work in the laboratory checkout;
+never write to home. The full ICLR objective remains active and unachieved.
 
-1. Matched800-step direct/distillation training and all8 audits are COMPLETE.
-   Pretraining loses to direct utility on the original12 selection parents.
-   The larger48-parent, six-composition evaluation and all6 audits are also
-   COMPLETE. No tested screen establishes a benefit over no screening there.
-   Do not scale or keep tuning these screening-only recipes. Small favorable
-   comparisons against another screen do not replace the no-screen control.
-2. Read `notes/post_screening_reconstruction_20260913.md`. Inspect existing
-   `escorted_exchange.py`, `chemical_path_guide.py`, their v1/v2/v3 experiments,
-   and `notes/nonequilibrium_chemical_candidate.md` before proposing collective
-   relaxation. Whole-COM paths already exist; v1/v2 accepted only4/64 paths per
-   replica even after endpoint support improved. Preserve those negatives.
-3. Make the next physics question discriminating before training another network:
-   distinguish geometric restriction from intrinsic chemical energy gaps and
-   proposal/path-probability costs. A bounded FIT-only diagnostic can compare
-   root-only and collective relaxation of BOTH the source and exchanged endpoint,
-   with matched oracle budgets and fixed perceived connectivity. Large anchor
-   forces alone are not proof, and lowering a destination alone confounds generic
-   relaxation of the source. Freeze exact selection, optimizer, query limits,
-   convergence/support checks and failure denominators before new calculations.
-   No such new protocol or job is frozen/submitted yet.
-4. Treat optimization as teacher feasibility, not a sampler. Any later collective
-   learned proposal needs its actual density/Jacobian or a complete reversible
-   auxiliary path; swap-plus-uncontrolled-relaxation with endpoint-only MH is
-   incorrect. Only proceed to a new learned framework if the diagnostic identifies
-   an opportunity. Do not assume another loss, neural head or collective move is
-   intrinsically novel or useful.
-5. The larger screening cohort is EVALUATION ONLY:48 parents excluded from gate
-   fitting and original12-parent selection, including two unseen composition
-   identities. It was used earlier for scalar evaluation and is not a final test.
-   Do not fit on it, fresh-proposal outcomes, any other prior evaluated cohort or
-   the722 reserved conditions. Preserve all source failures and electronic states.
-6. The final goal still requires reproducible real molecular gains, complete
-   timing/data/query costs, strong physical and representative learned-generator
-   baselines, realistic reuse and independent final evaluation. Current expected
-   substitutions at recorded prefixes are not changed chains or actual savings.
+1. The paired mobility diagnostic and all four independent audits are COMPLETE:
+   32 FIT parents, 128 arms, 5,564 raw physical calls. Producer46212367 and
+   audit46212970 are terminal. All 2,654 queried optimization trials replay.
+   Do not rerun the producer or interpret completion as physical convergence.
+2. Collective-minus-root paired gap change is -0.07727 eV, descriptive parent
+   interval [-0.22250, 0.08523]. Destination improvement is accompanied by source
+   improvement. Only 5/64 collective versus 59/64 root-only arms converge;
+   49 collective arms exhaust the cap, ten stop at the minimum step. This is
+   inconclusive about intrinsic chemical gaps and exchange-specific geometry.
+3. Resolve the diagnostic's finite optimization and constraint stops before
+   selecting a learned architecture. Saved minimum-step events show geometric-
+   domain stops in nine arms and frozen-graph stops in two; inspect actual
+   active constraints before changing an optimizer. No new oracle is needed
+   for that inspection. Preserve the target and graph semantics.
+4. If extending optimization, first freeze a bounded continuation of ALL
+   budget-exhausted arms, retaining converged and boundary-stopped arms in the
+   denominator. Replay cached prefixes; preserve histories, query accounting,
+   charge/spin, both mobility choices and both endpoints. Do not relaunch from
+   scratch, silently increase budgets or call unconverged endpoints minima.
+   No continuation protocol or job is frozen/submitted yet.
+5. Optimization is teacher feasibility, not a sampler. Existing whole-COM
+   escorted paths already failed their useful acceptance/cost test. Any new
+   transport must have its actual density/Jacobian or a fully reversible
+   auxiliary path. Do not infer novelty from collective motion or another loss.
+6. Stop scaling/tuning the tested screening-only recipes. The completed larger
+   48-parent, six-composition check establishes no gain over no screening.
+   Scalar, geometry, action, stronger-control and transfer negatives remain.
+7. Keep all evaluated cohorts and 722 reserved conditions out of fitting. The
+   broader goal requires reproducible real molecular gains, complete timing/
+   data/query costs, strong physical and representative learned-generator
+   baselines, realistic reuse and independent final evaluation.
 
-Jobs46203103,46203225,46206100 and46206282 are terminal. Re-query Slurm before
-recovery; do not restart completed work. Summaries:
-`runs/gate_distillation_summary_v1/results.json` and
-`runs/screen_transfer_summary_v1/results.json`. Read STATUS for the verified PDF.
-Prior NEXT: `notes/archive/next_through_source_force_screen_20260913.md`.
-
-Verified development PDF: `runs/verification/gate_distillation_transfer_20260913/main.pdf`
-(9 main pages,24 total). Build evidence:
-`research/evidence/gate_distillation_transfer_build_20260913.json`. Scientific
-submission readiness remains false.
+Summary: `runs/mobility_relaxation_summary_v1/results.json`.
+Verified development PDF: `runs/verification/mobility_relaxation_20260913/main.pdf`
+(9 main pages,25 total). Build evidence:
+`research/evidence/mobility_relaxation_build_20260913.json`.
+The paper is scientifically unready. Re-query Slurm before any recovery.
+Prior NEXT: `notes/archive/next_through_gate_transfer_20260913.md`.
