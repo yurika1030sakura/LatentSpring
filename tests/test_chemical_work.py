@@ -63,3 +63,33 @@ def test_policy_normalization_and_positive_support():
     torch.testing.assert_close(p.sum(), torch.tensor(1., dtype=torch.float64))
     assert (p >= .1/3-1e-15).all() and p[0] > p[1] > p[2]
     with pytest.raises(ValueError): informed_log_prob(work*float('nan'), work, .0258)
+
+
+@pytest.mark.parametrize('control', ['uniform', 'force'])
+def test_real_map_catalogue_normalization_and_mh(control):
+    import math
+    from test_bounded_action_geometry import pair_record
+    from cfm_mol.chemical_sampler import ChemicalTarget
+    from cfm_mol.chemical_work_policy import catalogue, policy, select, finish
+    row = pair_record()
+    class Oracle:
+        evaluated = 0
+        def evaluate_chunked(self, positions, max_request):
+            self.evaluated += len(positions)
+            return .01*positions.square().sum((1, 2)), -.02*positions
+    oracle = Oracle()
+    target = ChemicalTarget(oracle, dict(numbers=row['numbers'].tolist(), charge=0, spin_multiplicity=1), .026, .1)
+    old = target.evaluate([target.coordinate_state(row['x'])], phase='source')[0]
+    options = catalogue(target, old); probability = policy(target, old, options, control)
+    assert oracle.evaluated == 2 and options['valid']
+    torch.testing.assert_close(probability['log_probability'].exp().sum(), torch.tensor(1., dtype=torch.float64))
+    new, record = select(options, probability, .37)
+    target.evaluate([new], phase='selected')
+    done = finish(target, old, new, record, control, math.log(.42))
+    assert oracle.evaluated == 4
+    expected = (-.06*float(new['positions'].square().sum()-old['positions'].square().sum())/.026
+                + record['log_volume']+record['reverse_log_probability']-record['forward_log_probability'])
+    assert abs(expected-done['log_acceptance_ratio']) < 1e-10
+    assert done['accepted'] == (math.log(.42) < min(0., expected))
+    if control == 'uniform':
+        assert abs(done['action_log_ratio']-math.log(done['forward_valid_count']/done['reverse_valid_count'])) < 1e-12
