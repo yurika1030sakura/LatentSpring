@@ -1,0 +1,130 @@
+{
+  "updated_at_utc": "2026-09-13T07:40:27.487506+00:00",
+  "goal_status": "active",
+  "scientific_submission_ready": false,
+  "previous_goal_turn_classification": "progress",
+  "previous_checkpoint": "research/EDIT_MOBILITY_STATE_20260913.json",
+  "user_priority": "Prioritize AI framework and rapid real molecular evidence; no all-case perfection or optimizer cleanup.",
+  "closed_mobility_result": {
+    "strong_control_summary": "research/evidence/edit_mobility_strong_control_comparison_v1.json",
+    "sha256": "e03263893dc508230702d3a7b5cf081fd491727cf4cca2b0e82265210a878ba0",
+    "final128": {
+      "mean_potential_change_eV": {
+        "physical_arc": -0.466113623063595,
+        "scalar": -0.6040914881220184,
+        "collective": -0.6093545872825215,
+        "bare_edit": -0.5977293191176108,
+        "root_noise": -0.6120506741571161
+      },
+      "comparisons": {
+        "scalar minus physical_arc": {
+          "difference_eV": -0.13797786505842347,
+          "per_replica_difference_eV": [
+            -0.12483482619245478,
+            -0.15112090392439212
+          ],
+          "descriptive_parent_bootstrap95": [
+            -0.2352786917210526,
+            -0.060074104550848356
+          ]
+        },
+        "scalar minus bare_edit": {
+          "difference_eV": -0.006362169004407608,
+          "per_replica_difference_eV": [
+            0.04820323788044334,
+            -0.06092757588925855
+          ],
+          "descriptive_parent_bootstrap95": [
+            -0.0555141662946173,
+            0.04042372815355419
+          ]
+        },
+        "scalar minus root_noise": {
+          "difference_eV": 0.007959186035097647,
+          "per_replica_difference_eV": [
+            0.02404345200597567,
+            -0.008125079935780377
+          ],
+          "descriptive_parent_bootstrap95": [
+            -0.003977133872164511,
+            0.02205785336435737
+          ]
+        },
+        "collective minus physical_arc": {
+          "difference_eV": -0.1432409642189264,
+          "per_replica_difference_eV": [
+            -0.13624692556408668,
+            -0.15023500287376615
+          ],
+          "descriptive_parent_bootstrap95": [
+            -0.2428364447006162,
+            -0.06468161159763339
+          ]
+        },
+        "collective minus bare_edit": {
+          "difference_eV": -0.01162526816491057,
+          "per_replica_difference_eV": [
+            0.03679113850881145,
+            -0.06004167483863259
+          ],
+          "descriptive_parent_bootstrap95": [
+            -0.06292523250188727,
+            0.03669058615620694
+          ]
+        },
+        "collective minus root_noise": {
+          "difference_eV": 0.0026960868745946856,
+          "per_replica_difference_eV": [
+            0.012631352634343784,
+            -0.007239178885154413
+          ],
+          "descriptive_parent_bootstrap95": [
+            -0.014950111141640972,
+            0.022233933391867647
+          ]
+        }
+      }
+    },
+    "conclusion": "The frozen learned models beat the arc baseline on the new cohort, but do not establish a repeatable gain over the supplementary bare-edit or small-root-noise controls. Simple physical moves explain the main improvement. Current neural-mobility superiority and AI novelty remain unqualified.",
+    "bare_edit_joint_diagnostic": {
+      "attempted": 614,
+      "geometry_valid": 576,
+      "scored": 576,
+      "accepted": 55,
+      "positive_potential_change": 531,
+      "median_potential_change_eV": 0.4118975901910744
+    }
+  },
+  "candidate": "Masked passive-context paired finite-work predictor for informed selection of reversible chemical edits",
+  "candidate_note": "notes/chemical_work_policy_candidate_v1.md",
+  "novelty_status": "Unimplemented candidate representation. Informed/locally balanced MCMC is established prior art. New useful AI value must be demonstrated beyond linear, graph-only, force and uniform controls.",
+  "catalogue": {
+    "protocol": "research/evidence/chemical_work_catalogue_protocol_v1.json",
+    "summary": "research/evidence/chemical_work_catalogue_summary_v1.json",
+    "summary_sha256": "2992ddc4983011854afbe963129b8b5e391001642ee2af728e45f8877169acae",
+    "plan": "runs/chemical_work_catalogue_plan_v1/plan.pt",
+    "run": "runs/chemical_work_catalogue_v1",
+    "audit": "runs/chemical_work_catalogue_audit_v1",
+    "parents": 36,
+    "actions": 492,
+    "valid": 447,
+    "invalid": 45,
+    "raw_queries": 966,
+    "parents_with_downhill_edit": 26,
+    "fraction_uphill": 0.6912751677852349,
+    "linear_work_MAE_eV": 3.185038168721349
+  },
+  "jobs": {
+    "catalogue": "46227985 COMPLETED",
+    "catalogue_audit": "46228322 COMPLETED",
+    "strong_controls": "46225291 COMPLETED",
+    "strong_control_audit": "46225631 COMPLETED",
+    "transfer": "46223507 COMPLETED",
+    "transfer_audit": "46223792 COMPLETED"
+  },
+  "all_current_work_terminal": true,
+  "next": "Implement compact paired work model with shared masked passive context, exact edit-reversal sign and known restraint/Jacobian terms. Fit parent-balanced objectives with linear bond-energy and graph-only controls. Test actual normalized forward/reverse edit selection promptly, retaining uniform/force and bare/root-noise controls. No fitting on evaluated or722 reserved outcomes.",
+  "optimizer_recovery_paused": true,
+  "mobility_scaleup_stopped": true,
+  "reserved_conditions_unqueried": 722
+}

@@ -1,5 +1,15 @@
 # Rapid revision: learn correlated mobility from physical work
 
+Current result: `research/EDIT_MOBILITY_STATE_20260913.json`. Repeated internal
+one-step gains over scalar adaptation are now measured; the matched128-query
+chain differences remain inconclusive. Frozen models are moving to new parents.
+
+Subsequent strong controls supersede that next step: bare edits and small root
+noise match the learned transfer performance. No useful learned-mobility
+superiority is established. Stop scale-up and read
+`research/CHEMICAL_WORK_POLICY_STATE_20260913.json` and
+`notes/chemical_work_policy_candidate_v1.md` for the current edit-choice hypothesis.
+
 The first actual proposal pilot rejects the uniformly mobile candidate as a
 useful current method. Across384 attempts per arm, both collective models accept
 only1, versus37 for the physical arc control. Root-only models accept31/40 but

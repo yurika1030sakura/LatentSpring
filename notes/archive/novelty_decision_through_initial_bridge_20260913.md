@@ -1,31 +1,5 @@
 # Current contribution decision — September 13, 2026 UTC
 
-Current source of truth: `research/CHEMICAL_WORK_POLICY_STATE_20260913.json`.
-Supplementary bare-edit/root-noise controls REMOVE the demonstrated added value
-of learned mobility. The arc comparison alone is insufficient. Current AI novelty
-and overall method superiority remain unqualified. Stop mobility scale-up.
-The next candidate predicts finite 3D chemical work to choose edits; it is not
-implemented yet. Its complete original-FIT catalogue is ready:36 parents,492
-eligible edits,447 valid,45 failed,966 raw calls, full replay and physical-work
-reconstruction. Read current NEXT and `notes/chemical_work_policy_candidate_v1.md`.
-User priority remains AI framework and fast empirical proof; optimizer cleanup
-is paused. Evaluated cohorts and722 reserved outcomes remain excluded from fitting.
-
-All earlier current-status paragraphs below are historical where superseded.
-
-Current source of truth: `research/EDIT_MOBILITY_STATE_20260913.json`.
-Selective graph mobility trained on actual physical work has repeated INTERNAL
-one-step evidence over the scalar ablation (+10.0%/+7.8%). Its physical-baseline
-comparison and strict128-query chain differences remain inconclusive. All96
-chains reach their budgets and replay. Do not claim overall sampling superiority.
-The current next experiment uses18 previously unprepared evaluation-only parents
-in six compositions, including two absent from current model fitting. Models
-remain frozen; do not fit on this cohort or722 reserved outcomes. AI-method
-validation stays the priority; optimizer cleanup remains paused. Read NEXT.
-
-The following dated entries are retained historical checkpoints; they do not
-replace the current result or execution plan.
-
 Latest update: training46215808 is COMPLETE for all six models. Edit-conditioned
 and blind collective fitting errors are nearly equal; no clear conditioning
 benefit is established. Root-only fitting error is lower. Final model hashes and

@@ -1,5 +1,24 @@
 # BGFM project guide
 
+CURRENT: read `research/CHEMICAL_WORK_POLICY_STATE_20260913.json` and current NEXT.
+Simple bare-edit/root-noise controls erase the demonstrated added value of
+learned mobility; stop scaling it. The next AI candidate predicts finite work
+from masked 3D environments to choose chemical edits. Its complete FIT catalogue
+is ready and audited (36 parents,447 valid edits,966 raw calls). The new work
+model/policy is not yet implemented. Generic informed MCMC is prior art. Keep
+all evaluation data and722 reserved outcomes out of fitting; no optimizer
+cleanup prerequisite. The full ICLR goal remains active and scientifically
+unachieved. Older status statements below do not replace this checkpoint.
+
+Current update: read `research/EDIT_MOBILITY_STATE_20260913.json`. The initial
+paired-regression bridge failed, while selective graph mobility with actual-work
+training has repeated one-step gains over scalar adaptation. Strict128-query
+chains do not yet establish a benefit. All96 chains are complete and replayed.
+Next evaluate frozen models on18 new physical starting states across six
+compositions; their preparation is frozen/submitted. No optimizer-cleanup
+prerequisite and no fitting on evaluated/722 reserved outcomes. Older current-
+status paragraphs below are historical where superseded.
+
 Latest update: training46215808 is COMPLETE for all six models. Edit-conditioned
 and blind collective fitting errors are nearly equal; no clear conditioning
 benefit is established. Root-only fitting error is lower. Final model hashes and
@@ -24,7 +43,7 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/AI_FRAMEWORK_STATE_20260913.json` first. They record the current method,
+`research/CHEMICAL_WORK_POLICY_STATE_20260913.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
