@@ -148,3 +148,22 @@ class LinearBondWork(nn.Module):
 
     def forward(self, x, y, bonds, new_bonds, numbers, electronic, active):
         return self.energy(new_bonds, numbers)-self.energy(bonds, numbers)+harmonic_change(x, y, self.restraint)
+
+
+class ResidualChemicalWork(nn.Module):
+    """A frozen additive work model plus a paired non-additive correction.
+
+    Residual learning is a control-preserving architectural change, not itself
+    a novel sampling principle. The correction contains no second restraint.
+    """
+    def __init__(self, elements, hidden=24, radial=16, geometry=True, restraint=.1):
+        super().__init__()
+        self.configuration = dict(elements=list(elements), hidden=hidden, radial=radial,
+                                  geometry=geometry, restraint=restraint)
+        self.backbone = LinearBondWork(elements, restraint=restraint)
+        self.backbone.requires_grad_(False)
+        self.residual = PairedChemicalWork(hidden=hidden, radial=radial, geometry=geometry, restraint=0.)
+
+    def forward(self, x, y, bonds, new_bonds, numbers, electronic, active):
+        args = (x, y, bonds, new_bonds, numbers, electronic, active)
+        return self.backbone(*args)+self.residual(*args)

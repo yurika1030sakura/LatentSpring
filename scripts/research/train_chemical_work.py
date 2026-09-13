@@ -5,7 +5,7 @@ import json
 import time
 from pathlib import Path
 import torch
-from cfm_mol.chemical_work import PairedChemicalWork, LinearBondWork, informed_log_prob
+from cfm_mol.chemical_work import PairedChemicalWork, LinearBondWork, ResidualChemicalWork, informed_log_prob
 from scripts.research.audit_masked_angular import sha
 from scripts.research.evaluate_chemical_policy import write
 
@@ -78,6 +78,9 @@ def metrics(model, groups, protocol):
 
 
 def make_model(variant, protocol):
+    if variant.endswith('_residual'):
+        return ResidualChemicalWork(protocol['elements'], **protocol['model'],
+            geometry=variant == 'geometry_residual', restraint=protocol['restraint_eV_A2']).double()
     if variant == 'linear':
         return LinearBondWork(protocol['elements'], restraint=protocol['restraint_eV_A2']).double()
     return PairedChemicalWork(**protocol['model'], geometry=variant == 'geometry',
@@ -101,6 +104,19 @@ def train(project, out, protocol_path, replica):
         for variant in protocol['variants']:
             start = time.monotonic(); torch.manual_seed(seed)
             model = make_model(variant, protocol)
+            backbone_spec = None
+            if variant.endswith('_residual'):
+                backbone_spec = protocol['frozen_backbones'][str(replica)][phase]
+                backbone_path = project/backbone_spec['path']
+                assert sha(backbone_path) == backbone_spec['sha256']
+                backbone = torch.load(backbone_path, map_location='cpu', weights_only=False)
+                assert backbone['variant'] == 'linear' and backbone['phase'] == phase
+                assert backbone['training_source_ids'] == [g['source_id'] for g in training]
+                model.backbone.load_state_dict(backbone['state_dict'])
+                model.backbone.requires_grad_(False)
+                for group in groups:
+                    with torch.no_grad():
+                        torch.testing.assert_close(predict(model, group), predict(model.backbone, group), atol=0, rtol=0)
             optimizer = torch.optim.Adam(model.parameters(), lr=protocol['learning_rate'])
             generator = torch.Generator().manual_seed(seed+1000)
             directory = out / phase / variant; directory.mkdir(parents=True)
@@ -117,7 +133,11 @@ def train(project, out, protocol_path, replica):
                 trace.append(dict(step=step, source_id=group['source_id'], loss=float(loss), gradient_norm=float(norm)))
                 if step % 100 == 0:
                     print(json.dumps(dict(phase=phase, variant=variant, replica=replica, **trace[-1])), flush=True)
+            if backbone_spec is not None:
+                for key, value in model.backbone.state_dict().items():
+                    torch.testing.assert_close(value, backbone['state_dict'][key], atol=0, rtol=0)
             torch.save(dict(configuration=model.configuration, state_dict=model.state_dict(), variant=variant,
+                architecture='residual' if backbone_spec is not None else 'direct', frozen_backbone=backbone_spec,
                 seed=seed, phase=phase, training_source_ids=[g['source_id'] for g in training],
                 protocol_sha256=sha(protocol_path)), directory/'model.pt')
             report = dict(complete=True, phase=phase, variant=variant, replica=replica, seed=seed,
@@ -128,7 +148,7 @@ def train(project, out, protocol_path, replica):
             write(directory/'results.json', report)
             print(json.dumps({k: report[k] for k in ('complete', 'phase', 'variant', 'replica', 'elapsed_seconds')}), flush=True)
     write(out/'results.json', dict(complete=True, protocol_sha256=sha(protocol_path), replica=replica,
-        models=6, new_physical_queries=0, scientific_submission_ready=False))
+        models=2*len(protocol['variants']), new_physical_queries=0, scientific_submission_ready=False))
 
 
 def main():

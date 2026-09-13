@@ -38,6 +38,13 @@ def main():
                 if key in streams: assert streams[key] == trace
                 streams[key] = trace
                 model = make_model(variant, protocol); model.load_state_dict(saved['state_dict']); model.eval()
+                if variant.endswith('_residual'):
+                    spec = protocol['frozen_backbones'][str(replica)][phase]
+                    assert saved['frozen_backbone'] == spec and sha(args.project/spec['path']) == spec['sha256']
+                    base = torch.load(args.project/spec['path'], map_location='cpu', weights_only=False)
+                    assert base['training_source_ids'] == saved['training_source_ids']
+                    for key, value in model.backbone.state_dict().items():
+                        torch.testing.assert_close(value, base['state_dict'][key], atol=0, rtol=0)
                 equal(metrics(model, training, protocol), report['fit'])
                 if phase == 'diagnostic': equal(metrics(model, held, protocol), report['diagnostic'])
                 with torch.no_grad():
@@ -54,7 +61,7 @@ def main():
     write(args.out, dict(complete=True, protocol_sha256=sha(args.protocol), models=rows, controls=controls['diagnostic'],
         exact_metric_replay=True, identical_parent_streams_across_variants=True, pair_reversal_checks=reverse_checks,
         parents=36, valid_edits=447, diagnostic_parents=12, new_physical_queries=0, scientific_submission_ready=False,
-        interpretation='Paired-work fitting only. The 3D model does not beat the linear bond model in held-parent work MAE. Molecular usefulness requires the separate corrected-policy experiment.'))
+        interpretation='Paired-work fitting and diagnostic prediction replay only. Molecular usefulness requires the separate corrected-policy experiment; no novelty or sampler advantage follows from this audit.'))
 
 
 if __name__ == '__main__': main()

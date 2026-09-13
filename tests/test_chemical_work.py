@@ -93,3 +93,19 @@ def test_real_map_catalogue_normalization_and_mh(control):
     assert done['accepted'] == (math.log(.42) < min(0., expected))
     if control == 'uniform':
         assert abs(done['action_log_ratio']-math.log(done['forward_valid_count']/done['reverse_valid_count'])) < 1e-12
+
+
+def test_residual_starts_at_backbone_and_freezes_it_without_double_restraint():
+    from cfm_mol.chemical_work import ResidualChemicalWork
+    args = example()
+    model = ResidualChemicalWork(sorted(set(args[4].tolist())), hidden=8, radial=6).double()
+    torch.nn.init.normal_(model.backbone.coefficients)
+    torch.testing.assert_close(model(*args), model.backbone(*args), atol=0, rtol=0)
+    original = model.backbone.coefficients.detach().clone()
+    optimizer = torch.optim.Adam(model.parameters(), lr=.01)
+    (model(*args)-torch.tensor([.25, -.45])).square().mean().backward()
+    assert model.backbone.coefficients.grad is None
+    optimizer.step()
+    torch.testing.assert_close(original, model.backbone.coefficients, atol=0, rtol=0)
+    x, y, b, c, z, electronic, active = args
+    torch.testing.assert_close(model(*args), -model(y, x, c, b, z, electronic, active), atol=1e-10, rtol=1e-10)

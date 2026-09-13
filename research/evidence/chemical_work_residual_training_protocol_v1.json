@@ -1,0 +1,78 @@
+{
+  "frozen": true,
+  "created_at_utc": "2026-09-13T20:02:07.683288+00:00",
+  "plan": "runs/chemical_work_catalogue_plan_v1/plan.pt",
+  "plan_sha256": "c6ba8cb6db866189e0c5f52788e3e49f10d2756fe0dfd041351475ffe58d2516",
+  "catalogue_run": "runs/chemical_work_catalogue_v1",
+  "catalogue_summary": "research/evidence/chemical_work_catalogue_summary_v1.json",
+  "catalogue_summary_sha256": "2992ddc4983011854afbe963129b8b5e391001642ee2af728e45f8877169acae",
+  "variants": [
+    "graph_residual",
+    "geometry_residual"
+  ],
+  "seeds": [
+    28611,
+    28612
+  ],
+  "steps": 400,
+  "learning_rate": 0.003,
+  "huber_beta_eV": 0.25,
+  "uniform_fraction": 0.1,
+  "kT_eV": 0.025851999786435,
+  "restraint_eV_A2": 0.1,
+  "model": {
+    "hidden": 24,
+    "radial": 16
+  },
+  "elements": [
+    1,
+    6,
+    7,
+    8,
+    9,
+    16,
+    17,
+    35
+  ],
+  "diagnostic_parent_source_ids": [
+    2,
+    6,
+    7,
+    11,
+    12,
+    14,
+    22,
+    25,
+    26,
+    28,
+    33,
+    34
+  ],
+  "split": "Fixed hash of source ID before training, three parents per composition internally withheld. All 36 original FIT sources used for separate full fits. Existing 12 and 18 evaluation cohorts and 722 reserved outcomes never fit.",
+  "selection": "Fixed steps and all variants/seeds; no best-checkpoint or outcome-based selection.",
+  "scope": "Fixed additive FIT-only bond model plus paired graph/3D residual; exact same400-step, parent-balanced schedule and split as the direct models. This architectural repair is not itself an AI novelty claim. Evaluate all frozen models against original controls, retaining every negative result.",
+  "new_physical_queries": 0,
+  "scientific_submission_ready": false,
+  "frozen_backbones": {
+    "0": {
+      "diagnostic": {
+        "path": "runs/chemical_work_training_v1/s0/diagnostic/linear/model.pt",
+        "sha256": "080bfcfc96c909b704d3e503797dd2689a586b86721abdb3c800ac2889fcb8d7"
+      },
+      "full_fit": {
+        "path": "runs/chemical_work_training_v1/s0/full_fit/linear/model.pt",
+        "sha256": "102bff20ce1c3acbd92c6c5d8880eda89e62f2282e155541999ecd34a8083878"
+      }
+    },
+    "1": {
+      "diagnostic": {
+        "path": "runs/chemical_work_training_v1/s1/diagnostic/linear/model.pt",
+        "sha256": "ac5ffb7b4e6071814126c7050f38a98e6b49f4f1d0c58060b8ed8a7bf20ee311"
+      },
+      "full_fit": {
+        "path": "runs/chemical_work_training_v1/s1/full_fit/linear/model.pt",
+        "sha256": "63f9523bb97f26e60c223a3fe52d006332795651abc2649e02ed7a9d593ab0e3"
+      }
+    }
+  }
+}

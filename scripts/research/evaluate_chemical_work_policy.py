@@ -11,7 +11,7 @@ import math
 import time
 from pathlib import Path
 import torch
-from cfm_mol.chemical_work import PairedChemicalWork, LinearBondWork
+from cfm_mol.chemical_work import PairedChemicalWork, LinearBondWork, ResidualChemicalWork
 from cfm_mol.chemical_work_policy import catalogue, policy
 from cfm_mol.chemical_sampler import ChemicalTarget
 from cfm_mol.energy_oracle import EnergyOracle
@@ -26,7 +26,8 @@ def load_models(project, protocol):
         path = project/spec['path']; assert sha(path) == spec['sha256']
         saved = torch.load(path, map_location='cpu', weights_only=False)
         assert saved['phase'] == 'full_fit' and set(saved['training_source_ids']) == set(range(36))
-        model = (LinearBondWork if saved['variant'] == 'linear' else PairedChemicalWork)(**saved['configuration']).double()
+        cls = ResidualChemicalWork if saved.get('architecture') == 'residual' else (LinearBondWork if saved['variant'] == 'linear' else PairedChemicalWork)
+        model = cls(**saved['configuration']).double()
         model.load_state_dict(saved['state_dict']); model.eval(); model.requires_grad_(False)
         models[name] = model
     return models
