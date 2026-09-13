@@ -67,6 +67,7 @@ def edit_bridge(x,momentum,bonds,new_bonds,numbers,electronic,action,field,*,ste
     if not torch.isfinite(x).all() or not torch.isfinite(momentum).all() or float(torch.stack([x.mean(0).abs().max(),momentum.mean(0).abs().max()]).max())>1e-8:
         raise ValueError('Finite centered positions and momentum required')
     y=x;p=momentum;radii=covalent_radii(numbers).to(x);log_volume=x.new_zeros(())
+    mobility=getattr(field,'mobility',None)
     mobile_basis=None
     if getattr(field,'roots_only',False):
         from cfm_mol.mobility_relaxation import mobility_basis
@@ -75,10 +76,15 @@ def edit_bridge(x,momentum,bonds,new_bonds,numbers,electronic,action,field,*,ste
         if stage==steps_per_side:y,log_volume,_=exchange_terminal_sites(y,radii,action)
         if stage==2*steps_per_side:break
         left=stage/(2*steps_per_side);right=(stage+1)/(2*steps_per_side)
-        p=center(p+.5*kick_step*field(y,bonds,new_bonds,numbers,electronic,action,left))
+        control=field(y,bonds,new_bonds,numbers,electronic,action,left)
+        if mobility is not None:control=mobility(bonds,new_bonds,numbers,electronic,action,left)@control
+        p=center(p+.5*kick_step*control)
         velocity=p if mobile_basis is None else mobile_basis@(mobile_basis.T@p)
+        if mobility is not None:velocity=mobility(bonds,new_bonds,numbers,electronic,action,(left+right)/2)@p
         y=center(y+drift_step*velocity)
-        p=center(p+.5*kick_step*field(y,bonds,new_bonds,numbers,electronic,action,right))
+        control=field(y,bonds,new_bonds,numbers,electronic,action,right)
+        if mobility is not None:control=mobility(bonds,new_bonds,numbers,electronic,action,right)@control
+        p=center(p+.5*kick_step*control)
     return y,-p,log_volume
 
 

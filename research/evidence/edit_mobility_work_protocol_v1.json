@@ -1,0 +1,58 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-13T04:04:05.428151+00:00",
+  "data_run": "runs/edit_bridge_data_v1",
+  "data_sha256": "93b8ba13ab8520e618483dabaf356e9ac509acfc29a27db49edb9f8d9ce73cba",
+  "condition_indices": [
+    1,
+    2,
+    3,
+    5
+  ],
+  "initial_models": {
+    "0": {
+      "path": "runs/edit_bridge_training_v1/edit_roots_s0/model.pt",
+      "sha256": "7e0ab39d93a33336d9e8aa4ca99cd5a0a3c070eac8d0c067f250d61ffead948f"
+    },
+    "1": {
+      "path": "runs/edit_bridge_training_v1/edit_roots_s1/model.pt",
+      "sha256": "4bf303f55b851f428939734dc13c17717960eefcfabf8813484189dc4bfbf020"
+    }
+  },
+  "variants": [
+    "fixed",
+    "scalar",
+    "collective"
+  ],
+  "seeds": [
+    28321,
+    28322
+  ],
+  "mobility": {
+    "hidden": 12,
+    "rank": 3,
+    "passive_scale": 0.01,
+    "coefficient_bound": 0.25
+  },
+  "bridge": {
+    "steps_per_side": 2,
+    "kick_step": 0.2,
+    "drift_step": 0.02
+  },
+  "steps": 100,
+  "batch_size": 4,
+  "learning_rate": 0.001,
+  "gradient_clip": 10.0,
+  "graph_penalty_weight": 100.0,
+  "restraint_eV_A2": 0.1,
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "physical_protocol_sha256": "d725b92e17b95bd82304516eddbad085bce4b961fd35ba20690dfc53e74e0563",
+  "source_energy_tolerance_eV": 0.0001,
+  "raw_queries_per_model": 816,
+  "maximum_total_new_raw_queries": 4896,
+  "initialization": "All three variants start from the same root-trained force weights within each seed, now with force_field.roots_only=False. Fixed/scalar/collective mobility matrices are identical at initialization. Scalar controls uniform step adaptation; collective adds learned graph co-motion.",
+  "objective": "Mean softplus of actual dimensionless augmented work plus100 times a smooth desired-graph distance penalty. Query every candidate, including chemical failures; this is a smooth training proxy, not an unbiased gradient of hard-support acceptance or a certified hard-target KL.",
+  "accounting": "Four composition checks each score two source endpoints in both inversion orientations:16 raw calls.100 updates*4 candidates*2 orientations=800. Same selected source/direction/momentum streams for all three variants per seed. Every electronic condition is sent on each sequential oracle request.",
+  "interpretation": "Rapid architecture/work-training experiment on existing32 FIT parents only. No evaluation or reserved states are fitted. Graph penalties are training-only and do not change the physical evaluation target. The first molecular pilot remains negative; no advantage or novelty follows from fitting this objective.",
+  "scientific_submission_ready": false
+}
