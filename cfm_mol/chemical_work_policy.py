@@ -39,6 +39,8 @@ def policy(target, source, candidates, model, uniform_fraction=.1):
             work = x.new_zeros(len(rows)); uniform_fraction = 1.
         elif model == 'force':
             work = -(source['force_eV_A'][None]*(y-x)).sum((1, 2))+harmonic_change(x, y, target.restraint)
+        elif model == 'restraint':
+            work = harmonic_change(x, y, target.restraint)
         else:
             raise ValueError('Unknown physical policy control')
     else:
