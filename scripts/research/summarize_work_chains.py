@@ -68,7 +68,9 @@ def main():
         parents=[dict(index=i,parent=pid,data={str(cap):{m:[values[i,pid,m,s,cap] for s in replicas] for m in methods} for cap in caps}) for i,pid in parents],
         scientific_submission_ready=False,scope=protocol['interpretation'],uncertainty='Descriptive parent bootstrap within six fixed compositions, keeping both replicas together, all15 pairwise method comparisons shown, no multiplicity correction or final-test claim.')
     write(a.out,report)
-    print(json.dumps(dict(trajectories=report['trajectories'],new_raw_queries=cost,final=readouts[str(caps[-1])]['methods'],runtime=runtime),indent=2))
+    final=readouts[str(caps[-1])]['methods']
+    print(json.dumps(dict(trajectories=report['trajectories'],new_raw_queries=cost,
+        final={m:{k:final[m][k]['mean'] for k in ['distinct_connectivities','potential_change_eV']} for m in methods})))
 
 
 if __name__=='__main__':main()

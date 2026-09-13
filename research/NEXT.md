@@ -1,100 +1,85 @@
-# Next — validate cooperative interaction learning in the full sampler
+# Next — a main-generator redesign, not more routing variants
 
-CURRENT: read `research/EDIT_INTERACTION_STATE_20260913.json`, `research/NEXT.md`
-and `notes/cooperative_interaction_work_v1.md`.
+CURRENT: read `research/WORK_CHAIN_STATE_20260913.json`, `research/NEXT.md`,
+`notes/work_chain_pilot_v1.md` and `notes/ai_novelty_boundary_20260913.md`.
 
-The cooperative-interaction prototype is implemented and fully tested. Four-state
-FIT data reveal real electronic coupling (parent-balanced mean absolute0.16419 eV).
-All12 interaction models train/replay; the internal diagnostic has18 fit/9 held
-parents, with9 original parents having no pair kept separately. Full models fit27
-parents. The3D radial-contrast representation learns coupling; environmental
-conditioning has no demonstrated advantage over simpler models.
+The complete-chain study and supplementary exact controls are DONE:324 trajectories,
+64 raw calls each,20,736 new calls in total. Every trajectory reaches its cap;
+10,044 scored MH ratios,4,826 catalogue normalizers and all state histories replay.
+All project jobs from this stage are terminal. No training/evaluation job is hidden
+in the background; re-query Slurm before recovery.
 
-A fixed-root-block pilot is complete and retained: many matchings are equivalent
-under same-element atom relabelling, and utility differences are negligible.
-The retained-panel kernel now chooses across different root blocks, uses the
-SAME panel in the reverse normalizer, and treats coupling as a symmetric edge
-preference, NOT a directional total-work correction. All physical states and
-4,400 MH ratios replay. This gives small2--4% point improvements within the
-cooperative family, with uncertainty and no contextual-network superiority.
-The strongest single-edit learned method still has higher mean one-step utility.
-There is no overall generator/chain advantage or ICLR-readiness claim.
+Cooperative routing is slower and visits fewer connectivities than strong single
+edits. The single-edit learner visits2.1667 connectivities versus1.9444 uniform,
+1.7500 force-informed and1.8889 root-noise, but the exact zero-learning confinement/
+volume ablation reaches2.0833. Learned-minus-zero is+0.0833 with descriptive interval
+[-0.0556,0.2222]; potential difference is-0.01912 eV with interval[-0.06164,0.01961]
+and opposite energy signs across replicas. No material repeatable learned increment
+over this exact ablation is established. Preserve the positive weaker-control and
+one-step results, but do not call them ICLR-level AI novelty or overall superiority.
 
-All current jobs are COMPLETE0:0:46296885/46297013 labels/audit,46297734 training,
-46299227/46299395 fixed-block evaluation/audit,46299770/46299887 panel replay/audit.
-This stage used1,770 new raw calls (934 labels+836 endpoint evaluation); panel
-re-evaluation used zero. Keep722 reserved outcomes unqueried and evaluated parents
-out of fitting. Optimizer recovery and old single-edit neural scale-up stay paused.
-The full ICLR goal is active and scientifically unachieved.
+Stop scaling the cooperative/scorer recipe. The next bounded design task concerns
+the generator's own learned distribution; see `notes/generator_redesign_brief_v1.md`.
+That replacement is a hypothesis only, not implemented or validated. Ordinary
+learned energy-guided MCMC, residual learning, composed paths and score-blindness
+repairs have close prior art. The full ICLR goal remains active and unachieved.
+Keep the evaluated12/18-parent cohorts outside fitting, all722 reserved outcomes
+unqueried, optimizer recovery paused and the two software environments separate.
 
-Completed method and evidence:
-- `cfm_mol/chemical_edit_interaction.py`: commuting double edits, mixed electronic
-  work, known COM-restraint cross term and intrinsic map volume.
-- `cfm_mol/interaction_work_model.py`: four-corner radial contrasts with typed
-  linear, context-blind neural and environmental coefficients. Reversing one
-  edit negates interaction; reversing both preserves it. Do not add interaction
-  directly to directional work; use the symmetric affinity implementation.
-- `cfm_mol/cooperative_edit_policy.py`: type-admissible root blocks, complete valid
-  matchings and retained random panels. The panel draw law is invariant under
-  the prescribed edit, so it cancels. Forward/reverse catalogue probabilities
-  must still both be recomputed. Empty panels are self-loops.
-- `scripts/research/evaluate_cooperative_edits.py`: physical evaluation and
-  query-exact panel re-evaluation. `summarize_cooperative_edits.py` consumes only
-  complete audited outputs. The two scopes are different kernels; their physical
-  responses match, while their selection outcomes need not.
+Concrete next task:
+1. Read `notes/generator_redesign_brief_v1.md` and inspect the current BGFM target,
+   conditioning and energy-loss definitions. Determine whether a valid nonlocal
+   density/energy calibration mechanism can contribute something distinct from
+   the existing grouped energy variance and the cited prior work. Do not infer a
+   mode-weight pathology from the present short-chain results.
+2. Use the existing `clamped_density.py` sampler/density pair as a possible
+   controlled interface, with its actual semantics and prior numerical audits.
+   Its q0.95 is not the production CTMC endpoint plus noise. Density and sampling
+   must refer to one explicitly defined law; retain common conditioning across
+   transported samples. No new broad density audit or oracle labels are needed
+   merely to read and specify this candidate.
+3. Write one concrete learned-object/architecture/objective specification and
+   its minimal known-probability test. Explain the distinction from Boltzmann
+   generators, SLMC, existing score/ratio methods and DiffCLF where relevant.
+   A renamed pairwise variance loss is not sufficient. This is an open design
+   decision, not a validated new method or a promise of ICLR acceptance.
+4. If a distinct hypothesis survives, implement one bounded generator experiment
+   with physical/zero-learning controls from the outset. Evaluate actual samples,
+   valid retention, physical distribution claims only with a qualified reference,
+   and both training/inference costs. No all-case perfection, independent new
+   physics law or optimizer cleanup is required before a useful small test.
 
-Latest quantitative limits:
-- Original36 FIT parents:27 have pairs,9 have none.450 selected pairs,440 valid,
-  10 failures.24/440 reverse the sign of an oracle-additive work estimate; only
-  one has both singles uphill and the joint edit downhill. This is mechanism
-  data, not evidence that all proposals bypass a barrier.
-- Internal zero-interaction MAE0.1995 eV; typed radial0.1667/0.1703; blind neural
-  0.1557/0.1555; environment0.1549/0.1579. On15 supported evaluation parents,
-  zero0.1922, typed radial0.1415/0.1382, blind0.1673/0.1558, environment0.1736/0.1595.
-  No evaluated endpoint label was fitted. Keep the simple radial model as a
-  strong control instead of selecting only a favorable neural comparison.
-- Mean panel one-step utility: uniform0.051304, additive linear0.086910,
-  restraint-only0.086871, radial interaction0.089929, blind interaction0.089231,
-  environment0.089108 eV. The blind-minus-restraint descriptive interval is
-  [0.000287,0.004940]; radial/environment intervals cross zero. These are small
-  repeatedly evaluated development signals, not a model-selection certificate.
-- Prior strong single-edit linear utility was0.121892 eV on the same18 starts.
-  The current cooperative operator does not win that energy-descent comparison.
-  The six-composition denominator retains three parents with no double edit.
+What is closed:
+- The six-arm cooperative chain experiment and all three matched single-edit
+  controls are complete. Do not restart them or increase budgets to seek a win.
+- The known confinement term explains much of the single learner's exploration
+  advantage over weaker controls. Its remaining increment is uncertain. Keep
+  single_linear as a useful learned baseline, with single_restraint as its exact
+  zero-learning counterpart. Do not drop that counterpart from later comparisons.
+- Force-informed reverse probabilities correctly use the selected candidate's
+  force AFTER its energy query. A full old-condition replay verifies that this
+  adapter extension preserves earlier normalized-kernel results.
+- Query-budget endpoints, connectivity visits and typed distance movement do not
+  certify equilibrium sampling, thermodynamic basins or exact energy distributions.
 
-Next bounded experiment (not yet implemented or submitted):
-1. Integrate the existing cooperative panel kernel into a short complete-chain
-   comparison with the same background moves, query caps and starting states.
-   Include strong single-edit linear selection and cheap physical root-noise
-   moves, cooperative linear selection, typed radial coupling and blind coupling.
-   Environmental-network scale-up is not the priority.
-2. State the finite-temperature exploration/basin-transition hypothesis before
-   seeing new outcomes, and also retain energy descent and query/wall-time costs.
-   A cooperative shortcut may affect exploration differently from early energy
-   descent, but that is presently a hypothesis, not a reason to discard the
-   negative single-edit comparison or select favorable molecules.
-3. Reuse audited existing source/late-chain checkpoints where appropriate;
-   no all-case optimizer cleanup or new static map is required. Freeze the
-   source role/selection and protocol before queries. Fit no evaluation parent
-   and query none of the722 reserved outcomes. Choose a small fixed budget,
-   two seeds and matched controls; no acceptance/ICLR promise.
-4. If no material complete-chain advantage emerges, stop scaling this recipe.
-   Generic mixed differences, composed paths, auxiliary MH and learned radial
-   coefficients are prior art building blocks. The useful learned mechanism and
-   comparisons must support the paper's actual novelty claim.
+Current artifacts:
+- `research/evidence/work_chain_matched_controls_v2.json`: all9 methods with
+  checked common sources, target, background, seeds and budgets. Version1 remains.
+- `research/evidence/work_chain_final_table_v1.csv`: concise endpoint/runtime table.
+- `research/evidence/work_chain_summary_v1.json`:216 primary trajectories.
+- `research/evidence/work_chain_single_controls_summary_v1.json`:72 uniform/force trajectories.
+- `research/evidence/work_chain_single_restraint_summary_v1.json`:36 zero-learning trajectories.
+- `research/evidence/work_chain_move_attribution_v1.json`: accepted energy changes
+  telescope by move family. Descriptive attribution, not a causal intervention.
+- `research/evidence/work_chain_scheduler_hardware_v1.json`: actual Slurm records
+  and A100 MIG3g.20GB node class; wall times are observed under shared-node load.
+- `cfm_mol/work_chain_kernel.py`, `scripts/research/evaluate_work_chains.py`,
+  `summarize_work_chains.py`, `compare_work_chain_controls.py`: reusable code.
+- `runs/work_chains_v1`, `runs/work_chains_single_controls_v1`,
+  `runs/work_chains_single_restraint_v1` and their matching audit directories:
+  immutable complete traces, every checkpoint and raw response.
 
-Key artifacts:
-- State: `research/EDIT_INTERACTION_STATE_20260913.json`.
-- Data: `runs/chemical_edit_interaction_plan_v1`, `runs/chemical_edit_interaction_v1`,
-  `runs/chemical_edit_interaction_audit_v1`.
-- Models: `runs/interaction_work_training_v1/s{0,1}/full_fit/{linear,blind,environment}/model.pt`.
-- Fixed-block outputs: `runs/cooperative_edit_evaluation{,_audit}_v1`.
-- Panel outputs: `runs/cooperative_panel_evaluation{,_audit}_v1`.
-- Evidence summaries: `chemical_edit_interaction_summary_v1.json`,
-  `interaction_work_training_summary_v1.json`, `interaction_work_transfer_error_v1.json`,
-  `cooperative_edit_evaluation_summary_v1.json`, `cooperative_panel_evaluation_summary_v1.json`
-  under `research/evidence/`. All former results and source snapshots remain.
-
-No project jobs are running at this checkpoint; re-query Slurm before recovery.
-The old manuscript is a development draft and needs later rewriting around an
-actually supported method. Do not spend the next step polishing its layout.
+Jobs46303471/46303884,46307645/46307852 and46310519/46310594 all completed0:0.
+Latest targeted tests:9 pass, plus the old mixed-chain regression and an actual
+old-condition replay. No authorship/submission actions are taken for the user.
+The old manuscript remains a development draft, not an ICLR-ready paper.

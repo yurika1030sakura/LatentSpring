@@ -71,3 +71,24 @@ An overall advantage requires comparison with the strong single-edit policy and
 cheap physical moves, not merely improvement inside the cooperative family.
 Small exploratory differences accompanied by substantial runtime overhead do
 not justify scaling the current recipe or promising ICLR readiness.
+
+## Completed result with exact single-edit controls
+
+All216 primary,72 uniform/force and36 confinement-only trajectories finish64
+calls and fully replay:324 trajectories and20,736 raw calls. The supplemental
+controls share the same target, starting states, schedule and random seeds. They
+were added after the primary outcome and are labelled supplementary.
+
+The matched zero-learning control retains the known confinement work and map
+volume while setting the learned bond energy to zero. Its average connectivity
+count is2.0833 versus2.1667 for learning; the difference interval[-0.0556,0.2222]
+spans zero. Potential difference is-0.01912 eV, interval[-0.06164,0.01961], with
+opposite per-replica signs. Thus the earlier gains over uniform/force/root-noise
+controls do not establish a repeatable added effect of learning. All of those
+positive comparisons are retained in the combined summary.
+
+Cooperative variants have fewer visited connectivities and higher measured
+runtime than the strong single-edit method. Slight geometric-motion or
+within-cooperative energy improvements do not overturn the main result. The
+routing branch is closed to scale-up. A separate main-generator learning
+mechanism remains a design task, not a completed or demonstrated AI contribution.
