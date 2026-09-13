@@ -1,46 +1,59 @@
-# Current AI-method work — chemical edit choice
+# Current AI-method work — a useful simple baseline, neural value unresolved
 
 Read `research/CHEMICAL_WORK_POLICY_STATE_20260913.json` and
-`notes/chemical_work_policy_candidate_v1.md`. User priority: differentiated AI
-framework plus rapid molecular evidence, not perfect optimization of every case.
-The full ICLR objective remains active and scientifically unachieved.
+`research/evidence/chemical_work_policy_evaluation_summary_v1.json`.
+User priority remains differentiated AI plus fast molecular evidence. No all-case
+perfection or optimizer recovery prerequisite. The ICLR goal remains active.
 
-1. CLOSE the current learned-mobility superiority claim. On18 new parents,
-   collective, bare edit and small root noise give mean128-query changes
-   -0.60935,-0.59773,-0.61205 eV. Learned-minus-root-noise is+0.00270 with an
-   interval crossing zero. Simple controls explain the earlier arc advantage.
-   Preserve all positive/negative comparisons, including the original proposal
-   signal. Do not scale or tune these mobility weights to manufacture a win.
-2. Focus the next AI hypothesis on WHICH edit to query. In bare transfer chains,
-   576/614 proposals have scored valid geometry,531/576 increase energy and55
-   accept. This is an edit-choice opportunity, not proof of AI novelty.
-3. The complete FIT work catalogue is DONE and audited:36 sources,492 eligible
-   edits,447 valid candidates,45 failures,966 raw calls.26/36 sources have a
-   downhill candidate. Valid candidates are69.1% uphill; source-force linear
-   work has parent-balanced MAE3.185 eV. These are training diagnostics only.
-   Paths: `runs/chemical_work_catalogue_plan_v1`,
-   `runs/chemical_work_catalogue_v1`, `runs/chemical_work_catalogue_audit_v1`.
-4. Implement the compact masked passive-context model: encode unchanged atoms,
-   query both active placements through a shared conditional-energy decoder,
-   and take their difference. Preserve the joint interaction of both moved
-   atoms, original electronic states, O(3)/atom symmetry and reversal sign.
-   Separate the known restraint change and intrinsic edit volume. A cached
-   passive representation must not leak active coordinates. Do not claim global
-   cycle consistency from pair reversal alone.
-5. Fit parent-balanced objectives, with linear bond-energy and graph-only
-   learned controls, then test REAL selected edits promptly. A fixed informed
-   balancing rule may turn predicted work into probabilities over the actual
-   valid catalogue; the reverse catalogue and normalized probability must be
-   recomputed at the candidate. Keep uniform and current-force informed controls,
-   as well as bare edit/root noise. Do not present standard locally balanced
-   MCMC as a new general algorithm.
-6. Both12-parent and18-parent cohorts are now development/evaluation data;
-   never fit on them. The18 parents remain evaluation-only even though their
-   original generator stream was called fresh_training. Keep722 reserved
-   outcomes unqueried. No optimizer recovery is required before this AI test.
+1. The paired masked-context model is IMPLEMENTED in `cfm_mol/chemical_work.py`.
+   Both moved atoms are removed from passive encoding. A shared two-root decoder
+   evaluates both placements; their difference reverses sign. The graph-only
+   ablation removes geometric inputs except the known restraint. The additive
+   typed-bond model is a strong learned control. No one-pass cache across active
+   masks or global cycle consistency is claimed.
+2. Two seeds of all three variants each have24/12-parent diagnostic fits and
+   separate36-parent full fits,400 fixed steps each. All12 models and their
+   identical parent streams replay. No new labels:447 existing valid FIT edits.
+   Internal3D MAE0.683/0.704 eV loses to linear0.566/0.565 eV. Full models must
+   not be evaluated as held-out on the internal12, since those enter full fits.
+3. `cfm_mol/chemical_work_policy.py` enumerates the actual valid catalogue and
+   recomputes normalized reverse probabilities. Forward inference has no true
+   candidate E/F. The force control may use the physically scored selected
+   endpoint force for its reverse probability. Uniform mixture=.1; actual map
+   volume remains explicit. Eight focused tests pass.
+4. The18-parent molecular evaluation is COMPLETE,498 new raw calls,231 valid
+   and20 invalid actions. All catalogue endpoints were scored FOR EVALUATION;
+   no deployed oracle-assisted forward ranking is implied. Exact one-step
+   expected utility is0.070621 uniform,0.062508 force,0.121892 linear (two-seed
+   mean),0.082167 graph and0.0883913D. Linear beats uniform/force in this limited
+   comparison;3D has no established advantage over uniform, graph or linear.
+   Full replay and1,848 independent physical MH ratios pass. Keep all cases.
+5. Retain linear work selection as the strong learned baseline. The next compact
+   neural hypothesis should include that additive predictor explicitly and
+   learn the non-additive3D residual, using the same split and a frozen bounded
+   protocol. This is an architectural repair, not by itself a novelty claim.
+   Require a useful representation contribution beyond linear/graph controls
+   before expanding experiments or rewriting the paper around it. Do not tune
+   on evaluation labels. No further labels are needed to start that prototype.
+6. A later full-chain experiment must compare against valid-catalogue uniform,
+   cached force, linear work and the effective bare/root-noise controls, count
+   data/preparation and inference costs, and retain appropriate generator
+   comparisons for the paper. One-step work selection is not evidence of target
+   energy-distribution sampling or a complete generation improvement.
+7. Original12 and new18 evaluation parents are development/evaluation-only;
+   never fit them.722 reserved outcomes remain unqueried. The user's priority
+   does not require new physics laws, universal perfection or optimizer cleanup.
 
-All present physical jobs are terminal:46227985/46228322 catalogue and audit;
-46225291/46225631 simple controls and audit;46223507/46223792 transfer and audit.
-Re-query Slurm before recovery; never restart merely from an expired observation.
-The old26-page manuscript and mobility claim need later rewriting around an
-actually supported method; do not spend the next turn on PDF formatting.
+Artifacts:
+- Training: `runs/chemical_work_training_v1`, protocol and summary named
+  `research/evidence/chemical_work_training_{protocol,summary}_v1.json`.
+- Molecular evaluation: `runs/chemical_work_policy_evaluation_v1`; full replay:
+  `runs/chemical_work_policy_evaluation_audit_v1`; protocol/summary in evidence.
+- Model files: `runs/chemical_work_training_v1/s{0,1}/full_fit/{linear,graph,geometry}/model.pt`.
+- Reproducible audit scripts: `scripts/research/audit_chemical_work_training.py`
+  and `scripts/research/summarize_chemical_work_policy.py`; use new output paths.
+
+All current jobs are terminal:46258095 training,46258563 evaluation,46258596 audit.
+Re-query Slurm before recovery. No automatic rerun or model scaling is authorized
+by a stale status paragraph. The old mobility result and manuscript stay archived;
+no PDF-formatting work is needed before useful AI evidence.

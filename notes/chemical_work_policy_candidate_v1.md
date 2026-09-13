@@ -1,5 +1,24 @@
 # Candidate: predict finite chemical work to choose useful edits
 
+Implementation update (2026-09-13): `cfm_mol/chemical_work.py` now implements
+shared passive-context paired 3D work, a matched graph-only ablation, and typed
+linear bond energies. Both seeds have completed fixed400-step diagnostic and
+full fitting, with no new physical labels. The held-parent 3D work error does
+not beat the linear model. `cfm_mol/chemical_work_policy.py` implements exact
+normalization over valid forward/reverse catalogues, including the uniform
+mixture and actual map volume. Eight focused tests and all5,364 trained pair
+reversals pass. No one-pass cache across different active masks is implemented.
+
+The completed18-parent molecular evaluation uses498 raw oracle calls to score
+all231 valid edit endpoints and18 sources;20 invalid actions are retained.
+Forward policies are frozen before obtaining candidate energies. This estimates
+exact one-step corrected utility, not a sampled trajectory or an inference
+result after training/preparation costs. Linear bond energies currently give
+higher point utility than both frozen3D models. See the latest state/summary for
+full replay status and the final paired comparisons. The candidate description
+below records the hypothesis before implementation; it is not an AI novelty
+certificate.
+
 The stronger controls close the current neural-mobility superiority claim.
 At128 queries on the18 new parents, mean potential changes are-0.60935 eV for
 collective learning,-0.59773 for the bare edit and-0.61205 for small root noise.

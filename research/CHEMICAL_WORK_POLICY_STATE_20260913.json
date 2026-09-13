@@ -1,5 +1,5 @@
 {
-  "updated_at_utc": "2026-09-13T07:40:27.487506+00:00",
+  "updated_at_utc": "2026-09-13T15:35:41.655275+00:00",
   "goal_status": "active",
   "scientific_submission_ready": false,
   "previous_goal_turn_classification": "progress",
@@ -95,9 +95,9 @@
       "median_potential_change_eV": 0.4118975901910744
     }
   },
-  "candidate": "Masked passive-context paired finite-work predictor for informed selection of reversible chemical edits",
+  "candidate": "Implemented masked passive-context paired finite-work predictor and exact finite-catalogue edit policy",
   "candidate_note": "notes/chemical_work_policy_candidate_v1.md",
-  "novelty_status": "Unimplemented candidate representation. Informed/locally balanced MCMC is established prior art. New useful AI value must be demonstrated beyond linear, graph-only, force and uniform controls.",
+  "novelty_status": "The paired 3D model and corrected policy are implemented, trained and audited. Simple learned bond energies improve one-step utility over uniform/force selection, while the neural model has no established advantage over linear, graph-only, or uniform controls. Generic informed MCMC and residual learning are not novel general algorithms.",
   "catalogue": {
     "protocol": "research/evidence/chemical_work_catalogue_protocol_v1.json",
     "summary": "research/evidence/chemical_work_catalogue_summary_v1.json",
@@ -120,11 +120,155 @@
     "strong_controls": "46225291 COMPLETED",
     "strong_control_audit": "46225631 COMPLETED",
     "transfer": "46223507 COMPLETED",
-    "transfer_audit": "46223792 COMPLETED"
+    "transfer_audit": "46223792 COMPLETED",
+    "training": "46258095 COMPLETED",
+    "policy_evaluation": "46258563 COMPLETED",
+    "policy_evaluation_audit": "46258596 COMPLETED"
   },
   "all_current_work_terminal": true,
-  "next": "Implement compact paired work model with shared masked passive context, exact edit-reversal sign and known restraint/Jacobian terms. Fit parent-balanced objectives with linear bond-energy and graph-only controls. Test actual normalized forward/reverse edit selection promptly, retaining uniform/force and bare/root-noise controls. No fitting on evaluated or722 reserved outcomes.",
+  "next": "Retain typed linear work selection as the strong learned baseline. The next neural hypothesis should contain the successful additive predictor and learn non-additive 3D finite-work residuals; this architectural repair is not itself sufficient novelty. Use a bounded fixed-protocol test on existing labels and actual corrected edits before more scale or chains. Establish a useful representation contribution beyond the linear/graph controls; do not tune on evaluated outcomes or resume optimizer cleanup.",
   "optimizer_recovery_paused": true,
   "mobility_scaleup_stopped": true,
-  "reserved_conditions_unqueried": 722
+  "reserved_conditions_unqueried": 722,
+  "training": {
+    "protocol": "research/evidence/chemical_work_training_protocol_v1.json",
+    "run": "runs/chemical_work_training_v1",
+    "summary": "research/evidence/chemical_work_training_summary_v1.json",
+    "summary_sha256": "8e342ee9a67d79fafc607550a5abac45f25b5cd0cb33e619fa2e77c68b2ce2f7",
+    "variants": [
+      "linear",
+      "graph",
+      "geometry"
+    ],
+    "seeds": 2,
+    "models": 12,
+    "steps_per_model": 400,
+    "fit_parents": 36,
+    "diagnostic_fit_parents": 24,
+    "diagnostic_withheld_parents": 12,
+    "new_physical_queries": 0,
+    "pair_reversal_checks": 5364
+  },
+  "policy_evaluation": {
+    "protocol": "research/evidence/chemical_work_policy_evaluation_protocol_v1.json",
+    "run": "runs/chemical_work_policy_evaluation_v1",
+    "audit": "runs/chemical_work_policy_evaluation_audit_v1",
+    "summary": "research/evidence/chemical_work_policy_evaluation_summary_v1.json",
+    "summary_sha256": "0312488649f4a270315858482bbdbc890fa9e85a0f51c52ca1bfaad156292ced",
+    "full_replay": true,
+    "parents": 18,
+    "valid_edits": 231,
+    "failed_edits": 20,
+    "new_raw_queries": 498,
+    "independent_MH_checks": 1848,
+    "mean_one_step": {
+      "uniform": {
+        "acceptance": 0.26525993877494636,
+        "utility_eV": 0.07062060882345975,
+        "constitutional_flow": 0.26435229001171817,
+        "proposed_work_eV": 0.588442258180646
+      },
+      "force": {
+        "acceptance": 0.2845163495872161,
+        "utility_eV": 0.0625081005239041,
+        "constitutional_flow": 0.2834103732604714,
+        "proposed_work_eV": 0.5728381422753956
+      },
+      "linear_s0": {
+        "acceptance": 0.39233399573574196,
+        "utility_eV": 0.12175586194956406,
+        "constitutional_flow": 0.3909412689717771,
+        "proposed_work_eV": 0.22007546163254169
+      },
+      "graph_s0": {
+        "acceptance": 0.2731570666859723,
+        "utility_eV": 0.08217228674919846,
+        "constitutional_flow": 0.2717643396294605,
+        "proposed_work_eV": 0.6484786806377176
+      },
+      "geometry_s0": {
+        "acceptance": 0.2849222573076457,
+        "utility_eV": 0.08728082341735399,
+        "constitutional_flow": 0.28088925946534027,
+        "proposed_work_eV": 0.3939504291166065
+      },
+      "linear_s1": {
+        "acceptance": 0.3949235781656424,
+        "utility_eV": 0.12202766186983045,
+        "constitutional_flow": 0.39353085140167754,
+        "proposed_work_eV": 0.2207658217986855
+      },
+      "graph_s1": {
+        "acceptance": 0.27312383063611834,
+        "utility_eV": 0.08216189687237588,
+        "constitutional_flow": 0.27173110387218474,
+        "proposed_work_eV": 0.6485742881472137
+      },
+      "geometry_s1": {
+        "acceptance": 0.3059832534825385,
+        "utility_eV": 0.08950035376696296,
+        "constitutional_flow": 0.3018206226736045,
+        "proposed_work_eV": 0.315164287090565
+      }
+    },
+    "comparisons": {
+      "geometry minus uniform": {
+        "mean_utility_difference_eV": 0.017769979768698742,
+        "descriptive_parent_bootstrap95": [
+          -9.2205081667785e-05,
+          0.04072390497826833
+        ],
+        "parents_positive": 11
+      },
+      "geometry minus force": {
+        "mean_utility_difference_eV": 0.025882488068254383,
+        "descriptive_parent_bootstrap95": [
+          -0.006560765116366891,
+          0.06614721519076258
+        ],
+        "parents_positive": 10
+      },
+      "geometry minus linear": {
+        "mean_utility_difference_eV": -0.033501173317538775,
+        "descriptive_parent_bootstrap95": [
+          -0.07962534362334543,
+          0.0004249406627985046
+        ],
+        "parents_positive": 6
+      },
+      "geometry minus graph": {
+        "mean_utility_difference_eV": 0.006223496781371311,
+        "descriptive_parent_bootstrap95": [
+          -0.03975859312265339,
+          0.04672257758197576
+        ],
+        "parents_positive": 9
+      },
+      "linear minus uniform": {
+        "mean_utility_difference_eV": 0.05127115308623751,
+        "descriptive_parent_bootstrap95": [
+          0.011623852948393418,
+          0.09949515151822869
+        ],
+        "parents_positive": 11
+      },
+      "linear minus force": {
+        "mean_utility_difference_eV": 0.059383661385793145,
+        "descriptive_parent_bootstrap95": [
+          0.01371558415701956,
+          0.11395144186360166
+        ],
+        "parents_positive": 11
+      },
+      "graph minus uniform": {
+        "mean_utility_difference_eV": 0.01154648298732743,
+        "descriptive_parent_bootstrap95": [
+          -0.010137143569832648,
+          0.043931688327401935
+        ],
+        "parents_positive": 8
+      }
+    },
+    "scope": "Exact one-step expectation of actual corrected edits over complete valid catalogues on 18 existing evaluation-only parents. Forward probabilities frozen before candidate physical queries; all candidate labels used only for evaluation. This is not a chain, equilibrium validation, matched-wall-time result, or an inference gain after training cost. All methods retained, including unfavorable controls. No fitting on this cohort or 722 reserved outcomes."
+  }
 }
