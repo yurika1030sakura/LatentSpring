@@ -1,0 +1,74 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-13T23:28:29.304390+00:00",
+  "scenarios": [
+    "constant",
+    "nonlinear"
+  ],
+  "seeds": [
+    29011,
+    29012,
+    29013
+  ],
+  "labels_per_component": 512,
+  "hidden": 16,
+  "surrogate_steps": 600,
+  "surrogate_lr": 0.01,
+  "coupling_steps": 500,
+  "coupling_lr": 0.01,
+  "batch_size": 128,
+  "coupling_bank": 4096,
+  "angle_grid": 128,
+  "repetitions": 1000,
+  "calibration_sizes": [
+    16,
+    64,
+    256
+  ],
+  "surrogate_check_samples": 4096,
+  "generation_calibration_size": 64,
+  "generation_samples": 4096,
+  "target": {
+    "latent_shape": [
+      2,
+      3
+    ],
+    "com_atoms": 3,
+    "shells": [
+      [
+        1,
+        2
+      ],
+      [
+        3,
+        4
+      ]
+    ],
+    "kappas": [
+      1.0,
+      2.5
+    ],
+    "relative_scale": 0.4,
+    "constant_angle": 0.4,
+    "nonlinear_angle": "1.1*tanh(1.5*log(sum(z^2)/6))"
+  },
+  "methods": [
+    "independent",
+    "identity",
+    "constant",
+    "gaussian",
+    "nonlinear",
+    "oracle",
+    "mean_work"
+  ],
+  "primary": "Component-mass RMSE at64 calibration pairs compared with the optimized full O(3)-equivariant Gaussian coupling, separately for all three training seeds and both prescribed targets.",
+  "secondary": [
+    "RMSE across16/256 pairs; log-normalizer-ratio variance; individual-normalizer means.",
+    "The oracle nonlinear map is an analytic fixed-marginal optimum, not a deployable baseline.",
+    "Support and COM checks for actual generator draws; conditional shapes remain misspecified and joint reverse KL must also be reported."
+  ],
+  "budgets": "1024 analytic target labels per scenario/seed train both surrogates. Coupling optimization and constant-grid selection use only frozen surrogates. Evaluation samples are independent of fitting. Each standalone calibration uses2*n target evaluations; shared evaluation responses are counted once in research totals. Zero new molecular-oracle calls.",
+  "novelty": "Generalized coupled SNIS (Branchini/Elvira2024), Gaussian-preserving flow rearrangements (Morel et al.) and learned bridge estimators are direct prior art. Candidate distinction is the nonlinear O(3)-equivariant exact Gaussian coupling for generator-component mass calibration; neither generic coupling nor free-energy reweighting is claimed new.",
+  "scientific_submission_ready": false,
+  "interpretation": "Constructed analytic COM-space feasibility test, with one case requiring nonlinear coupling and a constant-angle control case. Exact shell references are realizable by conditional flow matching but are not trained FlowMol generators or chemically validated molecules. A toy win is not molecular usefulness or ICLR novelty."
+}
