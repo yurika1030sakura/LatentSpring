@@ -66,6 +66,20 @@ def block_catalogue(target,old,roots):
     return dict(roots=roots,valid=valid,failed=failed)
 
 
+def panel_catalogue(target,old,blocks):
+    """Conditional kernel given a randomly drawn, retained set of root blocks.
+
+    The same panel is used in the reverse density. Its sampling law is invariant
+    under the paired edit because terminal membership and element types do not
+    change. This is a mixture of auxiliary conditional MH kernels; it does not
+    require evaluating all O(N^4) possible root blocks at either endpoint.
+    """
+    if len({tuple(sorted(q)) for q in blocks})!=len(blocks):raise ValueError('Duplicate root blocks in a panel')
+    catalogues=[block_catalogue(target,old,q) for q in blocks]
+    return dict(valid=[r for c in catalogues for r in c['valid']],failed=[r for c in catalogues for r in c['failed']],
+                blocks=blocks,empty_blocks=sum(not c['valid'] for c in catalogues))
+
+
 @torch.no_grad()
 def block_policy(target,old,catalogue,backbone=None,interaction=None,*,use_affinity=False,
                  scale_eV=.25,bound=1.,uniform_fraction=.1):
