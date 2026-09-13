@@ -1,44 +1,44 @@
-# Claude continuation — September 12, 2026
+# Claude continuation — September 13, 2026 UTC
 
 Active checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
 `iclr2027-arch-fix`. Read `CLAUDE.md`, `research/NEXT.md`, `research/STATUS.md` and
-`research/SOURCE_FORCE_SCREEN_STATE_20260912.json`. Keep environments separate;
+`research/GATE_DISTILLATION_RESULT_20260913.json`. Keep environments separate and
 never write to the home checkout.
 
-The source-force screen uses general forward/reverse gate probabilities and
-candidate force only after querying. Its paired-geometry neural encoder,
-linear control, fixed physical/work controls and FIT-matched thinning are
-implemented. All four300-step runs and independent audits are complete.
-Whole-prefix neural point gains are6.06% /2.19% versus no screen, but fixed
-physical gives13.57%. Both neural-minus-physical intervals are below zero;
-neural-minus-linear intervals span zero. Only seed0 beats matched thinning.
-No repeatable useful neural advantage is established. Do not scale the weights.
+Eight matched gate runs (direct800 versus teacher500+utility300, linear/neural,
+two seeds) and independent audits are complete. The sampled index streams match
+across recipes; both reset Adam at500. All12,776 supported-pair cases and24
+phase/final gradient checks pass their declared tolerances. Pretraining does not
+improve the original12-parent selection result. No checkpoints were selected
+by intermediate validation and no new physical queries were used.
 
-Summary: `runs/source_force_screen_summary_v1/results.json`. All model/control
-metrics and6,388 supported-pair cases replay independently; max error2.09e-14.
-Six trained-head FD checks have max error8.51e-10. Training46199581 and audit
-46199747 are terminal. No new physical queries or actual saved calls occurred.
-The prefix proxy includes initial/nonjoint cost/work but holds source trajectories
-fixed. It is not a changed chain or wall-time result. Previous negatives remain.
+A frozen larger check reuses the first128-call physical prefixes of48 other
+parents in six compositions, including two absent from fitting. The corrected
+condition5 control and all provenance are retained. All1,620 attempts/1,582
+scored pairs and30,058 model-pair checks pass independent audits. Six compositions
+are weighted equally despite unequal parent counts. Pretrained neural point rates
+are2.21% /3.60% BELOW no screening, with intervals spanning zero. Small positive
+point comparisons to the physical screen are not a useful method advantage.
+No screen establishes a gain over no screening on this larger cohort.
 
-Next read `notes/gate_distillation_candidate_v1.md`. FIT-only gate-target
-analysis suggests testing dense label pretraining before utility refinement,
-with a matched total-step direct-utility control. The oracle labels and simple
-retention bound are implemented/tested; no distillation model or protocol is
-frozen/fitted yet. Do not claim the oracle teacher is deployable: its labels use
-the candidate's energy, which a cheap forward gate cannot see. Only36 FIT
-parents may enter optimization; retain12 internal-selection parents and failures.
+Stop further tuning/scaling of the tested screening recipes. Next inspect old
+escorted/collective paths and distinguish geometry restriction, intrinsic graph
+energy gaps and path-density costs. Read
+`notes/post_screening_reconstruction_20260913.md`. A paired source/destination,
+root-only/collective relaxation diagnostic may clarify this, but its exact
+protocol is not frozen and no physical job is submitted. Do not rediscover the
+old NCMC pilot or treat unconstrained relaxation as a valid MH proposal.
 
-`runs/screen_force_pairs_v1` contains all1,671 pairs with audited force provenance;
-`runs/screen_prefix_accounting_v1` contains the96 original trajectory constants.
-Do not fit on fresh follow-up outcomes, either prior molecular evaluation cohort
-or722 reserved conditions. Data construction remains18,110 raw calls. Actual
-chain gains, complete costs and suitable learned/physical controls are required.
-The ICLR goal is active and scientifically unachieved. Authors/submission remain
-with the user. Prior handoff:
-`notes/archive/claude_handoff_through_delayed_screen_20260912.md`.
+All current jobs are terminal:46203103,46203225,46206100,46206282. Re-query Slurm.
+The larger cohort is reused INTERNAL evaluation, not an untouched final test,
+and is excluded from fitting. Keep original12 selection parents, fresh follow-up,
+other evaluated cohorts and722 reserved outcomes out of optimization. Data costs
+remain explicit; this round has zero new physical calls and zero actual savings.
+The full ICLR goal remains active and scientifically unachieved. Authors and
+actual submission remain with the user. Prior handoff:
+`notes/archive/claude_handoff_through_source_force_screen_20260913.md`.
 
-Verified development PDF: `runs/verification/source_force_screen_completed_20260912/main.pdf`
-(9 main pages,23 total). Build evidence:
-`research/evidence/source_force_screen_completed_build_20260912.json`. Scientific
+Verified development PDF: `runs/verification/gate_distillation_transfer_20260913/main.pdf`
+(9 main pages,24 total). Build evidence:
+`research/evidence/gate_distillation_transfer_build_20260913.json`. Scientific
 submission readiness remains false.

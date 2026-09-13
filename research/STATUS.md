@@ -1,81 +1,77 @@
-# Current research status — September 12, 2026
+# Current research status — September 13, 2026 UTC
 
-Authoritative checkpoint: `research/SOURCE_FORCE_SCREEN_STATE_20260912.json`.
-The full ICLR goal remains active and scientifically unachieved. The completed
-source-force learner does not establish a useful advantage over cheap controls.
+Authoritative checkpoint: `research/GATE_DISTILLATION_RESULT_20260913.json`.
+The full ICLR goal is active and scientifically unachieved. The completed matched
+training and larger-cohort checks establish no useful screening advantage.
 
-## General gates and completed experiment
+## Matched gate pretraining
 
-Forward gates use the current state's cached even force, proposed geometry,
-perceived graphs, electronic conditions and known proposal ratio. Candidate
-force is used only after a passing gate and a paid query. The second log ratio
-is R + log(g_reverse) - log(g_forward), not an assumed reciprocal R-s. Tests
-cover molecular/force symmetries, information order, zero-gate exact RNG/query
-replay, and visible error after an invalid paid reverse gate. Nineteen combined
-regressions pass; independent FIT preview agrees to2.23e-16.
+Direct utility800 is compared with gate-target500 plus utility300 for both
+linear/neural architectures and two seeds. Identical sampled-index streams and
+an Adam reset at500 are verified across recipes. All final/control metrics,
+12,776 supported-pair cases, and24 phase-boundary/final head gradients pass the
+declared mixed absolute/relative checks. Maximum independent gate discrepancy
+is5.40e-14; maximum FD discrepancy is4.01e-6 across differently scaled objectives.
 
-A five-coefficient linear model and paired-geometry/force GNN each train for300
-steps and two seeds. Physical, source-work and zero controls are fixed. Each
-learner's constant-thinning control is calibrated only from FIT query use.
-The unchanged data contain36 FIT /12 internal-selection parents,1,671 attempts,
-74 failures, and verified original force/electronic provenance. No new oracle
-calls are used; inherited data construction still costs18,110 raw calls.
+Original12-parent internal rates (1e-3 eV per expected whole-prefix raw call):
 
-The objective/evaluation now includes initial and nonjoint work/cost constants
-from the original complete prefixes. The72 FIT prefixes cost128 calls each and
-have mean expected work0.4947591 eV, giving the fixed rate0.0038653057 eV/call.
-Joint contributions are replaced at recorded states; the changed trajectories
-are not replayed. All96 original prefixes and1,671 joints are joined and checked.
-
-## Internal whole-prefix results
-
-Expected work per expected raw call, eV, on12 internal parents and24 prefixes:
-
-| Model | Seed0 | Seed1 |
+| Recipe/model | Seed0 | Seed1 |
 | --- | --- | --- |
-| No screen | 0.004167470 | same fixed control |
-| Fixed physical | 0.004733094 | same fixed control |
-| Source work | 0.004522226 | same fixed control |
-| Linear | 0.004224067 | 0.004263457 |
-| Neural | 0.004420138 | 0.004258544 |
+| Direct linear | 4.4046 | 4.2739 |
+| Direct neural | 4.3856 | 4.4093 |
+| Pretrained linear | 4.2358 | 4.2121 |
+| Pretrained neural | 4.3426 | 4.3412 |
 
-Neural gains versus no screen are6.06% /2.19%; fixed physical gives13.57% and
-source work8.51%. Neural-minus-physical differences are-0.0003130 /-0.0004745,
-with95% parent intervals[-0.0005384,-0.0001026] and[-0.0008875,-0.0001086]. Both
-favor the fixed physical control. Only the first neural seed beats its matched
-thinning baseline; neither establishes an advantage over the linear model.
-Intervals fix four compositions, retain both trajectories per parent and are
-not multiplicity-adjusted. Summary: `runs/source_force_screen_summary_v1/results.json`.
+No screen is4.1675; fixed physical is4.7331. Pretrained-minus-direct neural
+intervals are below zero for both seeds. Pretraining and longer matched training
+do not resolve the competitive deficit. Summary:
+`runs/gate_distillation_summary_v1/results.json`.
 
-All final/control metrics replay. Independent calculations cover6,388 supported
-pair cases with both gates and balance, max discrepancy2.09e-14. Six sensitive
-trained-head gradients agree with FD to8.51e-10. Jobs46199581/46199747 completed
-with exit code zero. This is still a fixed-source expectation, not achieved
-query savings, changed-chain endpoints, equilibrium or a wall-time speedup.
-The earlier93% physical-screen gain used conditional joint-query rates; the
-13.57% value uses whole-prefix denominators, so those numbers are compatible.
+## Larger reused cohort
 
-## Next bounded learning question
+The frozen evaluation-only cohort has48 parents, six compositions and96 physical
+first128-call prefixes. Neither those parents nor the original12 selection
+parents enter gate fitting. Two composition identities were absent from fitting.
+These trajectories previously served scalar-model evaluation, so this is reused
+INTERNAL evidence, not a final test. The corrected condition5 control is used.
+All1,620 attempts,1,582 scored pairs and6,144 used force states retain energy,
+force, charge/spin and raw-query provenance. No new physical calls are used.
 
-`runs/gate_teacher_diagnostic_v1/results.json` uses only FIT outcomes. Neural
-seed0 retains98.95% of expected accepted moves but costs7.26 times the oracle-
-informed minimal gate; seed1 retains75.67% and costs5.71 times that teacher.
-Physical screening retains51.20% and costs3.00 times it. These are diagnostics,
-not evidence for a different primary success metric or a mixing comparison.
-The oracle-informed gate uses unknown candidate energy and is not deployable.
+Six independent audits replay every model/control metric and30,058 model-pair
+cases; maximum discrepancy2.79e-13. Aggregation weights six compositions equally,
+then parents and two trajectories within parent. The all-composition no-screen
+rate is0.009051543 eV/call; physical screening gives0.008617472. Pretrained neural
+rates are0.008851281 /0.008725512, point changes of+2.71% /+1.25% versus physical
+screening but-2.21% /-3.60% versus no screening. Both comparisons' intervals span
+zero. Neither neural model establishes benefit over linear or matched thinning.
+The two unseen compositions also show no consistent neural gain. No tested
+screen establishes improvement over no screening in this cohort.
 
-The bounded oracle targets and a simple underprediction/retention relation are
-implemented in `cfm_mol/gate_teacher.py`; two tests pass. A next candidate tests
-dense target pretraining followed by utility refinement against a matched total-
-step direct-utility control, with both linear/neural and two seeds. No such
-protocol or model is frozen/fitted yet. See `notes/gate_distillation_candidate_v1.md`.
-No new physical queries are needed initially. Keep all selection/fresh/prior
-molecular-evaluation and722 reserved outcomes out of fitting. Prior action/geometry,
-scalar-chain, strong-control and transfer negatives remain unchanged.
+These are fixed-source expected substitutions in recorded prefixes, not actual
+screened chains, saved queries, wall-time gains or equilibrium accuracy. All
+intervals fix compositions, resample parents with both trajectories and are
+not multiplicity-adjusted. Summary: `runs/screen_transfer_summary_v1/results.json`.
+The larger-cohort ranking does not support raising confidence in ICLR readiness.
 
-Historical status: `notes/archive/status_through_delayed_screen_20260912.md`.
+## Decision and next work
 
-Verified development PDF: `runs/verification/source_force_screen_completed_20260912/main.pdf`
-(9 main pages,23 total). Build evidence:
-`research/evidence/source_force_screen_completed_build_20260912.json`. Scientific
+Stop tuning/scaling the tested screening-only recipes. Inspect existing
+whole-COM escorted paths before another collective proposal: v1/v2 accepted
+only4/64 paths per replica even when the graph guide repaired endpoint support.
+A new diagnostic must separate intrinsic chemical energy gaps, geometry limits
+and path/proposal-density costs. Matched root-only versus collective relaxation
+of BOTH source and destination can be informative, but only as teacher feasibility
+with explicit convergence/support/failure accounting. No new protocol or physical
+job is frozen/submitted. See `notes/post_screening_reconstruction_20260913.md`.
+
+Jobs46203103,46203225,46206100 and46206282 are complete. This round has zero new
+physical calls; prior data construction and numerical repair costs remain.
+All older scalar, geometry, action, strong-control and transfer negatives remain.
+The722 reserved outcomes and every evaluated cohort stay out of fitting. The
+paper remains scientifically unready. Prior status:
+`notes/archive/status_through_source_force_screen_20260913.md`.
+
+Verified development PDF: `runs/verification/gate_distillation_transfer_20260913/main.pdf`
+(9 main pages,24 total). Build evidence:
+`research/evidence/gate_distillation_transfer_build_20260913.json`. Scientific
 submission readiness remains false.

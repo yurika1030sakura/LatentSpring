@@ -1,0 +1,80 @@
+\section{Matched gate pretraining and larger-cohort check}
+\label{app:gate-distillation-transfer}
+
+To test whether sparse utility feedback limits the source-force model, we
+compare direct utility optimization for 800 steps with 500 steps of normalized
+oracle log-gate target fitting followed by 300 utility steps. For finite true
+MH ratio $R$ and floor $e^{-B}$, the labels are
+\begin{equation}
+ \ell_f^*=\operatorname{clip}(R,-B,0),\qquad
+ \ell_r^*=\operatorname{clip}(-R,-B,0).
+\end{equation}
+They retain ordinary MH acceptance and are pointwise minimal under the floor
+subject to that retained probability. This elementary identity supplies training
+labels, not a deployable cheap oracle: constructing them requires the proposed
+energy after it has been queried. Positive log-gate underprediction relative to
+these labels bounds the corresponding loss of accepted probability; empirical
+label error does not certify a uniform unseen-state bound or mixing rate.
+
+Both recipes use the same source-force architecture, data, seeds, index draws
+and total step count. Adam resets at step 500 for both. Exact index corrections
+retain each declared empirical objective and all failures. No validation is used
+at the boundary checkpoint. The linear and neural versions each have two seeds,
+for eight frozen arms. All final metrics, fixed/thinning controls and 12,776
+supported-pair cases pass independent checks, including both gate orientations.
+All eight sampled-index streams are reconstructed and matched across recipes;
+24 phase-boundary/final head derivatives pass the declared finite-difference
+tolerances. No new physical queries are used.
+
+\begin{table}[h]
+\centering\small
+\begin{tabular}{lrr}
+\toprule
+Training/model & Seed 0 & Seed 1 \\
+\midrule
+Direct linear & 4.4046 & 4.2739 \\
+Direct neural & 4.3856 & 4.4093 \\
+Distill linear & 4.2358 & 4.2121 \\
+Distill neural & 4.3426 & 4.3412 \\
+\bottomrule
+\end{tabular}
+\caption{Original 12-parent internal whole-prefix rates, in
+$10^{-3}$\,eV per expected raw call. No screening gives 4.1675 and fixed physical
+screening 4.7331. Gate pretraining does not establish improvement.}
+\end{table}
+
+Pretrained-minus-direct neural differences are $-4.30\times10^{-5}$ and
+$-6.81\times10^{-5}$\,eV per expected call, with descriptive 95\% parent intervals
+$[-6.58,-2.33]\times10^{-5}$ and $[-11.17,-3.15]\times10^{-5}$.
+Both pretrained neural models also lose to fixed physical screening on this
+cohort. Increasing matched training time and changing initialization supervision
+has not resolved the competitive deficit.
+
+\newpage
+\paragraph{Larger reused internal cohort.}
+Because the fixed physical screen's ranking reverses between fitting and internal
+selection parents, we freeze an evaluation-only check on 48 other parents and
+six compositions. Two composition identities were absent from gate fitting.
+These physical trajectories were previously used to evaluate scalar models;
+they are not an untouched final test. Neither these parents nor the original
+12 selection parents enter the new models' fitting. We retain each physical
+trajectory's first 128-call prefix, including the corrected condition-5 control,
+for 96 prefixes, 1,620 joint attempts and 1,582 scored pairs. All original energy,
+force, electronic-state and numerical-repair provenance is retained. No models
+are updated and no new oracle calls are used. Six independent audits verify
+30,058 model/pair cases with maximum discrepancy $2.79\times10^{-13}$.
+
+Six compositions are weighted equally despite their unequal parent counts;
+uncertainty resamples parents within composition and retains both trajectories.
+The all-composition no-screen rate is $0.0090515$\,eV per expected call, versus
+$0.0086175$ for fixed physical screening. Pretrained neural rates are
+$0.0088513$ and $0.0087255$: point improvements of 2.71\% and 1.25\% over physical
+screening, but decreases of 2.21\% and 3.60\% against no screening. Both sets of
+intervals span zero. No tested screen establishes a rate improvement over no
+screening on this larger cohort, and neural-versus-linear intervals also span
+zero. The two unseen compositions do not establish a consistent neural benefit.
+These results stop scale-up of the tested screen recipes. They remain
+fixed-source prefix expectations, not measurements of new screened chains,
+actual savings or equilibrium accuracy. Conclusions require the no-screen comparison as well as
+comparisons between screens. All intervals are descriptive and not
+multiplicity-adjusted.

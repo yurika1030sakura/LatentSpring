@@ -1,49 +1,51 @@
-# Next research actions — September 12, 2026
+# Next research actions — September 13, 2026 UTC
 
-Read `research/SOURCE_FORCE_SCREEN_STATE_20260912.json`. Use the laboratory
-checkout; never write to home. The full ICLR goal remains active and unachieved.
+Read `research/GATE_DISTILLATION_RESULT_20260913.json`. Work in the laboratory
+checkout; never write to home. The full ICLR objective remains active and unachieved.
 
-1. Source-force screening and whole-prefix accounting are COMPLETE and audited.
-   Summary: `runs/source_force_screen_summary_v1/results.json`. Both neural seeds
-   lose to the fixed physical screen; their difference intervals are below zero.
-   Only seed0 improves over no screen and its FIT-matched thinning control.
-   Neither seed establishes benefit over linear learning. Do not scale the weights.
-2. Read `notes/gate_distillation_candidate_v1.md`. The FIT-only diagnostic shows
-   neural seed0 retaining98.95% of recorded expected acceptance but costing7.26
-   times an inadmissible oracle teacher, versus75.67% /5.71 for seed1. These do
-   not change the primary result or establish mixing. Actual candidate energy
-   defines the oracle labels and is unavailable to a cheap gate at inference.
-3. `cfm_mol/gate_teacher.py` and two tests implement ordinary-MH-preserving bounded
-   oracle labels and a simple log-underprediction/acceptance-retention relation.
-   It is an elementary identity, not a new theorem. Freeze a matched total-step
-   comparison before optimization: direct utility800 versus gate-target500 plus
-   utility300, both linear/neural and two seeds, with the same data, bounds and
-   controls. Exact objective/sampling choices are not frozen yet. No distillation
-   model has been fitted. Do not just extend the old300-step runs.
-4. Both phases may use only the36 FIT parents. Keep the12 internal-selection
-   parents, every failure, the original force/energy provenance and whole-prefix
-   cost accounting. Source force may enter the forward gate; candidate force and
-   true energy enter labels or post-query reverse correction only. Retention is
-   a separate diagnostic, never a replacement success metric after outcomes.
-   Initial work needs no new physical queries.
-5. The existing `utility_onpolicy_v1` PHYSICAL proposals remain available for a
-   separately frozen internal check of candidate gates on1,152 recorded draws.
-   No fitting on these outcomes. Such a check estimates expectations, not actual
-   saved calls or screened chains. Preserve its internal/reused-data designation.
-6. Real chains, complete wall-time/data/query costs, strong physical and
-   representative learned-generator baselines, realistic reuse and independent
-   final evaluation remain necessary. Keep the old six-composition and48-parent
-   molecular evaluations and all722 reserved outcomes out of fitting. Do not
-   mistake ordinary screening, cached forces or a new training loss for novelty.
+1. Matched800-step direct/distillation training and all8 audits are COMPLETE.
+   Pretraining loses to direct utility on the original12 selection parents.
+   The larger48-parent, six-composition evaluation and all6 audits are also
+   COMPLETE. No tested screen establishes a benefit over no screening there.
+   Do not scale or keep tuning these screening-only recipes. Small favorable
+   comparisons against another screen do not replace the no-screen control.
+2. Read `notes/post_screening_reconstruction_20260913.md`. Inspect existing
+   `escorted_exchange.py`, `chemical_path_guide.py`, their v1/v2/v3 experiments,
+   and `notes/nonequilibrium_chemical_candidate.md` before proposing collective
+   relaxation. Whole-COM paths already exist; v1/v2 accepted only4/64 paths per
+   replica even after endpoint support improved. Preserve those negatives.
+3. Make the next physics question discriminating before training another network:
+   distinguish geometric restriction from intrinsic chemical energy gaps and
+   proposal/path-probability costs. A bounded FIT-only diagnostic can compare
+   root-only and collective relaxation of BOTH the source and exchanged endpoint,
+   with matched oracle budgets and fixed perceived connectivity. Large anchor
+   forces alone are not proof, and lowering a destination alone confounds generic
+   relaxation of the source. Freeze exact selection, optimizer, query limits,
+   convergence/support checks and failure denominators before new calculations.
+   No such new protocol or job is frozen/submitted yet.
+4. Treat optimization as teacher feasibility, not a sampler. Any later collective
+   learned proposal needs its actual density/Jacobian or a complete reversible
+   auxiliary path; swap-plus-uncontrolled-relaxation with endpoint-only MH is
+   incorrect. Only proceed to a new learned framework if the diagnostic identifies
+   an opportunity. Do not assume another loss, neural head or collective move is
+   intrinsically novel or useful.
+5. The larger screening cohort is EVALUATION ONLY:48 parents excluded from gate
+   fitting and original12-parent selection, including two unseen composition
+   identities. It was used earlier for scalar evaluation and is not a final test.
+   Do not fit on it, fresh-proposal outcomes, any other prior evaluated cohort or
+   the722 reserved conditions. Preserve all source failures and electronic states.
+6. The final goal still requires reproducible real molecular gains, complete
+   timing/data/query costs, strong physical and representative learned-generator
+   baselines, realistic reuse and independent final evaluation. Current expected
+   substitutions at recorded prefixes are not changed chains or actual savings.
 
-Training46199581 and audit46199747 are terminal; re-query Slurm before action.
-Current results are fixed-source whole-prefix expectations, not changed chains.
-The previous conditional-joint93% physical-screen rate gain and current13.57%
-whole-prefix gain use different denominators and are not contradictory. Read
-STATUS for the current PDF. Prior NEXT:
-`notes/archive/next_through_delayed_screen_20260912.md`.
+Jobs46203103,46203225,46206100 and46206282 are terminal. Re-query Slurm before
+recovery; do not restart completed work. Summaries:
+`runs/gate_distillation_summary_v1/results.json` and
+`runs/screen_transfer_summary_v1/results.json`. Read STATUS for the verified PDF.
+Prior NEXT: `notes/archive/next_through_source_force_screen_20260913.md`.
 
-Verified development PDF: `runs/verification/source_force_screen_completed_20260912/main.pdf`
-(9 main pages,23 total). Build evidence:
-`research/evidence/source_force_screen_completed_build_20260912.json`. Scientific
+Verified development PDF: `runs/verification/gate_distillation_transfer_20260913/main.pdf`
+(9 main pages,24 total). Build evidence:
+`research/evidence/gate_distillation_transfer_build_20260913.json`. Scientific
 submission readiness remains false.

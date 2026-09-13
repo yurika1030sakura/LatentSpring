@@ -18,7 +18,7 @@ move has a useful molecular diagnostic; a learned-policy or ICLR-level advantage
 has not been established. `research/NEXT.md` is the current execution checkpoint.
 
 **Claude continuation entrypoint:** read `CLAUDE_HANDOFF.md`, `research/NEXT.md` and
-`research/SOURCE_FORCE_SCREEN_STATE_20260912.json` first. They record the current method,
+`research/GATE_DISTILLATION_RESULT_20260913.json` first. They record the current method,
 live job handles, exact next commands and remaining scientific gates. The core
 candidate is ready for continuation; the paper is not submission ready.
 Historical checkpoints below and in STATUS must not replace live scheduler
@@ -140,13 +140,28 @@ fixed physical13.57%. The earlier93% value used conditional joint-query rates;
 it is not a whole-sampler speedup. No new physical queries or actual savings
 occurred. Force provenance and original36/12 split remain audited.
 
-A FIT-only gate-target diagnosis motivates a bounded pretraining comparison.
-`cfm_mol/gate_teacher.py` implements oracle-only labels and a simple retention
-relation, not a deployable cheap oracle or a new theorem. Read
-`notes/gate_distillation_candidate_v1.md`. Match total training steps and simple
-controls; no distillation model/protocol is frozen or fitted yet. Exclude every
-evaluated cohort and722 reserved outcomes from fitting. The ICLR goal is active;
-competitive sampling, equilibrium and scientific readiness remain unqualified.
+The matched800-step direct versus gate-pretraining comparison is now COMPLETE.
+All eight models and boundary/final objectives are audited, with matched sampled
+index streams. Pretraining does not resolve the original12-parent selection
+failure. The larger48-parent, six-composition reused evaluation is also complete:
+no screen establishes a benefit over no screening. All30,058 model/pair cases
+pass independent checks. The two unseen composition identities do not establish
+consistent neural benefit. No new physical queries or actual savings occurred.
+Read `research/GATE_DISTILLATION_RESULT_20260913.json`.
+
+Stop scaling/tuning these screening-only recipes. Small positive point changes
+against another screen do not replace the no-screen comparison. All current
+jobs46203103,46203225,46206100 and46206282 are terminal; re-query Slurm before
+recovery. The larger cohort is evaluation-only and previously served scalar
+experiments; it is not an untouched final benchmark and must not enter fitting.
+
+Next inspect existing collective/escorted paths and distinguish geometric
+restriction, intrinsic chemical energy gaps and proposal/path-density costs.
+Read `notes/post_screening_reconstruction_20260913.md`. A matched source/destination
+root-only versus collective relaxation diagnostic may inform reconstruction,
+but no such new protocol or physical job is frozen/submitted. Existing whole-COM
+path failures remain. Keep every evaluated cohort and722 reserved outcomes out
+of fitting. The full ICLR goal is active and scientifically unachieved.
 The previous manuscript is `paper/main.tex` with
 `sections/M1_refinement.tex` and `M2_refinement_proofs.tex`, describing the actual
 exact-entropy refinement candidate. It is explicitly a development draft.
