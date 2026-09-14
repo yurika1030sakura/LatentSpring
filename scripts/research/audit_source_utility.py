@@ -51,7 +51,7 @@ def main():
             result=assess(torch.tensor(r['reference_positions'],dtype=torch.double)[None],r['condition'],[0])
             assert result['graph_supported']==1 and result['validator_errors']==0
     seeds=[a.seed_index] if a.seed_index is not None else [0,1]
-    all_results={}; audit_rows=[]; total_sources=0
+    all_results={}; audit_rows=[]; total_sources=0; costs={}
     for s in seeds:
         root=a.run/f's{s}'
         completed=json.loads((root/'results.json').read_text())
@@ -65,7 +65,16 @@ def main():
         training=json.loads((root/'training/training.json').read_text())
         assert sha(root/'training/training.json')==completed['training_sha256']
         assert sha(root/'training/bank_labels.json')==training['bank_labels_sha256']
+        for name, record in training['models'].items():
+            assert record['steps']==spec['prior_epochs']*len(refs['fit'])
+            assert sha(root/'training'/f'{name}_metrics.json')==record['metrics_sha256']
         all_results[s]={}
+        bank_cost=json.loads((root/'bank/fixed_results.json').read_text())
+        bank_seconds=sum(r['generation_seconds'] for r in bank_cost['rows'])
+        costs[s]=dict(total_run_elapsed_seconds=completed['elapsed_seconds'],bank_generation_seconds=bank_seconds,
+            bank_attempts=completed['bank_attempts'],source_training_seconds={m:r['training_seconds'] for m,r in training['models'].items()},
+            independent_method_preparation_seconds={m:(bank_seconds if m in ['actual','shuffled'] else 0.)+(training['models'][m]['training_seconds'] if m!='fixed' else 0.) for m in spec['methods']},
+            scope='Existing decoder training is common and reused. Actual/shuffled each require the full bank when deployed independently; the study generates it once and shares it. NLL does not require that bank. Corpus selection and training-bank density preprocessing are included only in total elapsed, not these component timers.')
         for phase,methods,refrows in [('bank',['fixed'],refs['fit']),('evaluation',spec['methods'],refs['held'])]:
             for method in methods:
                 if phase=='bank': prior=base
@@ -75,6 +84,8 @@ def main():
                     assert sha(file)==training['models'][method]['checkpoint_sha256']
                     saved=torch.load(file,map_location='cpu',weights_only=False)
                     assert saved['protocol_sha256']==ph and saved['base_decoder']==source and saved['method']==method and saved['seed']==s
+                    assert saved['configuration']['mode']==spec['prior_mode']
+                    assert saved['bank_report_sha256']==sha(root/'bank/fixed_results.json')
                     candidate=TreeMixturePrior(**saved['configuration']).double()
                     candidate.load_state_dict(saved['state_dict'],strict=True);candidate.requires_grad_(False)
                     assert saved['delta']==spec['trust_delta_nats']
@@ -134,7 +145,7 @@ def main():
         distinct=sum(summary[s]['actual']['distinct_connectivity']-summary[s]['fixed']['distinct_connectivity'] for s in seeds)/sum(summary[s]['fixed']['attempts'] for s in seeds)
         gate=point and bounds and distinct>=-.02
     write(a.out,dict(complete=True,protocol_sha256=ph,source_draws_replayed=total_sources,structural_attempts_replayed=total_sources,
-        reference_assays_replayed=sum(len(refs[r]) for r in ['fit','held']),rows=audit_rows,summary=summary,comparisons= comparisons,
+        reference_assays_replayed=sum(len(refs[r]) for r in ['fit','held']),rows=audit_rows,summary=summary,comparisons=comparisons,costs=costs,
         development_gate_passed=gate if len(seeds)==2 else None,new_molecular_oracle_calls=0,scientific_submission_ready=False,
         scope='Common frozen decoders; source-head held-out conditions from flow training corpus. Paired draw intervals conditional on these decoder checkpoints and compositions. Composition intervals descriptive; no model-seed population claim. No fresh decoder integration replay or absolute output density certification.'))
 
