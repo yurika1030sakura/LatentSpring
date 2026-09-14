@@ -1,57 +1,55 @@
-# Claude continuation — context test negative; source geometry gain and assay mismatch
+# Claude continuation — monomer assay qualified, learned-source gain still absent
 
 Checkout `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
-`iclr2027-arch-fix`. Read `research/NEXT.md`,
-`research/TREE_TRANSFER_STATE_20260914.json` and
-`notes/tree_results_and_scope_20260914.md` first.
+`iclr2027-arch-fix`. Read `research/NEXT.md`, `research/MONOMER_STATE_20260914.json`,
+`notes/monomer_results_20260914.md` and `notes/source_utility_learning_brief_v1.md`.
 
-The previously proposed tree-context network is now implemented and tested.
-`cfm_mol/latent_tree_context.py` adds a zero-initialized invariant residual edge
-adapter. The source tree follows the actual source permutation during FM pairing;
-actual and independent-tree arms have identical adapter parameters, initialization
-and budgets. Checkpoint restoration and missing-context/density guards work.
-57 targeted tests pass. No shared FlowMol code or bond supervision was changed.
+The prospective single-molecule task is now explicit: neutral singlet organic
+structures8-40 atoms. Metadata/reference criteria were fixed before generation.
+Of78 eligible original references,31 qualified; fixed hashes selected21 in size
+bins5/8/8. All21 reference assays pass. No equal elemental-count vector occurs
+in3,902,107 train or39,415 legacy-val records from checksum-verified processed
+corpora. Fast hashes are followed by exact checks, with deliberate collisions
+and real-corpus positive controls. This does not certify arbitrary unrecorded
+pretraining or complete parent-trajectory relationships.
 
-The matched generation experiment is COMPLETE and negative: graph passes/512 for
-no context / actual / independent are118/102/119 and97/75/97. The actual-tree head
-has no useful increment; second-seed intervals exclude zero negatively. All3,072
-source/context trees and structural outputs replay, and full-sized checkpoints
-restore. Do not scale this static adapter, vary its LR or gate to chase a win on
-these outcomes. Retain its implementation and the negative result.
+All10,752 outputs are COMPLETE and audited. First Gaussian/shell/harmonic/node/pair
+counts/1,344 are581/627/575/603/561; second Gaussian/shell/harmonic521/557/598.
+Node/pair source models exist only for the first continuation. Node minus shell
+is-1.79 pp[-5.21,1.64]; pair minus shell-4.91 pp[-8.41,-1.41]. No learned increment
+is established. Shell geometric gains repeat, but its paired graph-gain intervals
+span zero; keep the descriptive composition intervals too. No per-seed winner
+selection or post hoc removal of failed outcomes. The previous static-context
+adapter remains a negative result and is not scaled.
 
-The source framework was then tested on32 prospectively selected additional
-compositions without retraining. Gaussian / shell / harmonic graph passes/1,024
-are180/200/183 and164/178/195. Shell geometry improves6.54 and5.86 percentage
-points, with positive paired and descriptive composition intervals. Its graph-
-gain intervals span zero. All6,144 outputs replay; no source is chosen per seed.
+The implemented candidate is a learnable explicit-density source without supplied
+bonds. It has more method content than only adding a loss, but generic tree models,
+harmonic priors and latent conditioning have prior art. ICLR-level originality and
+usefulness are not established. Do not say the new benchmark produced a neural win.
 
-A reference assay check reveals a fundamental scope limitation: only6/32 original
-reference graphs pass the same readout;20/32 pass geometry,12 references are
-multifragment and12 cause validator exceptions. All16 all-arm-zero generated
-conditions also have rejected reference graphs. This is not permission to change
-primary counts or call rejected outputs chemically valid. Reference snapshots can
-be reactive/distorted/multicomponent. Do not retroactively use the six passing
-references as a new primary result. All32 references remain evaluation only.
+Next is one hypothesis: learn source probabilities from actual sample utility with
+the decoder frozen. The brief gives the source-space importance identity and an
+optional analytic tree-KL bound on raw output distribution shift under a common
+fixed kernel. It is mathematical/design work only, not an implemented or successful
+algorithm. Validate related work, support/estimator/trust assumptions and a bounded
+FIT-bank protocol first. Use actual/shuffled utility and unadapted controls; an
+objective comparison also needs an NLL source under the same frozen decoder.
+Do not fit any old evaluation data or assert that the old NLL objective is proven
+to be the unique cause of failure. User authorization permits bounded continuation
+without another permission question.
 
-Next is a prospective task/assay alignment for single-molecule generation, before
-more neural architecture variants. Inspect original-reference eligibility and
-metadata without output ranking, state any organic/monomer scope explicitly, and
-keep the existing broad panel as a separate stress test. Resolve training overlap
-before an unseen-composition claim. No replacement panel or successful architecture
-has been invented here. The user's broad authorization permits bounded work
-without another permission question; the ICLR goal remains active and unachieved.
+New infrastructure: `cfm_mol/source_checkpoint.py` restores the exact saved source,
+including node/pair priors;17 targeted restoration/tree tests pass. The evaluation
+runner's optional checkpoint-prior path leaves older default protocols unchanged.
+Jobs46415396_0/1 completed0:0 in34:26/20:28. Re-query Slurm. All source draws, reference
+assays, training-row matching and structural readouts replay; optimizer trajectories
+and final neural integration are not independently rerun. No new training or oracle
+queries occurred. Total tree/monomer outputs are30,208; earlier tree-energy calls5120.
 
-Jobs46367714_0/1 and46368764_0/1 all completed0:0. Query live Slurm; no job from
-these completed studies is intentionally left in the background. The two studies
-add9,216 outputs, totaling19,456 tree-study outputs. Zero new physical calls;
-the earlier energy readout remains5,120. Audits replay source draws and readouts,
-not full training or final neural trajectories. `paper/tree_working.tex` is the
-current internal manuscript with all results, proofs and limitations; it is not
-submission ready. The older manuscripts remain historical.
-
-Protect722 reserved outcomes, old12/18 cohorts,2,560 orbit outputs,19,456 tree
-outputs and32 raw references from fitting. Keep bond-free OMol25, max_atoms200,
-original charge/spin, separate environments and no home writes. The noisy T1
-sampler has no qualified absolute density/ESS/Boltzmann law. Earlier failed
-routing/collision/latent-mass sweeps remain closed. The user handles submission;
-official abstract/paper dates remain September18/25,23:59 AoE.
+Protect722 reserved outcomes, old evaluated cohorts,2,560 orbit outputs,30,208
+new-stage outputs,32 older references and78 monomer-pool references from fitting.
+Keep bond-free OMol25, max_atoms200, original charge/spin, separate environments and
+no home writes. The noisy final flow has no qualified density, ESS or Boltzmann law.
+All old routing/collision/latent-mass/static-context sweeps stay closed. The internal
+manuscript and abstract preserve the complete evidence; they are not submission
+ready. User handles authorship/submission; ICLR goal active and unachieved.

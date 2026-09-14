@@ -20,27 +20,24 @@
 \begin{center}\textbf{Development draft. Competitive advantage and submission readiness remain unestablished.}\end{center}
 \begin{abstract}
 Molecular flow matching often starts from isotropic noise or a spatial prior
-constructed from a supplied chemical graph. We study spatial source distributions
-when atomic composition and electronic conditions are given but chemical bonds
-are unavailable. A latent dependence tree connects isotropic finite-length edge
-distributions, and a matrix-tree ratio gives the normalized marginal coordinate
-density after removing translation. Small composition-conditioned networks learn
-tree affinities directly from coordinates, without bond targets or gradients
-through sampled discrete trees. We integrate this source with a molecular flow
-and examine which source properties improve generation. In a bounded OMol25
-development study, a fixed tree prior reduces fragmentation. Fresh draws from two
-matched training continuations also show higher graph acceptance than isotropic
-and covariance-matched single-Gaussian sources; comparison with a harmonic-tree
-mixture varies across continuations. An earlier weaker confirmation stream is
-retained. On32 additional compositions, geometric support improves while the
-shell-tree graph-acceptance gain remains uncertain. Original-reference checks
-also reveal limited graph-assay coverage on this heterogeneous domain. Learned
-affinities improve held-out source likelihood but have not established an
-increment over the fixed prior in final generation. A one-seed energy readout
-provides a node-network signal relative to an isotropic source. These results
-motivate separating source fit, spatial dependence and chemical utility. A matched
-test does not support the added static source-tree context adapter. These results
-do not establish equilibrium sampling or broad generator superiority.
+constructed from a supplied chemical graph. We study a learnable coordinate
+source when composition and electronic conditions are given but bonds are
+unavailable. A latent dependence tree connects normalized isotropic edge laws;
+a matrix-tree ratio gives the marginal coordinate density on the translation-free
+subspace. Small networks learn affinities directly from coordinates without bond
+targets or gradients through sampled trees. We integrate this source with molecular
+flow matching and distinguish source fit from generation utility. Tree sources
+repeatedly improve geometric support in bounded OMol25 studies, while chemical
+graph improvements vary across continuations. Broad-panel reference checks expose
+limited graph-assay coverage. A prospective test therefore selects21 neutral
+organic monomers whose original references all pass the unchanged assay and whose
+compositions are absent from two verified processed corpora. On10,752 generated
+outputs, learned node/pair sources still do not establish an increment over the
+fixed shell source; a separate static tree-context adapter also fails its matched
+control. The framework makes the source probability law explicit, but these
+results do not establish competitive superiority or equilibrium sampling. They
+motivate testing source learning against terminal generation utility rather than
+assuming that improved coordinate likelihood is sufficient.
 \end{abstract}
 
 \section{Introduction}
@@ -212,9 +209,19 @@ with deliberate hash-collision and real-corpus positive controls. This establish
 separation from those files, not arbitrary unrecorded pretraining or all parent
 trajectory relations. Five frozen source models are evaluated in the first
 continuation and three in the second; node/pair source models have only one
-continuation. No model is refitted for this panel. \textbf{The complete generated-
-output audit is pending in this development version.}
+continuation. No model is refitted for this panel. All10,752 generated source
+draws and structural outcomes, all21 reference assays, and matched training rows
+are replayed in the completed audit.
 \IfFileExists{sections/monomer_results.tex}{\input{sections/monomer_results}}{}
+
+The learned node and pair sources do not outperform the fixed shell source on
+this task; the pair-source graph difference is negative under both interval
+summaries. Poor reference-assay coverage is therefore not a sufficient explanation
+for the lack of learned-source benefit. The shell source improves geometry support
+by4.84 and7.14 percentage points, with positive paired and descriptive composition
+intervals. Its graph-gain draw intervals still span zero. Harmonic graph performance
+improves clearly in only the second continuation. The result supports a geometric
+source effect, not a repeated neural-source or universal graph-validity advantage.
 
 \paragraph{Tree-conditioned transport variant.}
 The source-only flow receives coordinates sampled from a tree but does not receive
@@ -371,16 +378,21 @@ actual/sham/no-context test. The32-composition comparison supports geometric gai
 but not a repeated shell-tree graph advantage. Poor reference coverage shows why
 a primary single-molecule benchmark must align its input domain and assay before
 further architectural claims. The prospective neutral-monomer panel supplies that
-next controlled test; its evaluation is pending. The present results do not establish a calibrated
-energy distribution or a completed competitive benchmark.
+controlled test, and its completed results still do not establish extra learned-
+source utility. One focused next hypothesis is to fit source probabilities to
+terminal generation utility with a frozen decoder, rather than to reference
+coordinate likelihood. Exact source importance ratios could support such a test
+without assigning a marginal density to the noisy decoder. That utility-trained
+method has not been implemented or validated here. The present results do not
+establish a calibrated energy distribution or a completed competitive benchmark.
 \label{endofmaintext}
 
 \subsubsection*{Reproducibility statement}
 Frozen protocols record data-order and generation seeds, source checkpoint hashes,
 all attempted structures, electronic conditions and oracle costs. Current audits
-replay19,456 source draws and structural readouts and5,120 stored physical rows;
+replay30,208 source draws and structural readouts and5,120 stored physical rows;
 they do not independently rerun optimizers, final neural generation or the oracle.
-The moment-control, context and additional-composition audits are complete.
+The moment-control, context, additional-composition and monomer audits are complete.
 Original-reference calibration is separate from generation and fitting.
 Implementation tests cover normalization,
 Jacobians, weighted-tree sampling, symmetry, density gradients and source-law guards.

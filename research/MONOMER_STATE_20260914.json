@@ -1,6 +1,6 @@
 {
-  "updated_utc": "2026-09-14T16:23:56.058850+00:00",
-  "phase": "reference_qualified_monomer_comparison_running",
+  "updated_utc": "2026-09-14T17:17:27.442980+00:00",
+  "phase": "monomer_comparison_complete_no_learned_increment",
   "job_id": "46415396",
   "source_commit": "5a4f7aa317c30eb1a55893790849b5fa00723803",
   "run": "runs/monomer_evaluation_v1",
@@ -46,5 +46,1375 @@
   "scientific_submission_ready": false,
   "iclr_goal_achieved": false,
   "previous_state": "research/TREE_TRANSFER_STATE_20260914.json",
-  "next": "Complete all frozen models, replay reference eligibility, source sampling and structural readouts, and assess learned-source increments without implying a second learned-prior training seed."
+  "next": "Test the hypothesis of utility-trained source probabilities with a frozen generator and actual/shuffled-utility controls; first complete its mathematical/related-work qualification and freeze a bounded training/validation protocol.",
+  "jobs": [
+    {
+      "job_id": "46415396_0",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:34:26"
+    },
+    {
+      "job_id": "46415396_1",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:20:28"
+    }
+  ],
+  "audit": "research/evidence/monomer_evaluation_audit_v1.json",
+  "results_note": "notes/monomer_results_20260914.md",
+  "new_outputs_replayed": 10752,
+  "total_tree_outputs_replayed": 30208,
+  "results": {
+    "s0": {
+      "gaussian": {
+        "attempted": 1344,
+        "graph_supported": 581,
+        "geometrically_supported": 789,
+        "validator_errors": 0,
+        "generation_seconds": 399.7204454722814,
+        "disconnected": 548,
+        "overlap": 21,
+        "distinct_connectivities_sum": 565
+      },
+      "fixed": {
+        "attempted": 1344,
+        "graph_supported": 627,
+        "geometrically_supported": 854,
+        "validator_errors": 0,
+        "generation_seconds": 395.3899923688732,
+        "disconnected": 479,
+        "overlap": 20,
+        "distinct_connectivities_sum": 603
+      },
+      "harmonic_tree": {
+        "attempted": 1344,
+        "graph_supported": 575,
+        "geometrically_supported": 811,
+        "validator_errors": 0,
+        "generation_seconds": 414.59895780612715,
+        "disconnected": 521,
+        "overlap": 21,
+        "distinct_connectivities_sum": 543
+      },
+      "node": {
+        "attempted": 1344,
+        "graph_supported": 603,
+        "geometrically_supported": 817,
+        "validator_errors": 0,
+        "generation_seconds": 418.3178395961877,
+        "disconnected": 520,
+        "overlap": 12,
+        "distinct_connectivities_sum": 570
+      },
+      "pair": {
+        "attempted": 1344,
+        "graph_supported": 561,
+        "geometrically_supported": 802,
+        "validator_errors": 0,
+        "generation_seconds": 412.9288907207083,
+        "disconnected": 529,
+        "overlap": 29,
+        "distinct_connectivities_sum": 521
+      }
+    },
+    "s1": {
+      "gaussian": {
+        "attempted": 1344,
+        "graph_supported": 521,
+        "geometrically_supported": 683,
+        "validator_errors": 0,
+        "generation_seconds": 397.3755128046032,
+        "disconnected": 644,
+        "overlap": 29,
+        "distinct_connectivities_sum": 512
+      },
+      "fixed": {
+        "attempted": 1344,
+        "graph_supported": 557,
+        "geometrically_supported": 779,
+        "validator_errors": 0,
+        "generation_seconds": 399.7503030584194,
+        "disconnected": 546,
+        "overlap": 40,
+        "distinct_connectivities_sum": 536
+      },
+      "harmonic_tree": {
+        "attempted": 1344,
+        "graph_supported": 598,
+        "geometrically_supported": 799,
+        "validator_errors": 0,
+        "generation_seconds": 410.8099366039969,
+        "disconnected": 539,
+        "overlap": 27,
+        "distinct_connectivities_sum": 576
+      }
+    }
+  },
+  "comparisons": {
+    "s0": {
+      "fixed minus gaussian": {
+        "graph": {
+          "mean": 0.03422619047619048,
+          "within_composition_paired95": [
+            -0.001488095238095238,
+            0.06994047619047619
+          ],
+          "descriptive_size_stratified95": [
+            0.005208333333333333,
+            0.06547619047619048
+          ],
+          "per_condition_counts": [
+            -5,
+            1,
+            3,
+            10,
+            8,
+            6,
+            16,
+            0,
+            3,
+            4,
+            0,
+            3,
+            0,
+            4,
+            -4,
+            -3,
+            -4,
+            2,
+            0,
+            -2,
+            4
+          ]
+        },
+        "geometry": {
+          "mean": 0.04836309523809524,
+          "within_composition_paired95": [
+            0.013392857142857142,
+            0.08258928571428571
+          ],
+          "descriptive_size_stratified95": [
+            0.018601190476190476,
+            0.07886904761904762
+          ],
+          "per_condition_counts": [
+            -7,
+            3,
+            0,
+            13,
+            7,
+            3,
+            11,
+            3,
+            1,
+            -3,
+            3,
+            4,
+            1,
+            8,
+            1,
+            1,
+            3,
+            3,
+            1,
+            0,
+            9
+          ]
+        },
+        "disconnected": {
+          "mean": -0.05133928571428571,
+          "within_composition_paired95": [
+            -0.08556547619047619,
+            -0.01636904761904762
+          ],
+          "descriptive_size_stratified95": [
+            -0.0818452380952381,
+            -0.021577380952380952
+          ],
+          "per_condition_counts": [
+            7,
+            -3,
+            0,
+            -13,
+            -7,
+            -3,
+            -11,
+            -4,
+            -1,
+            2,
+            -4,
+            -3,
+            -1,
+            -8,
+            -2,
+            -1,
+            -3,
+            -3,
+            1,
+            -2,
+            -10
+          ]
+        }
+      },
+      "harmonic_tree minus gaussian": {
+        "graph": {
+          "mean": -0.004464285714285714,
+          "within_composition_paired95": [
+            -0.03943452380952381,
+            0.02978050595238068
+          ],
+          "descriptive_size_stratified95": [
+            -0.052083333333333336,
+            0.043154761904761904
+          ],
+          "per_condition_counts": [
+            -6,
+            2,
+            1,
+            12,
+            14,
+            6,
+            13,
+            -8,
+            5,
+            -5,
+            -7,
+            1,
+            -16,
+            -6,
+            5,
+            -6,
+            -5,
+            -9,
+            1,
+            -1,
+            3
+          ]
+        },
+        "geometry": {
+          "mean": 0.01636904761904762,
+          "within_composition_paired95": [
+            -0.01636904761904762,
+            0.049107142857142856
+          ],
+          "descriptive_size_stratified95": [
+            -0.01488095238095238,
+            0.04836309523809524
+          ],
+          "per_condition_counts": [
+            0,
+            1,
+            0,
+            10,
+            8,
+            -3,
+            6,
+            -2,
+            3,
+            -6,
+            -2,
+            7,
+            -7,
+            -4,
+            3,
+            7,
+            -5,
+            -5,
+            1,
+            6,
+            4
+          ]
+        },
+        "disconnected": {
+          "mean": -0.020089285714285716,
+          "within_composition_paired95": [
+            -0.052083333333333336,
+            0.011904761904761904
+          ],
+          "descriptive_size_stratified95": [
+            -0.052083333333333336,
+            0.011160714285714286
+          ],
+          "per_condition_counts": [
+            -3,
+            -1,
+            0,
+            -10,
+            -8,
+            4,
+            -6,
+            0,
+            -3,
+            6,
+            2,
+            -6,
+            7,
+            4,
+            -6,
+            -8,
+            5,
+            5,
+            1,
+            -6,
+            -4
+          ]
+        }
+      },
+      "fixed minus harmonic_tree": {
+        "graph": {
+          "mean": 0.03869047619047619,
+          "within_composition_paired95": [
+            0.004464285714285714,
+            0.07291666666666667
+          ],
+          "descriptive_size_stratified95": [
+            0.004464285714285714,
+            0.07366071428571429
+          ],
+          "per_condition_counts": [
+            1,
+            -1,
+            2,
+            -2,
+            -6,
+            0,
+            3,
+            8,
+            -2,
+            9,
+            7,
+            2,
+            16,
+            10,
+            -9,
+            3,
+            1,
+            11,
+            -1,
+            -1,
+            1
+          ]
+        },
+        "geometry": {
+          "mean": 0.031994047619047616,
+          "within_composition_paired95": [
+            -0.000744047619047619,
+            0.06473214285714286
+          ],
+          "descriptive_size_stratified95": [
+            -0.000744047619047619,
+            0.06398809523809523
+          ],
+          "per_condition_counts": [
+            -7,
+            2,
+            0,
+            3,
+            -1,
+            6,
+            5,
+            5,
+            -2,
+            3,
+            5,
+            -3,
+            8,
+            12,
+            -2,
+            -6,
+            8,
+            8,
+            0,
+            -6,
+            5
+          ]
+        },
+        "disconnected": {
+          "mean": -0.03125,
+          "within_composition_paired95": [
+            -0.06398809523809523,
+            0.001488095238095238
+          ],
+          "descriptive_size_stratified95": [
+            -0.06547619047619048,
+            0.003720238095238095
+          ],
+          "per_condition_counts": [
+            10,
+            -2,
+            0,
+            -3,
+            1,
+            -7,
+            -5,
+            -4,
+            2,
+            -4,
+            -6,
+            3,
+            -8,
+            -12,
+            4,
+            7,
+            -8,
+            -8,
+            0,
+            4,
+            -6
+          ]
+        }
+      },
+      "node minus fixed": {
+        "graph": {
+          "mean": -0.017857142857142856,
+          "within_composition_paired95": [
+            -0.052083333333333336,
+            0.01636904761904762
+          ],
+          "descriptive_size_stratified95": [
+            -0.05282738095238095,
+            0.01711309523809524
+          ],
+          "per_condition_counts": [
+            6,
+            -2,
+            -8,
+            3,
+            3,
+            -5,
+            -9,
+            2,
+            -1,
+            5,
+            1,
+            -3,
+            -9,
+            -7,
+            10,
+            2,
+            -7,
+            -4,
+            7,
+            -4,
+            -4
+          ]
+        },
+        "geometry": {
+          "mean": -0.027529761904761904,
+          "within_composition_paired95": [
+            -0.05952380952380952,
+            0.004464285714285714
+          ],
+          "descriptive_size_stratified95": [
+            -0.0625,
+            0.008928571428571428
+          ],
+          "per_condition_counts": [
+            12,
+            1,
+            -5,
+            0,
+            0,
+            -3,
+            -7,
+            -3,
+            1,
+            8,
+            7,
+            -9,
+            -4,
+            -11,
+            0,
+            0,
+            -12,
+            -3,
+            2,
+            -7,
+            -4
+          ]
+        },
+        "disconnected": {
+          "mean": 0.03050595238095238,
+          "within_composition_paired95": [
+            -0.001488095238095238,
+            0.061755952380952384
+          ],
+          "descriptive_size_stratified95": [
+            -0.005208333333333333,
+            0.06547619047619048
+          ],
+          "per_condition_counts": [
+            -12,
+            -1,
+            5,
+            0,
+            0,
+            3,
+            7,
+            4,
+            -1,
+            -7,
+            -6,
+            9,
+            3,
+            11,
+            -1,
+            0,
+            12,
+            3,
+            -2,
+            9,
+            5
+          ]
+        }
+      },
+      "node minus gaussian": {
+        "graph": {
+          "mean": 0.01636904761904762,
+          "within_composition_paired95": [
+            -0.019345238095238096,
+            0.05133928571428571
+          ],
+          "descriptive_size_stratified95": [
+            -0.022321428571428572,
+            0.05431547619047619
+          ],
+          "per_condition_counts": [
+            1,
+            -1,
+            -5,
+            13,
+            11,
+            1,
+            7,
+            2,
+            2,
+            9,
+            1,
+            0,
+            -9,
+            -3,
+            6,
+            -1,
+            -11,
+            -2,
+            7,
+            -6,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": 0.020833333333333332,
+          "within_composition_paired95": [
+            -0.013392857142857142,
+            0.05505952380952381
+          ],
+          "descriptive_size_stratified95": [
+            -0.012648809523809524,
+            0.05282738095238095
+          ],
+          "per_condition_counts": [
+            5,
+            4,
+            -5,
+            13,
+            7,
+            0,
+            4,
+            0,
+            2,
+            5,
+            10,
+            -5,
+            -3,
+            -3,
+            1,
+            1,
+            -9,
+            0,
+            3,
+            -7,
+            5
+          ]
+        },
+        "disconnected": {
+          "mean": -0.020833333333333332,
+          "within_composition_paired95": [
+            -0.05505952380952381,
+            0.013392857142857142
+          ],
+          "descriptive_size_stratified95": [
+            -0.05357142857142857,
+            0.012648809523809524
+          ],
+          "per_condition_counts": [
+            -5,
+            -4,
+            5,
+            -13,
+            -7,
+            0,
+            -4,
+            0,
+            -2,
+            -5,
+            -10,
+            6,
+            2,
+            3,
+            -3,
+            -1,
+            9,
+            0,
+            -1,
+            7,
+            -5
+          ]
+        }
+      },
+      "node minus harmonic_tree": {
+        "graph": {
+          "mean": 0.020833333333333332,
+          "within_composition_paired95": [
+            -0.014136904761904762,
+            0.05580357142857143
+          ],
+          "descriptive_size_stratified95": [
+            -0.01711309523809524,
+            0.058779761904761904
+          ],
+          "per_condition_counts": [
+            7,
+            -3,
+            -6,
+            1,
+            -3,
+            -5,
+            -6,
+            10,
+            -3,
+            14,
+            8,
+            -1,
+            7,
+            3,
+            1,
+            5,
+            -6,
+            7,
+            6,
+            -5,
+            -3
+          ]
+        },
+        "geometry": {
+          "mean": 0.004464285714285714,
+          "within_composition_paired95": [
+            -0.029017857142857144,
+            0.03869047619047619
+          ],
+          "descriptive_size_stratified95": [
+            -0.034970238095238096,
+            0.041666666666666664
+          ],
+          "per_condition_counts": [
+            5,
+            3,
+            -5,
+            3,
+            -1,
+            3,
+            -2,
+            2,
+            -1,
+            11,
+            12,
+            -12,
+            4,
+            1,
+            -2,
+            -6,
+            -4,
+            5,
+            2,
+            -13,
+            1
+          ]
+        },
+        "disconnected": {
+          "mean": -0.000744047619047619,
+          "within_composition_paired95": [
+            -0.034970238095238096,
+            0.03273809523809524
+          ],
+          "descriptive_size_stratified95": [
+            -0.03794642857142857,
+            0.03869047619047619
+          ],
+          "per_condition_counts": [
+            -2,
+            -3,
+            5,
+            -3,
+            1,
+            -4,
+            2,
+            0,
+            1,
+            -11,
+            -12,
+            12,
+            -5,
+            -1,
+            3,
+            7,
+            4,
+            -5,
+            -2,
+            13,
+            -1
+          ]
+        }
+      },
+      "pair minus fixed": {
+        "graph": {
+          "mean": -0.049107142857142856,
+          "within_composition_paired95": [
+            -0.08407738095238096,
+            -0.014136904761904762
+          ],
+          "descriptive_size_stratified95": [
+            -0.0744047619047619,
+            -0.021577380952380952
+          ],
+          "per_condition_counts": [
+            1,
+            2,
+            -4,
+            2,
+            7,
+            -10,
+            -8,
+            -10,
+            -7,
+            -5,
+            0,
+            1,
+            -3,
+            -7,
+            4,
+            -3,
+            -9,
+            0,
+            -3,
+            -5,
+            -9
+          ]
+        },
+        "geometry": {
+          "mean": -0.03869047619047619,
+          "within_composition_paired95": [
+            -0.07217261904761904,
+            -0.005208333333333333
+          ],
+          "descriptive_size_stratified95": [
+            -0.07514880952380952,
+            -0.003720238095238095
+          ],
+          "per_condition_counts": [
+            12,
+            0,
+            -1,
+            2,
+            4,
+            -12,
+            1,
+            -5,
+            -1,
+            2,
+            8,
+            -7,
+            4,
+            -9,
+            -5,
+            2,
+            -18,
+            -4,
+            -7,
+            -8,
+            -10
+          ]
+        },
+        "disconnected": {
+          "mean": 0.03720238095238095,
+          "within_composition_paired95": [
+            0.003720238095238095,
+            0.07068452380952381
+          ],
+          "descriptive_size_stratified95": [
+            0.000744047619047619,
+            0.07589285714285714
+          ],
+          "per_condition_counts": [
+            -12,
+            0,
+            1,
+            -2,
+            -4,
+            13,
+            -1,
+            6,
+            1,
+            -1,
+            -8,
+            7,
+            -4,
+            9,
+            5,
+            -2,
+            18,
+            1,
+            4,
+            10,
+            9
+          ]
+        }
+      },
+      "pair minus gaussian": {
+        "graph": {
+          "mean": -0.01488095238095238,
+          "within_composition_paired95": [
+            -0.04985119047619048,
+            0.019345238095238096
+          ],
+          "descriptive_size_stratified95": [
+            -0.05133928571428571,
+            0.022321428571428572
+          ],
+          "per_condition_counts": [
+            -4,
+            3,
+            -1,
+            12,
+            15,
+            -4,
+            8,
+            -10,
+            -4,
+            -1,
+            0,
+            4,
+            -3,
+            -3,
+            0,
+            -6,
+            -13,
+            2,
+            -3,
+            -7,
+            -5
+          ]
+        },
+        "geometry": {
+          "mean": 0.009672619047619048,
+          "within_composition_paired95": [
+            -0.023809523809523808,
+            0.043154761904761904
+          ],
+          "descriptive_size_stratified95": [
+            -0.02976190476190476,
+            0.049107142857142856
+          ],
+          "per_condition_counts": [
+            5,
+            3,
+            -1,
+            15,
+            11,
+            -9,
+            12,
+            -2,
+            0,
+            -1,
+            11,
+            -3,
+            5,
+            -1,
+            -4,
+            3,
+            -15,
+            -1,
+            -6,
+            -8,
+            -1
+          ]
+        },
+        "disconnected": {
+          "mean": -0.014136904761904762,
+          "within_composition_paired95": [
+            -0.047619047619047616,
+            0.019345238095238096
+          ],
+          "descriptive_size_stratified95": [
+            -0.05580357142857143,
+            0.028273809523809524
+          ],
+          "per_condition_counts": [
+            -5,
+            -3,
+            1,
+            -15,
+            -11,
+            10,
+            -12,
+            2,
+            0,
+            1,
+            -12,
+            4,
+            -5,
+            1,
+            3,
+            -3,
+            15,
+            -2,
+            5,
+            8,
+            -1
+          ]
+        }
+      },
+      "pair minus harmonic_tree": {
+        "graph": {
+          "mean": -0.010416666666666666,
+          "within_composition_paired95": [
+            -0.04389880952380952,
+            0.022321428571428572
+          ],
+          "descriptive_size_stratified95": [
+            -0.049107142857142856,
+            0.03050595238095238
+          ],
+          "per_condition_counts": [
+            2,
+            1,
+            -2,
+            0,
+            1,
+            -10,
+            -5,
+            -2,
+            -9,
+            4,
+            7,
+            3,
+            13,
+            3,
+            -5,
+            0,
+            -8,
+            11,
+            -4,
+            -6,
+            -8
+          ]
+        },
+        "geometry": {
+          "mean": -0.006696428571428571,
+          "within_composition_paired95": [
+            -0.041666666666666664,
+            0.026785714285714284
+          ],
+          "descriptive_size_stratified95": [
+            -0.046130952380952384,
+            0.03422619047619048
+          ],
+          "per_condition_counts": [
+            5,
+            2,
+            -1,
+            5,
+            3,
+            -6,
+            6,
+            0,
+            -3,
+            5,
+            13,
+            -10,
+            12,
+            3,
+            -7,
+            -4,
+            -10,
+            4,
+            -7,
+            -14,
+            -5
+          ]
+        },
+        "disconnected": {
+          "mean": 0.005952380952380952,
+          "within_composition_paired95": [
+            -0.028273809523809524,
+            0.04019717261904735
+          ],
+          "descriptive_size_stratified95": [
+            -0.03794642857142857,
+            0.04836309523809524
+          ],
+          "per_condition_counts": [
+            -2,
+            -2,
+            1,
+            -5,
+            -3,
+            6,
+            -6,
+            2,
+            3,
+            -5,
+            -14,
+            10,
+            -12,
+            -3,
+            9,
+            5,
+            10,
+            -7,
+            4,
+            14,
+            3
+          ]
+        }
+      }
+    },
+    "s1": {
+      "fixed minus gaussian": {
+        "graph": {
+          "mean": 0.026785714285714284,
+          "within_composition_paired95": [
+            -0.00744047619047619,
+            0.06101190476190476
+          ],
+          "descriptive_size_stratified95": [
+            -0.005208333333333333,
+            0.057291666666666664
+          ],
+          "per_condition_counts": [
+            5,
+            1,
+            -1,
+            10,
+            8,
+            -5,
+            5,
+            6,
+            3,
+            8,
+            -9,
+            1,
+            -3,
+            -3,
+            5,
+            -1,
+            7,
+            -5,
+            -3,
+            4,
+            3
+          ]
+        },
+        "geometry": {
+          "mean": 0.07142857142857142,
+          "within_composition_paired95": [
+            0.03794642857142857,
+            0.10491071428571429
+          ],
+          "descriptive_size_stratified95": [
+            0.03869047619047619,
+            0.10193452380952381
+          ],
+          "per_condition_counts": [
+            13,
+            10,
+            4,
+            11,
+            6,
+            -3,
+            13,
+            8,
+            4,
+            11,
+            4,
+            4,
+            6,
+            -4,
+            0,
+            4,
+            8,
+            -11,
+            0,
+            4,
+            4
+          ]
+        },
+        "disconnected": {
+          "mean": -0.07291666666666667,
+          "within_composition_paired95": [
+            -0.10641741071428569,
+            -0.03943452380952381
+          ],
+          "descriptive_size_stratified95": [
+            -0.10342261904761904,
+            -0.04092261904761905
+          ],
+          "per_condition_counts": [
+            -13,
+            -10,
+            -5,
+            -11,
+            -6,
+            4,
+            -14,
+            -8,
+            -4,
+            -11,
+            -4,
+            -4,
+            -7,
+            4,
+            0,
+            -3,
+            -9,
+            9,
+            1,
+            -4,
+            -3
+          ]
+        }
+      },
+      "harmonic_tree minus gaussian": {
+        "graph": {
+          "mean": 0.057291666666666664,
+          "within_composition_paired95": [
+            0.022321428571428572,
+            0.09226190476190477
+          ],
+          "descriptive_size_stratified95": [
+            0.01711309523809524,
+            0.09523809523809523
+          ],
+          "per_condition_counts": [
+            6,
+            -3,
+            -1,
+            12,
+            11,
+            -4,
+            2,
+            10,
+            7,
+            6,
+            -9,
+            0,
+            10,
+            1,
+            9,
+            2,
+            4,
+            -4,
+            -1,
+            8,
+            11
+          ]
+        },
+        "geometry": {
+          "mean": 0.08630952380952381,
+          "within_composition_paired95": [
+            0.052083333333333336,
+            0.11979166666666667
+          ],
+          "descriptive_size_stratified95": [
+            0.04836309523809524,
+            0.12202380952380952
+          ],
+          "per_condition_counts": [
+            11,
+            5,
+            7,
+            14,
+            13,
+            -3,
+            6,
+            11,
+            9,
+            9,
+            0,
+            -6,
+            7,
+            0,
+            10,
+            11,
+            3,
+            -8,
+            0,
+            8,
+            9
+          ]
+        },
+        "disconnected": {
+          "mean": -0.078125,
+          "within_composition_paired95": [
+            -0.1108816964285714,
+            -0.044642857142857144
+          ],
+          "descriptive_size_stratified95": [
+            -0.11383928571428571,
+            -0.04017857142857143
+          ],
+          "per_condition_counts": [
+            -11,
+            -5,
+            -7,
+            -14,
+            -13,
+            5,
+            -7,
+            -11,
+            -8,
+            -9,
+            1,
+            6,
+            -7,
+            0,
+            -6,
+            -10,
+            -3,
+            8,
+            2,
+            -8,
+            -8
+          ]
+        }
+      },
+      "fixed minus harmonic_tree": {
+        "graph": {
+          "mean": -0.03050595238095238,
+          "within_composition_paired95": [
+            -0.06398809523809523,
+            0.003720238095238095
+          ],
+          "descriptive_size_stratified95": [
+            -0.05580357142857143,
+            -0.00744047619047619
+          ],
+          "per_condition_counts": [
+            -1,
+            4,
+            0,
+            -2,
+            -3,
+            -1,
+            3,
+            -4,
+            -4,
+            2,
+            0,
+            1,
+            -13,
+            -4,
+            -4,
+            -3,
+            3,
+            -1,
+            -2,
+            -4,
+            -8
+          ]
+        },
+        "geometry": {
+          "mean": -0.01488095238095238,
+          "within_composition_paired95": [
+            -0.046875,
+            0.017857142857142856
+          ],
+          "descriptive_size_stratified95": [
+            -0.04389880952380952,
+            0.015625
+          ],
+          "per_condition_counts": [
+            2,
+            5,
+            -3,
+            -3,
+            -7,
+            0,
+            7,
+            -3,
+            -5,
+            2,
+            4,
+            10,
+            -1,
+            -4,
+            -10,
+            -7,
+            5,
+            -3,
+            0,
+            -4,
+            -5
+          ]
+        },
+        "disconnected": {
+          "mean": 0.005208333333333333,
+          "within_composition_paired95": [
+            -0.026785714285714284,
+            0.03571428571428571
+          ],
+          "descriptive_size_stratified95": [
+            -0.023809523809523808,
+            0.033482142857142856
+          ],
+          "per_condition_counts": [
+            -2,
+            -5,
+            2,
+            3,
+            7,
+            -1,
+            -7,
+            3,
+            4,
+            -2,
+            -5,
+            -10,
+            0,
+            4,
+            6,
+            7,
+            -6,
+            1,
+            -1,
+            4,
+            5
+          ]
+        }
+      }
+    }
+  },
+  "decision": {
+    "extra_learned_source_gain_established": false,
+    "repeated_shell_graph_gain_established": false,
+    "geometry_gain_supported": true,
+    "reference_assay_qualified_for_selected_domain": true
+  },
+  "next_design": "notes/source_utility_learning_brief_v1.md",
+  "utility_trained_source_implemented": false,
+  "protected": "722 reserved outcomes, old evaluated cohorts,2560 orbit outputs,30208 tree/monomer outputs,78 monomer-pool references and32 earlier raw references remain outside fitting.",
+  "reference_registry": "research/evidence/generator_reference_registry_v5.json",
+  "manuscript": "paper/tree_working.pdf",
+  "manuscript_build": "research/evidence/monomer_manuscript_build_v1.json"
 }

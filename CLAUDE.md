@@ -1,52 +1,48 @@
 # BGFM project guide
 
-CURRENT MONOMER STUDY: read `research/MONOMER_STATE_20260914.json` and
-`notes/monomer_benchmark_v1.md`. All21 prospective references pass the assay;
-no equal composition was found in the checksum-verified train/legacy-val corpora.
-Frozen comparison46415396 is running. Learned-source usefulness remains unproved.
+CURRENT: read `research/MONOMER_STATE_20260914.json`, `research/NEXT.md`,
+`CLAUDE_HANDOFF.md`, `notes/monomer_results_20260914.md` and
+`notes/source_utility_learning_brief_v1.md`.
 
-CURRENT: read `research/TREE_TRANSFER_STATE_20260914.json`, `research/NEXT.md`,
-`CLAUDE_HANDOFF.md` and `notes/tree_results_and_scope_20260914.md`.
+The prospective monomer benchmark is COMPLETE. All21 original references passed
+before generation. No equal composition was found among3,902,107 training and
+39,415 legacy-validation records in two checksum-verified corpora, using exact
+count-vector verification and real-corpus positive controls. Scope is neutral
+singlet organic monomers8-40 atoms, not unrestricted OMol25 or unrecorded pretraining.
 
-Both new studies are COMPLETE. The static source-tree context adapter does not
-help: graph passes/512 for no context / actual tree / independent tree are
-118/102/119 and97/75/97. All3,072 source/context draws and structural outputs replay;
-full checkpoints restore and adapters have matched initialization and parameter
-counts. Do not scale or retune this adapter recipe against these outcomes.
+All10,752 new source draws and structural outcomes replay. Graph passes/1,344
+for Gaussian/shell/harmonic/node/pair are581/627/575/603/561 in the first
+continuation; Gaussian/shell/harmonic are521/557/598 in the second. Learned
+node/pair models have only one continuation. Node minus shell is-1.79 pp with
+paired interval[-5.21,1.64]; pair minus shell is-4.91 pp[-8.41,-1.41]. No extra
+learned-source benefit is established. Shell geometry gains repeat, but its
+paired graph-gain intervals span zero. Do not choose sources separately by seed.
 
-On32 prospectively selected additional development compositions, Gaussian / shell /
-harmonic graph passes/1,024 are180/200/183 and164/178/195. Shell geometry gains
-of6.54 and5.86 percentage points have positive draw and descriptive composition
-intervals; shell graph-gain intervals span zero. All6,144 outputs replay. The
-broader source result supports geometry, not a stable chemical-validity advantage.
+There is a concrete learnable, normalized bond-free source-method candidate,
+but ICLR-level originality/usefulness remains unproved. The static context adapter
+and unchanged source-coordinate-NLL recipes should not be scaled or retuned on
+these observed outcomes. Fixing assay coverage did not produce a neural win.
 
-Reference calibration exposes a scope limitation: the unchanged assay passes
-only6/32 original reference graphs and20/32 geometries;12 references are
-multifragment and12 trigger validator errors. All16 conditions with zero generated
-graph passes across all six arms also have rejected reference graphs. This does
-not prove every rejection is a validator bug or that every reference is a stable
-monomer. Preserve primary counts and denominators; do not rescue methods by
-post hoc filtering to the passing references.
+Next hypothesis: learn source probabilities from actual terminal sample utility,
+with the generator frozen and source-space importance ratios. The design brief
+states a possible tree-KL/output-shift control and its assumptions. This utility
+method is NOT implemented or validated yet; generic importance/KL identities are
+prior art. Complete related-work/math checks and a frozen bounded FIT-bank protocol
+before training. Do not use evaluation states in that bank.
 
-The next priority is a prospective, coherent single-molecule task and reference-
-qualified assay before more neural architecture variants. Keep the current broad
-molecular-system panel as a separate stress test. No replacement evaluation panel
-or new successful architecture is claimed. The full ICLR goal remains active
-and unachieved; the internal manuscript is not submission ready.
+Jobs46415396_0/1 completed0:0. This experiment uses no new training or physical
+queries.17 source-restoration/tree tests pass. Total tree/monomer outputs are30,208;
+all remain evaluation only. Query Slurm before assuming later work is absent.
+The internal manuscript `paper/tree_working.tex` includes all current findings;
+scientific submission readiness and the ICLR goal remain false/unachieved.
 
-Jobs46367714_0/1 and46368764_0/1 all completed0:0. These studies add9,216 outputs,
-bringing the total tree-study outputs to19,456, with zero new physical queries.
-The earlier energy readout remains5,120 calls.57 targeted implementation tests
-passed. Query live Slurm before assuming later work is absent. The manuscript
-`paper/tree_working.tex` includes method proofs, all current findings and limits.
-
-Keep722 reserved outcomes unqueried, old12/18 cohorts,2,560 earlier orbit outputs,
-all19,456 tree-study outputs and32 raw reference geometries outside fitting.
-Preserve bond-free OMol25, max_atoms200, original charge/spin, BGFM interfaces,
-separate environments and no home writes. The final noisy sampler has no qualified
-absolute density, ESS or Boltzmann-law result. Tree-conditioned models reject the
-old marginal-density interface. Earlier routing/collision/latent-mass sweeps stay
-closed. The user handles authorship/submission; deadlines remain September18/25 AoE.
+Preserve722 reserved outcomes, old evaluated cohorts,2,560 orbit outputs,30,208
+tree/monomer outputs,32 older raw references and78 monomer-pool references outside
+fitting. Keep OMol25 primary, max_atoms200, bond loss zero, original charge/spin,
+BGFM interfaces, separate environments and no home writes. The noisy final flow
+has no qualified absolute density, ESS or Boltzmann-law claim. Old routing,
+collision, latent-mass and static-context sweeps remain closed. The user handles
+submission; official abstract/paper deadlines remain September18/25 AoE.
 
 Historical milestones below do not replace this checkpoint.
 
