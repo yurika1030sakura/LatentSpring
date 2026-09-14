@@ -1,33 +1,31 @@
 # BGFM project guide
 
-CURRENT: read `research/LATENT_MASS_STATE_20260913.json`, `research/NEXT.md`,
-`CLAUDE_HANDOFF.md` and `notes/latent_mass_calibration_v1.md`.
+CURRENT: read `research/ORBIT_PAIRING_STATE_20260913.json`, `research/NEXT.md`,
+`CLAUDE_HANDOFF.md` and `notes/orbit_pairing_fm_v1.md`.
 
-The component-mass calibration prototype is implemented. Its offline known-target
-comparison and exact nonlinear controls are complete and audited. Nonlinear
-coupling reduces calibration error versus linear/Gaussian controls in a deliberately
-constructed nonlinear case; eight radial bins match the neural model. No distinct
-neural advantage or valid-molecule generation result follows. The equal-total-query
-online comparison and audit46320232/46320415 are complete. Neural has lower point
-error on the nonlinear case, but its paired intervals versus independent and
-binned span zero. All17 array tasks in this stage completed0:0; re-query Slurm
-before assuming later jobs are absent.
-Every learning query is retained in the online estimate. Current work does not
-use any new molecular oracle calls or query the722 reserved outcomes.
+The active main-generator experiment compares independent, rotation-aligned and
+collision-aware symmetry pairings in flow-matching training. A shared Haar
+rotation preserves the Gaussian prior and the rotation-symmetrized data endpoint
+law; source/target remain correlated. Do not apply the independent-Gaussian
+velocity-score proxy to this pairing. This is an FM-only pilot; the original
+BGFM hook, bond-free OMol25 and max_atoms200 settings remain intact.
 
-The previous324-trajectory routing study is closed to scale-up. The learned
-single-edit increment over its exact zero-learning counterpart is uncertain;
-cooperative routing is slower and explores fewer connectivities. All original
-results, source snapshots and negative evidence remain. The two environments,
-12/18 evaluation-only cohorts, bond-free OMol25 policy and paused optimizer
-recovery remain protected. The full ICLR goal is active and unachieved.
+Training46323226 runs the three matched3000-step continuations sequentially in
+one GPU test allocation. Evaluation46323424 is dependent and will generate2048
+fresh structures across all8 development compositions and four models, including
+the frozen warm generator. Re-query Slurm. The audit is implemented. No new
+molecular oracle calls or reserved outcomes are used in training/structure eval.
 
-Generic ratio-of-integrals coupling and Gaussian-preserving flow rearrangement
-have direct prior art. The new prototype calibrates mixture weights while keeping
-conditional reference shapes fixed; it is not yet a better complete generator.
-Production FM64 plus noise still has no qualified absolute q. Do not relabel its
-samples with clamped q0.95 or an EACF-refiner likelihood. Do not scale toy variants
-or broaden oracle sweeps merely to find a neural win.
+The prior latent-mass prototype is complete and audited, but has no established
+unique neural or real-molecular advantage. Its online point gains have broad
+paired intervals, and it cannot repair marginal weight collapse. Previous
+routing/scorer branches remain closed to scale-up. Keep all negative evidence,
+12/18 evaluation-only cohorts,722 reserved outcomes and separate environments.
+
+Alignment and geometry-aware FM paths have direct prior art. The new finite
+collision-aware rotation search is a hypothesis, not an ICLR-level novelty claim.
+Actual fresh generation and strong matched controls decide whether it is useful.
+The full ICLR goal remains active and unachieved.
 
 Historical milestones below do not replace this checkpoint.
 

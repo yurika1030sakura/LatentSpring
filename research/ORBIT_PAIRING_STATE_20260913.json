@@ -1,0 +1,67 @@
+{
+  "updated_utc": "2026-09-14T01:20:26.325147+00:00",
+  "phase": "main_generator_orbit_pairing_pilot",
+  "scientific_submission_ready": false,
+  "iclr_goal_achieved": false,
+  "protocol": "research/evidence/orbit_pairing_protocol_v1.json",
+  "theory": "notes/orbit_pairing_fm_v1.md",
+  "training": {
+    "job_id": 46323226,
+    "run": "runs/orbit_pairing_train_v3",
+    "status": "running; verify live",
+    "methods": [
+      "independent",
+      "rotation",
+      "steric"
+    ],
+    "steps_per_method": 3000,
+    "seed": 29401,
+    "sequential_gpu": true
+  },
+  "evaluation": {
+    "job_id": 46323424,
+    "run": "runs/orbit_pairing_eval_v2",
+    "status": "pending after training",
+    "total_geometries": 2048,
+    "methods": [
+      "warm",
+      "independent",
+      "rotation",
+      "steric"
+    ],
+    "conditions": 8,
+    "samples_per_condition": 64
+  },
+  "audit": {
+    "script": "scripts/research/audit_orbit_pairing.py",
+    "launcher": "scripts/research/orbit_pairing_audit.slurm",
+    "status": "implemented; submission next"
+  },
+  "scheduling_history": {
+    "cancelled_pending_jobs": [
+      46322261,
+      46322800
+    ],
+    "rejected_run": "runs/orbit_pairing_train_v2/submission.json",
+    "reason": "gpu_test permits max2 submitted jobs; use one serial training job and one dependent evaluation.",
+    "record": "research/evidence/orbit_pairing_queue_update_v1.json"
+  },
+  "tests": {
+    "initial_related_tests_passed": 44,
+    "final_focused_tests_passed": 5,
+    "unique_tests": 45
+  },
+  "prior_art": "Equivariant FM, ET-Flow, SemlaFlow and physics-aware FM paths have direct overlap. No generic alignment or new physical-law claim.",
+  "prior_preservation": "Proper source rotation followed by independent shared Haar rotation restores the Gaussian source and rotation-symmetrized target marginal.",
+  "force_proxy": "The independent-Gaussian velocity-score conversion is invalid for the correlated coupling; FM-only pilot, old BGFM hook unchanged.",
+  "energy_followup": "Only if steric total graph-supported count exceeds both independent and rotation: score ALL fixed outputs with E_plus plus0.1 COM restraint. Otherwise stop this pilot with no new molecular oracle calls.",
+  "new_molecular_oracle_calls": 0,
+  "reserved_outcomes_unqueried": 722,
+  "evaluated_12_18_parent_cohorts_excluded_from_training": true,
+  "previous_state": "research/LATENT_MASS_STATE_20260913.json",
+  "previous_branches_closed_to_scaleup": [
+    "cooperative routing",
+    "latent-mass toy architecture sweeps"
+  ],
+  "actual_generation_advantage_established": false
+}
