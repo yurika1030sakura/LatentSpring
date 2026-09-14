@@ -26,6 +26,22 @@ def load_training(project,protocol):
     metadata.verify_processed_file(ds.processed_data_dir/'train_data_processed.pt')
     assert len(ds)==len(metadata.indices)
     order=torch.randperm(len(ds),generator=torch.Generator().manual_seed(protocol['data_seed']))
+    metadata.selection_info=None
+    if protocol.get('target_domain')=='connected_nonoverlapping':
+        from cfm_mol.chemical_moves import covalent_radii
+        from cfm_mol.geometric_domain import connected_nonoverlapping
+        radii=covalent_radii(metadata.atomic_numbers.tolist())
+        needed=protocol['fm_steps']+protocol['prior_validation_rows'];selected=[];examined=[]
+        for index in order.tolist():
+            graph=ds[index];positions=graph.ndata['x_1_true'].double()
+            eligible=len(positions)>1 and bool(connected_nonoverlapping(positions[None],radii[graph.ndata['a_1_true'].argmax(-1)])[0])
+            examined.append((index,eligible))
+            if eligible:selected.append(index)
+            if len(selected)==needed:break
+        if len(selected)!=needed:raise ValueError('Insufficient qualified training geometries')
+        order=torch.tensor(selected,dtype=torch.long)
+        metadata.selection_info=dict(domain='connected_nonoverlapping',contact_factor=1.25,overlap_factor=.6,
+            examined=examined,selected=selected,source_split='train',scope='First qualifying examples in the same fixed full training permutation; no generated or evaluation outcomes.')
     return cfg,ds,metadata,order
 
 
@@ -51,6 +67,8 @@ def main():
     report=dict(complete=False,protocol_sha256=sha(a.protocol),data_sha256=sha(a.out/'data.pt'),
         data_order_sha256=hashlib.sha256(order.numpy().tobytes()).hexdigest(),metadata_progress_sha256=metadata.progress_sha256,
         training_rows=len(train),validation_rows=len(held),new_molecular_oracle_calls=0,models={})
+    if metadata.selection_info is not None:
+        write(a.out/'selection.json',metadata.selection_info);report['selection_sha256']=sha(a.out/'selection.json')
     write(a.out/'results.json',report)
     fixed=TreeMixturePrior(mode='fixed',width=spec['edge_log_width']).double()
     with torch.no_grad():

@@ -111,6 +111,7 @@ def main():
     if a.out.exists():raise FileExistsError(a.out)
     torch.set_num_threads(2);a.out.mkdir(parents=True)
     cfg,ds,metadata,order=load_training(a.project,protocol)
+    if metadata.selection_info is not None:write(a.out/'selection.json',metadata.selection_info)
     warm_path=a.project/protocol['warm_checkpoint'];assert sha(warm_path)==protocol['warm_checkpoint_sha256']
     warm=torch.load(warm_path,map_location='cpu',weights_only=False)
     assert warm['research_protocol']['position_parameterization']=='displacement' and warm['research_protocol']['data_endpoint_time']==1.
