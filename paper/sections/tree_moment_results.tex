@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Fresh moment-control outputs: graph check passed /512. All methods share training data and update budgets within a continuation.}
+\begin{tabular}{lrrrr}
+\toprule
+Continuation & Unit Gaussian & Covariance Gaussian & Harmonic tree & Shell tree\\
+\midrule
+1 & 103 & 106 & 112 & 136\\
+2 & 94 & 96 & 128 & 118\\
+\bottomrule
+\end{tabular}
+\label{tab:moment}
+\end{table}
+Table~\ref{tab:moment} reports the complete fresh comparison.
+The shell minus covariance Gaussian graph pass-rate differences are $+5.86$ percentage points $[2.15,9.38]$ and $+4.30$ percentage points $[0.59,8.01]$, respectively.
+The shell minus harmonic tree graph pass-rate differences are $+4.69$ percentage points $[0.98,8.40]$ and $-1.95$ percentage points $[-5.66,1.76]$, respectively.
+These intervals condition on fitted models and the same development compositions. The controls do not test an additional learned-affinity increment.

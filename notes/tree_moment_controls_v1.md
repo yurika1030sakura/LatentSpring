@@ -1,5 +1,17 @@
 # Moment controls for the latent-tree source
 
+COMPLETE: `research/evidence/tree_moment_audit_v1.json` replays all4,096 new
+source draws and structural outcomes. Graph passes/512 for unit Gaussian,
+covariance Gaussian, harmonic tree and shell tree are103/106/112/136 and
+94/96/128/118 in the two continuations. Shell versus either single Gaussian
+has positive conditional paired intervals in both; shell versus harmonic
+changes sign. The Gaussian/shell models reuse earlier checkpoints with fresh
+generation streams, not additional fits. The earlier weak confirmation is retained.
+This supports source structure beyond the tested covariance control; an exact
+covariance attribution remains limited by finite calibration. Learned-affinity
+utility and broad composition generalization remain unestablished. Next design:
+`notes/tree_conditioned_transport_brief_v1.md` (not implemented).
+
 Frozen question: is the observed fragmentation reduction explained by the source
 covariance, by a mixture of tree-dependent Gaussian shapes, or by finite-length
 non-Gaussian edge displacements? This experiment adds controls to identify the

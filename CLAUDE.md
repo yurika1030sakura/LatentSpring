@@ -1,41 +1,45 @@
 # BGFM project guide
 
-CURRENT MOMENT CONTROL: read `research/TREE_MOMENT_STATE_20260914.json` and
-`notes/tree_moment_controls_v1.md`. Job46364922 has two active continuation tasks;
-query Slurm. The previous completed evidence below remains unchanged.
+CURRENT: read `research/TREE_MOMENT_STATE_20260914.json`, `research/NEXT.md`,
+`CLAUDE_HANDOFF.md`, `notes/tree_moment_controls_v1.md` and
+`notes/tree_conditioned_transport_brief_v1.md`.
 
-CURRENT: read `research/TREE_PRIOR_STATE_20260914.json`, `research/NEXT.md`,
-`CLAUDE_HANDOFF.md`, `notes/tree_prior_results_20260914.md` and
-`notes/tree_mixture_prior_v1.md`.
+The complete4,096-output moment-control study strengthens the source-framework
+case. Graph passes/512 for unit Gaussian, covariance Gaussian, harmonic tree,
+shell tree are103/106/112/136 and94/96/128/118 in the two continuations. Shell
+versus either single Gaussian has positive conditional paired intervals in both.
+Shell versus harmonic changes sign; narrow finite-length edges have no repeated
+advantage. Gaussian/shell reference checkpoints are the SAME two as the previous
+connected studies, evaluated with new streams, not additional independent fits.
+The earlier weak confirmation stream remains preserved.
 
-The latent connection-tree spatial prior and node/pair affinity networks are
-implemented, with normalized source density and guarded FM/density interfaces.
-The bounded studies are complete:6,144 generated outputs,5,120 raw eSEN queries.
-All ten scheduled tasks completed0:0; query Slurm before assuming current state.
-53 targeted tests passed during implementation; source draws, structural outcomes
-and stored energy readouts were audited. See the current evidence files for scope.
+This supports useful source structure beyond the tested single-Gaussian control;
+its covariance is a documented finite Monte Carlo approximation. Extra learned
+node/pair affinity utility, new-composition generalization and competitive ICLR
+readiness remain unestablished. A one-seed node energy signal versus Gaussian
+still does not establish a node increment over fixed or a Boltzmann distribution.
 
-Fragmentation reduction repeats, but graph acceptance gain is unstable: fixed
-versus Gaussian is131/512 versus105/512 initially, then93/512 versus91/512 in an
-independent continuation. Node/pair learning has not established extra utility
-beyond fixed. Node has a one-seed energy signal versus Gaussian (-0.624 eV,
-conditional interval[-1.084,-0.144]), but its interval versus fixed spans zero.
-Do not call either neural affinity model a proved improvement or the paper ready.
+Jobs46364922_0/1 completed0:0. All4,096 new source draws and structural readouts
+replay; total tree-study evaluation outputs are10,240. This study uses zero new
+physical queries; the preceding energy study used5,120. Eleven tree/control tests
+pass, and the composition-only covariance calibration replays. Query live Slurm.
+The new `paper/tree_working.tex` contains the method, proofs and complete results;
+its PDF is an internal development draft using verified official2027 styles.
 
-The connected training subset is shared across methods and selected using only
-training geometry. Keep the unrestricted-data study and all negative evidence.
-The tree is an auxiliary dependence structure, not a chemical bond graph or a
-connectivity guarantee. Existing OMol25 is sufficient for this initial test; no
-extra user data is needed now. Retain the framework and controls; do not scale the
-current pair head. A covariance/scale control and a concrete explanation of the
-source-fit/output-utility gap remain relevant before broader claims.
+Next hypothesis: supply the sampled latent tree to the transport network through
+an equivariant edge adapter. Current code uses the tree only to create source
+coordinates. The concrete brief specifies true/sham/no-context controls and
+joint symmetry bookkeeping. This adapter is NOT implemented or validated yet.
+Do not scale the current prior-affinity head or select a source separately by seed.
 
-Keep722 reserved outcomes, old12/18 evaluated cohorts, the2,560 earlier orbit
-outputs and all6,144 tree-study outputs outside fitting. Preserve bond-free OMol25,
-max_atoms200, BGFM interfaces and separate environments. No home writes. The
-normalized prior does not qualify the final midpoint64 T1-plus-noise density,
-importance ESS or a Boltzmann distribution. Earlier routing, collision-pairing
-and latent-mass toy sweeps remain closed. The ICLR goal is active and unachieved.
+Keep722 reserved outcomes unqueried, old12/18 evaluated cohorts,2,560 earlier
+orbit outputs and all10,240 tree-study outputs outside fitting. Preserve bond-free
+OMol25, max_atoms200, BGFM interfaces, original charge/spin, separate environments
+and no home writes. Correlated/non-Gaussian FM pairing cannot use the old Gaussian
+score proxy. The final noisy midpoint sampler has no qualified density or ESS.
+Earlier routing/collision/latent-mass sweeps stay closed. The ICLR goal is active
+and unachieved. Official deadlines: September18 abstract and September25 paper,
+both23:59 AoE; the user handles authorship and actual submission.
 
 Historical milestones below do not replace this checkpoint.
 

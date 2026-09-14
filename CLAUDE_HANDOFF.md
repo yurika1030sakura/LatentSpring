@@ -1,61 +1,51 @@
-# Claude continuation — completed tree-prior studies, mixed evidence
+# Claude continuation — useful source structure, next transport-context hypothesis
 
-Checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
+Checkout `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
 `iclr2027-arch-fix`. Read `research/NEXT.md`,
-`research/TREE_PRIOR_STATE_20260914.json`, `notes/tree_prior_results_20260914.md`
-and `notes/tree_mixture_prior_v1.md` before another experiment.
+`research/TREE_MOMENT_STATE_20260914.json` and
+`notes/tree_conditioned_transport_brief_v1.md` first.
 
-The user's endorsed direction is implemented: node/pair networks learn latent
-connection affinities from composition and electronic conditions, fitting an
-explicit normalized spatial prior without bond labels. The generator remains
-flow matching. This is a candidate AI contribution; tree marginalization and
-structured molecular priors have prior art. Extra learned utility is unproven.
-Keep the user's priority on core usefulness and a bounded molecular demonstration.
+The latest study is COMPLETE: four source methods on two matched continuations,
+4,096 new outputs, every source draw and structural readout replayed. Jobs46364922_0/1
+completed0:0 after21:11/21:06. Query Slurm before assuming later work is absent.
+Unit Gaussian / covariance Gaussian / harmonic tree / shell tree graph passes/512
+are103/106/112/136 and94/96/128/118. Shell minus covariance Gaussian differences are
++5.86 pp[2.15,9.38] and+4.30 pp[0.59,8.01]. Shell minus harmonic is+4.69 pp[0.98,8.40]
+and-1.95 pp[-5.66,1.76]. All intervals are conditional on models and the fixed eight
+compositions; they are not multiplicity-adjusted or broad generalization evidence.
 
-All current studies are complete. Unrestricted-data graph counts/512 are78 warm,
-76 Gaussian,94 fixed,92 node,93 pair. The actual prior-training sample contains
-580/1000 disconnected structures. The next comparison uses the SAME train-only
-connected/nonoverlap selection for every method: graph counts66,105,131,121,111.
-Independent Gaussian/fixed continuation gives91/93, so the first+26 graph-pass
-advantage does not clearly repeat. Disconnection falls192 to162, then243 to194.
-The confirmation shares the warm checkpoint and development compositions; it
-has new continuation/data-order and generation seeds, not independent pretraining.
+The Gaussian/shell checkpoints are the same as the previous connected studies;
+only their generation streams are new. Preserve the earlier weak93 vs91 comparison.
+The result supports source structure beyond the tested single-Gaussian covariance,
+but does not establish a repeatable narrow-shell advantage or an extra learned-
+affinity increment. Covariance Gaussian uses a fixed128-tree estimate; harmonic
+and shell conditional covariances match analytically. Calibration error is recorded.
 
-All first-connected-run outputs received physical evaluation, including failures
-and metals:5,120 raw eSEN calls. Node versus Gaussian mean E+ difference is-0.624 eV
-[-1.084,-0.144]; node versus fixed is-0.229[-0.739,0.269]. These are marginal
-conditional paired intervals on eight fixed development conditions, not replicated
-training effects or composition-generalization intervals. Energy is not a thermal
-distribution test. Retain the source framework; do not scale the present pair
-head or declare a winning learned architecture.
+Core implementation: `cfm_mol/tree_prior_controls.py`, with tests in
+`tests/test_tree_prior_controls.py`; existing FM runner adds optional source controls.
+Eleven tree/control tests pass. `audit_tree_moment_controls.py` checks all4,096
+outputs, matched training rows, source laws and checkpoints; it does not retrain
+optimizers or reproduce final neural integration. No physical query was added.
+The preceding all-output energy result remains5,120 calls and one training seed.
 
-Completed jobs:46333856 prior fit,46335714/46335903 unrestricted FM;46342237
-connected prior fit,46342814/46342817 connected FM,46344611 audit;46352584_0/1
-confirmation;46354739 energy. All completed0:0. Query live Slurm; no tree-study job
-was active at the recorded check. Other projects were not changed. All6,144
-source draws and structural outcomes and all5,120 stored physical rows were
-audited. The audits do not retrain optimizers, regenerate final neural outputs or
-independently re-query eSEN.53 targeted tests passed during implementation.
-Auditv2 files strengthen provenance without changing outcomes; v1 is retained.
+The next concrete hypothesis is an equivariant transport adapter receiving the
+sampled latent tree. Current training discards that tree after constructing x0;
+the model never receives it. This is valid marginal FM, but possibly an avoidable
+information bottleneck. The brief specifies actual/sham/no-context controls,
+strict source-tree permutation bookkeeping and checkpoint guards. It is a design
+only, NOT an implemented/validated method. Keep the same shell prior for the first
+probe; do not change source learning and transport conditioning simultaneously.
+The user authorizes bounded continuation without another permission question.
 
-Use `research/evidence/generator_reference_registry_v2.json` for checkpoints and
-source laws. A tree checkpoint embeds its prior separately from the vector-field
-state. `prepare_research_backbone` restores the source-kind flag; generation still
-needs matching explicit prior draws. Do not use implicit Gaussian sampling or a
-Gaussian density for tree models. The old independent-Gaussian score proxy is
-invalid for correlated pairing. T1-plus-noise outputs have no qualified density
-or ESS. The experiment supplies composition and original charge/spin; it is not
-a demonstrated joint generator of these conditions.
+`paper/tree_working.tex` is the new internal manuscript with proofs and all current
+results; `paper/tree_abstract.txt` is its truthful abstract. Official2027 styles were
+verified byte-for-byte. It remains a development manuscript, not submission ready.
+The older `angular_working.tex` and `main.tex` preserve their separate histories.
 
-Next is one mechanism-based diagnosis of the gap between source fit and final
-chemical utility, with fixed-tree and Gaussian controls. Scale/covariance matching
-is relevant before topology attribution. See NEXT for constraints. No additional
-protocol or jobs are currently frozen/queued. The user's broad authorization
-permits useful bounded continuation without another permission question.
-
-Keep722 reserved outcomes, old12/18 cohorts,2,560 orbit outputs and all6,144 tree
-outputs outside fitting. Preserve bond-free OMol25, max_atoms200, original charge/
-spin, separate environments and no home writes. Earlier failed routing, collision
-and latent-mass sweeps remain closed. Existing data is enough for the initial
-tests; no additional user data is currently needed. The ICLR goal is active and
-unachieved, and the manuscript is not submission ready.
+Protect722 reserved outcomes, old12/18 cohorts,2,560 orbit outputs and all10,240 tree
+outputs from fitting. Preserve bond-free OMol25, max_atoms200, original charge/spin,
+separate environments and no home writes. A tree is a latent dependence structure,
+not a chemical bond or validity guarantee. The noisy midpoint64 T1 sampler has no
+qualified final density, ESS or Boltzmann law. Old failed routing/collision/latent-
+mass sweeps remain closed. ICLR goal active/unachieved; user handles submission.
+Official deadlines: September18 abstract, September25 paper,23:59 AoE.

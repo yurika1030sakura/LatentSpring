@@ -1,6 +1,6 @@
 {
-  "updated_utc": "2026-09-14T05:07:19.202118+00:00",
-  "phase": "source_moment_controls_running",
+  "updated_utc": "2026-09-14T05:22:25.231353+00:00",
+  "phase": "source_moment_controls_complete",
   "scientific_submission_ready": false,
   "iclr_goal_achieved": false,
   "job_id": "46364922",
@@ -24,5 +24,662 @@
   "harmonic_conditional_second_moments_match_analytically": true,
   "new_affinity_network_scaled": false,
   "previous_state": "research/TREE_PRIOR_STATE_20260914.json",
-  "next": "Audit all four methods on both continuations after Slurm completion; retain every condition and freeze conclusions from the completed comparison."
+  "next": "Implement and test one tree-conditioned transport adapter with true/sham/no-context controls, as specified in notes/tree_conditioned_transport_brief_v1.md. This is a new hypothesis, not an implemented or validated result.",
+  "jobs": [
+    {
+      "job_id": "46364922_0",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:21:11"
+    },
+    {
+      "job_id": "46364922_1",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:21:06"
+    }
+  ],
+  "audit": "research/evidence/tree_moment_audit_v1.json",
+  "new_outputs_replayed": 4096,
+  "total_tree_outputs_replayed": 10240,
+  "results": {
+    "s0": {
+      "gaussian": {
+        "attempted": 512,
+        "graph_supported": 103,
+        "geometrically_supported": 322,
+        "validator_errors": 109,
+        "generation_seconds": 120.94860017183237,
+        "disconnected": 187,
+        "overlap": 3,
+        "distinct_connectivities_sum": 103,
+        "new_training_seconds": 0.0
+      },
+      "fixed": {
+        "attempted": 512,
+        "graph_supported": 136,
+        "geometrically_supported": 344,
+        "validator_errors": 109,
+        "generation_seconds": 121.28916314709932,
+        "disconnected": 161,
+        "overlap": 8,
+        "distinct_connectivities_sum": 128,
+        "new_training_seconds": 0.0
+      },
+      "covariance_gaussian": {
+        "attempted": 512,
+        "graph_supported": 106,
+        "geometrically_supported": 317,
+        "validator_errors": 103,
+        "generation_seconds": 122.9933122782968,
+        "disconnected": 188,
+        "overlap": 9,
+        "distinct_connectivities_sum": 103,
+        "new_training_seconds": 401.42387274699286
+      },
+      "harmonic_tree": {
+        "attempted": 512,
+        "graph_supported": 112,
+        "geometrically_supported": 324,
+        "validator_errors": 106,
+        "generation_seconds": 123.09136298391968,
+        "disconnected": 186,
+        "overlap": 3,
+        "distinct_connectivities_sum": 105,
+        "new_training_seconds": 331.5701667619869
+      }
+    },
+    "s1": {
+      "gaussian": {
+        "attempted": 512,
+        "graph_supported": 94,
+        "geometrically_supported": 284,
+        "validator_errors": 102,
+        "generation_seconds": 118.34827826800756,
+        "disconnected": 224,
+        "overlap": 8,
+        "distinct_connectivities_sum": 92,
+        "new_training_seconds": 0.0
+      },
+      "fixed": {
+        "attempted": 512,
+        "graph_supported": 118,
+        "geometrically_supported": 335,
+        "validator_errors": 111,
+        "generation_seconds": 118.62385862180963,
+        "disconnected": 170,
+        "overlap": 9,
+        "distinct_connectivities_sum": 115,
+        "new_training_seconds": 0.0
+      },
+      "covariance_gaussian": {
+        "attempted": 512,
+        "graph_supported": 96,
+        "geometrically_supported": 292,
+        "validator_errors": 102,
+        "generation_seconds": 122.0376320569776,
+        "disconnected": 215,
+        "overlap": 6,
+        "distinct_connectivities_sum": 93,
+        "new_training_seconds": 400.34225044888444
+      },
+      "harmonic_tree": {
+        "attempted": 512,
+        "graph_supported": 128,
+        "geometrically_supported": 336,
+        "validator_errors": 111,
+        "generation_seconds": 121.97628182731569,
+        "disconnected": 173,
+        "overlap": 3,
+        "distinct_connectivities_sum": 121,
+        "new_training_seconds": 330.8705121621024
+      }
+    }
+  },
+  "comparisons": {
+    "s0": {
+      "fixed minus covariance_gaussian": {
+        "graph": {
+          "mean": 0.05859375,
+          "conditional_paired_bootstrap95": [
+            0.021484375,
+            0.09375
+          ],
+          "per_condition_counts": [
+            0,
+            7,
+            2,
+            0,
+            9,
+            0,
+            12,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": 0.052734375,
+          "conditional_paired_bootstrap95": [
+            0.001953125,
+            0.103515625
+          ],
+          "per_condition_counts": [
+            -1,
+            5,
+            2,
+            0,
+            6,
+            -1,
+            11,
+            5
+          ]
+        },
+        "disconnected": {
+          "mean": -0.052734375,
+          "conditional_paired_bootstrap95": [
+            -0.103515625,
+            -0.001953125
+          ],
+          "per_condition_counts": [
+            1,
+            -4,
+            -2,
+            -1,
+            -5,
+            1,
+            -11,
+            -6
+          ]
+        }
+      },
+      "fixed minus harmonic_tree": {
+        "graph": {
+          "mean": 0.046875,
+          "conditional_paired_bootstrap95": [
+            0.009765625,
+            0.083984375
+          ],
+          "per_condition_counts": [
+            -2,
+            7,
+            -3,
+            0,
+            5,
+            0,
+            17,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": 0.0390625,
+          "conditional_paired_bootstrap95": [
+            -0.009814453124999956,
+            0.087890625
+          ],
+          "per_condition_counts": [
+            -1,
+            6,
+            2,
+            1,
+            0,
+            0,
+            13,
+            -1
+          ]
+        },
+        "disconnected": {
+          "mean": -0.048828125,
+          "conditional_paired_bootstrap95": [
+            -0.09765625,
+            0.0
+          ],
+          "per_condition_counts": [
+            1,
+            -6,
+            -2,
+            -5,
+            0,
+            0,
+            -13,
+            0
+          ]
+        }
+      },
+      "fixed minus gaussian": {
+        "graph": {
+          "mean": 0.064453125,
+          "conditional_paired_bootstrap95": [
+            0.029296875,
+            0.099609375
+          ],
+          "per_condition_counts": [
+            4,
+            10,
+            0,
+            0,
+            10,
+            0,
+            9,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": 0.04296875,
+          "conditional_paired_bootstrap95": [
+            -0.00390625,
+            0.091796875
+          ],
+          "per_condition_counts": [
+            7,
+            3,
+            6,
+            0,
+            3,
+            -6,
+            7,
+            2
+          ]
+        },
+        "disconnected": {
+          "mean": -0.05078125,
+          "conditional_paired_bootstrap95": [
+            -0.09770507812499996,
+            -0.00390625
+          ],
+          "per_condition_counts": [
+            -7,
+            -3,
+            -6,
+            -3,
+            -3,
+            6,
+            -7,
+            -3
+          ]
+        }
+      },
+      "covariance_gaussian minus gaussian": {
+        "graph": {
+          "mean": 0.005859375,
+          "conditional_paired_bootstrap95": [
+            -0.033203125,
+            0.044921875
+          ],
+          "per_condition_counts": [
+            4,
+            3,
+            -2,
+            0,
+            1,
+            0,
+            -3,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": -0.009765625,
+          "conditional_paired_bootstrap95": [
+            -0.05859375,
+            0.037109375
+          ],
+          "per_condition_counts": [
+            8,
+            -2,
+            4,
+            0,
+            -3,
+            -5,
+            -4,
+            -3
+          ]
+        },
+        "disconnected": {
+          "mean": 0.001953125,
+          "conditional_paired_bootstrap95": [
+            -0.044921875,
+            0.048828125
+          ],
+          "per_condition_counts": [
+            -8,
+            1,
+            -4,
+            -2,
+            2,
+            5,
+            4,
+            3
+          ]
+        }
+      },
+      "harmonic_tree minus gaussian": {
+        "graph": {
+          "mean": 0.017578125,
+          "conditional_paired_bootstrap95": [
+            -0.01953125,
+            0.0546875
+          ],
+          "per_condition_counts": [
+            6,
+            3,
+            3,
+            0,
+            5,
+            0,
+            -8,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": 0.00390625,
+          "conditional_paired_bootstrap95": [
+            -0.044921875,
+            0.052734375
+          ],
+          "per_condition_counts": [
+            8,
+            -3,
+            4,
+            -1,
+            3,
+            -6,
+            -6,
+            3
+          ]
+        },
+        "disconnected": {
+          "mean": -0.001953125,
+          "conditional_paired_bootstrap95": [
+            -0.05078125,
+            0.044921875
+          ],
+          "per_condition_counts": [
+            -8,
+            3,
+            -4,
+            2,
+            -3,
+            6,
+            6,
+            -3
+          ]
+        }
+      }
+    },
+    "s1": {
+      "fixed minus covariance_gaussian": {
+        "graph": {
+          "mean": 0.04296875,
+          "conditional_paired_bootstrap95": [
+            0.005859375,
+            0.080078125
+          ],
+          "per_condition_counts": [
+            2,
+            5,
+            3,
+            0,
+            7,
+            0,
+            5,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": 0.083984375,
+          "conditional_paired_bootstrap95": [
+            0.033203125,
+            0.13671875
+          ],
+          "per_condition_counts": [
+            7,
+            4,
+            8,
+            0,
+            3,
+            8,
+            2,
+            11
+          ]
+        },
+        "disconnected": {
+          "mean": -0.087890625,
+          "conditional_paired_bootstrap95": [
+            -0.138671875,
+            -0.037109375
+          ],
+          "per_condition_counts": [
+            -7,
+            -4,
+            -8,
+            -3,
+            -3,
+            -8,
+            -3,
+            -9
+          ]
+        }
+      },
+      "fixed minus harmonic_tree": {
+        "graph": {
+          "mean": -0.01953125,
+          "conditional_paired_bootstrap95": [
+            -0.056640625,
+            0.017578125
+          ],
+          "per_condition_counts": [
+            -1,
+            1,
+            -2,
+            0,
+            -1,
+            0,
+            -7,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": -0.001953125,
+          "conditional_paired_bootstrap95": [
+            -0.048828125,
+            0.046875
+          ],
+          "per_condition_counts": [
+            0,
+            -1,
+            1,
+            -5,
+            -1,
+            6,
+            -5,
+            4
+          ]
+        },
+        "disconnected": {
+          "mean": -0.005859375,
+          "conditional_paired_bootstrap95": [
+            -0.052734375,
+            0.041015625
+          ],
+          "per_condition_counts": [
+            0,
+            2,
+            -1,
+            0,
+            1,
+            -6,
+            4,
+            -3
+          ]
+        }
+      },
+      "fixed minus gaussian": {
+        "graph": {
+          "mean": 0.046875,
+          "conditional_paired_bootstrap95": [
+            0.009765625,
+            0.083984375
+          ],
+          "per_condition_counts": [
+            5,
+            8,
+            -1,
+            0,
+            5,
+            0,
+            7,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": 0.099609375,
+          "conditional_paired_bootstrap95": [
+            0.046875,
+            0.150390625
+          ],
+          "per_condition_counts": [
+            11,
+            7,
+            9,
+            1,
+            8,
+            2,
+            4,
+            9
+          ]
+        },
+        "disconnected": {
+          "mean": -0.10546875,
+          "conditional_paired_bootstrap95": [
+            -0.15625,
+            -0.0546875
+          ],
+          "per_condition_counts": [
+            -11,
+            -6,
+            -9,
+            -4,
+            -8,
+            -2,
+            -5,
+            -9
+          ]
+        }
+      },
+      "covariance_gaussian minus gaussian": {
+        "graph": {
+          "mean": 0.00390625,
+          "conditional_paired_bootstrap95": [
+            -0.03125,
+            0.0390625
+          ],
+          "per_condition_counts": [
+            3,
+            3,
+            -4,
+            0,
+            -2,
+            0,
+            2,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": 0.015625,
+          "conditional_paired_bootstrap95": [
+            -0.03515625,
+            0.06640625
+          ],
+          "per_condition_counts": [
+            4,
+            3,
+            1,
+            1,
+            5,
+            -6,
+            2,
+            -2
+          ]
+        },
+        "disconnected": {
+          "mean": -0.017578125,
+          "conditional_paired_bootstrap95": [
+            -0.06640625,
+            0.033203125
+          ],
+          "per_condition_counts": [
+            -4,
+            -2,
+            -1,
+            -1,
+            -5,
+            6,
+            -2,
+            0
+          ]
+        }
+      },
+      "harmonic_tree minus gaussian": {
+        "graph": {
+          "mean": 0.06640625,
+          "conditional_paired_bootstrap95": [
+            0.029296875,
+            0.10546875
+          ],
+          "per_condition_counts": [
+            6,
+            7,
+            1,
+            0,
+            6,
+            0,
+            14,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": 0.1015625,
+          "conditional_paired_bootstrap95": [
+            0.052734375,
+            0.15234375
+          ],
+          "per_condition_counts": [
+            11,
+            8,
+            8,
+            6,
+            9,
+            -4,
+            9,
+            5
+          ]
+        },
+        "disconnected": {
+          "mean": -0.099609375,
+          "conditional_paired_bootstrap95": [
+            -0.1484375,
+            -0.05078125
+          ],
+          "per_condition_counts": [
+            -11,
+            -8,
+            -8,
+            -4,
+            -9,
+            4,
+            -9,
+            -6
+          ]
+        }
+      }
+    }
+  },
+  "decision": {
+    "source_structure_beyond_tested_single_gaussian_supported": true,
+    "narrow_shell_advantage_over_harmonic_repeated": false,
+    "extra_learned_affinity_gain_established": false,
+    "broader_composition_generalization_established": false
+  },
+  "inference_scope": "Same two shell/Gaussian checkpoints as the earlier connected-data comparisons; new generation streams. New covariance/harmonic models have matched training data and budgets. Earlier weak confirmation is retained.",
+  "uncertainty_scope": "Paired intervals within eight fixed development compositions, conditional on fitted models, without multiplicity adjustment.",
+  "reference_registry": "research/evidence/generator_reference_registry_v3.json",
+  "candidate_manuscript_pdf": "paper/tree_working.pdf"
 }

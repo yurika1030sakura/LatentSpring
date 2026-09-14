@@ -41,7 +41,7 @@ def main():
             ax = axes[row, col]
             bars = ax.bar(range(4), [study['methods'][method][key] for method in methods], color=colors, width=.65)
             ax.bar_label(bars, padding=3)
-            ax.set_xticks(range(4), ['Unit\nGaussian', 'Covariance\nGaussian', 'Harmonic\ntree', 'Shell\ntree'])
+            ax.set_xticks(range(4), ['Unit\nGaussian', 'Cov.\nGaussian', 'Harmonic\ntree', 'Shell\ntree'])
             ax.set_title(f'Continuation {row+1}: {label}', fontsize=10)
             ax.set_ylim(0, limit)
             ax.set_ylabel('Count / 512')
