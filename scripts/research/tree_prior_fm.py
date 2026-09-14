@@ -39,6 +39,9 @@ def geometry_counts(x,numbers):
 def load_prior(method,prior_run,protocol,protocol_hash):
     if method in ['gaussian','warm']:return None
     if method=='fixed':return TreeMixturePrior('fixed',width=protocol['edge_log_width']).double()
+    if method in ['harmonic_tree','covariance_gaussian']:
+        from cfm_mol.tree_prior_controls import TreePriorControl
+        return TreePriorControl(method,width=protocol['edge_log_width'],**protocol['covariance_control']).double()
     report=json.loads((prior_run/'results.json').read_text())
     assert report['complete'] and report['protocol_sha256']==protocol_hash
     path=prior_run/f'{method}.pt';assert sha(path)==report['models'][method]['checkpoint_sha256']

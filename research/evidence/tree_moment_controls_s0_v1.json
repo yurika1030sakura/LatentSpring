@@ -1,0 +1,72 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-14T04:55:40.948556+00:00",
+  "methods": [
+    "covariance_gaussian",
+    "harmonic_tree"
+  ],
+  "warm_checkpoint": "runs/orbit_pairing_typed_v1/training/typed_rotation/last.ckpt",
+  "warm_checkpoint_sha256": "92269b5915da5ef057bde64067a84baaaf85a7d60470bdb2b027dc31624cfab9",
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "metadata": "runs/raw_metadata_replay_v1",
+  "condition_manifest": "research/evidence/development_panel_v1.json",
+  "condition_manifest_sha256": "cd0cff7c0b3422e1ae560b41c346d1753e5ebfc1ad7629387998911bd87f24ad",
+  "data_seed": 29612,
+  "fm_seed": 29611,
+  "fm_steps": 3000,
+  "fm_lr": 2e-05,
+  "prior_seed": 29621,
+  "prior_steps": 1000,
+  "prior_lr": 0.003,
+  "prior_validation_rows": 128,
+  "edge_log_width": 0.2,
+  "edge_mean_length": "sum of covalent radii, shared and fixed across all tree models",
+  "prior_logit_bound": 2.0,
+  "pairing": "typed_rotation",
+  "evaluation_seed": 30103,
+  "conditions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "samples_per_condition": 64,
+  "evaluation_batch": 16,
+  "midpoint_steps": 64,
+  "terminal_time": 1.0,
+  "terminal_noise_std_A": 0.025,
+  "model_input_kT_eV": 1.0,
+  "primary": "Fixed shell tree versus covariance Gaussian and harmonic tree, each continuation separately, with fresh Gaussian/fixed reference draws. Preserve graph/geometry support, disconnection, overlap, exceptions, diversity and cost.",
+  "mechanism": "Initial/final disconnected and overlap fractions; fixed component laws, learned latent tree weights. A connected auxiliary tree does NOT guarantee connected or collision-free coordinate geometry.",
+  "prior_training": "No prior fitting. Gaussian covariance uses a fixed128-tree composition-only calibration; harmonic edge covariance matches shell edges analytically.",
+  "claim_boundary": "Matrix-tree marginalization and tree ensembles are prior art; graph-informed harmonic priors are prior art. Candidate contribution is a learned, explicit-density spatial prior without supplied bonds and its demonstrated molecular value, not those general principles.",
+  "molecular_energy_gate": "Zero new physical queries in this bounded mechanism-control study.",
+  "scientific_submission_ready": false,
+  "target_domain": "connected_nonoverlapping",
+  "parent_unrestricted_protocol_sha256": "34356e21ed45275ba0a8001bcb1ec24e52b91c7bfde2deaee867717702e0e364",
+  "target_alignment_reason": "580/1000 prior-training structures and79/128 prior-validation structures in the unrestricted pilot are disconnected under the fixed contact rule. Preserve that pilot. Compare every method on the SAME automatically selected train-only connected/nonoverlapping subset, with new generated evaluation streams.",
+  "selection": "First3128 qualifying training rows in the same seeded complete dataset permutation; first1000 prior fit, first3000 FM fit, final128 prior validation. No energy or bond perception is used in selection.",
+  "parent_protocol_sha256": "db7cdd5e6a942e0d6308b60b222f9a5703f75656a1624409c08e925f41db5cfd",
+  "covariance_control": {
+    "covariance_trees": 128,
+    "covariance_seed": 30191
+  },
+  "covariance_calibration_sha256": "c6c3e093d657af53554ef6825fb67189ce63969a6688a2ea14fae8dd6da6949e",
+  "frozen_references": {
+    "gaussian": {
+      "checkpoint": "runs/tree_prior_fm_connected_fixed_v1/study/gaussian/last.ckpt",
+      "checkpoint_sha256": "cef6d4641086cfe8162a664258c1a48c2beaca502c16c28c8a51eab0fbaf8709"
+    },
+    "fixed": {
+      "checkpoint": "runs/tree_prior_fm_connected_fixed_v1/study/fixed/last.ckpt",
+      "checkpoint_sha256": "5c609f85fc707cf24b4e406fa8942befc052bae33a6f779d0d14f6567ae3377e"
+    }
+  },
+  "role": "Two prespecified controls of source second moments; no learned affinity update",
+  "total_new_outputs_this_seed": 2048
+}
