@@ -1,85 +1,77 @@
-# Next — a main-generator redesign, not more routing variants
+# Next — component-mass calibration checkpoint
 
-CURRENT: read `research/WORK_CHAIN_STATE_20260913.json`, `research/NEXT.md`,
-`notes/work_chain_pilot_v1.md` and `notes/ai_novelty_boundary_20260913.md`.
+Read `research/LATENT_MASS_STATE_20260913.json` and
+`notes/latent_mass_calibration_v1.md` first. The ICLR goal remains unachieved.
+User priority is useful AI novelty and quick evidence, not all-case perfection.
 
-The complete-chain study and supplementary exact controls are DONE:324 trajectories,
-64 raw calls each,20,736 new calls in total. Every trajectory reaches its cap;
-10,044 scored MH ratios,4,826 catalogue normalizers and all state histories replay.
-All project jobs from this stage are terminal. No training/evaluation job is hidden
-in the background; re-query Slurm before recovery.
+The new prototype learns Gaussian-preserving couplings between normalized
+reference generators to reduce component-mass estimation error. It is implemented
+and tested on exact-probability COM targets. It keeps each conditional reference
+shape fixed. Generic ratio coupling and Gaussian-preserving rearrangements have
+direct prior art; do not claim those principles as new.
 
-Cooperative routing is slower and visits fewer connectivities than strong single
-edits. The single-edit learner visits2.1667 connectivities versus1.9444 uniform,
-1.7500 force-informed and1.8889 root-noise, but the exact zero-learning confinement/
-volume ablation reaches2.0833. Learned-minus-zero is+0.0833 with descriptive interval
-[-0.0556,0.2222]; potential difference is-0.01912 eV with interval[-0.06164,0.01961]
-and opposite energy signs across replicas. No material repeatable learned increment
-over this exact ablation is established. Preserve the positive weaker-control and
-one-step results, but do not call them ICLR-level AI novelty or overall superiority.
+Completed evidence:
+- Offline run46315997, audit46317683 and binned control46317713 are complete.
+  At64 pairs, nonlinear-case mass RMSE averages0.03884 independent,0.02285 neural
+  and0.02281 binned. Simple nonlinear coupling matches neural with fixed fitting
+  data. The constant-angle case gives no substantive neural increment.
+- The online experiment46320232 is complete:384 histories across two constructed
+  cases and six methods,512 target calls per history including all learning.
+  Every query is retained. Audit46320415 is complete. All17 array tasks from this
+  stage completed0:0. No stage job remains active; re-query Slurm before recovery.
+- No molecular oracle calls were added. These COM shells are not chemically
+  validated molecules. Correct component masses alone can worsen joint reverse
+  KL when conditional shapes remain misspecified; that result is retained.
 
-Stop scaling the cooperative/scorer recipe. The next bounded design task concerns
-the generator's own learned distribution; see `notes/generator_redesign_brief_v1.md`.
-That replacement is a hypothesis only, not implemented or validated. Ordinary
-learned energy-guided MCMC, residual learning, composed paths and score-blindness
-repairs have close prior art. The full ICLR goal remains active and unachieved.
-Keep the evaluated12/18-parent cohorts outside fitting, all722 reserved outcomes
-unqueried, optimizer recovery paused and the two software environments separate.
+The final online nonlinear-case mass RMSE is0.016519 independent,0.016149 shared
+latent,0.017523 constant,0.017964 Gaussian,0.012027 neural and0.014159 binned.
+Neural point error is27.2% below independent and15.1% below binned, but both paired
+MSE intervals span zero. Constant/Gaussian maps have lower point error than neural
+on the constant case. The binned control matches neural offline. Do not claim a
+robust neural win or molecule-generation advance from these results.
 
-Concrete next task:
-1. Read `notes/generator_redesign_brief_v1.md` and inspect the current BGFM target,
-   conditioning and energy-loss definitions. Determine whether a valid nonlocal
-   density/energy calibration mechanism can contribute something distinct from
-   the existing grouped energy variance and the cited prior work. Do not infer a
-   mode-weight pathology from the present short-chain results.
-2. Use the existing `clamped_density.py` sampler/density pair as a possible
-   controlled interface, with its actual semantics and prior numerical audits.
-   Its q0.95 is not the production CTMC endpoint plus noise. Density and sampling
-   must refer to one explicitly defined law; retain common conditioning across
-   transported samples. No new broad density audit or oracle labels are needed
-   merely to read and specify this candidate.
-3. Write one concrete learned-object/architecture/objective specification and
-   its minimal known-probability test. Explain the distinction from Boltzmann
-   generators, SLMC, existing score/ratio methods and DiffCLF where relevant.
-   A renamed pairwise variance loss is not sufficient. This is an open design
-   decision, not a validated new method or a promise of ICLR acceptance.
-4. If a distinct hypothesis survives, implement one bounded generator experiment
-   with physical/zero-learning controls from the outset. Evaluate actual samples,
-   valid retention, physical distribution claims only with a qualified reference,
-   and both training/inference costs. No all-case perfection, independent new
-   physics law or optimizer cleanup is required before a useful small test.
+Final artifacts:
+- `research/evidence/online_latent_mass_summary_v1.json`: all methods, budgets,
+  paired uncertainty, source hashes and full-run compute times.
+- `research/evidence/online_latent_mass_table_v1.csv`: flat numerical table.
+- `research/figures/latent_mass_v1/online_latent_mass_v2.pdf`: curves and paired
+  uncertainty. Version1 point-only figure remains preserved.
+- `runs/online_latent_mass_v1` and `runs/online_latent_mass_audit_v1`: complete
+  traces and audits. All196,608 weights and prefix estimators replay;48 histories
+  replay end to end, including32 adaptive and16 static histories.
+- `research/evidence/latent_mass_scheduler_v1.json`: actual completion records.
 
-What is closed:
-- The six-arm cooperative chain experiment and all three matched single-edit
-  controls are complete. Do not restart them or increase budgets to seek a win.
-- The known confinement term explains much of the single learner's exploration
-  advantage over weaker controls. Its remaining increment is uncertain. Keep
-  single_linear as a useful learned baseline, with single_restraint as its exact
-  zero-learning counterpart. Do not drop that counterpart from later comparisons.
-- Force-informed reverse probabilities correctly use the selected candidate's
-  force AFTER its energy query. A full old-condition replay verifies that this
-  adapter extension preserves earlier normalized-kernel results.
-- Query-budget endpoints, connectivity visits and typed distance movement do not
-  certify equilibrium sampling, thermodynamic basins or exact energy distributions.
+Next main-method decision:
+1. Retain the coupling as an estimator prototype. It cannot change marginal
+   importance-weight collapse or repair conditional geometric coverage. A new
+   paper story cannot be built on generic coupled importance sampling alone.
+2. Choose one explicit learned-distribution contribution and a small molecular
+   test that directly measures it. The normalized sampler/density interface and
+   strong simple baseline must be part of that specification from the start.
+   The present module does not establish that such a contribution is solved.
+3. Do not increase toy budgets, change targets, add neural variants or revive
+   routing sweeps merely to seek a favorable comparison. Do not polish the old
+   diagnostic manuscript into a claimed new method before that decision.
 
-Current artifacts:
-- `research/evidence/work_chain_matched_controls_v2.json`: all9 methods with
-  checked common sources, target, background, seeds and budgets. Version1 remains.
-- `research/evidence/work_chain_final_table_v1.csv`: concise endpoint/runtime table.
-- `research/evidence/work_chain_summary_v1.json`:216 primary trajectories.
-- `research/evidence/work_chain_single_controls_summary_v1.json`:72 uniform/force trajectories.
-- `research/evidence/work_chain_single_restraint_summary_v1.json`:36 zero-learning trajectories.
-- `research/evidence/work_chain_move_attribution_v1.json`: accepted energy changes
-  telescope by move family. Descriptive attribution, not a causal intervention.
-- `research/evidence/work_chain_scheduler_hardware_v1.json`: actual Slurm records
-  and A100 MIG3g.20GB node class; wall times are observed under shared-node load.
-- `cfm_mol/work_chain_kernel.py`, `scripts/research/evaluate_work_chains.py`,
-  `summarize_work_chains.py`, `compare_work_chain_controls.py`: reusable code.
-- `runs/work_chains_v1`, `runs/work_chains_single_controls_v1`,
-  `runs/work_chains_single_restraint_v1` and their matching audit directories:
-  immutable complete traces, every checkpoint and raw response.
+A molecular continuation must first choose one normalized reference sampler with
+its matching density, within one fixed composition/electronic sector. Production
+FM64 plus noise does not have a qualified absolute q; clamped q0.95 is a different
+law. Existing EACF checkpoints are implicit-source refiners, not established
+absolute-density reference banks. Historical triatomic integrals differ in target,
+spin, temperature or support and cannot silently serve as ground truth here.
+These are concrete interface choices, not a request for another broad density
+or all-case chemistry audit. Keep the first actual molecular test small and
+include a simple nonlinear control and a learned-generator baseline.
 
-Jobs46303471/46303884,46307645/46307852 and46310519/46310594 all completed0:0.
-Latest targeted tests:9 pass, plus the old mixed-chain regression and an actual
-old-condition replay. No authorship/submission actions are taken for the user.
-The old manuscript remains a development draft, not an ICLR-ready paper.
+The earlier routing branch is closed to scale-up. Its324 trajectories and20,736
+calls are archived under `research/WORK_CHAIN_STATE_20260913.json` and
+`research/evidence/work_chain_matched_controls_v2.json`. The learned single edit
+has no established material increment beyond its exact zero-learning counterpart;
+cooperative routing is slower and explores fewer connectivities. Preserve every
+negative result. Do not restart scorer/committee/mobility/optimizer sweeps.
+
+Protected constraints:722 reserved outcomes unqueried; evaluated12/18-parent
+cohorts excluded from fitting; two environments separate; no home writes;
+bond-free OMol25 with max_atoms200; user handles authorship/submission.
+`paper/angular_working.tex` remains the old diagnostic draft, not the current
+method paper or an ICLR-ready submission.

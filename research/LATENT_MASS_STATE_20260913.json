@@ -1,0 +1,342 @@
+{
+  "updated_utc": "2026-09-14T00:47:08.600562+00:00",
+  "phase": "latent_coupling_component_mass_calibration",
+  "scientific_submission_ready": false,
+  "iclr_goal_achieved": false,
+  "offline_complete": true,
+  "online_status": "complete and audited",
+  "jobs": {
+    "offline": 46315997,
+    "offline_audit": 46317683,
+    "binned": 46317713,
+    "online": 46320232,
+    "online_audit": 46320415
+  },
+  "preserved_submission_rejection": "runs/latent_mass_calibration_audit_v1/submission.json: expired producer dependency rejected; audit_v2 submitted without dependency after producer completion was verified",
+  "artifacts": {
+    "theory": "notes/latent_mass_calibration_v1.md",
+    "offline_summary": "research/evidence/latent_mass_calibration_summary_v1.json",
+    "online_protocol": "research/evidence/online_latent_mass_protocol_v1.json",
+    "online_run": "runs/online_latent_mass_v1",
+    "online_audit": "runs/online_latent_mass_audit_v1",
+    "online_summary": "research/evidence/online_latent_mass_summary_v1.json",
+    "online_summary_sha256": "5adddf0efd76d159d9710fc763b4f466bfd4fefc8ff28aea5d8418f715e5f4f7",
+    "online_table": "research/evidence/online_latent_mass_table_v1.csv",
+    "figure": "research/figures/latent_mass_v1/online_latent_mass_v2.pdf"
+  },
+  "offline_nonlinear_case_mean_mass_RMSE_at64pairs": {
+    "independent": 0.03883668,
+    "identity": 0.03504102,
+    "constant": 0.03494475,
+    "gaussian": 0.03531821,
+    "neural": 0.0228463,
+    "binned": 0.02281009
+  },
+  "interpretation": "The online nonlinear-case neural RMSE is27.2% below independent and15.1% below binned at equal512 total calls, but both paired MSE intervals span zero. Simple constant/Gaussian coupling has lower point error on the constant case. Offline binned matches neural. Useful nonlinear-coupling mechanism signal; no established distinctive neural or molecular-generator advantage.",
+  "known_limits": [
+    "Generic ratio coupling and Gaussian-preserving rearrangements are prior art.",
+    "Toy is three COM points on radial shells, not a chemical-validity demonstration.",
+    "Reference marginal shapes do not improve; correcting masses can worsen joint reverse KL.",
+    "Production FM64 plus noise has no qualified absolute density.",
+    "Unbiased normalizer estimates do not imply unbiased ratios or masses."
+  ],
+  "old_routing_study": "research/WORK_CHAIN_STATE_20260913.json",
+  "old_routing_scaleup_stopped": true,
+  "new_molecular_oracle_calls_this_stage": 0,
+  "reserved_outcomes_still_unqueried": 722,
+  "evaluated_parent_cohorts_excluded_from_fit": [
+    12,
+    18
+  ],
+  "optimizer_recovery_paused": true,
+  "online_primary": {
+    "constant": {
+      "scenario": "constant",
+      "pairs": 256,
+      "histories": 32,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.020724208498028317,
+          "mass_bias": 0.004204234705372772,
+          "mass_RMSE_bootstrap95": [
+            0.015832578573482768,
+            0.025136090149019425
+          ],
+          "log_ratio_RMSE": 0.08541796141401257,
+          "mean_normalizers": [
+            1.128513478580721,
+            0.8199607398220488
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 0.0019416199866100214
+        },
+        "identity": {
+          "mass_RMSE": 0.01575730064611195,
+          "mass_bias": -0.0018002794744106342,
+          "mass_RMSE_bootstrap95": [
+            0.011798779396862118,
+            0.01943421228392403
+          ],
+          "log_ratio_RMSE": 0.06513178641271265,
+          "mean_normalizers": [
+            1.128513478580721,
+            0.7993040789433997
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 0.0015547709554084577
+        },
+        "constant": {
+          "mass_RMSE": 0.012450105594985642,
+          "mass_bias": -0.0015480096523206865,
+          "mass_RMSE_bootstrap95": [
+            0.009699676520098689,
+            0.014949803526716527
+          ],
+          "log_ratio_RMSE": 0.05141553071682292,
+          "mean_normalizers": [
+            1.128513478580721,
+            0.8002377769118576
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 1.2407090047308884
+        },
+        "gaussian": {
+          "mass_RMSE": 0.01245855037288438,
+          "mass_bias": -0.0018968283403260813,
+          "mass_RMSE_bootstrap95": [
+            0.009760462853937207,
+            0.015059284561349836
+          ],
+          "log_ratio_RMSE": 0.05135330050602703,
+          "mean_normalizers": [
+            1.128513478580721,
+            0.7989895048772916
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 1.7073968832737592
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.014275935697792803,
+          "mass_bias": -0.0016279443246646468,
+          "mass_RMSE_bootstrap95": [
+            0.010704924891321462,
+            0.017552743505104662
+          ],
+          "log_ratio_RMSE": 0.05906228678554139,
+          "mean_normalizers": [
+            1.128513478580721,
+            0.8000782412672738
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 1.6315834755441756
+        },
+        "binned": {
+          "mass_RMSE": 0.015247375641758881,
+          "mass_bias": 0.0003335374047615889,
+          "mass_RMSE_bootstrap95": [
+            0.011360020871706211,
+            0.019412088249332216
+          ],
+          "log_ratio_RMSE": 0.06315290348986118,
+          "mean_normalizers": [
+            1.128513478580721,
+            0.8065713054385946
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 2.0046604268391093
+        }
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "paired_MSE_difference": -0.00022569047782223427,
+          "paired_history_bootstrap95": [
+            -0.00044475765293215056,
+            -3.1978656938042394e-05
+          ],
+          "RMSE_ratio": 0.6888531206946216
+        },
+        "nonlinear minus identity": {
+          "paired_MSE_difference": -4.449018360444527e-05,
+          "paired_history_bootstrap95": [
+            -0.0001631740897675988,
+            8.551603134932976e-05
+          ],
+          "RMSE_ratio": 0.9059886600129909
+        },
+        "nonlinear minus constant": {
+          "paired_MSE_difference": 4.879721072122208e-05,
+          "paired_history_bootstrap95": [
+            -1.2155408346863245e-05,
+            0.00012518623112918784
+          ],
+          "RMSE_ratio": 1.1466517764750948
+        },
+        "nonlinear minus gaussian": {
+          "paired_MSE_difference": 4.85868626538173e-05,
+          "paired_history_bootstrap95": [
+            -3.9524495529257685e-05,
+            0.00013535911458803038
+          ],
+          "RMSE_ratio": 1.1458745416211424
+        },
+        "nonlinear minus binned": {
+          "paired_MSE_difference": -2.8680123913387184e-05,
+          "paired_history_bootstrap95": [
+            -0.00014500494135674297,
+            8.381919565927451e-05
+          ],
+          "RMSE_ratio": 0.9362880559389158
+        }
+      }
+    },
+    "nonlinear": {
+      "scenario": "nonlinear",
+      "pairs": 256,
+      "histories": 32,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.01651945541487509,
+          "mass_bias": -0.002486960807056347,
+          "mass_RMSE_bootstrap95": [
+            0.012757744429947437,
+            0.01999830636490935
+          ],
+          "log_ratio_RMSE": 0.06813188323244536,
+          "mean_normalizers": [
+            1.132236275739829,
+            0.7995365139206739
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 0.0019089572451775894
+        },
+        "identity": {
+          "mass_RMSE": 0.016148770218995946,
+          "mass_bias": -1.82162003171428e-05,
+          "mass_RMSE_bootstrap95": [
+            0.01263214578235002,
+            0.01934933276364876
+          ],
+          "log_ratio_RMSE": 0.06656279993969572,
+          "mean_normalizers": [
+            1.132236275739829,
+            0.8079601185603189
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 0.0018800796460709535
+        },
+        "constant": {
+          "mass_RMSE": 0.017522659258444886,
+          "mass_bias": -0.001891445855367855,
+          "mass_RMSE_bootstrap95": [
+            0.013928036026082925,
+            0.02079740684052134
+          ],
+          "log_ratio_RMSE": 0.07241739922742936,
+          "mean_normalizers": [
+            1.132236275739829,
+            0.8023170284678146
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 0.9939699869428296
+        },
+        "gaussian": {
+          "mass_RMSE": 0.017964407166047677,
+          "mass_bias": 0.0011500946411913855,
+          "mass_RMSE_bootstrap95": [
+            0.011578216791199147,
+            0.023570763582647022
+          ],
+          "log_ratio_RMSE": 0.07388938904910237,
+          "mean_normalizers": [
+            1.132236275739829,
+            0.8122381127439018
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 1.71454007966895
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.012027260248017096,
+          "mass_bias": -0.0005148197183191261,
+          "mass_RMSE_bootstrap95": [
+            0.0082757139285717,
+            0.015720357625394796
+          ],
+          "log_ratio_RMSE": 0.04965755729255497,
+          "mean_normalizers": [
+            1.132236275739829,
+            0.8067130720599801
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 1.6382847795684938
+        },
+        "binned": {
+          "mass_RMSE": 0.014158926749816766,
+          "mass_bias": 0.0001824059060581227,
+          "mass_RMSE_bootstrap95": [
+            0.010555925390724245,
+            0.01742976705195186
+          ],
+          "log_ratio_RMSE": 0.058455883253106314,
+          "mean_normalizers": [
+            1.132236275739829,
+            0.8092825875345144
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 2.033733051735908
+        }
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "paired_MSE_difference": -0.0001282374181305136,
+          "paired_history_bootstrap95": [
+            -0.0002753009343968023,
+            9.218073600104554e-06
+          ],
+          "RMSE_ratio": 0.7280663887495372
+        },
+        "nonlinear minus identity": {
+          "paired_MSE_difference": -0.00011612779051239808,
+          "paired_history_bootstrap95": [
+            -0.0002573197338508907,
+            3.177440578307964e-05
+          ],
+          "RMSE_ratio": 0.7447787097663524
+        },
+        "nonlinear minus constant": {
+          "paired_MSE_difference": -0.00016238859841403208,
+          "paired_history_bootstrap95": [
+            -0.00030920707312070544,
+            -1.2830520954516768e-05
+          ],
+          "RMSE_ratio": 0.6863832749712728
+        },
+        "nonlinear minus gaussian": {
+          "paired_MSE_difference": -0.00017806493575401282,
+          "paired_history_bootstrap95": [
+            -0.00042929635346544156,
+            3.532734783334499e-05
+          ],
+          "RMSE_ratio": 0.669504990442899
+        },
+        "nonlinear minus binned": {
+          "paired_MSE_difference": -5.5820217633144475e-05,
+          "paired_history_bootstrap95": [
+            -0.0001321872371734535,
+            1.3218056819775066e-05
+          ],
+          "RMSE_ratio": 0.8494471693041807
+        }
+      }
+    }
+  },
+  "online_histories": 384,
+  "online_source_analytic_target_calls": 196608,
+  "online_weights_checked": 196608,
+  "online_full_history_replays": 48,
+  "online_adaptive_history_replays": 32,
+  "all_jobs_this_stage_terminal": true,
+  "live_jobs_this_stage": [],
+  "scheduler_record": "research/evidence/latent_mass_scheduler_v1.json",
+  "decision": "Retain as a bounded estimator prototype. Do not scale toy variants or promote it to the main ICLR contribution. Next main-method work must change the learned sample distribution or demonstrate a distinct useful contribution on a controlled real molecular task; this module alone cannot fix marginal importance-weight collapse.",
+  "current_paper": "paper/angular_working.tex remains an old diagnostic draft; no submission-ready replacement is claimed"
+}

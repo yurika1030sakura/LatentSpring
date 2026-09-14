@@ -1,0 +1,1174 @@
+{
+  "complete": true,
+  "protocol_sha256": "2dacb3770e0111320897fda791d09508edd614fce82567c00709c9be14be94ba",
+  "sources": {
+    "0": {
+      "results_sha256": "1d916ca6aa6bcd765a81378cc2740488400309ff0082f8a92f1eeb40c383fe53",
+      "audit_sha256": "b0d7bbccef8db7469682891d7ed9c69d41aae644706005aa0b60c64ffe57bc87",
+      "trace_sha256": "90534fb125a65a74405d993b4ebbdc5327922972712a6f6cb1bfdb79ef8bed5c"
+    },
+    "1": {
+      "results_sha256": "597a1d959280b3f531b6011cc4428453aa561c71a11ac68182b736745adb92d9",
+      "audit_sha256": "425bbfc2f397686d2cc04a70e65f238e4615b573034ee0ac9bc74a8dfaa8d30f",
+      "trace_sha256": "b48f26a98f65c61cfacd6b9b825227eb9ac030b13d5cd8edc85d0f36e7888778"
+    },
+    "2": {
+      "results_sha256": "e63697063ba0445ae2faee01d843e410412d95679f77f7991e899013d320260e",
+      "audit_sha256": "b5f3c56751a84823549ab190daadb6afea788ec699048c9a4ef13f365b1cd8ef",
+      "trace_sha256": "46556577c51064fda0f7676fa3edf33f3284175b9af534e4483e03a2cadce437"
+    },
+    "3": {
+      "results_sha256": "ad1cd9ba4297dfa797e4881e8732cbb8b3cb24a7fb77c6e88408f4ad05984df5",
+      "audit_sha256": "83b6bcdf1fac7c0a25d576640b39154178664efd9a22ec83fb17cd53daa26e17",
+      "trace_sha256": "71d7e090c6c50e9331885c4a98f5f7463fca97348c1c799bf92a048c68ea2cfc"
+    }
+  },
+  "rows": [
+    {
+      "scenario": "constant",
+      "pairs": 64,
+      "histories": 32,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.04521668715892244,
+          "mass_bias": 0.002430844379444092,
+          "mass_RMSE_bootstrap95": [
+            0.03470449783963651,
+            0.0553663096765729
+          ],
+          "log_ratio_RMSE": 0.18871224501774939,
+          "mean_normalizers": [
+            1.1294838841157193,
+            0.8224706974921662
+          ],
+          "target_calls_per_history": 128,
+          "full_256_pair_seconds_mean": 0.0019416199866100214
+        },
+        "identity": {
+          "mass_RMSE": 0.033666286010356386,
+          "mass_bias": -0.007012728357217304,
+          "mass_RMSE_bootstrap95": [
+            0.0257710122924916,
+            0.04114929871877319
+          ],
+          "log_ratio_RMSE": 0.140948191193572,
+          "mean_normalizers": [
+            1.1294838841157193,
+            0.7878418804100816
+          ],
+          "target_calls_per_history": 128,
+          "full_256_pair_seconds_mean": 0.0015547709554084577
+        },
+        "constant": {
+          "mass_RMSE": 0.033666286010356386,
+          "mass_bias": -0.007012728357217304,
+          "mass_RMSE_bootstrap95": [
+            0.0257710122924916,
+            0.04114929871877319
+          ],
+          "log_ratio_RMSE": 0.140948191193572,
+          "mean_normalizers": [
+            1.1294838841157193,
+            0.7878418804100816
+          ],
+          "target_calls_per_history": 128,
+          "full_256_pair_seconds_mean": 1.2407090047308884
+        },
+        "gaussian": {
+          "mass_RMSE": 0.033666286010356386,
+          "mass_bias": -0.007012728357217304,
+          "mass_RMSE_bootstrap95": [
+            0.0257710122924916,
+            0.04114929871877319
+          ],
+          "log_ratio_RMSE": 0.140948191193572,
+          "mean_normalizers": [
+            1.1294838841157193,
+            0.7878418804100816
+          ],
+          "target_calls_per_history": 128,
+          "full_256_pair_seconds_mean": 1.7073968832737592
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.033666286010356386,
+          "mass_bias": -0.007012728357217304,
+          "mass_RMSE_bootstrap95": [
+            0.0257710122924916,
+            0.04114929871877319
+          ],
+          "log_ratio_RMSE": 0.140948191193572,
+          "mean_normalizers": [
+            1.1294838841157193,
+            0.7878418804100816
+          ],
+          "target_calls_per_history": 128,
+          "full_256_pair_seconds_mean": 1.6315834755441756
+        },
+        "binned": {
+          "mass_RMSE": 0.033666286010356386,
+          "mass_bias": -0.007012728357217304,
+          "mass_RMSE_bootstrap95": [
+            0.0257710122924916,
+            0.04114929871877319
+          ],
+          "log_ratio_RMSE": 0.140948191193572,
+          "mean_normalizers": [
+            1.1294838841157193,
+            0.7878418804100816
+          ],
+          "target_calls_per_history": 128,
+          "full_256_pair_seconds_mean": 2.0046604268391093
+        }
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "paired_MSE_difference": -0.0009111299838967433,
+          "paired_history_bootstrap95": [
+            -0.001998286863762861,
+            6.305607530464728e-05
+          ],
+          "RMSE_ratio": 0.7445544582253444
+        },
+        "nonlinear minus identity": {
+          "paired_MSE_difference": 0.0,
+          "paired_history_bootstrap95": [
+            0.0,
+            0.0
+          ],
+          "RMSE_ratio": 1.0
+        },
+        "nonlinear minus constant": {
+          "paired_MSE_difference": 0.0,
+          "paired_history_bootstrap95": [
+            0.0,
+            0.0
+          ],
+          "RMSE_ratio": 1.0
+        },
+        "nonlinear minus gaussian": {
+          "paired_MSE_difference": 0.0,
+          "paired_history_bootstrap95": [
+            0.0,
+            0.0
+          ],
+          "RMSE_ratio": 1.0
+        },
+        "nonlinear minus binned": {
+          "paired_MSE_difference": 0.0,
+          "paired_history_bootstrap95": [
+            0.0,
+            0.0
+          ],
+          "RMSE_ratio": 1.0
+        }
+      }
+    },
+    {
+      "scenario": "constant",
+      "pairs": 128,
+      "histories": 32,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.0262170936636409,
+          "mass_bias": 0.005398715604433104,
+          "mass_RMSE_bootstrap95": [
+            0.019439700261589612,
+            0.033086791572123166
+          ],
+          "log_ratio_RMSE": 0.1079610483521862,
+          "mean_normalizers": [
+            1.133307431589838,
+            0.8290545826653901
+          ],
+          "target_calls_per_history": 256,
+          "full_256_pair_seconds_mean": 0.0019416199866100214
+        },
+        "identity": {
+          "mass_RMSE": 0.022023617693605262,
+          "mass_bias": -0.0030242225842749357,
+          "mass_RMSE_bootstrap95": [
+            0.01744171274155249,
+            0.02660562148262022
+          ],
+          "log_ratio_RMSE": 0.09133394696160453,
+          "mean_normalizers": [
+            1.133307431589838,
+            0.7996398966332077
+          ],
+          "target_calls_per_history": 256,
+          "full_256_pair_seconds_mean": 0.0015547709554084577
+        },
+        "constant": {
+          "mass_RMSE": 0.016825842629274262,
+          "mass_bias": -0.0014566657093686448,
+          "mass_RMSE_bootstrap95": [
+            0.012347699581417087,
+            0.020976470102925384
+          ],
+          "log_ratio_RMSE": 0.06972425103980165,
+          "mean_normalizers": [
+            1.133307431589838,
+            0.8047466960756664
+          ],
+          "target_calls_per_history": 256,
+          "full_256_pair_seconds_mean": 1.2407090047308884
+        },
+        "gaussian": {
+          "mass_RMSE": 0.016194375810930788,
+          "mass_bias": -0.00046123315144300583,
+          "mass_RMSE_bootstrap95": [
+            0.01201148275096921,
+            0.020050498053937382
+          ],
+          "log_ratio_RMSE": 0.0668722226478267,
+          "mean_normalizers": [
+            1.133307431589838,
+            0.8077748688498918
+          ],
+          "target_calls_per_history": 256,
+          "full_256_pair_seconds_mean": 1.7073968832737592
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.018793169654825595,
+          "mass_bias": -0.002693846186989774,
+          "mass_RMSE_bootstrap95": [
+            0.013953619910710976,
+            0.023254474896112615
+          ],
+          "log_ratio_RMSE": 0.07803188483089704,
+          "mean_normalizers": [
+            1.133307431589838,
+            0.8007319997511236
+          ],
+          "target_calls_per_history": 256,
+          "full_256_pair_seconds_mean": 1.6315834755441756
+        },
+        "binned": {
+          "mass_RMSE": 0.021035246483069002,
+          "mass_bias": -0.0020079599309393067,
+          "mass_RMSE_bootstrap95": [
+            0.015080053144093858,
+            0.02634327183829557
+          ],
+          "log_ratio_RMSE": 0.08740607792144071,
+          "mean_normalizers": [
+            1.133307431589838,
+            0.8035598820493226
+          ],
+          "target_calls_per_history": 256,
+          "full_256_pair_seconds_mean": 2.0046604268391093
+        }
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "paired_MSE_difference": -0.00033415277449306223,
+          "paired_history_bootstrap95": [
+            -0.0007634158276080851,
+            1.1184899993580524e-05
+          ],
+          "RMSE_ratio": 0.7168288711150637
+        },
+        "nonlinear minus identity": {
+          "paired_MSE_difference": -0.00013185651063902517,
+          "paired_history_bootstrap95": [
+            -0.0002451185501464043,
+            -2.6300930862188484e-05
+          ],
+          "RMSE_ratio": 0.853318919547098
+        },
+        "nonlinear minus constant": {
+          "paired_MSE_difference": 7.007424548995448e-05,
+          "paired_history_bootstrap95": [
+            -4.259769422118618e-06,
+            0.00017775003853000697
+          ],
+          "RMSE_ratio": 1.1169229422203497
+        },
+        "nonlinear minus gaussian": {
+          "paired_MSE_difference": 9.092541776939726e-05,
+          "paired_history_bootstrap95": [
+            -4.449033038933126e-05,
+            0.00022834394126724396
+          ],
+          "RMSE_ratio": 1.1604750855627721
+        },
+        "nonlinear minus binned": {
+          "paired_MSE_difference": -8.92983689284092e-05,
+          "paired_history_bootstrap95": [
+            -0.00023644665416486634,
+            5.996912998869531e-05
+          ],
+          "RMSE_ratio": 0.8934133322351119
+        }
+      }
+    },
+    {
+      "scenario": "constant",
+      "pairs": 192,
+      "histories": 32,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.021133089805864345,
+          "mass_bias": 0.004733996849399845,
+          "mass_RMSE_bootstrap95": [
+            0.01563373935691478,
+            0.0262544449561242
+          ],
+          "log_ratio_RMSE": 0.08694523786316029,
+          "mean_normalizers": [
+            1.1309228532825266,
+            0.8234262494008594
+          ],
+          "target_calls_per_history": 384,
+          "full_256_pair_seconds_mean": 0.0019416199866100214
+        },
+        "identity": {
+          "mass_RMSE": 0.0168646885416354,
+          "mass_bias": -0.0021051739196890767,
+          "mass_RMSE_bootstrap95": [
+            0.01324381140906122,
+            0.020273989058165555
+          ],
+          "log_ratio_RMSE": 0.06976310980312124,
+          "mean_normalizers": [
+            1.1309228532825266,
+            0.800462257644349
+          ],
+          "target_calls_per_history": 384,
+          "full_256_pair_seconds_mean": 0.0015547709554084577
+        },
+        "constant": {
+          "mass_RMSE": 0.014043153477302275,
+          "mass_bias": -0.0012011885383176307,
+          "mass_RMSE_bootstrap95": [
+            0.010886880316386158,
+            0.016942367703008006
+          ],
+          "log_ratio_RMSE": 0.05804021973726192,
+          "mean_normalizers": [
+            1.1309228532825266,
+            0.8035635475911908
+          ],
+          "target_calls_per_history": 384,
+          "full_256_pair_seconds_mean": 1.2407090047308884
+        },
+        "gaussian": {
+          "mass_RMSE": 0.013019890137351603,
+          "mass_bias": -0.0016160551264100768,
+          "mass_RMSE_bootstrap95": [
+            0.010236368713080922,
+            0.015634347066127197
+          ],
+          "log_ratio_RMSE": 0.053723484822763935,
+          "mean_normalizers": [
+            1.1309228532825266,
+            0.801878728984272
+          ],
+          "target_calls_per_history": 384,
+          "full_256_pair_seconds_mean": 1.7073968832737592
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.0151903012658448,
+          "mass_bias": -0.0017485403672200146,
+          "mass_RMSE_bootstrap95": [
+            0.011804328004591025,
+            0.01820202449555696
+          ],
+          "log_ratio_RMSE": 0.06283366220528983,
+          "mean_normalizers": [
+            1.1309228532825266,
+            0.801593504084671
+          ],
+          "target_calls_per_history": 384,
+          "full_256_pair_seconds_mean": 1.6315834755441756
+        },
+        "binned": {
+          "mass_RMSE": 0.01758448995384381,
+          "mass_bias": -0.001254492011547051,
+          "mass_RMSE_bootstrap95": [
+            0.012856745639174655,
+            0.021930203799354803
+          ],
+          "log_ratio_RMSE": 0.07293203627809353,
+          "mean_normalizers": [
+            1.1309228532825266,
+            0.8037309392780034
+          ],
+          "target_calls_per_history": 384,
+          "full_256_pair_seconds_mean": 2.0046604268391093
+        }
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "paired_MSE_difference": -0.00021586223219560133,
+          "paired_history_bootstrap95": [
+            -0.00047006265506661715,
+            -5.710310642025945e-06
+          ],
+          "RMSE_ratio": 0.7187922544875361
+        },
+        "nonlinear minus identity": {
+          "paired_MSE_difference": -5.367246705924218e-05,
+          "paired_history_bootstrap95": [
+            -0.00016742604688171713,
+            6.480574190844255e-05
+          ],
+          "RMSE_ratio": 0.9007163831305343
+        },
+        "nonlinear minus constant": {
+          "paired_MSE_difference": 3.3535092960059196e-05,
+          "paired_history_bootstrap95": [
+            -2.8494018558336575e-05,
+            0.00011082572772052046
+          ],
+          "RMSE_ratio": 1.0816873354262375
+        },
+        "nonlinear minus gaussian": {
+          "paired_MSE_difference": 6.122771335842062e-05,
+          "paired_history_bootstrap95": [
+            -2.282797855805545e-05,
+            0.00014180044272750096
+          ],
+          "RMSE_ratio": 1.1666996499660698
+        },
+        "nonlinear minus binned": {
+          "paired_MSE_difference": -7.846903438970775e-05,
+          "paired_history_bootstrap95": [
+            -0.00021701464413795824,
+            5.471138514495379e-05
+          ],
+          "RMSE_ratio": 0.86384656624768
+        }
+      }
+    },
+    {
+      "scenario": "constant",
+      "pairs": 256,
+      "histories": 32,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.020724208498028317,
+          "mass_bias": 0.004204234705372772,
+          "mass_RMSE_bootstrap95": [
+            0.015832578573482768,
+            0.025136090149019425
+          ],
+          "log_ratio_RMSE": 0.08541796141401257,
+          "mean_normalizers": [
+            1.128513478580721,
+            0.8199607398220488
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 0.0019416199866100214
+        },
+        "identity": {
+          "mass_RMSE": 0.01575730064611195,
+          "mass_bias": -0.0018002794744106342,
+          "mass_RMSE_bootstrap95": [
+            0.011798779396862118,
+            0.01943421228392403
+          ],
+          "log_ratio_RMSE": 0.06513178641271265,
+          "mean_normalizers": [
+            1.128513478580721,
+            0.7993040789433997
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 0.0015547709554084577
+        },
+        "constant": {
+          "mass_RMSE": 0.012450105594985642,
+          "mass_bias": -0.0015480096523206865,
+          "mass_RMSE_bootstrap95": [
+            0.009699676520098689,
+            0.014949803526716527
+          ],
+          "log_ratio_RMSE": 0.05141553071682292,
+          "mean_normalizers": [
+            1.128513478580721,
+            0.8002377769118576
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 1.2407090047308884
+        },
+        "gaussian": {
+          "mass_RMSE": 0.01245855037288438,
+          "mass_bias": -0.0018968283403260813,
+          "mass_RMSE_bootstrap95": [
+            0.009760462853937207,
+            0.015059284561349836
+          ],
+          "log_ratio_RMSE": 0.05135330050602703,
+          "mean_normalizers": [
+            1.128513478580721,
+            0.7989895048772916
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 1.7073968832737592
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.014275935697792803,
+          "mass_bias": -0.0016279443246646468,
+          "mass_RMSE_bootstrap95": [
+            0.010704924891321462,
+            0.017552743505104662
+          ],
+          "log_ratio_RMSE": 0.05906228678554139,
+          "mean_normalizers": [
+            1.128513478580721,
+            0.8000782412672738
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 1.6315834755441756
+        },
+        "binned": {
+          "mass_RMSE": 0.015247375641758881,
+          "mass_bias": 0.0003335374047615889,
+          "mass_RMSE_bootstrap95": [
+            0.011360020871706211,
+            0.019412088249332216
+          ],
+          "log_ratio_RMSE": 0.06315290348986118,
+          "mean_normalizers": [
+            1.128513478580721,
+            0.8065713054385946
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 2.0046604268391093
+        }
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "paired_MSE_difference": -0.00022569047782223427,
+          "paired_history_bootstrap95": [
+            -0.00044475765293215056,
+            -3.1978656938042394e-05
+          ],
+          "RMSE_ratio": 0.6888531206946216
+        },
+        "nonlinear minus identity": {
+          "paired_MSE_difference": -4.449018360444527e-05,
+          "paired_history_bootstrap95": [
+            -0.0001631740897675988,
+            8.551603134932976e-05
+          ],
+          "RMSE_ratio": 0.9059886600129909
+        },
+        "nonlinear minus constant": {
+          "paired_MSE_difference": 4.879721072122208e-05,
+          "paired_history_bootstrap95": [
+            -1.2155408346863245e-05,
+            0.00012518623112918784
+          ],
+          "RMSE_ratio": 1.1466517764750948
+        },
+        "nonlinear minus gaussian": {
+          "paired_MSE_difference": 4.85868626538173e-05,
+          "paired_history_bootstrap95": [
+            -3.9524495529257685e-05,
+            0.00013535911458803038
+          ],
+          "RMSE_ratio": 1.1458745416211424
+        },
+        "nonlinear minus binned": {
+          "paired_MSE_difference": -2.8680123913387184e-05,
+          "paired_history_bootstrap95": [
+            -0.00014500494135674297,
+            8.381919565927451e-05
+          ],
+          "RMSE_ratio": 0.9362880559389158
+        }
+      }
+    },
+    {
+      "scenario": "nonlinear",
+      "pairs": 64,
+      "histories": 32,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.03534674352271102,
+          "mass_bias": -0.002888214772475745,
+          "mass_RMSE_bootstrap95": [
+            0.025763006121340987,
+            0.04432145410382479
+          ],
+          "log_ratio_RMSE": 0.14652673267986388,
+          "mean_normalizers": [
+            1.1276830219917215,
+            0.7985618726628956
+          ],
+          "target_calls_per_history": 128,
+          "full_256_pair_seconds_mean": 0.0019089572451775894
+        },
+        "identity": {
+          "mass_RMSE": 0.032607823133301815,
+          "mass_bias": -0.006610904805257464,
+          "mass_RMSE_bootstrap95": [
+            0.024889084611369038,
+            0.04074107166534012
+          ],
+          "log_ratio_RMSE": 0.13652117291631558,
+          "mean_normalizers": [
+            1.1276830219917215,
+            0.7887236543254346
+          ],
+          "target_calls_per_history": 128,
+          "full_256_pair_seconds_mean": 0.0018800796460709535
+        },
+        "constant": {
+          "mass_RMSE": 0.032607823133301815,
+          "mass_bias": -0.006610904805257464,
+          "mass_RMSE_bootstrap95": [
+            0.024889084611369038,
+            0.04074107166534012
+          ],
+          "log_ratio_RMSE": 0.13652117291631558,
+          "mean_normalizers": [
+            1.1276830219917215,
+            0.7887236543254346
+          ],
+          "target_calls_per_history": 128,
+          "full_256_pair_seconds_mean": 0.9939699869428296
+        },
+        "gaussian": {
+          "mass_RMSE": 0.032607823133301815,
+          "mass_bias": -0.006610904805257464,
+          "mass_RMSE_bootstrap95": [
+            0.024889084611369038,
+            0.04074107166534012
+          ],
+          "log_ratio_RMSE": 0.13652117291631558,
+          "mean_normalizers": [
+            1.1276830219917215,
+            0.7887236543254346
+          ],
+          "target_calls_per_history": 128,
+          "full_256_pair_seconds_mean": 1.71454007966895
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.032607823133301815,
+          "mass_bias": -0.006610904805257464,
+          "mass_RMSE_bootstrap95": [
+            0.024889084611369038,
+            0.04074107166534012
+          ],
+          "log_ratio_RMSE": 0.13652117291631558,
+          "mean_normalizers": [
+            1.1276830219917215,
+            0.7887236543254346
+          ],
+          "target_calls_per_history": 128,
+          "full_256_pair_seconds_mean": 1.6382847795684938
+        },
+        "binned": {
+          "mass_RMSE": 0.032607823133301815,
+          "mass_bias": -0.006610904805257464,
+          "mass_RMSE_bootstrap95": [
+            0.024889084611369038,
+            0.04074107166534012
+          ],
+          "log_ratio_RMSE": 0.13652117291631558,
+          "mean_normalizers": [
+            1.1276830219917215,
+            0.7887236543254346
+          ],
+          "target_calls_per_history": 128,
+          "full_256_pair_seconds_mean": 2.033733051735908
+        }
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "paired_MSE_difference": -0.00018612214816762047,
+          "paired_history_bootstrap95": [
+            -0.0011145594195887162,
+            0.0007329132075609475
+          ],
+          "RMSE_ratio": 0.9225127942083436
+        },
+        "nonlinear minus identity": {
+          "paired_MSE_difference": 0.0,
+          "paired_history_bootstrap95": [
+            0.0,
+            0.0
+          ],
+          "RMSE_ratio": 1.0
+        },
+        "nonlinear minus constant": {
+          "paired_MSE_difference": 0.0,
+          "paired_history_bootstrap95": [
+            0.0,
+            0.0
+          ],
+          "RMSE_ratio": 1.0
+        },
+        "nonlinear minus gaussian": {
+          "paired_MSE_difference": 0.0,
+          "paired_history_bootstrap95": [
+            0.0,
+            0.0
+          ],
+          "RMSE_ratio": 1.0
+        },
+        "nonlinear minus binned": {
+          "paired_MSE_difference": 0.0,
+          "paired_history_bootstrap95": [
+            0.0,
+            0.0
+          ],
+          "RMSE_ratio": 1.0
+        }
+      }
+    },
+    {
+      "scenario": "nonlinear",
+      "pairs": 128,
+      "histories": 32,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.025707530387763102,
+          "mass_bias": -0.0004892517783190685,
+          "mass_RMSE_bootstrap95": [
+            0.017290695880487265,
+            0.03381330004400432
+          ],
+          "log_ratio_RMSE": 0.1057568468117115,
+          "mean_normalizers": [
+            1.1232758763569224,
+            0.8017462555386108
+          ],
+          "target_calls_per_history": 256,
+          "full_256_pair_seconds_mean": 0.0019089572451775894
+        },
+        "identity": {
+          "mass_RMSE": 0.02256690841654834,
+          "mass_bias": -0.002506350051137281,
+          "mass_RMSE_bootstrap95": [
+            0.017000869644575617,
+            0.027475095570967188
+          ],
+          "log_ratio_RMSE": 0.09332726446339934,
+          "mean_normalizers": [
+            1.1232758763569224,
+            0.7947861465618036
+          ],
+          "target_calls_per_history": 256,
+          "full_256_pair_seconds_mean": 0.0018800796460709535
+        },
+        "constant": {
+          "mass_RMSE": 0.02158174888603038,
+          "mass_bias": 0.005353516471871067,
+          "mass_RMSE_bootstrap95": [
+            0.01753046637405182,
+            0.025265506792206367
+          ],
+          "log_ratio_RMSE": 0.08846092622481702,
+          "mean_normalizers": [
+            1.1232758763569224,
+            0.8214094864063903
+          ],
+          "target_calls_per_history": 256,
+          "full_256_pair_seconds_mean": 0.9939699869428296
+        },
+        "gaussian": {
+          "mass_RMSE": 0.01827043352594671,
+          "mass_bias": 0.0026495724212781645,
+          "mass_RMSE_bootstrap95": [
+            0.014550725554558056,
+            0.021491947865214193
+          ],
+          "log_ratio_RMSE": 0.07505198334878328,
+          "mean_normalizers": [
+            1.1232758763569224,
+            0.811739041676736
+          ],
+          "target_calls_per_history": 256,
+          "full_256_pair_seconds_mean": 1.71454007966895
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.019195934695217975,
+          "mass_bias": -0.0044523794795503745,
+          "mass_RMSE_bootstrap95": [
+            0.014820619811389768,
+            0.023379296593494924
+          ],
+          "log_ratio_RMSE": 0.0794418864839076,
+          "mean_normalizers": [
+            1.1232758763569224,
+            0.7887779682242964
+          ],
+          "target_calls_per_history": 256,
+          "full_256_pair_seconds_mean": 1.6382847795684938
+        },
+        "binned": {
+          "mass_RMSE": 0.021239372218941382,
+          "mass_bias": -0.004765821807316552,
+          "mass_RMSE_bootstrap95": [
+            0.014628392020683726,
+            0.027368461963655562
+          ],
+          "log_ratio_RMSE": 0.08858867426087004,
+          "mean_normalizers": [
+            1.1232758763569224,
+            0.7880957976835614
+          ],
+          "target_calls_per_history": 256,
+          "full_256_pair_seconds_mean": 2.033733051735908
+        }
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "paired_MSE_difference": -0.0002923932098146901,
+          "paired_history_bootstrap95": [
+            -0.0008198071557180894,
+            0.00012204844739199923
+          ],
+          "RMSE_ratio": 0.7467047361482582
+        },
+        "nonlinear minus identity": {
+          "paired_MSE_difference": -0.0001407814466578072,
+          "paired_history_bootstrap95": [
+            -0.00039221485210687014,
+            9.69456446996702e-05
+          ],
+          "RMSE_ratio": 0.850623148766872
+        },
+        "nonlinear minus constant": {
+          "paired_MSE_difference": -9.728797615660034e-05,
+          "paired_history_bootstrap95": [
+            -0.0003012793228373217,
+            0.00010795194431181075
+          ],
+          "RMSE_ratio": 0.8894522309840833
+        },
+        "nonlinear minus gaussian": {
+          "paired_MSE_difference": 3.467516759703571e-05,
+          "paired_history_bootstrap95": [
+            -0.00015334777610865786,
+            0.0002418524227832724
+          ],
+          "RMSE_ratio": 1.0506556764488877
+        },
+        "nonlinear minus binned": {
+          "paired_MSE_difference": -8.262702343166578e-05,
+          "paired_history_bootstrap95": [
+            -0.0003379673085749769,
+            0.0001318534750453579
+          ],
+          "RMSE_ratio": 0.903790116644735
+        }
+      }
+    },
+    {
+      "scenario": "nonlinear",
+      "pairs": 192,
+      "histories": 32,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.019793148213284026,
+          "mass_bias": -0.002740117876016232,
+          "mass_RMSE_bootstrap95": [
+            0.014704170312189025,
+            0.02442983713703351
+          ],
+          "log_ratio_RMSE": 0.08167657887910168,
+          "mean_normalizers": [
+            1.1293737750400243,
+            0.7972427359529206
+          ],
+          "target_calls_per_history": 384,
+          "full_256_pair_seconds_mean": 0.0019089572451775894
+        },
+        "identity": {
+          "mass_RMSE": 0.018669532617369845,
+          "mass_bias": -0.0013513163901536871,
+          "mass_RMSE_bootstrap95": [
+            0.013629001944436902,
+            0.023356522184169986
+          ],
+          "log_ratio_RMSE": 0.07712408721505352,
+          "mean_normalizers": [
+            1.1293737750400243,
+            0.8020849490721993
+          ],
+          "target_calls_per_history": 384,
+          "full_256_pair_seconds_mean": 0.0018800796460709535
+        },
+        "constant": {
+          "mass_RMSE": 0.020860640437385804,
+          "mass_bias": -0.002315317424694525,
+          "mass_RMSE_bootstrap95": [
+            0.015856948641757556,
+            0.025599536195793807
+          ],
+          "log_ratio_RMSE": 0.08624636748530602,
+          "mean_normalizers": [
+            1.1293737750400243,
+            0.7996546122559371
+          ],
+          "target_calls_per_history": 384,
+          "full_256_pair_seconds_mean": 0.9939699869428296
+        },
+        "gaussian": {
+          "mass_RMSE": 0.01621624830367519,
+          "mass_bias": 0.0014503529460981462,
+          "mass_RMSE_bootstrap95": [
+            0.01228674140375957,
+            0.019869171209198053
+          ],
+          "log_ratio_RMSE": 0.06672889869725443,
+          "mean_normalizers": [
+            1.1293737750400243,
+            0.8111223586645975
+          ],
+          "target_calls_per_history": 384,
+          "full_256_pair_seconds_mean": 1.71454007966895
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.013120658825309177,
+          "mass_bias": -0.0019219569579992206,
+          "mass_RMSE_bootstrap95": [
+            0.009899600282779638,
+            0.016492601109309623
+          ],
+          "log_ratio_RMSE": 0.054240843180368176,
+          "mean_normalizers": [
+            1.1293737750400243,
+            0.800074098150943
+          ],
+          "target_calls_per_history": 384,
+          "full_256_pair_seconds_mean": 1.6382847795684938
+        },
+        "binned": {
+          "mass_RMSE": 0.015539007825347138,
+          "mass_bias": -0.002223265337212411,
+          "mass_RMSE_bootstrap95": [
+            0.010572308226181997,
+            0.01995462601331163
+          ],
+          "log_ratio_RMSE": 0.06440553866226334,
+          "mean_normalizers": [
+            1.1293737750400243,
+            0.7993725146188287
+          ],
+          "target_calls_per_history": 384,
+          "full_256_pair_seconds_mean": 2.033733051735908
+        }
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "paired_MSE_difference": -0.00021961702818286505,
+          "paired_history_bootstrap95": [
+            -0.0004305480527329027,
+            -4.168580323337095e-05
+          ],
+          "RMSE_ratio": 0.662888929235792
+        },
+        "nonlinear minus identity": {
+          "paired_MSE_difference": -0.00017639976014087287,
+          "paired_history_bootstrap95": [
+            -0.00039388833037664456,
+            1.838210025616205e-05
+          ],
+          "RMSE_ratio": 0.7027845364003338
+        },
+        "nonlinear minus constant": {
+          "paired_MSE_difference": -0.0002630146314477322,
+          "paired_history_bootstrap95": [
+            -0.0004897669536453803,
+            -6.245242718344428e-05
+          ],
+          "RMSE_ratio": 0.6289672105078199
+        },
+        "nonlinear minus gaussian": {
+          "paired_MSE_difference": -9.081502103628491e-05,
+          "paired_history_bootstrap95": [
+            -0.00025718190117281307,
+            7.033533276983207e-05
+          ],
+          "RMSE_ratio": 0.8091056932284121
+        },
+        "nonlinear minus binned": {
+          "paired_MSE_difference": -6.9309076186036e-05,
+          "paired_history_bootstrap95": [
+            -0.0002126462700138416,
+            4.777066077498435e-05
+          ],
+          "RMSE_ratio": 0.8443691497411331
+        }
+      }
+    },
+    {
+      "scenario": "nonlinear",
+      "pairs": 256,
+      "histories": 32,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.01651945541487509,
+          "mass_bias": -0.002486960807056347,
+          "mass_RMSE_bootstrap95": [
+            0.012757744429947437,
+            0.01999830636490935
+          ],
+          "log_ratio_RMSE": 0.06813188323244536,
+          "mean_normalizers": [
+            1.132236275739829,
+            0.7995365139206739
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 0.0019089572451775894
+        },
+        "identity": {
+          "mass_RMSE": 0.016148770218995946,
+          "mass_bias": -1.82162003171428e-05,
+          "mass_RMSE_bootstrap95": [
+            0.01263214578235002,
+            0.01934933276364876
+          ],
+          "log_ratio_RMSE": 0.06656279993969572,
+          "mean_normalizers": [
+            1.132236275739829,
+            0.8079601185603189
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 0.0018800796460709535
+        },
+        "constant": {
+          "mass_RMSE": 0.017522659258444886,
+          "mass_bias": -0.001891445855367855,
+          "mass_RMSE_bootstrap95": [
+            0.013928036026082925,
+            0.02079740684052134
+          ],
+          "log_ratio_RMSE": 0.07241739922742936,
+          "mean_normalizers": [
+            1.132236275739829,
+            0.8023170284678146
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 0.9939699869428296
+        },
+        "gaussian": {
+          "mass_RMSE": 0.017964407166047677,
+          "mass_bias": 0.0011500946411913855,
+          "mass_RMSE_bootstrap95": [
+            0.011578216791199147,
+            0.023570763582647022
+          ],
+          "log_ratio_RMSE": 0.07388938904910237,
+          "mean_normalizers": [
+            1.132236275739829,
+            0.8122381127439018
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 1.71454007966895
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.012027260248017096,
+          "mass_bias": -0.0005148197183191261,
+          "mass_RMSE_bootstrap95": [
+            0.0082757139285717,
+            0.015720357625394796
+          ],
+          "log_ratio_RMSE": 0.04965755729255497,
+          "mean_normalizers": [
+            1.132236275739829,
+            0.8067130720599801
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 1.6382847795684938
+        },
+        "binned": {
+          "mass_RMSE": 0.014158926749816766,
+          "mass_bias": 0.0001824059060581227,
+          "mass_RMSE_bootstrap95": [
+            0.010555925390724245,
+            0.01742976705195186
+          ],
+          "log_ratio_RMSE": 0.058455883253106314,
+          "mean_normalizers": [
+            1.132236275739829,
+            0.8092825875345144
+          ],
+          "target_calls_per_history": 512,
+          "full_256_pair_seconds_mean": 2.033733051735908
+        }
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "paired_MSE_difference": -0.0001282374181305136,
+          "paired_history_bootstrap95": [
+            -0.0002753009343968023,
+            9.218073600104554e-06
+          ],
+          "RMSE_ratio": 0.7280663887495372
+        },
+        "nonlinear minus identity": {
+          "paired_MSE_difference": -0.00011612779051239808,
+          "paired_history_bootstrap95": [
+            -0.0002573197338508907,
+            3.177440578307964e-05
+          ],
+          "RMSE_ratio": 0.7447787097663524
+        },
+        "nonlinear minus constant": {
+          "paired_MSE_difference": -0.00016238859841403208,
+          "paired_history_bootstrap95": [
+            -0.00030920707312070544,
+            -1.2830520954516768e-05
+          ],
+          "RMSE_ratio": 0.6863832749712728
+        },
+        "nonlinear minus gaussian": {
+          "paired_MSE_difference": -0.00017806493575401282,
+          "paired_history_bootstrap95": [
+            -0.00042929635346544156,
+            3.532734783334499e-05
+          ],
+          "RMSE_ratio": 0.669504990442899
+        },
+        "nonlinear minus binned": {
+          "paired_MSE_difference": -5.5820217633144475e-05,
+          "paired_history_bootstrap95": [
+            -0.0001321872371734535,
+            1.3218056819775066e-05
+          ],
+          "RMSE_ratio": 0.8494471693041807
+        }
+      }
+    }
+  ],
+  "exact": {
+    "normalizers": [
+      1.13031820798497,
+      0.8053491984923842
+    ],
+    "component_mass": [
+      0.5839423674762351,
+      0.41605763252376493
+    ],
+    "log_normalizer_ratio": -0.3389785017439845,
+    "fixed_shape_reverse_KL_optimal_mass": [
+      0.7142857142857143,
+      0.28571428571428575
+    ],
+    "conditional_reverse_KL": [
+      0.12249919306911404,
+      0.6998114231992846
+    ],
+    "optimal_fixed_marginal_log_ratio_asymptotic_variance": 0.5298438714763236
+  },
+  "histories_checked": 384,
+  "analytic_target_calls": 196608,
+  "full_training_histories_replayed": 48,
+  "every_weight_and_prefix_replayed": true,
+  "new_molecular_oracle_calls": 0,
+  "scientific_submission_ready": false,
+  "uncertainty": "Descriptive paired bootstrap over independent complete adaptive histories on fixed constructed targets; 32 histories per case, no multiplicity adjustment or molecular generalization.",
+  "limits": [
+    "All learning queries are counted and retained. Compute time is reported separately; no matched-wall-time superiority follows.",
+    "The target deliberately contains a radius-dependent twist. Generic coupling optimization and Gaussian-preserving rearrangement have direct prior art.",
+    "Reference shapes remain fixed and misspecified. Better component mass estimation need not improve joint reverse KL.",
+    "Normalizers are conditionally unbiased in exact arithmetic; ratios, masses and logs generally have finite-sample bias.",
+    "Only 48 of 384 complete optimization histories are replayed; all saved target weights and prefix estimates are checked."
+  ]
+}

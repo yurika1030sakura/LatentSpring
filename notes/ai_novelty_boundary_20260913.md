@@ -1,3 +1,5 @@
+Current follow-up: the specified generator-calibration candidate is now implemented and audited. Read `notes/latent_mass_calibration_v1.md` and `research/LATENT_MASS_STATE_20260913.json`. It supplies a constructed-target coupling signal, not established distinctive neural or molecular-generator superiority. Earlier open-design text below is historical.
+
 # AI contribution boundary after the complete-chain pilot
 
 The cooperative architecture is implemented and correct at the tested interface,

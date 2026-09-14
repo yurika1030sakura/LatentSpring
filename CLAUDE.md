@@ -1,30 +1,33 @@
 # BGFM project guide
 
-CURRENT: read `research/WORK_CHAIN_STATE_20260913.json`, `research/NEXT.md`,
-`notes/work_chain_pilot_v1.md` and `notes/ai_novelty_boundary_20260913.md`.
+CURRENT: read `research/LATENT_MASS_STATE_20260913.json`, `research/NEXT.md`,
+`CLAUDE_HANDOFF.md` and `notes/latent_mass_calibration_v1.md`.
 
-The complete-chain study and supplementary exact controls are DONE:324 trajectories,
-64 raw calls each,20,736 new calls in total. Every trajectory reaches its cap;
-10,044 scored MH ratios,4,826 catalogue normalizers and all state histories replay.
-All project jobs from this stage are terminal. No training/evaluation job is hidden
-in the background; re-query Slurm before recovery.
+The component-mass calibration prototype is implemented. Its offline known-target
+comparison and exact nonlinear controls are complete and audited. Nonlinear
+coupling reduces calibration error versus linear/Gaussian controls in a deliberately
+constructed nonlinear case; eight radial bins match the neural model. No distinct
+neural advantage or valid-molecule generation result follows. The equal-total-query
+online comparison and audit46320232/46320415 are complete. Neural has lower point
+error on the nonlinear case, but its paired intervals versus independent and
+binned span zero. All17 array tasks in this stage completed0:0; re-query Slurm
+before assuming later jobs are absent.
+Every learning query is retained in the online estimate. Current work does not
+use any new molecular oracle calls or query the722 reserved outcomes.
 
-Cooperative routing is slower and visits fewer connectivities than strong single
-edits. The single-edit learner visits2.1667 connectivities versus1.9444 uniform,
-1.7500 force-informed and1.8889 root-noise, but the exact zero-learning confinement/
-volume ablation reaches2.0833. Learned-minus-zero is+0.0833 with descriptive interval
-[-0.0556,0.2222]; potential difference is-0.01912 eV with interval[-0.06164,0.01961]
-and opposite energy signs across replicas. No material repeatable learned increment
-over this exact ablation is established. Preserve the positive weaker-control and
-one-step results, but do not call them ICLR-level AI novelty or overall superiority.
+The previous324-trajectory routing study is closed to scale-up. The learned
+single-edit increment over its exact zero-learning counterpart is uncertain;
+cooperative routing is slower and explores fewer connectivities. All original
+results, source snapshots and negative evidence remain. The two environments,
+12/18 evaluation-only cohorts, bond-free OMol25 policy and paused optimizer
+recovery remain protected. The full ICLR goal is active and unachieved.
 
-Stop scaling the cooperative/scorer recipe. The next bounded design task concerns
-the generator's own learned distribution; see `notes/generator_redesign_brief_v1.md`.
-That replacement is a hypothesis only, not implemented or validated. Ordinary
-learned energy-guided MCMC, residual learning, composed paths and score-blindness
-repairs have close prior art. The full ICLR goal remains active and unachieved.
-Keep the evaluated12/18-parent cohorts outside fitting, all722 reserved outcomes
-unqueried, optimizer recovery paused and the two software environments separate.
+Generic ratio-of-integrals coupling and Gaussian-preserving flow rearrangement
+have direct prior art. The new prototype calibrates mixture weights while keeping
+conditional reference shapes fixed; it is not yet a better complete generator.
+Production FM64 plus noise still has no qualified absolute q. Do not relabel its
+samples with clamped q0.95 or an EACF-refiner likelihood. Do not scale toy variants
+or broaden oracle sweeps merely to find a neural win.
 
 Historical milestones below do not replace this checkpoint.
 

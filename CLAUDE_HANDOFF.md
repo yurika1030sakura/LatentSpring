@@ -1,38 +1,37 @@
-# Claude continuation — complete-chain verdict and generator redesign
+# Claude continuation — latent component-mass calibration
 
 Active checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
-`iclr2027-arch-fix`. Never write home or merge the two environments. Read current
-NEXT/state before action; all earlier proposal pilots and source snapshots stay.
+`iclr2027-arch-fix`. Read `research/NEXT.md`,
+`research/LATENT_MASS_STATE_20260913.json` and
+`notes/latent_mass_calibration_v1.md` before further work.
 
-CURRENT: read `research/WORK_CHAIN_STATE_20260913.json`, `research/NEXT.md`,
-`notes/work_chain_pilot_v1.md` and `notes/ai_novelty_boundary_20260913.md`.
+The offline known-target coupling experiment and exact nonlinear control are
+complete and audited. Nonlinear coupling helps the constructed nonlinear case;
+the simple binned map matches neural offline. The all-query online experiment
+46320232 and audit46320415 are complete. The final all-cost summary and figure
+are linked in NEXT; all stage jobs are terminal. Check live Slurm before recovery. All target values
+used for online fitting remain in the estimates; no post-update remapping of old
+samples is allowed. The audit includes48 full-history replays (32 adaptive,16 static) and all
+384 histories' weights and prefix normalizers.
 
-The complete-chain study and supplementary exact controls are DONE:324 trajectories,
-64 raw calls each,20,736 new calls in total. Every trajectory reaches its cap;
-10,044 scored MH ratios,4,826 catalogue normalizers and all state histories replay.
-All project jobs from this stage are terminal. No training/evaluation job is hidden
-in the background; re-query Slurm before recovery.
+There is no new molecular performance result yet. Generic coupled importance
+sampling and Gaussian-preserving flow rearrangement are prior art. This module
+changes calibration covariance, then mixture probabilities, while keeping
+conditional reference shapes fixed. Do not describe it as a complete improved
+Boltzmann generator or distinct ICLR-level AI novelty based on the toy result.
 
-Cooperative routing is slower and visits fewer connectivities than strong single
-edits. The single-edit learner visits2.1667 connectivities versus1.9444 uniform,
-1.7500 force-informed and1.8889 root-noise, but the exact zero-learning confinement/
-volume ablation reaches2.0833. Learned-minus-zero is+0.0833 with descriptive interval
-[-0.0556,0.2222]; potential difference is-0.01912 eV with interval[-0.06164,0.01961]
-and opposite energy signs across replicas. No material repeatable learned increment
-over this exact ablation is established. Preserve the positive weaker-control and
-one-step results, but do not call them ICLR-level AI novelty or overall superiority.
+Keep the previous routing branch closed to scaling, preserve its exact
+zero-learning control and every negative outcome. Never substitute the corrected
+clamped q0.95 for the unknown production FM64-plus-noise density. Preserve all722
+reserved outcomes, exclude the12/18 evaluated cohorts from fitting and keep the
+two environments separate. The user's priority is a useful main-method advance
+and rapid evidence; broad cleanup and an independent new physics law are not
+requirements. The full ICLR goal remains active and unachieved.
 
-Stop scaling the cooperative/scorer recipe. The next bounded design task concerns
-the generator's own learned distribution; see `notes/generator_redesign_brief_v1.md`.
-That replacement is a hypothesis only, not implemented or validated. Ordinary
-learned energy-guided MCMC, residual learning, composed paths and score-blindness
-repairs have close prior art. The full ICLR goal remains active and unachieved.
-Keep the evaluated12/18-parent cohorts outside fitting, all722 reserved outcomes
-unqueried, optimizer recovery paused and the two software environments separate.
-
-The next deliverable is one main-generator method specification and a minimal
-test, following `notes/generator_redesign_brief_v1.md`. No replacement has been
-implemented. Do not launch another scorer/committee/mobility sweep or call a
-known SLMC/score-calibration principle new. Preserve the exact zero-learning
-control, all negative evidence and the source-density limitations. User priority
-is useful AI novelty and rapid evidence, not universal case perfection.
+Final online nonlinear-case RMSE:0.012027 neural,0.014159 binned,0.016519
+independent at512 total calls including learning. The neural-minus-binned and
+neural-minus-independent paired MSE intervals both span zero. Constant/Gaussian
+maps have lower point error on the constant case. Keep this as a bounded
+estimator prototype; marginal weight collapse and within-component geometry
+remain unchanged. The next main-method choice is open, not an implemented
+ICLR-level solution. Do not scale toy variants to force a neural win.
