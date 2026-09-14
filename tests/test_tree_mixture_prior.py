@@ -98,7 +98,7 @@ def test_non_gaussian_prior_in_clamped_density_and_fm_interface():
     from cfm_mol.clamped_density import log_density_clamped_flow
     from cfm_mol.clamped_fm import clamped_fm_path
     graph,nbi,uem=graph_batch();head=LinearHead(a=.1,endpoint=False)
-    model=SimpleNamespace(vector_field=head);prior=TreeMixturePrior('fixed').double()
+    model=SimpleNamespace(vector_field=head,_research_prior_kind='fixed');prior=TreeMixturePrior('fixed').double()
     def logp(x,g,idx):
         return torch.stack([prior.log_prob(x[idx==i],[6]*int((idx==i).sum()),0,1) for i in range(g.batch_size)])
     actual=log_density_clamped_flow(model,graph,nbi,uem,n_ode_steps=16,n_hutchinson=0,
@@ -117,3 +117,20 @@ def test_non_gaussian_prior_in_clamped_density_and_fm_interface():
     _,_,_,info=clamped_fm_path(graph,nbi,Schedule(),terminal_time=1.,parameterization='displacement',
         prior_positions=supplied,generator=torch.Generator().manual_seed(40))
     torch.testing.assert_close(info['x0'],supplied,atol=1e-12,rtol=0)
+
+
+def test_declared_prior_cannot_silently_use_gaussian_sampling_or_density():
+    import pytest
+    from types import SimpleNamespace
+    from test_clamped_density import graph_batch,LinearHead
+    from cfm_mol.radial_reference import prepare_research_backbone
+    from cfm_mol.clamped_density import sample_clamped_flow,log_density_clamped_flow
+    from cfm_mol.clamped_fm import clamped_fm_loss
+    g,nbi,uem=graph_batch();model=SimpleNamespace(vector_field=LinearHead(endpoint=False))
+    prepare_research_backbone(model,dict(source_prior_kind='pair'))
+    with pytest.raises(ValueError,match='non-Gaussian'):
+        sample_clamped_flow(model,g,nbi,uem,parameterization='velocity')
+    with pytest.raises(ValueError,match='non-Gaussian'):
+        log_density_clamped_flow(model,g,nbi,uem,parameterization='velocity')
+    with pytest.raises(ValueError,match='non-Gaussian'):
+        clamped_fm_loss(model,g,nbi,uem,parameterization='displacement')

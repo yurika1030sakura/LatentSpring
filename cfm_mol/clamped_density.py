@@ -220,7 +220,11 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
     A local graph scope and model-mode restoration prevent side effects.
     Optional non-reentrant step checkpointing trades recomputation for memory;
     its per-step probe caches preserve both global and dedicated RNG streams.
+    A declared non-Gaussian checkpoint requires its normalized prior callback;
+    silently substituting the default Gaussian would describe another law.
     """
+    if prior_log_prob is None and getattr(model,'_research_prior_kind','gaussian')!='gaussian':
+        raise ValueError('Declared non-Gaussian source requires an explicit prior_log_prob callback')
     if not isinstance(n_trace_replicates, int) or n_trace_replicates < 1:
         raise ValueError("n_trace_replicates must be a positive integer")
     if n_ode_steps < 1 or n_hutchinson < 0:
@@ -310,6 +314,8 @@ def sample_clamped_flow(model, graph, node_batch_idx, upper_edge_mask, *,
     trace quadrature is not the exact Jacobian of this discrete solver.
     ``x0`` permits matched-prior comparisons and analytic validation.
     """
+    if x0 is None and getattr(model,'_research_prior_kind','gaussian')!='gaussian':
+        raise ValueError('Declared non-Gaussian source requires explicitly sampled x0')
     if n_ode_steps < 1 or not math.isfinite(terminal_time) or not 0 < terminal_time <= 1:
         raise ValueError("Require positive steps and terminal_time in (0,1]")
     if not math.isfinite(prior_std) or prior_std <= 0:

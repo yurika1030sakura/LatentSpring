@@ -116,6 +116,7 @@ def patch_radial_reference(model):
 
 def prepare_research_backbone(model, protocol):
     """Restore a declared research backbone before strict checkpoint loading."""
+    model._research_prior_kind=protocol.get('source_prior_kind','gaussian')
     backbone=protocol.get('position_backbone','flowmol')
     if backbone=='radial_reference':
         patch_radial_reference(model)

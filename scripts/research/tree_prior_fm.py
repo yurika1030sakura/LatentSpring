@@ -126,6 +126,7 @@ def main():
     for method in a.methods:
         torch.manual_seed(protocol['fm_seed']);model=restore_model(cfg,warm).train()
         prior=load_prior(method,a.prior_run,protocol,protocol_hash)
+        model._research_prior_kind=method
         directory=a.out/method;directory.mkdir()
         recipe={**warm['research_protocol'],**protocol,'format':'tree_prior_fm_v1','source_prior_kind':method,
             'pairing_protocol_sha256':None,'tree_protocol_sha256':protocol_hash,'seed':protocol['fm_seed'],

@@ -81,6 +81,8 @@ def clamped_fm_loss(model,graph,node_batch_idx,upper_edge_mask,*,terminal_time=0
     it is exactly velocity MSE. The field's stochastic/history branch is
     disabled exactly as in the density and sampler. No steric retraction occurs.
     """
+    if prior_positions is None and getattr(model,'_research_prior_kind','gaussian')!='gaussian':
+        raise ValueError('Declared non-Gaussian source requires explicit prior training samples')
     xt,t,target,info=clamped_fm_path(graph,node_batch_idx,
         model.vector_field.interpolant_scheduler,terminal_time=terminal_time,
         prior_std=prior_std,generator=generator,parameterization=parameterization,
