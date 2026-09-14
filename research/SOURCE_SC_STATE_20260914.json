@@ -1,0 +1,155 @@
+{
+  "status": "complete_shell_gate_failed_harmonic_candidate",
+  "job_id": "46497703",
+  "source_commit": "95654a841ea03826e7a1e7b071858a01b34d2fa6",
+  "run": "runs/source_sc_v1",
+  "protocols": [
+    "research/evidence/source_sc_s0_v1.json",
+    "research/evidence/source_sc_s1_v1.json"
+  ],
+  "question": "Does the fixed shell source beat unit Gaussian and covariance-matched harmonic tree under the same geometry-SC backbone?",
+  "new_training_runs": 4,
+  "reused_shell_runs": 2,
+  "new_generated_outputs_planned": 3072,
+  "user_priority": "Only essential experiments and result checks; no new architecture or paper polishing.",
+  "next_command": "PYTHONPATH=. /n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol/bin/python scripts/research/audit_source_sc.py --project . --run runs/source_sc_v1 --out research/evidence/source_sc_audit_v1.json",
+  "scientific_submission_ready": false,
+  "audit": "research/evidence/source_sc_audit_v1.json",
+  "summary": {
+    "0": {
+      "fixed": {
+        "attempts": 768,
+        "graph": 417,
+        "geometry": 517,
+        "distinct_connectivity": 394,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0,
+        "parameters": 5904369
+      },
+      "gaussian": {
+        "attempts": 768,
+        "graph": 357,
+        "geometry": 465,
+        "distinct_connectivity": 340,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0,
+        "parameters": 5904369
+      },
+      "harmonic_tree": {
+        "attempts": 768,
+        "graph": 436,
+        "geometry": 561,
+        "distinct_connectivity": 407,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0,
+        "parameters": 5904369
+      }
+    },
+    "1": {
+      "fixed": {
+        "attempts": 768,
+        "graph": 342,
+        "geometry": 426,
+        "distinct_connectivity": 318,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0,
+        "parameters": 5904369
+      },
+      "gaussian": {
+        "attempts": 768,
+        "graph": 377,
+        "geometry": 461,
+        "distinct_connectivity": 363,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0,
+        "parameters": 5904369
+      },
+      "harmonic_tree": {
+        "attempts": 768,
+        "graph": 388,
+        "geometry": 494,
+        "distinct_connectivity": 357,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0,
+        "parameters": 5904369
+      }
+    }
+  },
+  "comparisons": {
+    "fixed minus gaussian": {
+      "graph_supported": {
+        "mean": 0.016276041666666668,
+        "paired_draw95": [
+          -0.014973958333333334,
+          0.048828125
+        ],
+        "descriptive_composition95": [
+          -0.020849609374999994,
+          0.059895833333333336
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.011067708333333334,
+        "paired_draw95": [
+          -0.018880208333333332,
+          0.039713541666666664
+        ],
+        "descriptive_composition95": [
+          -0.026692708333333332,
+          0.054036458333333336
+        ]
+      }
+    },
+    "fixed minus harmonic_tree": {
+      "graph_supported": {
+        "mean": -0.042317708333333336,
+        "paired_draw95": [
+          -0.07291666666666667,
+          -0.011067708333333334
+        ],
+        "descriptive_composition95": [
+          -0.08528645833333333,
+          -0.001953125
+        ]
+      },
+      "geometrically_supported": {
+        "mean": -0.07291666666666667,
+        "paired_draw95": [
+          -0.10091145833333333,
+          -0.045572916666666664
+        ],
+        "descriptive_composition95": [
+          -0.10872395833333333,
+          -0.044270833333333336
+        ]
+      }
+    },
+    "harmonic_tree minus gaussian": {
+      "graph_supported": {
+        "mean": 0.05859375,
+        "paired_draw95": [
+          0.026692708333333332,
+          0.08984375
+        ],
+        "descriptive_composition95": [
+          0.005208333333333333,
+          0.12174479166666667
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.083984375,
+        "paired_draw95": [
+          0.05597330729166668,
+          0.111328125
+        ],
+        "descriptive_composition95": [
+          0.033854166666666664,
+          0.13999023437499977
+        ]
+      }
+    }
+  },
+  "new_generated_outputs": 3072,
+  "reused_generated_outputs": 1536,
+  "next": "Frozen harmonic versus Gaussian confirmation on all10 remaining qualified pool compositions; no retraining."
+}

@@ -1,0 +1,246 @@
+{
+  "complete": true,
+  "summary": {
+    "0": {
+      "fixed": {
+        "attempts": 768,
+        "graph": 417,
+        "geometry": 517,
+        "distinct_connectivity": 394,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0,
+        "parameters": 5904369
+      },
+      "gaussian": {
+        "attempts": 768,
+        "graph": 357,
+        "geometry": 465,
+        "distinct_connectivity": 340,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0,
+        "parameters": 5904369
+      },
+      "harmonic_tree": {
+        "attempts": 768,
+        "graph": 436,
+        "geometry": 561,
+        "distinct_connectivity": 407,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0,
+        "parameters": 5904369
+      }
+    },
+    "1": {
+      "fixed": {
+        "attempts": 768,
+        "graph": 342,
+        "geometry": 426,
+        "distinct_connectivity": 318,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0,
+        "parameters": 5904369
+      },
+      "gaussian": {
+        "attempts": 768,
+        "graph": 377,
+        "geometry": 461,
+        "distinct_connectivity": 363,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0,
+        "parameters": 5904369
+      },
+      "harmonic_tree": {
+        "attempts": 768,
+        "graph": 388,
+        "geometry": 494,
+        "distinct_connectivity": 357,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0,
+        "parameters": 5904369
+      }
+    }
+  },
+  "comparisons": {
+    "fixed minus gaussian": {
+      "graph_supported": {
+        "mean": 0.016276041666666668,
+        "paired_draw95": [
+          -0.014973958333333334,
+          0.048828125
+        ],
+        "descriptive_composition95": [
+          -0.020849609374999994,
+          0.059895833333333336
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.011067708333333334,
+        "paired_draw95": [
+          -0.018880208333333332,
+          0.039713541666666664
+        ],
+        "descriptive_composition95": [
+          -0.026692708333333332,
+          0.054036458333333336
+        ]
+      }
+    },
+    "fixed minus harmonic_tree": {
+      "graph_supported": {
+        "mean": -0.042317708333333336,
+        "paired_draw95": [
+          -0.07291666666666667,
+          -0.011067708333333334
+        ],
+        "descriptive_composition95": [
+          -0.08528645833333333,
+          -0.001953125
+        ]
+      },
+      "geometrically_supported": {
+        "mean": -0.07291666666666667,
+        "paired_draw95": [
+          -0.10091145833333333,
+          -0.045572916666666664
+        ],
+        "descriptive_composition95": [
+          -0.10872395833333333,
+          -0.044270833333333336
+        ]
+      }
+    },
+    "harmonic_tree minus gaussian": {
+      "graph_supported": {
+        "mean": 0.05859375,
+        "paired_draw95": [
+          0.026692708333333332,
+          0.08984375
+        ],
+        "descriptive_composition95": [
+          0.005208333333333333,
+          0.12174479166666667
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.083984375,
+        "paired_draw95": [
+          0.05597330729166668,
+          0.111328125
+        ],
+        "descriptive_composition95": [
+          0.033854166666666664,
+          0.13999023437499977
+        ]
+      }
+    }
+  },
+  "costs": {
+    "0": {
+      "fixed": {
+        "training_seconds": 605.6105395650957,
+        "generation_seconds": 238.52104370878078,
+        "training_primitive_forwards": 6000,
+        "primitive_evaluations_per_sample": 128,
+        "reused_training_and_draws": true
+      },
+      "gaussian": {
+        "training_seconds": 576.5784602949861,
+        "generation_seconds": 235.21356165595353,
+        "training_primitive_forwards": 6000,
+        "primitive_evaluations_per_sample": 128,
+        "reused_training_and_draws": false
+      },
+      "harmonic_tree": {
+        "training_seconds": 586.6904606409371,
+        "generation_seconds": 236.15060324338265,
+        "training_primitive_forwards": 6000,
+        "primitive_evaluations_per_sample": 128,
+        "reused_training_and_draws": false
+      }
+    },
+    "1": {
+      "fixed": {
+        "training_seconds": 595.6845252811909,
+        "generation_seconds": 242.78888760181144,
+        "training_primitive_forwards": 6000,
+        "primitive_evaluations_per_sample": 128,
+        "reused_training_and_draws": true
+      },
+      "gaussian": {
+        "training_seconds": 572.7643605400808,
+        "generation_seconds": 230.31023739697412,
+        "training_primitive_forwards": 6000,
+        "primitive_evaluations_per_sample": 128,
+        "reused_training_and_draws": false
+      },
+      "harmonic_tree": {
+        "training_seconds": 568.5623645379674,
+        "generation_seconds": 226.20966617693193,
+        "training_primitive_forwards": 6000,
+        "primitive_evaluations_per_sample": 128,
+        "reused_training_and_draws": false
+      }
+    }
+  },
+  "artifacts": [
+    {
+      "seed": 0,
+      "method": "fixed",
+      "checkpoint_sha256": "b78d65655344c795523ad8f11baab9c5e590ade53a361ce30cf7a8302f3697d3",
+      "report_sha256": "def19fdb9a927b3598dee8b2a80bf5f42c542f80e5426c9f58aa5eebe1f577c5",
+      "metrics_sha256": "a56053ea631aa685e979ab19a8ab2f69e3d17e23b39d922d979c44df83792afe",
+      "data_sha256": "8abe2cb06071bfccbb56a41a847e61c7a74f151a17f2433721027868e85fbda8"
+    },
+    {
+      "seed": 0,
+      "method": "gaussian",
+      "checkpoint_sha256": "a9a21ba33cf0e8817b283fe71df118d75ae451fdb7192aa2fe4e7378e02955e8",
+      "report_sha256": "532cdb9a90886aed32274184d1ad0abd6f1608fda243dd68175f7e0e8ae06dd5",
+      "metrics_sha256": "87486eded9a0bddc4e795f91e78a971d1d74d3d367dade08cb99926beadede42",
+      "data_sha256": "8abe2cb06071bfccbb56a41a847e61c7a74f151a17f2433721027868e85fbda8"
+    },
+    {
+      "seed": 0,
+      "method": "harmonic_tree",
+      "checkpoint_sha256": "5447887b0ecd80b76a38a28c083b3505068215daec9b0b70d8d1507b6f72a05e",
+      "report_sha256": "c22ab3abe00fd28d0f63667004f644a4e58df5dd7ad9e956ae0df75c94059b5b",
+      "metrics_sha256": "1cc6dd1fa151f612be9b24c52b6d3815974afacd57bc8659601d63c6bd7936bf",
+      "data_sha256": "8abe2cb06071bfccbb56a41a847e61c7a74f151a17f2433721027868e85fbda8"
+    },
+    {
+      "seed": 1,
+      "method": "fixed",
+      "checkpoint_sha256": "180d7bc81e4b43257ae6eb1dd9b5e4eb708fc8a1bceddda52d35e8e791ec889c",
+      "report_sha256": "86921e9f94e6ed0c49e332ce44dfb6b0186e98f7d1710375394047eb22ba9fe4",
+      "metrics_sha256": "bcbcf0aa88231634f100951dbdbb01264b1eb6d543112b5594a8c0ba59c41615",
+      "data_sha256": "5e25c8d6e2cba64c29e6df3336d0cba1cea8d316065717af4b9285b9cf6259e4"
+    },
+    {
+      "seed": 1,
+      "method": "gaussian",
+      "checkpoint_sha256": "ec0d7f9a9af059dede4ad7eb61471d101773ec8ffcaab85850e69d6b7bae8539",
+      "report_sha256": "ca0bf51c85fa4ac1f10533c3cb3180da3e47abf2fad430c77b7d510b0b3bd59e",
+      "metrics_sha256": "acbf55931cb4bfdf4f8c4b3a44cce22fcf74262f7956da0e5e5884a9c6eda383",
+      "data_sha256": "5e25c8d6e2cba64c29e6df3336d0cba1cea8d316065717af4b9285b9cf6259e4"
+    },
+    {
+      "seed": 1,
+      "method": "harmonic_tree",
+      "checkpoint_sha256": "63ab39a35618601fb2a139faeb9fa5fdfac4df5c7a914eb4eb9e446275f1a7ec",
+      "report_sha256": "5ddb853b652a7894c752eecdbb18cfb0d76cfc4aa09ea0316be273dd3a5e9281",
+      "metrics_sha256": "4304724d001fbcbb11078f9a0200164c35fa71546d67044c1e538ec32beb4326",
+      "data_sha256": "5e25c8d6e2cba64c29e6df3336d0cba1cea8d316065717af4b9285b9cf6259e4"
+    }
+  ],
+  "source_and_structural_outputs_replayed": 4608,
+  "new_generated_outputs": 3072,
+  "reused_generated_outputs": 1536,
+  "data_provenance_audit_sha256": "3d9a6a994ce65e4f61cb70a6945025570cd90864ddca031feae131d0d0dec1b1",
+  "full_checkpoint_restoration": true,
+  "identical_feedback_initial_states": true,
+  "unchanged_edge_head_verified": true,
+  "development_gate_passed": false,
+  "new_molecular_oracle_calls": 0,
+  "scientific_submission_ready": false,
+  "scope": "Reused12-composition development benchmark. All sources use identical geometry-SC structure,3000 two-pass updates and128 primitive inference calls. Same shell references reused without new sampling. Harmonic tree matches shell conditional covariance analytically; no new-composition, original-method or energy-law claim follows automatically."
+}
