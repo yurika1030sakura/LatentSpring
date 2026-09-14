@@ -1,3 +1,10 @@
+LATEST: source-SC development and frozen-composition confirmation are complete.
+Read `research/NEXT.md`, `research/SOURCE_SC_STATE_20260914.json` and
+`notes/source_sc_results_20260914.md` before the older handoff below. Harmonic
+tree beats Gaussian by8.83pp on10 additional compositions; both existing model
+seeds improve. Shell fails; novelty and competitive generator evidence remain
+unestablished. No live job, no new fitting or paper polishing this round.
+
 # Claude continuation — measured baseline gain, no established new-method benefit
 
 Checkout `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch

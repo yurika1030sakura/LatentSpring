@@ -1,5 +1,17 @@
 # ICLR readiness checkpoint
 
+Latest essential result (source-SC studies complete): the fixed harmonic-tree
+source improves graph support over unit Gaussian with the same geometry-SC
+backbone by5.86pp on12 development compositions. Frozen models then improve by
+8.83pp on10 additional reference-qualified compositions; conditional paired95
+[5.08,12.50], descriptive composition95[4.84,12.66]. Both existing model seeds
+improve; this is additional composition evidence, not new training replication.
+The shell-specific superiority hypothesis fails. See
+`notes/source_sc_results_20260914.md` and `research/SOURCE_SC_STATE_20260914.json`.
+Method usefulness in this limited setting is now supported; originality and
+competitive generator evidence still need to be established. No energy-law claim.
+The older checkpoint below records the state before this positive result.
+
 The research goal is unachieved. The manuscript is an internal development draft.
 It is not scientifically submission ready and no acceptance probability is assigned.
 

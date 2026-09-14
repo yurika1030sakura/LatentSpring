@@ -1,5 +1,13 @@
 # BGFM project guide
 
+LATEST: read `research/SOURCE_SC_STATE_20260914.json` and `research/NEXT.md`.
+Harmonic-tree source plus geometry SC has a positive frozen-composition result:
++8.83pp graph support, conditional paired95[5.08,12.50], on10 new17-28-atom
+compositions using the same two model seeds. Shell-specific superiority fails.
+Both new jobs46497703/46503573 are complete. Preserve the frozen checkpoints;
+originality, external-generator comparison and Boltzmann claims remain unresolved.
+The following older checkpoint does not supersede these results.
+
 CURRENT: read `research/ICLR_READINESS_20260914.md`,
 `research/DUAL_GEOMETRY_STATE_20260914.json`, `research/NEXT.md` and
 `CLAUDE_HANDOFF.md`. The ICLR goal is unachieved; the draft is not submission ready.

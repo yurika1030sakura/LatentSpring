@@ -151,5 +151,80 @@
   },
   "new_generated_outputs": 3072,
   "reused_generated_outputs": 1536,
-  "next": "Frozen harmonic versus Gaussian confirmation on all10 remaining qualified pool compositions; no retraining."
+  "next": "Establish originality and compare original native generator on the same defined task; no architecture sweep or new fitting is justified by this result alone.",
+  "confirmation": {
+    "status": "complete_passed",
+    "job_id": "46503573",
+    "run": "runs/source_sc_confirmation_v1",
+    "source_commit": "58d6f019d7319ed9ed818719aba8443d425885f1",
+    "audit_command": "PYTHONPATH=. /n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol/bin/python scripts/research/audit_source_sc_confirmation.py --project . --run runs/source_sc_confirmation_v1 --out research/evidence/source_sc_confirmation_audit_v1.json",
+    "audit": "research/evidence/source_sc_confirmation_audit_v1.json",
+    "audit_sha256": "47c4909f6d676febfb4491da0c7c2eb42c0815e4cddad083ad8d4557b43a4be7",
+    "summary": {
+      "0": {
+        "gaussian": {
+          "attempted": 640,
+          "graph_supported": 326,
+          "geometrically_supported": 402,
+          "distinct_connectivity": 326,
+          "validator_errors": 0,
+          "generation_seconds": 175.42712248582393
+        },
+        "harmonic_tree": {
+          "attempted": 640,
+          "graph_supported": 413,
+          "geometrically_supported": 490,
+          "distinct_connectivity": 413,
+          "validator_errors": 0,
+          "generation_seconds": 175.73093555867672
+        }
+      },
+      "1": {
+        "gaussian": {
+          "attempted": 640,
+          "graph_supported": 349,
+          "geometrically_supported": 430,
+          "distinct_connectivity": 349,
+          "validator_errors": 0,
+          "generation_seconds": 177.7385270765517
+        },
+        "harmonic_tree": {
+          "attempted": 640,
+          "graph_supported": 375,
+          "geometrically_supported": 466,
+          "distinct_connectivity": 375,
+          "validator_errors": 0,
+          "generation_seconds": 178.2040984078776
+        }
+      }
+    },
+    "comparisons": {
+      "graph_supported": {
+        "mean": 0.08828125,
+        "paired_draw95": [
+          0.05078125,
+          0.125
+        ],
+        "descriptive_composition95": [
+          0.048417968750000005,
+          0.1265625
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.096875,
+        "paired_draw95": [
+          0.06328125,
+          0.12890625
+        ],
+        "descriptive_composition95": [
+          0.05078125,
+          0.13828125
+        ]
+      }
+    },
+    "new_outputs": 2560
+  },
+  "current_candidate": "Fixed random-tree harmonic source with geometry-only self-conditioned flow matching; existing harmonic checkpoints frozen.",
+  "total_new_generated_outputs_this_turn": 5632,
+  "all_current_jobs_terminal": true
 }
