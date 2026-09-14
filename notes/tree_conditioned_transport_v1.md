@@ -1,8 +1,19 @@
 # Retaining latent-tree information inside the flow
 
-The adapter is implemented; molecular utility is not yet established. The design
+The adapter comparison is COMPLETE and does not establish molecular utility. The design
 motivation and joint source/target contract are in
 `notes/tree_conditioned_transport_brief_v1.md`. Prior results remain unchanged.
+
+All3,072 outputs replay in `research/evidence/tree_context_audit_v1.json`.
+Graph passes/512 for no-context / actual-tree / independent-tree are118/102/119
+and97/75/97. Actual minus independent differences are-3.32 percentage points
+[-6.84,0.20] and-4.30[-7.81,-0.78]. Actual minus no-context is-3.13[-6.64,0.39]
+and-4.30[-7.81,-0.78]. These are conditional paired intervals on the fixed eight
+compositions. The model restores correctly, its weights and gradients change,
+and source coordinates/context trees replay, but actual source-tree information
+does not yield a generation gain in this recipe. Do not scale or retune this
+static adapter against these outcomes. The broader source-framework comparison
+is separately frozen in `notes/tree_source_transfer_v1.md`.
 
 ## Learned component
 

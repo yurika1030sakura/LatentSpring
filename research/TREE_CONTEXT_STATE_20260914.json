@@ -1,6 +1,6 @@
 {
-  "updated_utc": "2026-09-14T05:52:53.207746+00:00",
-  "phase": "latent_tree_conditioned_transport_running",
+  "updated_utc": "2026-09-14T06:09:59.752344+00:00",
+  "phase": "latent_tree_context_complete_no_gain",
   "scientific_submission_ready": false,
   "iclr_goal_achieved": false,
   "job_id": "46367714",
@@ -19,5 +19,413 @@
   "transfer_panel": "research/evidence/tree_transfer_panel_v1.json",
   "transfer_panel_outcomes_queried": false,
   "previous_state": "research/TREE_MOMENT_STATE_20260914.json",
-  "next": "Read the complete actual/sham/no-context comparison, replay all source/context trees and structural readouts, and update the paper only from audited results."
+  "next": "Keep source framework and run the frozen32-composition source comparison. See research/TREE_TRANSFER_STATE_20260914.json.",
+  "audit": "research/evidence/tree_context_audit_v1.json",
+  "jobs": [
+    {
+      "job_id": "46367714_0",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:19:07"
+    },
+    {
+      "job_id": "46367714_1",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:19:04"
+    }
+  ],
+  "outputs_replayed": 3072,
+  "total_tree_outputs_replayed": 13312,
+  "methods": {
+    "s0": {
+      "fixed": {
+        "attempted": 512,
+        "graph_supported": 118,
+        "geometrically_supported": 331,
+        "validator_errors": 103,
+        "generation_seconds": 119.72356195282191,
+        "disconnected": 170,
+        "overlap": 12,
+        "distinct_connectivities_sum": 118
+      },
+      "tree_actual": {
+        "attempted": 512,
+        "graph_supported": 102,
+        "geometrically_supported": 349,
+        "validator_errors": 126,
+        "generation_seconds": 122.93537625810131,
+        "disconnected": 157,
+        "overlap": 6,
+        "distinct_connectivities_sum": 101
+      },
+      "tree_sham": {
+        "attempted": 512,
+        "graph_supported": 119,
+        "geometrically_supported": 335,
+        "validator_errors": 107,
+        "generation_seconds": 125.44235512870364,
+        "disconnected": 165,
+        "overlap": 13,
+        "distinct_connectivities_sum": 119
+      }
+    },
+    "s1": {
+      "fixed": {
+        "attempted": 512,
+        "graph_supported": 97,
+        "geometrically_supported": 312,
+        "validator_errors": 112,
+        "generation_seconds": 122.12711443682201,
+        "disconnected": 193,
+        "overlap": 7,
+        "distinct_connectivities_sum": 96
+      },
+      "tree_actual": {
+        "attempted": 512,
+        "graph_supported": 75,
+        "geometrically_supported": 269,
+        "validator_errors": 101,
+        "generation_seconds": 123.80136902607046,
+        "disconnected": 237,
+        "overlap": 11,
+        "distinct_connectivities_sum": 73
+      },
+      "tree_sham": {
+        "attempted": 512,
+        "graph_supported": 97,
+        "geometrically_supported": 309,
+        "validator_errors": 109,
+        "generation_seconds": 124.19221168686636,
+        "disconnected": 198,
+        "overlap": 6,
+        "distinct_connectivities_sum": 96
+      }
+    }
+  },
+  "comparisons": {
+    "s0": {
+      "tree_actual minus tree_sham": {
+        "graph": {
+          "mean": -0.033203125,
+          "conditional_paired_bootstrap95": [
+            -0.068359375,
+            0.001953125
+          ],
+          "per_condition_counts": [
+            0,
+            -15,
+            -1,
+            0,
+            -4,
+            0,
+            3,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": 0.02734375,
+          "conditional_paired_bootstrap95": [
+            -0.015625,
+            0.0703125
+          ],
+          "per_condition_counts": [
+            1,
+            -9,
+            -8,
+            7,
+            3,
+            1,
+            14,
+            5
+          ]
+        },
+        "disconnected": {
+          "mean": -0.015625,
+          "conditional_paired_bootstrap95": [
+            -0.056640625,
+            0.025390625
+          ],
+          "per_condition_counts": [
+            -1,
+            9,
+            8,
+            -2,
+            -3,
+            -1,
+            -14,
+            -4
+          ]
+        }
+      },
+      "tree_actual minus fixed": {
+        "graph": {
+          "mean": -0.03125,
+          "conditional_paired_bootstrap95": [
+            -0.06640625,
+            0.00390625
+          ],
+          "per_condition_counts": [
+            1,
+            -11,
+            -2,
+            0,
+            -5,
+            0,
+            1,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": 0.03515625,
+          "conditional_paired_bootstrap95": [
+            -0.0078125,
+            0.078125
+          ],
+          "per_condition_counts": [
+            1,
+            -7,
+            -8,
+            9,
+            3,
+            1,
+            12,
+            7
+          ]
+        },
+        "disconnected": {
+          "mean": -0.025390625,
+          "conditional_paired_bootstrap95": [
+            -0.06640625,
+            0.015625
+          ],
+          "per_condition_counts": [
+            -1,
+            7,
+            8,
+            -4,
+            -3,
+            -1,
+            -12,
+            -7
+          ]
+        }
+      },
+      "tree_sham minus fixed": {
+        "graph": {
+          "mean": 0.001953125,
+          "conditional_paired_bootstrap95": [
+            -0.009765625,
+            0.013671875
+          ],
+          "per_condition_counts": [
+            1,
+            4,
+            -1,
+            0,
+            -1,
+            0,
+            -2,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": 0.0078125,
+          "conditional_paired_bootstrap95": [
+            -0.009765625,
+            0.025390625
+          ],
+          "per_condition_counts": [
+            0,
+            2,
+            0,
+            2,
+            0,
+            0,
+            -2,
+            2
+          ]
+        },
+        "disconnected": {
+          "mean": -0.009765625,
+          "conditional_paired_bootstrap95": [
+            -0.02734375,
+            0.005859375
+          ],
+          "per_condition_counts": [
+            0,
+            -2,
+            0,
+            -2,
+            0,
+            0,
+            2,
+            -3
+          ]
+        }
+      }
+    },
+    "s1": {
+      "tree_actual minus tree_sham": {
+        "graph": {
+          "mean": -0.04296875,
+          "conditional_paired_bootstrap95": [
+            -0.078125,
+            -0.0078125
+          ],
+          "per_condition_counts": [
+            0,
+            -1,
+            1,
+            0,
+            -16,
+            0,
+            -6,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": -0.078125,
+          "conditional_paired_bootstrap95": [
+            -0.126953125,
+            -0.029296875
+          ],
+          "per_condition_counts": [
+            1,
+            0,
+            1,
+            -1,
+            -15,
+            -7,
+            -9,
+            -10
+          ]
+        },
+        "disconnected": {
+          "mean": 0.076171875,
+          "conditional_paired_bootstrap95": [
+            0.029296875,
+            0.123046875
+          ],
+          "per_condition_counts": [
+            -1,
+            0,
+            -2,
+            1,
+            15,
+            6,
+            10,
+            10
+          ]
+        }
+      },
+      "tree_actual minus fixed": {
+        "graph": {
+          "mean": -0.04296875,
+          "conditional_paired_bootstrap95": [
+            -0.078125,
+            -0.0078125
+          ],
+          "per_condition_counts": [
+            -1,
+            -2,
+            2,
+            0,
+            -12,
+            0,
+            -9,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": -0.083984375,
+          "conditional_paired_bootstrap95": [
+            -0.130859375,
+            -0.037109375
+          ],
+          "per_condition_counts": [
+            -1,
+            1,
+            2,
+            -4,
+            -13,
+            -7,
+            -11,
+            -10
+          ]
+        },
+        "disconnected": {
+          "mean": 0.0859375,
+          "conditional_paired_bootstrap95": [
+            0.0390625,
+            0.1328125
+          ],
+          "per_condition_counts": [
+            1,
+            0,
+            -3,
+            4,
+            13,
+            6,
+            13,
+            10
+          ]
+        }
+      },
+      "tree_sham minus fixed": {
+        "graph": {
+          "mean": 0.0,
+          "conditional_paired_bootstrap95": [
+            -0.017578125,
+            0.017578125
+          ],
+          "per_condition_counts": [
+            -1,
+            -1,
+            1,
+            0,
+            4,
+            0,
+            -3,
+            0
+          ]
+        },
+        "geometry": {
+          "mean": -0.005859375,
+          "conditional_paired_bootstrap95": [
+            -0.02734375,
+            0.015625
+          ],
+          "per_condition_counts": [
+            -2,
+            1,
+            1,
+            -3,
+            2,
+            0,
+            -2,
+            0
+          ]
+        },
+        "disconnected": {
+          "mean": 0.009765625,
+          "conditional_paired_bootstrap95": [
+            -0.01171875,
+            0.03125
+          ],
+          "per_condition_counts": [
+            2,
+            0,
+            -1,
+            3,
+            -2,
+            0,
+            3,
+            0
+          ]
+        }
+      }
+    }
+  },
+  "decision": "Actual context has lower graph pass counts than both controls in both continuations; second intervals exclude zero. Do not scale or retune this adapter recipe against these outcomes."
 }

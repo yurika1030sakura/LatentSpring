@@ -206,9 +206,16 @@ source and continuation budget. Context follows both axes of the source atom
 permutation during pairing and remains fixed throughout generation. Conditioning
 on $T$ changes the probability object to a joint/conditional flow, so the existing
 marginal-density interface explicitly rejects this variant. No final-density or
-thermal claim is made. \textbf{The paired molecular comparison is pending in this
-development version.}
+thermal claim is made. The complete paired comparison retains every output.
 \IfFileExists{sections/tree_context_results.tex}{\input{sections/tree_context_results}}{}
+
+Actual-tree conditioning has lower graph acceptance than both controls in both
+continuations; the second continuation's intervals exclude zero. Geometry support
+improves in the first continuation but decreases in the second. Full checkpoint
+restoration, nonzero adapter gradients, identical actual/sham initialization, and
+all source/context trees replay. Thus this particular static context adapter has
+no established useful increment and is not scaled further. Its conditional-risk
+motivation does not imply a benefit at the tested data and optimization budget.
 
 \paragraph{Matched continuations and target selection.}
 All methods start from the same typed-matching warm checkpoint and receive3,000
@@ -308,17 +315,19 @@ learnable. The new controls support a useful source structure beyond a single
 Gaussian approximation, while affinity learning's downstream value remains
 unresolved. Narrow finite-length edges are not consistently better than a harmonic
 tree mixture. One concrete open question is whether the flow should retain the
-sampled tree as conditioning, instead of receiving its coordinates alone. This
-variant is implemented and its controlled evaluation is pending. The present results do not establish a
+sampled tree as conditioning, instead of receiving its coordinates alone. The
+implemented static adapter does not establish a useful increment in the matched
+actual/sham/no-context test. A separately frozen32-composition comparison evaluates
+the source effect more broadly; it introduces no new learning. The present results do not establish a
 calibrated energy distribution or a completed competitive benchmark.
 \label{endofmaintext}
 
 \subsubsection*{Reproducibility statement}
 Frozen protocols record data-order and generation seeds, source checkpoint hashes,
 all attempted structures, electronic conditions and oracle costs. Current audits
-replay10,240 source draws and structural readouts and5,120 stored physical rows;
+replay13,312 source draws and structural readouts and5,120 stored physical rows;
 they do not independently rerun optimizers, final neural generation or the oracle.
-The4,096-output moment-control audit is complete. Implementation tests cover normalization,
+The4,096-output moment-control and3,072-output context audits are complete. Implementation tests cover normalization,
 Jacobians, weighted-tree sampling, symmetry, density gradients and source-law guards.
 The anonymous release package and final author verification remain outstanding.
 

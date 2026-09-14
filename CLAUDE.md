@@ -1,5 +1,10 @@
 # BGFM project guide
 
+CURRENT: read `research/TREE_TRANSFER_STATE_20260914.json` and
+`notes/tree_source_transfer_v1.md`. The context adapter experiment is complete
+with no useful increment; it is closed to scale-up. The frozen32-composition
+source comparison is running as job46368764. Query Slurm.
+
 CURRENT CONTEXT EXPERIMENT: read `research/TREE_CONTEXT_STATE_20260914.json`
 and `notes/tree_conditioned_transport_v1.md`. The adapter is implemented;57 tests
 pass. Job46367714 has two continuation tasks; query Slurm. No molecular advantage

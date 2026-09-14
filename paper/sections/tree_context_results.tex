@@ -1,0 +1,17 @@
+\begin{table}[t]
+\centering
+\caption{Latent-tree context ablation: graph-check passes /512. The actual and independent-tree adapters have the same parameter count, initialization and learning rates.}
+\begin{tabular}{lrrr}
+\toprule
+Continuation & No tree context & Actual source tree & Independent tree\\
+\midrule
+1 & 118 & 102 & 119\\
+2 & 97 & 75 & 97\\
+\bottomrule
+\end{tabular}
+\label{tab:context}
+\end{table}
+Table~\ref{tab:context} reports all3,072 fresh outputs.
+The actual minus independent-tree graph pass-rate differences are $-3.32$ percentage points $[-6.84,0.20]$ and $-4.30$ percentage points $[-7.81,-0.78]$, respectively.
+The actual minus no-context graph pass-rate differences are $-3.12$ percentage points $[-6.64,0.39]$ and $-4.30$ percentage points $[-7.81,-0.78]$, respectively.
+Intervals condition on the fitted models and the same eight development compositions. These are marginal intervals without multiplicity adjustment.
