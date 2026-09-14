@@ -1,77 +1,64 @@
-# Next — component-mass calibration checkpoint
+# Next — main-generator symmetry/collision pairing pilot
 
-Read `research/LATENT_MASS_STATE_20260913.json` and
-`notes/latent_mass_calibration_v1.md` first. The ICLR goal remains unachieved.
-User priority is useful AI novelty and quick evidence, not all-case perfection.
+CURRENT: `research/ORBIT_PAIRING_STATE_20260913.json` and
+`notes/orbit_pairing_fm_v1.md`. The ICLR goal remains active and unachieved.
+The previous mass-calibration and molecular-routing branches are preserved;
+neither is a qualified main-method success. Do not restart their sweeps.
 
-The new prototype learns Gaussian-preserving couplings between normalized
-reference generators to reduce component-mass estimation error. It is implemented
-and tested on exact-probability COM targets. It keeps each conditional reference
-shape fixed. Generic ratio coupling and Gaussian-preserving rearrangements have
-direct prior art; do not claim those principles as new.
+Active jobs (query Slurm; these are snapshots):
+-46323226: `runs/orbit_pairing_train_v3`, three sequential FM continuations,
+ independent / rotation / steric,3000 steps each, identical initialization/data.
+-46323424: `runs/orbit_pairing_eval_v2`, after training;2048 fresh molecular
+ outputs, including the frozen warm generator and all8 development conditions.
+-46324210: `runs/orbit_pairing_audit_v1`, after evaluation; replay every structural
+ outcome and verify matched training records, checkpoint hashes and sample streams.
 
-Completed evidence:
-- Offline run46315997, audit46317683 and binned control46317713 are complete.
-  At64 pairs, nonlinear-case mass RMSE averages0.03884 independent,0.02285 neural
-  and0.02281 binned. Simple nonlinear coupling matches neural with fixed fitting
-  data. The constant-angle case gives no substantive neural increment.
-- The online experiment46320232 is complete:384 histories across two constructed
-  cases and six methods,512 target calls per history including all learning.
-  Every query is retained. Audit46320415 is complete. All17 array tasks from this
-  stage completed0:0. No stage job remains active; re-query Slurm before recovery.
-- No molecular oracle calls were added. These COM shells are not chemically
-  validated molecules. Correct component masses alone can worsen joint reverse
-  KL when conditional shapes remain misspecified; that result is retained.
+All three fit arms preserve the Gaussian source via a shared independent Haar
+rotation of both training endpoints. Standard rotation alignment is prior art.
+The steric arm additionally searches a fixed set of13 proper rotations using
+path overlap and displacement. It uses no new oracle, bond labels, generated
+evaluation parents or reserved outcomes. Its usefulness is unknown until the
+fresh generation comparison completes. Do not equate lower training loss or
+path overlap with better output validity.
 
-The final online nonlinear-case mass RMSE is0.016519 independent,0.016149 shared
-latent,0.017523 constant,0.017964 Gaussian,0.012027 neural and0.014159 binned.
-Neural point error is27.2% below independent and15.1% below binned, but both paired
-MSE intervals span zero. Constant/Gaussian maps have lower point error than neural
-on the constant case. The binned control matches neural offline. Do not claim a
-robust neural win or molecule-generation advance from these results.
+Finish the current experiment:
+1. Verify all three training completions, then the32 method/condition output
+ rows and the structural audit. Preserve failed jobs or samples rather than
+ replacing a condition. Do not tune weights, angle candidates or training length
+ using evaluation outcomes.
+2. Run `scripts/research/summarize_orbit_pairing.py` with:
+ `--protocol research/evidence/orbit_pairing_protocol_v1.json`
+ `--run runs/orbit_pairing_eval_v2/evaluation`
+ `--audit runs/orbit_pairing_audit_v1/audit.json`
+ `--out research/evidence/orbit_pairing_summary_v1.json`
+ `--csv research/evidence/orbit_pairing_table_v1.csv`.
+3. If the audited pooled graph-supported count for steric exceeds BOTH
+ independent and rotation, perform the already frozen all-output energy check:
+ all four methods, all eight conditions, same64 outputs each; E_plus=(E(x)+E(-x))/2,
+ original charge/spin,0.1-eV/A^2 COM restraint,4096 raw calls total. Retain invalid
+ outputs and errors in the denominator. Otherwise stop this bounded pilot with
+ zero new molecular oracle calls. This gate is a feasibility screen, not a
+ significance criterion or ICLR-readiness certificate.
+4. A positive generation result still needs training-seed confirmation and a
+ careful contribution statement against equivariant FM, ET-Flow, SemlaFlow and
+ physics-aware paths. These controls are deliberately required before calling
+ this an AI contribution. No all-case perfection or new physics law is required.
 
-Final artifacts:
-- `research/evidence/online_latent_mass_summary_v1.json`: all methods, budgets,
-  paired uncertainty, source hashes and full-run compute times.
-- `research/evidence/online_latent_mass_table_v1.csv`: flat numerical table.
-- `research/figures/latent_mass_v1/online_latent_mass_v2.pdf`: curves and paired
-  uncertainty. Version1 point-only figure remains preserved.
-- `runs/online_latent_mass_v1` and `runs/online_latent_mass_audit_v1`: complete
-  traces and audits. All196,608 weights and prefix estimators replay;48 histories
-  replay end to end, including32 adaptive and16 static histories.
-- `research/evidence/latent_mass_scheduler_v1.json`: actual completion records.
+The old independent-Gaussian velocity-to-score formula is incompatible with
+correlated endpoint pairings. This pilot uses FM only; the existing BGFM hook and
+three-term interface remain intact. Do not silently enable that force proxy.
+The finite T1 midpoint64 sampler plus0.025-A COM noise has no qualified absolute
+q, so no importance weights, ESS or Boltzmann-sampling claim follows here.
 
-Next main-method decision:
-1. Retain the coupling as an estimator prototype. It cannot change marginal
-   importance-weight collapse or repair conditional geometric coverage. A new
-   paper story cannot be built on generic coupled importance sampling alone.
-2. Choose one explicit learned-distribution contribution and a small molecular
-   test that directly measures it. The normalized sampler/density interface and
-   strong simple baseline must be part of that specification from the start.
-   The present module does not establish that such a contribution is solved.
-3. Do not increase toy budgets, change targets, add neural variants or revive
-   routing sweeps merely to seek a favorable comparison. Do not polish the old
-   diagnostic manuscript into a claimed new method before that decision.
+Scheduling provenance:46322261 and46322800 were cancelled while still PENDING,
+with no training metrics or calculations. Partition-update attempts were rejected
+by site validators; the subsequent three-element gpu_test array submission was
+rejected by the two-submitted-job QOS limit. The accepted replacement uses one
+serial training allocation and one dependent evaluation. All records remain in
+`research/evidence/orbit_pairing_queue_update_v1.json` and `research/jobs.jsonl`.
+Do not cancel other projects' jobs to free this QOS.
 
-A molecular continuation must first choose one normalized reference sampler with
-its matching density, within one fixed composition/electronic sector. Production
-FM64 plus noise does not have a qualified absolute q; clamped q0.95 is a different
-law. Existing EACF checkpoints are implicit-source refiners, not established
-absolute-density reference banks. Historical triatomic integrals differ in target,
-spin, temperature or support and cannot silently serve as ground truth here.
-These are concrete interface choices, not a request for another broad density
-or all-case chemistry audit. Keep the first actual molecular test small and
-include a simple nonlinear control and a learned-generator baseline.
-
-The earlier routing branch is closed to scale-up. Its324 trajectories and20,736
-calls are archived under `research/WORK_CHAIN_STATE_20260913.json` and
-`research/evidence/work_chain_matched_controls_v2.json`. The learned single edit
-has no established material increment beyond its exact zero-learning counterpart;
-cooperative routing is slower and explores fewer connectivities. Preserve every
-negative result. Do not restart scorer/committee/mobility/optimizer sweeps.
-
-Protected constraints:722 reserved outcomes unqueried; evaluated12/18-parent
-cohorts excluded from fitting; two environments separate; no home writes;
-bond-free OMol25 with max_atoms200; user handles authorship/submission.
-`paper/angular_working.tex` remains the old diagnostic draft, not the current
-method paper or an ICLR-ready submission.
+Protected:722 reserved outcomes unqueried;12/18 evaluated generated-parent
+cohorts excluded from fitting; separate FlowMol/oracle environments; no home writes;
+OMol25 primary, bond supervision zero, max_atoms200. User handles authorship and
+submission. `paper/angular_working.tex` is still the old diagnostic draft.

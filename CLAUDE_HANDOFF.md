@@ -1,37 +1,31 @@
-# Claude continuation — latent component-mass calibration
+# Claude continuation — main FM pairing experiment
 
-Active checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
+Checkout: `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
 `iclr2027-arch-fix`. Read `research/NEXT.md`,
-`research/LATENT_MASS_STATE_20260913.json` and
-`notes/latent_mass_calibration_v1.md` before further work.
+`research/ORBIT_PAIRING_STATE_20260913.json`,
+`notes/orbit_pairing_fm_v1.md` and the frozen protocol first.
 
-The offline known-target coupling experiment and exact nonlinear control are
-complete and audited. Nonlinear coupling helps the constructed nonlinear case;
-the simple binned map matches neural offline. The all-query online experiment
-46320232 and audit46320415 are complete. The final all-cost summary and figure
-are linked in NEXT; all stage jobs are terminal. Check live Slurm before recovery. All target values
-used for online fitting remain in the estimates; no post-update remapping of old
-samples is allowed. The audit includes48 full-history replays (32 adaptive,16 static) and all
-384 histories' weights and prefix normalizers.
+The main generator is now being trained with independent, standard rotation and
+collision-aware symmetry pairings. Shared Haar symmetrization preserves the
+Gaussian source; the endpoint data shape and chirality remain intact. Alignment
+and physically motivated paths have close prior art. This is a concrete useful-
+mechanism test, not an established ICLR contribution.
 
-There is no new molecular performance result yet. Generic coupled importance
-sampling and Gaussian-preserving flow rearrangement are prior art. This module
-changes calibration covariance, then mixture probabilities, while keeping
-conditional reference shapes fixed. Do not describe it as a complete improved
-Boltzmann generator or distinct ICLR-level AI novelty based on the toy result.
+Current jobs: training46323226 (`runs/orbit_pairing_train_v3`), generation46323424
+(`runs/orbit_pairing_eval_v2`), audit46324210 (`runs/orbit_pairing_audit_v1`). Query
+live Slurm. Finish these and their summary before choosing another design.
+All2048 generated outputs and all8 conditions stay in the readout. Only if steric
+beats both continuation controls in pooled graph-supported count is the frozen
+4096-call all-output physical energy check released. See NEXT for exact inputs.
+Do not tune on evaluation outcomes or claim a thermal distribution from geometry.
 
-Keep the previous routing branch closed to scaling, preserve its exact
-zero-learning control and every negative outcome. Never substitute the corrected
-clamped q0.95 for the unknown production FM64-plus-noise density. Preserve all722
-reserved outcomes, exclude the12/18 evaluated cohorts from fitting and keep the
-two environments separate. The user's priority is a useful main-method advance
-and rapid evidence; broad cleanup and an independent new physics law are not
-requirements. The full ICLR goal remains active and unachieved.
+45 unique targeted tests pass. The correlated pairing does not support the old
+independent-Gaussian velocity-score proxy; training here is FM-only. Existing
+BGFM hooks and separate environments are unchanged. No evaluated generated
+parent, reserved outcome or fresh molecular oracle label enters fitting.
 
-Final online nonlinear-case RMSE:0.012027 neural,0.014159 binned,0.016519
-independent at512 total calls including learning. The neural-minus-binned and
-neural-minus-independent paired MSE intervals both span zero. Constant/Gaussian
-maps have lower point error on the constant case. Keep this as a bounded
-estimator prototype; marginal weight collapse and within-component geometry
-remain unchanged. The next main-method choice is open, not an implemented
-ICLR-level solution. Do not scale toy variants to force a neural win.
+The previous coupled mass-estimator prototype is complete and audited. It has
+no established distinct neural/molecular advantage and cannot fix marginal
+importance-weight collapse. Previous routing/committee/scorer and toy-architecture
+sweeps stay closed. Retain their full negative evidence. The ICLR goal is active
+and unachieved; the old manuscript remains diagnostic.
