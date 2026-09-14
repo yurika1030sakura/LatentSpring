@@ -1,7 +1,8 @@
 # Next hypothesis: learn the source from generated-sample utility
 
-Status: mathematical/design brief only. No utility-trained source, new training
-bank or performance result is implemented or claimed. The completed monomer test
+Status update: the design is implemented and the bounded pilot is running; see
+`notes/source_utility_method_v1.md` and `research/SOURCE_UTILITY_STATE_20260914.json`.
+No performance gain is claimed. The remaining text records the original design brief. The completed monomer test
 does not establish an extra benefit of coordinate-likelihood source fitting.
 
 ## What the new benchmark resolves

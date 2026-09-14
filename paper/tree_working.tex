@@ -381,9 +381,12 @@ further architectural claims. The prospective neutral-monomer panel supplies tha
 controlled test, and its completed results still do not establish extra learned-
 source utility. One focused next hypothesis is to fit source probabilities to
 terminal generation utility with a frozen decoder, rather than to reference
-coordinate likelihood. Exact source importance ratios could support such a test
-without assigning a marginal density to the noisy decoder. That utility-trained
-method has not been implemented or validated here. The present results do not
+coordinate likelihood. Exact source importance ratios support such a test
+without assigning a marginal density to the noisy decoder. A bounded pilot is now
+implemented (Appendix~\ref{app:source-utility}), but no performance result is yet
+claimed. Frozen-decoder initial-noise learning already appears in Noise PPO
+\citep{miao2025noiseppo}, and inference-time noise optimization in DNO
+\citep{tang2024dno}; the generic adaptation idea is not our novelty. The present results do not
 establish a calibrated energy distribution or a completed competitive benchmark.
 \label{endofmaintext}
 
@@ -444,4 +447,49 @@ of these matrices. Averaging this matrix over within-species permutations preser
 positive definiteness on the centered subspace and yields species invariance.
 The Gaussian is exactly normalized for its chosen covariance; equality to the
 infinite tree-mixture covariance remains approximate.
+
+
+
+\section{Prespecified source-utility pilot}\label{app:source-utility}
+For each fixed composition and electronic condition $c$, retain the actual frozen
+decoder kernel $K_\theta(y\mid x_0,c)$, including its midpoint integrator and final
+noise. Changing only latent-tree affinities gives the standard importance identity
+\begin{equation}
+ J(\eta,c)=\mathbb{E}_{q_0K_\theta}
+ \left[\frac{q_\eta(X_0\mid c)}{q_0(X_0\mid c)}R(Y,c)\right].
+\end{equation}
+The ratio is a source-space marginal ratio, not the marginal output-density ratio.
+For $M$ iid cached draws, the leave-one-out centered estimate
+$\frac{M}{M-1}\frac1M\sum_i w_i(R_i-\bar R)$ is unbiased for the improvement over
+$q_0$ at a fixed $\eta$. Optimizing it on that same bank can overfit.
+
+With common normalized edge kernels, the exact latent-tree divergence is
+\begin{equation}
+ D_T=\sum_{e}m_{\eta,e}(\log a_{\eta,e}-\log a_{0,e})
+       -\log\tau(a_\eta)+\log\tau(a_0),
+\end{equation}
+where $m_{\eta,e}$ is the prior tree edge marginal. Deploy the mixture
+$p_{\mathrm{mix}}(T)=(1-\epsilon)p_0(T)+\epsilon p_\eta(T)$ with
+$\epsilon=\min(1,\delta/D_T)$, taking $\epsilon=1$ at zero divergence. Standard KL
+convexity and data processing through $T\to X_0\to Y$ imply
+\begin{equation}
+ D_{\mathrm{KL}}(p_{\mathrm{mix}}(Y)\Vert p_0(Y))\leq\epsilon D_T\leq\delta.
+\end{equation}
+This controls the raw attempt distribution for a common decoder. It does not
+certify output density, effective sample size, diversity, validity or equilibrium,
+and does not apply to earlier experiments that changed decoder weights.
+
+The prospective pilot fixes $\delta=0.25$ nats, unchanged lognormal edge width0.2,
+and utility $0.8$ times graph support plus $0.2$ times geometric support, retaining
+all failures. Twenty-four new qualified training-corpus compositions supply64
+bank draws each. Twelve additional compositions are held out of source-head
+fitting, with four per size bin8--16,17--28,29--40. All36 originate from the flow's
+training corpus; this is not a global pretraining-disjoint test. The actual-utility,
+within-composition shuffled-utility and coordinate-NLL heads have equal capacity
+and30 training epochs, Adam learning rate0.003, gradient clipping5 and tree-KL
+penalty0.01. Together with the fixed source, all four receive64 fresh draws per
+held composition under each of two frozen decoders. The9216 planned attempts count
+both bank preparation and validation. No result or useful learned increment is
+claimed before completion and audit.
+
 \end{document}

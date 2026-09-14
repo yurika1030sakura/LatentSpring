@@ -1,5 +1,18 @@
 # BGFM project guide
 
+CURRENT OVERRIDE (2026-09-14): source-utility method IMPLEMENTED; controlled jobs
+46434075_0/1 RUNNING from immutable commit0ad2193. Read
+`research/SOURCE_UTILITY_STATE_20260914.json`, `notes/source_utility_method_v1.md`
+and `research/evidence/source_utility_protocol_v1.json`. Prior “not implemented”
+statements below describe the completed monomer checkpoint, not current work.
+There is no new validated utility gain yet.24 FIT plus12 source-head held-out
+compositions come from the real TRAINING corpus; do not confuse this split with
+the older21 composition-disjoint evaluation molecules.9216 planned attempts,
+actual/shuffled/NLL/fixed controls, two fixed decoders, no oracle calls. Re-query
+Slurm; finish and audit this bounded run before proposing another method. Generic
+frozen-decoder noise learning is prior art (Noise PPO); originality remains open.
+
+
 CURRENT: read `research/MONOMER_STATE_20260914.json`, `research/NEXT.md`,
 `CLAUDE_HANDOFF.md`, `notes/monomer_results_20260914.md` and
 `notes/source_utility_learning_brief_v1.md`.
