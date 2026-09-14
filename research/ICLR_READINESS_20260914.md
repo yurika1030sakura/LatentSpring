@@ -26,27 +26,30 @@ What does not establish a new useful AI contribution:
   evidence of useful molecular generation.
 - None of these results establishes a calibrated Boltzmann energy distribution.
 
-Current bounded test:
+Latest completed test:
 
-`research/DUAL_GEOMETRY_STATE_20260914.json` tracks two parameter-free internal
-geometry variants. Time-scaled geometry must beat both the original representation
-and fixed-current-geometry control. Existing geometry self-conditioning is retained
-as an additional stronger-training-compute reference. No new method gain is claimed
-while this test is running.
+`research/DUAL_GEOMETRY_STATE_20260914.json` records a FAILED internal-geometry
+gate. Original/geometry-SC/fixed-geometry/time-geometry graph counts are
+384/410/167/328 and327/369/156/315 out of768. The time-scaled variant loses to the
+original representation. Geometry SC again improves on original with new draws
+from the same two trained models; this is a draw-stream confirmation, not new
+independent model training. The pooled improvement is4.43 percentage points,
+with paired95 interval[2.02,6.90] and descriptive composition95 interval[2.73,5.92].
+See `research/evidence/geometry_sc_fresh_stream_v1.json`.
 
-After this test:
+Next most useful bounded work:
 
-If it passes, freeze the method and obtain genuinely new composition evidence before
-refining the manuscript's contribution claim. Assess appropriate generator baselines,
-training-budget sensitivity, molecular energy quality and full cost. A successful
-reused-panel development gate is not an ICLR acceptance criterion.
+1. Audit the original native endpoint generator before further architectural
+   additions. The original30,000-step checkpoint restores and its hash verifies;
+   its native conditional sampling has not been measured by these displacement
+   adaptations. A successful restoration is not a performance result.
+2. Compare Gaussian/moment controls and structured sources under the stronger,
+   correctly parameterized geometry-SC backbone. Fixed prior design can itself
+   be an AI-method contribution; a new trained module is not universally required.
+   Its originality and usefulness still need support against relevant prior art.
+3. Freeze any chosen method before a new-composition confirmation. Do not tune
+   envelopes, priors or filters on this repeatedly used12-condition panel.
 
-If it fails, preserve the result and do not search time envelopes/learning rates on
-the observed panel. Audit the original native endpoint generator before more
-architectural additions: the original30,000-step checkpoint restores, but its native
-conditional sampling has not been measured by these adapted displacement experiments.
-This is a baseline-completeness question, not an invention or an assured improvement.
-
-All reserved outcomes remain unqueried; no evaluated coordinates or results enter
-fitting. The user handles authors and submission. The work should be judged by a
-specific contribution and reproducible utility, not by the number of modules or tests.
+No new experiment is currently queued. All reserved outcomes remain unqueried;
+all evaluated coordinates/results stay outside fitting. The user handles authors
+and submission. The ICLR goal remains unachieved. No energy-law claim is supported.

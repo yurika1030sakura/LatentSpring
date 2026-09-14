@@ -396,7 +396,7 @@ completed competitive benchmark or calibrated energy distribution.
 \subsubsection*{Reproducibility statement}
 Frozen protocols record data-order and generation seeds, source checkpoint hashes,
 all attempted structures, electronic conditions and oracle costs. Current audits
-replay56,256 generated-output source records (including3072 FIT-bank records),
+replay62,400 generated-output source records (including3072 FIT-bank records),
 1,536 additional projected-coordinate readouts and5,120 stored physical rows;
 they do not independently rerun optimizers, final neural generation or the oracle.
 The moment-control, context, additional-composition, monomer, source-utility,
@@ -583,5 +583,25 @@ All these controls retain the bond-free interface, original electronic metadata,
 zero bond loss and the declared train/evaluation separation. The later12-condition
 panel is reused development data; it is not an untouched confirmatory test. No new
 quantum-energy queries were made in these three architecture studies.
+
+
+\paragraph{Internal geometry versus accumulated velocity.}
+A final controlled hypothesis separated the velocity accumulator $V$ from the
+internal geometry used by coordinate-updating layers. The tested geometry was
+either fixed at $X_t$ or set to $X_t+(1-t)V$, while the output remained the
+displacement head $X_t+V$. The standard endpoint/velocity identity motivates this
+inductive bias but does not prove that arbitrary learned internal geometries are
+invalid. No network parameters were added.
+Graph counts for original/geometry-SC/fixed/time-scaled geometry were
+384/410/167/328 and327/369/156/315 out of768.
+Time-scaled minus original geometry is$-4.43$ percentage points, paired95\% interval$[-6.84,-2.02]$.
+Time-scaled minus fixed geometry is$+20.83$ percentage points, paired95\% interval$[+18.29,+23.44]$.
+Time-scaled minus geometry self-conditioning is$-8.85$ percentage points, paired95\% interval$[-11.46,-6.25]$.
+The internal-geometry gate fails. All6144 source/output records and matching
+parameter counts, data and checkpoint recipes were audited. The original and
+geometry-SC references reuse their earlier trained checkpoints with new source
+streams; their4.43-point SC difference is not an extra model-training replicate.
+These results retain the known self-conditioning improvement and do not establish
+a new useful architecture or a calibrated energy distribution.
 
 \end{document}

@@ -1,6 +1,6 @@
 {
   "at_utc": "2026-09-14T22:17:24.785512+00:00",
-  "status": "running",
+  "status": "complete_negative",
   "goal_achieved": false,
   "scientific_submission_ready": false,
   "method": "notes/dual_geometry_v1.md",
@@ -13,8 +13,178 @@
   "planned_new_training_updates": 12000,
   "planned_outputs": 6144,
   "new_molecular_oracle_calls": 0,
-  "next": "Run both fixed and time-scaled internal geometry controls. All comparator checkpoints match the exact data/source/training recipe, and all get new generation streams. No improvement claim before audit.",
+  "next": "No live experiment. Preserve the failed internal-geometry gate. Before more modules, assess original native endpoint sampling and source choices under the now stronger geometry-SC baseline. Do not tune time envelopes on this reused panel.",
   "job_id": "46485300",
   "source_commit": "cbdb297ac27e6627bc98cdd017150f050b8cdfe7",
-  "run": "runs/dual_geometry_v1"
+  "run": "runs/dual_geometry_v1",
+  "development_gate_passed": false,
+  "audit": "research/evidence/dual_geometry_audit_v1.json",
+  "summary": {
+    "0": {
+      "plain": {
+        "attempts": 768,
+        "graph": 384,
+        "geometry": 500,
+        "distinct_connectivity": 360,
+        "validator_errors": 0,
+        "parameters": 5904369
+      },
+      "geometry": {
+        "attempts": 768,
+        "graph": 410,
+        "geometry": 532,
+        "distinct_connectivity": 387,
+        "validator_errors": 0,
+        "parameters": 5904369
+      },
+      "fixed_geometry": {
+        "attempts": 768,
+        "graph": 167,
+        "geometry": 250,
+        "distinct_connectivity": 156,
+        "validator_errors": 0,
+        "parameters": 5904369
+      },
+      "time_geometry": {
+        "attempts": 768,
+        "graph": 328,
+        "geometry": 438,
+        "distinct_connectivity": 309,
+        "validator_errors": 0,
+        "parameters": 5904369
+      }
+    },
+    "1": {
+      "plain": {
+        "attempts": 768,
+        "graph": 327,
+        "geometry": 434,
+        "distinct_connectivity": 304,
+        "validator_errors": 0,
+        "parameters": 5904369
+      },
+      "geometry": {
+        "attempts": 768,
+        "graph": 369,
+        "geometry": 445,
+        "distinct_connectivity": 342,
+        "validator_errors": 0,
+        "parameters": 5904369
+      },
+      "fixed_geometry": {
+        "attempts": 768,
+        "graph": 156,
+        "geometry": 241,
+        "distinct_connectivity": 138,
+        "validator_errors": 0,
+        "parameters": 5904369
+      },
+      "time_geometry": {
+        "attempts": 768,
+        "graph": 315,
+        "geometry": 421,
+        "distinct_connectivity": 285,
+        "validator_errors": 0,
+        "parameters": 5904369
+      }
+    }
+  },
+  "comparisons": {
+    "time_geometry minus plain": {
+      "graph_supported": {
+        "mean": -0.044270833333333336,
+        "paired_draw95": [
+          -0.06837565104166667,
+          -0.020182291666666668
+        ],
+        "descriptive_composition95": [
+          -0.06642252604166667,
+          -0.024088541666666668
+        ]
+      },
+      "geometrically_supported": {
+        "mean": -0.048828125,
+        "paired_draw95": [
+          -0.07097981770833334,
+          -0.026692708333333332
+        ],
+        "descriptive_composition95": [
+          -0.06380208333333333,
+          -0.032552083333333336
+        ]
+      }
+    },
+    "time_geometry minus fixed_geometry": {
+      "graph_supported": {
+        "mean": 0.20833333333333334,
+        "paired_draw95": [
+          0.18294270833333334,
+          0.234375
+        ],
+        "descriptive_composition95": [
+          0.17122395833333334,
+          0.24806315104166643
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.23958333333333334,
+        "paired_draw95": [
+          0.21223958333333334,
+          0.2662760416666667
+        ],
+        "descriptive_composition95": [
+          0.20052083333333334,
+          0.2779947916666667
+        ]
+      }
+    },
+    "time_geometry minus geometry": {
+      "graph_supported": {
+        "mean": -0.08854166666666667,
+        "paired_draw95": [
+          -0.114599609375,
+          -0.0625
+        ],
+        "descriptive_composition95": [
+          -0.11328125,
+          -0.06380208333333333
+        ]
+      },
+      "geometrically_supported": {
+        "mean": -0.07682291666666667,
+        "paired_draw95": [
+          -0.1015625,
+          -0.053385416666666664
+        ],
+        "descriptive_composition95": [
+          -0.091796875,
+          -0.061197916666666664
+        ]
+      }
+    },
+    "fixed_geometry minus plain": {
+      "graph_supported": {
+        "mean": -0.2526041666666667,
+        "paired_draw95": [
+          -0.279296875,
+          -0.22591145833333334
+        ],
+        "descriptive_composition95": [
+          -0.302734375,
+          -0.201171875
+        ]
+      },
+      "geometrically_supported": {
+        "mean": -0.2884114583333333,
+        "paired_draw95": [
+          -0.3151041666666667,
+          -0.26235351562500026
+        ],
+        "descriptive_composition95": [
+          -0.3404947916666667,
+          -0.2376139322916669
+        ]
+      }
+    }
+  }
 }

@@ -1,77 +1,50 @@
 # BGFM project guide
 
-LATEST: geometry feedback is complete. Geometry-only SC gives a repeated known-
-technique improvement, but the new pair-code gate fails. The next bounded test
-separates internal geometry from velocity accumulation without adding parameters.
-Read `research/DUAL_GEOMETRY_STATE_20260914.json` and `notes/dual_geometry_v1.md`.
-No ICLR readiness, energy-law result or established new AI benefit is claimed.
+CURRENT: read `research/ICLR_READINESS_20260914.md`,
+`research/DUAL_GEOMETRY_STATE_20260914.json`, `research/NEXT.md` and
+`CLAUDE_HANDOFF.md`. The ICLR goal is unachieved; the draft is not submission ready.
 
+There is a repeated useful BASELINE improvement: geometry self-conditioning raises
+graph support by5.47 pp, paired95[3.06,7.94], on12 reused monomer compositions.
+Counts/768: plain363/312, geometry417/342. Fresh source streams from the SAME
+trained models give plain384/327 and geometry410/369. These are not extra model
+replicates. Self-conditioning is prior art; this gain alone is not our new AI claim.
 
-LATEST: tree-coordinate flow is COMPLETE and its chemical-validity gate FAILED.
-Read `notes/tree_manifold_results_20260914.md`. Current candidate is the separately
-frozen geometry/latent-relation feedback study; read
-`research/GEOMETRY_FEEDBACK_STATE_20260914.json` and `notes/geometry_feedback_v1.md`
-first. It restores a correctly parameterized self-conditioning baseline and tests
-unlabelled pair-code learning through coordinate error. No improvement claim yet.
+Proposed extra methods fail their frozen gates: coordinate-NLL source learning,
+static source-tree context, source utility adaptation, dynamic tree attention,
+fixed-tree product-coordinate flow, localized relation codes and internal geometry
+rescaling. Pair feedback counts422/334 versus geometry417/342 and pooled432/333;
+no extra learned relation gain. Internal time geometry328/315 loses to original
+384/327; fixed geometry167/156 is worse. Do not choose a source/model by seed.
 
+The fixed-tree manifold method achieves zero fragmentation but REDUCES chemical
+validity: Cartesian311/295, projected202/193, manifold165/156. Source law and support
+proofs pass; geometric connectivity is not a chemical-validity certificate.
+All completed studies, including1472 saved outputs from an interrupted gradient-
+bug variant, are preserved and audited. No quantum queries in these new studies.
 
-LATEST: dynamic-tree attention is COMPLETE with a failed gate; see
-`notes/dynamic_tree_results_20260914.md`. Next active candidate is the coordination
-prior plus geometry-preserving tree-coordinate flow. Read
-`research/TREE_MANIFOLD_STATE_20260914.json` and `notes/tree_manifold_brief_v1.md`
-first. It has a tested implementation and frozen matched controls, no improvement
-result yet. Earlier source-utility and dynamic-attention failures remain unchanged.
+All current jobs are terminal:46434075 utility,46443856 interrupted dynamic,
+46446108 corrected dynamic,46457005 manifold,46473082 feedback,46485300 internal
+geometry. Query Slurm before assuming no later jobs. Registry:
+`research/evidence/generator_reference_registry_v8.json`. The manuscript
+`paper/tree_working.tex` records completed findings; no new-method win is claimed.
 
+Next priorities: verify original native endpoint-sampler performance and assess
+structured-source benefits against strong geometry-SC source controls, before more
+modules. The30,000-step primary checkpoint restores and its hash verifies, but that
+is not a native performance result. A fixed probabilistic prior can be an AI-method
+contribution; usefulness and originality, not extra parameter count, are the tests.
+Any successful candidate needs fresh composition evidence and appropriate generator
+comparisons. Current calibration does not establish a Boltzmann energy distribution.
 
-CURRENT UPDATE: the user asked to prioritize a concrete new AI method and fast
-improvement after the failed source-utility result. A state-dependent global-tree
-attention block is now implemented. Read `research/DYNAMIC_TREE_STATE_20260914.json`
-and `notes/dynamic_tree_attention_v1.md` first. No improvement is claimed yet.
-The previous source-utility failure and all data protections below remain in force.
-The new architecture changes the decoder; its law has no source-utility KL guarantee.
-
-
-CURRENT: read `research/SOURCE_UTILITY_STATE_20260914.json`, `research/NEXT.md`,
-`CLAUDE_HANDOFF.md` and `notes/source_utility_results_20260914.md`.
-
-The frozen-decoder source utility method is implemented and the bounded pilot is
-COMPLETE, with a failed development gate. It changes only latent-tree affinities,
-uses exact source marginal importance ratios and a0.25-nat per-condition mixture
-trust bound. Generic source adaptation, importance/KL identities and tree priors
-have prior art, including ICLR2026 SGFM and Noise PPO. Originality/usefulness are
-not established merely by this implementation.
-
-Twenty-four new FIT and12 source-head held-out compositions were selected from the
-verified real TRAINING corpus, before generation and disjoint from previous
-candidate/panel compositions. They are NOT globally model-pretraining held out.
-All36 reference assays and9216 source/structural attempts replay. The6144 new
-validation outputs stay outside fitting; only3072 FIT-bank outputs are fit data.
-All frozen decoder state tensors remain exactly unchanged.
-
-Graph counts/768 for fixed/actual/shuffled/NLL:461/462/423/476 and410/392/410/409.
-Pooled actual-minus-fixed is-1.11 pp, paired95[-3.84,1.76]; actual-minus-shuffled
-is+1.37 pp[-1.63,4.36]. Both descriptive composition intervals also span zero.
-Actual training-bank utility improves, but independent benefit does not repeat.
-No new molecular oracle calls. Jobs46434075_0/1 completed0:0 in24:02/24:43.
-Twelve source-utility/tree tests pass; the source heads have1881 parameters.
-
-Preserve the completed monomer benchmark and all prior negative results in
-`research/MONOMER_STATE_20260914.json` and the earlier notes. The earlier21 monomer
-compositions are disjoint from two known processed corpora; do not confuse them
-with this pilot's12 training-corpus-derived head-held-out compositions. Static
-context and unchanged coordinate-NLL scale-ups remain closed. Do not grow this
-utility recipe, change the reward or relax trust based on its validation outcomes.
-A FIT-only check of reproducible source-affinity utility signal is the next bounded
-question, before another method/training run; no new performance experiment is live.
-
-The manuscript `paper/tree_working.tex` includes this failed pilot and checked prior
-art. The ICLR goal remains unachieved and scientific submission readiness false.
-Preserve722 reserved outcomes, old evaluated cohorts,2560 orbit outputs,36352
-source/monomer evaluation outputs,32 older raw references,78 monomer-pool references
-and the new12 held reference geometries outside FIT. Keep OMol25 primary,
-max_atoms200, bond loss zero, original charge/spin, BGFM interfaces, separate
-environments and no home writes. No final-density, output-ESS or Boltzmann claim.
-The user handles submission. Query Slurm before assuming later work is absent.
+Preserve722 reserved outcomes, old evaluated cohorts,2560 orbit outputs,59328 stored
+tree/architecture evaluation outputs,1536 derived projection outputs and all their
+reference geometries outside fitting.3072 utility-bank outputs are FIT only.
+The new source/head-held data came from the training corpus; the earlier21 monomer
+compositions were absent from two verified processed corpora. Do not confuse those
+claims or certify unrecorded pretraining. Keep OMol25 primary, max_atoms200, bond
+loss zero, original charge/spin, BGFM interfaces, separate environments and no home
+writes. No final-density, output-ESS or thermal-law claim. The user handles submission.
 
 Historical milestones below do not replace this checkpoint.
 

@@ -1,65 +1,35 @@
-# Claude continuation — utility method tested; ICLR gate still unmet
+# Claude continuation — measured baseline gain, no established new-method benefit
 
-LATEST: geometry feedback is complete. Geometry-only SC gives a repeated known-
-technique improvement, but the new pair-code gate fails. The next bounded test
-separates internal geometry from velocity accumulation without adding parameters.
-Read `research/DUAL_GEOMETRY_STATE_20260914.json` and `notes/dual_geometry_v1.md`.
-No ICLR readiness, energy-law result or established new AI benefit is claimed.
-
-
-LATEST: tree-coordinate flow is COMPLETE and its chemical-validity gate FAILED.
-Read `notes/tree_manifold_results_20260914.md`. Current candidate is the separately
-frozen geometry/latent-relation feedback study; read
-`research/GEOMETRY_FEEDBACK_STATE_20260914.json` and `notes/geometry_feedback_v1.md`
-first. It restores a correctly parameterized self-conditioning baseline and tests
-unlabelled pair-code learning through coordinate error. No improvement claim yet.
-
-
-LATEST: dynamic-tree attention is COMPLETE with a failed gate; see
-`notes/dynamic_tree_results_20260914.md`. Next active candidate is the coordination
-prior plus geometry-preserving tree-coordinate flow. Read
-`research/TREE_MANIFOLD_STATE_20260914.json` and `notes/tree_manifold_brief_v1.md`
-first. It has a tested implementation and frozen matched controls, no improvement
-result yet. Earlier source-utility and dynamic-attention failures remain unchanged.
-
-
-CURRENT UPDATE: the user asked to prioritize a concrete new AI method and fast
-improvement after the failed source-utility result. A state-dependent global-tree
-attention block is now implemented. Read `research/DYNAMIC_TREE_STATE_20260914.json`
-and `notes/dynamic_tree_attention_v1.md` first. No improvement is claimed yet.
-The previous source-utility failure and all data protections below remain in force.
-The new architecture changes the decoder; its law has no source-utility KL guarantee.
-
-
-Active checkout `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
+Checkout `/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027`, branch
 `iclr2027-arch-fix`. Read `CLAUDE.md`, `research/NEXT.md`,
-`research/SOURCE_UTILITY_STATE_20260914.json`, and
-`notes/source_utility_results_20260914.md` first.
+`research/ICLR_READINESS_20260914.md` and `research/DUAL_GEOMETRY_STATE_20260914.json`.
 
-Implemented `cfm_mol/source_utility.py`: batched exact matrix-tree density,
-effective-resistance tree KL with gradients, per-condition trust-mixture sampling
-and marginal IS utility training. Frozen decoder and edge kernels; delta0.25 nats.
-The generic identities/source adaptation are prior art, not new physics.
+All bounded jobs in this session are terminal. The completed feedback study gives
+plain/geometry/latent/pooled counts363/417/422/432 and312/342/334/333 per768.
+Geometry SC improves both models; extra pair-localized feedback does not. It learns
+through coordinates with bond loss zero, but active gradients are not utility.
 
-Completed two24-minute jobs46434075_0/1 from0ad2193.24 real-corpus FIT and12
-source-head held-out conditions; four methods,9216 attempted outputs including
-3072 FIT-bank and6144 validation states. All source draws, assays, training artifact
-hashes and unchanged decoder tensors check.12 targeted math/source tests pass.
+The completed internal-geometry test gives original/geometry-SC/fixed/time counts
+384/410/167/328 and327/369/156/315. Its gate FAILS. These original/geometry references
+reuse the same feedback-study models with fresh draws, not new model replicates.
+All6144 new source/output records replay; training data and parameter counts match.
 
-Graph passes/768, fixed/actual/shuffled/NLL:
-first461/462/423/476; second410/392/410/409. The prespecified gate FAILS.
-Actual learned gains in its training bank but lacks repeated fresh benefit. Do not
-select one seed, claim that a new network proves novelty, or infer energy-law
-correctness. Preserve the full audit and both uncertainty summaries.
+The manifold study preserves contact connectivity but harms chemistry:
+Cartesian311/295, projected202/193, manifold165/156. Its correct normalization and
+support tests do not license a valid-molecule or energy-law claim. Dynamic attention
+and source utility also remain failed gates. The1472 interrupted dynamic outputs
+are separately preserved after an independently found relative-floor gradient bug.
 
-No additional performance run is launched. Follow the FIT-only signal assessment
-question in NEXT before proposing a justified different method. Do not immediately
-scale or retune this failed protocol. SGFM/Noise PPO must be in the originality
-comparison. The12 current validation compositions are already evaluated and cannot
-be recycled into fitting. Only the source heads, not the old flow, held them out.
+Next: audit native endpoint sampling from the original30,000-step checkpoint, then
+compare source choices under the stronger geometry-SC backbone. The native checkpoint
+restores and hashes correctly, but no native quality result has been obtained here.
+Keep the distinction between an AI method contribution and a newly trained module:
+fixed structured-source design can count, provided originality and useful results
+are demonstrated. No further ad hoc envelope/LR/width sweep on the observed panel.
 
-All previous protections remain:722 reserved outcomes, original evaluated cohorts,
-2560 orbit and36352 tree/monomer evaluation outputs, plus evaluation references.
-Use separate flowmol/oracle environments, max_atoms200, zero bond loss, original
-charge/spin; no home writes. Existing eSEN weights remain on holylab. The user
-handles authors/submission; ordinary bounded continuation is already authorized.
+Use `research/evidence/generator_reference_registry_v8.json` and the per-study
+source hashes. All prior raw outputs, quantum labels and data exclusions persist.
+No reserved outcomes were queried; no evaluation state enters FIT. Maintain two
+environments, original charge/spin, max_atoms200, zero bond supervision, and no
+home writes. The user handles authors/submission. No permission is needed for
+already authorized bounded research continuation. The ICLR goal is unachieved.
