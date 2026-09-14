@@ -77,3 +77,8 @@ controlled results. It is not a new theorem, new physics law, or automatically a
 ICLR contribution. The source-utility output-KL bound does not apply when these
 newly trained decoder weights change. Final output density/ESS/Boltzmann claims
 remain unqualified.
+
+The current local comparator uses independent global edge-mass normalization, not
+every possible local attention rule. If the tree mechanism gains, degree-coverage
+controls would still be needed to separate singleton coverage from larger-cut
+connectivity effects. The first pilot does not settle that finer attribution.
