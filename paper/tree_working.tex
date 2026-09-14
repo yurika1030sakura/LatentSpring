@@ -386,17 +386,21 @@ without assigning a marginal density to the noisy decoder. The completed pilot
 (Appendix~\ref{app:source-utility}) fails its prespecified gate: actual-utility
 training does not establish repeated benefit over fixed and shuffled controls. Frozen-decoder initial-noise learning already appears in Noise PPO
 \citep{miao2025noiseppo}, and inference-time noise optimization in DNO
-\citep{tang2024dno}; the generic adaptation idea is not our novelty. The present results do not
-establish a calibrated energy distribution or a completed competitive benchmark.
+\citep{tang2024dno}; the generic adaptation idea is not our novelty. Additional dynamic-attention and fixed-tree coordinate experiments also fail their
+learned-method gates. Geometry self-conditioning improves the one-pass baseline,
+but added unlabelled pair feedback does not establish a repeated extra benefit
+(Appendix~\ref{app:later-controls}). These are development findings, not a
+completed competitive benchmark or calibrated energy distribution.
 \label{endofmaintext}
 
 \subsubsection*{Reproducibility statement}
 Frozen protocols record data-order and generation seeds, source checkpoint hashes,
 all attempted structures, electronic conditions and oracle costs. Current audits
-replay39,424 source draws and structural readouts (including3072 FIT-bank draws)
-and5,120 stored physical rows;
+replay56,256 generated-output source records (including3072 FIT-bank records),
+1,536 additional projected-coordinate readouts and5,120 stored physical rows;
 they do not independently rerun optimizers, final neural generation or the oracle.
-The moment-control, context, additional-composition and monomer audits are complete.
+The moment-control, context, additional-composition, monomer, source-utility,
+dynamic-attention, product-coordinate and feedback audits are complete.
 Original-reference calibration is separate from generation and fitting.
 Implementation tests cover normalization,
 Jacobians, weighted-tree sampling, symmetry, density gradients and source-law guards.
@@ -524,5 +528,60 @@ generation plus source training. The full four-arm jobs complete in24:02/24:43.
 The separate corpus-qualification stage was not timed, so the preparation numbers
 are lower bounds. No new quantum-energy queries were made. Both the earlier
 negative studies and this failed gate remain part of the evidence.
+
+
+
+\section{Further controlled architecture tests}\label{app:later-controls}
+\paragraph{Current-geometry structure.}
+A differentiable tree-marginal residual adapter was compared with independent
+edge mass and fixed tree affinities, under two newly matched3000-update training
+seeds and12 reused monomer development conditions. Graph passes out of768 are
+316/321/322/318 and312/300/298/295 for no block, learned tree, fixed tree affinities
+and learned local mass. Learned-tree minus no block is$-0.46$ percentage points,
+paired95\% interval$[-1.95,1.11]$. Learned-tree minus local is$+0.52$ points,
+paired interval$[-0.59,1.56]$ and descriptive composition interval$[0.07,1.04]$.
+The gate fails; the favorable composition interval is not selected in isolation.
+A relative-edge-floor gradient defect was corrected before this final comparison.
+The1472 saved outputs of the interrupted implementation are preserved separately;
+only its unaffected complete no-block baselines were reused.
+
+\paragraph{Contact connectivity is insufficient.}
+A further prototype sampled a normalized coordination-sensitive heavy-core tree
+and terminal allocations, and generated bounded tree-edge radii with spherical
+directions. A product-space flow preserves contact connectivity by construction.
+The matched Cartesian flow, its deterministic final radial projection, and the
+trained product flow achieve graph counts311/202/165 and295/193/156 out of768.
+Both constrained outputs have zero disconnected cases, but product-flow graph
+validity falls by18.55 points versus Cartesian flow, paired95\% interval
+$[-20.83,-16.28]$, and by4.82 points versus final projection,$[-6.90,-2.73]$.
+Thus correct geometric support does not establish chemical validity or useful
+learning. The3072 neural outputs and1536 derived projections are all retained.
+
+\paragraph{Self-conditioning and unlabelled relation feedback.}
+Earlier source experiments used the explicitly declared memoryless one-pass
+coordinate path, not the full native FlowMol3 sampling algorithm. For a linear
+FM displacement head, $\widehat X_1=X_t+(1-t)v_0$ supplies the appropriate endpoint
+estimate to a geometry feedback branch. Two differentiable passes, supervised by
+their mean velocity-FM error, preserve this parameterization. Additional variants
+feed soft edge codes from the first pass or their within-molecule average to the
+second pass. Only coordinate error trains those codes; no bond-order label or loss
+is added, and no chemical semantics are assigned to the four channels. Learning
+latent interactions is established prior art \citep{kipf2018nri}.
+
+The one-pass, geometry-only, pair-code and pooled-code models produce graph counts
+363/417/422/432 and312/342/334/333 out of768. All use128 primitive denoiser calls
+per sample; feedback uses32 midpoint steps with two passes, versus64 single-pass
+steps. Training updates match, but feedback training compute is higher. Geometry
+feedback improves graph support by5.47 points, paired95\% interval$[3.06,7.94]$
+and descriptive composition interval$[4.10,6.77]$. This is a known-technique baseline
+improvement. Pair codes add$-0.20$ points versus geometry,$[-1.50,1.17]$, and$-0.59$
+versus pooled codes,$[-2.02,0.85]$. The relation-learning gate fails, despite verified
+coordinate-only gradients and changes in the edge head. No new AI contribution is
+established by the self-conditioning gain alone.
+
+All these controls retain the bond-free interface, original electronic metadata,
+zero bond loss and the declared train/evaluation separation. The later12-condition
+panel is reused development data; it is not an untouched confirmatory test. No new
+quantum-energy queries were made in these three architecture studies.
 
 \end{document}
