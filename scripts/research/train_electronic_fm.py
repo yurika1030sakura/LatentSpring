@@ -40,7 +40,7 @@ def main():
     p.add_argument('--seed',type=int,default=9041);p.add_argument('--global-state',type=int,choices=[0,1],default=1)
     p.add_argument('--prior-std',type=float,default=1.);p.add_argument('--requested-kT',type=float,default=1.)
     p.add_argument('--lr',type=float,default=2e-5);p.add_argument('--device',default='cuda')
-    p.add_argument('--pairing',choices=['none','independent','rotation','steric'],default='none')
+    p.add_argument('--pairing',choices=['none','independent','rotation','steric','typed_rotation'],default='none')
     p.add_argument('--pairing-protocol',type=Path)
     args=p.parse_args()
     if args.pairing_protocol:
@@ -86,7 +86,7 @@ def main():
         'warm_sha256':sha(args.warm_checkpoint),'config_sha256':sha(args.config),'script_sha256':sha(__file__),
         'data_order_sha256':hashlib.sha256(order.numpy().tobytes()).hexdigest(),
         'purpose':__doc__,'composition_prior_checkpoint':warm.get('composition_prior_checkpoint',str(args.warm_checkpoint.resolve()))}
-    protocol.update(alignment=args.pairing in ['rotation','steric'],
+    protocol.update(alignment=args.pairing in ['rotation','steric','typed_rotation'],
         paired_Haar_augmentation=args.pairing!='none',
         pairing_protocol_sha256=None if args.pairing_protocol is None else sha(args.pairing_protocol),
         score_proxy_warning='For correlated FM pairings, the independent-Gaussian velocity-to-score formula is invalid. This pilot uses FM only.')

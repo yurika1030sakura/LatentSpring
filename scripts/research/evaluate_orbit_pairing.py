@@ -23,6 +23,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for key in ['project','run','out','protocol']:
         parser.add_argument('--'+key,type=Path,required=True)
+    parser.add_argument('--supplementary-method',choices=['typed_rotation'])
     args=parser.parse_args()
     if args.out.exists():raise FileExistsError(args.out)
     protocol=json.loads(args.protocol.read_text());assert protocol['frozen']
@@ -33,6 +34,9 @@ def main():
     assert sha(config)==protocol['config_sha256'] and sha(manifest)==protocol['condition_manifest_sha256']
     checkpoints={'warm':args.project/protocol['warm_checkpoint']}
     checkpoints.update({m:args.run/m/'last.ckpt' for m in protocol['methods']})
+    if args.supplementary_method:
+        assert protocol['methods']==[args.supplementary_method]
+        checkpoints={args.supplementary_method:checkpoints[args.supplementary_method]}
     cfg=read_config_file(config);cfg['mol_fm'].pop('bgfm',None)
     assert cfg['dataset']['max_atoms']==200 and cfg['mol_fm']['total_loss_weights']['e']==0
     args.out.mkdir(parents=True);rows=[];source_records={};orders=[]
@@ -89,10 +93,11 @@ def main():
         del model;torch.cuda.empty_cache()
     assert len(set(orders))==1
     totals={m:sum(r['graph_supported'] for r in rows if r['method']==m) for m in checkpoints}
-    gate=totals['steric']>totals['independent'] and totals['steric']>totals['rotation']
+    gate=None if args.supplementary_method else totals['steric']>totals['independent'] and totals['steric']>totals['rotation']
     write(args.out/'results.json',dict(complete=True,protocol_sha256=sha(args.protocol),sources=source_records,rows=rows,
         graph_supported_totals=totals,attempts_per_method=len(protocol['conditions'])*protocol['samples_per_condition'],
         proceed_to_frozen_energy_check=gate,new_molecular_oracle_calls=0,scientific_submission_ready=False,
+        supplementary_method=args.supplementary_method,
         scope='All fresh unconditional geometries at fixed compositions, with common Gaussian prior/noise draws. FM-only training; structural outcomes do not certify Boltzmann probabilities. Geometric support, RDKit graph support, and validator errors remain separate. Single training seed.'))
 
 

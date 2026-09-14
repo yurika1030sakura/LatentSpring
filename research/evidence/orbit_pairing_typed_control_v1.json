@@ -1,0 +1,70 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-14T01:40:03.817109+00:00",
+  "methods": [
+    "typed_rotation"
+  ],
+  "training_seed": 29401,
+  "training_steps": 3000,
+  "learning_rate": 2e-05,
+  "batch_size": 1,
+  "warm_checkpoint": "runs/electronic_fm_global_v1/last.ckpt",
+  "warm_checkpoint_sha256": "aa25f1c31a7f5d692a8b6a0d1ccb8f564dc82ead95be05c5419f157ba63bbf18",
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "metadata": "runs/raw_metadata_replay_v1",
+  "condition_manifest": "research/evidence/development_panel_v1.json",
+  "condition_manifest_sha256": "cd0cff7c0b3422e1ae560b41c346d1753e5ebfc1ad7629387998911bd87f24ad",
+  "evaluation_seed": 29403,
+  "conditions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "samples_per_condition": 64,
+  "evaluation_batch": 16,
+  "midpoint_steps": 64,
+  "terminal_noise_std_A": 0.025,
+  "terminal_time": 1.0,
+  "model_input_kT_eV": 1.0,
+  "physical_target_kT_eV": 0.025851999786435,
+  "primary": "Graph support and diversity on the same frozen64 Gaussian/noise starts per condition as the primary experiment.",
+  "followup_energy": "Primary protocol retains its existing operational gate; this supplementary control does not redefine it. A positive main-method claim must also address this stronger baseline.",
+  "training_scope": "Real processed OMol25 train split with verified original electronic metadata; no evaluated generated parents, reserved outcomes, oracle labels or new bond supervision.",
+  "coupling": {
+    "steric_weight_A2": 4.0,
+    "overlap_factor": 0.6,
+    "path_times": [
+      0.25,
+      0.5,
+      0.75
+    ],
+    "rotation_candidates": 13,
+    "angle_radians": [
+      0.4,
+      0.8
+    ],
+    "shared_Haar": true
+  },
+  "limits": [
+    "One training seed is a feasibility comparison, not replicated superiority.",
+    "Kabsch and symmetry-aware OT/FM have direct prior art; this small randomized rotation search is not claimed a new OT solver.",
+    "The geometric collision cost is not a physical energy or proof of validity.",
+    "No finite-time Boltzmann or exact finite-solver density claim.",
+    "Conditional path coupling invalidates the independent Gaussian velocity-score proxy; this comparison is FM-only.",
+    "The target is additionally symmetrized under identical conditioning-label permutations; physical molecular geometries are unchanged. This is a standard matching baseline, not a new method claim."
+  ],
+  "scientific_submission_ready": false,
+  "new_training_oracle_calls": 0,
+  "role": "supplementary strong symmetry-matching baseline",
+  "parent_protocol_sha256": "9ada81d2b21c55f7d4b9904e0122726678f6d635384977d051b7f6bdeeb57bc5",
+  "purpose": "Add type-and-charge preserving Hungarian assignment plus Kabsch before claiming a collision-aware increment. Added during primary evaluation after warm-model structural results; no trained-arm outcomes used to set this baseline.",
+  "assignment_iterations": 3,
+  "finite_group_augmentation": true,
+  "edge_conditioning": "Must be constant within a graph; only equal atom and charge labels may be exchanged."
+}

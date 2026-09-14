@@ -68,10 +68,27 @@ def test_coupled_fm_path_preserves_terminal_semantics_and_input_graph():
     from test_clamped_density import graph_batch, Schedule
     from cfm_mol.clamped_fm import clamped_fm_path
     graph,nbi,_=graph_batch();original=graph.ndata['x_1_true'].clone()
-    for mode in ['independent','rotation','steric']:
+    for mode in ['independent','rotation','steric','typed_rotation']:
         xt,t,head,info=clamped_fm_path(graph,nbi,Schedule(2),terminal_time=1.,parameterization='displacement',
             generator=torch.Generator().manual_seed(18),pairing=mode,pairing_radii=torch.ones(len(original)),
             pairing_generator=torch.Generator().manual_seed(19))
         torch.testing.assert_close(head-xt,2*t[nbi,None]*(info['x1']-info['x0']),atol=1e-12,rtol=0)
         torch.testing.assert_close(graph.ndata['x_1_true'],original,atol=0,rtol=0)
         assert len(info['pairing_records'])==2
+
+
+def test_typed_matching_preserves_conditioned_shape_and_reduces_displacement():
+    from cfm_mol.orbit_pairing import typed_orbit_pair
+    g=torch.Generator().manual_seed(923)
+    source=centered(torch.randn(9,3,generator=g,dtype=torch.float64))
+    target=centered(torch.randn(9,3,generator=g,dtype=torch.float64))
+    groups=torch.tensor([0,0,0,0,1,1,1,2,2])
+    radii=torch.tensor([.7]*4+[.4]*3+[1.]*2,dtype=source.dtype)
+    a,b,r=typed_orbit_pair(source,target,radii,groups,generator=g)
+    for old,new in [(source,a),(target,b)]:
+        for group in groups.unique():
+            idx=groups==group
+            torch.testing.assert_close(old[idx].square().sum(-1).sort().values,new[idx].square().sum(-1).sort().values,atol=1e-11,rtol=0)
+        torch.testing.assert_close(torch.pdist(old).sort().values,torch.pdist(new).sort().values,atol=1e-11,rtol=0)
+    reference=source@proper_alignment(source,target)
+    assert r['displacement_per_atom']<=float((reference-target).square().sum(-1).mean())+1e-12

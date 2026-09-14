@@ -6,12 +6,15 @@ The previous mass-calibration and molecular-routing branches are preserved;
 neither is a qualified main-method success. Do not restart their sweeps.
 
 Active jobs (query Slurm; these are snapshots):
--46323226: `runs/orbit_pairing_train_v3`, three sequential FM continuations,
+- 46323226: `runs/orbit_pairing_train_v3`, three sequential FM continuations,
  independent / rotation / steric,3000 steps each, identical initialization/data.
--46323424: `runs/orbit_pairing_eval_v2`, after training;2048 fresh molecular
+- 46323424: `runs/orbit_pairing_eval_v2`, after training;2048 fresh molecular
  outputs, including the frozen warm generator and all8 development conditions.
--46324210: `runs/orbit_pairing_audit_v1`, after evaluation; replay every structural
+- 46324210: `runs/orbit_pairing_audit_v1`, after evaluation; replay every structural
  outcome and verify matched training records, checkpoint hashes and sample streams.
+
+- 46325717: `runs/orbit_pairing_energy_v1`, after the audit; automatically skips
+ without physical calls if the prespecified structural gate fails.
 
 All three fit arms preserve the Gaussian source via a shared independent Haar
 rotation of both training endpoints. Standard rotation alignment is prior art.

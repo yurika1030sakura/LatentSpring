@@ -38,8 +38,18 @@ def clamped_fm_path(graph,node_batch_idx,scheduler,*,terminal_time=0.8,
         x0,x1=x0.clone(),x1.clone()
         for i in range(graph.batch_size):
             selected=node_batch_idx==i
-            x0[selected],x1[selected],record=orbit_pair(x0[selected],x1[selected],pairing_radii[selected],
-                mode=pairing,generator=pairing_generator)
+            if pairing=='typed_rotation':
+                from .orbit_pairing import typed_orbit_pair
+                src,_=graph.edges();edges=graph.edata['e_1_true'][node_batch_idx[src]==i]
+                if len(edges) and not torch.equal(edges,edges[:1].expand_as(edges)):
+                    raise ValueError('Typed matching requires permutation-invariant edge conditioning')
+                a=graph.ndata['a_1_true'][selected].argmax(-1)
+                c=graph.ndata['c_1_true'][selected].argmax(-1)
+                groups=a*graph.ndata['c_1_true'].shape[-1]+c
+                x0[selected],x1[selected],record=typed_orbit_pair(x0[selected],x1[selected],pairing_radii[selected],groups,generator=pairing_generator)
+            else:
+                x0[selected],x1[selected],record=orbit_pair(x0[selected],x1[selected],pairing_radii[selected],
+                    mode=pairing,generator=pairing_generator)
             pairing_records.append(record)
     feature=list(scheduler.feats).index('x')
     alpha=scheduler.alpha_t(t.clone())[:,feature]

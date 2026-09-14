@@ -84,3 +84,43 @@ def orbit_pair(source, target, radii, *, mode, generator, steric_weight=4.):
         standard_cost=float(costs[0]), selected_cost=float(selected_cost[0]),
         standard_overlap=float(penalties[0]), selected_overlap=float(selected_penalty[0]),
         displacement_per_atom=float((aligned-target).square().sum(-1).mean()))
+
+
+@torch.no_grad()
+def typed_orbit_pair(source, target, radii, groups, *, generator):
+    """Alternating type-preserving assignment/Kabsch, followed by group Haar.
+
+    Groups must preserve every clamped node feature, and edge conditioning must
+    be permutation invariant (checked by the caller). This is a standard
+    symmetry-matching baseline, not the proposed collision-aware pairing.
+    """
+    from scipy.optimize import linear_sum_assignment
+    if groups.shape!=(len(source),):raise ValueError('One conditioning group per atom required')
+    # Use the same rotation/augmentation stream as the existing controls.
+    axes=torch.randn((6,3),dtype=source.dtype,device=source.device,generator=generator)
+    augmentation=haar_rotation(source,generator)
+    rotation=proper_alignment(source,target)
+    permutation=torch.arange(len(source),device=source.device)
+    identity=permutation.clone()
+    class_indices=[torch.where(groups==g)[0] for g in groups.unique()]
+    for _ in range(3):
+        moved=source@rotation
+        for selected in class_indices:
+            cost=(moved[selected,None]-target[None,selected]).square().sum(-1).cpu().numpy()
+            left,right=linear_sum_assignment(cost)
+            permutation[selected[torch.as_tensor(right,device=source.device)]]=selected[torch.as_tensor(left,device=source.device)]
+        rotation=proper_alignment(source[permutation],target)
+    # Independently randomize the finite label-stabilizer group in BOTH endpoints.
+    random_permutation=identity.clone()
+    for selected in class_indices:
+        order=torch.randperm(len(selected),device=source.device,generator=generator)
+        random_permutation[selected]=selected[order]
+    aligned=source[permutation]@rotation
+    standard=source@proper_alignment(source,target)
+    cost,overlap=path_cost(aligned,target,radii)
+    standard_cost,standard_overlap=path_cost(standard,target,radii)
+    return aligned[random_permutation]@augmentation,target[random_permutation]@augmentation,dict(
+        mode='typed_rotation',selected_candidate=-2,standard_cost=float(standard_cost[0]),selected_cost=float(cost[0]),
+        standard_overlap=float(standard_overlap[0]),selected_overlap=float(overlap[0]),
+        displacement_per_atom=float((aligned-target).square().sum(-1).mean()),
+        atoms_reassigned=int((permutation!=identity).sum()))

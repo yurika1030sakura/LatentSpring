@@ -1,3 +1,11 @@
+CURRENT execution: `research/ORBIT_PAIRING_STATE_20260913.json` and
+`research/NEXT.md`. Main-FM pairing training46323226, generation46323424,
+structural audit46324210 and conditional energy follow-up46325717 form the active
+pipeline. Query Slurm for current state. No new molecular advantage is claimed
+before the actual generated outputs are evaluated. The latent-mass stage below
+is complete but does not establish a distinct neural contribution. The ICLR goal
+is active and unachieved. Earlier checkpoints below are historical.
+
 # Current research status — September 13, 2026 UTC
 
 CURRENT: read `research/WORK_CHAIN_STATE_20260913.json`, `research/NEXT.md`,
