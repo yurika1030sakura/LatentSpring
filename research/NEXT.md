@@ -1,5 +1,13 @@
 # Next — utility pilot complete; no established learned advantage
 
+LATEST: dynamic-tree attention is COMPLETE with a failed gate; see
+`notes/dynamic_tree_results_20260914.md`. Next active candidate is the coordination
+prior plus geometry-preserving tree-coordinate flow. Read
+`research/TREE_MANIFOLD_STATE_20260914.json` and `notes/tree_manifold_brief_v1.md`
+first. It has a tested implementation and frozen matched controls, no improvement
+result yet. Earlier source-utility and dynamic-attention failures remain unchanged.
+
+
 CURRENT UPDATE: the user asked to prioritize a concrete new AI method and fast
 improvement after the failed source-utility result. A state-dependent global-tree
 attention block is now implemented. Read `research/DYNAMIC_TREE_STATE_20260914.json`

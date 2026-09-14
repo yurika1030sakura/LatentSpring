@@ -1,6 +1,6 @@
 {
   "at_utc": "2026-09-14T18:27:41.087854+00:00",
-  "status": "corrected_run_running",
+  "status": "complete_negative",
   "goal_achieved": false,
   "scientific_submission_ready": false,
   "method": "notes/dynamic_tree_attention_v1.md",
@@ -14,7 +14,7 @@
   "planned_new_outputs": 6144,
   "new_molecular_oracle_calls": 0,
   "scope": "New main-flow architecture test; previous source-utility failed gate and static-context failure preserved. Reused12-composition development panel; no claimed improvement yet.",
-  "next": "Finish corrected three dynamic variants per seed, reusing only unaffected complete baselines. Audit all corrected outputs and separately preserve/read out the interrupted implementation variant; no tuning on outcomes.",
+  "next": "Preserve completed failed attention gate. The degree-sensitive tree/product-space flow is a tested mathematical prototype only; freeze data/support/control protocol before a new performance run.",
   "job_id": "46446108",
   "source_commit": "b6233c82de8a00eff76de3d4ceab710563f849f4",
   "run": "runs/dynamic_tree_gradient_fix_v1",
@@ -27,5 +27,170 @@
   "gradient_fix_record": "research/evidence/dynamic_tree_gradient_fix_v1.json",
   "interrupted_run": "runs/dynamic_tree_v1",
   "reused_no_block_outputs": 1536,
-  "preserved_interrupted_dynamic_outputs": 1472
+  "preserved_interrupted_dynamic_outputs": 1472,
+  "development_gate_passed": false,
+  "summary": {
+    "0": {
+      "fixed": {
+        "attempts": 768,
+        "graph": 316,
+        "geometry": 476,
+        "distinct_connectivity": 300,
+        "validator_errors": 0,
+        "learning": {}
+      },
+      "tree_learned": {
+        "attempts": 768,
+        "graph": 321,
+        "geometry": 488,
+        "distinct_connectivity": 305,
+        "validator_errors": 0,
+        "learning": {
+          "affinity.2.weight": 0.19481214880943298,
+          "messages.2.weight": 1.0184353590011597
+        }
+      },
+      "tree_fixed": {
+        "attempts": 768,
+        "graph": 322,
+        "geometry": 487,
+        "distinct_connectivity": 307,
+        "validator_errors": 0,
+        "learning": {
+          "affinity.2.weight": 0.0,
+          "messages.2.weight": 1.0166900157928467
+        }
+      },
+      "local_learned": {
+        "attempts": 768,
+        "graph": 318,
+        "geometry": 486,
+        "distinct_connectivity": 302,
+        "validator_errors": 0,
+        "learning": {
+          "affinity.2.weight": 0.11774920672178268,
+          "messages.2.weight": 1.0270941257476807
+        }
+      }
+    },
+    "1": {
+      "fixed": {
+        "attempts": 768,
+        "graph": 312,
+        "geometry": 500,
+        "distinct_connectivity": 278,
+        "validator_errors": 0,
+        "learning": {}
+      },
+      "tree_learned": {
+        "attempts": 768,
+        "graph": 300,
+        "geometry": 501,
+        "distinct_connectivity": 267,
+        "validator_errors": 0,
+        "learning": {
+          "affinity.2.weight": 0.33548039197921753,
+          "messages.2.weight": 1.150225043296814
+        }
+      },
+      "tree_fixed": {
+        "attempts": 768,
+        "graph": 298,
+        "geometry": 499,
+        "distinct_connectivity": 265,
+        "validator_errors": 0,
+        "learning": {
+          "affinity.2.weight": 0.0,
+          "messages.2.weight": 1.1314637660980225
+        }
+      },
+      "local_learned": {
+        "attempts": 768,
+        "graph": 295,
+        "geometry": 492,
+        "distinct_connectivity": 263,
+        "validator_errors": 0,
+        "learning": {
+          "affinity.2.weight": 0.23145923018455505,
+          "messages.2.weight": 1.0435035228729248
+        }
+      }
+    }
+  },
+  "comparisons": {
+    "fixed": {
+      "graph_supported": {
+        "mean": -0.004557291666666667,
+        "paired_draw95": [
+          -0.01953125,
+          0.011067708333333334
+        ],
+        "descriptive_composition95": [
+          -0.016276041666666668,
+          0.004557291666666667
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.008463541666666666,
+        "paired_draw95": [
+          -0.006510416666666667,
+          0.022786458333333332
+        ],
+        "descriptive_composition95": [
+          -0.004557291666666667,
+          0.021484375
+        ]
+      }
+    },
+    "local_learned": {
+      "graph_supported": {
+        "mean": 0.005208333333333333,
+        "paired_draw95": [
+          -0.005859375,
+          0.015625
+        ],
+        "descriptive_composition95": [
+          0.0006510416666666666,
+          0.010416666666666666
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.007161458333333333,
+        "paired_draw95": [
+          -0.0032552083333333335,
+          0.017578125
+        ],
+        "descriptive_composition95": [
+          0.0006510416666666666,
+          0.014322916666666666
+        ]
+      }
+    },
+    "tree_fixed": {
+      "graph_supported": {
+        "mean": 0.0006510416666666666,
+        "paired_draw95": [
+          -0.007161458333333333,
+          0.008463541666666666
+        ],
+        "descriptive_composition95": [
+          -0.0032552083333333335,
+          0.004557291666666667
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.001953125,
+        "paired_draw95": [
+          -0.005208333333333333,
+          0.009114583333333334
+        ],
+        "descriptive_composition95": [
+          -0.0026041666666666665,
+          0.007161458333333333
+        ]
+      }
+    }
+  },
+  "audit": "research/evidence/dynamic_tree_audit_v1.json",
+  "current_next_design": "notes/tree_manifold_brief_v1.md"
 }
