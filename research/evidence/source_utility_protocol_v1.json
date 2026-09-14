@@ -1,0 +1,108 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-14T17:42:00.935686+00:00",
+  "format": "source_utility_v1",
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "metadata": "runs/raw_metadata_replay_v1",
+  "processed_train": "/n/holylabs/woo_lab/Lab/yulili/bgfm/processed_data/omol25_4m_processed/train_data_processed.pt",
+  "processed_train_sha256": "e31300074a7c2a6baf48a0f01c476cf8f4503f4fa4210b4df6c2e2f649bb3d03",
+  "exclude_manifests": [
+    "research/evidence/official_development_candidates.json",
+    "research/evidence/official_reserved_candidates.json",
+    "research/evidence/development_panel_v1.json",
+    "research/evidence/transfer_development_panel_v1.json",
+    "research/evidence/proposal_training_panel_v1.json",
+    "research/evidence/tree_transfer_panel_v1.json",
+    "research/evidence/monomer_panel_v1.json"
+  ],
+  "exclude_manifest_sha256": {
+    "research/evidence/official_development_candidates.json": "fcdc8622e7e41e990b23e35774174222d32b61ee6d3698f5781b9462fc36b3fc",
+    "research/evidence/official_reserved_candidates.json": "809213f9bad9a917747766cd2588456d0df6e1d6a9c26541c8ca2c862211844c",
+    "research/evidence/development_panel_v1.json": "cd0cff7c0b3422e1ae560b41c346d1753e5ebfc1ad7629387998911bd87f24ad",
+    "research/evidence/transfer_development_panel_v1.json": "61468ea38954518efd18eda4c69a79a3965a0859723a69a7b80e5954e715d579",
+    "research/evidence/proposal_training_panel_v1.json": "baefdca3f241d06bf12d6592029d74001f3bdfbb90307469655f4a060e5b3584",
+    "research/evidence/tree_transfer_panel_v1.json": "1a4d2a9b213007bf938b1dc9ef0cb3eebef64b8578fbc9a860d81bcdb54ab567",
+    "research/evidence/monomer_panel_v1.json": "8a00328000cb57d1a8e89fbe0c7c0ec1d975d127c716dd974c92c64a8f36099e"
+  },
+  "selection_seed": 31091,
+  "max_selection_scan": 100000,
+  "size_bins": [
+    [
+      8,
+      16
+    ],
+    [
+      17,
+      28
+    ],
+    [
+      29,
+      40
+    ]
+  ],
+  "fit_per_bin": 8,
+  "held_per_bin": 4,
+  "allowed_atomic_numbers": [
+    1,
+    5,
+    6,
+    7,
+    8,
+    9,
+    14,
+    15,
+    16,
+    17,
+    35,
+    53
+  ],
+  "selection": "First qualified distinct compositions in seeded full training permutation, per size bin. First8 FIT, next4 source-head held out. Neutral Q0, multiplicity1, C/H present, unchanged reference graph/geometry assay. No generated outcomes or energy ranking.",
+  "methods": [
+    "fixed",
+    "actual",
+    "shuffled",
+    "nll"
+  ],
+  "prior_mode": "pair",
+  "prior_seed": 31021,
+  "prior_epochs": 30,
+  "prior_lr": 0.003,
+  "prior_clip": 5.0,
+  "edge_log_width": 0.2,
+  "bank_samples_per_condition": 64,
+  "samples_per_condition": 64,
+  "evaluation_batch": 16,
+  "midpoint_steps": 64,
+  "terminal_noise_std_A": 0.025,
+  "trust_delta_nats": 0.25,
+  "tree_kl_penalty": 0.01,
+  "utility": "0.8*graph_supported+0.2*geometrically_supported; all attempts including validator failures retained",
+  "training_objective": "Actual/shuffled: maximize unnormalized source marginal IS utility difference with leave-one-out centering, minus .01*treeKL. NLL: minimize reference coordinate NLL per DOF plus same .01*treeKL. All use the same per-condition trust mixture and30 epochs; no validation selection.",
+  "shuffle": "One frozen within-composition permutation, seed31031+seed_index*1000+condition_index; same reward multiset.",
+  "bank_seeds": [
+    31003,
+    31103
+  ],
+  "evaluation_seeds": [
+    31203,
+    31303
+  ],
+  "frozen_references": [
+    {
+      "checkpoint": "runs/tree_prior_fm_connected_fixed_v1/study/fixed/last.ckpt",
+      "checkpoint_sha256": "5c609f85fc707cf24b4e406fa8942befc052bae33a6f779d0d14f6567ae3377e"
+    },
+    {
+      "checkpoint": "runs/tree_prior_confirmation_v1/s1/study/fixed/last.ckpt",
+      "checkpoint_sha256": "8b802e34d0d840551a3b74710aecdb15a361e1cd66be0039335bcf34d9610e7a"
+    }
+  ],
+  "primary": "Fresh head-held-out graph pass rate: actual vs fixed and shuffled, separately for both frozen decoders. Report paired draw intervals and composition-stratified intervals, utility, geometry, diversity and total preparation/inference cost.",
+  "pilot_gate": "Proceed only if actual point gain over fixed AND shuffled in both decoders, pooled paired-draw95 lower bounds positive for both comparisons, and pooled distinct connectivity per attempted draw no worse than fixed by more than2pp. Also report composition uncertainty; this is a development gate, not a submission or confirmatory claim.",
+  "fail_rule": "No parameter sweep, trust relaxation, reward change or sample budget growth based on fresh outcomes. All negatives retained; offline IS gain does not pass.",
+  "scope": "New source-head utility pilot on real training-corpus monomers. Decoder unchanged. No global pretraining holdout, output density, output ESS, energy-law or physics novelty claim.",
+  "total_planned_attempts": 9216,
+  "new_molecular_oracle_calls": 0,
+  "scientific_submission_ready": false
+}
