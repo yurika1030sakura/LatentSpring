@@ -1,0 +1,326 @@
+% Internal development manuscript; previous manuscripts remain unchanged.
+\documentclass{article}
+\usepackage{iclr2027_conference,times}
+\usepackage{amsmath,amssymb,amsthm,graphicx,booktabs,microtype,xcolor}
+\usepackage{etoolbox}
+\usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=green!45!black,urlcolor=blue!70!black]{hyperref}
+% Internal draft labels; the shared conference style is unchanged.
+\makeatletter
+\patchcmd{\@maketitle}{Under review as a conference paper at ICLR 2027}{Internal development draft for ICLR 2027}{}{\errmessage{Draft header patch failed}}
+\patchcmd{\@maketitle}{Paper under double-blind review}{Internal development version}{}{\errmessage{Draft title patch failed}}
+\makeatother
+\newtheorem{proposition}{Proposition}
+\newcommand{\HH}{\mathcal H}
+\newcommand{\EE}{\mathbb E}
+\newcommand{\RR}{\mathbb R}
+\title{Latent Tree Priors for Bond-Free\\Molecular Flow Matching}
+\author{Anonymous}
+\begin{document}
+\maketitle
+\begin{center}\textbf{Development draft. Competitive advantage and submission readiness remain unestablished.}\end{center}
+\begin{abstract}
+Molecular flow matching often starts from isotropic noise or a spatial prior
+constructed from a supplied chemical graph. We study spatial source distributions
+when atomic composition and electronic conditions are given but chemical bonds
+are unavailable. A latent dependence tree connects isotropic finite-length edge
+distributions, and a matrix-tree ratio gives the normalized marginal coordinate
+density after removing translation. Small composition-conditioned networks learn
+tree affinities directly from coordinates, without bond targets or gradients
+through sampled discrete trees. We integrate this source with a molecular flow
+and examine which source properties improve generation. In a bounded OMol25
+development study, a fixed tree prior reduces fragmentation in two independently
+trained continuations, while improvement in graph acceptance is unstable. Learned
+affinities improve held-out source likelihood but have not established an
+increment over the fixed prior in final generation. A one-seed energy readout
+provides a node-network signal relative to an isotropic source. These results
+motivate separating source fit, spatial dependence and chemical utility; they do
+not establish equilibrium sampling or broad generator superiority.
+\end{abstract}
+
+\section{Introduction}
+The starting distribution of a molecular generator specifies more than its noise
+scale: it determines which spatial dependencies the learned transport must create.
+Flow matching offers a flexible way to learn this transport
+\citep{lipman2023flowmatching}. Existing molecular implementations include joint
+generation of atom types, bonds and coordinates \citep{flowmol3}, and conformer
+generation conditioned on a supplied molecular graph \citep{etflow}. Here we
+consider a different, narrower task: generate coordinates conditional on a
+composition, total charge and spin multiplicity, without supplied bond labels.
+
+A graph-informed harmonic source is useful when the graph is known. When bonds
+are unavailable, replacing them by one inferred graph commits to a discrete
+structure and can obscure the probability law of the coordinate source. Our
+construction instead averages over latent dependence trees. Every component has
+a normalized density on the translation-free coordinate space, and the full
+mixture admits tractable normalization and learning. The latent tree supplies a
+coordinate dependence pattern; it need not represent the final chemical bonds.
+
+This construction combines established tree-ensemble identities with a
+finite-length, non-Gaussian spatial edge law. We do not claim a new matrix-tree
+theorem, tree-mixture principle, or physical work identity. The proposed method
+contribution is an explicit, learnable spatial source without supplied bonds and
+its integration into molecular flow matching. Whether this combination provides
+competitive practical value is the empirical question, rather than a consequence
+of normalization. Our present evidence distinguishes a repeated fragmentation
+effect from an unestablished extra benefit of affinity learning.
+
+\section{Related work and task boundary}
+\paragraph{Molecular flow matching.}
+FlowMol3 studies joint molecular topology and geometry generation and reports
+improvements from self-conditioning, fake atoms and training geometry distortion
+\citep{flowmol3}. We reuse its vector-field implementation with the repository's
+electronic conditioning and coordinate-only research path. Published native
+FlowMol3 validity on its own benchmark is not directly comparable to our
+bond-free, charged/open-shell OMol25 development panel. ET-Flow uses a harmonic
+prior for conformer generation with a supplied molecular graph \citep{etflow}.
+Our harmonic control is a controlled source ablation in the same backbone, not
+a reproduction of ET-Flow's training or benchmark performance.
+
+\paragraph{Tree distributions.}
+Tractable factored distributions and learning over trees have a long history
+\citep{meila2000trees}. Spanning-tree likelihoods can characterize dependence
+without requiring the true population dependence graph to be a tree
+\citep{duan2023spanning}. These are direct antecedents of our marginalization and
+affinity learning. Our application uses an intrinsic coordinate measure and
+normalized isotropic edge kernels, with no observed chemical graph.
+
+\paragraph{Physical meaning.}
+OMol25 provides molecular geometries with electronic conditions and calculated
+properties \citep{omol25}. Its empirical geometry distribution is not automatically
+a canonical ensemble for a specified temperature. We use an eSEN potential
+\citep{esen} for a separate output readout. Neither low potential energy nor a
+normalized source proves that the final generator follows a Boltzmann law.
+
+\section{A normalized latent-tree spatial source}
+Let $c=(z_1,\ldots,z_N,Q,S)$ denote atomic numbers, integer total charge and spin
+multiplicity. We remove unweighted translation and use intrinsic Lebesgue measure
+on $\HH_N=\{X\in\RR^{N\times3}:\sum_i x_i=0\}$, of dimension $3(N-1)$.
+For positive symmetric affinities $a_{ij}(c)$, define
+\begin{equation}
+ p_\eta(T\mid c)=\frac{\prod_{(i,j)\in T}a_{ij}(c)}{\tau(a(c))},\qquad
+ \tau(a)=\sum_{T\text{ spanning tree}}\prod_{(i,j)\in T}a_{ij}.
+ \label{eq:tree-law}
+\end{equation}
+We sample $T$, draw independent edge displacements, integrate them on the tree,
+and subtract the coordinate mean. Weighted Wilson sampling supplies the tree law.
+
+\paragraph{Finite-length edge law.}
+Let $\ell_{ij}$ be the sum of the two covalent radii. Draw a uniform direction
+and a lognormal radius of mean $\ell_{ij}$ and log standard deviation $s$.
+The resulting normalized density against three-dimensional displacement measure is
+\begin{equation}
+ h_{ij}(d)=\frac{\exp[-(\log r-\mu_{ij})^2/(2s^2)]}
+ {4\pi s\sqrt{2\pi}\,r^3},\quad
+ r=\|d\|>0,\quad \mu_{ij}=\log\ell_{ij}-s^2/2.
+ \label{eq:edge-law}
+\end{equation}
+The $r^{-3}$ factor includes both the lognormal and solid-angle Jacobians. We
+fix $s=0.2$ in these studies. This radial distribution is a source heuristic,
+not an electronic interaction potential. Exact coincidences have zero probability;
+the current differentiable density implementation rejects them as numerical inputs.
+
+\begin{proposition}[Intrinsic tree-mixture density]
+If every $h_{ij}$ is a normalized displacement density, then
+\begin{equation}
+ q_\eta(X\mid c)=N^{3/2}
+ \frac{\tau\big(a_{ij}(c)h_{ij}(x_i-x_j)\big)}{\tau(a(c))}
+ \label{eq:source}
+\end{equation}
+is normalized on $\HH_N$. For an edge log affinity $\alpha_e=\log a_e$,
+\begin{equation}
+ \frac{\partial\log q_\eta(X\mid c)}{\partial\alpha_e}
+ =\Pr(e\in T\mid X,c)-\Pr(e\in T\mid c).
+ \label{eq:gradient}
+\end{equation}
+\end{proposition}
+The proof is in Appendix~\ref{app:proof}. Equation~\eqref{eq:source} is the
+marginal over all trees, rather than a density conditional on one sampled tree.
+Two grounded Laplacian determinants evaluate it in cubic time. Our implementation
+uses positive elimination in log space to avoid cancellation when edge weights
+span a large dynamic range.
+
+\paragraph{Learning affinities.}
+The fixed reference has $a_{ij}=u_i u_j$, where $u_i=0.05$ for H and the common
+terminal halogens and otherwise uses a simple default-valence-derived propensity.
+This is a heuristic and does not enforce chemical valence. A node network adds
+$b_i+b_j$ to $\log a_{ij}$; a pair network adds a symmetric pair score. Inputs are
+species embeddings, pooled composition, $\log N$, $Q/N$ and $\log S$. No input
+coordinates or chemical bonds are provided to the affinity head at generation.
+Coordinate data fit its parameters through
+\begin{equation}
+ \mathcal L_{\rm source}(\eta)=
+ \EE_{(X,c)\sim\mathcal D_{\rm train}}
+ \left[-\frac{\log q_\eta(X\mid c)}{3(N-1)}\right].
+\end{equation}
+The node scores and pair score each use $2\tanh$ bounding. Consequently the summed
+node correction spans $[-4,4]$ and the pair correction $[-2,2]$; these are not
+strictly nested equal-range capacity ablations. Both learned priors retain the
+same fixed radial edge law.
+
+\section{Integration with flow matching}
+After fitting the source, sample $X_0\sim q_\eta(\cdot\mid c)$ and a training
+endpoint $X_1$, apply the same type-preserving assignment/rotation coupling in all
+arms, and interpolate coordinates. Shared Haar augmentation preserves the
+rotation- and identical-label-permutation-invariant source law (Appendix~\ref{app:symmetry}).
+The equivariant vector field learns the conditional path displacement. The pilot
+uses coordinate flow matching alone and no chemical-bond loss. Existing force/
+energy training interfaces remain available, but their independent-Gaussian
+velocity-to-score proxy is not valid for this correlated non-Gaussian pairing.
+
+At generation, composition, charge and spin are fixed inputs. We integrate the
+displacement parameterization with64 midpoint steps to $t=1$ and add0.025\,\AA
+centered Gaussian noise. This finite numerical sampler is the evaluated law.
+The continuous-flow density interface can use Equation~\eqref{eq:source} at an
+integrated preimage with its divergence correction. That fact does not provide
+the exact density of the evaluated midpoint-plus-noise sampler. We therefore
+make no absolute final-likelihood or importance-ESS claim.
+
+\section{Development experiments}
+\paragraph{Matched continuations and target selection.}
+All methods start from the same typed-matching warm checkpoint and receive3,000
+matched OMol25 training examples and AdamW updates at learning rate $2\cdot10^{-5}$.
+Node/pair priors fit1,000 of those same examples;128 separate train-split examples
+are used for source validation. No generated evaluation structure enters fitting.
+The maximum supported atom count remains200; this development panel contains
+eight compositions with9--20 atoms, including charged, open-shell and metal cases.
+Each method produces64 outputs per composition.
+
+The unrestricted pilot's source-fitting sample contains580 disconnected structures
+out of1,000, whereas the desired output criterion is a single connected structure.
+We preserve that pilot and apply a shared training-only connected/nonoverlapping
+selection to the next comparison. The first continuation selects3,128 examples
+after examining7,130; the confirmation examines7,019 with a new data-order seed.
+Contact and overlap cutoffs are fixed at1.25 and0.6 times the sum of covalent radii.
+This changes the target domain and is not evidence of an improvement on all
+unrestricted OMol25 geometries.
+
+\begin{table}[t]
+\centering
+\caption{Graph-check passes out of512 attempts per method. Confirmation changes
+continuation/data-order and sampling seeds but shares the warm checkpoint and
+development compositions. All attempts and validator exceptions are retained.}
+\begin{tabular}{lrrrrr}
+\toprule
+Training comparison & Warm & Gaussian & Fixed tree & Node tree & Pair tree\\
+\midrule
+Unrestricted &78&76&94&92&93\\
+Connected, first &66&105&131&121&111\\
+Connected, confirmation &---&91&93&---&---\\
+\bottomrule
+\end{tabular}
+\label{tab:structural}
+\end{table}
+
+\paragraph{Source fit and output utility differ.}
+Connected-target held source NLL per degree of freedom is1.59362 for fixed,
+1.58443 for node and1.57507 for pair. Table~\ref{tab:structural} shows that this
+ordering does not translate into higher graph acceptance. Fixed minus Gaussian
+graph pass rate is $+5.08$ percentage points with a conditional paired95\% interval
+$[1.17,8.79]$ initially, but $+0.39$ with interval $[-3.52,4.10]$ in confirmation.
+The initial graph advantage is therefore not a stable replicated result.
+
+Fragmentation shows a more consistent mechanism: disconnected counts fall from192
+to162 in the first continuation and243 to194 in confirmation. Geometry-supported
+counts rise from314 to340 and266 to312. These checks neither certify the requested
+electronic state nor enforce valid chemical valence. The legacy RDKit charged-
+fragment graph perception has radical and metal limitations; exceptions are
+reported without retroactively revising any graph count or decision.
+
+\paragraph{Energy readout.}
+We evaluate every output of all five first-connected-run methods with the same
+frozen eSEN checkpoint at its original charge and spin. Each structure and its
+inversion are scored, totaling5,120 raw queries. Define
+$E_+(X)=[E(X)+E(-X)]/2$. Mean differences are taken within compositions, then
+averaged with equal composition weight. Node minus Gaussian is $-0.624$\,eV with
+conditional interval $[-1.084,-0.144]$, but node minus fixed is $-0.229$\,eV with
+interval $[-0.739,0.269]$. Fixed minus Gaussian is $-0.395$\,eV with interval
+$[-0.907,0.135]$. This is an unreplicated node-network signal relative to Gaussian,
+not an established learned increment over the fixed prior. The Re-containing case
+worsens for fixed and pair and is retained. No output was chosen by energy.
+
+\paragraph{Second-moment controls.}
+Two additional controls isolate source properties. A harmonic-tree mixture keeps
+the exact tree law and uses Gaussian edge covariance
+$v_{ij}I=\ell_{ij}^2\exp(s^2)I/3$. It matches the shell-tree covariance for every
+tree. A single Gaussian uses a fixed128-tree average of analytic covariances,
+symmetrized over identical species. Against an independent8,192-tree calibration,
+the covariance approximation differs by2.4--6.1\% in Frobenius norm and at most3.5\%
+in trace on the eight compositions. Two matched continuations and fresh reference
+draws are frozen for this experiment. \textbf{Outcome audit is pending in this
+version; no performance conclusion from these controls is included.}
+\IfFileExists{sections/tree_moment_results.tex}{\input{sections/tree_moment_results}}{}
+
+\paragraph{Uncertainty and remaining evidence.}
+The intervals resample paired draws within each of the eight fixed compositions,
+conditional on the fitted models, without multiplicity adjustment. They do not
+quantify new-composition or pretraining-seed uncertainty. Broad held-composition
+evaluation, comparisons with independently trained learned generators and a
+replicated useful learned-source increment remain outstanding. A favorable source
+likelihood or one conditional energy interval cannot replace those experiments.
+
+\section{Discussion}
+The current framework makes a bond-free source probability law explicit and
+learnable. Its fixed structural bias repeatedly reduces fragmentation, while
+affinity learning's downstream value remains unresolved. The next useful design
+decision depends on whether source covariance or non-Gaussian tree structure
+explains the measured changes. The present evidence supports that investigation;
+it does not justify a claim of a near-perfect molecular generator, a calibrated
+energy distribution or a completed competitive benchmark.
+\label{endofmaintext}
+
+\subsubsection*{Reproducibility statement}
+Frozen protocols record data-order and generation seeds, source checkpoint hashes,
+all attempted structures, electronic conditions and oracle costs. Current audits
+replay6,144 source draws and structural readouts and5,120 stored physical rows;
+they do not independently rerun optimizers, final neural generation or the oracle.
+The new moment-control audit is pending. Implementation tests cover normalization,
+Jacobians, weighted-tree sampling, symmetry, density gradients and source-law guards.
+The anonymous release package and final author verification remain outstanding.
+
+\subsubsection*{AI use statement}
+AI tools assisted research exploration, literature checks, mathematical derivation,
+implementation, testing, experiment orchestration, analysis and drafting. This is
+an internal development version; final human-author review remains outstanding.
+
+\bibliography{refs,tree_refs}
+\bibliographystyle{iclr2027_conference}
+\appendix
+\section{Normalization and affinity-gradient proof}\label{app:proof}
+For a tree $T$, let $B_T\in\RR^{(N-1)\times N}$ be an oriented incidence matrix
+and $U\in\RR^{N\times(N-1)}$ an orthonormal basis of the centered subspace.
+Because $B_T\mathbf1=0$, $(B_TU)(B_TU)^\top=B_TB_T^\top$. Cauchy--Binet expresses
+$\det(B_TB_T^\top)$ as the sum of squares of its $N$ maximal minors. Each minor
+of a tree incidence matrix is $\pm1$, so the determinant is $N$. The absolute
+Jacobian in one spatial dimension is therefore $\sqrt N$, and in three dimensions
+it is $N^{3/2}$. Consequently the component density is
+$q(X\mid T,c)=N^{3/2}\prod_{e\in T}h_e(B_TX)$ and integrates to one. Averaging
+with Equation~\eqref{eq:tree-law} yields Equation~\eqref{eq:source} and preserves
+normalization. Differentiating the log of each finite positive tree partition
+with respect to $\alpha_e$ gives its edge-inclusion probability, proving
+Equation~\eqref{eq:gradient}. These are applications of standard incidence and
+tree-ensemble identities.
+
+\section{Source invariance under symmetry coupling}\label{app:symmetry}
+Let $G$ be the compact group of proper rotations and permutations of identical
+conditioning labels. Suppose $q_0$ is $G$-invariant, $X\sim q_0$, and a pairing
+algorithm selects $g(X,Y)\in G$ using a target $Y$. If $H$ is an independent Haar
+draw, then conditional on the orbit of $X$ and on the selected $g$, $HgX$ has
+the uniform orbit distribution of $HX$, by Haar invariance. Integrating over the
+unchanged source-orbit distribution recovers $q_0$. This argument permits a
+non-Gaussian source and explains the shared augmentation used in the pairing.
+It does not imply independence of source and target after pairing or justify
+the independent-Gaussian velocity-to-score formula.
+
+\section{Covariance controls}
+For $R=\ell\exp(sZ-s^2/2)$ with $Z\sim N(0,1)$, $\EE R^2=\ell^2\exp(s^2)$.
+A uniform direction has second moment $I/3$, so each edge has covariance
+$vI=\ell^2\exp(s^2)I/3$. Let $A_T$ map edge coordinates to centered node
+coordinates. Independence gives $C_T=A_T\operatorname{diag}(v_e)A_T^\top$.
+Replacing the edge vectors by independent Gaussians of covariance $v_eI$ leaves
+$C_T$ unchanged and, since all component means are zero, leaves $\EE_TC_T$
+unchanged. The single-Gaussian control uses a finite, composition-seeded average
+of these matrices. Averaging this matrix over within-species permutations preserves
+positive definiteness on the centered subspace and yields species invariance.
+The Gaussian is exactly normalized for its chosen covariance; equality to the
+infinite tree-mixture covariance remains approximate.
+\end{document}

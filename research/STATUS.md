@@ -1,3 +1,7 @@
+CURRENT MOMENT CONTROL: read `research/TREE_MOMENT_STATE_20260914.json` and
+`notes/tree_moment_controls_v1.md`. Job46364922 has two active continuation tasks;
+query Slurm. The previous completed evidence below remains unchanged.
+
 CURRENT: read `research/TREE_PRIOR_STATE_20260914.json`, `research/NEXT.md`,
 `CLAUDE_HANDOFF.md`, `notes/tree_prior_results_20260914.md` and
 `notes/tree_mixture_prior_v1.md`.
