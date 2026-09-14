@@ -1,78 +1,35 @@
-# Next — finish and audit the frozen source utility pilot
+# Next — utility pilot complete; no established learned advantage
 
-CURRENT OVERRIDE (2026-09-14): source-utility method IMPLEMENTED; controlled jobs
-46434075_0/1 RUNNING from immutable commit0ad2193. Read
-`research/SOURCE_UTILITY_STATE_20260914.json`, `notes/source_utility_method_v1.md`
-and `research/evidence/source_utility_protocol_v1.json`. Prior “not implemented”
-statements below describe the completed monomer checkpoint, not current work.
-There is no new validated utility gain yet.24 FIT plus12 source-head held-out
-compositions come from the real TRAINING corpus; do not confuse this split with
-the older21 composition-disjoint evaluation molecules.9216 planned attempts,
-actual/shuffled/NLL/fixed controls, two fixed decoders, no oracle calls. Re-query
-Slurm; finish and audit this bounded run before proposing another method. Generic
-frozen-decoder noise learning is prior art (Noise PPO); originality remains open.
+Read `research/SOURCE_UTILITY_STATE_20260914.json`,
+`notes/source_utility_results_20260914.md` and `notes/source_utility_method_v1.md`.
 
+The bounded actual/shuffled/NLL/fixed test is complete and all9216 attempts replay.
+The gate fails: graph counts/768 are461/462/423/476 and410/392/410/409.
+Pooled actual-minus-fixed:-1.11 pp[-3.84,1.76]; actual-minus-shuffled:+1.37 pp
+[-1.63,4.36], conditional paired95. Both composition intervals span zero.
+No learned increment, energy-law result or ICLR readiness is established.
 
-Read `research/MONOMER_STATE_20260914.json`, `notes/monomer_results_20260914.md`
-and `notes/source_utility_learning_brief_v1.md`.
+Next authorized work is a bounded FIT-only assessment of whether this source
+parameterization contains reproducible terminal-utility signal. Specify the split,
+statistic and failure condition before another diagnostic. Contrast real and
+shuffled labels using the3072 FIT-bank outputs; exclude all6144 fresh validation
+outputs and their12 compositions/reference geometries. A diagnostic does not
+constitute AI novelty. It should decide whether a justified method change exists,
+not start a wider optimizer/source-head sweep. The completed pilot must remain
+negative; no post hoc budget growth, reward change, trust relaxation or seed choice.
 
-The task/readout mismatch has been addressed prospectively for21 neutral singlet
-organic monomers8-40 atoms. All references passed before generation; exact equal
-compositions are absent from two checksum-verified processed corpora. Full arbitrary
-pretraining/trajectory disjointness is not claimed. All10,752 new outputs replay.
+Source adaptation alone is prior art: Noise PPO and ICLR2026 Source-Guided Flow
+Matching are direct references. Conditional source learning and random-tree spatial
+priors are also established. Any new contribution needs a concrete missing
+capability and useful molecular evidence against appropriate existing methods.
 
-Graph passes/1,344: first Gaussian/shell/harmonic/node/pair581/627/575/603/561;
-second Gaussian/shell/harmonic521/557/598. Node/pair are one-continuation evidence
-only and do not beat fixed shell; pair is worse under both uncertainty summaries.
-Shell geometry improves, but its paired graph intervals span zero. Keep both
-conditional-draw and descriptive-composition intervals; do not choose the more
-favorable one or a different source by seed. All earlier negative studies remain.
+Artifacts: `research/evidence/source_utility_audit_v1.json`,
+`source_utility_offline_diagnostic_v1.json`, `source_utility_scheduler_v1.json`,
+`generator_reference_registry_v6.json` and `research/figures/source_utility_v1/`.
+The source protocol is frozen in `source_utility_protocol_v1.json`; immutable run
+commit0ad2193. Six source heads and all raw states are under
+`runs/source_utility_v1/s{0,1}/`. No live pilot jobs; both46434075 tasks completed.
 
-Next authorized bounded work:
-
-1. Assess the single new hypothesis in the source-utility brief: keep the actual
-   generator kernel frozen and learn the normalized source from terminal utility.
-   This tests objective alignment without simultaneously adding a context layer,
-   enlarging the backbone or changing source kernels.
-2. Check prior work on latent/noise adaptation, reward-weighted fitting and
-   generator steering. Importance identities and data processing are not our
-   inventions. Establish the exact source objective, support assumptions, trust
-   control and estimator behavior before a performance claim.
-3. Select disjoint FIT compositions from the real training corpus under the
-   coherent monomer criteria, then freeze a bounded source/output bank, training
-   budget and fresh validation streams. No prior evaluated coordinates or outcomes
-   may enter that bank. Count preparation and validation generation costs.
-4. Compare actual utility, within-composition shuffled utility and unadapted source
-   with identical head capacity and fixed decoder. To attribute a change specifically
-   to the objective, include a corresponding coordinate-NLL source under that same
-   decoder. Prespecify trust limits and stop criteria; no utility-trained model or
-   protocol is implemented/frozen yet. Offline importance gains alone are insufficient.
-
-Do not merely scale the old source-NLL heads or static context adapter on the
-observed panels. Their failure does not uniquely diagnose the cause, and the new
-hypothesis may also fail. A useful, sufficiently distinctive method remains the
-ICLR objective, not more modules or a nearly perfect generator on every element.
-
-Current artifacts:
-
-- `monomer_panel_v1.json`, `monomer_qualification_v1.json`:prospective selection
-  and all78 reference decisions under `research/evidence/`.
-- `monomer_overlap_v1.json`, `monomer_overlap_controls_v1.json`:actual-corpus exact
-  composition checks and positive controls.
-- `monomer_evaluation_audit_v1.json`:all sources/outcomes, matched training rows,
-  checkpoint identities and uncertainty summaries.
-- `research/figures/monomer_v1/`:complete frozen-model figure.
-- `notes/ai_novelty_monomer_scope_v1.md`:candidate contribution and prior-art boundary.
-- `paper/tree_working.tex` and `.pdf`:internal working manuscript, not submission ready.
-
-Jobs46415396_0/1 completed0:0 in34:26/20:28; query live Slurm.17 targeted source/
-restoration tests pass. No new fitting or physical queries in this evaluation.
-The earlier tree-energy readout remains5,120 calls. Audits do not independently
-retrain optimizers or regenerate the final neural integration.
-
-Protect722 reserved outcomes, old evaluated cohorts,2,560 orbit outputs,30,208
-tree/monomer outputs,32 old references and78 monomer-pool references from fitting.
-Keep bond-free OMol25, max_atoms200, original charge/spin, separate environments
-and no home writes. No final density/ESS/Boltzmann claim. Old failed routing,
-collision, latent-mass and static-context sweeps remain closed. User handles
-submission; the ICLR goal remains active and unachieved.
+Retain all previous data protections, negative studies and the full budget record.
+The new head-held-out data originate from the flow training corpus and differ from
+the earlier21 composition-disjoint monomer benchmark. The ICLR goal is unachieved.

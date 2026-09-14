@@ -74,7 +74,7 @@ def main():
         costs[s]=dict(total_run_elapsed_seconds=completed['elapsed_seconds'],bank_generation_seconds=bank_seconds,
             bank_attempts=completed['bank_attempts'],source_training_seconds={m:r['training_seconds'] for m,r in training['models'].items()},
             independent_method_preparation_seconds={m:(bank_seconds if m in ['actual','shuffled'] else 0.)+(training['models'][m]['training_seconds'] if m!='fixed' else 0.) for m in spec['methods']},
-            scope='Existing decoder training is common and reused. Actual/shuffled each require the full bank when deployed independently; the study generates it once and shares it. NLL does not require that bank. Corpus selection and training-bank density preprocessing are included only in total elapsed, not these component timers.')
+            scope='Existing decoder training is common and reused. Actual/shuffled each require the full bank when deployed independently; the study generates it once and shares it. NLL does not require that bank. Training-bank density preprocessing is included in run elapsed, not these component timers. Corpus qualification/selection ran separately and its wall time was not recorded; reported preparation times are lower bounds excluding that stage.')
         for phase,methods,refrows in [('bank',['fixed'],refs['fit']),('evaluation',spec['methods'],refs['held'])]:
             for method in methods:
                 if phase=='bank': prior=base

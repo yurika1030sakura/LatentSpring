@@ -1,38 +1,81 @@
 {
-  "at_utc": "2026-09-14T18:16:20.214911+00:00",
-  "goal": "ICLR2027 research submission",
-  "goal_achieved": false,
-  "scientific_submission_ready": false,
-  "status": "complete_negative",
-  "job_id": "46434075",
-  "source_commit": "0ad21934ab1b4192d75c015d3845c319bc2d39ee",
-  "protocol": "research/evidence/source_utility_protocol_v1.json",
-  "selection": "runs/source_utility_selection_v1/selection.json",
-  "run": "runs/source_utility_v1",
-  "method": "notes/source_utility_method_v1.md",
-  "implementation": "cfm_mol/source_utility.py",
-  "tests": "12 source utility/tree tests pass; real35-atom FIT composition has finite initial utility gradient",
-  "utility_trained_source_implemented": true,
-  "utility_gain_validated": false,
-  "previous_monomer_state": "research/MONOMER_STATE_20260914.json",
-  "fit_conditions": 24,
-  "head_held_out_conditions": 12,
-  "planned_attempts": 9216,
-  "new_molecular_oracle_calls": 0,
-  "current_action": "No live utility jobs. Preserve the failed gate. Specify a FIT-only reproducibility test of the affinity-family utility signal before any further model or larger bank; no retuning on the12 held compositions.",
-  "scope": "The new12 held compositions come from the flow training corpus and are held out only from source-head fitting; not the earlier21 composition-disjoint benchmark.",
-  "prior_art": "Noise PPO and ICLR2026 Source-Guided Flow Matching predate frozen-decoder source adaptation; conditional source learning and random-tree continuous difference priors also have prior art. Molecular utility and concrete method originality remain unproved.",
-  "protected": "722 reserved outcomes and all prior evaluation states stay outside FIT; static-context and unchanged coordinate-NLL scale-ups closed.",
-  "source_heads_trained": 6,
-  "parameters_per_head": 1881,
-  "source_training_seconds_range": [
-    14.04,
-    26.84
+  "complete": true,
+  "protocol_sha256": "6300e781937216f63e54b0041d6c084a67e9c48a982a100273f9de0f6703bbd9",
+  "source_draws_replayed": 9216,
+  "structural_attempts_replayed": 9216,
+  "reference_assays_replayed": 36,
+  "rows": [
+    {
+      "seed": 0,
+      "phase": "bank",
+      "method": "fixed",
+      "attempts": 1536,
+      "report_sha256": "690c2911b777c80beb9f21830fed78fce20ac9c23c8b95f08887e45b789401d7"
+    },
+    {
+      "seed": 0,
+      "phase": "evaluation",
+      "method": "fixed",
+      "attempts": 768,
+      "report_sha256": "17ce458dcfc5070ee4e9045c8b59c28c7b8016f64c9985ae66955917b8950e16"
+    },
+    {
+      "seed": 0,
+      "phase": "evaluation",
+      "method": "actual",
+      "attempts": 768,
+      "report_sha256": "7ea6a20189529a6acbb331d47aa347f5567e2ae5cfb1b0e4f6755fd6fe485953"
+    },
+    {
+      "seed": 0,
+      "phase": "evaluation",
+      "method": "shuffled",
+      "attempts": 768,
+      "report_sha256": "42f37fa42e33a9ea20eb5aaeb400dec36529a1513331dd3fb74030b8e7b7adfe"
+    },
+    {
+      "seed": 0,
+      "phase": "evaluation",
+      "method": "nll",
+      "attempts": 768,
+      "report_sha256": "0a08a8a009eeb16bb84f761762207c7aa3361751167ce0f5f2568ca29c508e33"
+    },
+    {
+      "seed": 1,
+      "phase": "bank",
+      "method": "fixed",
+      "attempts": 1536,
+      "report_sha256": "e66fd7bc5a5649373fe94fd7d0bbda9c7151ba1bac92c8f833bc255e8189f5f4"
+    },
+    {
+      "seed": 1,
+      "phase": "evaluation",
+      "method": "fixed",
+      "attempts": 768,
+      "report_sha256": "19506d9b8f35d6b92ad40c8434c5f05c5798b5323b5b06aa49adf995b52cc96a"
+    },
+    {
+      "seed": 1,
+      "phase": "evaluation",
+      "method": "actual",
+      "attempts": 768,
+      "report_sha256": "95a365f22c067efc675c6dcecf84616cf8600864403b46b42a55b8258b1cf8cd"
+    },
+    {
+      "seed": 1,
+      "phase": "evaluation",
+      "method": "shuffled",
+      "attempts": 768,
+      "report_sha256": "8f66469d330bfa9440cd8a00255fcda0b8a2b99880960334c9da709ea43f6c0a"
+    },
+    {
+      "seed": 1,
+      "phase": "evaluation",
+      "method": "nll",
+      "attempts": 768,
+      "report_sha256": "a6cc7e0c65564e83b0b7fbf350955b2ea8cfdbbf6c44bedd02df03ba5f088ce4"
+    }
   ],
-  "development_gate_passed": false,
-  "audit": "research/evidence/source_utility_audit_v1.json",
-  "audit_sha256": "aed9ae567855ed79b057e448b377dfc9d67c2ce6d47f8eb4140c9809eb5238c9",
-  "results": "notes/source_utility_results_20260914.md",
   "summary": {
     "0": {
       "fixed": {
@@ -218,13 +261,45 @@
       }
     }
   },
-  "source_draws_and_structural_assays_replayed": 9216,
-  "fit_bank_attempts": 3072,
-  "fresh_evaluation_attempts": 6144,
-  "tree_monomer_evaluation_total": 36352,
-  "source_utility_fit_banks_reusable_only_for_fit": true,
-  "scheduler": "research/evidence/source_utility_scheduler_v1.json",
-  "offline_diagnostic": "research/evidence/source_utility_offline_diagnostic_v1.json",
-  "reference_registry": "research/evidence/generator_reference_registry_v6.json",
+  "costs": {
+    "0": {
+      "total_run_elapsed_seconds": 1421.606378746219,
+      "bank_generation_seconds": 436.49848564434797,
+      "bank_attempts": 1536,
+      "source_training_seconds": {
+        "actual": 25.89444171008654,
+        "shuffled": 25.51080014789477,
+        "nll": 14.042042833054438
+      },
+      "independent_method_preparation_seconds": {
+        "fixed": 0.0,
+        "actual": 462.3929273544345,
+        "shuffled": 462.00928579224274,
+        "nll": 14.042042833054438
+      },
+      "scope": "Existing decoder training is common and reused. Actual/shuffled each require the full bank when deployed independently; the study generates it once and shares it. NLL does not require that bank. Training-bank density preprocessing is included in run elapsed, not these component timers. Corpus qualification/selection ran separately and its wall time was not recorded; reported preparation times are lower bounds excluding that stage."
+    },
+    "1": {
+      "total_run_elapsed_seconds": 1464.0615021758713,
+      "bank_generation_seconds": 446.9474568970036,
+      "bank_attempts": 1536,
+      "source_training_seconds": {
+        "actual": 26.788431404158473,
+        "shuffled": 26.83241788414307,
+        "nll": 14.795171805890277
+      },
+      "independent_method_preparation_seconds": {
+        "fixed": 0.0,
+        "actual": 473.73588830116205,
+        "shuffled": 473.77987478114665,
+        "nll": 14.795171805890277
+      },
+      "scope": "Existing decoder training is common and reused. Actual/shuffled each require the full bank when deployed independently; the study generates it once and shares it. NLL does not require that bank. Training-bank density preprocessing is included in run elapsed, not these component timers. Corpus qualification/selection ran separately and its wall time was not recorded; reported preparation times are lower bounds excluding that stage."
+    }
+  },
+  "development_gate_passed": false,
+  "new_molecular_oracle_calls": 0,
+  "scientific_submission_ready": false,
+  "scope": "Common frozen decoders; source-head held-out conditions from flow training corpus. Paired draw intervals conditional on these decoder checkpoints and compositions. Composition intervals descriptive; no model-seed population claim. No fresh decoder integration replay or absolute output density certification.",
   "cost_accounting_limitation": "The separate training-corpus qualification/selection stage has no recorded wall time. All3072 FIT-bank generations,6144 fresh evaluation generations and six source training times are retained; no complete all-stage wall-time claim."
 }

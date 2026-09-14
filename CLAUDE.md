@@ -1,61 +1,46 @@
 # BGFM project guide
 
-CURRENT OVERRIDE (2026-09-14): source-utility method IMPLEMENTED; controlled jobs
-46434075_0/1 RUNNING from immutable commit0ad2193. Read
-`research/SOURCE_UTILITY_STATE_20260914.json`, `notes/source_utility_method_v1.md`
-and `research/evidence/source_utility_protocol_v1.json`. Prior “not implemented”
-statements below describe the completed monomer checkpoint, not current work.
-There is no new validated utility gain yet.24 FIT plus12 source-head held-out
-compositions come from the real TRAINING corpus; do not confuse this split with
-the older21 composition-disjoint evaluation molecules.9216 planned attempts,
-actual/shuffled/NLL/fixed controls, two fixed decoders, no oracle calls. Re-query
-Slurm; finish and audit this bounded run before proposing another method. Generic
-frozen-decoder noise learning is prior art (Noise PPO); originality remains open.
+CURRENT: read `research/SOURCE_UTILITY_STATE_20260914.json`, `research/NEXT.md`,
+`CLAUDE_HANDOFF.md` and `notes/source_utility_results_20260914.md`.
 
+The frozen-decoder source utility method is implemented and the bounded pilot is
+COMPLETE, with a failed development gate. It changes only latent-tree affinities,
+uses exact source marginal importance ratios and a0.25-nat per-condition mixture
+trust bound. Generic source adaptation, importance/KL identities and tree priors
+have prior art, including ICLR2026 SGFM and Noise PPO. Originality/usefulness are
+not established merely by this implementation.
 
-CURRENT: read `research/MONOMER_STATE_20260914.json`, `research/NEXT.md`,
-`CLAUDE_HANDOFF.md`, `notes/monomer_results_20260914.md` and
-`notes/source_utility_learning_brief_v1.md`.
+Twenty-four new FIT and12 source-head held-out compositions were selected from the
+verified real TRAINING corpus, before generation and disjoint from previous
+candidate/panel compositions. They are NOT globally model-pretraining held out.
+All36 reference assays and9216 source/structural attempts replay. The6144 new
+validation outputs stay outside fitting; only3072 FIT-bank outputs are fit data.
+All frozen decoder state tensors remain exactly unchanged.
 
-The prospective monomer benchmark is COMPLETE. All21 original references passed
-before generation. No equal composition was found among3,902,107 training and
-39,415 legacy-validation records in two checksum-verified corpora, using exact
-count-vector verification and real-corpus positive controls. Scope is neutral
-singlet organic monomers8-40 atoms, not unrestricted OMol25 or unrecorded pretraining.
+Graph counts/768 for fixed/actual/shuffled/NLL:461/462/423/476 and410/392/410/409.
+Pooled actual-minus-fixed is-1.11 pp, paired95[-3.84,1.76]; actual-minus-shuffled
+is+1.37 pp[-1.63,4.36]. Both descriptive composition intervals also span zero.
+Actual training-bank utility improves, but independent benefit does not repeat.
+No new molecular oracle calls. Jobs46434075_0/1 completed0:0 in24:02/24:43.
+Twelve source-utility/tree tests pass; the source heads have1881 parameters.
 
-All10,752 new source draws and structural outcomes replay. Graph passes/1,344
-for Gaussian/shell/harmonic/node/pair are581/627/575/603/561 in the first
-continuation; Gaussian/shell/harmonic are521/557/598 in the second. Learned
-node/pair models have only one continuation. Node minus shell is-1.79 pp with
-paired interval[-5.21,1.64]; pair minus shell is-4.91 pp[-8.41,-1.41]. No extra
-learned-source benefit is established. Shell geometry gains repeat, but its
-paired graph-gain intervals span zero. Do not choose sources separately by seed.
+Preserve the completed monomer benchmark and all prior negative results in
+`research/MONOMER_STATE_20260914.json` and the earlier notes. The earlier21 monomer
+compositions are disjoint from two known processed corpora; do not confuse them
+with this pilot's12 training-corpus-derived head-held-out compositions. Static
+context and unchanged coordinate-NLL scale-ups remain closed. Do not grow this
+utility recipe, change the reward or relax trust based on its validation outcomes.
+A FIT-only check of reproducible source-affinity utility signal is the next bounded
+question, before another method/training run; no new performance experiment is live.
 
-There is a concrete learnable, normalized bond-free source-method candidate,
-but ICLR-level originality/usefulness remains unproved. The static context adapter
-and unchanged source-coordinate-NLL recipes should not be scaled or retuned on
-these observed outcomes. Fixing assay coverage did not produce a neural win.
-
-Next hypothesis: learn source probabilities from actual terminal sample utility,
-with the generator frozen and source-space importance ratios. The design brief
-states a possible tree-KL/output-shift control and its assumptions. This utility
-method is NOT implemented or validated yet; generic importance/KL identities are
-prior art. Complete related-work/math checks and a frozen bounded FIT-bank protocol
-before training. Do not use evaluation states in that bank.
-
-Jobs46415396_0/1 completed0:0. This experiment uses no new training or physical
-queries.17 source-restoration/tree tests pass. Total tree/monomer outputs are30,208;
-all remain evaluation only. Query Slurm before assuming later work is absent.
-The internal manuscript `paper/tree_working.tex` includes all current findings;
-scientific submission readiness and the ICLR goal remain false/unachieved.
-
-Preserve722 reserved outcomes, old evaluated cohorts,2,560 orbit outputs,30,208
-tree/monomer outputs,32 older raw references and78 monomer-pool references outside
-fitting. Keep OMol25 primary, max_atoms200, bond loss zero, original charge/spin,
-BGFM interfaces, separate environments and no home writes. The noisy final flow
-has no qualified absolute density, ESS or Boltzmann-law claim. Old routing,
-collision, latent-mass and static-context sweeps remain closed. The user handles
-submission; official abstract/paper deadlines remain September18/25 AoE.
+The manuscript `paper/tree_working.tex` includes this failed pilot and checked prior
+art. The ICLR goal remains unachieved and scientific submission readiness false.
+Preserve722 reserved outcomes, old evaluated cohorts,2560 orbit outputs,36352
+source/monomer evaluation outputs,32 older raw references,78 monomer-pool references
+and the new12 held reference geometries outside FIT. Keep OMol25 primary,
+max_atoms200, bond loss zero, original charge/spin, BGFM interfaces, separate
+environments and no home writes. No final-density, output-ESS or Boltzmann claim.
+The user handles submission. Query Slurm before assuming later work is absent.
 
 Historical milestones below do not replace this checkpoint.
 

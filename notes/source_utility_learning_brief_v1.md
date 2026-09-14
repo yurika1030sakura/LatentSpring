@@ -1,6 +1,6 @@
 # Next hypothesis: learn the source from generated-sample utility
 
-Status update: the design is implemented and the bounded pilot is running; see
+Status update: the design is implemented and the bounded pilot is complete with a failed gate; see
 `notes/source_utility_method_v1.md` and `research/SOURCE_UTILITY_STATE_20260914.json`.
 No performance gain is claimed. The remaining text records the original design brief. The completed monomer test
 does not establish an extra benefit of coordinate-likelihood source fitting.

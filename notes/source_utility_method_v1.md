@@ -1,7 +1,7 @@
 # Frozen-decoder utility adaptation: bounded pilot v1
 
-This implements `source_utility_learning_brief_v1.md`; effectiveness remains
-unmeasured until fresh generation completes. The base is each of the two frozen
+This implements `source_utility_learning_brief_v1.md`; the completed pilot fails its prespecified development gate. See
+`notes/source_utility_results_20260914.md`; the text below records the frozen method. The base is each of the two frozen
 shell-source flow continuations. No decoder, edge kernel or radial width changes.
 
 The existing pair head predicts symmetric latent-tree affinities. Its exact
