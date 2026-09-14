@@ -1,0 +1,34 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-14T00:30:55.635513+00:00",
+  "scenarios": [
+    "constant",
+    "nonlinear"
+  ],
+  "methods": [
+    "independent",
+    "identity",
+    "constant",
+    "gaussian",
+    "nonlinear",
+    "binned"
+  ],
+  "chunks": 4,
+  "histories_per_chunk": 8,
+  "base_seed": 29101,
+  "total_pairs": 256,
+  "pairs_per_batch": 64,
+  "hidden": 16,
+  "surrogate_steps": 150,
+  "surrogate_lr": 0.01,
+  "coupling_steps": 100,
+  "coupling_lr": 0.01,
+  "batch_size": 64,
+  "coupling_bank": 512,
+  "angle_grid": 64,
+  "bins": 8,
+  "primary": "Mass RMSE after256 pairs including ALL learning queries, with paired independent histories and all simple/nonlinear controls retained.",
+  "adaptation": "Adaptive methods start with identity coupling. Fit surrogates and coupling using only earlier complete batches. New Gaussian draws are independent of history. Do not remap old draws with updated parameters; retain all target values in the final normalizer sums.",
+  "scope": "Known-probability COM toy;32 independent history seeds per case, fixed512 total target evaluations per method/history. Learned coupling can alter only within-batch covariance, not reference marginals. Standard adaptive-IS/martingale logic, not claimed novel. No new molecular calls or molecular-generation claim.",
+  "scientific_submission_ready": false
+}

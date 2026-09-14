@@ -1,0 +1,2532 @@
+{
+  "complete": true,
+  "protocol_sha256": "b7eeff000f55266c7580ec16b2fcac414b64acc9363588e0408579995e46c8be",
+  "sources": {
+    "constant_s0": {
+      "results_sha256": "abd3d87b352e7bc19ee9ce5679febd8e6b043571ef3c3f8c77f4a17bafe60d4d",
+      "audit_sha256": "1ee5490be53ab9e072fc8cbb80cc657ba9ac27d021ac903c07edb61597f29dcc",
+      "binned_results_sha256": "e0c861a8431c687643829887fea3264b27855a551bcc7ea77732eaeb0b1b5f8a",
+      "binned_data_sha256": "1dca0b40ea7e2dae112a3d8b1e4affe98985108ea3cd8d6eae6245f6c0b5efc8"
+    },
+    "nonlinear_s0": {
+      "results_sha256": "56055f15b5cd8e05720b884202b462a2d1a3f22c7f13ff51d3581ff7121d5983",
+      "audit_sha256": "1ee5490be53ab9e072fc8cbb80cc657ba9ac27d021ac903c07edb61597f29dcc",
+      "binned_results_sha256": "e0c861a8431c687643829887fea3264b27855a551bcc7ea77732eaeb0b1b5f8a",
+      "binned_data_sha256": "83bcd2b9fd8755d90793a1ffed443b6e1b28a7c3d269beca6736bd1c35ebc60b"
+    },
+    "constant_s1": {
+      "results_sha256": "af7bf33ca9dfe4e1200b0ebf713b1bfd5a6cf9a552617552d6a0a0d10125adb0",
+      "audit_sha256": "9a196eefd4dfcb3393409324662585e57975ff3f27f4ecb007d4ff1a3dd7a411",
+      "binned_results_sha256": "36788f0c00d19487e76ef52860dcf108a67b22d4de15cdebd4bff8a2047dbb52",
+      "binned_data_sha256": "c64d00a61618dd23eb9db990b82ce407a963ce309a7cf20fca6993b69b267c2b"
+    },
+    "nonlinear_s1": {
+      "results_sha256": "a9500f9821c6d923788521093f3159ae0f396c917973b3ef04ce6abad252c31c",
+      "audit_sha256": "9a196eefd4dfcb3393409324662585e57975ff3f27f4ecb007d4ff1a3dd7a411",
+      "binned_results_sha256": "36788f0c00d19487e76ef52860dcf108a67b22d4de15cdebd4bff8a2047dbb52",
+      "binned_data_sha256": "f9d98488ee2238f386aa9e136a57a28c005c65b328801ea335d832a81cd8dbbf"
+    },
+    "constant_s2": {
+      "results_sha256": "b358c4e071a1a3d8187b4d306fa58911dc90d5ff435818a741aca66e60b09b95",
+      "audit_sha256": "478857e7dcdc8e65d10995851044da7ffed2ea14727f7d426ee9a305ae5b5dfb",
+      "binned_results_sha256": "6371f053b719c2615b46a723a4aaa2e794751faaedb6b392e34830b0eb444d2d",
+      "binned_data_sha256": "bfa30395c3248eb53f76d242556d8c5177135fcb04e74992ba01f78a7b62c230"
+    },
+    "nonlinear_s2": {
+      "results_sha256": "5cd9d111ea0a1f70affb22502311a68344d26c9f6ac818cc38a322014d9bd5f3",
+      "audit_sha256": "478857e7dcdc8e65d10995851044da7ffed2ea14727f7d426ee9a305ae5b5dfb",
+      "binned_results_sha256": "6371f053b719c2615b46a723a4aaa2e794751faaedb6b392e34830b0eb444d2d",
+      "binned_data_sha256": "0c12ba76048279eddcb71e8098189fe67a9015df64171aec335a50634cc275b6"
+    }
+  },
+  "rows": [
+    {
+      "scenario": "constant",
+      "replica": 0,
+      "pairs": 16,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.07793684465283027,
+          "mass_bias": -0.006229669109741007,
+          "log_ratio_RMSE": 0.3349993984240878,
+          "log_ratio_variance": 0.1109048859462341,
+          "normalizer_means": [
+            1.1343279322927118,
+            0.8103101375182139
+          ],
+          "mean_joint_reverse_KL": 0.3718735139590857,
+          "target_calls_per_calibration": 32
+        },
+        "identity": {
+          "mass_RMSE": 0.06039235301615582,
+          "mass_bias": -0.0057825022867570375,
+          "log_ratio_RMSE": 0.257336886620113,
+          "log_ratio_variance": 0.06530746306753503,
+          "normalizer_means": [
+            1.1343279322927118,
+            0.8148598462759479
+          ],
+          "mean_joint_reverse_KL": 0.36700319277267307,
+          "target_calls_per_calibration": 32
+        },
+        "constant": {
+          "mass_RMSE": 0.04646610185660471,
+          "mass_bias": -0.008359684727839206,
+          "log_ratio_RMSE": 0.19759949813800248,
+          "log_ratio_variance": 0.03757737845854746,
+          "normalizer_means": [
+            1.1343279322927118,
+            0.8078983282854458
+          ],
+          "mean_joint_reverse_KL": 0.3623946576079922,
+          "target_calls_per_calibration": 32
+        },
+        "gaussian": {
+          "mass_RMSE": 0.04675351545816811,
+          "mass_bias": -0.008073732838474377,
+          "log_ratio_RMSE": 0.19871384354005597,
+          "log_ratio_variance": 0.03810549426783922,
+          "normalizer_means": [
+            1.1343279322927118,
+            0.8085761714387921
+          ],
+          "mean_joint_reverse_KL": 0.3626146087725762,
+          "target_calls_per_calibration": 32
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.046800973610254884,
+          "mass_bias": -0.008509526962833344,
+          "log_ratio_RMSE": 0.19878318296204744,
+          "log_ratio_variance": 0.037996590780131095,
+          "normalizer_means": [
+            1.1343279322927118,
+            0.8073316748219563
+          ],
+          "mean_joint_reverse_KL": 0.3623709248842747,
+          "target_calls_per_calibration": 32
+        },
+        "oracle": {
+          "mass_RMSE": 0.04639261344086677,
+          "mass_bias": -0.008299554938644082,
+          "log_ratio_RMSE": 0.19724896795330296,
+          "log_ratio_variance": 0.0374592506992012,
+          "normalizer_means": [
+            1.1343279322927118,
+            0.8080644547652077
+          ],
+          "mean_joint_reverse_KL": 0.3624145604248367,
+          "target_calls_per_calibration": 32
+        },
+        "mean_work": {
+          "mass_RMSE": 0.1349381499890281,
+          "mass_bias": -0.1256495006395008,
+          "target_calls_per_calibration": 32
+        },
+        "binned": {
+          "mass_RMSE": 0.04756779859254099,
+          "mass_bias": -0.009029232079683758,
+          "target_calls_per_calibration": 32
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 1.0072067967888418,
+      "neural_to_binned_RMSE": 0.9838793258259727,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.04756779859254099,
+        "binned_mass_bias": -0.009029232079683798,
+        "nonlinear_mass_RMSE": 0.046800973610254884,
+        "neural_to_binned_RMSE_ratio": 0.9838793258259727,
+        "paired_squared_error_difference": -7.236433207277055e-05,
+        "paired_MC_normal95": [
+          -0.0001665191340130303,
+          2.1790469867489202e-05
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.003883820623571625,
+          "paired_MC_normal95": [
+            -0.004439683287108104,
+            -0.0033279579600351467
+          ],
+          "RMSE_ratio": 0.600498696332009
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.0014569051719602114,
+          "paired_MC_normal95": [
+            -0.001815324063668666,
+            -0.0010984862802517568
+          ],
+          "RMSE_ratio": 0.774948669374332
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": 3.12325091194103e-05,
+          "paired_MC_normal95": [
+            -3.567322911220358e-05,
+            9.813824735102419e-05
+          ],
+          "RMSE_ratio": 1.0072067967888418
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": 4.439923170609527e-06,
+          "paired_MC_normal95": [
+            -7.194797176526069e-05,
+            8.082781810647974e-05
+          ],
+          "RMSE_ratio": 1.0010150713079369
+        }
+      }
+    },
+    {
+      "scenario": "constant",
+      "replica": 0,
+      "pairs": 64,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.038843166378107793,
+          "mass_bias": -0.0012153860100526906,
+          "log_ratio_RMSE": 0.16104914683516142,
+          "log_ratio_variance": 0.02588500091368082,
+          "normalizer_means": [
+            1.131377782490653,
+            0.8072957354326964
+          ],
+          "mean_joint_reverse_KL": 0.3651088180127932,
+          "target_calls_per_calibration": 128
+        },
+        "identity": {
+          "mass_RMSE": 0.029668738535994044,
+          "mass_bias": -0.0011952551948851134,
+          "log_ratio_RMSE": 0.12334455111506186,
+          "log_ratio_variance": 0.015174599489832715,
+          "normalizer_means": [
+            1.131377782490653,
+            0.8087225068811514
+          ],
+          "mean_joint_reverse_KL": 0.36382607498119346,
+          "target_calls_per_calibration": 128
+        },
+        "constant": {
+          "mass_RMSE": 0.022374422189356043,
+          "mass_bias": -0.0019155878031135568,
+          "log_ratio_RMSE": 0.09268032871839793,
+          "log_ratio_variance": 0.008515049923601907,
+          "normalizer_means": [
+            1.131377782490653,
+            0.8066668360796007
+          ],
+          "mean_joint_reverse_KL": 0.362622611057959,
+          "target_calls_per_calibration": 128
+        },
+        "gaussian": {
+          "mass_RMSE": 0.02271241576160846,
+          "mass_bias": -0.001912668365519053,
+          "log_ratio_RMSE": 0.09408098968444797,
+          "log_ratio_variance": 0.00877646668106245,
+          "normalizer_means": [
+            1.131377782490653,
+            0.8067194565109699
+          ],
+          "mean_joint_reverse_KL": 0.36265575205588,
+          "target_calls_per_calibration": 128
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.022355089950412608,
+          "mass_bias": -0.0019503283356578796,
+          "log_ratio_RMSE": 0.09260441020115993,
+          "log_ratio_variance": 0.008498507618279444,
+          "normalizer_means": [
+            1.131377782490653,
+            0.8065029899651213
+          ],
+          "mean_joint_reverse_KL": 0.3626008000756302,
+          "target_calls_per_calibration": 128
+        },
+        "oracle": {
+          "mass_RMSE": 0.02232756274354221,
+          "mass_bias": -0.001873285142898163,
+          "log_ratio_RMSE": 0.09248597896443676,
+          "log_ratio_variance": 0.008482096050412601,
+          "normalizer_means": [
+            1.131377782490653,
+            0.8068067358762037
+          ],
+          "mean_joint_reverse_KL": 0.3626426996261058,
+          "target_calls_per_calibration": 128
+        },
+        "mean_work": {
+          "mass_RMSE": 0.13194970580679502,
+          "mass_bias": -0.1296949645096384,
+          "target_calls_per_calibration": 128
+        },
+        "binned": {
+          "mass_RMSE": 0.022958964658495076,
+          "mass_bias": -0.0022225087277362165,
+          "target_calls_per_calibration": 128
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.9991359670082282,
+      "neural_to_binned_RMSE": 0.9736976506970219,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.022958964658495076,
+        "binned_mass_bias": -0.002222508727736177,
+        "nonlinear_mass_RMSE": 0.022355089950412608,
+        "neural_to_binned_RMSE_ratio": 0.9736976506970219,
+        "paired_squared_error_difference": -2.736401149898713e-05,
+        "paired_MC_normal95": [
+          -4.8395360613853706e-05,
+          -6.332662384120552e-06
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.0010090415275863247,
+          "paired_MC_normal95": [
+            -0.0011369650830045943,
+            -0.0008811179721680552
+          ],
+          "RMSE_ratio": 0.5755218236536981
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.00038048399962613933,
+          "paired_MC_normal95": [
+            -0.0004749748576404282,
+            -0.00028599314161185046
+          ],
+          "RMSE_ratio": 0.7534897354429635
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -8.647216165092114e-07,
+          "paired_MC_normal95": [
+            -1.6082082498570583e-05,
+            1.4352639265552161e-05
+          ],
+          "RMSE_ratio": 0.9991359670082282
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -1.6103783037121476e-05,
+          "paired_MC_normal95": [
+            -3.5636484333862454e-05,
+            3.428918259619501e-06
+          ],
+          "RMSE_ratio": 0.9842673797914596
+        }
+      }
+    },
+    {
+      "scenario": "constant",
+      "replica": 0,
+      "pairs": 256,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.019266141343019662,
+          "mass_bias": 0.00032786685473844366,
+          "log_ratio_RMSE": 0.07942249048426402,
+          "log_ratio_variance": 0.006307260113723722,
+          "normalizer_means": [
+            1.130122829974992,
+            0.8076646076495564
+          ],
+          "mean_joint_reverse_KL": 0.3636480939414418,
+          "target_calls_per_calibration": 512
+        },
+        "identity": {
+          "mass_RMSE": 0.014910374065348843,
+          "mass_bias": -0.0010766407473342785,
+          "log_ratio_RMSE": 0.0615375175594753,
+          "log_ratio_variance": 0.0037642552210063844,
+          "normalizer_means": [
+            1.130122829974992,
+            0.8032274553324749
+          ],
+          "mean_joint_reverse_KL": 0.3625310606263705,
+          "target_calls_per_calibration": 512
+        },
+        "constant": {
+          "mass_RMSE": 0.010832242635403682,
+          "mass_bias": -0.0006512324491740842,
+          "log_ratio_RMSE": 0.04464900787423572,
+          "log_ratio_variance": 0.0019854143582857153,
+          "normalizer_means": [
+            1.130122829974992,
+            0.8046669486394197
+          ],
+          "mean_joint_reverse_KL": 0.3625600740463268,
+          "target_calls_per_calibration": 512
+        },
+        "gaussian": {
+          "mass_RMSE": 0.010930849312910147,
+          "mass_bias": -0.0007453778941234348,
+          "log_ratio_RMSE": 0.04507014501503011,
+          "log_ratio_variance": 0.002020815503527147,
+          "normalizer_means": [
+            1.130122829974992,
+            0.8043396328997435
+          ],
+          "mean_joint_reverse_KL": 0.36251019541096097,
+          "target_calls_per_calibration": 512
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.010919176424724513,
+          "mass_bias": -0.0007128147500196177,
+          "log_ratio_RMSE": 0.04501598815729326,
+          "log_ratio_variance": 0.0020167915721420533,
+          "normalizer_means": [
+            1.130122829974992,
+            0.8044616221777412
+          ],
+          "mean_joint_reverse_KL": 0.36252844722922667,
+          "target_calls_per_calibration": 512
+        },
+        "oracle": {
+          "mass_RMSE": 0.010794877456677638,
+          "mass_bias": -0.0006995325590605332,
+          "log_ratio_RMSE": 0.044499890616012144,
+          "log_ratio_variance": 0.0019709538865303818,
+          "normalizer_means": [
+            1.130122829974992,
+            0.8044989575199236
+          ],
+          "mean_joint_reverse_KL": 0.36253054293248255,
+          "target_calls_per_calibration": 512
+        },
+        "mean_work": {
+          "mass_RMSE": 0.13115855623252243,
+          "mass_bias": -0.13057334420668737,
+          "target_calls_per_calibration": 512
+        },
+        "binned": {
+          "mass_RMSE": 0.011119744692579035,
+          "mass_bias": -0.0006599974050319757,
+          "target_calls_per_calibration": 512
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 1.0080254654780998,
+      "neural_to_binned_RMSE": 0.9819628711450206,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.011119744692579035,
+        "binned_mass_bias": -0.0006599974050319835,
+        "nonlinear_mass_RMSE": 0.010919176424724513,
+        "neural_to_binned_RMSE_ratio": 0.9819628711450206,
+        "paired_squared_error_difference": -4.420308233880031e-06,
+        "paired_MC_normal95": [
+          -9.481088798647478e-06,
+          6.404723308874155e-07
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.0002519557884549519,
+          "paired_MC_normal95": [
+            -0.0002827167420767126,
+            -0.00022119483483319113
+          ],
+          "RMSE_ratio": 0.5667547138950402
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.00010309084097436776,
+          "paired_MC_normal95": [
+            -0.0001247907219630751,
+            -8.139095998566041e-05
+          ],
+          "RMSE_ratio": 0.7323207571364876
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": 1.8909332820023084e-06,
+          "paired_MC_normal95": [
+            -1.9391224284347213e-06,
+            5.720988992439338e-06
+          ],
+          "RMSE_ratio": 1.0080254654780998
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -2.550529072885958e-07,
+          "paired_MC_normal95": [
+            -4.707229561653142e-06,
+            4.19712374707595e-06
+          ],
+          "RMSE_ratio": 0.9989321151676799
+        }
+      }
+    },
+    {
+      "scenario": "nonlinear",
+      "replica": 0,
+      "pairs": 16,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.07959633962802619,
+          "mass_bias": -0.009622853802212837,
+          "log_ratio_RMSE": 0.3418576937209906,
+          "log_ratio_variance": 0.11429300577461063,
+          "normalizer_means": [
+            1.129287577845567,
+            0.7954223772756902
+          ],
+          "mean_joint_reverse_KL": 0.37046176609972725,
+          "target_calls_per_calibration": 32
+        },
+        "identity": {
+          "mass_RMSE": 0.07206341223013756,
+          "mass_bias": -0.006583849737135114,
+          "log_ratio_RMSE": 0.30911233546932737,
+          "log_ratio_variance": 0.09423356869873897,
+          "normalizer_means": [
+            1.129287577845567,
+            0.8079403456320101
+          ],
+          "mean_joint_reverse_KL": 0.3698098322586444,
+          "target_calls_per_calibration": 32
+        },
+        "constant": {
+          "mass_RMSE": 0.0701171780714246,
+          "mass_bias": -0.006346109623883774,
+          "log_ratio_RMSE": 0.2994763444277183,
+          "log_ratio_variance": 0.08848103193021095,
+          "normalizer_means": [
+            1.129287577845567,
+            0.8076216008816336
+          ],
+          "mean_joint_reverse_KL": 0.36934656453773224,
+          "target_calls_per_calibration": 32
+        },
+        "gaussian": {
+          "mass_RMSE": 0.07125481002129984,
+          "mass_bias": -0.004767254387386785,
+          "log_ratio_RMSE": 0.30332935050628373,
+          "log_ratio_variance": 0.09121340909561945,
+          "normalizer_means": [
+            1.129287577845567,
+            0.8131177999675695
+          ],
+          "mean_joint_reverse_KL": 0.37057316085686737,
+          "target_calls_per_calibration": 32
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.047456787168712156,
+          "mass_bias": -0.007441221874205358,
+          "log_ratio_RMSE": 0.20049127326490204,
+          "log_ratio_variance": 0.039006281637860775,
+          "normalizer_means": [
+            1.129287577845567,
+            0.8077035469752468
+          ],
+          "mean_joint_reverse_KL": 0.3631023644273763,
+          "target_calls_per_calibration": 32
+        },
+        "oracle": {
+          "mass_RMSE": 0.04693489002747463,
+          "mass_bias": -0.00824254016657254,
+          "log_ratio_RMSE": 0.1984355999965852,
+          "log_ratio_variance": 0.03795090211333426,
+          "normalizer_means": [
+            1.129287577845567,
+            0.8054294244801997
+          ],
+          "mean_joint_reverse_KL": 0.36253954741360506,
+          "target_calls_per_calibration": 32
+        },
+        "mean_work": {
+          "mass_RMSE": 0.14124603087047363,
+          "mass_bias": -0.12765098561228894,
+          "target_calls_per_calibration": 32
+        },
+        "binned": {
+          "mass_RMSE": 0.048308879519812754,
+          "mass_bias": -0.007052351990806172,
+          "target_calls_per_calibration": 32
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.6768211224982624,
+      "neural_to_binned_RMSE": 0.9823615790808989,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.048308879519812754,
+        "binned_mass_bias": -0.007052351990806234,
+        "nonlinear_mass_RMSE": 0.047456787168712156,
+        "neural_to_binned_RMSE_ratio": 0.9823615790808989,
+        "paired_squared_error_difference": -8.160119208334132e-05,
+        "paired_MC_normal95": [
+          -0.00021348719925124435,
+          5.028481508456173e-05
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.004083430633803651,
+          "paired_MC_normal95": [
+            -0.004627299536673453,
+            -0.003539561730933849
+          ],
+          "RMSE_ratio": 0.5962182104163296
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.0029409887338742976,
+          "paired_MC_normal95": [
+            -0.0034425708504092945,
+            -0.0024394066173393006
+          ],
+          "RMSE_ratio": 0.6585420492878813
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -0.0026642720123234236,
+          "paired_MC_normal95": [
+            -0.0031270915005196767,
+            -0.0022014525241271705
+          ],
+          "RMSE_ratio": 0.6768211224982624
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -0.0028251013027950907,
+          "paired_MC_normal95": [
+            -0.0032860479876685835,
+            -0.002364154617921598
+          ],
+          "RMSE_ratio": 0.6660152087210132
+        }
+      }
+    },
+    {
+      "scenario": "nonlinear",
+      "replica": 0,
+      "pairs": 64,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.03953141492436504,
+          "mass_bias": -0.001879154210836192,
+          "log_ratio_RMSE": 0.1642496670076477,
+          "log_ratio_variance": 0.026876535443589426,
+          "normalizer_means": [
+            1.131191083244939,
+            0.805577716825621
+          ],
+          "mean_joint_reverse_KL": 0.36484154577073247,
+          "target_calls_per_calibration": 128
+        },
+        "identity": {
+          "mass_RMSE": 0.0343366981457162,
+          "mass_bias": -0.0017317285973562314,
+          "log_ratio_RMSE": 0.14251767268414897,
+          "log_ratio_variance": 0.02023233229584048,
+          "normalizer_means": [
+            1.131191083244939,
+            0.8061782487548403
+          ],
+          "mean_joint_reverse_KL": 0.3641318072711173,
+          "target_calls_per_calibration": 128
+        },
+        "constant": {
+          "mass_RMSE": 0.036516803436182216,
+          "mass_bias": -0.0016214182178104495,
+          "log_ratio_RMSE": 0.15156460490698564,
+          "log_ratio_variance": 0.02289692307102662,
+          "normalizer_means": [
+            1.131191083244939,
+            0.8072454370728767
+          ],
+          "mean_joint_reverse_KL": 0.364514614216003,
+          "target_calls_per_calibration": 128
+        },
+        "gaussian": {
+          "mass_RMSE": 0.03607288016145561,
+          "mass_bias": -0.001079049809977729,
+          "log_ratio_RMSE": 0.14974827113798636,
+          "log_ratio_variance": 0.02238383438699309,
+          "normalizer_means": [
+            1.131191083244939,
+            0.8086130134388699
+          ],
+          "mean_joint_reverse_KL": 0.3647614809889714,
+          "target_calls_per_calibration": 128
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.022298772650495905,
+          "mass_bias": -0.001971573550041522,
+          "log_ratio_RMSE": 0.09246173551971003,
+          "log_ratio_variance": 0.008470476034300047,
+          "normalizer_means": [
+            1.131191083244939,
+            0.8057084481822026
+          ],
+          "mean_joint_reverse_KL": 0.3625839982269386,
+          "target_calls_per_calibration": 128
+        },
+        "oracle": {
+          "mass_RMSE": 0.022008021689986765,
+          "mass_bias": -0.0018560546277687534,
+          "log_ratio_RMSE": 0.09123624788954876,
+          "log_ratio_variance": 0.008253917860005898,
+          "normalizer_means": [
+            1.131191083244939,
+            0.8062227204904263
+          ],
+          "mean_joint_reverse_KL": 0.3626239297718894,
+          "target_calls_per_calibration": 128
+        },
+        "mean_work": {
+          "mass_RMSE": 0.13349346384432367,
+          "mass_bias": -0.13014539327375035,
+          "target_calls_per_calibration": 128
+        },
+        "binned": {
+          "mass_RMSE": 0.02265392785846366,
+          "mass_bias": -0.0014377777835444805,
+          "target_calls_per_calibration": 128
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.6494151696201421,
+      "neural_to_binned_RMSE": 0.9843225770741976,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.02265392785846366,
+        "binned_mass_bias": -0.001437777783544471,
+        "nonlinear_mass_RMSE": 0.022298772650495905,
+        "neural_to_binned_RMSE_ratio": 0.9843225770741976,
+        "paired_squared_error_difference": -1.5965185697971672e-05,
+        "paired_MC_normal95": [
+          -4.401666019864787e-05,
+          1.2086288802704525e-05
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.0010654975042038068,
+          "paired_MC_normal95": [
+            -0.0011965433342995193,
+            -0.0009344516741080944
+          ],
+          "RMSE_ratio": 0.5640772710301382
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.0006817735778315265,
+          "paired_MC_normal95": [
+            -0.0007950076187361467,
+            -0.0005685395369269064
+          ],
+          "RMSE_ratio": 0.6494151696201421
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -0.000836241671478265,
+          "paired_MC_normal95": [
+            -0.000955376226077926,
+            -0.0007171071168786039
+          ],
+          "RMSE_ratio": 0.6106441569965416
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -0.0008040174214242334,
+          "paired_MC_normal95": [
+            -0.0009229161321673861,
+            -0.0006851187106810807
+          ],
+          "RMSE_ratio": 0.6181589202384362
+        }
+      }
+    },
+    {
+      "scenario": "nonlinear",
+      "replica": 0,
+      "pairs": 256,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.0191208363817376,
+          "mass_bias": -0.0003463561583698807,
+          "log_ratio_RMSE": 0.07890089967728964,
+          "log_ratio_variance": 0.006221537859639499,
+          "normalizer_means": [
+            1.1290838844702997,
+            0.8046054024081288
+          ],
+          "mean_joint_reverse_KL": 0.36324783295947954,
+          "target_calls_per_calibration": 512
+        },
+        "identity": {
+          "mass_RMSE": 0.01719979493596097,
+          "mass_bias": -0.0009184347924731136,
+          "log_ratio_RMSE": 0.07100003867564089,
+          "log_ratio_variance": 0.0050232775176550825,
+          "normalizer_means": [
+            1.1290838844702997,
+            0.802863830679254
+          ],
+          "mean_joint_reverse_KL": 0.36277396494544406,
+          "target_calls_per_calibration": 512
+        },
+        "constant": {
+          "mass_RMSE": 0.017444125150166398,
+          "mass_bias": -0.001484126716739595,
+          "log_ratio_RMSE": 0.0719880301266995,
+          "log_ratio_variance": 0.005139376146814926,
+          "normalizer_means": [
+            1.1290838844702997,
+            0.8010365075873408
+          ],
+          "mean_joint_reverse_KL": 0.3624647224935599,
+          "target_calls_per_calibration": 512
+        },
+        "gaussian": {
+          "mass_RMSE": 0.01751801657316247,
+          "mass_bias": -0.0012994536659598327,
+          "log_ratio_RMSE": 0.07231034445093056,
+          "log_ratio_variance": 0.005195211455288809,
+          "normalizer_means": [
+            1.1290838844702997,
+            0.801593974322074
+          ],
+          "mean_joint_reverse_KL": 0.36257674864156336,
+          "target_calls_per_calibration": 512
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.011773342930774417,
+          "mass_bias": -0.001166874301769966,
+          "log_ratio_RMSE": 0.048594043184120625,
+          "log_ratio_variance": 0.0023363245274819356,
+          "normalizer_means": [
+            1.1290838844702997,
+            0.8023756734048213
+          ],
+          "mean_joint_reverse_KL": 0.36230645733781885,
+          "target_calls_per_calibration": 512
+        },
+        "oracle": {
+          "mass_RMSE": 0.01138236910479552,
+          "mass_bias": -0.0008953665391192777,
+          "log_ratio_RMSE": 0.046969297600015385,
+          "log_ratio_variance": 0.002191103461550779,
+          "normalizer_means": [
+            1.1290838844702997,
+            0.8032585421276183
+          ],
+          "mean_joint_reverse_KL": 0.36244450039571846,
+          "target_calls_per_calibration": 512
+        },
+        "mean_work": {
+          "mass_RMSE": 0.13119547402586798,
+          "mass_bias": -0.1303127930685522,
+          "target_calls_per_calibration": 512
+        },
+        "binned": {
+          "mass_RMSE": 0.011720252370116115,
+          "mass_bias": -0.0010350655763964878,
+          "target_calls_per_calibration": 512
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.6845048429129209,
+      "neural_to_binned_RMSE": 1.0045298137771905,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.011720252370116115,
+        "binned_mass_bias": -0.0010350655763964893,
+        "nonlinear_mass_RMSE": 0.011773342930774417,
+        "neural_to_binned_RMSE_ratio": 1.0045298137771905,
+        "paired_squared_error_difference": 1.2472881464034853e-06,
+        "paired_MC_normal95": [
+          -6.334119454880502e-06,
+          8.828695747687474e-06
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.0002269947801715642,
+          "paired_MC_normal95": [
+            -0.00026047103605018066,
+            -0.00019351852429294776
+          ],
+          "RMSE_ratio": 0.6157336789942511
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.00015722134207349266,
+          "paired_MC_normal95": [
+            -0.00018670129614415507,
+            -0.00012774138800283026
+          ],
+          "RMSE_ratio": 0.6845048429129209
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -0.00016568589848905195,
+          "paired_MC_normal95": [
+            -0.0001943089878212944,
+            -0.0001370628091568095
+          ],
+          "RMSE_ratio": 0.674917362116157
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -0.00016826930089197903,
+          "paired_MC_normal95": [
+            -0.00019879587490615386,
+            -0.0001377427268778042
+          ],
+          "RMSE_ratio": 0.6720705441511644
+        }
+      }
+    },
+    {
+      "scenario": "constant",
+      "replica": 1,
+      "pairs": 16,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.07852164417659643,
+          "mass_bias": -0.007054853728287281,
+          "log_ratio_RMSE": 0.3378057273536346,
+          "log_ratio_variance": 0.11250590030541037,
+          "normalizer_means": [
+            1.1311072023353355,
+            0.8040601833425419
+          ],
+          "mean_joint_reverse_KL": 0.3716008206189606,
+          "target_calls_per_calibration": 32
+        },
+        "identity": {
+          "mass_RMSE": 0.059364858449351625,
+          "mass_bias": -0.008344177279545697,
+          "log_ratio_RMSE": 0.2530263154876693,
+          "log_ratio_variance": 0.06237000705567276,
+          "normalizer_means": [
+            1.1311072023353355,
+            0.8031089229437348
+          ],
+          "mean_joint_reverse_KL": 0.3652703293112798,
+          "target_calls_per_calibration": 32
+        },
+        "constant": {
+          "mass_RMSE": 0.04793584253568077,
+          "mass_bias": -0.007804721024300692,
+          "log_ratio_RMSE": 0.2027698270475288,
+          "log_ratio_variance": 0.03980866363625577,
+          "normalizer_means": [
+            1.1311072023353355,
+            0.8085225246365233
+          ],
+          "mean_joint_reverse_KL": 0.3629927430996369,
+          "target_calls_per_calibration": 32
+        },
+        "gaussian": {
+          "mass_RMSE": 0.047968290088513624,
+          "mass_bias": -0.008024940497996218,
+          "log_ratio_RMSE": 0.20282304290259912,
+          "log_ratio_variance": 0.03976452883235956,
+          "normalizer_means": [
+            1.1311072023353355,
+            0.8076847645771472
+          ],
+          "mean_joint_reverse_KL": 0.3628708903958288,
+          "target_calls_per_calibration": 32
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.04790022633805232,
+          "mass_bias": -0.007809026953317564,
+          "log_ratio_RMSE": 0.20261129616246631,
+          "log_ratio_variance": 0.03974362974506444,
+          "normalizer_means": [
+            1.1311072023353355,
+            0.8085186859313802
+          ],
+          "mean_joint_reverse_KL": 0.36298300684989326,
+          "target_calls_per_calibration": 32
+        },
+        "oracle": {
+          "mass_RMSE": 0.04783890168594043,
+          "mass_bias": -0.007714842055736803,
+          "log_ratio_RMSE": 0.20213200441047263,
+          "log_ratio_variance": 0.03958043926181494,
+          "normalizer_means": [
+            1.1311072023353355,
+            0.8089680127125062
+          ],
+          "mean_joint_reverse_KL": 0.3630221442676419,
+          "target_calls_per_calibration": 32
+        },
+        "mean_work": {
+          "mass_RMSE": 0.13694786321219393,
+          "mass_bias": -0.12818503682161897,
+          "target_calls_per_calibration": 32
+        },
+        "binned": {
+          "mass_RMSE": 0.04840309111028436,
+          "mass_bias": -0.007995875710197164,
+          "target_calls_per_calibration": 32
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.9992570027823765,
+      "neural_to_binned_RMSE": 0.9896108954883421,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.04840309111028436,
+        "binned_mass_bias": -0.00799587571019719,
+        "nonlinear_mass_RMSE": 0.04790022633805232,
+        "neural_to_binned_RMSE_ratio": 0.9896108954883421,
+        "paired_squared_error_difference": -4.8427545793848426e-05,
+        "paired_MC_normal95": [
+          -0.0001315163955563433,
+          3.4661303968646456e-05
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.0038712169209593793,
+          "paired_MC_normal95": [
+            -0.004404775425689104,
+            -0.0033376584162296543
+          ],
+          "RMSE_ratio": 0.6100257685680135
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.0012297547354749143,
+          "paired_MC_normal95": [
+            -0.0015687032773302528,
+            -0.0008908061936195758
+          ],
+          "RMSE_ratio": 0.806878473043432
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -3.4133163689411443e-06,
+          "paired_MC_normal95": [
+            -1.1002171825812307e-05,
+            4.175539087930019e-06
+          ],
+          "RMSE_ratio": 0.9992570027823765
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -6.525170779154349e-06,
+          "paired_MC_normal95": [
+            -6.694315043242518e-05,
+            5.389280887411648e-05
+          ],
+          "RMSE_ratio": 0.9985810678192675
+        }
+      }
+    },
+    {
+      "scenario": "constant",
+      "replica": 1,
+      "pairs": 64,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.039089572431400155,
+          "mass_bias": -0.0007415548446390961,
+          "log_ratio_RMSE": 0.16225699294112284,
+          "log_ratio_variance": 0.026299154694890265,
+          "normalizer_means": [
+            1.1314556089811447,
+            0.8092601135880589
+          ],
+          "mean_joint_reverse_KL": 0.3654243718545722,
+          "target_calls_per_calibration": 128
+        },
+        "identity": {
+          "mass_RMSE": 0.02959480891115625,
+          "mass_bias": -0.0013293347369864811,
+          "log_ratio_RMSE": 0.12281585260920572,
+          "log_ratio_variance": 0.015037544189005879,
+          "normalizer_means": [
+            1.1314556089811447,
+            0.8079189096391224
+          ],
+          "mean_joint_reverse_KL": 0.3637378475553101,
+          "target_calls_per_calibration": 128
+        },
+        "constant": {
+          "mass_RMSE": 0.022321976606172845,
+          "mass_bias": -0.001801167219001981,
+          "log_ratio_RMSE": 0.09250339456062125,
+          "log_ratio_variance": 0.008490195761699081,
+          "normalizer_means": [
+            1.1314556089811447,
+            0.8069083625178528
+          ],
+          "mean_joint_reverse_KL": 0.36268411028668185,
+          "target_calls_per_calibration": 128
+        },
+        "gaussian": {
+          "mass_RMSE": 0.022692161019579226,
+          "mass_bias": -0.0020723155909200494,
+          "log_ratio_RMSE": 0.09403676977117717,
+          "log_ratio_variance": 0.008756295181317025,
+          "normalizer_means": [
+            1.1314556089811447,
+            0.8061245413239932
+          ],
+          "mean_joint_reverse_KL": 0.3625619992335015,
+          "target_calls_per_calibration": 128
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.022335989226623776,
+          "mass_bias": -0.0018459902215778065,
+          "log_ratio_RMSE": 0.09256452397836944,
+          "log_ratio_variance": 0.00849844172476107,
+          "normalizer_means": [
+            1.1314556089811447,
+            0.8067749837601683
+          ],
+          "mean_joint_reverse_KL": 0.36265954802238115,
+          "target_calls_per_calibration": 128
+        },
+        "oracle": {
+          "mass_RMSE": 0.022391949203511754,
+          "mass_bias": -0.0018393404848385342,
+          "log_ratio_RMSE": 0.09277494998474267,
+          "log_ratio_variance": 0.008537868586311826,
+          "normalizer_means": [
+            1.1314556089811447,
+            0.8068787422900334
+          ],
+          "mean_joint_reverse_KL": 0.3626684034960519,
+          "target_calls_per_calibration": 128
+        },
+        "mean_work": {
+          "mass_RMSE": 0.13205040084698896,
+          "mass_bias": -0.1297636595274798,
+          "target_calls_per_calibration": 128
+        },
+        "binned": {
+          "mass_RMSE": 0.022763663609917616,
+          "mass_bias": -0.002240146269924914,
+          "target_calls_per_calibration": 128
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 1.0006277499837113,
+      "neural_to_binned_RMSE": 0.9812124098026334,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.022763663609917616,
+        "binned_mass_bias": -0.002240146269924907,
+        "nonlinear_mass_RMSE": 0.022335989226623776,
+        "neural_to_binned_RMSE_ratio": 0.9812124098026334,
+        "paired_squared_error_difference": -1.928796621363411e-05,
+        "paired_MC_normal95": [
+          -4.1645241619103074e-05,
+          3.069309191834852e-06
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.0010290982581378251,
+          "paired_MC_normal95": [
+            -0.0011594622544342308,
+            -0.0008987342618414194
+          ],
+          "RMSE_ratio": 0.5714053093269846
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.00037695629975600004,
+          "paired_MC_normal95": [
+            -0.00045909335310250415,
+            -0.00029481924640949593
+          ],
+          "RMSE_ratio": 0.7547265905205374
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": 6.257751253255834e-07,
+          "paired_MC_normal95": [
+            -1.3133840027670296e-06,
+            2.564934253418196e-06
+          ],
+          "RMSE_ratio": 1.0006277499837113
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -1.6037757006657638e-05,
+          "paired_MC_normal95": [
+            -3.0373472513439565e-05,
+            -1.70204149987571e-06
+          ],
+          "RMSE_ratio": 0.9843041924192174
+        }
+      }
+    },
+    {
+      "scenario": "constant",
+      "replica": 1,
+      "pairs": 256,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.01892418496999527,
+          "mass_bias": -0.0012632185227326698,
+          "log_ratio_RMSE": 0.07816730442793131,
+          "log_ratio_variance": 0.00607737540830772,
+          "normalizer_means": [
+            1.132101469319623,
+            0.8037693487394094
+          ],
+          "mean_joint_reverse_KL": 0.36270359891172677,
+          "target_calls_per_calibration": 512
+        },
+        "identity": {
+          "mass_RMSE": 0.01432813207623212,
+          "mass_bias": -0.0012385956276528623,
+          "log_ratio_RMSE": 0.05911358908062171,
+          "log_ratio_variance": 0.0034653008677127542,
+          "normalizer_means": [
+            1.132101469319623,
+            0.8040712244380753
+          ],
+          "mean_joint_reverse_KL": 0.36240237808721154,
+          "target_calls_per_calibration": 512
+        },
+        "constant": {
+          "mass_RMSE": 0.011036268789429505,
+          "mass_bias": -0.000192517924800375,
+          "log_ratio_RMSE": 0.045463842727900806,
+          "log_ratio_variance": 0.0020660268871820304,
+          "normalizer_means": [
+            1.132101469319623,
+            0.8076269197668036
+          ],
+          "mean_joint_reverse_KL": 0.36283398785754867,
+          "target_calls_per_calibration": 512
+        },
+        "gaussian": {
+          "mass_RMSE": 0.01096347375940547,
+          "mass_bias": -9.300956445014513e-05,
+          "log_ratio_RMSE": 0.04515563778292419,
+          "log_ratio_variance": 0.002038724414548492,
+          "normalizer_means": [
+            1.132101469319623,
+            0.8079312511364057
+          ],
+          "mean_joint_reverse_KL": 0.3628881086729807,
+          "target_calls_per_calibration": 512
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.011017929006575907,
+          "mass_bias": -0.00018143145530730465,
+          "log_ratio_RMSE": 0.04538799415533505,
+          "log_ratio_variance": 0.0020592231135284295,
+          "normalizer_means": [
+            1.132101469319623,
+            0.8076618312910321
+          ],
+          "mean_joint_reverse_KL": 0.3628395544327777,
+          "target_calls_per_calibration": 512
+        },
+        "oracle": {
+          "mass_RMSE": 0.010918976263989124,
+          "mass_bias": -5.474090835178491e-05,
+          "log_ratio_RMSE": 0.04497788293562926,
+          "log_ratio_variance": 0.002022853454538935,
+          "normalizer_means": [
+            1.132101469319623,
+            0.8080712385943329
+          ],
+          "mean_joint_reverse_KL": 0.3629082162827541,
+          "target_calls_per_calibration": 512
+        },
+        "mean_work": {
+          "mass_RMSE": 0.13081753877063432,
+          "mass_bias": -0.1302428817824292,
+          "target_calls_per_calibration": 512
+        },
+        "binned": {
+          "mass_RMSE": 0.011186682946250153,
+          "mass_bias": -0.00027236336325503485,
+          "target_calls_per_calibration": 512
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 1.0049669701743684,
+      "neural_to_binned_RMSE": 0.9849147472503623,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.011186682946250153,
+        "binned_mass_bias": -0.0002723633632550583,
+        "nonlinear_mass_RMSE": 0.011017929006575907,
+        "neural_to_binned_RMSE_ratio": 0.9849147472503623,
+        "paired_squared_error_difference": -3.7471157459772265e-06,
+        "paired_MC_normal95": [
+          -9.127260877685408e-06,
+          1.6330293857309556e-06
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.00023673001718464804,
+          "paired_MC_normal95": [
+            -0.00026850983351195043,
+            -0.00020495020085734564
+          ],
+          "RMSE_ratio": 0.5822141890942774
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -8.390060920000497e-05,
+          "paired_MC_normal95": [
+            -0.00010344065215592917,
+            -6.436056624408077e-05
+          ],
+          "RMSE_ratio": 0.7689717646344659
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -4.044691985889678e-07,
+          "paired_MC_normal95": [
+            -8.684397770833311e-07,
+            5.950137990539547e-08
+          ],
+          "RMSE_ratio": 0.998338226152016
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": 1.197002720774456e-06,
+          "paired_MC_normal95": [
+            -2.43391589618431e-06,
+            4.827921337733222e-06
+          ],
+          "RMSE_ratio": 1.0049669701743684
+        }
+      }
+    },
+    {
+      "scenario": "nonlinear",
+      "replica": 1,
+      "pairs": 16,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.07760272543830958,
+          "mass_bias": -0.008935093832674408,
+          "log_ratio_RMSE": 0.3331189356171349,
+          "log_ratio_variance": 0.10872283342341697,
+          "normalizer_means": [
+            1.1302246346879787,
+            0.7990939710230068
+          ],
+          "mean_joint_reverse_KL": 0.37019946107377644,
+          "target_calls_per_calibration": 32
+        },
+        "identity": {
+          "mass_RMSE": 0.06957981328412215,
+          "mass_bias": -0.008517975829991784,
+          "log_ratio_RMSE": 0.29818936361289106,
+          "log_ratio_variance": 0.08700570833349373,
+          "normalizer_means": [
+            1.1302246346879787,
+            0.7983103367397673
+          ],
+          "mean_joint_reverse_KL": 0.3679531258420899,
+          "target_calls_per_calibration": 32
+        },
+        "constant": {
+          "mass_RMSE": 0.06983930872375883,
+          "mass_bias": -0.009259847920016138,
+          "log_ratio_RMSE": 0.29887779971966216,
+          "log_ratio_variance": 0.08713510536481468,
+          "normalizer_means": [
+            1.1302246346879787,
+            0.7991962432192844
+          ],
+          "mean_joint_reverse_KL": 0.3675958348896804,
+          "target_calls_per_calibration": 32
+        },
+        "gaussian": {
+          "mass_RMSE": 0.06999971779297091,
+          "mass_bias": -0.010166022378755612,
+          "log_ratio_RMSE": 0.30000621349234485,
+          "log_ratio_variance": 0.08743894254336951,
+          "normalizer_means": [
+            1.1302246346879787,
+            0.7954749353249513
+          ],
+          "mean_joint_reverse_KL": 0.36712691017231713,
+          "target_calls_per_calibration": 32
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.046562874681567015,
+          "mass_bias": -0.008575254284838444,
+          "log_ratio_RMSE": 0.19748676031368123,
+          "log_ratio_variance": 0.03746970895713627,
+          "normalizer_means": [
+            1.1302246346879787,
+            0.8035191732802887
+          ],
+          "mean_joint_reverse_KL": 0.3622816143306407,
+          "target_calls_per_calibration": 32
+        },
+        "oracle": {
+          "mass_RMSE": 0.045808990225158344,
+          "mass_bias": -0.008333846165454527,
+          "log_ratio_RMSE": 0.19408688724977494,
+          "log_ratio_variance": 0.03622479105027654,
+          "normalizer_means": [
+            1.1302246346879787,
+            0.8042040935173154
+          ],
+          "mean_joint_reverse_KL": 0.3622736932872454,
+          "target_calls_per_calibration": 32
+        },
+        "mean_work": {
+          "mass_RMSE": 0.1407733091085874,
+          "mass_bias": -0.12734117537286,
+          "target_calls_per_calibration": 32
+        },
+        "binned": {
+          "mass_RMSE": 0.045912738281046805,
+          "mass_bias": -0.007348427044158834,
+          "target_calls_per_calibration": 32
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.6692009145157118,
+      "neural_to_binned_RMSE": 1.0141602619416972,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.045912738281046805,
+        "binned_mass_bias": -0.007348427044158822,
+        "nonlinear_mass_RMSE": 0.046562874681567015,
+        "neural_to_binned_RMSE_ratio": 1.0141602619416972,
+        "paired_squared_error_difference": 6.0121762147413284e-05,
+        "paired_MC_normal95": [
+          -5.6038741772463095e-05,
+          0.00017628226606728966
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.003854081696842346,
+          "paired_MC_normal95": [
+            -0.004378470219255868,
+            -0.0033296931744288237
+          ],
+          "RMSE_ratio": 0.6000159713279948
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.0026732491180419867,
+          "paired_MC_normal95": [
+            -0.0031403332915335173,
+            -0.002206164944550456
+          ],
+          "RMSE_ratio": 0.6692009145157118
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -0.002709427744401183,
+          "paired_MC_normal95": [
+            -0.003166265038883695,
+            -0.002252590449918671
+          ],
+          "RMSE_ratio": 0.6667144267670373
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -0.0027318591924842548,
+          "paired_MC_normal95": [
+            -0.0031931408090253377,
+            -0.002270577575943172
+          ],
+          "RMSE_ratio": 0.6651866057414687
+        }
+      }
+    },
+    {
+      "scenario": "nonlinear",
+      "replica": 1,
+      "pairs": 64,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.03863932587450067,
+          "mass_bias": -0.0015636129615961517,
+          "log_ratio_RMSE": 0.1609967160777647,
+          "log_ratio_variance": 0.02584397674041343,
+          "normalizer_means": [
+            1.127576713500476,
+            0.8034787898197737
+          ],
+          "mean_joint_reverse_KL": 0.36488423078228344,
+          "target_calls_per_calibration": 128
+        },
+        "identity": {
+          "mass_RMSE": 0.036256794602690094,
+          "mass_bias": -0.0015383518705911977,
+          "log_ratio_RMSE": 0.15056050347713199,
+          "log_ratio_variance": 0.022599642772359776,
+          "normalizer_means": [
+            1.127576713500476,
+            0.8045612656143231
+          ],
+          "mean_joint_reverse_KL": 0.3645243256408127,
+          "target_calls_per_calibration": 128
+        },
+        "constant": {
+          "mass_RMSE": 0.0344782836689294,
+          "mass_bias": -0.002837063133138073,
+          "log_ratio_RMSE": 0.14331562144884663,
+          "log_ratio_variance": 0.020357608159395933,
+          "normalizer_means": [
+            1.127576713500476,
+            0.7996018109169567
+          ],
+          "mean_joint_reverse_KL": 0.36351625920726055,
+          "target_calls_per_calibration": 128
+        },
+        "gaussian": {
+          "mass_RMSE": 0.035897735062392445,
+          "mass_bias": -0.0016105155829969444,
+          "log_ratio_RMSE": 0.14909743684993207,
+          "log_ratio_variance": 0.02215681310263749,
+          "normalizer_means": [
+            1.127576713500476,
+            0.8037794629942314
+          ],
+          "mean_joint_reverse_KL": 0.36442937353582255,
+          "target_calls_per_calibration": 128
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.022948969479609314,
+          "mass_bias": -0.0028647292155936075,
+          "log_ratio_RMSE": 0.09511718558527696,
+          "log_ratio_variance": 0.008888805377314637,
+          "normalizer_means": [
+            1.127576713500476,
+            0.8007641239888595
+          ],
+          "mean_joint_reverse_KL": 0.36212889757083827,
+          "target_calls_per_calibration": 128
+        },
+        "oracle": {
+          "mass_RMSE": 0.02264010585295671,
+          "mass_bias": -0.0024916759132946912,
+          "log_ratio_RMSE": 0.09379540533096717,
+          "log_ratio_variance": 0.00867597264153448,
+          "normalizer_means": [
+            1.127576713500476,
+            0.8020156770176435
+          ],
+          "mean_joint_reverse_KL": 0.3623148463762717,
+          "target_calls_per_calibration": 128
+        },
+        "mean_work": {
+          "mass_RMSE": 0.13280606143676701,
+          "mass_bias": -0.12926420668697042,
+          "target_calls_per_calibration": 128
+        },
+        "binned": {
+          "mass_RMSE": 0.02307152202795969,
+          "mass_bias": -0.002708546206890372,
+          "target_calls_per_calibration": 128
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.665606493060155,
+      "neural_to_binned_RMSE": 0.9946881463562803,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.02307152202795969,
+        "binned_mass_bias": -0.0027085462068903803,
+        "nonlinear_mass_RMSE": 0.022948969479609314,
+        "neural_to_binned_RMSE_ratio": 0.9946881463562803,
+        "paired_squared_error_difference": -5.63992851058955e-06,
+        "paired_MC_normal95": [
+          -3.2681149187323744e-05,
+          2.1401292166144645e-05
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.0009663423038598171,
+          "paired_MC_normal95": [
+            -0.001110952564132603,
+            -0.0008217320435870314
+          ],
+          "RMSE_ratio": 0.5939277914461255
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.0007878999546856176,
+          "paired_MC_normal95": [
+            -0.0009104698411313505,
+            -0.0006653300682398847
+          ],
+          "RMSE_ratio": 0.6329563804823111
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -0.000662096844579124,
+          "paired_MC_normal95": [
+            -0.0007776698632306544,
+            -0.0005465238259275936
+          ],
+          "RMSE_ratio": 0.665606493060155
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -0.0007619921824336804,
+          "paired_MC_normal95": [
+            -0.0008828251615207014,
+            -0.0006411592033466595
+          ],
+          "RMSE_ratio": 0.6392873934726693
+        }
+      }
+    },
+    {
+      "scenario": "nonlinear",
+      "replica": 1,
+      "pairs": 256,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.019806948348688343,
+          "mass_bias": 7.93155561521774e-05,
+          "log_ratio_RMSE": 0.08175428032915173,
+          "log_ratio_variance": 0.006683704347109577,
+          "normalizer_means": [
+            1.1294697836997925,
+            0.8064135437137215
+          ],
+          "mean_joint_reverse_KL": 0.36354874932843084,
+          "target_calls_per_calibration": 512
+        },
+        "identity": {
+          "mass_RMSE": 0.01704764193486946,
+          "mass_bias": -0.000763712641091898,
+          "log_ratio_RMSE": 0.07030900507911492,
+          "log_ratio_variance": 0.004930672703073983,
+          "normalizer_means": [
+            1.1294697836997925,
+            0.8036323354217167
+          ],
+          "mean_joint_reverse_KL": 0.3628521930664743,
+          "target_calls_per_calibration": 512
+        },
+        "constant": {
+          "mass_RMSE": 0.016862122013546324,
+          "mass_bias": 3.491280717517264e-05,
+          "log_ratio_RMSE": 0.06955578096083964,
+          "log_ratio_variance": 0.004837936013797095,
+          "normalizer_means": [
+            1.1294697836997925,
+            0.8062161881034233
+          ],
+          "mean_joint_reverse_KL": 0.36330034675598083,
+          "target_calls_per_calibration": 512
+        },
+        "gaussian": {
+          "mass_RMSE": 0.01753727689843495,
+          "mass_bias": 0.0002506275127003552,
+          "log_ratio_RMSE": 0.07227644850137316,
+          "log_ratio_variance": 0.0052235328623004805,
+          "normalizer_means": [
+            1.1294697836997925,
+            0.8071067294385027
+          ],
+          "mean_joint_reverse_KL": 0.36347236570144337,
+          "target_calls_per_calibration": 512
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.011405693694223763,
+          "mass_bias": -0.0006584745875131217,
+          "log_ratio_RMSE": 0.046999149339828336,
+          "log_ratio_variance": 0.002200528143573945,
+          "normalizer_means": [
+            1.1294697836997925,
+            0.8042967009109454
+          ],
+          "mean_joint_reverse_KL": 0.36258210566195287,
+          "target_calls_per_calibration": 512
+        },
+        "oracle": {
+          "mass_RMSE": 0.01112620748995921,
+          "mass_bias": -0.0006309014618330176,
+          "log_ratio_RMSE": 0.04585601933884401,
+          "log_ratio_variance": 0.002095075097997661,
+          "normalizer_means": [
+            1.1294697836997925,
+            0.8043775856941868
+          ],
+          "mean_joint_reverse_KL": 0.3625850874630877,
+          "target_calls_per_calibration": 512
+        },
+        "mean_work": {
+          "mass_RMSE": 0.1318156794345874,
+          "mass_bias": -0.1309357716210045,
+          "target_calls_per_calibration": 512
+        },
+        "binned": {
+          "mass_RMSE": 0.011251151711391948,
+          "mass_bias": -0.0005385926998927038,
+          "target_calls_per_calibration": 512
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.6764091544979277,
+      "neural_to_binned_RMSE": 1.0137356589615034,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.011251151711391948,
+        "binned_mass_bias": -0.0005385926998927122,
+        "nonlinear_mass_RMSE": 0.011405693694223763,
+        "neural_to_binned_RMSE_ratio": 1.0137356589615034,
+        "paired_squared_error_difference": 3.501433813697719e-06,
+        "paired_MC_normal95": [
+          -2.66537541250212e-06,
+          9.668243039897558e-06
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.00026222535424115224,
+          "paired_MC_normal95": [
+            -0.00029723721464827886,
+            -0.00022721349383402566
+          ],
+          "RMSE_ratio": 0.5758430573672432
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.00016053224689306395,
+          "paired_MC_normal95": [
+            -0.0001879687600333,
+            -0.0001330957337528279
+          ],
+          "RMSE_ratio": 0.6690481732194536
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -0.0001542413101532678,
+          "paired_MC_normal95": [
+            -0.00018371380443899638,
+            -0.0001247688158675392
+          ],
+          "RMSE_ratio": 0.6764091544979277
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -0.00017746623236592445,
+          "paired_MC_normal95": [
+            -0.0002061883750345878,
+            -0.0001487440896972611
+          ],
+          "RMSE_ratio": 0.6503685697773081
+        }
+      }
+    },
+    {
+      "scenario": "constant",
+      "replica": 2,
+      "pairs": 16,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.08079786055037119,
+          "mass_bias": -0.01159897348102877,
+          "log_ratio_RMSE": 0.3503451590084017,
+          "log_ratio_variance": 0.11912170622743189,
+          "normalizer_means": [
+            1.1304688367544005,
+            0.7902401104788448
+          ],
+          "mean_joint_reverse_KL": 0.369802411338572,
+          "target_calls_per_calibration": 32
+        },
+        "identity": {
+          "mass_RMSE": 0.05639267895237396,
+          "mass_bias": -0.007091282372975163,
+          "log_ratio_RMSE": 0.23868012512324818,
+          "log_ratio_variance": 0.05577113584870186,
+          "normalizer_means": [
+            1.1304688367544005,
+            0.8047462773389953
+          ],
+          "mean_joint_reverse_KL": 0.36524558841779936,
+          "target_calls_per_calibration": 32
+        },
+        "constant": {
+          "mass_RMSE": 0.045981657758797194,
+          "mass_bias": -0.007795870325223896,
+          "log_ratio_RMSE": 0.19431201683090274,
+          "log_ratio_variance": 0.03647982339489095,
+          "normalizer_means": [
+            1.1304688367544005,
+            0.8066006461525744
+          ],
+          "mean_joint_reverse_KL": 0.3626105349139746,
+          "target_calls_per_calibration": 32
+        },
+        "gaussian": {
+          "mass_RMSE": 0.04628150378854308,
+          "mass_bias": -0.008092889349478632,
+          "log_ratio_RMSE": 0.19579370668959173,
+          "log_ratio_variance": 0.03696343243430597,
+          "normalizer_means": [
+            1.1304688367544005,
+            0.8052509212449404
+          ],
+          "mean_joint_reverse_KL": 0.36249958719946035,
+          "target_calls_per_calibration": 32
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.045910389643189706,
+          "mass_bias": -0.007673660607470549,
+          "log_ratio_RMSE": 0.19394148817579926,
+          "log_ratio_variance": 0.036373150373877436,
+          "normalizer_means": [
+            1.1304688367544005,
+            0.8069412619534958
+          ],
+          "mean_joint_reverse_KL": 0.3626665418867572,
+          "target_calls_per_calibration": 32
+        },
+        "oracle": {
+          "mass_RMSE": 0.0459383398652738,
+          "mass_bias": -0.007769545742151695,
+          "log_ratio_RMSE": 0.19412516064434238,
+          "log_ratio_variance": 0.03641549940858713,
+          "normalizer_means": [
+            1.1304688367544005,
+            0.806659388010783
+          ],
+          "mean_joint_reverse_KL": 0.3626173709167378,
+          "target_calls_per_calibration": 32
+        },
+        "mean_work": {
+          "mass_RMSE": 0.13677322177554516,
+          "mass_bias": -0.12854038069865648,
+          "target_calls_per_calibration": 32
+        },
+        "binned": {
+          "mass_RMSE": 0.04624298097951492,
+          "mass_bias": -0.007507741012655,
+          "target_calls_per_calibration": 32
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.9984500751151397,
+      "neural_to_binned_RMSE": 0.992807744455909,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.04624298097951492,
+        "binned_mass_bias": -0.007507741012654979,
+        "nonlinear_mass_RMSE": 0.045910389643189706,
+        "neural_to_binned_RMSE_ratio": 0.992807744455909,
+        "paired_squared_error_difference": -3.064941268227764e-05,
+        "paired_MC_normal95": [
+          -0.00010675905967027943,
+          4.546023430572415e-05
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.00442053039232773,
+          "paired_MC_normal95": [
+            -0.004984777355530141,
+            -0.0038562834291253193
+          ],
+          "RMSE_ratio": 0.5682129369572619
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.0010723703622360205,
+          "paired_MC_normal95": [
+            -0.0014024512848202695,
+            -0.0007422894396517715
+          ],
+          "RMSE_ratio": 0.8141196782292078
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -6.548973057653384e-06,
+          "paired_MC_normal95": [
+            -4.0833341451452447e-05,
+            2.7735395336145677e-05
+          ],
+          "RMSE_ratio": 0.9984500751151397
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -3.421371573942718e-05,
+          "paired_MC_normal95": [
+            -0.00011155142357637821,
+            4.312399209752386e-05
+          ],
+          "RMSE_ratio": 0.991981372363159
+        }
+      }
+    },
+    {
+      "scenario": "constant",
+      "replica": 2,
+      "pairs": 64,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.03954082640548861,
+          "mass_bias": -0.0031615753545600196,
+          "log_ratio_RMSE": 0.16470304060776417,
+          "log_ratio_variance": 0.026889991686206777,
+          "normalizer_means": [
+            1.130922453344122,
+            0.8011300707561791
+          ],
+          "mean_joint_reverse_KL": 0.3641073134436847,
+          "target_calls_per_calibration": 128
+        },
+        "identity": {
+          "mass_RMSE": 0.028743144074973102,
+          "mass_bias": -0.0020101797629671,
+          "log_ratio_RMSE": 0.1192304130219764,
+          "log_ratio_variance": 0.014125257537241585,
+          "normalizer_means": [
+            1.130922453344122,
+            0.8051519772352883
+          ],
+          "mean_joint_reverse_KL": 0.36324166878260633,
+          "target_calls_per_calibration": 128
+        },
+        "constant": {
+          "mass_RMSE": 0.022728063090846167,
+          "mass_bias": -0.0016082292016591354,
+          "log_ratio_RMSE": 0.09418637063842114,
+          "log_ratio_variance": 0.008816342667413043,
+          "normalizer_means": [
+            1.130922453344122,
+            0.8073700438361254
+          ],
+          "mean_joint_reverse_KL": 0.3628332580398696,
+          "target_calls_per_calibration": 128
+        },
+        "gaussian": {
+          "mass_RMSE": 0.022915950591291298,
+          "mass_bias": -0.0016157862285982063,
+          "log_ratio_RMSE": 0.09495105001735256,
+          "log_ratio_variance": 0.008960329866827167,
+          "normalizer_means": [
+            1.130922453344122,
+            0.8072958838764175
+          ],
+          "mean_joint_reverse_KL": 0.36284652716462085,
+          "target_calls_per_calibration": 128
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.022676319337818183,
+          "mass_bias": -0.0015220062512787012,
+          "log_ratio_RMSE": 0.09396075283341729,
+          "log_ratio_variance": 0.00877907795006929,
+          "normalizer_means": [
+            1.130922453344122,
+            0.8075990938433834
+          ],
+          "mean_joint_reverse_KL": 0.36287811000247516,
+          "target_calls_per_calibration": 128
+        },
+        "oracle": {
+          "mass_RMSE": 0.022714654559341147,
+          "mass_bias": -0.001606551803014052,
+          "log_ratio_RMSE": 0.09413386205788853,
+          "log_ratio_variance": 0.00880656552592248,
+          "normalizer_means": [
+            1.130922453344122,
+            0.8073682942005631
+          ],
+          "mean_joint_reverse_KL": 0.36283299008921466,
+          "target_calls_per_calibration": 128
+        },
+        "mean_work": {
+          "mass_RMSE": 0.13198384248101241,
+          "mass_bias": -0.12973255007993317,
+          "target_calls_per_calibration": 128
+        },
+        "binned": {
+          "mass_RMSE": 0.02278066734030344,
+          "mass_bias": -0.0014728892888524192,
+          "target_calls_per_calibration": 128
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.9977233540394024,
+      "neural_to_binned_RMSE": 0.9954194492669386,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.02278066734030344,
+        "binned_mass_bias": -0.0014728892888523455,
+        "nonlinear_mass_RMSE": 0.022676319337818183,
+        "neural_to_binned_RMSE_ratio": 0.9954194492669386,
+        "paired_squared_error_difference": -4.743345758860747e-06,
+        "paired_MC_normal95": [
+          -2.292383485897673e-05,
+          1.3437143341255237e-05
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.0010492614941182783,
+          "paired_MC_normal95": [
+            -0.0011926545002268782,
+            -0.0009058684880096785
+          ],
+          "RMSE_ratio": 0.5734912848121585
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.00031195287260395453,
+          "paired_MC_normal95": [
+            -0.00039239554707578856,
+            -0.0002315101981321205
+          ],
+          "RMSE_ratio": 0.7889296758444267
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -2.3493931507769535e-06,
+          "paired_MC_normal95": [
+            -1.1099095981981504e-05,
+            6.4003096804275965e-06
+          ],
+          "RMSE_ratio": 0.9977233540394024
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -1.092533279179723e-05,
+          "paired_MC_normal95": [
+            -2.9888341656810857e-05,
+            8.037676073216397e-06
+          ],
+          "RMSE_ratio": 0.9895430367368578
+        }
+      }
+    },
+    {
+      "scenario": "constant",
+      "replica": 2,
+      "pairs": 256,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.018752410950574717,
+          "mass_bias": 0.0006649130389336841,
+          "log_ratio_RMSE": 0.07724603367609807,
+          "log_ratio_variance": 0.005961935029312851,
+          "normalizer_means": [
+            1.129522765731445,
+            0.8083559122968687
+          ],
+          "mean_joint_reverse_KL": 0.36380209409091024,
+          "target_calls_per_calibration": 512
+        },
+        "identity": {
+          "mass_RMSE": 0.014944699749344169,
+          "mass_bias": 0.0007596130155594159,
+          "log_ratio_RMSE": 0.061533788768601376,
+          "log_ratio_variance": 0.0037785047737897313,
+          "normalizer_means": [
+            1.129522765731445,
+            0.8088333842203655
+          ],
+          "mean_joint_reverse_KL": 0.3635925400125786,
+          "target_calls_per_calibration": 512
+        },
+        "constant": {
+          "mass_RMSE": 0.010706352880671812,
+          "mass_bias": -0.0008882227487868286,
+          "log_ratio_RMSE": 0.0441501040778854,
+          "log_ratio_variance": 0.0019346243208913565,
+          "normalizer_means": [
+            1.129522765731445,
+            0.8033636215071221
+          ],
+          "mean_joint_reverse_KL": 0.36241774238188107,
+          "target_calls_per_calibration": 512
+        },
+        "gaussian": {
+          "mass_RMSE": 0.010721552563173977,
+          "mass_bias": -0.0007855384962151861,
+          "log_ratio_RMSE": 0.044210102801280536,
+          "log_ratio_variance": 0.001942975575339279,
+          "normalizer_means": [
+            1.129522765731445,
+            0.8036667239638262
+          ],
+          "mean_joint_reverse_KL": 0.3624776846484143,
+          "target_calls_per_calibration": 512
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.010696648344572797,
+          "mass_bias": -0.0007956410537442837,
+          "log_ratio_RMSE": 0.04410747765461994,
+          "log_ratio_variance": 0.0019336327655800083,
+          "normalizer_means": [
+            1.129522765731445,
+            0.803662008023233
+          ],
+          "mean_joint_reverse_KL": 0.36247075367618775,
+          "target_calls_per_calibration": 512
+        },
+        "oracle": {
+          "mass_RMSE": 0.010697986463234225,
+          "mass_bias": -0.0008729584521410445,
+          "log_ratio_RMSE": 0.04411516905946475,
+          "log_ratio_variance": 0.001932019176557652,
+          "normalizer_means": [
+            1.129522765731445,
+            0.8034123159240155
+          ],
+          "mean_joint_reverse_KL": 0.3624261841489849,
+          "target_calls_per_calibration": 512
+        },
+        "mean_work": {
+          "mass_RMSE": 0.13008146935864037,
+          "mass_bias": -0.12947213542976366,
+          "target_calls_per_calibration": 512
+        },
+        "binned": {
+          "mass_RMSE": 0.01094991952820129,
+          "mass_bias": -0.0008461961482296165,
+          "target_calls_per_calibration": 512
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.9990935721802581,
+      "neural_to_binned_RMSE": 0.9768700415581869,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.01094991952820129,
+        "binned_mass_bias": -0.0008461961482296136,
+        "nonlinear_mass_RMSE": 0.010696648344572797,
+        "neural_to_binned_RMSE_ratio": 0.9768700415581869,
+        "paired_squared_error_difference": -5.482451866632053e-06,
+        "paired_MC_normal95": [
+          -9.391762935338802e-06,
+          -1.573140797925303e-06
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.00023723463065178257,
+          "paired_MC_normal95": [
+            -0.00026673846998996023,
+            -0.00020773079131360488
+          ],
+          "RMSE_ratio": 0.570414565506574
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.00010892576479059569,
+          "paired_MC_normal95": [
+            -0.000130785974169462,
+            -8.706555541172938e-05
+          ],
+          "RMSE_ratio": 0.7157486282079509
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -2.0770619801766e-07,
+          "paired_MC_normal95": [
+            -2.284943921141133e-06,
+            1.8695315251058128e-06
+          ],
+          "RMSE_ratio": 0.9990935721802581
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -5.334035574505339e-07,
+          "paired_MC_normal95": [
+            -4.815158263440978e-06,
+            3.74835114853991e-06
+          ],
+          "RMSE_ratio": 0.9976771816903907
+        }
+      }
+    },
+    {
+      "scenario": "nonlinear",
+      "replica": 2,
+      "pairs": 16,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.07898814527944076,
+          "mass_bias": -0.006208100219471759,
+          "log_ratio_RMSE": 0.3407315800480565,
+          "log_ratio_variance": 0.11473785275911676,
+          "normalizer_means": [
+            1.1322868872907625,
+            0.8084765913388464
+          ],
+          "mean_joint_reverse_KL": 0.37226123827970814,
+          "target_calls_per_calibration": 32
+        },
+        "identity": {
+          "mass_RMSE": 0.0747146161862375,
+          "mass_bias": -0.010452069148645857,
+          "log_ratio_RMSE": 0.3229890529731119,
+          "log_ratio_variance": 0.10144914969003542,
+          "normalizer_means": [
+            1.1322868872907625,
+            0.797345719214221
+          ],
+          "mean_joint_reverse_KL": 0.36845060922064227,
+          "target_calls_per_calibration": 32
+        },
+        "constant": {
+          "mass_RMSE": 0.07235762728787722,
+          "mass_bias": -0.0095513066990695,
+          "log_ratio_RMSE": 0.3107502759097968,
+          "log_ratio_variance": 0.09417757537002358,
+          "normalizer_means": [
+            1.1322868872907625,
+            0.7993911119959793
+          ],
+          "mean_joint_reverse_KL": 0.3682016653087588,
+          "target_calls_per_calibration": 32
+        },
+        "gaussian": {
+          "mass_RMSE": 0.07156829158994028,
+          "mass_bias": -0.009589900272012803,
+          "log_ratio_RMSE": 0.3078547302122457,
+          "log_ratio_variance": 0.0923832760309045,
+          "normalizer_means": [
+            1.1322868872907625,
+            0.7974486472807716
+          ],
+          "mean_joint_reverse_KL": 0.3679475981663296,
+          "target_calls_per_calibration": 32
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.04672313652574192,
+          "mass_bias": -0.007402720659602956,
+          "log_ratio_RMSE": 0.1983125860358959,
+          "log_ratio_variance": 0.038147484570747174,
+          "normalizer_means": [
+            1.1322868872907625,
+            0.8078628918410978
+          ],
+          "mean_joint_reverse_KL": 0.3629924047446438,
+          "target_calls_per_calibration": 32
+        },
+        "oracle": {
+          "mass_RMSE": 0.04479890965692911,
+          "mass_bias": -0.008890894609264304,
+          "log_ratio_RMSE": 0.18983886430189398,
+          "log_ratio_variance": 0.034426459006407666,
+          "normalizer_means": [
+            1.1322868872907625,
+            0.8027131511516968
+          ],
+          "mean_joint_reverse_KL": 0.3617613546040742,
+          "target_calls_per_calibration": 32
+        },
+        "mean_work": {
+          "mass_RMSE": 0.14300530731709976,
+          "mass_bias": -0.12871408761531927,
+          "target_calls_per_calibration": 32
+        },
+        "binned": {
+          "mass_RMSE": 0.04599967595791818,
+          "mass_bias": -0.008921353370976659,
+          "target_calls_per_calibration": 32
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.6528468891425847,
+      "neural_to_binned_RMSE": 1.0157275144391362,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.04599967595791818,
+        "binned_mass_bias": -0.008921353370976626,
+        "nonlinear_mass_RMSE": 0.04672313652574192,
+        "neural_to_binned_RMSE_ratio": 1.0157275144391362,
+        "paired_squared_error_difference": 6.708129856964288e-05,
+        "paired_MC_normal95": [
+          -7.881655817489935e-05,
+          0.0002129791553141851
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.00405607560788292,
+          "paired_MC_normal95": [
+            -0.004614631950589217,
+            -0.003497519265176624
+          ],
+          "RMSE_ratio": 0.5915208713971809
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.0033992223850536634,
+          "paired_MC_normal95": [
+            -0.003933078966676355,
+            -0.0028653658034309723
+          ],
+          "RMSE_ratio": 0.6253547018066375
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -0.003052574739928235,
+          "paired_MC_normal95": [
+            -0.003551395185510038,
+            -0.0025537542943464323
+          ],
+          "RMSE_ratio": 0.6457251056595924
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -0.002938968874299598,
+          "paired_MC_normal95": [
+            -0.0034387835910394977,
+            -0.0024391541575596986
+          ],
+          "RMSE_ratio": 0.6528468891425847
+        }
+      }
+    },
+    {
+      "scenario": "nonlinear",
+      "replica": 2,
+      "pairs": 64,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.03833928839057572,
+          "mass_bias": 0.0021213993952427057,
+          "log_ratio_RMSE": 0.1588873663489645,
+          "log_ratio_variance": 0.025201517477451613,
+          "normalizer_means": [
+            1.1303471797706037,
+            0.8177652449178502
+          ],
+          "mean_joint_reverse_KL": 0.366953721024479,
+          "target_calls_per_calibration": 128
+        },
+        "identity": {
+          "mass_RMSE": 0.0345295816188596,
+          "mass_bias": -0.0015351833501639866,
+          "log_ratio_RMSE": 0.14343523612128528,
+          "log_ratio_variance": 0.020507779241343376,
+          "normalizer_means": [
+            1.1303471797706037,
+            0.8059642811941219
+          ],
+          "mean_joint_reverse_KL": 0.36427413367970296,
+          "target_calls_per_calibration": 128
+        },
+        "constant": {
+          "mass_RMSE": 0.03383914939230441,
+          "mass_bias": -0.0003461346163915486,
+          "log_ratio_RMSE": 0.14036596835305465,
+          "log_ratio_variance": 0.019692835749240887,
+          "normalizer_means": [
+            1.1303471797706037,
+            0.8098579962135293
+          ],
+          "mean_joint_reverse_KL": 0.3648608342811151,
+          "target_calls_per_calibration": 128
+        },
+        "gaussian": {
+          "mass_RMSE": 0.03398402894781674,
+          "mass_bias": -0.0017608079614050537,
+          "log_ratio_RMSE": 0.1410660916786451,
+          "log_ratio_variance": 0.01981910517574406,
+          "normalizer_means": [
+            1.1303471797706037,
+            0.8051763845434974
+          ],
+          "mean_joint_reverse_KL": 0.36406542319298246,
+          "target_calls_per_calibration": 128
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.023291144038204627,
+          "mass_bias": -0.002020451988532041,
+          "log_ratio_RMSE": 0.09658128354023973,
+          "log_ratio_variance": 0.009244436128525454,
+          "normalizer_means": [
+            1.1303471797706037,
+            0.8054104462925497
+          ],
+          "mean_joint_reverse_KL": 0.3626492461863869,
+          "target_calls_per_calibration": 128
+        },
+        "oracle": {
+          "mass_RMSE": 0.022129808857712957,
+          "mass_bias": -0.002114921587385204,
+          "log_ratio_RMSE": 0.09172815652076799,
+          "log_ratio_variance": 0.008324822795283023,
+          "normalizer_means": [
+            1.1303471797706037,
+            0.8049190367874424
+          ],
+          "mean_joint_reverse_KL": 0.3624854770155563,
+          "target_calls_per_calibration": 128
+        },
+        "mean_work": {
+          "mass_RMSE": 0.13260041529052738,
+          "mass_bias": -0.1292830275260511,
+          "target_calls_per_calibration": 128
+        },
+        "binned": {
+          "mass_RMSE": 0.02270481023692059,
+          "mass_bias": -0.0017336951398702616,
+          "target_calls_per_calibration": 128
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.6882898789264905,
+      "neural_to_binned_RMSE": 1.0258242106040856,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.02270481023692059,
+        "binned_mass_bias": -0.0017336951398702674,
+        "nonlinear_mass_RMSE": 0.023291144038204627,
+        "neural_to_binned_RMSE_ratio": 1.0258242106040856,
+        "paired_squared_error_difference": 2.6968982713820712e-05,
+        "paired_MC_normal95": [
+          -7.5827470146717114e-06,
+          6.152071244231313e-05
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.0009274236436873391,
+          "paired_MC_normal95": [
+            -0.0010574491228512593,
+            -0.000797398164523419
+          ],
+          "RMSE_ratio": 0.60750068704796
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.0006498146161650919,
+          "paired_MC_normal95": [
+            -0.0007623398231370948,
+            -0.000537289409193089
+          ],
+          "RMSE_ratio": 0.6745272588383554
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -0.000602610640986301,
+          "paired_MC_normal95": [
+            -0.0007117268632235191,
+            -0.0004934944187490829
+          ],
+          "RMSE_ratio": 0.6882898789264905
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -0.0006124368329176516,
+          "paired_MC_normal95": [
+            -0.00072329626802382,
+            -0.0005015773978114831
+          ],
+          "RMSE_ratio": 0.6853555849416417
+        }
+      }
+    },
+    {
+      "scenario": "nonlinear",
+      "replica": 2,
+      "pairs": 256,
+      "methods": {
+        "independent": {
+          "mass_RMSE": 0.01975949613173224,
+          "mass_bias": -0.00015308335672188877,
+          "log_ratio_RMSE": 0.08156701935908492,
+          "log_ratio_variance": 0.006651749689562603,
+          "normalizer_means": [
+            1.1289986316980603,
+            0.8054026315549149
+          ],
+          "mean_joint_reverse_KL": 0.36341076858510285,
+          "target_calls_per_calibration": 512
+        },
+        "identity": {
+          "mass_RMSE": 0.017422150420894646,
+          "mass_bias": -0.00020834850598089433,
+          "log_ratio_RMSE": 0.07180591506031471,
+          "log_ratio_variance": 0.005154423737513836,
+          "normalizer_means": [
+            1.1289986316980603,
+            0.805167661324608
+          ],
+          "mean_joint_reverse_KL": 0.363199137488996,
+          "target_calls_per_calibration": 512
+        },
+        "constant": {
+          "mass_RMSE": 0.01726433185337511,
+          "mass_bias": -0.00042530134373601757,
+          "log_ratio_RMSE": 0.07114916255632206,
+          "log_ratio_variance": 0.005057472539857587,
+          "normalizer_means": [
+            1.1289986316980603,
+            0.8044345372528148
+          ],
+          "mean_joint_reverse_KL": 0.36306257257428526,
+          "target_calls_per_calibration": 512
+        },
+        "gaussian": {
+          "mass_RMSE": 0.017948651631662135,
+          "mass_bias": 0.000354249243122036,
+          "log_ratio_RMSE": 0.07401147002632288,
+          "log_ratio_variance": 0.005476705192399761,
+          "normalizer_means": [
+            1.1289986316980603,
+            0.8071346510052695
+          ],
+          "mean_joint_reverse_KL": 0.36356247623542914,
+          "target_calls_per_calibration": 512
+        },
+        "nonlinear": {
+          "mass_RMSE": 0.011456844107101124,
+          "mass_bias": -0.0008231896866968375,
+          "log_ratio_RMSE": 0.047247336574832974,
+          "log_ratio_variance": 0.0022195055688916812,
+          "normalizer_means": [
+            1.1289986316980603,
+            0.8033180790410682
+          ],
+          "mean_joint_reverse_KL": 0.3624895651404362,
+          "target_calls_per_calibration": 512
+        },
+        "oracle": {
+          "mass_RMSE": 0.010933120722744985,
+          "mass_bias": -0.0006345536857795018,
+          "log_ratio_RMSE": 0.0450724252789798,
+          "log_ratio_variance": 0.0020237709392663234,
+          "normalizer_means": [
+            1.1289986316980603,
+            0.803941715360261
+          ],
+          "mean_joint_reverse_KL": 0.3625742525438377,
+          "target_calls_per_calibration": 512
+        },
+        "mean_work": {
+          "mass_RMSE": 0.1305241383405123,
+          "mass_bias": -0.12964214032746801,
+          "target_calls_per_calibration": 512
+        },
+        "binned": {
+          "mass_RMSE": 0.011156067051860143,
+          "mass_bias": -0.0006887682227367242,
+          "target_calls_per_calibration": 512
+        }
+      },
+      "neural_to_best_observed_linear_control_RMSE": 0.6636135243693984,
+      "neural_to_binned_RMSE": 1.0269608504361607,
+      "binned_comparison": {
+        "binned_mass_RMSE": 0.011156067051860143,
+        "binned_mass_bias": -0.0006887682227367269,
+        "nonlinear_mass_RMSE": 0.011456844107101124,
+        "neural_to_binned_RMSE_ratio": 1.0269608504361607,
+        "paired_squared_error_difference": 6.801444828818276e-06,
+        "paired_MC_normal95": [
+          -2.5809919645602467e-06,
+          1.61838816221968e-05
+        ]
+      },
+      "comparisons": {
+        "nonlinear minus independent": {
+          "mean_squared_mass_error_difference": -0.00025917841048552366,
+          "paired_MC_normal95": [
+            -0.0002943716128251925,
+            -0.00022398520814585486
+          ],
+          "RMSE_ratio": 0.5798145879186821
+        },
+        "nonlinear minus identity": {
+          "mean_squared_mass_error_difference": -0.00017227204839386168,
+          "paired_MC_normal95": [
+            -0.00020017902349690295,
+            -0.0001443650732908204
+          ],
+          "RMSE_ratio": 0.6576021805758696
+        },
+        "nonlinear minus constant": {
+          "mean_squared_mass_error_difference": -0.0001667978774490447,
+          "paired_MC_normal95": [
+            -0.00019507284836340756,
+            -0.00013852290653468185
+          ],
+          "RMSE_ratio": 0.6636135243693984
+        },
+        "nonlinear minus gaussian": {
+          "mean_squared_mass_error_difference": -0.00019089481850035,
+          "paired_MC_normal95": [
+            -0.00022011742240812796,
+            -0.00016167221459257206
+          ],
+          "RMSE_ratio": 0.6383122444078638
+        }
+      }
+    }
+  ],
+  "exact": {
+    "normalizers": [
+      1.13031820798497,
+      0.8053491984923842
+    ],
+    "component_mass": [
+      0.5839423674762351,
+      0.41605763252376493
+    ],
+    "log_normalizer_ratio": -0.3389785017439845,
+    "fixed_shape_reverse_KL_optimal_mass": [
+      0.7142857142857143,
+      0.28571428571428575
+    ],
+    "conditional_reverse_KL": [
+      0.12249919306911404,
+      0.6998114231992846
+    ],
+    "optimal_fixed_marginal_log_ratio_asymptotic_variance": 0.5298438714763236
+  },
+  "primary_cases": 6,
+  "fit_seed_runs": 3,
+  "scenarios": [
+    "constant",
+    "nonlinear"
+  ],
+  "primary_full_replay": true,
+  "binned_full_replay": true,
+  "binned_mass_values_checked": 18000,
+  "new_molecular_oracle_calls": 0,
+  "analytic_training_labels": 6144,
+  "scientific_submission_ready": false,
+  "interpretation": "The constructed nonlinear case benefits from nonlinear marginal-preserving coupling versus linear/Gaussian choices. Eight radial bins perform similarly to the neural map, so a distinctive neural advantage is not established. The constant-angle case gives no substantive neural advantage. Coarse mass calibration does not correct conditional shapes; joint reverse KL can remain worse than variational mass weighting.",
+  "limits": [
+    "The target was constructed with a known radius-dependent twist; this is not molecular performance.",
+    "GenSNIS and Gaussian-preserving flow rearrangements are direct prior art.",
+    "The oracle coupling is an asymptotic log-ratio-variance reference, not a finite-sample MSE lower bound.",
+    "Normalizer estimates preserve unbiasedness under fixed independent coupling training; normalized masses and log ratios generally have finite-sample bias.",
+    "Three separately reported fit seeds are not a new-condition benchmark. Calibration repeats are independent of fitting, not independent model replications."
+  ]
+}
