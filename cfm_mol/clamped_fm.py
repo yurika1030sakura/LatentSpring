@@ -19,7 +19,7 @@ from .clamped_density import center_by_graph,deterministic_field
 
 def clamped_fm_path(graph,node_batch_idx,scheduler,*,terminal_time=0.8,
                     prior_std=1.,generator=None,parameterization='endpoint',
-                    pairing=None,pairing_radii=None,pairing_generator=None,prior_positions=None):
+                    pairing=None,pairing_radii=None,pairing_generator=None,prior_positions=None,prior_edge_context=None):
     if 'has_reference_geometry' in graph.ndata and not graph.ndata['has_reference_geometry'].all():
         raise ValueError('Condition-only placeholder coordinates cannot be used as FM targets')
     if not math.isfinite(terminal_time) or not 0<terminal_time<=1:
@@ -34,6 +34,11 @@ def clamped_fm_path(graph,node_batch_idx,scheduler,*,terminal_time=0.8,
             raise ValueError('Declared prior positions must be finite and match the graph')
         x0=prior_positions.to(x1).detach().clone()
     x0=center_by_graph(x0,node_batch_idx,graph.batch_size)
+    context=None
+    if prior_edge_context is not None:
+        if prior_positions is None:raise ValueError('Prior context requires explicit source positions')
+        from .latent_tree_context import validate_context
+        context=validate_context(prior_edge_context,graph,node_batch_idx)
     t=torch.rand((graph.batch_size,),device=x1.device,dtype=x1.dtype,generator=generator)*terminal_time
     pairing_records=[]
     if pairing is not None:
@@ -51,7 +56,11 @@ def clamped_fm_path(graph,node_batch_idx,scheduler,*,terminal_time=0.8,
                 a=graph.ndata['a_1_true'][selected].argmax(-1)
                 c=graph.ndata['c_1_true'][selected].argmax(-1)
                 groups=a*graph.ndata['c_1_true'].shape[-1]+c
-                x0[selected],x1[selected],record=typed_orbit_pair(x0[selected],x1[selected],pairing_radii[selected],groups,generator=pairing_generator)
+                x0[selected],x1[selected],record=typed_orbit_pair(x0[selected],x1[selected],pairing_radii[selected],groups,generator=pairing_generator,
+                    return_source_permutation=context is not None)
+                if context is not None:
+                    permutation=torch.tensor(record['source_permutation'],device=context[i].device)
+                    context[i]=context[i][permutation][:,permutation]
             else:
                 x0[selected],x1[selected],record=orbit_pair(x0[selected],x1[selected],pairing_radii[selected],
                     mode=pairing,generator=pairing_generator)
@@ -68,12 +77,14 @@ def clamped_fm_path(graph,node_batch_idx,scheduler,*,terminal_time=0.8,
         endpoint_target=xt+(prime/final_alpha)[node_batch_idx,None]*delta
     elif parameterization!='endpoint':
         raise ValueError('Training supports endpoint or displacement heads')
-    return xt,t,endpoint_target,{'x0':x0,'x1':x1,'alpha_T':final_alpha,'pairing_records':pairing_records}
+    info={'x0':x0,'x1':x1,'alpha_T':final_alpha,'pairing_records':pairing_records}
+    if context is not None:info['prior_edge_context']=context
+    return xt,t,endpoint_target,info
 
 
 def clamped_fm_loss(model,graph,node_batch_idx,upper_edge_mask,*,terminal_time=0.8,
                     prior_std=1.,generator=None,parameterization='endpoint',
-                    pairing=None,pairing_radii=None,pairing_generator=None,pairing_diagnostics=None,prior_positions=None):
+                    pairing=None,pairing_radii=None,pairing_generator=None,pairing_diagnostics=None,prior_positions=None,prior_edge_context=None):
     """Equal-molecule head MSE for a memoryless clamped flow.
 
     It is a positive time-weighting of the velocity FM loss and has the same
@@ -83,13 +94,18 @@ def clamped_fm_loss(model,graph,node_batch_idx,upper_edge_mask,*,terminal_time=0
     """
     if prior_positions is None and getattr(model,'_research_prior_kind','gaussian')!='gaussian':
         raise ValueError('Declared non-Gaussian source requires explicit prior training samples')
+    if hasattr(model.vector_field,'latent_tree_adapter') and prior_edge_context is None:
+        raise ValueError('Tree-conditioned FM requires explicit prior_edge_context for source permutation')
     xt,t,target,info=clamped_fm_path(graph,node_batch_idx,
         model.vector_field.interpolant_scheduler,terminal_time=terminal_time,
         prior_std=prior_std,generator=generator,parameterization=parameterization,
-        pairing=pairing,pairing_radii=pairing_radii,pairing_generator=pairing_generator,prior_positions=prior_positions)
+        pairing=pairing,pairing_radii=pairing_radii,pairing_generator=pairing_generator,prior_positions=prior_positions,prior_edge_context=prior_edge_context)
     if pairing_diagnostics is not None:pairing_diagnostics.extend(info['pairing_records'])
     with graph.local_scope(),deterministic_field(model.vector_field):
         graph.ndata['x_t']=xt
+        if prior_edge_context is not None:
+            from .latent_tree_context import attach_context
+            attach_context(graph,info['prior_edge_context'],node_batch_idx)
         for key in ('a','c'):graph.ndata[f'{key}_t']=graph.ndata[f'{key}_1_true']
         graph.edata['e_t']=graph.edata['e_1_true']
         prediction=model.vector_field(graph,t,node_batch_idx=node_batch_idx,upper_edge_mask=upper_edge_mask)['x']

@@ -126,4 +126,8 @@ def prepare_research_backbone(model, protocol):
         if backbone!='flowmol':raise ValueError('Electronic conditioning requires the FlowMol backbone')
         from cfm_mol.electronic_conditioning import patch_electronic_conditioning
         patch_electronic_conditioning(model)
+    if protocol.get('latent_tree_context'):
+        if backbone!='flowmol':raise ValueError('Tree context requires the FlowMol backbone')
+        from cfm_mol.latent_tree_context import patch_latent_tree_context
+        patch_latent_tree_context(model,**protocol['latent_tree_context'])
     return model

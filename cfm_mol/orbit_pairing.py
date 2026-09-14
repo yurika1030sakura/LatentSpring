@@ -87,7 +87,7 @@ def orbit_pair(source, target, radii, *, mode, generator, steric_weight=4.):
 
 
 @torch.no_grad()
-def typed_orbit_pair(source, target, radii, groups, *, generator):
+def typed_orbit_pair(source, target, radii, groups, *, generator, return_source_permutation=False):
     """Alternating type-preserving assignment/Kabsch, followed by group Haar.
 
     Groups must preserve every clamped node feature, and edge conditioning must
@@ -119,8 +119,11 @@ def typed_orbit_pair(source, target, radii, groups, *, generator):
     standard=source@proper_alignment(source,target)
     cost,overlap=path_cost(aligned,target,radii)
     standard_cost,standard_overlap=path_cost(standard,target,radii)
-    return aligned[random_permutation]@augmentation,target[random_permutation]@augmentation,dict(
+    record=dict(
         mode='typed_rotation',selected_candidate=-2,standard_cost=float(standard_cost[0]),selected_cost=float(cost[0]),
         standard_overlap=float(standard_overlap[0]),selected_overlap=float(overlap[0]),
         displacement_per_atom=float((aligned-target).square().sum(-1).mean()),
         atoms_reassigned=int((permutation!=identity).sum()))
+    if return_source_permutation:
+        record['source_permutation']=permutation[random_permutation].tolist()
+    return aligned[random_permutation]@augmentation,target[random_permutation]@augmentation,record

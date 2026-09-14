@@ -223,6 +223,8 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
     A declared non-Gaussian checkpoint requires its normalized prior callback;
     silently substituting the default Gaussian would describe another law.
     """
+    if hasattr(model.vector_field,'latent_tree_adapter'):
+        raise ValueError('Tree-conditioned density requires a qualified conditional/joint interface; marginal prior substitution is invalid')
     if prior_log_prob is None and getattr(model,'_research_prior_kind','gaussian')!='gaussian':
         raise ValueError('Declared non-Gaussian source requires an explicit prior_log_prob callback')
     if not isinstance(n_trace_replicates, int) or n_trace_replicates < 1:
