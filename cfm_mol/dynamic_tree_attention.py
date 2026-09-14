@@ -92,10 +92,11 @@ class DynamicTreeAttention(nn.Module):
         return self.messages(features)
 
 
-def patch_dynamic_tree_attention(model,atomic_numbers_by_type,mode='tree_learned',hidden=32):
+def patch_dynamic_tree_attention(model,atomic_numbers_by_type,mode='tree_learned',hidden=32,geometry='current'):
     """Recompute soft connectivity at each denoiser call from its current geometry."""
     field=model.vector_field
-    configuration=dict(atomic_numbers_by_type=list(atomic_numbers_by_type),mode=mode,hidden=hidden)
+    configuration=dict(atomic_numbers_by_type=list(atomic_numbers_by_type),mode=mode,hidden=hidden,geometry=geometry)
+    if geometry not in ['current','endpoint']:raise ValueError('Unknown connectivity geometry')
     if hasattr(field,'dynamic_tree_attention'):
         if field._dynamic_tree_configuration!=configuration:raise ValueError('Dynamic tree configuration changed')
         return model
@@ -106,7 +107,15 @@ def patch_dynamic_tree_attention(model,atomic_numbers_by_type,mode='tree_learned
     field._dynamic_tree_configuration=configuration
     original=field.denoise_graph
     def denoise(self,g,node_scalar_features,node_vec_features,node_positions,edge_features,node_batch_idx,upper_edge_mask,apply_softmax=False,remove_com=False):
-        residual=self.dynamic_tree_attention(g,node_scalar_features,node_positions,edge_features,node_batch_idx)
+        if getattr(self,'_geometry_sc_suppress_tree',False):
+            return original(g,node_scalar_features,node_vec_features,node_positions,edge_features,node_batch_idx,upper_edge_mask,apply_softmax,remove_com)
+        positions=node_positions
+        if geometry=='endpoint':
+            if '_geometry_sc_endpoint' not in g.ndata:raise ValueError('Endpoint connectivity requires the geometry self-conditioning wrapper')
+            positions=g.ndata['_geometry_sc_endpoint']
+        residual=self.dynamic_tree_attention(g,node_scalar_features,positions,edge_features,node_batch_idx)
+        if geometry=='endpoint':
+            residual=residual*g.ndata['_geometry_sc_envelope'][g.edges()[0]]
         return original(g,node_scalar_features,node_vec_features,node_positions,edge_features+residual,node_batch_idx,upper_edge_mask,apply_softmax,remove_com)
     field.denoise_graph=MethodType(denoise,field)
     return model

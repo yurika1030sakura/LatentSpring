@@ -108,9 +108,13 @@ def clamped_fm_loss(model,graph,node_batch_idx,upper_edge_mask,*,terminal_time=0
             attach_context(graph,info['prior_edge_context'],node_batch_idx)
         for key in ('a','c'):graph.ndata[f'{key}_t']=graph.ndata[f'{key}_1_true']
         graph.edata['e_t']=graph.edata['e_1_true']
-        prediction=model.vector_field(graph,t,node_batch_idx=node_batch_idx,upper_edge_mask=upper_edge_mask)['x']
-        prediction=center_by_graph(prediction,node_batch_idx,graph.batch_size)
+        output=model.vector_field(graph,t,node_batch_idx=node_batch_idx,upper_edge_mask=upper_edge_mask)
+        prediction=center_by_graph(output['x'],node_batch_idx,graph.batch_size)
         atom_loss=(prediction-target).square().mean(-1)
+        if '_geometry_sc_first_x' in output:
+            if parameterization!='displacement':raise ValueError('Two-pass geometry supervision requires a displacement head')
+            first=center_by_graph(output['_geometry_sc_first_x'],node_batch_idx,graph.batch_size)
+            atom_loss=.5*(atom_loss+(first-target).square().mean(-1))
         counts=torch.bincount(node_batch_idx,minlength=graph.batch_size).to(atom_loss)
         loss=atom_loss.new_zeros(graph.batch_size).index_add(0,node_batch_idx,atom_loss)/counts
         return loss.mean()

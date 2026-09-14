@@ -134,4 +134,8 @@ def prepare_research_backbone(model, protocol):
         if backbone!='flowmol':raise ValueError('Dynamic tree attention requires the FlowMol backbone')
         from cfm_mol.dynamic_tree_attention import patch_dynamic_tree_attention
         patch_dynamic_tree_attention(model,**protocol['dynamic_tree_attention'])
+    if protocol.get('geometry_self_conditioning'):
+        if protocol.get('position_parameterization')!='displacement':raise ValueError('Geometry SC requires its declared displacement head')
+        from cfm_mol.geometry_self_conditioning import patch_geometry_self_conditioning
+        patch_geometry_self_conditioning(model,**protocol['geometry_self_conditioning'])
     return model

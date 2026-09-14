@@ -1,5 +1,13 @@
 # Claude continuation — utility method tested; ICLR gate still unmet
 
+LATEST: tree-coordinate flow is COMPLETE and its chemical-validity gate FAILED.
+Read `notes/tree_manifold_results_20260914.md`. Current candidate is the separately
+frozen geometry/latent-relation feedback study; read
+`research/GEOMETRY_FEEDBACK_STATE_20260914.json` and `notes/geometry_feedback_v1.md`
+first. It restores a correctly parameterized self-conditioning baseline and tests
+unlabelled pair-code learning through coordinate error. No improvement claim yet.
+
+
 LATEST: dynamic-tree attention is COMPLETE with a failed gate; see
 `notes/dynamic_tree_results_20260914.md`. Next active candidate is the coordination
 prior plus geometry-preserving tree-coordinate flow. Read

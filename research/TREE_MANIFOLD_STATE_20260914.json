@@ -1,6 +1,6 @@
 {
   "at_utc": "2026-09-14T19:57:36.718262+00:00",
-  "status": "implemented_pending_submission",
+  "status": "complete_negative",
   "goal_achieved": false,
   "scientific_submission_ready": false,
   "method": "notes/tree_manifold_brief_v1.md",
@@ -16,5 +16,126 @@
   "planned_reported_outputs_including_projection": 4608,
   "source": "Learned heavy-core coordination tree plus normalized terminal-count allocations",
   "scope": "A contact-connected coordinate parameterization; non-edge sterics, chemical validity, improved learning and energy law remain unproved.",
-  "next": "Submit two matched bounded jobs, then audit initial source laws, scaffold support, replayed outcomes, projection-control cost and the frozen learned-method gate."
+  "next": "Preserve failed chemical-validity gate despite achieved contact connectivity. Geometry/relation feedback is a separate hypothesis; no retuning this fixed-chart recipe.",
+  "job_id": "46457005",
+  "source_commit": "dc3b90dc7b4d7993f2a77d308a1cdb4c4bbe2638",
+  "run": "runs/tree_manifold_v1",
+  "development_gate_passed": false,
+  "audit": "research/evidence/tree_manifold_audit_v1.json",
+  "summary": {
+    "0": {
+      "cartesian": {
+        "attempts": 768,
+        "graph": 311,
+        "geometry": 686,
+        "distinct_connectivity": 257,
+        "disconnected": 61,
+        "overlap": 24,
+        "generation_seconds": 243.2534781214781,
+        "validator_errors": 0
+      },
+      "cartesian_projected": {
+        "attempts": 768,
+        "graph": 202,
+        "geometry": 589,
+        "distinct_connectivity": 148,
+        "disconnected": 0,
+        "overlap": 179,
+        "generation_seconds": 243.2534781214781,
+        "validator_errors": 0
+      },
+      "manifold": {
+        "attempts": 768,
+        "graph": 165,
+        "geometry": 678,
+        "distinct_connectivity": 119,
+        "disconnected": 0,
+        "overlap": 90,
+        "generation_seconds": 249.65791289322078,
+        "validator_errors": 0
+      }
+    },
+    "1": {
+      "cartesian": {
+        "attempts": 768,
+        "graph": 295,
+        "geometry": 605,
+        "distinct_connectivity": 236,
+        "disconnected": 98,
+        "overlap": 73,
+        "generation_seconds": 242.34021200076677,
+        "validator_errors": 0
+      },
+      "cartesian_projected": {
+        "attempts": 768,
+        "graph": 193,
+        "geometry": 538,
+        "distinct_connectivity": 135,
+        "disconnected": 0,
+        "overlap": 230,
+        "generation_seconds": 242.34021200076677,
+        "validator_errors": 0
+      },
+      "manifold": {
+        "attempts": 768,
+        "graph": 156,
+        "geometry": 650,
+        "distinct_connectivity": 108,
+        "disconnected": 0,
+        "overlap": 118,
+        "generation_seconds": 244.5696154704783,
+        "validator_errors": 0
+      }
+    }
+  },
+  "comparisons": {
+    "cartesian": {
+      "graph_supported": {
+        "mean": -0.185546875,
+        "paired_draw95": [
+          -0.20833333333333334,
+          -0.16276041666666666
+        ],
+        "descriptive_composition95": [
+          -0.21875,
+          -0.15559895833333334
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.024088541666666668,
+        "paired_draw95": [
+          0.0006510416666666666,
+          0.046223958333333336
+        ],
+        "descriptive_composition95": [
+          -0.015625,
+          0.06770833333333333
+        ]
+      }
+    },
+    "cartesian_projected": {
+      "graph_supported": {
+        "mean": -0.048177083333333336,
+        "paired_draw95": [
+          -0.06901041666666667,
+          -0.02734375
+        ],
+        "descriptive_composition95": [
+          -0.07877604166666667,
+          -0.01953125
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.130859375,
+        "paired_draw95": [
+          0.10677083333333333,
+          0.15559895833333334
+        ],
+        "descriptive_composition95": [
+          0.08722330729166666,
+          0.17643229166666666
+        ]
+      }
+    }
+  }
 }
