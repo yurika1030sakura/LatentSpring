@@ -40,7 +40,17 @@ def main():
     p.add_argument('--seed',type=int,default=9041);p.add_argument('--global-state',type=int,choices=[0,1],default=1)
     p.add_argument('--prior-std',type=float,default=1.);p.add_argument('--requested-kT',type=float,default=1.)
     p.add_argument('--lr',type=float,default=2e-5);p.add_argument('--device',default='cuda')
+    p.add_argument('--pairing',choices=['none','independent','rotation','steric'],default='none')
+    p.add_argument('--pairing-protocol',type=Path)
     args=p.parse_args()
+    if args.pairing_protocol:
+        frozen=json.loads(args.pairing_protocol.read_text())
+        assert frozen['frozen'] and args.pairing in frozen['methods']
+        assert args.seed==frozen['training_seed'] and args.steps==frozen['training_steps']
+        assert args.lr==frozen['learning_rate'] and args.batch_size==frozen['batch_size']
+        assert args.global_state==1 and args.prior_std==1. and args.requested_kT==1.
+        assert sha(args.warm_checkpoint)==frozen['warm_checkpoint_sha256']
+        assert sha(args.config)==frozen['config_sha256']
     if min(args.steps,args.batch_size)<1 or min(args.prior_std,args.requested_kT,args.lr)<=0:raise ValueError('Invalid training configuration')
     args.out.mkdir(parents=True,exist_ok=True)
     if (args.out/'metrics.jsonl').exists():raise FileExistsError('Refusing to overwrite training')
@@ -49,6 +59,8 @@ def main():
     if cfg['dataset']['max_atoms']!=200 or cfg['mol_fm']['total_loss_weights']['e']!=0:raise ValueError('Require bond-free max_atoms=200 protocol')
     cfg['mol_fm']['prior_config']['x']['align']=False
     metadata=ElectronicMetadata(args.metadata,'train',[atomic_numbers[s] for s in cfg['dataset']['atom_map']])
+    from cfm_mol.chemical_moves import covalent_radii
+    radii_by_type=covalent_radii(metadata.atomic_numbers.tolist(),dtype=torch.float32,device=args.device)
     state=torch.load(str(args.warm_checkpoint),map_location='cpu',weights_only=False)
     warm=state.get('research_protocol',{})
     if warm.get('position_backbone','flowmol')!='flowmol':raise ValueError('Electronic adapter requires the FlowMol backbone')
@@ -74,6 +86,10 @@ def main():
         'warm_sha256':sha(args.warm_checkpoint),'config_sha256':sha(args.config),'script_sha256':sha(__file__),
         'data_order_sha256':hashlib.sha256(order.numpy().tobytes()).hexdigest(),
         'purpose':__doc__,'composition_prior_checkpoint':warm.get('composition_prior_checkpoint',str(args.warm_checkpoint.resolve()))}
+    protocol.update(alignment=args.pairing in ['rotation','steric'],
+        paired_Haar_augmentation=args.pairing!='none',
+        pairing_protocol_sha256=None if args.pairing_protocol is None else sha(args.pairing_protocol),
+        score_proxy_warning='For correlated FM pairings, the independent-Gaussian velocity-to-score formula is invalid. This pilot uses FM only.')
     (args.out/'protocol.json').write_text(json.dumps(protocol,indent=2)+'\n')
     # Extra adapter initialization must not change dataset-side randomness
     # between the legacy and global-state arms. FM noise has its own generator.
@@ -84,13 +100,19 @@ def main():
         graph=dgl.batch([dataset[index] for index in indices]).to(args.device)
         metadata.attach(graph,indices,args.requested_kT)
         nbi,_=get_batch_idxs(graph);uem=get_upper_edge_mask(graph)
+        pairing_records=[]
         loss=clamped_fm_loss(model,graph,nbi,uem,terminal_time=terminal,parameterization=head,
-            prior_std=args.prior_std,generator=torch.Generator(device=args.device).manual_seed(args.seed*1000003+step))
+            prior_std=args.prior_std,generator=torch.Generator(device=args.device).manual_seed(args.seed*1000003+step),
+            pairing=None if args.pairing=='none' else args.pairing,
+            pairing_radii=radii_by_type[graph.ndata['a_1_true'].argmax(-1)],
+            pairing_generator=torch.Generator(device=args.device).manual_seed(args.seed*2000003+step),
+            pairing_diagnostics=pairing_records)
         if not torch.isfinite(loss):raise FloatingPointError('Non-finite FM loss')
         optimizer.zero_grad(set_to_none=True);loss.backward()
         norm=torch.nn.utils.clip_grad_norm_(model.parameters(),1.,error_if_nonfinite=True);optimizer.step()
         row={'step':step+1,'fm_loss':float(loss.detach()),'gradient_norm':float(norm),
-            'n_atoms':graph.num_nodes(),'seconds':time.perf_counter()-start}
+            'n_atoms':graph.num_nodes(),'seconds':time.perf_counter()-start,
+            'processed_indices':indices,'pairing':pairing_records}
         with (args.out/'metrics.jsonl').open('a') as f:f.write(json.dumps(row)+'\n')
         if (step+1)%100==0 or step==0:print(json.dumps(row),flush=True)
         if (step+1)%1000==0 or step+1==args.steps:
