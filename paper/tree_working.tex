@@ -88,6 +88,15 @@ without requiring the true population dependence graph to be a tree
 affinity learning. Our application uses an intrinsic coordinate measure and
 normalized isotropic edge kernels, with no observed chemical graph.
 
+\paragraph{Latent conditioning.}
+Latent-CFM conditions the transport on features extracted by pretrained
+latent-variable models to exploit target clustering \citep{samaddar2026latentcfm}.
+Latent or mixture-component conditioning is therefore not itself our proposed
+innovation. The additional experiment here retains the explicit source tree as
+context, without a target encoder, and tracks its node labels through molecular
+symmetry coupling. Its usefulness must be measured against parameter-matched
+independent-tree conditioning.
+
 \paragraph{Physical meaning.}
 OMol25 provides molecular geometries with electronic conditions and calculated
 properties \citep{omol25}. Its empirical geometry distribution is not automatically
@@ -180,6 +189,27 @@ the exact density of the evaluated midpoint-plus-noise sampler. We therefore
 make no absolute final-likelihood or importance-ESS claim.
 
 \section{Development experiments}
+\paragraph{Tree-conditioned transport variant.}
+The source-only flow receives coordinates sampled from a tree but does not receive
+the tree itself. We additionally implement a small invariant adapter for that
+information. For each atom pair, its inputs are the source-tree edge indicator,
+$\log(1+\text{tree-path hops})$, and the mean of the two $\log(1+\text{degree})$
+values. A $3\rightarrow32\rightarrow d_{\rm edge}$ SiLU network adds a residual
+to the existing equivariant field's edge embedding. A zero final layer preserves
+the warm field at initialization. The adapter sees no observed chemical bonds.
+
+An actual-tree arm retains the tree that generated $X_0$. An independent-tree arm
+uses a separate draw from the same tree law. Both have identical initialization,
+parameter counts and learning rates: $2\cdot10^{-5}$ for the backbone and
+$3\cdot10^{-4}$ for the adapter. A no-context reference uses the same fixed shell
+source and continuation budget. Context follows both axes of the source atom
+permutation during pairing and remains fixed throughout generation. Conditioning
+on $T$ changes the probability object to a joint/conditional flow, so the existing
+marginal-density interface explicitly rejects this variant. No final-density or
+thermal claim is made. \textbf{The paired molecular comparison is pending in this
+development version.}
+\IfFileExists{sections/tree_context_results.tex}{\input{sections/tree_context_results}}{}
+
 \paragraph{Matched continuations and target selection.}
 All methods start from the same typed-matching warm checkpoint and receive3,000
 matched OMol25 training examples and AdamW updates at learning rate $2\cdot10^{-5}$.
@@ -278,8 +308,8 @@ learnable. The new controls support a useful source structure beyond a single
 Gaussian approximation, while affinity learning's downstream value remains
 unresolved. Narrow finite-length edges are not consistently better than a harmonic
 tree mixture. One concrete open question is whether the flow should retain the
-sampled tree as conditioning, instead of receiving its coordinates alone. That
-architecture has not been tested here. The present results do not establish a
+sampled tree as conditioning, instead of receiving its coordinates alone. This
+variant is implemented and its controlled evaluation is pending. The present results do not establish a
 calibrated energy distribution or a completed competitive benchmark.
 \label{endofmaintext}
 

@@ -1,5 +1,10 @@
 # BGFM project guide
 
+CURRENT CONTEXT EXPERIMENT: read `research/TREE_CONTEXT_STATE_20260914.json`
+and `notes/tree_conditioned_transport_v1.md`. The adapter is implemented;57 tests
+pass. Job46367714 has two continuation tasks; query Slurm. No molecular advantage
+from tree conditioning is claimed before the completed comparison.
+
 CURRENT: read `research/TREE_MOMENT_STATE_20260914.json`, `research/NEXT.md`,
 `CLAUDE_HANDOFF.md`, `notes/tree_moment_controls_v1.md` and
 `notes/tree_conditioned_transport_brief_v1.md`.
