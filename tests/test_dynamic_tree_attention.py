@@ -73,3 +73,14 @@ def test_dynamic_adapter_mixed_size_batch_matches_separate_graphs():
         separate.append(block(g,scalars[node_start:node_start+n],positions[node_start:node_start+n],edges[edge_start:edge_start+e],torch.zeros(n,dtype=torch.long)))
         node_start+=n;edge_start+=e
     torch.testing.assert_close(batched,torch.cat(separate),atol=1e-6,rtol=1e-5)
+
+
+def test_relative_weight_floor_preserves_gauge_gradient():
+    raw=torch.tensor([[0.,1.,-4.,-2.],[1.,0.,-3.,-.2],[-4.,-3.,0.,.2],[-2.,-.2,.2,0.]],dtype=torch.double)
+    for fn in [tree_edge_marginals,local_edge_mass]:
+        shift=torch.tensor(0.,dtype=torch.double,requires_grad=True)
+        m=fn(raw+shift,relative_floor=.1)
+        gradient=torch.autograd.grad(m[0,1]+2*m[1,2],shift)[0]
+        torch.testing.assert_close(gradient,torch.zeros_like(gradient),atol=1e-12,rtol=0)
+        variable=raw.clone().requires_grad_(True)
+        assert torch.autograd.gradcheck(lambda x:fn((x+x.T)/2,relative_floor=.1),variable,eps=1e-5,atol=1e-6,rtol=1e-4)

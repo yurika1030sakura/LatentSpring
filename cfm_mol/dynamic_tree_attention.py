@@ -9,7 +9,7 @@ from torch import nn
 from rdkit import Chem
 
 
-def tree_edge_marginals(log_weights):
+def tree_edge_marginals(log_weights,relative_floor=1e-8):
     """Marginals with a shared1e-8 relative edge-weight floor for stable solves.
 
     The floor changes edge weights, not the tree family; no diagonal ridge or
@@ -19,7 +19,7 @@ def tree_edge_marginals(log_weights):
     if log_weights.shape[-2]!=n or n<2: raise ValueError('At least two nodes required')
     mask=torch.eye(n,dtype=torch.bool,device=log_weights.device)
     off=log_weights.masked_fill(mask,-torch.inf)
-    w=(off-off.amax((-1,-2),keepdim=True).detach()).exp().clamp_min(1e-8).masked_fill(torch.eye(n,dtype=torch.bool,device=log_weights.device),0.)
+    w=(off-off.amax((-1,-2),keepdim=True)).exp().clamp_min(relative_floor).masked_fill(torch.eye(n,dtype=torch.bool,device=log_weights.device),0.)
     lap=torch.diag_embed(w.sum(-1))-w
     q=torch.nn.functional.pad(torch.linalg.inv(lap[...,:-1,:-1]),(0,1,0,1))
     diagonal=q.diagonal(dim1=-2,dim2=-1)
@@ -28,11 +28,11 @@ def tree_edge_marginals(log_weights):
     return m
 
 
-def local_edge_mass(log_weights):
+def local_edge_mass(log_weights,relative_floor=1e-8):
     """Independent edge weights with the same total undirected mass N-1."""
     n=log_weights.shape[-1]
     off=log_weights.masked_fill(torch.eye(n,dtype=torch.bool,device=log_weights.device),-torch.inf)
-    w=(off-off.amax((-1,-2),keepdim=True).detach()).exp().clamp_min(1e-8).masked_fill(torch.eye(n,dtype=torch.bool,device=log_weights.device),0.)
+    w=(off-off.amax((-1,-2),keepdim=True)).exp().clamp_min(relative_floor).masked_fill(torch.eye(n,dtype=torch.bool,device=log_weights.device),0.)
     return w*(2*(n-1)/w.sum((-1,-2),keepdim=True))
 
 

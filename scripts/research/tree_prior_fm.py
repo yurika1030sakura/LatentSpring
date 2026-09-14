@@ -119,6 +119,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for key in ['project','protocol','prior-run','out']:p.add_argument('--'+key,type=Path,required=True)
     p.add_argument('--methods',nargs='+',required=True);p.add_argument('--include-warm',action='store_true')
+    p.add_argument('--reuse-fixed-run',type=Path)
     a=p.parse_args();protocol=json.loads(a.protocol.read_text());protocol_hash=sha(a.protocol)
     assert protocol['frozen'] and all(m in protocol['methods'] for m in a.methods)
     if a.out.exists():raise FileExistsError(a.out)
@@ -136,7 +137,28 @@ def main():
         evaluate(model,None,'warm',cfg,protocol,protocol_hash,evaluation,protocol['warm_checkpoint_sha256'],manifest)
         del model;torch.cuda.empty_cache()
     completed=[]
+    if a.reuse_fixed_run is not None:
+        assert 'fixed' in a.methods
+        previous=a.reuse_fixed_run.resolve()
+        old_selection=json.loads((previous/'selection.json').read_text())
+        assert old_selection['selected']==order.tolist()
+        old_validation=json.loads((previous/'fixed/validation.json').read_text())
+        old_report=json.loads((previous/'evaluation/fixed_results.json').read_text())
+        assert old_validation['complete'] and old_report['complete'] and old_report['protocol_sha256']==protocol_hash
+        assert sha(previous/'fixed/last.ckpt')==old_validation['checkpoint_sha256']==old_report['checkpoint_sha256']
+        assert len(old_report['rows'])==len(protocol['conditions'])
+        (a.out/'fixed').symlink_to(previous/'fixed',target_is_directory=True)
+        for row in old_report['rows']:
+            name=f'fixed_c{row["condition_index"]}.pt'
+            assert sha(previous/'evaluation'/name)==row['sample_sha256']
+            (evaluation/name).symlink_to(previous/'evaluation'/name)
+        (evaluation/'fixed_results.json').symlink_to(previous/'evaluation/fixed_results.json')
+        write(a.out/'baseline_reuse.json',dict(source=str(previous),protocol_sha256=protocol_hash,
+            checkpoint_sha256=old_validation['checkpoint_sha256'],report_sha256=sha(previous/'evaluation/fixed_results.json'),
+            reason='No-block training does not use dynamic attention; preserve its complete identical-protocol training/evaluation after an independent attention-gradient implementation fix.'))
+        completed=['fixed']
     for method in a.methods:
+        if method in completed:continue
         torch.manual_seed(protocol['fm_seed']);model=restore_model(cfg,warm).train()
         dynamic_mode=protocol.get('dynamic_modes',{}).get(method)
         prior=load_prior('fixed' if dynamic_mode else method,a.prior_run,protocol,protocol_hash)

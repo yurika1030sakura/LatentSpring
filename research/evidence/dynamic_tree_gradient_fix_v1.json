@@ -1,0 +1,35 @@
+{
+  "at_utc": "2026-09-14T18:51:23.552349+00:00",
+  "cancelled_job": "46443856",
+  "affected_source_commit": "5865d9fe4ac2908e88108d1b75afddbfd1f646f6",
+  "bug": "Detaching max log weight before a relative floor omitted the floor-threshold derivative. The normalized edge law is invariant to a uniform logit shift, but its autograd gradient was not when floor edges were active.",
+  "independent_control": {
+    "relative_floor_for_stress_test": 0.1,
+    "tree_spurious_shift_gradient": -0.18037256231335497,
+    "local_spurious_shift_gradient": -0.03574948540389156
+  },
+  "fix": "Differentiate through the maximum in both tree and local relative-floor rules. Forward probabilities unchanged. Production floor remains1e-8; no objective, architecture width, LR, dataset, evaluator, or seed change.",
+  "tests": "Five dynamic tests pass, including gauge-gradient invariance and finite-difference gradients with active floor edges.",
+  "reuse": "Only completed no-block baseline training and samples; this baseline never calls the affected functions.",
+  "preserved": "All original job logs, checkpoints and saved outputs remain. Corrected dynamic models restart from the same warm checkpoint with the same budgets/seeds. No outcome-dependent hyperparameter choice.",
+  "partial_artifacts": {
+    "0": {
+      "saved_evaluation_attempts": {
+        "fixed": 768,
+        "tree_learned": 704,
+        "tree_fixed": 0,
+        "local_learned": 0
+      },
+      "scope": "Counts of saved complete condition batches; possible in-flight unsaved generations are not counted."
+    },
+    "1": {
+      "saved_evaluation_attempts": {
+        "fixed": 768,
+        "tree_learned": 768,
+        "tree_fixed": 0,
+        "local_learned": 0
+      },
+      "scope": "Counts of saved complete condition batches; possible in-flight unsaved generations are not counted."
+    }
+  }
+}

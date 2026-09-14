@@ -82,3 +82,12 @@ The current local comparator uses independent global edge-mass normalization, no
 every possible local attention rule. If the tree mechanism gains, degree-coverage
 controls would still be needed to separate singleton coverage from larger-cut
 connectivity effects. The first pilot does not settle that finer attribution.
+
+An independent active-floor gauge-gradient test found an implementation error in
+the first snapshot: detaching the reference maximum incorrectly stopped the
+relative-floor derivative. The corrected functions retain that derivative; five
+tests, including finite differences, pass. Production forward weights/floor and
+all experimental hyperparameters remain unchanged. See
+`research/evidence/dynamic_tree_gradient_fix_v1.json`. Jobs46443856 were stopped;
+all artifacts are preserved. Only their completed unaffected no-block baselines
+are reused; dynamic models restart from the original warm checkpoint.

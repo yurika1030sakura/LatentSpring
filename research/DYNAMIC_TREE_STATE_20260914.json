@@ -1,6 +1,6 @@
 {
   "at_utc": "2026-09-14T18:27:41.087854+00:00",
-  "status": "running",
+  "status": "gradient_fix_pending_submission",
   "goal_achieved": false,
   "scientific_submission_ready": false,
   "method": "notes/dynamic_tree_attention_v1.md",
@@ -14,7 +14,7 @@
   "planned_new_outputs": 6144,
   "new_molecular_oracle_calls": 0,
   "scope": "New main-flow architecture test; previous source-utility failed gate and static-context failure preserved. Reused12-composition development panel; no claimed improvement yet.",
-  "next": "Finish all four matched FM/generation methods in both jobs. Use audit_dynamic_tree.py, independently verify excluded composition count vectors, and report the frozen gate without retuning.",
+  "next": "Resubmit corrected dynamic variants, reusing only completed identical-protocol no-block baselines. Original outputs preserved as an interrupted implementation variant, not silently removed.",
   "job_id": "46443856",
   "source_commit": "5865d9fe4ac2908e88108d1b75afddbfd1f646f6",
   "run": "runs/dynamic_tree_v1",
@@ -22,5 +22,7 @@
   "training_exclusion_audit": "research/evidence/dynamic_tree_training_audit_v1.json",
   "training_excluded_compositions": 1352,
   "selected_training_rows_checked": 6256,
-  "training_exclusion_overlap": 0
+  "training_exclusion_overlap": 0,
+  "cancelled_job_id": "46443856",
+  "gradient_fix_record": "research/evidence/dynamic_tree_gradient_fix_v1.json"
 }
