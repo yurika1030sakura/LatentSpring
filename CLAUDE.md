@@ -1,5 +1,10 @@
 # BGFM project guide
 
+CURRENT MONOMER STUDY: read `research/MONOMER_STATE_20260914.json` and
+`notes/monomer_benchmark_v1.md`. All21 prospective references pass the assay;
+no equal composition was found in the checksum-verified train/legacy-val corpora.
+Frozen comparison46415396 is running. Learned-source usefulness remains unproved.
+
 CURRENT: read `research/TREE_TRANSFER_STATE_20260914.json`, `research/NEXT.md`,
 `CLAUDE_HANDOFF.md` and `notes/tree_results_and_scope_20260914.md`.
 
