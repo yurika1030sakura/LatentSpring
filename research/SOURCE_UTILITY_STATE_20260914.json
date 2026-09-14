@@ -3,7 +3,7 @@
   "goal": "ICLR2027 research submission",
   "goal_achieved": false,
   "scientific_submission_ready": false,
-  "status": "running",
+  "status": "fresh_validation_running",
   "job_id": "46434075",
   "source_commit": "0ad21934ab1b4192d75c015d3845c319bc2d39ee",
   "protocol": "research/evidence/source_utility_protocol_v1.json",
@@ -21,6 +21,12 @@
   "new_molecular_oracle_calls": 0,
   "current_action": "Allow both bounded jobs to finish, then replay source draws and structural assays with audit_source_utility.py. Do not tune on outcomes.",
   "scope": "The new12 held compositions come from the flow training corpus and are held out only from source-head fitting; not the earlier21 composition-disjoint benchmark.",
-  "prior_art": "Noise PPO already learns a prompt-conditioned initial noise law under a frozen decoder. Generic source adaptation and KL/DPI are not new.",
-  "protected": "722 reserved outcomes and all prior evaluation states stay outside FIT; static-context and unchanged coordinate-NLL scale-ups closed."
+  "prior_art": "Noise PPO and ICLR2026 Source-Guided Flow Matching predate frozen-decoder source adaptation; conditional source learning and random-tree continuous difference priors also have prior art. Molecular utility and concrete method originality remain unproved.",
+  "protected": "722 reserved outcomes and all prior evaluation states stay outside FIT; static-context and unchanged coordinate-NLL scale-ups closed.",
+  "source_heads_trained": 6,
+  "parameters_per_head": 1881,
+  "source_training_seconds_range": [
+    14.04,
+    26.84
+  ]
 }

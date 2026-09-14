@@ -69,3 +69,31 @@ training and an exact tree-distribution trust calculation. This combination need
 molecular evidence and a fuller literature comparison; it is not yet established
 as an original ICLR contribution. Generic importance sampling, KL convexity,
 data processing, or a newly instantiated network are not original theorems.
+
+
+Further primary-source check (same pilot; no protocol change):
+
+- Wang, Harting, Barreau, Zavlanos and Johansson, *Source-Guided Flow Matching*,
+  ICLR2026, https://openreview.net/forum?id=p56ZAQUCUr,
+  https://arxiv.org/abs/2508.14807. Guidance by modifying the source under a frozen
+  vector field, including source-space importance and MCMC sampling, predates this
+  pilot. Its exact-target statement assumes the appropriate tilted source and
+  transport; our bounded utility optimization makes no analogous target-law claim.
+- Kim et al., *Better Source, Better Flow* (2026),
+  https://arxiv.org/abs/2602.05951, learns conditional source distributions under
+  flow matching and addresses collapse/stability. Conditional source learning
+  alone is therefore not a distinct contribution either.
+- Everink, *Random spanning tree Markov random field priors for Bayesian inverse
+  problems in imaging* (2026), https://arxiv.org/abs/2605.18619, combines random
+  spanning-tree connectivity with continuous pixel-difference priors. Random-tree
+  spatial difference priors are not new in general.
+- Zhou et al., *Guiding Diffusion Models with Reinforcement Learning for Stable
+  Molecule Generation* (2025), https://arxiv.org/abs/2508.16521, fine-tunes molecular
+  diffusion using physical rewards on QM9/GEOM. Reward-guided molecular generation
+  is established, though that is a different task/training setup from this pilot.
+
+A positive actual/shuffled/fixed test would be an internal mechanism result,
+not a completed comparison with these methods. Structured marginalization, molecular
+utility, adaptation cost and appropriate baselines would still need to support the
+specific contribution. These findings narrow the originality claim; they do not
+change the frozen experiment or justify declaring its outcome in advance.

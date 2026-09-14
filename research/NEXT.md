@@ -1,4 +1,4 @@
-# Next — source utility learning is a hypothesis, not an achieved neural gain
+# Next — finish and audit the frozen source utility pilot
 
 CURRENT OVERRIDE (2026-09-14): source-utility method IMPLEMENTED; controlled jobs
 46434075_0/1 RUNNING from immutable commit0ad2193. Read
