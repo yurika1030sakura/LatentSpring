@@ -126,6 +126,10 @@ def prepare_research_backbone(model, protocol):
         if backbone!='flowmol':raise ValueError('Electronic conditioning requires the FlowMol backbone')
         from cfm_mol.electronic_conditioning import patch_electronic_conditioning
         patch_electronic_conditioning(model)
+    if protocol.get('dual_geometry'):
+        if protocol.get('position_parameterization')!='displacement':raise ValueError('Dual geometry requires a displacement head')
+        from cfm_mol.dual_geometry import patch_dual_geometry
+        patch_dual_geometry(model,**protocol['dual_geometry'])
     if protocol.get('latent_tree_context'):
         if backbone!='flowmol':raise ValueError('Tree context requires the FlowMol backbone')
         from cfm_mol.latent_tree_context import patch_latent_tree_context

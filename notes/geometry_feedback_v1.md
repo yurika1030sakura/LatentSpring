@@ -55,3 +55,15 @@ novelty. No post hoc width, LR, loss, sampler or sample-budget sweep on this pan
 
 The optional endpoint-tree adapter extension is implemented but is NOT part of
 this four-arm experiment. It must not be mistaken for a tested success.
+
+Primary-source references verified during this implementation:
+- Dunn and Koes, FlowMol3 (2025), https://arxiv.org/abs/2508.12629. Its published
+  improvements include self-conditioning; native joint-topology validity is not
+  our bond-free coordinate-perception benchmark.
+- Kipf et al., Neural Relational Inference (ICML2018),
+  https://arxiv.org/abs/1802.04687. Learning latent interactions from observations
+  is established; the broad relational-inference idea is not our novelty.
+
+Job46473082_0/1 runs snapshot755c6b8. The earlier source/attention/manifold
+experiments retain their own samplers and declared disabled-history baseline;
+this change does not retroactively relabel their results as native FlowMol3.

@@ -1,5 +1,12 @@
 # Claude continuation — utility method tested; ICLR gate still unmet
 
+LATEST: geometry feedback is complete. Geometry-only SC gives a repeated known-
+technique improvement, but the new pair-code gate fails. The next bounded test
+separates internal geometry from velocity accumulation without adding parameters.
+Read `research/DUAL_GEOMETRY_STATE_20260914.json` and `notes/dual_geometry_v1.md`.
+No ICLR readiness, energy-law result or established new AI benefit is claimed.
+
+
 LATEST: tree-coordinate flow is COMPLETE and its chemical-validity gate FAILED.
 Read `notes/tree_manifold_results_20260914.md`. Current candidate is the separately
 frozen geometry/latent-relation feedback study; read

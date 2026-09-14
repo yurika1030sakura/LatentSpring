@@ -1,7 +1,7 @@
 # Next prototype: learn coordination, transport constrained tree coordinates
 
-Status: full pilot runner implemented and six tests pass; no trained model or molecular
-improvement result yet. The completed dynamic-attention pilot also fails to
+Status: the full pilot is complete and its chemical-validity gate fails. Six
+implementation tests pass; see `notes/tree_manifold_results_20260914.md`. The completed dynamic-attention pilot also fails to
 establish a repeated useful neural gain. Attention supplies information, but does
 not preserve any actual coordinate constraint. This next hypothesis changes the
 state representation so the sampled spatial tree remains geometrically connected.
@@ -108,3 +108,8 @@ validation compositions all have feasible coordination budgets; their coordinate
 are never inputs. Two3000-step models per seed are planned, with1000 prior updates
 and a matched train-only scaffold-qualified subset. These are development tests,
 not an untouched evaluation, a proved AI novelty, or an energy-law result.
+
+The coordination family supplies a capability absent from species-pair affinities;
+it is not a strict superset. In particular its heavy-core law has no learned
+pair-type affinity. The completed chemical-validity failure must remain distinct
+from its correct geometric-connectivity guarantee.

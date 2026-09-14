@@ -1,0 +1,79 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-14T22:14:57.387742+00:00",
+  "format": "dual_geometry_v1",
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "warm_checkpoint": "runs/orbit_pairing_typed_v1/training/typed_rotation/last.ckpt",
+  "warm_checkpoint_sha256": "92269b5915da5ef057bde64067a84baaaf85a7d60470bdb2b027dc31624cfab9",
+  "data": "runs/tree_manifold_v1/s1/data/data.pt",
+  "data_sha256": "5e25c8d6e2cba64c29e6df3336d0cba1cea8d316065717af4b9285b9cf6259e4",
+  "data_selection": "runs/tree_manifold_v1/s1/data/selection.json",
+  "condition_manifest": "research/evidence/dynamic_tree_panel_v1.json",
+  "condition_manifest_sha256": "ab21f7098611d87393dba959441449472b194680abf73d0c9bf9bd7e14ec3651",
+  "conditions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "methods": [
+    "plain",
+    "geometry",
+    "fixed_geometry",
+    "time_geometry"
+  ],
+  "fm_steps": 3000,
+  "fm_seed": 33911,
+  "fm_lr": 2e-05,
+  "edge_log_width": 0.2,
+  "evaluation_seed": 34903,
+  "evaluation_batch": 16,
+  "samples_per_condition": 64,
+  "terminal_noise_std_A": 0.025,
+  "method_midpoint_steps": {
+    "plain": 64,
+    "geometry": 32,
+    "fixed_geometry": 64,
+    "time_geometry": 64
+  },
+  "primitive_denoiser_evaluations_per_sample": 128,
+  "source": "Identical fixed normalized shell-tree source; no source tree/scaffold is supplied to the field. Geometric scaffolds stored in the reused data are ignored.",
+  "data_scope": "Reuse the same checksum-bound clean TRAIN coordinate subset and exclusions from the completed manifold study. No prior evaluation states or geometry/chemical edge labels are fitted.",
+  "coupling": "Same typed source pairing with shared augmentation; linear position schedule and displacement head at T=1.",
+  "total_reported_outputs_this_seed": 3072,
+  "new_molecular_oracle_calls": 0,
+  "scientific_submission_ready": false,
+  "training_methods": [
+    "fixed_geometry",
+    "time_geometry"
+  ],
+  "geometry_modes": {
+    "fixed_geometry": "fixed",
+    "time_geometry": "time"
+  },
+  "references": {
+    "plain": {
+      "checkpoint": "runs/geometry_feedback_v1/s1/study/plain/last.ckpt",
+      "checkpoint_sha256": "719aa4d925dd1060feee52de29fbd1894ab9aa317685f18ac54c275cbaa37378"
+    },
+    "geometry": {
+      "checkpoint": "runs/geometry_feedback_v1/s1/study/geometry/last.ckpt",
+      "checkpoint_sha256": "180d7bc81e4b43257ae6eb1dd9b5e4eb708fc8a1bceddda52d35e8e791ec889c"
+    }
+  },
+  "objective": "Same velocity FM loss and update budget as the original one-pass reference. Internal geometry is either fixed at Xt or Xt+(1-t)*accumulated_velocity; output remains Xt+accumulated_velocity. No additional trainable parameters.",
+  "primary": "Time-scaled internal geometry versus original velocity-coordinate geometry and fixed-current-geometry control; existing two-pass geometry SC is an additional stronger-compute training reference.",
+  "pilot_gate": "Time-geometry graph-rate point gain over BOTH plain and fixed_geometry in both seeds, pooled paired95 lower bounds positive over both, and no >2pp loss in distinct connectivity per attempt versus plain. Always report geometry-SC performance and costs; this gate does not establish superiority over every reference.",
+  "claim_boundary": "The endpoint/velocity identity is standard. The candidate is a time-aware internal geometry representation in coordinate-updating velocity networks, not a new flow-matching theorem. An original learned-method contribution and broad usefulness still need evidence.",
+  "failure_rule": "No post hoc time-envelope, LR, width, data, integration or sampling-budget sweep on this panel. Baseline checkpoints match the exact warm/data/source/training recipe and get new source streams.",
+  "novelty_status": "implemented candidate, no improvement result yet"
+}

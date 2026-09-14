@@ -1,0 +1,300 @@
+{
+  "complete": true,
+  "summary": {
+    "0": {
+      "plain": {
+        "attempts": 768,
+        "graph": 363,
+        "geometry": 480,
+        "distinct_connectivity": 342,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0
+      },
+      "geometry": {
+        "attempts": 768,
+        "graph": 417,
+        "geometry": 517,
+        "distinct_connectivity": 394,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0
+      },
+      "latent": {
+        "attempts": 768,
+        "graph": 422,
+        "geometry": 522,
+        "distinct_connectivity": 401,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 2.5355753898620605
+      },
+      "pooled": {
+        "attempts": 768,
+        "graph": 432,
+        "geometry": 534,
+        "distinct_connectivity": 408,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 2.128506898880005
+      }
+    },
+    "1": {
+      "plain": {
+        "attempts": 768,
+        "graph": 312,
+        "geometry": 410,
+        "distinct_connectivity": 293,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0
+      },
+      "geometry": {
+        "attempts": 768,
+        "graph": 342,
+        "geometry": 426,
+        "distinct_connectivity": 318,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0
+      },
+      "latent": {
+        "attempts": 768,
+        "graph": 334,
+        "geometry": 418,
+        "distinct_connectivity": 311,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 2.866307020187378
+      },
+      "pooled": {
+        "attempts": 768,
+        "graph": 333,
+        "geometry": 417,
+        "distinct_connectivity": 309,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 2.079735040664673
+      }
+    }
+  },
+  "comparisons": {
+    "latent minus geometry": {
+      "graph_supported": {
+        "mean": -0.001953125,
+        "paired_draw95": [
+          -0.014973958333333334,
+          0.01171875
+        ],
+        "descriptive_composition95": [
+          -0.012369791666666666,
+          0.01171875
+        ]
+      },
+      "geometrically_supported": {
+        "mean": -0.001953125,
+        "paired_draw95": [
+          -0.013671875,
+          0.009114583333333334
+        ],
+        "descriptive_composition95": [
+          -0.009765625,
+          0.006510416666666667
+        ]
+      }
+    },
+    "latent minus pooled": {
+      "graph_supported": {
+        "mean": -0.005859375,
+        "paired_draw95": [
+          -0.020182291666666668,
+          0.008463541666666666
+        ],
+        "descriptive_composition95": [
+          -0.01953125,
+          0.012369791666666666
+        ]
+      },
+      "geometrically_supported": {
+        "mean": -0.007161458333333333,
+        "paired_draw95": [
+          -0.018880208333333332,
+          0.00390625
+        ],
+        "descriptive_composition95": [
+          -0.014973958333333334,
+          0.001953125
+        ]
+      }
+    },
+    "geometry minus plain": {
+      "graph_supported": {
+        "mean": 0.0546875,
+        "paired_draw95": [
+          0.030598958333333332,
+          0.07942708333333333
+        ],
+        "descriptive_composition95": [
+          0.041015625,
+          0.06770833333333333
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.034505208333333336,
+        "paired_draw95": [
+          0.01171875,
+          0.057291666666666664
+        ],
+        "descriptive_composition95": [
+          0.010416666666666666,
+          0.059244791666666664
+        ]
+      }
+    },
+    "latent minus plain": {
+      "graph_supported": {
+        "mean": 0.052734375,
+        "paired_draw95": [
+          0.028645833333333332,
+          0.078125
+        ],
+        "descriptive_composition95": [
+          0.033203125,
+          0.07291666666666667
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.032552083333333336,
+        "paired_draw95": [
+          0.010400390625000006,
+          0.055338541666666664
+        ],
+        "descriptive_composition95": [
+          0.008447265625000006,
+          0.056640625
+        ]
+      }
+    }
+  },
+  "costs": {
+    "0": {
+      "plain": {
+        "training_seconds": 330.2713282960467,
+        "generation_seconds": 231.45671113138087,
+        "training_primitive_forwards": 3000,
+        "primitive_evaluations_per_sample": 128
+      },
+      "geometry": {
+        "training_seconds": 605.6105395650957,
+        "generation_seconds": 238.52104370878078,
+        "training_primitive_forwards": 6000,
+        "primitive_evaluations_per_sample": 128
+      },
+      "latent": {
+        "training_seconds": 615.3605820930097,
+        "generation_seconds": 236.3504272410646,
+        "training_primitive_forwards": 6000,
+        "primitive_evaluations_per_sample": 128
+      },
+      "pooled": {
+        "training_seconds": 615.1895218931604,
+        "generation_seconds": 236.52138351695612,
+        "training_primitive_forwards": 6000,
+        "primitive_evaluations_per_sample": 128
+      }
+    },
+    "1": {
+      "plain": {
+        "training_seconds": 313.71482990309596,
+        "generation_seconds": 230.04773004329763,
+        "training_primitive_forwards": 3000,
+        "primitive_evaluations_per_sample": 128
+      },
+      "geometry": {
+        "training_seconds": 595.6845252811909,
+        "generation_seconds": 242.78888760181144,
+        "training_primitive_forwards": 6000,
+        "primitive_evaluations_per_sample": 128
+      },
+      "latent": {
+        "training_seconds": 578.4793074219488,
+        "generation_seconds": 234.8083889754489,
+        "training_primitive_forwards": 6000,
+        "primitive_evaluations_per_sample": 128
+      },
+      "pooled": {
+        "training_seconds": 566.4349557911046,
+        "generation_seconds": 225.76428651856259,
+        "training_primitive_forwards": 6000,
+        "primitive_evaluations_per_sample": 128
+      }
+    }
+  },
+  "artifacts": [
+    {
+      "seed": 0,
+      "method": "plain",
+      "checkpoint_sha256": "05092e9e0870c317bb8ede3eb46cbc4a1fbd3361df6c9456b3c558aea8a500b0",
+      "report_sha256": "bc89d3824f4089ceb9286974819a5ffed536010f0d53b4bebc8c32bcdcded587",
+      "metrics_sha256": "e5e08af4df61e2576be5ed9d784baabe3ba2859b491ad3f1401cd5167f2e3614",
+      "data_sha256": "8abe2cb06071bfccbb56a41a847e61c7a74f151a17f2433721027868e85fbda8"
+    },
+    {
+      "seed": 0,
+      "method": "geometry",
+      "checkpoint_sha256": "b78d65655344c795523ad8f11baab9c5e590ade53a361ce30cf7a8302f3697d3",
+      "report_sha256": "def19fdb9a927b3598dee8b2a80bf5f42c542f80e5426c9f58aa5eebe1f577c5",
+      "metrics_sha256": "a56053ea631aa685e979ab19a8ab2f69e3d17e23b39d922d979c44df83792afe",
+      "data_sha256": "8abe2cb06071bfccbb56a41a847e61c7a74f151a17f2433721027868e85fbda8"
+    },
+    {
+      "seed": 0,
+      "method": "latent",
+      "checkpoint_sha256": "08cfa7d94ed3bacd8cd24eb34c3c99a329a8b0807a4dfebeff5c6d2bdd976cbf",
+      "report_sha256": "f2e69498a3c5c5546e2701c582c492cec2e0f42193dbf9e955292bb8e810560d",
+      "metrics_sha256": "b5dde72582f29327adbe4bfe2e8ec0c88420b4ee79c75ba68a70e5e979a385f9",
+      "data_sha256": "8abe2cb06071bfccbb56a41a847e61c7a74f151a17f2433721027868e85fbda8"
+    },
+    {
+      "seed": 0,
+      "method": "pooled",
+      "checkpoint_sha256": "85625d8246f39c064d82fa11acba1e046dc1074e9b7d659663d0c3487816986a",
+      "report_sha256": "2e9f28a2c697392a155df1916eccecabfeda675e66249f572f72e00df57a43ed",
+      "metrics_sha256": "0941ff0cd656b19262496feac912b37d728fab904d9c2aa5b5c8c9eaf0198453",
+      "data_sha256": "8abe2cb06071bfccbb56a41a847e61c7a74f151a17f2433721027868e85fbda8"
+    },
+    {
+      "seed": 1,
+      "method": "plain",
+      "checkpoint_sha256": "719aa4d925dd1060feee52de29fbd1894ab9aa317685f18ac54c275cbaa37378",
+      "report_sha256": "fcc499ffb30dcc6cca600c902015efd291ead546f464f2b3cd9ee911480dc323",
+      "metrics_sha256": "9c9ac51e4e14f73136c0b2389bdf73f1a4e6ce991dcd2d9394ab93280d656166",
+      "data_sha256": "5e25c8d6e2cba64c29e6df3336d0cba1cea8d316065717af4b9285b9cf6259e4"
+    },
+    {
+      "seed": 1,
+      "method": "geometry",
+      "checkpoint_sha256": "180d7bc81e4b43257ae6eb1dd9b5e4eb708fc8a1bceddda52d35e8e791ec889c",
+      "report_sha256": "86921e9f94e6ed0c49e332ce44dfb6b0186e98f7d1710375394047eb22ba9fe4",
+      "metrics_sha256": "bcbcf0aa88231634f100951dbdbb01264b1eb6d543112b5594a8c0ba59c41615",
+      "data_sha256": "5e25c8d6e2cba64c29e6df3336d0cba1cea8d316065717af4b9285b9cf6259e4"
+    },
+    {
+      "seed": 1,
+      "method": "latent",
+      "checkpoint_sha256": "eade357e3f053070820e8a78c82cb0c5e7d6452ade94534e9897af4274b02595",
+      "report_sha256": "c89839048823f048403484ab7a0471f07c973e0c65fff3785e18358729b39cd2",
+      "metrics_sha256": "5e04818a2c6b24918a8806e63018b4631c268083e4523e94a0719eb5d093da22",
+      "data_sha256": "5e25c8d6e2cba64c29e6df3336d0cba1cea8d316065717af4b9285b9cf6259e4"
+    },
+    {
+      "seed": 1,
+      "method": "pooled",
+      "checkpoint_sha256": "83500b77b5820ca6c4a4d30621c513310dbf7e288d6ea0886ff35ffd79eebe85",
+      "report_sha256": "3e64a68c2cf27429be55c69413d4648e667d16db37c54469b5ea1a06f46a6817",
+      "metrics_sha256": "fc5d1ec7d62a2fd49834df02e66be2eebdb7e5c489b2b76f27b0662ddcaef506",
+      "data_sha256": "5e25c8d6e2cba64c29e6df3336d0cba1cea8d316065717af4b9285b9cf6259e4"
+    }
+  ],
+  "source_and_structural_outputs_replayed": 6144,
+  "data_provenance_audit_sha256": "a5a287a49cfa864ea593a2ee4ebe58210167dfb2a1c9ef2692d3b54109ccf691",
+  "full_checkpoint_restoration": true,
+  "identical_feedback_initial_states": true,
+  "coordinate_only_edge_head_learning_verified": true,
+  "development_gate_passed": false,
+  "new_molecular_oracle_calls": 0,
+  "scientific_submission_ready": false,
+  "scope": "Reused12-composition development benchmark. Self-conditioning is prior art; a gain over plain alone is not a new-method result. Codes have no assigned chemical bond-order semantics. Training updates match, training compute does not; all inference arms use128 primitive denoiser calls."
+}

@@ -1,6 +1,6 @@
 {
   "at_utc": "2026-09-14T21:07:07.614198+00:00",
-  "status": "implemented_pending_submission",
+  "status": "complete_failed_novelty_gate",
   "goal_achieved": false,
   "scientific_submission_ready": false,
   "method": "notes/geometry_feedback_v1.md",
@@ -13,5 +13,179 @@
   "intended_comparison": "Pair-localized latent feedback versus geometry-only and molecule-pooled feedback; plain one-pass baseline also retained.",
   "planned_outputs": 6144,
   "new_molecular_oracle_calls": 0,
-  "next": "Submit bounded four-arm two-seed pilot. A gain from ordinary self-conditioning alone is not an AI novelty result; primary latent-versus-geometry and latent-versus-pooled gate must pass."
+  "next": "Preserve the distinction: ordinary geometry SC improves the baseline, but localized unlabelled relation codes do not establish an extra benefit. A separately frozen zero-parameter internal-geometry hypothesis is next.",
+  "job_id": "46473082",
+  "source_commit": "755c6b8e09ce915d6a0406645dd0a7a2b9c158b4",
+  "run": "runs/geometry_feedback_v1",
+  "development_gate_passed": false,
+  "summary": {
+    "0": {
+      "plain": {
+        "attempts": 768,
+        "graph": 363,
+        "geometry": 480,
+        "distinct_connectivity": 342,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0
+      },
+      "geometry": {
+        "attempts": 768,
+        "graph": 417,
+        "geometry": 517,
+        "distinct_connectivity": 394,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0
+      },
+      "latent": {
+        "attempts": 768,
+        "graph": 422,
+        "geometry": 522,
+        "distinct_connectivity": 401,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 2.5355753898620605
+      },
+      "pooled": {
+        "attempts": 768,
+        "graph": 432,
+        "geometry": 534,
+        "distinct_connectivity": 408,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 2.128506898880005
+      }
+    },
+    "1": {
+      "plain": {
+        "attempts": 768,
+        "graph": 312,
+        "geometry": 410,
+        "distinct_connectivity": 293,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0
+      },
+      "geometry": {
+        "attempts": 768,
+        "graph": 342,
+        "geometry": 426,
+        "distinct_connectivity": 318,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 0.0
+      },
+      "latent": {
+        "attempts": 768,
+        "graph": 334,
+        "geometry": 418,
+        "distinct_connectivity": 311,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 2.866307020187378
+      },
+      "pooled": {
+        "attempts": 768,
+        "graph": 333,
+        "geometry": 417,
+        "distinct_connectivity": 309,
+        "validator_errors": 0,
+        "edge_head_parameter_change": 2.079735040664673
+      }
+    }
+  },
+  "comparisons": {
+    "latent minus geometry": {
+      "graph_supported": {
+        "mean": -0.001953125,
+        "paired_draw95": [
+          -0.014973958333333334,
+          0.01171875
+        ],
+        "descriptive_composition95": [
+          -0.012369791666666666,
+          0.01171875
+        ]
+      },
+      "geometrically_supported": {
+        "mean": -0.001953125,
+        "paired_draw95": [
+          -0.013671875,
+          0.009114583333333334
+        ],
+        "descriptive_composition95": [
+          -0.009765625,
+          0.006510416666666667
+        ]
+      }
+    },
+    "latent minus pooled": {
+      "graph_supported": {
+        "mean": -0.005859375,
+        "paired_draw95": [
+          -0.020182291666666668,
+          0.008463541666666666
+        ],
+        "descriptive_composition95": [
+          -0.01953125,
+          0.012369791666666666
+        ]
+      },
+      "geometrically_supported": {
+        "mean": -0.007161458333333333,
+        "paired_draw95": [
+          -0.018880208333333332,
+          0.00390625
+        ],
+        "descriptive_composition95": [
+          -0.014973958333333334,
+          0.001953125
+        ]
+      }
+    },
+    "geometry minus plain": {
+      "graph_supported": {
+        "mean": 0.0546875,
+        "paired_draw95": [
+          0.030598958333333332,
+          0.07942708333333333
+        ],
+        "descriptive_composition95": [
+          0.041015625,
+          0.06770833333333333
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.034505208333333336,
+        "paired_draw95": [
+          0.01171875,
+          0.057291666666666664
+        ],
+        "descriptive_composition95": [
+          0.010416666666666666,
+          0.059244791666666664
+        ]
+      }
+    },
+    "latent minus plain": {
+      "graph_supported": {
+        "mean": 0.052734375,
+        "paired_draw95": [
+          0.028645833333333332,
+          0.078125
+        ],
+        "descriptive_composition95": [
+          0.033203125,
+          0.07291666666666667
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.032552083333333336,
+        "paired_draw95": [
+          0.010400390625000006,
+          0.055338541666666664
+        ],
+        "descriptive_composition95": [
+          0.008447265625000006,
+          0.056640625
+        ]
+      }
+    }
+  },
+  "audit": "research/evidence/geometry_feedback_audit_v1.json",
+  "baseline_geometry_sc_improves_both": true
 }
