@@ -75,6 +75,10 @@ def main():
     note='Matched3000 updates and two differentiable passes for all source arms; no atom/bond classification loss.'))
   protocol=spec
   evaluate(model,prior,method,cfg,protocol,ph,evaluation,sha(directory/'last.ckpt'),manifest)
+  for name,extra in spec.get('extra_evaluations',{}).items():
+   extra_manifest=a.project/extra['condition_manifest'];assert sha(extra_manifest)==extra['condition_manifest_sha256']
+   extra_out=a.out/name;extra_out.mkdir(exist_ok=True)
+   evaluate(model,prior,method,cfg,dict(spec,**extra),ph,extra_out,sha(directory/'last.ckpt'),extra_manifest)
   completed.append(method);write(a.out/'progress.json',dict(complete=len(completed)==len(spec['methods']),protocol_sha256=ph,completed=completed))
   del model,optimizer;torch.cuda.empty_cache()
 

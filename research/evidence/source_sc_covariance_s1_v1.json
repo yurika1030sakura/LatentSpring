@@ -1,0 +1,87 @@
+{
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "warm_checkpoint": "runs/orbit_pairing_typed_v1/training/typed_rotation/last.ckpt",
+  "warm_checkpoint_sha256": "92269b5915da5ef057bde64067a84baaaf85a7d60470bdb2b027dc31624cfab9",
+  "data": "runs/tree_manifold_v1/s1/data/data.pt",
+  "data_sha256": "5e25c8d6e2cba64c29e6df3336d0cba1cea8d316065717af4b9285b9cf6259e4",
+  "data_selection": "runs/tree_manifold_v1/s1/data/selection.json",
+  "condition_manifest": "research/evidence/dynamic_tree_panel_v1.json",
+  "condition_manifest_sha256": "ab21f7098611d87393dba959441449472b194680abf73d0c9bf9bd7e14ec3651",
+  "conditions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "fm_steps": 3000,
+  "fm_seed": 33911,
+  "fm_lr": 2e-05,
+  "feedback_lr": 0.0003,
+  "edge_log_width": 0.2,
+  "self_conditioning": {
+    "zero_init": true,
+    "deep_supervision": true
+  },
+  "evaluation_seed": 33903,
+  "evaluation_batch": 16,
+  "samples_per_condition": 64,
+  "terminal_noise_std_A": 0.025,
+  "primitive_denoiser_evaluations_per_sample": 128,
+  "frozen": true,
+  "at_utc": "2026-09-14T23:51:16.630839+00:00",
+  "format": "source_sc_covariance_v1",
+  "methods": [
+    "covariance_gaussian"
+  ],
+  "midpoint_steps": 32,
+  "covariance_control": {
+    "covariance_trees": 128,
+    "covariance_seed": 30191
+  },
+  "primary": "Fixed harmonic tree versus single Gaussian with the same covariance approximation; matched source-SC training recipe and frozen existing harmonic/Gaussian references.",
+  "pilot_gate": "Harmonic exceeds covariance Gaussian graph count in both existing training seeds and both panels; positive pooled conditional paired95 lower bounds on both panels. Report every comparison, geometry and diversity. Panels are now reused for a new control, not a second untouched confirmation.",
+  "failure_rule": "No calibration-budget, source-scale, data, optimizer, sampler, or seed selection based on generated outcomes.",
+  "data_scope": "Same audited TRAIN coordinate rows and composition exclusions; no scaffold or evaluation geometry used for fitting.",
+  "compute": "One new model per seed,3000 two-pass updates,128 primitive inference calls on both existing panels. Frozen existing harmonic/Gaussian models reused.",
+  "source_control": "128-tree covariance Gaussian from the existing tested control implementation. Covariance calibration against8192 trees on all22 compositions is reported before any benefit is attributed beyond second moments.",
+  "claim_boundary": "Development experiment only; fixed probabilistic source may be the contribution but no originality, held-out-composition, Boltzmann-law or ICLR-readiness claim follows automatically.",
+  "new_outputs_this_seed": 1408,
+  "reused_outputs_this_seed": 0,
+  "new_molecular_oracle_calls": 0,
+  "scientific_submission_ready": false,
+  "parent_source_sc_protocol_sha256": "810abc0ec2bcce1a9c76137d4449e878c3d96578e12d679bfb4cc2922c5c71c6",
+  "parent_development_audit_sha256": "54664777bc015dfeb1d92f96c73fb9cbfc8cedcbd9ad014e39e7a51e2f924524",
+  "parent_confirmation_audit_sha256": "47c4909f6d676febfb4491da0c7c2eb42c0815e4cddad083ad8d4557b43a4be7",
+  "extra_evaluations": {
+    "confirmation": {
+      "condition_manifest": "research/evidence/source_sc_confirmation_panel_v1.json",
+      "condition_manifest_sha256": "934311077b9cf8649f6193d30f65f942a406270fe9b23f20c9da2533b1c04de6",
+      "conditions": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "evaluation_seed": 35903,
+      "samples_per_condition": 64,
+      "evaluation_batch": 16,
+      "midpoint_steps": 32,
+      "terminal_noise_std_A": 0.025
+    }
+  }
+}
