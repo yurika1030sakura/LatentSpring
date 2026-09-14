@@ -192,6 +192,30 @@ the exact density of the evaluated midpoint-plus-noise sampler. We therefore
 make no absolute final-likelihood or importance-ESS claim.
 
 \section{Development experiments}
+\paragraph{Prospective neutral-monomer evaluation.}
+To align the single-molecule task with its readout, we separately define a
+neutral-singlet organic domain with8--40 atoms, containing C and H and restricted
+to H, B, C, N, O, F, Si, P, S, Cl, Br and I. The implementation limit remains200
+atoms. We exclude54 compositions from the four declared earlier panels before
+checking original references. Of78 metadata-eligible references,31 pass the
+unchanged connectivity, overlap and graph assays. A fixed metadata hash selects
+up to8 per size bin, yielding21 compositions with5/8/8 in the8--16/17--28/29--40
+bins. All21 reference assays pass before any new model output is queried. The
+reference coordinates are absent from the generation manifest and never enter
+fitting or initialization. This is an explicit scope restriction, not filtering
+of the earlier generated outputs.
+
+An independent exact count-vector audit finds no matching composition among
+3,902,107 training and39,415 legacy-validation records in the two checksum-verified
+processed corpora. A fast additive-hash screen is followed by exact verification,
+with deliberate hash-collision and real-corpus positive controls. This establishes
+separation from those files, not arbitrary unrecorded pretraining or all parent
+trajectory relations. Five frozen source models are evaluated in the first
+continuation and three in the second; node/pair source models have only one
+continuation. No model is refitted for this panel. \textbf{The complete generated-
+output audit is pending in this development version.}
+\IfFileExists{sections/monomer_results.tex}{\input{sections/monomer_results}}{}
+
 \paragraph{Tree-conditioned transport variant.}
 The source-only flow receives coordinates sampled from a tree but does not receive
 the tree itself. We additionally implement a small invariant adapter for that
@@ -346,7 +370,8 @@ implemented static adapter does not establish a useful increment in the matched
 actual/sham/no-context test. The32-composition comparison supports geometric gains
 but not a repeated shell-tree graph advantage. Poor reference coverage shows why
 a primary single-molecule benchmark must align its input domain and assay before
-further architectural claims. The present results do not establish a calibrated
+further architectural claims. The prospective neutral-monomer panel supplies that
+next controlled test; its evaluation is pending. The present results do not establish a calibrated
 energy distribution or a completed competitive benchmark.
 \label{endofmaintext}
 
