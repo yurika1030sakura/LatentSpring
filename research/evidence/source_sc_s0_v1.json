@@ -1,0 +1,71 @@
+{
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "warm_checkpoint": "runs/orbit_pairing_typed_v1/training/typed_rotation/last.ckpt",
+  "warm_checkpoint_sha256": "92269b5915da5ef057bde64067a84baaaf85a7d60470bdb2b027dc31624cfab9",
+  "data": "runs/tree_manifold_v1/s0/data/data.pt",
+  "data_sha256": "8abe2cb06071bfccbb56a41a847e61c7a74f151a17f2433721027868e85fbda8",
+  "data_selection": "runs/tree_manifold_v1/s0/data/selection.json",
+  "condition_manifest": "research/evidence/dynamic_tree_panel_v1.json",
+  "condition_manifest_sha256": "ab21f7098611d87393dba959441449472b194680abf73d0c9bf9bd7e14ec3651",
+  "conditions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "fm_steps": 3000,
+  "fm_seed": 33811,
+  "fm_lr": 2e-05,
+  "feedback_lr": 0.0003,
+  "edge_log_width": 0.2,
+  "self_conditioning": {
+    "zero_init": true,
+    "deep_supervision": true
+  },
+  "evaluation_seed": 33803,
+  "evaluation_batch": 16,
+  "samples_per_condition": 64,
+  "terminal_noise_std_A": 0.025,
+  "primitive_denoiser_evaluations_per_sample": 128,
+  "frozen": true,
+  "at_utc": "2026-09-14T23:03:57.227132+00:00",
+  "format": "source_sc_v1",
+  "methods": [
+    "fixed",
+    "gaussian",
+    "harmonic_tree"
+  ],
+  "midpoint_steps": 32,
+  "covariance_control": {
+    "covariance_trees": 128,
+    "covariance_seed": 30191
+  },
+  "reference": {
+    "run": "runs/geometry_feedback_v1/s0/study",
+    "method": "geometry",
+    "protocol": "research/evidence/geometry_feedback_s0_v1.json",
+    "protocol_sha256": "68c60a99a9adcc2e5871bec9e777cef4daec32600e97ad9b6070731a2c48b3bb",
+    "checkpoint_sha256": "b78d65655344c795523ad8f11baab9c5e590ade53a361ce30cf7a8302f3697d3",
+    "report_sha256": "def19fdb9a927b3598dee8b2a80bf5f42c542f80e5426c9f58aa5eebe1f577c5"
+  },
+  "primary": "Fixed shell source versus unit Gaussian and analytically covariance-matched harmonic tree under identical geometry-only self-conditioning.",
+  "pilot_gate": "Shell graph count exceeds BOTH controls in EACH training seed; pooled conditional paired95 lower bound positive against BOTH; pooled distinct-connectivity rate no more than2pp below either control.",
+  "failure_rule": "No parameter, source-width, LR, sampler or seed selection based on this reused12-condition development panel.",
+  "data_scope": "Same audited TRAIN coordinate rows and composition exclusions; no scaffold or evaluation geometry used for fitting.",
+  "compute": "All arms3000 updates with two differentiable denoiser passes;32 midpoint steps and128 primitive denoiser calls per generated sample. Shell training/evaluation reused with full hashes, not counted as new draws.",
+  "source_control": "Harmonic tree has the same latent-tree law and analytically identical conditional covariance as shell source; its Gaussian edge kernel removes the radial shell. This is the essential moment control; a separate approximate covariance Gaussian is omitted.",
+  "claim_boundary": "Development experiment only; fixed probabilistic source may be the contribution but no originality, held-out-composition, Boltzmann-law or ICLR-readiness claim follows automatically.",
+  "new_outputs_this_seed": 1536,
+  "reused_outputs_this_seed": 768,
+  "new_molecular_oracle_calls": 0,
+  "scientific_submission_ready": false
+}
