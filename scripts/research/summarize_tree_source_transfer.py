@@ -51,13 +51,13 @@ def main():
         ax.set_yticks(range(3), ['Shell - Gaussian', 'Harmonic - Gaussian', 'Shell - Harmonic'])
         ax.invert_yaxis()
         ax.set_xlabel('Graph pass-rate difference (percentage points)')
-        ax.set_title('95% intervals; composition resampling is descriptive')
-        if row == 0:
-            ax.legend(frameon=False, fontsize=8, loc='best')
+        ax.set_title('95% intervals\nComposition resampling is descriptive', fontsize=10)
     fig.suptitle('Frozen source models on prospectively selected additional compositions', fontsize=13)
     fig.text(.5, .012, 'All 6,144 outputs retained. No new model fitting or physical queries.\n'
              'Additional development panel; composition-disjoint warm pretraining is not certified. Sources are not chosen separately by seed.', ha='center', fontsize=9)
-    fig.tight_layout(rect=(0, .065, 1, .95))
+    handles, labels = axes[0, 1].get_legend_handles_labels()
+    fig.legend(handles, labels, frameon=False, fontsize=9, ncol=2, loc='lower center', bbox_to_anchor=(.5, .065))
+    fig.tight_layout(rect=(0, .12, 1, .95))
     directory = args.project/'research/figures/tree_source_transfer_v1'
     directory.mkdir(parents=True, exist_ok=True)
     for extension in ['pdf', 'png']:

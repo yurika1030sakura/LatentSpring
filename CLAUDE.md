@@ -1,55 +1,47 @@
 # BGFM project guide
 
-CURRENT: read `research/TREE_TRANSFER_STATE_20260914.json` and
-`notes/tree_source_transfer_v1.md`. The context adapter experiment is complete
-with no useful increment; it is closed to scale-up. The frozen32-composition
-source comparison is running as job46368764. Query Slurm.
+CURRENT: read `research/TREE_TRANSFER_STATE_20260914.json`, `research/NEXT.md`,
+`CLAUDE_HANDOFF.md` and `notes/tree_results_and_scope_20260914.md`.
 
-CURRENT CONTEXT EXPERIMENT: read `research/TREE_CONTEXT_STATE_20260914.json`
-and `notes/tree_conditioned_transport_v1.md`. The adapter is implemented;57 tests
-pass. Job46367714 has two continuation tasks; query Slurm. No molecular advantage
-from tree conditioning is claimed before the completed comparison.
+Both new studies are COMPLETE. The static source-tree context adapter does not
+help: graph passes/512 for no context / actual tree / independent tree are
+118/102/119 and97/75/97. All3,072 source/context draws and structural outputs replay;
+full checkpoints restore and adapters have matched initialization and parameter
+counts. Do not scale or retune this adapter recipe against these outcomes.
 
-CURRENT: read `research/TREE_MOMENT_STATE_20260914.json`, `research/NEXT.md`,
-`CLAUDE_HANDOFF.md`, `notes/tree_moment_controls_v1.md` and
-`notes/tree_conditioned_transport_brief_v1.md`.
+On32 prospectively selected additional development compositions, Gaussian / shell /
+harmonic graph passes/1,024 are180/200/183 and164/178/195. Shell geometry gains
+of6.54 and5.86 percentage points have positive draw and descriptive composition
+intervals; shell graph-gain intervals span zero. All6,144 outputs replay. The
+broader source result supports geometry, not a stable chemical-validity advantage.
 
-The complete4,096-output moment-control study strengthens the source-framework
-case. Graph passes/512 for unit Gaussian, covariance Gaussian, harmonic tree,
-shell tree are103/106/112/136 and94/96/128/118 in the two continuations. Shell
-versus either single Gaussian has positive conditional paired intervals in both.
-Shell versus harmonic changes sign; narrow finite-length edges have no repeated
-advantage. Gaussian/shell reference checkpoints are the SAME two as the previous
-connected studies, evaluated with new streams, not additional independent fits.
-The earlier weak confirmation stream remains preserved.
+Reference calibration exposes a scope limitation: the unchanged assay passes
+only6/32 original reference graphs and20/32 geometries;12 references are
+multifragment and12 trigger validator errors. All16 conditions with zero generated
+graph passes across all six arms also have rejected reference graphs. This does
+not prove every rejection is a validator bug or that every reference is a stable
+monomer. Preserve primary counts and denominators; do not rescue methods by
+post hoc filtering to the passing references.
 
-This supports useful source structure beyond the tested single-Gaussian control;
-its covariance is a documented finite Monte Carlo approximation. Extra learned
-node/pair affinity utility, new-composition generalization and competitive ICLR
-readiness remain unestablished. A one-seed node energy signal versus Gaussian
-still does not establish a node increment over fixed or a Boltzmann distribution.
+The next priority is a prospective, coherent single-molecule task and reference-
+qualified assay before more neural architecture variants. Keep the current broad
+molecular-system panel as a separate stress test. No replacement evaluation panel
+or new successful architecture is claimed. The full ICLR goal remains active
+and unachieved; the internal manuscript is not submission ready.
 
-Jobs46364922_0/1 completed0:0. All4,096 new source draws and structural readouts
-replay; total tree-study evaluation outputs are10,240. This study uses zero new
-physical queries; the preceding energy study used5,120. Eleven tree/control tests
-pass, and the composition-only covariance calibration replays. Query live Slurm.
-The new `paper/tree_working.tex` contains the method, proofs and complete results;
-its PDF is an internal development draft using verified official2027 styles.
+Jobs46367714_0/1 and46368764_0/1 all completed0:0. These studies add9,216 outputs,
+bringing the total tree-study outputs to19,456, with zero new physical queries.
+The earlier energy readout remains5,120 calls.57 targeted implementation tests
+passed. Query live Slurm before assuming later work is absent. The manuscript
+`paper/tree_working.tex` includes method proofs, all current findings and limits.
 
-Next hypothesis: supply the sampled latent tree to the transport network through
-an equivariant edge adapter. Current code uses the tree only to create source
-coordinates. The concrete brief specifies true/sham/no-context controls and
-joint symmetry bookkeeping. This adapter is NOT implemented or validated yet.
-Do not scale the current prior-affinity head or select a source separately by seed.
-
-Keep722 reserved outcomes unqueried, old12/18 evaluated cohorts,2,560 earlier
-orbit outputs and all10,240 tree-study outputs outside fitting. Preserve bond-free
-OMol25, max_atoms200, BGFM interfaces, original charge/spin, separate environments
-and no home writes. Correlated/non-Gaussian FM pairing cannot use the old Gaussian
-score proxy. The final noisy midpoint sampler has no qualified density or ESS.
-Earlier routing/collision/latent-mass sweeps stay closed. The ICLR goal is active
-and unachieved. Official deadlines: September18 abstract and September25 paper,
-both23:59 AoE; the user handles authorship and actual submission.
+Keep722 reserved outcomes unqueried, old12/18 cohorts,2,560 earlier orbit outputs,
+all19,456 tree-study outputs and32 raw reference geometries outside fitting.
+Preserve bond-free OMol25, max_atoms200, original charge/spin, BGFM interfaces,
+separate environments and no home writes. The final noisy sampler has no qualified
+absolute density, ESS or Boltzmann-law result. Tree-conditioned models reject the
+old marginal-density interface. Earlier routing/collision/latent-mass sweeps stay
+closed. The user handles authorship/submission; deadlines remain September18/25 AoE.
 
 Historical milestones below do not replace this checkpoint.
 

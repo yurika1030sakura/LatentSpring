@@ -32,12 +32,15 @@ development study, a fixed tree prior reduces fragmentation. Fresh draws from tw
 matched training continuations also show higher graph acceptance than isotropic
 and covariance-matched single-Gaussian sources; comparison with a harmonic-tree
 mixture varies across continuations. An earlier weaker confirmation stream is
-retained. Learned
+retained. On32 additional compositions, geometric support improves while the
+shell-tree graph-acceptance gain remains uncertain. Original-reference checks
+also reveal limited graph-assay coverage on this heterogeneous domain. Learned
 affinities improve held-out source likelihood but have not established an
 increment over the fixed prior in final generation. A one-seed energy readout
 provides a node-network signal relative to an isotropic source. These results
-motivate separating source fit, spatial dependence and chemical utility; they do
-not establish equilibrium sampling or broad generator superiority.
+motivate separating source fit, spatial dependence and chemical utility. A matched
+test does not support the added static source-tree context adapter. These results
+do not establish equilibrium sampling or broad generator superiority.
 \end{abstract}
 
 \section{Introduction}
@@ -301,9 +304,32 @@ control, but does not establish a repeatable benefit of the narrow radial law.
 The covariance control's finite calibration error remains a limitation of exact
 moment attribution. No new physical queries are made in this experiment.
 
+\IfFileExists{sections/tree_source_transfer_results.tex}{
+\paragraph{Additional composition panel.}
+We freeze32 additional development compositions before querying their generated
+outcomes, selecting four metadata-hash ranks per size/charge/spin stratum and
+excluding three declared earlier panels. We omit reference energies and use no
+element or generated-geometry selection. Frozen Gaussian, shell-tree and harmonic-
+tree checkpoints each generate32 outputs per condition in both continuations,
+without retraining or physical-oracle queries. Full composition disjointness
+from warm pretraining is not certified.
+\input{sections/tree_source_transfer_results}
+
+The shell-tree graph gain is not established on this broader panel, whereas
+geometric-support gains of6.54 and5.86 percentage points have positive paired and
+descriptive composition intervals. A post-experiment reference calibration gives
+only6 graph passes and20 geometry passes among the32 original references. Twelve
+references are disconnected and12 trigger validator errors. All16 conditions with
+zero graph passes across the six generated arms also have rejected reference
+graphs. This reveals scope and assay-coverage limitations; it does not prove that
+all rejected outputs are chemically valid or that each reference is a stable
+monomer. No primary denominator or generated outcome is changed after calibration.
+}{}
+
 \paragraph{Uncertainty and remaining evidence.}
-The intervals resample paired draws within each of the eight fixed compositions,
-conditional on the fitted models, without multiplicity adjustment. They do not
+The paired draw intervals condition on fitted models and the respective fixed
+composition panels, without multiplicity adjustment. The additional panel also
+has a descriptive stratified composition bootstrap. These summaries do not
 quantify new-composition or pretraining-seed uncertainty. Broad held-composition
 evaluation, comparisons with independently trained learned generators and a
 replicated useful learned-source increment remain outstanding. A favorable source
@@ -317,17 +343,21 @@ unresolved. Narrow finite-length edges are not consistently better than a harmon
 tree mixture. One concrete open question is whether the flow should retain the
 sampled tree as conditioning, instead of receiving its coordinates alone. The
 implemented static adapter does not establish a useful increment in the matched
-actual/sham/no-context test. A separately frozen32-composition comparison evaluates
-the source effect more broadly; it introduces no new learning. The present results do not establish a
-calibrated energy distribution or a completed competitive benchmark.
+actual/sham/no-context test. The32-composition comparison supports geometric gains
+but not a repeated shell-tree graph advantage. Poor reference coverage shows why
+a primary single-molecule benchmark must align its input domain and assay before
+further architectural claims. The present results do not establish a calibrated
+energy distribution or a completed competitive benchmark.
 \label{endofmaintext}
 
 \subsubsection*{Reproducibility statement}
 Frozen protocols record data-order and generation seeds, source checkpoint hashes,
 all attempted structures, electronic conditions and oracle costs. Current audits
-replay13,312 source draws and structural readouts and5,120 stored physical rows;
+replay19,456 source draws and structural readouts and5,120 stored physical rows;
 they do not independently rerun optimizers, final neural generation or the oracle.
-The4,096-output moment-control and3,072-output context audits are complete. Implementation tests cover normalization,
+The moment-control, context and additional-composition audits are complete.
+Original-reference calibration is separate from generation and fitting.
+Implementation tests cover normalization,
 Jacobians, weighted-tree sampling, symmetry, density gradients and source-law guards.
 The anonymous release package and final author verification remain outstanding.
 
