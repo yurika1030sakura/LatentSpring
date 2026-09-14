@@ -204,7 +204,7 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
                              terminal_time=0.95, for_training=False,
                              parameterization="endpoint", kT=None, xi_fn=None,
                              n_trace_replicates=1, checkpoint_steps=False,
-                             discrete_adjoint=False, solver='midpoint'):
+                             discrete_adjoint=False, solver='midpoint',prior_log_prob=None):
     """Log q_T(x), midpoint or RK4 integration of state AND log-Jacobian.
 
     With n_trace_replicates>1, return (replicates, graphs) estimates from
@@ -233,6 +233,8 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
     if solver=='rk4' and parameterization=='endpoint' and terminal_time==1:
         raise ValueError('RK4 endpoint-head evaluation requires terminal_time<1')
     if discrete_adjoint and for_training:
+        if prior_log_prob is not None:
+            raise ValueError('Custom prior training currently requires direct/checkpointed autograd, not the Gaussian discrete adjoint')
         if checkpoint_steps:
             raise ValueError('Select step checkpointing or the discrete adjoint, not both')
         from .clamped_adjoint import log_density_discrete_adjoint
@@ -281,8 +283,14 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
             if not for_training:
                 x = x.detach().requires_grad_(True)
                 integral = integral.detach()
-        sq = x.new_zeros(n_graphs).index_add(0, node_batch_idx, x.square().sum(-1))
-        logp = -0.5*sq/prior_std**2 - 1.5*(n_atoms-1)*math.log(2*math.pi*prior_std**2) - integral
+        if prior_log_prob is None:
+            sq = x.new_zeros(n_graphs).index_add(0, node_batch_idx, x.square().sum(-1))
+            prior_value=-0.5*sq/prior_std**2-1.5*(n_atoms-1)*math.log(2*math.pi*prior_std**2)
+        else:
+            prior_value=prior_log_prob(x,graph,node_batch_idx)
+            if prior_value.shape!=(n_graphs,) or prior_value.device!=x.device:
+                raise ValueError('Prior callback must return one log density per graph on the trajectory device')
+        logp=prior_value-integral
         if not torch.isfinite(logp).all():
             raise FloatingPointError("Non-finite clamped-flow density; inspect field and resolution")
         result = logp[0] if n_trace_replicates == 1 else logp
