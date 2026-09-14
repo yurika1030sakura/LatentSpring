@@ -1,30 +1,32 @@
 # BGFM project guide
 
-CURRENT: `research/ORBIT_PAIRING_STATE_20260913.json`, `research/NEXT.md`,
-`CLAUDE_HANDOFF.md` and `notes/orbit_pairing_fm_v1.md`.
+CURRENT: read `research/TREE_PRIOR_STATE_20260913.json`, `research/NEXT.md`,
+`CLAUDE_HANDOFF.md` and `notes/tree_mixture_prior_v1.md`.
 
-The main-generator pairing pilot is COMPLETE. All2560 outputs across five models
-and eight fixed development compositions are structurally replayed. Graph-support
-counts/512 are47 warm,65 independent continuation,61 rotation,62 collision-aware
-and74 typed assignment+rotation. The new collision-aware candidate does not beat
-ordinary continuation and loses to the stronger type-matching control. Its paired
-interval versus typed matching excludes zero conditionally on these fixed models.
-This is one training seed, not replicated molecular superiority or ICLR readiness.
+The active candidate is a learned spatial prior over latent connection trees,
+without bond labels. The source coordinate density is normalized by the matrix-
+tree theorem. Its node and pair affinity networks fit actual OMol25 coordinates;
+the tree is a dependence structure, not a chemical bond assignment or a guarantee
+of valid output connectivity. The user explicitly wants this connection-learning
+direction. It remains a candidate AI contribution, not a validated ICLR result.
 
-Keep independent and typed-matching continuations as development controls; exact
-checkpoints and finite sampling settings are recorded in
-`research/evidence/generator_reference_registry_v1.json`. The frozen energy gate
-failed and the follow-up made zero physical calls. All five jobs from this stage
-are terminal; re-query Slurm before recovery. The next distinctive main-method contribution is still open.
+Prior fitting46333856 is complete. Fixed/node/pair held NLL per DOF is
+1.84687/1.83615/1.82766; this is not molecular performance. Main-FM comparisons
+46335714 and46335903 are running, with fixed physical and simple learned controls,
+3000 matched training examples and2560 planned fresh outputs. Query live Slurm.
+52 tests pass. No new physical queries or bond supervision are used. Existing
+OMol25 data is enough for this first test; no extra user data is needed now.
 
-Close collision-aware rotation search to scale-up. Earlier routing/scorer and
-latent-mass toy sweeps also stay closed. Preserve all negative evidence and the
-722 reserved outcomes. The new2560 generated evaluation outputs and old12/18
-cohorts do not enter fitting. Keep the two environments, bond-free OMol25 and
-max_atoms200. Existing BGFM hooks remain intact; correlated pairings cannot use
-the independent-Gaussian velocity-score proxy. The finite T1-plus-noise source
-has no qualified absolute q or Boltzmann-law claim. The ICLR goal remains active
-and unachieved.
+The stronger previous generator's geometric failures are primarily fragmentation:
+272 disconnected outputs and6 overlapping outputs among512. The old charged-
+fragment graph readout also misses neutral radical representations. An explicit
+secondary diagnostic preserves old counts and decisions. Do not retroactively
+promote a metric change into model improvement or a quantum-state certificate.
+
+Keep all protected evaluation outputs and722 reserved outcomes outside fitting.
+Keep separate environments, bond-free OMol25, max_atoms200 and the BGFM interfaces.
+A normalized new prior does not qualify the final midpoint64 T1-plus-noise density.
+Earlier collision-pairing, routing and latent-mass toy sweeps remain closed.
 
 Historical milestones below do not replace this checkpoint.
 

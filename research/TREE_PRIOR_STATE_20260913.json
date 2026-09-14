@@ -1,0 +1,73 @@
+{
+  "updated_utc": "2026-09-14T02:56:55.795120+00:00",
+  "phase": "learned_latent_tree_spatial_prior",
+  "scientific_submission_ready": false,
+  "iclr_goal_achieved": false,
+  "protocol": "research/evidence/tree_prior_protocol_v1.json",
+  "theory": "notes/tree_mixture_prior_v1.md",
+  "failure_diagnostic": "research/evidence/generator_fragment_diagnostic_v1.json",
+  "prior_fit": {
+    "job_id": 46333856,
+    "run": "runs/tree_prior_fit_v1",
+    "status": "complete",
+    "fixed_validation_nll_per_dof": 1.8468693110758774,
+    "node_validation_nll_per_dof": 1.8361471736133117,
+    "pair_validation_nll_per_dof": 1.8276609599277456
+  },
+  "molecular_jobs": [
+    {
+      "job_id": 46335714,
+      "run": "runs/tree_prior_fm_fixed_v1",
+      "methods": [
+        "warm",
+        "gaussian",
+        "fixed"
+      ],
+      "status": "running; query Slurm"
+    },
+    {
+      "job_id": 46335903,
+      "run": "runs/tree_prior_fm_learned_v1",
+      "methods": [
+        "node",
+        "pair"
+      ],
+      "status": "running; query Slurm"
+    }
+  ],
+  "methods": [
+    "warm",
+    "gaussian",
+    "fixed",
+    "node",
+    "pair"
+  ],
+  "training_steps_per_model": 3000,
+  "prior_learning_rows": 1000,
+  "prior_validation_rows": 128,
+  "conditions": 8,
+  "samples_per_condition": 64,
+  "expected_outputs": 2560,
+  "implementation": "Exact spatial density from a mixture of latent dependence trees and normalized isotropic radial edge kernels; tree partition via log-domain positive elimination; weighted Wilson sampling; no supplied bond graph.",
+  "diagnostic": {
+    "typed_old_outputs": 512,
+    "disconnected": 272,
+    "overlap": 6,
+    "both": 4,
+    "geometric_failures": 274,
+    "legacy_graph_supported": 74,
+    "legacy_validator_exceptions": 89
+  },
+  "tests_passed": 52,
+  "new_molecular_oracle_calls": 0,
+  "user_direction": "User explicitly wants the connection-learning network direction. Initial proof uses existing OMol25; no request for additional user data is needed.",
+  "novelty_boundary": "Connection learning and the normalized spatial prior are candidate method contributions. Tree ensembles, matrix-tree identities and graph-informed harmonic priors have direct prior art. Molecular usefulness is not yet established.",
+  "normalized_prior_not_final_density": true,
+  "final_noisy_flow_density_qualified": false,
+  "protected": [
+    "722 reserved outcomes",
+    "old12/18 evaluated generated-parent cohorts",
+    "the2560 previous orbit-pairing evaluation outputs"
+  ],
+  "previous_state": "research/ORBIT_PAIRING_STATE_20260913.json"
+}
