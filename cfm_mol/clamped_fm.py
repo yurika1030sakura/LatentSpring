@@ -6,6 +6,11 @@ head must predict D*=X0+(X1-X0)/alpha(T), because its velocity conversion is
 alpha'(t)/(1-alpha(t))*(D-Xt). This trains data to time T, not time one.
 The separately trained displacement head defines v=D-Xt and predicts
 D*=Xt+alpha'(t)/alpha(T)*(X1-X0), without an endpoint conversion singularity.
+
+Optional SO(3)-orbit pairing restores the Gaussian source with a shared Haar
+rotation and keeps the rotation-symmetrized data endpoint law. The endpoints
+are then correlated: an independent-Gaussian velocity-to-score identity does
+not apply. This option changes the FM coupling, never the inference/density API.
 """
 import math
 import torch
@@ -54,7 +59,7 @@ def clamped_fm_path(graph,node_batch_idx,scheduler,*,terminal_time=0.8,
 def clamped_fm_loss(model,graph,node_batch_idx,upper_edge_mask,*,terminal_time=0.8,
                     prior_std=1.,generator=None,parameterization='endpoint',
                     pairing=None,pairing_radii=None,pairing_generator=None,pairing_diagnostics=None):
-    """Equal-molecule head MSE for a memoryless, unaligned clamped flow.
+    """Equal-molecule head MSE for a memoryless clamped flow.
 
     It is a positive time-weighting of the velocity FM loss and has the same
     conditional regression optimum for endpoint heads; for displacement heads
