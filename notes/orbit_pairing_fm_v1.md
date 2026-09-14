@@ -127,3 +127,63 @@ three-element array exceeds that limit even with concurrency capped at two.
 The replacement runs the three arms sequentially in one bounded GPU allocation.
 See `research/ORBIT_PAIRING_STATE_20260913.json` for current handles and exact
 next commands. Do not modify the frozen scientific protocol to fix scheduling.
+
+## Completed results and decision
+
+All five active jobs completed0:0: training46323226, generation46323424,
+primary audit46324210, conditional energy follow-up46325717 and supplementary
+matching baseline46327728. The earlier cancelled/rejected submissions remain.
+The final comparison replays all2560 structural outcomes. Four3000-step training
+runs share the same initialization and actual3000 OMol25 data indices. Training
+itself is not independently rerun by the output audit.46 unique targeted tests
+have passed, including the supplementary conditioned-permutation path check.
+
+During primary evaluation, after inspecting the warm-model outputs, a stronger
+standard control was added without using trained-arm outcomes to set it. It uses
+three alternating Hungarian assignment/Kabsch steps within identical atom AND
+charge-feature classes. It requires constant edge conditioning. Independent
+uniform permutations within these classes, shared by both endpoints, extend Haar
+augmentation to the finite label-stabilizer group. This preserves the conditional
+Gaussian source and the physical data shape. The labeled target is additionally
+symmetrized over indistinguishable conditioning labels; its arbitrary atom-row
+order is not preserved. This is standard matching methodology, not claimed new.
+
+| Model | Graph accepted /512 | Geometric support /512 | Validator exceptions | Distinct graphs summed over conditions |
+|---|---:|---:|---:|---:|
+| Frozen warm FM |47|203|87|47|
+| Independent continuation |65|232|95|65|
+| Rotation alignment |61|235|96|61|
+| Collision-aware rotation |62|244|98|62|
+| Typed assignment + rotation |74|238|89|73|
+
+All eight compositions and every attempted output are retained. A validator
+exception is not declared a chemically invalid molecule. These totals describe
+the stated algorithmic support test, not a quantum-state validity certificate.
+The strongest observed control has14.45% graph support versus9.18% for the warm
+model, but these are one-seed development results and do not establish a thermal
+or generally superior generator.
+
+Collision-aware minus independent graph-support fraction is-0.00586 with paired
+interval[-0.03125,0.01953]; minus rotation is+0.00195 with[-0.00977,0.01367].
+Versus the stronger typed-assignment control it is-0.02344 with
+[-0.04297,-0.00391]. Intervals bootstrap the Gaussian/noise draws within the fixed
+compositions and models. They are not independent-training replication or
+multiplicity-adjusted guarantees. The collision-aware mechanism is not supported
+by this comparison. Its lower path overlap and positive warm-only comparison do
+not establish its incremental value.
+
+The frozen energy gate failed because collision-aware did not beat independent
+continuation. The automated follow-up therefore skipped every physical query:
+zero new molecular oracle calls. No energy-distribution result is claimed.
+
+Decision: stop scaling or tuning the collision-aware rotation search. Preserve
+independent and typed-matching models as stronger conventional development
+baselines. Their exact checkpoint hashes and finite sampler settings are in
+`research/evidence/generator_reference_registry_v1.json`. Do not quietly replace
+archived production sources or assign absolute densities to their T1-plus-noise
+outputs. The next distinctive main-method contribution remains an open research
+problem. Newly generated evaluation outputs stay outside future fitting.
+
+Final artifacts: `research/evidence/orbit_pairing_five_method_v1.json` and its
+CSV; `research/figures/orbit_pairing_v1/orbit_pairing_v2.pdf`; current state and
+scheduler records. The old working manuscript is still a diagnostic draft.

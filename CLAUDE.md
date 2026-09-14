@@ -1,31 +1,30 @@
 # BGFM project guide
 
-CURRENT: read `research/ORBIT_PAIRING_STATE_20260913.json`, `research/NEXT.md`,
+CURRENT: `research/ORBIT_PAIRING_STATE_20260913.json`, `research/NEXT.md`,
 `CLAUDE_HANDOFF.md` and `notes/orbit_pairing_fm_v1.md`.
 
-The active main-generator experiment compares independent, rotation-aligned and
-collision-aware symmetry pairings in flow-matching training. A shared Haar
-rotation preserves the Gaussian prior and the rotation-symmetrized data endpoint
-law; source/target remain correlated. Do not apply the independent-Gaussian
-velocity-score proxy to this pairing. This is an FM-only pilot; the original
-BGFM hook, bond-free OMol25 and max_atoms200 settings remain intact.
+The main-generator pairing pilot is COMPLETE. All2560 outputs across five models
+and eight fixed development compositions are structurally replayed. Graph-support
+counts/512 are47 warm,65 independent continuation,61 rotation,62 collision-aware
+and74 typed assignment+rotation. The new collision-aware candidate does not beat
+ordinary continuation and loses to the stronger type-matching control. Its paired
+interval versus typed matching excludes zero conditionally on these fixed models.
+This is one training seed, not replicated molecular superiority or ICLR readiness.
 
-Training46323226 runs the three matched3000-step continuations sequentially in
-one GPU test allocation. Evaluation46323424 is dependent and will generate2048
-fresh structures across all8 development compositions and four models, including
-the frozen warm generator. Re-query Slurm. The audit is implemented. No new
-molecular oracle calls or reserved outcomes are used in training/structure eval.
+Keep independent and typed-matching continuations as development controls; exact
+checkpoints and finite sampling settings are recorded in
+`research/evidence/generator_reference_registry_v1.json`. The frozen energy gate
+failed and the follow-up made zero physical calls. All five jobs from this stage
+are terminal; re-query Slurm before recovery. The next distinctive main-method contribution is still open.
 
-The prior latent-mass prototype is complete and audited, but has no established
-unique neural or real-molecular advantage. Its online point gains have broad
-paired intervals, and it cannot repair marginal weight collapse. Previous
-routing/scorer branches remain closed to scale-up. Keep all negative evidence,
-12/18 evaluation-only cohorts,722 reserved outcomes and separate environments.
-
-Alignment and geometry-aware FM paths have direct prior art. The new finite
-collision-aware rotation search is a hypothesis, not an ICLR-level novelty claim.
-Actual fresh generation and strong matched controls decide whether it is useful.
-The full ICLR goal remains active and unachieved.
+Close collision-aware rotation search to scale-up. Earlier routing/scorer and
+latent-mass toy sweeps also stay closed. Preserve all negative evidence and the
+722 reserved outcomes. The new2560 generated evaluation outputs and old12/18
+cohorts do not enter fitting. Keep the two environments, bond-free OMol25 and
+max_atoms200. Existing BGFM hooks remain intact; correlated pairings cannot use
+the independent-Gaussian velocity-score proxy. The finite T1-plus-noise source
+has no qualified absolute q or Boltzmann-law claim. The ICLR goal remains active
+and unachieved.
 
 Historical milestones below do not replace this checkpoint.
 

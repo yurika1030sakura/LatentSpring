@@ -1,6 +1,6 @@
 {
-  "updated_utc": "2026-09-14T01:30:49.388000+00:00",
-  "phase": "main_generator_orbit_pairing_pilot",
+  "updated_utc": "2026-09-14T01:56:35.943119+00:00",
+  "phase": "main_generator_orbit_pairing_complete",
   "scientific_submission_ready": false,
   "iclr_goal_achieved": false,
   "protocol": "research/evidence/orbit_pairing_protocol_v1.json",
@@ -8,7 +8,7 @@
   "training": {
     "job_id": 46323226,
     "run": "runs/orbit_pairing_train_v3",
-    "status": "running; verify live",
+    "status": "complete",
     "methods": [
       "independent",
       "rotation",
@@ -21,7 +21,7 @@
   "evaluation": {
     "job_id": 46323424,
     "run": "runs/orbit_pairing_eval_v2",
-    "status": "pending after training",
+    "status": "complete",
     "total_geometries": 2048,
     "methods": [
       "warm",
@@ -35,7 +35,7 @@
   "audit": {
     "script": "scripts/research/audit_orbit_pairing.py",
     "launcher": "scripts/research/orbit_pairing_audit.slurm",
-    "status": "pending after evaluation",
+    "status": "complete",
     "job_id": 46324210,
     "run": "runs/orbit_pairing_audit_v1"
   },
@@ -50,8 +50,8 @@
   },
   "tests": {
     "initial_related_tests_passed": 44,
-    "final_focused_tests_passed": 5,
-    "unique_tests": 45
+    "final_focused_tests_passed": 6,
+    "unique_tests": 46
   },
   "prior_art": "Equivariant FM, ET-Flow, SemlaFlow and physics-aware FM paths have direct overlap. No generic alignment or new physical-law claim.",
   "prior_preservation": "Proper source rotation followed by independent shared Haar rotation restores the Gaussian source and rotation-symmetrized target marginal.",
@@ -69,6 +69,147 @@
   "energy_followup_job": {
     "job_id": 46325717,
     "run": "runs/orbit_pairing_energy_v1",
-    "status": "pending after audit; skips without oracle calls if frozen structural gate fails"
+    "status": "complete; skipped with zero physical calls because gate failed"
+  },
+  "all_jobs_terminal": true,
+  "live_jobs": [],
+  "generated_structures": 2560,
+  "all_structural_outcomes_replayed": true,
+  "methods": {
+    "warm": {
+      "attempted": 512,
+      "graph_supported": 47,
+      "geometrically_supported": 203,
+      "validator_errors": 87,
+      "distinct_connectivities_sum": 47,
+      "generation_seconds": 241.670179692097,
+      "additional_training_seconds": 0.0
+    },
+    "independent": {
+      "attempted": 512,
+      "graph_supported": 65,
+      "geometrically_supported": 232,
+      "validator_errors": 95,
+      "distinct_connectivities_sum": 65,
+      "generation_seconds": 235.99984487961046,
+      "additional_training_seconds": 341.8519084439613
+    },
+    "rotation": {
+      "attempted": 512,
+      "graph_supported": 61,
+      "geometrically_supported": 235,
+      "validator_errors": 96,
+      "distinct_connectivities_sum": 61,
+      "generation_seconds": 231.5330612526741,
+      "additional_training_seconds": 333.5768770358991
+    },
+    "steric": {
+      "attempted": 512,
+      "graph_supported": 62,
+      "geometrically_supported": 244,
+      "validator_errors": 98,
+      "distinct_connectivities_sum": 62,
+      "generation_seconds": 229.8588634931948,
+      "additional_training_seconds": 348.54520436306484
+    },
+    "typed_rotation": {
+      "attempted": 512,
+      "graph_supported": 74,
+      "geometrically_supported": 238,
+      "validator_errors": 89,
+      "distinct_connectivities_sum": 73,
+      "generation_seconds": 232.27000177418813,
+      "additional_training_seconds": 328.72089473507367
+    }
+  },
+  "comparisons": {
+    "steric minus warm": {
+      "graph_support_fraction_difference": 0.029296875,
+      "conditional_paired_bootstrap95": [
+        0.0078125,
+        0.05078125
+      ],
+      "per_condition_count_difference": [
+        0,
+        6,
+        1,
+        0,
+        6,
+        0,
+        2,
+        0
+      ]
+    },
+    "steric minus independent": {
+      "graph_support_fraction_difference": -0.005859375,
+      "conditional_paired_bootstrap95": [
+        -0.03125,
+        0.01953125
+      ],
+      "per_condition_count_difference": [
+        0,
+        -2,
+        -2,
+        0,
+        3,
+        0,
+        -2,
+        0
+      ]
+    },
+    "steric minus rotation": {
+      "graph_support_fraction_difference": 0.001953125,
+      "conditional_paired_bootstrap95": [
+        -0.009765625,
+        0.013671875
+      ],
+      "per_condition_count_difference": [
+        0,
+        1,
+        -1,
+        0,
+        3,
+        0,
+        -2,
+        0
+      ]
+    },
+    "steric minus typed_rotation": {
+      "graph_support_fraction_difference": -0.0234375,
+      "conditional_paired_bootstrap95": [
+        -0.04296875,
+        -0.00390625
+      ],
+      "per_condition_count_difference": [
+        0,
+        -5,
+        1,
+        0,
+        -4,
+        0,
+        -4,
+        0
+      ]
+    }
+  },
+  "strongest_observed_baseline": "typed_rotation",
+  "new_collision_aware_advantage_established": false,
+  "interpretation": "Type-preserving assignment baseline has74/512 graph-supported outputs versus47 warm,65 independent,61 rotation and62 collision-aware. Collision-aware minus typed is-2.34375 percentage points with conditional interval[-4.296875,-0.390625]. The new collision mechanism is not supported. Retain stronger conventional generator controls, do not claim new AI novelty or thermal sampling.",
+  "decision": "Close collision-aware rotation search to scale-up; do not tune its angle count, cost weight or length after seeing these outcomes. Keep independent and typed-matching continuations as strong development baselines. The next distinctive main-method contribution is still open.",
+  "summary": "research/evidence/orbit_pairing_five_method_v1.json",
+  "table": "research/evidence/orbit_pairing_five_method_v1.csv",
+  "figure": "research/figures/orbit_pairing_v1/orbit_pairing_v2.pdf",
+  "reference_registry": "research/evidence/generator_reference_registry_v1.json",
+  "scheduler": "research/evidence/orbit_pairing_scheduler_v1.json",
+  "energy_check_skipped_by_frozen_gate": true,
+  "protected_new_evaluation_outputs": [
+    "runs/orbit_pairing_eval_v2/evaluation",
+    "runs/orbit_pairing_typed_v1/evaluation"
+  ],
+  "supplementary_baseline": {
+    "job_id": 46327728,
+    "run": "runs/orbit_pairing_typed_v1",
+    "status": "complete;512 outcomes replayed",
+    "matched_training_steps": 3000
   }
 }

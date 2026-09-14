@@ -1,67 +1,67 @@
-# Next — main-generator symmetry/collision pairing pilot
+# Next — completed main-generator pairing comparison
 
-CURRENT: `research/ORBIT_PAIRING_STATE_20260913.json` and
+Read `research/ORBIT_PAIRING_STATE_20260913.json` and
 `notes/orbit_pairing_fm_v1.md`. The ICLR goal remains active and unachieved.
-The previous mass-calibration and molecular-routing branches are preserved;
-neither is a qualified main-method success. Do not restart their sweeps.
 
-Active jobs (query Slurm; these are snapshots):
-- 46323226: `runs/orbit_pairing_train_v3`, three sequential FM continuations,
- independent / rotation / steric,3000 steps each, identical initialization/data.
-- 46323424: `runs/orbit_pairing_eval_v2`, after training;2048 fresh molecular
- outputs, including the frozen warm generator and all8 development conditions.
-- 46324210: `runs/orbit_pairing_audit_v1`, after evaluation; replay every structural
- outcome and verify matched training records, checkpoint hashes and sample streams.
+The experiment is complete, with every one of2560 generated structures included.
+Counts passing the stated graph check out of512: warm47, independent continuation65,
+rotation61, collision-aware62, typed assignment+rotation74. The collision-aware
+candidate does not establish an increment beyond continuation or standard matching.
+Versus typed matching its paired fraction difference is-0.02344, interval
+[-0.04297,-0.00391]. This is a fixed-model/development comparison, not a training-
+replicated superiority result. Do not turn its positive warm-only comparison or
+lower path overlap into an AI novelty claim.
 
-- 46325717: `runs/orbit_pairing_energy_v1`, after the audit; automatically skips
- without physical calls if the prespecified structural gate fails.
+What is now available:
+- `research/evidence/orbit_pairing_five_method_v1.json` and `.csv`: all five models,
+  source checksums, matched3000 training rows, all structural outcomes replayed,
+  per-condition results, validator exceptions, costs and paired uncertainty.
+- `research/evidence/generator_reference_registry_v1.json`: exact checkpoints and
+  inference settings for all models. Retain independent and typed-matching
+  continuations as conventional development controls. Their selection used this
+  development panel; they have not been qualified on reserved outcomes.
+- `research/figures/orbit_pairing_v1/orbit_pairing_v2.pdf`: support categories and
+  paired uncertainty. Graph perception is not an electronic validity certificate.
+- `runs/orbit_pairing_train_v3`, `runs/orbit_pairing_eval_v2`,
+  `runs/orbit_pairing_audit_v1`, `runs/orbit_pairing_typed_v1`: full source artifacts.
+- `runs/orbit_pairing_energy_v1/energy/results.json`: the prescribed structural
+  gate failed, so energy scoring was skipped with zero new molecular oracle calls.
+- `research/evidence/orbit_pairing_scheduler_v1.json`: jobs46323226,46323424,
+  46324210,46325717 and46327728 all completed0:0. Query Slurm before assuming later
+  work is absent. Earlier cancelled/rejected submissions remain preserved.
 
-All three fit arms preserve the Gaussian source via a shared independent Haar
-rotation of both training endpoints. Standard rotation alignment is prior art.
-The steric arm additionally searches a fixed set of13 proper rotations using
-path overlap and displacement. It uses no new oracle, bond labels, generated
-evaluation parents or reserved outcomes. Its usefulness is unknown until the
-fresh generation comparison completes. Do not equate lower training loss or
-path overlap with better output validity.
+The next research decision:
+1. Close this collision-aware rotation-search recipe to scale-up. Do not vary
+   its angle candidates, penalty weight or training duration to seek a win on
+   the observed outputs. Earlier routing and latent-mass toy sweeps stay closed.
+2. Work from the stronger conventional generator controls and identify a concrete
+   remaining failure mechanism for a new learned-distribution contribution.
+   Pairing-cost reduction alone did not establish that contribution. A new design
+   must have a plausible advantage beyond standard type/rotation matching and a
+   bounded direct molecular test. No replacement mechanism is declared solved.
+3. Keep the current scope honest: graph support/observed structural diversity are
+   not calibrated energy distributions. The ordinary FM data target is empirical
+   OMol25, not automatically a Gibbs ensemble. A useful generation claim does
+   not require perfect mixing on every case, but a thermal claim needs actual
+   compatible evidence. No independent new physical law is mandatory.
+4. If a new hypothesis survives, freeze its core comparison before querying new
+   evaluation outputs. Use fresh disjoint streams; retain the complete original
+   results, all failure categories and preparation/inference cost. Do not use
+   the reserved outcomes or this panel's generated geometries as fitting data.
 
-Finish the current experiment:
-1. Verify all three training completions, then the32 method/condition output
- rows and the structural audit. Preserve failed jobs or samples rather than
- replacing a condition. Do not tune weights, angle candidates or training length
- using evaluation outcomes.
-2. Run `scripts/research/summarize_orbit_pairing.py` with:
- `--protocol research/evidence/orbit_pairing_protocol_v1.json`
- `--run runs/orbit_pairing_eval_v2/evaluation`
- `--audit runs/orbit_pairing_audit_v1/audit.json`
- `--out research/evidence/orbit_pairing_summary_v1.json`
- `--csv research/evidence/orbit_pairing_table_v1.csv`.
-3. If the audited pooled graph-supported count for steric exceeds BOTH
- independent and rotation, perform the already frozen all-output energy check:
- all four methods, all eight conditions, same64 outputs each; E_plus=(E(x)+E(-x))/2,
- original charge/spin,0.1-eV/A^2 COM restraint,4096 raw calls total. Retain invalid
- outputs and errors in the denominator. Otherwise stop this bounded pilot with
- zero new molecular oracle calls. This gate is a feasibility screen, not a
- significance criterion or ICLR-readiness certificate.
-4. A positive generation result still needs training-seed confirmation and a
- careful contribution statement against equivariant FM, ET-Flow, SemlaFlow and
- physics-aware paths. These controls are deliberately required before calling
- this an AI contribution. No all-case perfection or new physics law is required.
+Implementation facts to preserve:
+- Optional orbit pairing has a Gaussian source after shared Haar augmentation.
+  Typed matching also randomizes within identical conditioning-label groups and
+  requires permutation-invariant edge features. Shape is unchanged under this
+  physical symmetry; arbitrary target atom-row order is not preserved.
+- The independent-Gaussian velocity-to-score identity does not apply to correlated
+  endpoint pairings. This pilot is FM-only and leaves the original BGFM hooks
+  intact. Do not silently enable the old force proxy on the new coupling.
+- The midpoint64 T1 displacement sampler plus0.025-A COM noise has no qualified
+  absolute likelihood. Do not score it with a mismatched clamped q0.95 or claim
+  importance ESS. Keep original charge/spin and model-input temperature.
 
-The old independent-Gaussian velocity-to-score formula is incompatible with
-correlated endpoint pairings. This pilot uses FM only; the existing BGFM hook and
-three-term interface remain intact. Do not silently enable that force proxy.
-The finite T1 midpoint64 sampler plus0.025-A COM noise has no qualified absolute
-q, so no importance weights, ESS or Boltzmann-sampling claim follows here.
-
-Scheduling provenance:46322261 and46322800 were cancelled while still PENDING,
-with no training metrics or calculations. Partition-update attempts were rejected
-by site validators; the subsequent three-element gpu_test array submission was
-rejected by the two-submitted-job QOS limit. The accepted replacement uses one
-serial training allocation and one dependent evaluation. All records remain in
-`research/evidence/orbit_pairing_queue_update_v1.json` and `research/jobs.jsonl`.
-Do not cancel other projects' jobs to free this QOS.
-
-Protected:722 reserved outcomes unqueried;12/18 evaluated generated-parent
-cohorts excluded from fitting; separate FlowMol/oracle environments; no home writes;
-OMol25 primary, bond supervision zero, max_atoms200. User handles authorship and
-submission. `paper/angular_working.tex` is still the old diagnostic draft.
+Protected:722 reserved outcomes; old12/18 evaluated cohorts; the2560 new evaluated
+outputs; separate FlowMol/oracle environments; no home writes; OMol25 primary,
+bond loss zero, max_atoms200. User handles authorship/submission. The existing
+`paper/angular_working.tex` is still a diagnostic draft, not a new ICLR manuscript.

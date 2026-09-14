@@ -1,0 +1,90 @@
+{
+  "at_utc": "2026-09-14T01:56:35.943119+00:00",
+  "scope": "Development references chosen after the fixed8-condition diagnostic, not final held-out model selection or thermal qualification.",
+  "sampling_law": {
+    "terminal_time": 1.0,
+    "parameterization": "displacement",
+    "midpoint_steps": 64,
+    "prior_std_A": 1.0,
+    "terminal_COM_noise_std_A": 0.025,
+    "model_input_kT_eV": 1.0,
+    "absolute_density_qualified": false
+  },
+  "references": {
+    "warm": {
+      "checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/electronic_fm_global_v1/last.ckpt",
+      "checkpoint_sha256": "aa25f1c31a7f5d692a8b6a0d1ccb8f564dc82ead95be05c5419f157ba63bbf18",
+      "observed_structural_readout": {
+        "attempted": 512,
+        "graph_supported": 47,
+        "geometrically_supported": 203,
+        "validator_errors": 87,
+        "distinct_connectivities_sum": 47,
+        "generation_seconds": 241.670179692097,
+        "additional_training_seconds": 0.0
+      }
+    },
+    "independent": {
+      "checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/orbit_pairing_train_v3/independent/last.ckpt",
+      "checkpoint_sha256": "f4e67a4758cced0c8990040a8889990bf79886821e00dc84fd902eeb284e29ff",
+      "observed_structural_readout": {
+        "attempted": 512,
+        "graph_supported": 65,
+        "geometrically_supported": 232,
+        "validator_errors": 95,
+        "distinct_connectivities_sum": 65,
+        "generation_seconds": 235.99984487961046,
+        "additional_training_seconds": 341.8519084439613
+      }
+    },
+    "rotation": {
+      "checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/orbit_pairing_train_v3/rotation/last.ckpt",
+      "checkpoint_sha256": "e65accb6c593c0df18498727f27d6585f6886bac05a2999ea07da9114fcf9af4",
+      "observed_structural_readout": {
+        "attempted": 512,
+        "graph_supported": 61,
+        "geometrically_supported": 235,
+        "validator_errors": 96,
+        "distinct_connectivities_sum": 61,
+        "generation_seconds": 231.5330612526741,
+        "additional_training_seconds": 333.5768770358991
+      }
+    },
+    "steric": {
+      "checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/orbit_pairing_train_v3/steric/last.ckpt",
+      "checkpoint_sha256": "373ef532d7d144d053e4092c1cea9ded6bee259ceaee48d54aae9ebb1c48f952",
+      "observed_structural_readout": {
+        "attempted": 512,
+        "graph_supported": 62,
+        "geometrically_supported": 244,
+        "validator_errors": 98,
+        "distinct_connectivities_sum": 62,
+        "generation_seconds": 229.8588634931948,
+        "additional_training_seconds": 348.54520436306484
+      }
+    },
+    "typed_rotation": {
+      "checkpoint": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/orbit_pairing_typed_v1/training/typed_rotation/last.ckpt",
+      "checkpoint_sha256": "92269b5915da5ef057bde64067a84baaaf85a7d60470bdb2b027dc31624cfab9",
+      "observed_structural_readout": {
+        "attempted": 512,
+        "graph_supported": 74,
+        "geometrically_supported": 238,
+        "validator_errors": 89,
+        "distinct_connectivities_sum": 73,
+        "generation_seconds": 232.27000177418813,
+        "additional_training_seconds": 328.72089473507367
+      }
+    }
+  },
+  "retain_as_strong_controls": [
+    "independent",
+    "typed_rotation"
+  ],
+  "candidate_not_promoted": "steric",
+  "main_contribution_established": false,
+  "scientific_submission_ready": false,
+  "energy_validation": "Not performed: prospective new-method structural gate failed; zero new physical queries.",
+  "evidence": "research/evidence/orbit_pairing_five_method_v1.json",
+  "evidence_sha256": "e71d6748576d95a137cdc523156c9da1ba41a652e3c7706f93d65fb834818908"
+}

@@ -1,10 +1,30 @@
-CURRENT execution: `research/ORBIT_PAIRING_STATE_20260913.json` and
-`research/NEXT.md`. Main-FM pairing training46323226, generation46323424,
-structural audit46324210 and conditional energy follow-up46325717 form the active
-pipeline. Query Slurm for current state. No new molecular advantage is claimed
-before the actual generated outputs are evaluated. The latent-mass stage below
-is complete but does not establish a distinct neural contribution. The ICLR goal
-is active and unachieved. Earlier checkpoints below are historical.
+CURRENT: `research/ORBIT_PAIRING_STATE_20260913.json`, `research/NEXT.md`,
+`CLAUDE_HANDOFF.md` and `notes/orbit_pairing_fm_v1.md`.
+
+The main-generator pairing pilot is COMPLETE. All2560 outputs across five models
+and eight fixed development compositions are structurally replayed. Graph-support
+counts/512 are47 warm,65 independent continuation,61 rotation,62 collision-aware
+and74 typed assignment+rotation. The new collision-aware candidate does not beat
+ordinary continuation and loses to the stronger type-matching control. Its paired
+interval versus typed matching excludes zero conditionally on these fixed models.
+This is one training seed, not replicated molecular superiority or ICLR readiness.
+
+Keep independent and typed-matching continuations as development controls; exact
+checkpoints and finite sampling settings are recorded in
+`research/evidence/generator_reference_registry_v1.json`. The frozen energy gate
+failed and the follow-up made zero physical calls. All five jobs from this stage
+are terminal; re-query Slurm before recovery. The next distinctive main-method contribution is still open.
+
+Close collision-aware rotation search to scale-up. Earlier routing/scorer and
+latent-mass toy sweeps also stay closed. Preserve all negative evidence and the
+722 reserved outcomes. The new2560 generated evaluation outputs and old12/18
+cohorts do not enter fitting. Keep the two environments, bond-free OMol25 and
+max_atoms200. Existing BGFM hooks remain intact; correlated pairings cannot use
+the independent-Gaussian velocity-score proxy. The finite T1-plus-noise source
+has no qualified absolute q or Boltzmann-law claim. The ICLR goal remains active
+and unachieved.
+
+Earlier checkpoints below are historical.
 
 # Current research status — September 13, 2026 UTC
 
