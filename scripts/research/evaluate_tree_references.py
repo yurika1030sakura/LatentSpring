@@ -37,7 +37,12 @@ def main():
         for key in ['data_seed', 'fm_seed', 'fm_steps', 'fm_lr', 'target_domain', 'warm_checkpoint_sha256']:
             assert recipe[key] == protocol[key], key
         model = restore_model(cfg, saved)
-        prior = load_prior(method, None, protocol, sha(args.protocol))
+        if protocol.get('use_checkpoint_prior', False):
+            from cfm_mol.source_checkpoint import prior_from_checkpoint
+            assert recipe['source_prior_kind'] == method
+            prior = prior_from_checkpoint(saved)
+        else:
+            prior = load_prior(method, None, protocol, sha(args.protocol))
         evaluate(model, prior, method, cfg, protocol, sha(args.protocol), args.out,
                  reference['checkpoint_sha256'], manifest)
         del model, saved
