@@ -1,6 +1,6 @@
 {
   "at_utc": "2026-09-14T18:27:41.087854+00:00",
-  "status": "gradient_fix_pending_submission",
+  "status": "corrected_run_running",
   "goal_achieved": false,
   "scientific_submission_ready": false,
   "method": "notes/dynamic_tree_attention_v1.md",
@@ -14,15 +14,18 @@
   "planned_new_outputs": 6144,
   "new_molecular_oracle_calls": 0,
   "scope": "New main-flow architecture test; previous source-utility failed gate and static-context failure preserved. Reused12-composition development panel; no claimed improvement yet.",
-  "next": "Resubmit corrected dynamic variants, reusing only completed identical-protocol no-block baselines. Original outputs preserved as an interrupted implementation variant, not silently removed.",
-  "job_id": "46443856",
-  "source_commit": "5865d9fe4ac2908e88108d1b75afddbfd1f646f6",
-  "run": "runs/dynamic_tree_v1",
-  "tests": "Four dynamic structure tests pass, including mixed-size batching; four existing static-context tests also pass.",
+  "next": "Finish corrected three dynamic variants per seed, reusing only unaffected complete baselines. Audit all corrected outputs and separately preserve/read out the interrupted implementation variant; no tuning on outcomes.",
+  "job_id": "46446108",
+  "source_commit": "b6233c82de8a00eff76de3d4ceab710563f849f4",
+  "run": "runs/dynamic_tree_gradient_fix_v1",
+  "tests": "Five dynamic tests pass, including active-floor finite differences and gauge-gradient invariance.",
   "training_exclusion_audit": "research/evidence/dynamic_tree_training_audit_v1.json",
   "training_excluded_compositions": 1352,
   "selected_training_rows_checked": 6256,
   "training_exclusion_overlap": 0,
   "cancelled_job_id": "46443856",
-  "gradient_fix_record": "research/evidence/dynamic_tree_gradient_fix_v1.json"
+  "gradient_fix_record": "research/evidence/dynamic_tree_gradient_fix_v1.json",
+  "interrupted_run": "runs/dynamic_tree_v1",
+  "reused_no_block_outputs": 1536,
+  "preserved_interrupted_dynamic_outputs": 1472
 }
