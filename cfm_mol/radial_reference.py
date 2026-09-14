@@ -130,4 +130,8 @@ def prepare_research_backbone(model, protocol):
         if backbone!='flowmol':raise ValueError('Tree context requires the FlowMol backbone')
         from cfm_mol.latent_tree_context import patch_latent_tree_context
         patch_latent_tree_context(model,**protocol['latent_tree_context'])
+    if protocol.get('dynamic_tree_attention'):
+        if backbone!='flowmol':raise ValueError('Dynamic tree attention requires the FlowMol backbone')
+        from cfm_mol.dynamic_tree_attention import patch_dynamic_tree_attention
+        patch_dynamic_tree_attention(model,**protocol['dynamic_tree_attention'])
     return model

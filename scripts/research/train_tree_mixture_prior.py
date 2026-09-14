@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import time
 import torch
+import numpy as np
 from ase.data import atomic_numbers
 from flowmol.model_utils.load import read_config_file
 from flowmol.data_processing.dataset import MoleculeDataset
@@ -31,17 +32,26 @@ def load_training(project,protocol):
         from cfm_mol.chemical_moves import covalent_radii
         from cfm_mol.geometric_domain import connected_nonoverlapping
         radii=covalent_radii(metadata.atomic_numbers.tolist())
+        excluded=set()
+        for path,digest in protocol.get('training_exclusion_manifests',{}).items():
+            file=project/path;assert sha(file)==digest
+            excluded.update(row['composition_hex'] for row in json.loads(file.read_text())['rows'])
         needed=protocol['fm_steps']+protocol['prior_validation_rows'];selected=[];examined=[]
         for index in order.tolist():
             graph=ds[index];positions=graph.ndata['x_1_true'].double()
             eligible=len(positions)>1 and bool(connected_nonoverlapping(positions[None],radii[graph.ndata['a_1_true'].argmax(-1)])[0])
+            if eligible and excluded:
+                numbers=metadata.atomic_numbers[graph.ndata['a_1_true'].argmax(-1)].numpy()
+                if (numbers>83).any():raise ValueError('Exclusion count vector requires the declared83-element OMol map')
+                composition=np.bincount(numbers-1,minlength=83).astype(np.uint8).tobytes().hex()
+                eligible=composition not in excluded
             examined.append((index,eligible))
             if eligible:selected.append(index)
             if len(selected)==needed:break
         if len(selected)!=needed:raise ValueError('Insufficient qualified training geometries')
         order=torch.tensor(selected,dtype=torch.long)
         metadata.selection_info=dict(domain='connected_nonoverlapping',contact_factor=1.25,overlap_factor=.6,
-            examined=examined,selected=selected,source_split='train',scope='First qualifying examples in the same fixed full training permutation; no generated or evaluation outcomes.')
+            examined=examined,selected=selected,excluded_compositions=len(excluded),source_split='train',scope='First qualifying examples in the same fixed full training permutation; no generated or evaluation outcomes.')
     return cfg,ds,metadata,order
 
 

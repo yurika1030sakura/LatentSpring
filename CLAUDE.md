@@ -1,5 +1,13 @@
 # BGFM project guide
 
+CURRENT UPDATE: the user asked to prioritize a concrete new AI method and fast
+improvement after the failed source-utility result. A state-dependent global-tree
+attention block is now implemented. Read `research/DYNAMIC_TREE_STATE_20260914.json`
+and `notes/dynamic_tree_attention_v1.md` first. No improvement is claimed yet.
+The previous source-utility failure and all data protections below remain in force.
+The new architecture changes the decoder; its law has no source-utility KL guarantee.
+
+
 CURRENT: read `research/SOURCE_UTILITY_STATE_20260914.json`, `research/NEXT.md`,
 `CLAUDE_HANDOFF.md` and `notes/source_utility_results_20260914.md`.
 

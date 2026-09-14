@@ -138,13 +138,19 @@ def main():
     completed=[]
     for method in a.methods:
         torch.manual_seed(protocol['fm_seed']);model=restore_model(cfg,warm).train()
-        prior=load_prior(method,a.prior_run,protocol,protocol_hash)
+        dynamic_mode=protocol.get('dynamic_modes',{}).get(method)
+        prior=load_prior('fixed' if dynamic_mode else method,a.prior_run,protocol,protocol_hash)
+        if dynamic_mode:
+            from cfm_mol.dynamic_tree_attention import patch_dynamic_tree_attention
+            torch.manual_seed(protocol['dynamic_initialization_seed'])
+            patch_dynamic_tree_attention(model,mode=dynamic_mode,**protocol['dynamic_adapter'])
         context_mode=protocol.get('context_modes',{}).get(method)
         if context_mode:
             from cfm_mol.latent_tree_context import patch_latent_tree_context,context_tree,tree_features
             torch.manual_seed(protocol['context_initialization_seed'])
             patch_latent_tree_context(model,**protocol['context_adapter'])
-        source_kind='fixed' if context_mode else method
+        assert not (context_mode and dynamic_mode)
+        source_kind='fixed' if context_mode or dynamic_mode else method
         model._research_prior_kind=source_kind
         directory=a.out/method;directory.mkdir()
         recipe={**warm['research_protocol'],**protocol,'format':'tree_prior_fm_v1','source_prior_kind':source_kind,
@@ -156,12 +162,20 @@ def main():
             recipe.update(latent_tree_context=protocol['context_adapter'],context_mode=context_mode,model_variant=method,
                 purpose='Actual versus independent latent tree conditioning; same shell source and training data, no bonds or oracle labels.')
             torch.save(model.vector_field.latent_tree_adapter.state_dict(),directory/'adapter_initial.pt')
+        if dynamic_mode:
+            recipe.update(dynamic_tree_attention=dict(mode=dynamic_mode,**protocol['dynamic_adapter']),model_variant=method,
+                purpose='State-dependent global tree attention versus local mass and fixed global affinities; same main FM objective and source, no supplied bonds.')
+            torch.save(model.vector_field.dynamic_tree_attention.state_dict(),directory/'dynamic_initial.pt')
         write(directory/'protocol.json',recipe)
         if context_mode:
             adapter=list(model.vector_field.latent_tree_adapter.parameters());ids={id(p) for p in adapter}
             groups=[dict(params=[p for p in model.parameters() if id(p) not in ids],lr=protocol['fm_lr']),
                     dict(params=adapter,lr=protocol['context_lr'])]
             optimizer=torch.optim.AdamW(groups,weight_decay=1e-12)
+        elif dynamic_mode:
+            adapter=list(model.vector_field.dynamic_tree_attention.parameters());ids={id(p) for p in adapter}
+            optimizer=torch.optim.AdamW([dict(params=[p for p in model.parameters() if id(p) not in ids],lr=protocol['fm_lr']),
+                dict(params=[p for p in adapter if p.requires_grad],lr=protocol['dynamic_lr'])],weight_decay=1e-12)
         else:optimizer=torch.optim.AdamW(model.parameters(),lr=protocol['fm_lr'],weight_decay=1e-12)
         torch.manual_seed(protocol['fm_seed']+17);start=time.perf_counter()
         for step,index in enumerate(order[:protocol['fm_steps']].tolist(),1):
