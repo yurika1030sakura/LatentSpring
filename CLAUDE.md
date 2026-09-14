@@ -1,32 +1,37 @@
 # BGFM project guide
 
-CURRENT: read `research/TREE_PRIOR_STATE_20260913.json`, `research/NEXT.md`,
-`CLAUDE_HANDOFF.md` and `notes/tree_mixture_prior_v1.md`.
+CURRENT: read `research/TREE_PRIOR_STATE_20260914.json`, `research/NEXT.md`,
+`CLAUDE_HANDOFF.md`, `notes/tree_prior_results_20260914.md` and
+`notes/tree_mixture_prior_v1.md`.
 
-The active candidate is a learned spatial prior over latent connection trees,
-without bond labels. The source coordinate density is normalized by the matrix-
-tree theorem. Its node and pair affinity networks fit actual OMol25 coordinates;
-the tree is a dependence structure, not a chemical bond assignment or a guarantee
-of valid output connectivity. The user explicitly wants this connection-learning
-direction. It remains a candidate AI contribution, not a validated ICLR result.
+The latent connection-tree spatial prior and node/pair affinity networks are
+implemented, with normalized source density and guarded FM/density interfaces.
+The bounded studies are complete:6,144 generated outputs,5,120 raw eSEN queries.
+All ten scheduled tasks completed0:0; query Slurm before assuming current state.
+53 targeted tests passed during implementation; source draws, structural outcomes
+and stored energy readouts were audited. See the current evidence files for scope.
 
-Prior fitting46333856 is complete. Fixed/node/pair held NLL per DOF is
-1.84687/1.83615/1.82766; this is not molecular performance. Main-FM comparisons
-46335714 and46335903 are running, with fixed physical and simple learned controls,
-3000 matched training examples and2560 planned fresh outputs. Query live Slurm.
-52 tests pass. No new physical queries or bond supervision are used. Existing
-OMol25 data is enough for this first test; no extra user data is needed now.
+Fragmentation reduction repeats, but graph acceptance gain is unstable: fixed
+versus Gaussian is131/512 versus105/512 initially, then93/512 versus91/512 in an
+independent continuation. Node/pair learning has not established extra utility
+beyond fixed. Node has a one-seed energy signal versus Gaussian (-0.624 eV,
+conditional interval[-1.084,-0.144]), but its interval versus fixed spans zero.
+Do not call either neural affinity model a proved improvement or the paper ready.
 
-The stronger previous generator's geometric failures are primarily fragmentation:
-272 disconnected outputs and6 overlapping outputs among512. The old charged-
-fragment graph readout also misses neutral radical representations. An explicit
-secondary diagnostic preserves old counts and decisions. Do not retroactively
-promote a metric change into model improvement or a quantum-state certificate.
+The connected training subset is shared across methods and selected using only
+training geometry. Keep the unrestricted-data study and all negative evidence.
+The tree is an auxiliary dependence structure, not a chemical bond graph or a
+connectivity guarantee. Existing OMol25 is sufficient for this initial test; no
+extra user data is needed now. Retain the framework and controls; do not scale the
+current pair head. A covariance/scale control and a concrete explanation of the
+source-fit/output-utility gap remain relevant before broader claims.
 
-Keep all protected evaluation outputs and722 reserved outcomes outside fitting.
-Keep separate environments, bond-free OMol25, max_atoms200 and the BGFM interfaces.
-A normalized new prior does not qualify the final midpoint64 T1-plus-noise density.
-Earlier collision-pairing, routing and latent-mass toy sweeps remain closed.
+Keep722 reserved outcomes, old12/18 evaluated cohorts, the2,560 earlier orbit
+outputs and all6,144 tree-study outputs outside fitting. Preserve bond-free OMol25,
+max_atoms200, BGFM interfaces and separate environments. No home writes. The
+normalized prior does not qualify the final midpoint64 T1-plus-noise density,
+importance ESS or a Boltzmann distribution. Earlier routing, collision-pairing
+and latent-mass toy sweeps remain closed. The ICLR goal is active and unachieved.
 
 Historical milestones below do not replace this checkpoint.
 

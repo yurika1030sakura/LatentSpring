@@ -1,0 +1,1048 @@
+{
+  "complete": true,
+  "sources": {
+    "unrestricted": {
+      "path": "research/evidence/tree_prior_study_v1.json",
+      "sha256": "95e3bed8d7767ec38e62fd02dea3152a42ab15efae323e8a0fe1e3b3701c593e"
+    },
+    "connected_first": {
+      "path": "runs/tree_prior_connected_audit_v1/audit.json",
+      "sha256": "a16fc2f8554712b281774328f227ab45a01c7e3df8ea9655622943c602f5d6a5"
+    },
+    "connected_confirmation": {
+      "path": "research/evidence/tree_prior_confirmation_audit_v2.json",
+      "sha256": "546da097c9a27197216e6e7f2ae6013eacf23eba25f45cd5d5eb35db569274df"
+    },
+    "energy": {
+      "path": "research/evidence/tree_prior_energy_audit_v2.json",
+      "sha256": "da6a6c8fb90858869b02a3c1afd8aedc8400e6f9f5fa815a3c1cc29a16c182c9"
+    }
+  },
+  "audit_implementations": {
+    "audit_tree_confirmation.py": "638840bd03db17d999e5514eaf7aaa8037a17a99ab696fb152a559839c97f9a1",
+    "audit_tree_energy.py": "0d9a657cef7c48884fad69196c05493d37bfad777620e68bd39d29e61c6398ea"
+  },
+  "stages": {
+    "unrestricted": {
+      "complete": true,
+      "protocol_sha256": "34356e21ed45275ba0a8001bcb1ec24e52b91c7bfde2deaee867717702e0e364",
+      "sources": {
+        "warm": {
+          "results_sha256": "d999d0393b4d53f49073886c767d63fc59fd38f42dd1fe9ca55f570f5d1b29fb",
+          "checkpoint_sha256": "92269b5915da5ef057bde64067a84baaaf85a7d60470bdb2b027dc31624cfab9"
+        },
+        "gaussian": {
+          "results_sha256": "27ef8f223f900a64bad7be9387f2c0688ea6c8b4138f52d5b1a6e9650daad98a",
+          "checkpoint_sha256": "5f25d8a93cf5da442d1676663d80d319dc014fb27fad5526b9acc52bd7886b5c"
+        },
+        "fixed": {
+          "results_sha256": "9b45226b407ebfb79fda219675baf16873521810af3730cdbf3d821dc915e339",
+          "checkpoint_sha256": "240c6c1081b900da147a3bcac66d4289e9af6c41d7c887118f45f002eaa0fb73"
+        },
+        "node": {
+          "results_sha256": "9af3035fac1f5d1a4fcca5a0cb3b60526b982cccab60454db601c12778d97bfa",
+          "checkpoint_sha256": "529fceca2ee9b27fd4dc49cabc01ecc1871158e3c01d3bbaac5cfadadf3b68db"
+        },
+        "pair": {
+          "results_sha256": "99ca28b8a375bebbbcb4e477c292368ec99d2e1bec77469268ca0b5cb9610cda",
+          "checkpoint_sha256": "b0bf3d0651c0a8f7fb776cfcca01d1fca63d2c1cd81c23f628d7242682b69b1b"
+        }
+      },
+      "prior_report_sha256": "d8a69c26b17d43a6cec5890ca791427b51a600bdf94285014646030af93da8fd",
+      "prior_validation": {
+        "fixed": {
+          "mean_validation_nll_per_dof": 1.8468693110758774,
+          "values_replayed": 128
+        },
+        "node": {
+          "mean_validation_nll_per_dof": 1.8361471736133117,
+          "values_replayed": 128
+        },
+        "pair": {
+          "mean_validation_nll_per_dof": 1.8276609599277456,
+          "values_replayed": 128
+        }
+      },
+      "training": {
+        "gaussian": {
+          "seconds": 352.5335476510227,
+          "metrics_sha256": "09ae86d906099a6d4160f8feacfb4dacb109392dae18d5d1d69e8ec8c722516d",
+          "mean_fm_loss": 0.6749942408415178,
+          "initial_disconnected": 2649,
+          "mean_paired_displacement_A2": 12.303602707624435
+        },
+        "fixed": {
+          "seconds": 377.3883483519312,
+          "metrics_sha256": "718eca2eeef7c2d4f5fae5830729b6c26c9f6392a7968dac6950793503125ff8",
+          "mean_fm_loss": 1.2767269920048614,
+          "initial_disconnected": 1818,
+          "mean_paired_displacement_A2": 9.969434108757104
+        },
+        "node": {
+          "seconds": 360.8866907360498,
+          "metrics_sha256": "0447b3283094855443974123b389bad40f68396cac8bfdd29fe3603035d82a4f",
+          "mean_fm_loss": 1.2601243895590306,
+          "initial_disconnected": 1822,
+          "mean_paired_displacement_A2": 9.950862612886354
+        },
+        "pair": {
+          "seconds": 377.0553357480094,
+          "metrics_sha256": "3be5af1cc2b6f25e1e6701e1ba086f0630bcc91a3fcccf68c9525068f086470f",
+          "mean_fm_loss": 1.318722072304537,
+          "initial_disconnected": 1852,
+          "mean_paired_displacement_A2": 9.973115720891084
+        }
+      },
+      "matched_training_rows": 3000,
+      "initial_sources_replayed": 2560,
+      "finite_tree_prior_densities_checked": 1536,
+      "final_structural_outcomes_replayed": 2560,
+      "methods": {
+        "warm": {
+          "attempted": 512,
+          "graph_supported": 78,
+          "geometrically_supported": 256,
+          "validator_errors": 95,
+          "disconnected": 256,
+          "overlap": 4,
+          "initial_disconnected": 440,
+          "initial_overlap": 465,
+          "distinct_connectivities_sum": 78,
+          "generation_seconds": 122.48162369173951
+        },
+        "gaussian": {
+          "attempted": 512,
+          "graph_supported": 76,
+          "geometrically_supported": 239,
+          "validator_errors": 95,
+          "disconnected": 272,
+          "overlap": 2,
+          "initial_disconnected": 440,
+          "initial_overlap": 465,
+          "distinct_connectivities_sum": 76,
+          "generation_seconds": 124.6424756757915
+        },
+        "fixed": {
+          "attempted": 512,
+          "graph_supported": 94,
+          "geometrically_supported": 284,
+          "validator_errors": 97,
+          "disconnected": 216,
+          "overlap": 14,
+          "initial_disconnected": 198,
+          "initial_overlap": 408,
+          "distinct_connectivities_sum": 92,
+          "generation_seconds": 126.23400764586404
+        },
+        "node": {
+          "attempted": 512,
+          "graph_supported": 92,
+          "geometrically_supported": 275,
+          "validator_errors": 98,
+          "disconnected": 232,
+          "overlap": 6,
+          "initial_disconnected": 206,
+          "initial_overlap": 403,
+          "distinct_connectivities_sum": 90,
+          "generation_seconds": 126.18554666079581
+        },
+        "pair": {
+          "attempted": 512,
+          "graph_supported": 93,
+          "geometrically_supported": 281,
+          "validator_errors": 97,
+          "disconnected": 229,
+          "overlap": 8,
+          "initial_disconnected": 212,
+          "initial_overlap": 394,
+          "distinct_connectivities_sum": 90,
+          "generation_seconds": 126.97235850966536
+        }
+      },
+      "comparisons": {
+        "fixed minus gaussian": {
+          "graph_support_difference": 0.03515625,
+          "conditional_paired_bootstrap95": [
+            0.0,
+            0.072265625
+          ],
+          "per_condition_counts": [
+            1,
+            0,
+            3,
+            0,
+            10,
+            0,
+            4,
+            0
+          ]
+        },
+        "node minus fixed": {
+          "graph_support_difference": -0.00390625,
+          "conditional_paired_bootstrap95": [
+            -0.03515625,
+            0.025390625
+          ],
+          "per_condition_counts": [
+            1,
+            -1,
+            -3,
+            0,
+            -6,
+            0,
+            7,
+            0
+          ]
+        },
+        "pair minus fixed": {
+          "graph_support_difference": -0.001953125,
+          "conditional_paired_bootstrap95": [
+            -0.0390625,
+            0.033203125
+          ],
+          "per_condition_counts": [
+            -1,
+            -5,
+            -3,
+            0,
+            1,
+            0,
+            7,
+            0
+          ]
+        },
+        "pair minus node": {
+          "graph_support_difference": 0.001953125,
+          "conditional_paired_bootstrap95": [
+            -0.033203125,
+            0.037109375
+          ],
+          "per_condition_counts": [
+            -2,
+            -4,
+            0,
+            0,
+            7,
+            0,
+            0,
+            0
+          ]
+        },
+        "node minus gaussian": {
+          "graph_support_difference": 0.03125,
+          "conditional_paired_bootstrap95": [
+            -0.005859375,
+            0.068359375
+          ],
+          "per_condition_counts": [
+            2,
+            -1,
+            0,
+            0,
+            4,
+            0,
+            11,
+            0
+          ]
+        },
+        "pair minus gaussian": {
+          "graph_support_difference": 0.033203125,
+          "conditional_paired_bootstrap95": [
+            -0.00390625,
+            0.0703125
+          ],
+          "per_condition_counts": [
+            0,
+            -5,
+            0,
+            0,
+            11,
+            0,
+            11,
+            0
+          ]
+        }
+      },
+      "new_molecular_oracle_calls": 0,
+      "scientific_submission_ready": false,
+      "limits": [
+        "One FM/prior training seed; bootstrap conditions on fitted models and fixed compositions.",
+        "Prior and FM optimizer trajectories and final neural generation are not independently retrained by this audit; saved prior validation, source sampling, training indices and final readouts are replayed.",
+        "Source spatial priors have normalized densities; final midpoint/noise outputs do not acquire qualified densities from that fact.",
+        "A connected latent tree is not a chemical bond graph or output connectivity guarantee."
+      ]
+    },
+    "connected_first": {
+      "complete": true,
+      "protocol_sha256": "db7cdd5e6a942e0d6308b60b222f9a5703f75656a1624409c08e925f41db5cfd",
+      "sources": {
+        "warm": {
+          "results_sha256": "3ffd6549b7be5b0d3ae03a5e05697262c36bdf14bc6e0124c2e24ad2b6d30243",
+          "checkpoint_sha256": "92269b5915da5ef057bde64067a84baaaf85a7d60470bdb2b027dc31624cfab9"
+        },
+        "gaussian": {
+          "results_sha256": "a520254fe4810eeaf811d395b7521db567829e6db6c731502de10cc424c19295",
+          "checkpoint_sha256": "cef6d4641086cfe8162a664258c1a48c2beaca502c16c28c8a51eab0fbaf8709"
+        },
+        "fixed": {
+          "results_sha256": "0c467479f0c369ff55f2c1f2ecd27f47e0fd6bd0b11dfc826a26f962610b708b",
+          "checkpoint_sha256": "5c609f85fc707cf24b4e406fa8942befc052bae33a6f779d0d14f6567ae3377e"
+        },
+        "node": {
+          "results_sha256": "fbf73b8f52ee0466439d09e8e1c7fca798d4d3527c2efcc655cd0e88a208877f",
+          "checkpoint_sha256": "c50f97b34b3136e599c37964e1502f2d79c4e1b4e3e94e4dd9e05ddea282d5be"
+        },
+        "pair": {
+          "results_sha256": "cf9cb6c094d55095e94ce5cc90133168137e37eb360d58a79c6615c239186ce8",
+          "checkpoint_sha256": "c34616323c805858b5e79ebe441e95804f654ae856d11f9dea963a7de5bb08ac"
+        }
+      },
+      "prior_report_sha256": "a2f6fe397bf6c0fb4caec72a903c471ca7fc6ae957bab87915d2594a0ec81a58",
+      "prior_validation": {
+        "fixed": {
+          "mean_validation_nll_per_dof": 1.5936191413652634,
+          "values_replayed": 128
+        },
+        "node": {
+          "mean_validation_nll_per_dof": 1.5844296553725057,
+          "values_replayed": 128
+        },
+        "pair": {
+          "mean_validation_nll_per_dof": 1.5750741914713648,
+          "values_replayed": 128
+        }
+      },
+      "training": {
+        "gaussian": {
+          "seconds": 333.1966377070639,
+          "metrics_sha256": "1a7511a548939cc77854aa363b37ce5148746a8587a36defda982be9c5704921",
+          "mean_fm_loss": 0.5901321706591794,
+          "initial_disconnected": 2585,
+          "mean_paired_displacement_A2": 7.8858414377172785
+        },
+        "fixed": {
+          "seconds": 338.6448159420397,
+          "metrics_sha256": "a6b4102388f0d932ee47ae52b0f70de3be16576725f16cefc317d7c9aee97dea",
+          "mean_fm_loss": 0.9950800303642948,
+          "initial_disconnected": 1683,
+          "mean_paired_displacement_A2": 6.700144074626267
+        },
+        "node": {
+          "seconds": 337.84187002899125,
+          "metrics_sha256": "6997b14f42e183d58c6b99fc26a47bd0bc411b4c5386f572956a7e6ab39cfa4f",
+          "mean_fm_loss": 0.9926826059172551,
+          "initial_disconnected": 1697,
+          "mean_paired_displacement_A2": 6.625872777628402
+        },
+        "pair": {
+          "seconds": 349.1022736351006,
+          "metrics_sha256": "3538c0632baddea988760218fdee117ed414663c4eeed9df44ddaecb247c8147",
+          "mean_fm_loss": 1.066219002268898,
+          "initial_disconnected": 1722,
+          "mean_paired_displacement_A2": 6.6296238076364
+        }
+      },
+      "matched_training_rows": 3000,
+      "initial_sources_replayed": 2560,
+      "finite_tree_prior_densities_checked": 1536,
+      "final_structural_outcomes_replayed": 2560,
+      "methods": {
+        "warm": {
+          "attempted": 512,
+          "graph_supported": 66,
+          "geometrically_supported": 237,
+          "validator_errors": 99,
+          "disconnected": 270,
+          "overlap": 8,
+          "initial_disconnected": 447,
+          "initial_overlap": 472,
+          "distinct_connectivities_sum": 66,
+          "generation_seconds": 120.34197628428228
+        },
+        "gaussian": {
+          "attempted": 512,
+          "graph_supported": 105,
+          "geometrically_supported": 314,
+          "validator_errors": 117,
+          "disconnected": 192,
+          "overlap": 6,
+          "initial_disconnected": 447,
+          "initial_overlap": 472,
+          "distinct_connectivities_sum": 103,
+          "generation_seconds": 125.80158635578118
+        },
+        "fixed": {
+          "attempted": 512,
+          "graph_supported": 131,
+          "geometrically_supported": 340,
+          "validator_errors": 103,
+          "disconnected": 162,
+          "overlap": 10,
+          "initial_disconnected": 189,
+          "initial_overlap": 415,
+          "distinct_connectivities_sum": 123,
+          "generation_seconds": 125.12192049995065
+        },
+        "node": {
+          "attempted": 512,
+          "graph_supported": 121,
+          "geometrically_supported": 352,
+          "validator_errors": 112,
+          "disconnected": 157,
+          "overlap": 4,
+          "initial_disconnected": 203,
+          "initial_overlap": 422,
+          "distinct_connectivities_sum": 113,
+          "generation_seconds": 122.5615297651384
+        },
+        "pair": {
+          "attempted": 512,
+          "graph_supported": 111,
+          "geometrically_supported": 337,
+          "validator_errors": 108,
+          "disconnected": 167,
+          "overlap": 9,
+          "initial_disconnected": 195,
+          "initial_overlap": 416,
+          "distinct_connectivities_sum": 105,
+          "generation_seconds": 124.14688853058033
+        }
+      },
+      "comparisons": {
+        "fixed minus gaussian": {
+          "graph_support_difference": 0.05078125,
+          "conditional_paired_bootstrap95": [
+            0.01171875,
+            0.087890625
+          ],
+          "per_condition_counts": [
+            5,
+            2,
+            -1,
+            0,
+            8,
+            0,
+            12,
+            0
+          ]
+        },
+        "node minus fixed": {
+          "graph_support_difference": -0.01953125,
+          "conditional_paired_bootstrap95": [
+            -0.0546875,
+            0.015625
+          ],
+          "per_condition_counts": [
+            1,
+            -1,
+            0,
+            0,
+            1,
+            0,
+            -11,
+            0
+          ]
+        },
+        "pair minus fixed": {
+          "graph_support_difference": -0.0390625,
+          "conditional_paired_bootstrap95": [
+            -0.078125,
+            0.0
+          ],
+          "per_condition_counts": [
+            0,
+            -8,
+            -2,
+            0,
+            -13,
+            0,
+            3,
+            0
+          ]
+        },
+        "pair minus node": {
+          "graph_support_difference": -0.01953125,
+          "conditional_paired_bootstrap95": [
+            -0.056640625,
+            0.017578125
+          ],
+          "per_condition_counts": [
+            -1,
+            -7,
+            -2,
+            0,
+            -14,
+            0,
+            14,
+            0
+          ]
+        },
+        "node minus gaussian": {
+          "graph_support_difference": 0.03125,
+          "conditional_paired_bootstrap95": [
+            -0.005859375,
+            0.0703125
+          ],
+          "per_condition_counts": [
+            6,
+            1,
+            -1,
+            0,
+            9,
+            0,
+            1,
+            0
+          ]
+        },
+        "pair minus gaussian": {
+          "graph_support_difference": 0.01171875,
+          "conditional_paired_bootstrap95": [
+            -0.0234375,
+            0.046875
+          ],
+          "per_condition_counts": [
+            5,
+            -6,
+            -3,
+            0,
+            -5,
+            0,
+            15,
+            0
+          ]
+        }
+      },
+      "new_molecular_oracle_calls": 0,
+      "scientific_submission_ready": false,
+      "limits": [
+        "One FM/prior training seed; bootstrap conditions on fitted models and fixed compositions.",
+        "Prior and FM optimizer trajectories and final neural generation are not independently retrained by this audit; saved prior validation, source sampling, training indices and final readouts are replayed.",
+        "Source spatial priors have normalized densities; final midpoint/noise outputs do not acquire qualified densities from that fact.",
+        "A connected latent tree is not a chemical bond graph or output connectivity guarantee."
+      ]
+    },
+    "connected_confirmation": {
+      "complete": true,
+      "protocol_sha256": "015f7fb0cc2c2416c8f18cb606dbc56b69dbbdd0074bfc3331e15ee86d3f8f42",
+      "sources": {
+        "gaussian": {
+          "results_sha256": "600479e49950e7d777851d98ae3ab30c498838dbfcb194ed0ce9daf1b3dda874",
+          "checkpoint_sha256": "054cf5fd7a73e6e1e2304c7c54644ef4979875afb24810adac0d86283df52fad",
+          "metrics_sha256": "a48f67ad0f047b505ceea5c9eb842402f060a5fffff46e454fd1a13949ae4036"
+        },
+        "fixed": {
+          "results_sha256": "c0b30b0f38b8a937af60dd32e5cd439f0ce7bc2d22308fe9c8b01fd7ff6ea7ef",
+          "checkpoint_sha256": "8b802e34d0d840551a3b74710aecdb15a361e1cd66be0039335bcf34d9610e7a",
+          "metrics_sha256": "a8b47c27cdccf6a30c55ab0a1bd60f453478553714c13b48b8e6e6aaea2fe135"
+        }
+      },
+      "methods": {
+        "gaussian": {
+          "attempted": 512,
+          "graph_supported": 91,
+          "geometrically_supported": 266,
+          "disconnected": 243,
+          "overlap": 7,
+          "validator_errors": 97
+        },
+        "fixed": {
+          "attempted": 512,
+          "graph_supported": 93,
+          "geometrically_supported": 312,
+          "disconnected": 194,
+          "overlap": 11,
+          "validator_errors": 109
+        }
+      },
+      "comparison": {
+        "graph_support_difference": 0.00390625,
+        "conditional_paired_bootstrap95": [
+          -0.03515625,
+          0.041015625
+        ],
+        "per_condition_counts": [
+          -1,
+          5,
+          -1,
+          0,
+          1,
+          0,
+          -2,
+          0
+        ]
+      },
+      "initial_sources_and_final_structures_replayed": 1024,
+      "matched_training_rows": 3000,
+      "new_molecular_oracle_calls": 0,
+      "scientific_submission_ready": false,
+      "scope": "Independent training/data-order and generation seeds, same8 development compositions. Prior sampling and structural outcomes replayed; optimizer and final neural generation not independently replayed."
+    },
+    "energy": {
+      "complete": true,
+      "source_results_sha256": "f993f6b51953773f825e0b38fa71a7e4e651c29c205a76f325943c669185333e",
+      "protocol_sha256": "759bb065e1afed4c9badf4ec0b294bfb6bfa3a708f889e371875b7fa99c53896",
+      "structural_audit_sha256": "a16fc2f8554712b281774328f227ab45a01c7e3df8ea9655622943c602f5d6a5",
+      "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+      "raw_energy_force_rows_checked": 5120,
+      "comparisons": {
+        "fixed minus gaussian": {
+          "mean_energy_difference_eV": -0.3946906272973578,
+          "energy_conditional_paired_bootstrap95": [
+            -0.906640625596111,
+            0.13505081090604246
+          ],
+          "mean_potential_difference_eV": -0.22479695237146657,
+          "potential_conditional_paired_bootstrap95": [
+            -0.7412734555767538,
+            0.30396593951053885
+          ],
+          "per_condition": [
+            {
+              "condition": 0,
+              "n_common_geometric": 0,
+              "mean_potential_difference_common_geometric_eV": null,
+              "mean_energy_difference_all_eV": -0.642787641667951
+            },
+            {
+              "condition": 1,
+              "n_common_geometric": 41,
+              "mean_potential_difference_common_geometric_eV": -0.9433000366710674,
+              "mean_energy_difference_all_eV": -0.710630989193703
+            },
+            {
+              "condition": 2,
+              "n_common_geometric": 42,
+              "mean_potential_difference_common_geometric_eV": 0.1477343890920955,
+              "mean_energy_difference_all_eV": 0.05573919021017559
+            },
+            {
+              "condition": 3,
+              "n_common_geometric": 45,
+              "mean_potential_difference_common_geometric_eV": 0.5022288825005591,
+              "mean_energy_difference_all_eV": 3.456681395682267
+            },
+            {
+              "condition": 4,
+              "n_common_geometric": 25,
+              "mean_potential_difference_common_geometric_eV": -1.4775459308786958,
+              "mean_energy_difference_all_eV": -0.6639724280948371
+            },
+            {
+              "condition": 5,
+              "n_common_geometric": 36,
+              "mean_potential_difference_common_geometric_eV": -1.6943716038798204,
+              "mean_energy_difference_all_eV": -2.5997321259747252
+            },
+            {
+              "condition": 6,
+              "n_common_geometric": 9,
+              "mean_potential_difference_common_geometric_eV": -1.4541149312422528,
+              "mean_energy_difference_all_eV": -1.7950292685962381
+            },
+            {
+              "condition": 7,
+              "n_common_geometric": 39,
+              "mean_potential_difference_common_geometric_eV": 0.845002898856481,
+              "mean_energy_difference_all_eV": -0.2577931507438507
+            }
+          ]
+        },
+        "node minus gaussian": {
+          "mean_energy_difference_eV": -0.6241509307745403,
+          "energy_conditional_paired_bootstrap95": [
+            -1.0842999887629081,
+            -0.1435082792917104
+          ],
+          "mean_potential_difference_eV": -0.528264290113448,
+          "potential_conditional_paired_bootstrap95": [
+            -0.9911098743353267,
+            -0.056952645771737954
+          ],
+          "per_condition": [
+            {
+              "condition": 0,
+              "n_common_geometric": 1,
+              "mean_potential_difference_common_geometric_eV": 4.701884825175512,
+              "mean_energy_difference_all_eV": -1.0808703892487301
+            },
+            {
+              "condition": 1,
+              "n_common_geometric": 44,
+              "mean_potential_difference_common_geometric_eV": -1.1724001425435828,
+              "mean_energy_difference_all_eV": -1.123992876680461
+            },
+            {
+              "condition": 2,
+              "n_common_geometric": 41,
+              "mean_potential_difference_common_geometric_eV": -0.029405982285669135,
+              "mean_energy_difference_all_eV": -0.013153384576753524
+            },
+            {
+              "condition": 3,
+              "n_common_geometric": 51,
+              "mean_potential_difference_common_geometric_eV": -0.17366037777409313,
+              "mean_energy_difference_all_eV": -0.2018172878565565
+            },
+            {
+              "condition": 4,
+              "n_common_geometric": 24,
+              "mean_potential_difference_common_geometric_eV": 1.6493048080733388,
+              "mean_energy_difference_all_eV": 0.1638530750064433
+            },
+            {
+              "condition": 5,
+              "n_common_geometric": 41,
+              "mean_potential_difference_common_geometric_eV": -1.7301599004239971,
+              "mean_energy_difference_all_eV": -2.094321826396026
+            },
+            {
+              "condition": 6,
+              "n_common_geometric": 8,
+              "mean_potential_difference_common_geometric_eV": -1.0154368056751082,
+              "mean_energy_difference_all_eV": -1.0412433936957655
+            },
+            {
+              "condition": 7,
+              "n_common_geometric": 40,
+              "mean_potential_difference_common_geometric_eV": 0.9881201992438946,
+              "mean_energy_difference_all_eV": 0.39833863725152696
+            }
+          ]
+        },
+        "pair minus gaussian": {
+          "mean_energy_difference_eV": 0.03188848047306436,
+          "energy_conditional_paired_bootstrap95": [
+            -0.4938832762230801,
+            0.5820687160214806
+          ],
+          "mean_potential_difference_eV": 0.10760373960035352,
+          "potential_conditional_paired_bootstrap95": [
+            -0.4217694403065592,
+            0.6559466054648915
+          ],
+          "per_condition": [
+            {
+              "condition": 0,
+              "n_common_geometric": 2,
+              "mean_potential_difference_common_geometric_eV": 5.524876847168343,
+              "mean_energy_difference_all_eV": 0.4429397668066599
+            },
+            {
+              "condition": 1,
+              "n_common_geometric": 38,
+              "mean_potential_difference_common_geometric_eV": -1.0951167710970224,
+              "mean_energy_difference_all_eV": -0.7587272351319712
+            },
+            {
+              "condition": 2,
+              "n_common_geometric": 40,
+              "mean_potential_difference_common_geometric_eV": 0.7244070482927782,
+              "mean_energy_difference_all_eV": 0.22341756041606686
+            },
+            {
+              "condition": 3,
+              "n_common_geometric": 49,
+              "mean_potential_difference_common_geometric_eV": 1.9151377979642534,
+              "mean_energy_difference_all_eV": 2.9357020946171133
+            },
+            {
+              "condition": 4,
+              "n_common_geometric": 19,
+              "mean_potential_difference_common_geometric_eV": -0.02369101030681601,
+              "mean_energy_difference_all_eV": -1.0005302821467694
+            },
+            {
+              "condition": 5,
+              "n_common_geometric": 36,
+              "mean_potential_difference_common_geometric_eV": -2.0852545679671897,
+              "mean_energy_difference_all_eV": -1.721443825382039
+            },
+            {
+              "condition": 6,
+              "n_common_geometric": 15,
+              "mean_potential_difference_common_geometric_eV": 0.12389416981095565,
+              "mean_energy_difference_all_eV": -1.5456385121016751
+            },
+            {
+              "condition": 7,
+              "n_common_geometric": 41,
+              "mean_potential_difference_common_geometric_eV": 3.213198127015547,
+              "mean_energy_difference_all_eV": 1.6793882767071295
+            }
+          ]
+        },
+        "node minus fixed": {
+          "mean_energy_difference_eV": -0.2294603034771825,
+          "energy_conditional_paired_bootstrap95": [
+            -0.7385648974775674,
+            0.269400318086356
+          ],
+          "mean_potential_difference_eV": -0.3034673377419814,
+          "potential_conditional_paired_bootstrap95": [
+            -0.8194649396711696,
+            0.20094830034067943
+          ],
+          "per_condition": [
+            {
+              "condition": 0,
+              "n_common_geometric": 5,
+              "mean_potential_difference_common_geometric_eV": -0.18140927816493785,
+              "mean_energy_difference_all_eV": -0.43808274758077914
+            },
+            {
+              "condition": 1,
+              "n_common_geometric": 46,
+              "mean_potential_difference_common_geometric_eV": -0.6128170769804021,
+              "mean_energy_difference_all_eV": -0.41336188748675795
+            },
+            {
+              "condition": 2,
+              "n_common_geometric": 49,
+              "mean_potential_difference_common_geometric_eV": -0.3961764464049561,
+              "mean_energy_difference_all_eV": -0.06889257478692912
+            },
+            {
+              "condition": 3,
+              "n_common_geometric": 45,
+              "mean_potential_difference_common_geometric_eV": -1.3109781890043652,
+              "mean_energy_difference_all_eV": -3.6584986835388236
+            },
+            {
+              "condition": 4,
+              "n_common_geometric": 33,
+              "mean_potential_difference_common_geometric_eV": 1.7295618537146682,
+              "mean_energy_difference_all_eV": 0.8278255031012804
+            },
+            {
+              "condition": 5,
+              "n_common_geometric": 43,
+              "mean_potential_difference_common_geometric_eV": 1.376906026839585,
+              "mean_energy_difference_all_eV": 0.5054102995786991
+            },
+            {
+              "condition": 6,
+              "n_common_geometric": 14,
+              "mean_potential_difference_common_geometric_eV": 0.9217527207331712,
+              "mean_energy_difference_all_eV": 0.7537858749004727
+            },
+            {
+              "condition": 7,
+              "n_common_geometric": 38,
+              "mean_potential_difference_common_geometric_eV": -0.0972830956768456,
+              "mean_energy_difference_all_eV": 0.6561317879953776
+            }
+          ]
+        },
+        "pair minus fixed": {
+          "mean_energy_difference_eV": 0.4265791077704222,
+          "energy_conditional_paired_bootstrap95": [
+            -0.11513527115688232,
+            0.9817843856993744
+          ],
+          "mean_potential_difference_eV": 0.3324006919718201,
+          "potential_conditional_paired_bootstrap95": [
+            -0.19769222843421674,
+            0.8770030864151191
+          ],
+          "per_condition": [
+            {
+              "condition": 0,
+              "n_common_geometric": 3,
+              "mean_potential_difference_common_geometric_eV": 0.30694259849284816,
+              "mean_energy_difference_all_eV": 1.085727408474611
+            },
+            {
+              "condition": 1,
+              "n_common_geometric": 37,
+              "mean_potential_difference_common_geometric_eV": -0.4040508371727884,
+              "mean_energy_difference_all_eV": -0.04809624593826811
+            },
+            {
+              "condition": 2,
+              "n_common_geometric": 44,
+              "mean_potential_difference_common_geometric_eV": -0.04034957337770803,
+              "mean_energy_difference_all_eV": 0.16767837020589127
+            },
+            {
+              "condition": 3,
+              "n_common_geometric": 46,
+              "mean_potential_difference_common_geometric_eV": 0.08070512410995434,
+              "mean_energy_difference_all_eV": -0.5209793010651538
+            },
+            {
+              "condition": 4,
+              "n_common_geometric": 22,
+              "mean_potential_difference_common_geometric_eV": -0.885579484561359,
+              "mean_energy_difference_all_eV": -0.3365578540519323
+            },
+            {
+              "condition": 5,
+              "n_common_geometric": 38,
+              "mean_potential_difference_common_geometric_eV": 0.49104365656392857,
+              "mean_energy_difference_all_eV": 0.8782883005926863
+            },
+            {
+              "condition": 6,
+              "n_common_geometric": 18,
+              "mean_potential_difference_common_geometric_eV": 0.5301297156907417,
+              "mean_energy_difference_all_eV": 0.249390756494563
+            },
+            {
+              "condition": 7,
+              "n_common_geometric": 35,
+              "mean_potential_difference_common_geometric_eV": 1.786032262561847,
+              "mean_energy_difference_all_eV": 1.9371814274509802
+            }
+          ]
+        }
+      },
+      "new_oracle_calls_for_audit": 0,
+      "producer_raw_oracle_calls": 5120,
+      "scientific_submission_ready": false,
+      "scope": "All stored E_plus/restraint calculations, source positions, masks and readouts replay. No independent oracle re-query or equilibrium reference.",
+      "limits": [
+        "Energy differences are paired within composition; overall means weight the fixed8 cases equally.",
+        "Common-geometric-support subsets depend on both methods; they are descriptive, not unbiased equilibrium comparisons.",
+        "Energy measured only for the first connected-data training seed.",
+        "The energy model and graph perception are not quantum-validity certificates; lower energy does not demonstrate Boltzmann-distributed outputs."
+      ]
+    }
+  },
+  "structural_table": [
+    {
+      "stage": "unrestricted",
+      "method": "warm",
+      "attempted": 512,
+      "graph_supported": 78,
+      "geometrically_supported": 256,
+      "disconnected": 256,
+      "overlap": 4,
+      "validator_errors": 95
+    },
+    {
+      "stage": "unrestricted",
+      "method": "gaussian",
+      "attempted": 512,
+      "graph_supported": 76,
+      "geometrically_supported": 239,
+      "disconnected": 272,
+      "overlap": 2,
+      "validator_errors": 95
+    },
+    {
+      "stage": "unrestricted",
+      "method": "fixed",
+      "attempted": 512,
+      "graph_supported": 94,
+      "geometrically_supported": 284,
+      "disconnected": 216,
+      "overlap": 14,
+      "validator_errors": 97
+    },
+    {
+      "stage": "unrestricted",
+      "method": "node",
+      "attempted": 512,
+      "graph_supported": 92,
+      "geometrically_supported": 275,
+      "disconnected": 232,
+      "overlap": 6,
+      "validator_errors": 98
+    },
+    {
+      "stage": "unrestricted",
+      "method": "pair",
+      "attempted": 512,
+      "graph_supported": 93,
+      "geometrically_supported": 281,
+      "disconnected": 229,
+      "overlap": 8,
+      "validator_errors": 97
+    },
+    {
+      "stage": "connected_first",
+      "method": "warm",
+      "attempted": 512,
+      "graph_supported": 66,
+      "geometrically_supported": 237,
+      "disconnected": 270,
+      "overlap": 8,
+      "validator_errors": 99
+    },
+    {
+      "stage": "connected_first",
+      "method": "gaussian",
+      "attempted": 512,
+      "graph_supported": 105,
+      "geometrically_supported": 314,
+      "disconnected": 192,
+      "overlap": 6,
+      "validator_errors": 117
+    },
+    {
+      "stage": "connected_first",
+      "method": "fixed",
+      "attempted": 512,
+      "graph_supported": 131,
+      "geometrically_supported": 340,
+      "disconnected": 162,
+      "overlap": 10,
+      "validator_errors": 103
+    },
+    {
+      "stage": "connected_first",
+      "method": "node",
+      "attempted": 512,
+      "graph_supported": 121,
+      "geometrically_supported": 352,
+      "disconnected": 157,
+      "overlap": 4,
+      "validator_errors": 112
+    },
+    {
+      "stage": "connected_first",
+      "method": "pair",
+      "attempted": 512,
+      "graph_supported": 111,
+      "geometrically_supported": 337,
+      "disconnected": 167,
+      "overlap": 9,
+      "validator_errors": 108
+    },
+    {
+      "stage": "connected_confirmation",
+      "method": "gaussian",
+      "attempted": 512,
+      "graph_supported": 91,
+      "geometrically_supported": 266,
+      "disconnected": 243,
+      "overlap": 7,
+      "validator_errors": 97
+    },
+    {
+      "stage": "connected_confirmation",
+      "method": "fixed",
+      "attempted": 512,
+      "graph_supported": 93,
+      "geometrically_supported": 312,
+      "disconnected": 194,
+      "overlap": 11,
+      "validator_errors": 109
+    }
+  ],
+  "generated_outputs": 6144,
+  "raw_energy_queries": 5120,
+  "decision": {
+    "retain_framework": true,
+    "fragmentation_reduction_repeated": true,
+    "graph_support_advantage_reliably_replicated": false,
+    "extra_learned_affinity_advantage_over_fixed_established": false,
+    "node_energy_signal_vs_gaussian": "Negative conditional interval in the first connected training seed only; interval versus fixed spans zero.",
+    "scale_current_pair_network": false,
+    "scientific_submission_ready": false,
+    "iclr_goal_achieved": false
+  },
+  "uncertainty_scope": "Paired bootstrap within each of eight fixed development compositions, conditional on fitted models. Intervals are marginal, not multiplicity-adjusted; no population-of-compositions or training-seed uncertainty claim.",
+  "inference_scope": "Composition, original total charge and spin are supplied. This is conditional 3D generation, not a demonstrated joint generator of composition and electronic state.",
+  "target_scope": "Connected-data results target the same geometry-selected OMol25 training subset for all methods. They do not establish improvement on unrestricted OMol25."
+}

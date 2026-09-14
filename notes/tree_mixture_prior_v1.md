@@ -3,8 +3,10 @@
 Current hypothesis: learn a bond-label-free spatial starting distribution for
 the main flow-matching generator. This acts on the generator's source law, not
 another post-generation MCMC scorer. The connection network and prior fitter are
-implemented. A molecular advantage and distinct ICLR contribution are unproven.
-Read `research/TREE_PRIOR_STATE_20260913.json` and `research/NEXT.md` for execution.
+implemented. Fragmentation reduction repeats, but graph-support improvement is
+unstable across independent continuations and extra learned-affinity utility over
+the fixed prior remains unproven. Read `research/TREE_PRIOR_STATE_20260914.json`,
+`notes/tree_prior_results_20260914.md` and `research/NEXT.md` for current evidence.
 
 ## The observed failure being addressed
 
@@ -104,7 +106,10 @@ Every tree variant has the same fixed radial component law.
 
 This distinguishes fixed structural bias, learned degree preferences and learned
 pair relations. A benefit of node learning need not imply a benefit of the larger
-pair model. A covariance/scale-matched Gaussian would still be relevant before
+pair model. Each node score is bounded by2*tanh, so its summed log-edge correction
+can range over[-4,4], versus[-2,2] for the pair head. These are not strictly nested,
+equal-range capacity ablations; do not infer a universal cost of pair expressivity.
+A covariance/scale-matched Gaussian would still be relevant before
 attributing a positive result solely to higher-order connectivity, since different
 tree laws can change coordinate covariance despite fixed edge distributions.
 
@@ -122,6 +127,9 @@ preimage, followed by the usual divergence integral. Direct/checkpointed autogra
 supports it; the Gaussian-specific discrete-adjoint training route explicitly
 rejects custom priors. The optional callback passes a linear-flow value/gradient
 test. An analytic source density does not make finite ODE integration exact.
+Models tagged with a non-Gaussian source also reject implicit Gaussian generation,
+FM training without supplied prior positions and density without a custom callback.
+The saved checkpoint carries the source prior separately from the vector field.
 
 The current molecular output remains midpoint64 at T1 plus0.025-A Gaussian noise.
 No absolute likelihood, importance ESS or Boltzmann-law claim is assigned to those
@@ -145,12 +153,21 @@ initial/final disconnection, overlaps, graph acceptance, validator exceptions,
 diversity and runtime. No physical query is part of this first test. A clear
 new-method signal would justify a separately frozen physical/distribution check.
 
-52 targeted tests pass: exact tree enumeration and gradients, extreme log weights,
+53 targeted tests passed in the implementation stage: exact tree enumeration and gradients, extreme log weights,
 radial normalization, the intrinsic Jacobian, weighted-tree sampling frequencies,
 coordinate/parameter gradients and symmetry, custom-prior flow density, and
 existing FM/density/condition regressions. Prior fitting is complete; held-out
 NLL/DOF is1.84687 fixed,1.83615 node and1.82766 pair. This small likelihood gain
-is not a molecular-generation benefit. The actual generation comparison is active.
+is not a molecular-generation benefit. All generation and audit jobs are complete.
+
+The unrestricted pilot, connected-target comparison, independent Gaussian/fixed
+continuation and all-output energy check are summarized in
+`notes/tree_prior_results_20260914.md`. They include6,144 generated outputs and
+5,120 raw energy queries, preserving every condition and validator exception.
+The connected target uses a shared training-only geometric selection; it is a
+different target domain from unrestricted OMol25. The energy protocol was frozen
+after the first structural result and before energy evaluation. Neither empirical
+OMol25 matching nor lower model energy establishes a Boltzmann distribution.
 
 ## Closest prior art
 
