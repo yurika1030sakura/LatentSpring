@@ -118,3 +118,24 @@ and 25 total pages. The source ZIP includes 24 used references and two GIFs.
 The original HOLY Overleaf checkout is fast-forwarded and clean. Cloud compilation
 and OpenReview submission are not claimed. The GAGA feedback challenge remains
 separate ongoing research with three passing module tests and no trained result.
+
+
+## Reviewer-directed factorial release
+
+The manuscript now foregrounds the latent-tree source, replay-subtracted physical
+adaptation, the same-norm control and the completed Gaussian/Harmonic by physical
+update comparison. Jarzynski/rotor evidence remains in the theoretical extensions.
+HarmonicFlow/FlowSite is credited explicitly, and the source determinant's actual
+role is stated. The source advantage with matched physical training is positive
+when pooled, with the continuation-specific joint-yield reversal also reported.
+
+Canonical and standalone builds have9 scientific main pages,26 pages total and25
+used references. Their extracted PDF text is identical. All39 exported source and
+media files plus the manifest match the fetched Overleaf revision. GitHub release
+is `f32e843f710f35d55d36c5738a37c7b131f096f4`; Overleaf is
+`f3d2a79a6dddf3071e32209b37dd2bbf7a9cf9f8`. Collaborator history is preserved.
+The source package is runs/publication_20260915/overleaf_source_v7; build evidence
+is publication_build_v4.json, synchronization receipt publication_sync_v4.json,
+and completed-study ledger v16. Local compilation is verified; cloud compilation
+and OpenReview submission are not claimed. Extra source repetitions and GAGA
+follow-ups remain in progress and are not presented as completed paper results.

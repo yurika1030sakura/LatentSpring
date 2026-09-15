@@ -1,3 +1,9 @@
+Publication update: the reviewer-directed revision and completed source/physics
+factorial are pushed and remotely verified. GitHub release f32e843; Overleaf
+f3d2a79. See publication_sync_v4.json and publication_build_v4.json in
+research/evidence. Current PDF:9 scientific main pages,26 total,25 citations.
+The extra repetitions and GAGA studies remain active as described below.
+
 Latest review follow-up: the source-by-physical-update factorial is COMPLETE and
 independently audited. See `research/evidence/source_physical_factorial_audit_v1.json`.
 At GFN2 force RMS<=5 eV/A, all-attempt joint yields are35.68% Gaussian,
