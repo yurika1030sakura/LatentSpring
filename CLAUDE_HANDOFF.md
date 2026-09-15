@@ -1,76 +1,84 @@
-# LatentSpring: completed fresh confirmation; raw generation is the priority
+# LatentSpring: focused submission draft assembled
 
-Read `research/FRESH_PHYSICS_STATE_20260915.json` and
-`notes/fresh_physics_results_20260915.md`. The manuscript is
-`paper/tree_working.tex` / `paper/tree_working.pdf`, titled
-**LatentSpring: Physics-Informed Molecular Flow Matching from Atomic Composition**.
-It compiles cleanly: 9 main pages, 16 total. Scientific submission readiness is false.
+Read `research/RAW_QUALITY_STATE_20260915.json`, `paper/REPRODUCIBILITY.md`,
+`notes/paper_framing_20260915.md`, and `notes/rotor_work_results_20260915.md`.
+Canonical PDF: `paper/tree_working.pdf`; source: `paper/tree_working.tex`.
+Title: **LatentSpring: Physics-Informed Molecular Flow Matching from Atomic Composition**.
+The manuscript compiles cleanly:9 main pages (including the reproducibility/AI-use
+statements),16 total. Plain-text title/abstract is `paper/submission_abstract.txt`.
+Build hashes are in `research/evidence/submission_manuscript_build_v1.json`.
 
-Jobs46531691_0/1 (generation/eSEN) and46531808_0/1 (GFN2) are complete.
-No new BGFM study was submitted after these jobs; unrelated user jobs may be live.
-Re-query specific jobs before recovery. Latest registry: v12.
+## Current publication scope and user priorities
 
-## Completed result
+The user explicitly corrected the writing direction: a paper is not an experiment
+diary. Focus on supported contributions; discarded alternatives need not appear
+when no claims depend on them. The final draft removes unrelated failed architecture
+branches and the capped-relaxation experiment while retaining their research records.
+Keep the relevant controls, actual raw rates, training histories and scoped limits.
+Jarzynski stays as qualified local-work theory and a positive molecular mechanism
+experiment. Do not claim global3D Boltzmann generation, fast convergence to minima,
+a new fluctuation law or work-specific neural superiority.
 
-Frozen24 new compositions, two existing model continuations, four models and32
-samples per composition give6,144 new raw outputs. Old official candidates and
-composition matches in both verified processed corpora are excluded. No fitting,
-coefficient changes or model selection occurred on these new outcomes.
+No full OMol25 run is required for the current scoped paper. Source comparisons
+use an existing pretrained backbone plus3000 selected OMol25 structures per
+continuation. Never call this full-corpus training. A larger-subset study could
+strengthen future evidence but is not a prerequisite that every discarded branch
+must meet before this manuscript can be reviewed.
 
-Raw graph support: Gaussian44.53%, harmonic52.73%, force update53.45%, complete-work
-update52.67%. Harmonic minus Gaussian is+8.20pp, conditional paired95[5.08,11.33].
-Force update minus harmonic is+0.72pp[-0.98,2.34], not an established extra validity
-gain. Both force-update continuations improve energy and force under both eSEN
-and independent GFN2. Common-graph energy changes are-0.01308 eV/atom under eSEN
-and-0.01168 under GFN2; both paired intervals exclude zero. The prespecified
-cross-potential gate passes. Source-only physics is heterogeneous across seeds.
-Extra complete-work advantage over force update remains unestablished.
+## Evidence in the draft
 
-GFN2 has4 generated failures/6144, all graph-rejected. All graph-supported outputs
-and96 reference calculations succeed. Total new costs:12384 eSEN queries and6240
-GFN2 attempts. Both are approximate evaluators, not DFT or equilibrium certification.
-Same two trained models are reused; this is new-composition evidence, not additional
-independent model replication.
+- Harmonic source improves raw graph support over Gaussian by5.86pp on12 development
+  compositions,8.83pp on10 additional, and8.20pp on24 fresh compositions. Matched
+  covariance-Gaussian controls also lose on the earlier panels. The same two fitted
+  model continuations are reused; intervals are conditional on models/compositions.
+- Fresh24 raw support: Gaussian44.53%, harmonic52.73%, force update53.45%, work
+  update52.67%. The force update lowers energy/force in both continuations under
+  eSEN and independent GFN2. All reported generator outputs are unoptimized.
+- Independently adapted EDM was strengthened to30000 total updates on the same
+  3000 FIT rows: raw graph13.22% at128 calls and12.96% at1001 calls. Its backbone,
+  pretraining history, capacity and compute differ. This is a conditional adaptation
+  comparison, not native published EDM/SOTA performance or a pure source ablation.
+- Controlled Jarzynski experiment:3 FIT methyl rotors,512 GFN2 energies each,
+  3 fixed escorts and128 repetitions at8/32/128/512/2048 particles. Complete work
+  passes all normalizer checks and beats both incomplete-weight controls at2048
+  draws in all6 nonidentity cases. Mean TV0.0636 versus0.1532 energy-only (58.5%
+  lower) and0.1134 without Jacobian. Free-energy RMSE0.158–0.734 meV. These are
+  constrained, interpolated-potential targets; they do not validate global generator
+  equilibrium or an extra neural-training advantage.
 
-## User correction: directly valid output with little relaxation
+The main AI contribution candidate is the specific latent-connectivity harmonic
+source and its integration with molecular FM and physical learning. Prior tree
+mathematics, self-conditioning, escorted work and parameter arithmetic are credited.
+This is a credible scoped submission story, not a certificate of ICLR-level novelty
+or acceptance. The ultimate ICLR goal remains unachieved; the manuscript is ready
+for review. Do not turn acceptance uncertainty into a requirement for a perfect
+generator or an endless sequence of unclaimed experiments.
 
-All reported coordinates are raw generator outputs. xTB uses `--grad`, never
-`--opt`. All input coordinates and atom symbols match the frozen generated samples.
-No per-output energy ranking, force correction or geometry optimization occurs
-at inference. Physical teacher displacements and updates occur on separate FIT
-samples during learning. Preserve this distinction in every claim.
+## Completed research outside the chosen method
 
-Current force-update failures/1536:474 disconnected only,3 overlap only,7 both,
-231 geometry-supported but graph-rejected;821 graph-supported. Disconnection
-therefore affects481/1536 (31.32%), the largest failure category. Do not interpret
-graph rejection as a uniquely diagnosed chemical defect. The existing raw assay
-is unchanged. Lower force does not establish few relaxation steps or stable minima.
+Endpoint-connectivity regularization did not pass its gate and was not adopted.
+The capped-relaxation diagnostic did not establish short relaxation:0/384 generated
+samples and1/24 references converged within20 steps. Median generated RMSD was
+about0.39 Angstrom. These are retained in `notes/raw_quality_results_20260915.md`
+and their audited artifacts; no relaxed copy replaces original generation.
 
-Next essential work: one targeted connectivity intervention developed on FIT-only
-data, consulting failed tree-context/product-coordinate/edge-feedback results.
-Preserve all frozen harmonic and physics checkpoints. Raw generation is the primary
-metric. A separate matched capped-relaxation assay can measure steps, coordinate
-change, graph retention, failures and total cost before claiming little optimization.
-Keep original coordinates and raw validity visible. Do not tune on fresh24 and
-then describe it as untouched confirmation. A fair independent-generator comparison
-and broader coverage remain substantive gaps.
+## Execution and provenance
 
-The proposed additional global stochastic-path/Jarzynski reconstruction is deferred
-following the user's raw-quality clarification. No such new sampler was implemented
-or submitted. No architecture or coefficient sweep is queued.
+All relevant jobs are terminal:46541711 (connectivity),46542830 (relaxation),
+46543959 (initial EDM),46546006 (rotor work),46546237 (extended EDM).
+Job46543268 never trained and was cancelled while pending after unsuccessful
+in-place partition updates. Its exact-source replacement and all records remain.
+Re-query specific jobs if resuming; unrelated user jobs can still be active.
+No additional BGFM experiment is queued.
 
-Jarzynski remains the already implemented and audited LOCAL work teacher and
-comparison. No global Boltzmann output law, final output density, equilibrium isomer
-weights or output ESS is established. Established random-tree theory, self-conditioning,
-energy-weighted FM, escorted work and task arithmetic must be credited. The scoped
-molecular source/learning construction has useful evidence; ICLR acceptance or
-sufficient novelty is not guaranteed. Current gains are not a matched comparison
-against the original BGFM loss model.
+Latest registry isv13:94912 evaluation NN outputs+3584 FIT=98496 total records.
+Source/teacher eSEN rows remain44256. This follow-up adds9679 GFN2 attempts,
+including8142 relaxation,1 smoke and1536 rotor-grid calls; this branch's GFN2
+confirmation/follow-up count is15919. Older physical campaigns remain separate.
+Rotational numerical Monte Carlo draws are not NN outputs or oracle queries.
+Reserved722 outcomes remain unqueried and all evaluation data remain outside fitting.
 
-Registryv12:84160 evaluation NN outputs+3584 FIT=87744 total;44256 source/teacher
-eSEN rows plus6240 fresh GFN2 attempts, counted separately. Earlier local proposals,
-projected coordinates and physical campaigns retain their separate ledgers.
-Reserved722 outcomes remain unqueried; all evaluation data remain outside fitting.
-Keep OMol25, max_atoms200, bond loss zero, original electronic conditions, runtime
-patch architecture, NaN guards, two environments and no home writes. The user
-handles authors and submission.
+Preserve OMol25, max_atoms200, bond-loss weight zero, original electronic states,
+runtime patches, NaN guards, the two environments and the no-home-write rule.
+Do not silently promote correlated-source FM into an independent-Gaussian score
+identity. The user handles authors and submission. Preserve the frozen main models.

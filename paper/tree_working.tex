@@ -1,4 +1,4 @@
-% Internal development manuscript; previous manuscripts remain unchanged.
+% Scoped ICLR submission candidate; full research history is retained separately.
 \documentclass{article}
 \usepackage{iclr2027_conference,times}
 \usepackage{amsmath,amssymb,amsthm,graphicx,booktabs,microtype,xcolor}
@@ -6,8 +6,8 @@
 \usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=green!45!black,urlcolor=blue!70!black]{hyperref}
 % Internal draft labels; the shared conference style is unchanged.
 \makeatletter
-\patchcmd{\@maketitle}{Under review as a conference paper at ICLR 2027}{Internal development draft for ICLR 2027}{}{\errmessage{Draft header patch failed}}
-\patchcmd{\@maketitle}{Paper under double-blind review}{Internal development version}{}{\errmessage{Draft title patch failed}}
+\patchcmd{\@maketitle}{Under review as a conference paper at ICLR 2027}{Submission draft for ICLR 2027}{}{\errmessage{Draft header patch failed}}
+\patchcmd{\@maketitle}{Paper under double-blind review}{Anonymous submission draft}{}{\errmessage{Draft title patch failed}}
 \makeatother
 \newtheorem{proposition}{Proposition}
 \newcommand{\HH}{\mathcal H}
@@ -17,7 +17,6 @@
 \author{Anonymous}
 \begin{document}
 \maketitle
-\begin{center}\textbf{Internal research draft. Results are scoped to the reported benchmark.}\end{center}
 \begin{abstract}
 Generating molecular structures from atomic composition requires spatial organization
 to emerge without a supplied chemical graph. We introduce LatentSpring, a molecular
@@ -34,7 +33,9 @@ from mixture structure beyond the tested second-moment approximation. We further
 incorporate physical feedback during training: a paired parameter update reduces
 raw energy and force in both continuations under eSEN and independent GFN2-xTB
 readouts. Generation uses 128 primitive denoiser calls and requires no per-output
-energy selection or geometry optimization. These results establish latent spatial
+energy selection or geometry optimization. A controlled molecular-rotor experiment
+also validates complete escorted-work correction of a specified local target.
+These results establish latent spatial
 dependence as a useful source design for composition-conditioned molecular flows
 and demonstrate a complementary route for incorporating physical feedback into
 the learned generator.
@@ -200,8 +201,8 @@ as an additional learned force or guidance term.
 
 \section{Integration with molecular flow matching}
 Sample $X_0\sim q_0(\cdot\mid c)$ and a reference $X_1$ from the training corpus.
-A type-preserving assignment and proper rotation couple the pair, followed by a
-shared independent Haar augmentation. This preserves the invariant source
+A type-preserving assignment and proper rotation couple the pair, followed by
+shared independent Haar rotation and within-label permutation augmentation. This preserves the invariant source
 marginal while allowing dependence between paired endpoints
 (Appendix~\ref{app:symmetry}). We use the linear path
 $X_t=(1-t)X_0+tX_1$ and target $V^*=X_1-X_0$.
@@ -357,6 +358,10 @@ effects and training histories limit the corresponding comparison claims.
 
 \input{sections/fresh_physics_results}
 
+\input{sections/conditional_edm_results}
+
+\input{sections/rotor_work_results}
+
 \section{Discussion and limitations}
 LatentSpring shows that a fixed, structured source can improve a molecular flow
 without a supplied graph or an additional learned source head. Marginalizing
@@ -378,26 +383,26 @@ Appendix~\ref{app:jarzynski} specify their respective targets and assumptions.
 The current evidence supports the source and physical-feedback construction for
 raw generation, with broader chemical coverage and equilibrium sampling as
 separate directions for development.
-\label{endofmaintext}
 
 \subsubsection*{Reproducibility statement}
-Frozen protocols record data-order and generation seeds, source checkpoint hashes,
-all attempted structures, electronic conditions and oracle costs. Current audits
-replay 87,744 generated-output source records (including 3,584 FIT records),
-1,536 additional projected-coordinate readouts and 44,256 stored source/teacher eSEN rows and 6,240 fresh GFN2 attempts;
-they do not independently rerun optimizers, final neural generation or the oracle.
-Source-SC, frozen-composition confirmation, moment-control, context, monomer,
-source-utility, dynamic-attention, product-coordinate and feedback audits are complete.
-Original-reference calibration is separate from generation and fitting.
-Implementation tests cover normalization,
-Jacobians, weighted-tree sampling, symmetry, density gradients and source-law guards.
-The anonymous release package and final author verification remain outstanding.
+Frozen protocols specify training and generation seeds, data selection, model
+checkpoints, source distributions and physical-evaluation settings. All attempted
+outputs, including structural and oracle failures, are retained. Artifact audits
+check source sampling, coordinate and condition identities, structural readouts,
+work weights and parameter-transfer arithmetic. Model-training and inference
+budgets are reported separately from physical teacher and evaluation costs.
+Implementation tests cover source normalization, symmetry, density gradients,
+escort Jacobians and work identities. The code and artifact manifests accompany
+the research record; source data and pretrained backbones retain their original
+licenses and access requirements.
 
 \subsubsection*{AI use statement}
 AI tools assisted research exploration, literature checks, mathematical derivation,
-implementation, testing, experiment orchestration, analysis and drafting. This is
-an internal development version; final human-author review remains outstanding.
+implementation, testing, experiment orchestration, analysis and drafting.
+Experimental protocols, implementation checks and underlying records are retained
+for verification.
 
+\label{endofmaintext}
 \bibliography{refs,tree_refs}
 \bibliographystyle{iclr2027_conference}
 \appendix
@@ -504,5 +509,7 @@ free-energy, effective-sample-size or Boltzmann-distribution claim is inferred
 from their graph or geometry pass rates.
 
 \input{sections/local_work_distillation}
+
+\input{sections/rotor_work_details}
 
 \end{document}

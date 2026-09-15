@@ -1,5 +1,5 @@
 {
-  "status": "running",
+  "status": "scoped_submission_draft_complete",
   "scientific_submission_ready": false,
   "method_name": "LatentSpring",
   "connectivity": {
@@ -13,7 +13,8 @@
     "status": "complete_audited",
     "audit": "research/evidence/endpoint_connectivity_audit_v1.json",
     "primary_gate": false,
-    "adopted": false
+    "adopted": false,
+    "paper_inclusion": "Research archive only; not adopted or claimed."
   },
   "independent_generator": {
     "run": "runs/conditional_edm_gpu_test_v1",
@@ -22,14 +23,27 @@
       "research/evidence/conditional_edm_s1_v1.json"
     ],
     "source_commit": "c625766",
-    "status": "submitted",
+    "status": "extended_complete_audited",
     "job": "46543959",
     "partition": "gpu_test",
     "partition_change_at_utc": "2026-09-15T03:49:28.381945+00:00",
     "partition_change_reason": "Original regular GPU queue remained pending; original two gpu_test slots are now free. Same job, source and limits.",
     "previous_job": "46543268",
     "previous_status": "cancelled_while_pending_without_training",
-    "partition_change_result": "In-place partition updates rejected by scheduler plugin despite stored GPU request; cancelled pending job and resubmitted identical source and protocol via original gpu_test launcher."
+    "partition_change_result": "In-place partition updates rejected by scheduler plugin despite stored GPU request; cancelled pending job and resubmitted identical source and protocol via original gpu_test launcher.",
+    "initial_audit": "research/evidence/conditional_edm_audit_v1.json",
+    "extended_run": "runs/conditional_edm_extended_v1",
+    "extended_protocol_stem": "conditional_edm_extended",
+    "extended_job": "46546237",
+    "extended_audit": "research/evidence/conditional_edm_extended_audit_v1.json",
+    "extended_graph_counts_128": [
+      103,
+      100
+    ],
+    "extended_graph_counts_1001": [
+      93,
+      106
+    ]
   },
   "relaxation": {
     "run": "runs/capped_relaxation_v1",
@@ -43,11 +57,44 @@
     "generated_attempts": 384,
     "reference_force_converged_by20": 1,
     "reference_attempts": 24,
-    "new_raw_singlepoint_attempts": 8142
+    "new_raw_singlepoint_attempts": 8142,
+    "paper_inclusion": "Research archive only; no short-relaxation claim in paper."
   },
   "last_complete": "research/FRESH_PHYSICS_STATE_20260915.json",
   "extra_smoke_gfn2_queries": 1,
   "user_priority": "Directly valid raw outputs and useful scoped ICLR contribution; no unearned novelty or readiness claim.",
   "reserved_outcomes_unqueried": 722,
-  "manuscript_rebuild_pending": true
+  "manuscript_rebuild_pending": false,
+  "user_publication_scope": "Focus paper on supported claims; discarded experiments need not appear. Keep material controls, actual rates and concise relevant limits. Jarzynski retained as qualified theory and mechanism.",
+  "rotor_work": {
+    "job": "46546006",
+    "run": "runs/rotor_work_v1",
+    "protocol": "research/evidence/rotor_work_v1.json",
+    "status": "complete_audited",
+    "source_commit": "1922e237aab3674fb937b284dc16e0b687a3ced2",
+    "purpose": "User-requested real-molecule mechanism test of complete escorted work on constrained periodic targets.",
+    "audit": "research/evidence/rotor_work_audit_v1.json",
+    "complete_work_quadrature_gate": true,
+    "finite_sample_gate": true,
+    "full_weight_mean_TV": 0.0635852843254975,
+    "energy_only_mean_TV": 0.15321182141617684,
+    "raw_gfn2_queries": 1536
+  },
+  "registry": "research/evidence/generator_reference_registry_v13.json",
+  "full_omol_training_required_for_current_claims": false,
+  "full_omol_training_claimed": false,
+  "scoped_paper_claims": [
+    "Latent harmonic source improves raw graph support under matched continuation controls",
+    "Training-only physical feedback improves raw energy and force under two approximate potentials",
+    "Complete work corrects the declared constrained-rotor distributions and normalizers"
+  ],
+  "manuscript_ready_for_review": true,
+  "manuscript": "paper/tree_working.pdf",
+  "main_pages": 9,
+  "total_pages": 16,
+  "build_evidence": "research/evidence/submission_manuscript_build_v1.json",
+  "all_planned_jobs_terminal": true,
+  "additional_experiments_queued": false,
+  "ultimate_iclr_goal_complete": false,
+  "scope_note": "The scoped manuscript and planned supporting studies are complete; scientific_submission_ready is not used to certify novelty or ultimate ICLR acceptance. Full-corpus training and success of unclaimed branches are not prerequisites for reviewing this draft."
 }
