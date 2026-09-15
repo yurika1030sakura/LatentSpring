@@ -169,7 +169,10 @@ def main():
     assert not train_keys&val_keys and not test_keys&(train_keys|val_keys)
     assert {r['composition_hex'] for r in panel['validation_rows']}<=val_keys
     assert len(data['training'])==20000 and len(panel['validation_rows'])==32 and len(test_keys)==32
-    assert args.seed in [0,1] and spec['initialization_seed']==40401+args.seed
+    assert args.seed in [0,1]
+    original=json.loads((args.project/f'research/evidence/matched_generators_harmonic_fm_s{args.seed}_v1.json').read_text())
+    for key in ['initialization_seed','batch_seed','noise_seed']:
+        assert spec[key]==original[key]
     args.out.mkdir(parents=True,exist_ok=True)
     if (args.out/'complete.json').exists():
         assert json.loads((args.out/'complete.json').read_text())['protocol_sha256']==sha(args.protocol)
