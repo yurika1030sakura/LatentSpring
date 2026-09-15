@@ -1,0 +1,33 @@
+{
+  "at_utc": "2026-09-15T06:59:26.217745+00:00",
+  "source_commit": "af1939053240cc61a97dbda2aff2a0529335a3c3",
+  "source_manifest_sha256": "415d15607403bc4dc5e47b1b32a77d3682f0b5c99e135364334aa1c64add6b80",
+  "jobs": {
+    "wide": {
+      "job": "46562196",
+      "command": [
+        "sbatch",
+        "--parsable",
+        "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/launch_source/scripts/research/wide_generalization.slurm",
+        "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/data_source_v2",
+        "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/launch_source",
+        "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/frozen_models",
+        "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027"
+      ],
+      "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/frozen_models"
+    },
+    "matched": {
+      "job": "46562197",
+      "command": [
+        "sbatch",
+        "--parsable",
+        "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/launch_source/scripts/research/matched_generators.slurm",
+        "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/data_source_v2",
+        "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/launch_source",
+        "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/matched_generators_v1/training",
+        "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027"
+      ],
+      "out": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/matched_generators_v1/training"
+    }
+  }
+}
