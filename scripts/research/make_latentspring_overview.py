@@ -56,6 +56,8 @@ def main():
     fig.subplots_adjust(left=.01,right=.99,bottom=.01,top=.99)
     for suffix in ['pdf','svg','png']:
         fig.savefig(args.out/('method.'+suffix),dpi=200,bbox_inches='tight',pad_inches=.02)
+    svg = args.out/'method.svg'
+    svg.write_text('\n'.join(line.rstrip() for line in svg.read_text().splitlines())+'\n')
     plt.close(fig)
 
 
