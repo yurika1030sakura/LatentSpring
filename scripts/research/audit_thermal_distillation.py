@@ -69,7 +69,7 @@ def main():
    for label,val in [('raw_positions',anchor[eligible]),('proposals',y[eligible]),('weights',weights[eligible]),('uniform_weights',uniform[eligible])]:torch.testing.assert_close(saved[label],val,atol=1e-8,rtol=1e-9)
    calls=2*n+2*count;assert saved['oracle_queries']==calls;teacher_calls+=calls
    if eligible.any():pools.append(saved)
-   conditional=(ep-e[:,None]);teacher_stats.append(dict(condition=i,anchors=n,retained=int(eligible.sum()),mean_local_ess=float(ess.mean()),mean_energy_change_uniform_eV=float((uniform[eligible]*conditional[eligible]).sum(1).mean()) if eligible.any() else None,mean_energy_change_work_eV=float((weights[eligible]*conditional[eligible]).sum(1).mean()) if eligible.any() else None,artifact_sha256=sha(file)))
+   conditional=(ep-e[:,None]);teacher_stats.append(dict(condition=i,anchors=n,retained=int(eligible.sum()),mean_local_ess=float(ess.mean()),anchor_raw_queries=2*n,proposal_raw_queries=2*count,mean_energy_change_uniform_eV=float((uniform[eligible]*conditional[eligible]).sum(1).mean()) if eligible.any() else None,mean_energy_change_work_eV=float((weights[eligible]*conditional[eligible]).sum(1).mean()) if eligible.any() else None,artifact_sha256=sha(file)))
   teacher_progress=json.loads((root/'teacher_progress.json').read_text());assert teacher_progress['complete'] and teacher_progress['queries']==teacher_progress['requested']==teacher_calls==done['teacher_raw_queries']
   assert len(pools)>=spec['minimum_teacher_compositions'];teacher.append(dict(seed=seed,rows=teacher_stats,raw_queries=teacher_calls))
   reports[seed]={};summary[seed]={};energy[seed]={};force[seed]={};costs[seed]={};common_labels=None
@@ -125,7 +125,7 @@ def main():
   comparisons[left+' minus '+right]=result
  primary=comparisons['work minus escort']['energy_per_atom_eV'];point=all(x['mean'] is not None and x['mean']<0 for x in primary['common_graph_by_seed']);bounds=primary['common_graph_supported']['paired_draw95'] is not None and primary['common_graph_supported']['paired_draw95'][1]<0
  support=all(sum(summary[s]['work'][metric]-summary[s][m][metric] for s in [0,1])/1280>=-.02 for metric in ['graph_supported','distinct_connectivity'] for m in ['frozen','replay','escort'])
- write(a.out,dict(complete=True,summary=summary,comparisons=comparisons,teacher=teacher,artifacts=artifacts,costs=costs,fit_generation_outputs_replayed=total_fit,evaluation_outputs_replayed=total_eval,teacher_raw_queries=sum(t['raw_queries'] for t in teacher),evaluation_raw_queries=raw_count,work_weighting_gate_passed=point and bounds and support,scientific_submission_ready=False,
+ write(a.out,dict(complete=True,summary=summary,comparisons=comparisons,teacher=teacher,artifacts=artifacts,costs=costs,fit_generation_outputs_replayed=total_fit,evaluation_outputs_replayed=total_eval,teacher_raw_queries=sum(t['raw_queries'] for t in teacher),minimum_physical_teacher_queries_by_method=dict(replay=0,escort=sum(r['anchor_raw_queries'] for t in teacher for r in t['rows']),work=sum(t['raw_queries'] for t in teacher)),evaluation_raw_queries=raw_count,work_weighting_gate_passed=point and bounds and support,scientific_submission_ready=False,
   scope='Exact local escort/reference work reconstruction and all saved outputs audited; no independent oracle or neural-generation rerun. Finite-particle local ESS is not global ESS. Local Gaussian-restrained targets and distillation do not establish global Boltzmann law, chemical-isomer weights, quantum accuracy or new identity novelty.'))
 
 

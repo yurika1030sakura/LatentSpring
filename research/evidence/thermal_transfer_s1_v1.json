@@ -1,0 +1,62 @@
+{
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "condition_manifest": "research/evidence/source_sc_confirmation_panel_v1.json",
+  "condition_manifest_sha256": "934311077b9cf8649f6193d30f65f942a406270fe9b23f20c9da2533b1c04de6",
+  "conditions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "evaluation_seed": 36903,
+  "samples_per_condition": 64,
+  "evaluation_batch": 16,
+  "midpoint_steps": 32,
+  "terminal_noise_std_A": 0.025,
+  "oracle_worker_sha256": "ee784c39b042c2afa201612bb2dfbeb12ab28415ea5554d7698faf7b553b357c",
+  "oracle_checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "oracle_interpreter": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python",
+  "frozen": true,
+  "at_utc": "2026-09-15T01:17:55.350629+00:00",
+  "model_seed": 1,
+  "coefficient": 1.0,
+  "methods": [
+    "escort_delta",
+    "work_delta"
+  ],
+  "updates": {
+    "escort_delta": "escort",
+    "work_delta": "work"
+  },
+  "parent_audit": "research/evidence/thermal_distillation_audit_v1.json",
+  "parent_audit_sha256": "f984fb5676ce43fb707f8461c3837c52e04a3ed0f02d599fb0d050086bb7088b",
+  "checkpoints": {
+    "frozen": {
+      "path": "runs/source_sc_v1/s1/study/harmonic_tree/last.ckpt",
+      "sha256": "63ab39a35618601fb2a139faeb9fa5fdfac4df5c7a914eb4eb9e446275f1a7ec"
+    },
+    "replay": {
+      "path": "runs/thermal_distillation_v1/s1/study/replay/last.ckpt",
+      "sha256": "cbc7a760305bf04a9bb385d8eb4096b0261e9c79086504a8678d74a93046f0b2"
+    },
+    "escort": {
+      "path": "runs/thermal_distillation_v1/s1/study/escort/last.ckpt",
+      "sha256": "c46855f47b61fc62023ddedff162cbc270b45b83c93c25ae97df315b853d7019"
+    },
+    "work": {
+      "path": "runs/thermal_distillation_v1/s1/study/work/last.ckpt",
+      "sha256": "75c4f1dca7ba0bf9003325ff55cf9b53c248d3f2768bfd84c7f30c9a895474c5"
+    }
+  },
+  "primary": "Work-difference transfer versus frozen baseline and escort-difference transfer; fixed coefficient1, no interpolation or layer selection sweep.",
+  "pilot_gate": "Work-difference has lower common-graph energy than frozen in both seeds, pooled conditional95 upper bound negative; no more than2pp pooled graph/diversity loss versus frozen. A distinct work-weighting increment also requires lower energy than escort-difference in both seeds and positive-support noninferiority. Both criteria reported separately.",
+  "scope": "Post-result exploratory intervention on reused panels: theta_new=theta_frozen+(theta_physical-theta_replay), applied only to parameter tensors. Same128 primitive calls, no new optimization. Parameter arithmetic is prior art and does not exactly subtract functional or distributional drift. No global Boltzmann guarantee."
+}
