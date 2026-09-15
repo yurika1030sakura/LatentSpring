@@ -57,3 +57,17 @@ were not changed through Git.
 These are publication-source updates, not an OpenReview submission. The manuscript
 is an anonymous submission draft; author and submission metadata remain with the
 user. This synchronization receipt is a subsequent documentation-only commit.
+
+## Expanded reader-oriented release
+
+The follow-up adds the64-composition source comparison, independent unpretrained
+EGNN/EDM/GAGA comparisons, matched-budget self-conditioning ablations, a same-norm
+physical-update control, and a displacement-only physical-target control. All
+planned studies are audited. The paper explains notation before equations, gives
+a reader's guide and workflow figure, and retains the full comparator outcomes.
+
+The new canonical and standalone builds both have9 scientific main pages and20
+pages total. Their extracted text is identical; all28 exported source files match
+the manifest. There are19 verified cited references. Build evidence is
+`research/evidence/publication_build_v2.json`. The updated package source is
+`runs/publication_20260915/overleaf_source_v3`.
