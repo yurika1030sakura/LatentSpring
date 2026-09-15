@@ -5,24 +5,10 @@ corpora and from the earlier generation panels. The models receive no additional
 training. Metadata ranks select each composition after the same reference-validity
 checks, with 32 draws per composition and model continuation.
 
-\begin{table}[t]
-\centering
-\caption{Raw chemical-graph validity on the 64-composition panel. Each size range
-contains 1,024 attempts per method across two continuations. Values are percentages;
-the final column reports percentage-point differences.}
-\begin{tabular}{lrrr}
-\toprule
-Atoms & Gaussian & Harmonic & Difference\\
-\midrule
-17--28 & 49.12 & 55.08 & +5.96\\
-29--40 & 24.02 & 38.28 & +14.26\\
-41--52 & 16.50 & 21.29 & +4.79\\
-53--64 & 9.77 & 12.40 & +2.64\\
-\midrule
-All 64 compositions &24.85&31.76&+6.91\\
-\bottomrule
-\end{tabular}\label{tab:wide}
-\end{table}
+Across all 64 compositions, Gaussian sources yield 24.85\% graph validity and
+harmonic sources yield 31.76\%. Appendix~\ref{app:wide-size} gives the full
+size-stratified rates.
+
 
 The harmonic source improves the pooled rate in every size range. Overall it
 adds 6.91 percentage points, with a size-stratified composition-bootstrap 95\%

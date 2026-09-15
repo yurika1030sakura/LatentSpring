@@ -1,3 +1,13 @@
+Latest checkpoint: all expanded generator and component experiments are complete
+and audited. The manuscript now defines its symbols and method roles explicitly,
+includes a reader's guide and workflow figure, and reports direct component
+benefits. Scientific main text:9 pages; current build evidence is
+`research/evidence/publication_build_v2.json`. Read
+`research/BENCHMARK_EXPANSION_STATE_20260915.json` and
+`notes/reader_and_component_review_20260915.md`. The independent EGNN source
+contrast is positive, while EDM/GAGA have higher overall validity in that setting.
+No universal generator-superiority or global Boltzmann claim follows.
+
 Current continuation: the user authorized stronger generator comparisons and broader evaluation.
 Read `research/BENCHMARK_EXPANSION_STATE_20260915.json` and
 `notes/benchmark_expansion_20260915.md` before the last publication checkpoint below.

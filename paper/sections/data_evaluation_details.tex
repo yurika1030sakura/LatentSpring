@@ -7,17 +7,34 @@ and a geometric scaffold filter.
 
 The scaffold filter considers pairs whose distance divided by the sum of covalent
 radii lies strictly between 0.6501 and 1.1999. Kruskal's algorithm constructs a
-minimum normalized-distance spanning tree from these pairs. A structure is accepted
+minimum normalized-distance spanning tree from these pairs, greedily adding
+short edges that do not create a cycle. A structure is accepted
 if the tree is connected and its degrees are at most 1 for H/F/Cl/Br/I, 4 for
 B/C/N/Si, 3 for O, and 6 for P/S. The scaffold is used only to select training
 coordinates; the molecular flow uses its own sampled harmonic source.
 
-Structural evaluation uses RDKit 2025.03.2. After the contact-connectivity and
+Structural evaluation uses RDKit 2025.03.2, a toolkit for representing molecules
+and checking chemical consistency. After the contact-connectivity and
 overlap checks, \texttt{DetermineBonds} assigns bonds at the specified total charge,
 with \texttt{covFactor=1.25}, \texttt{useVdw=True},
 \texttt{allowChargedFragments=True}, and \texttt{embedChiral=False}.
+Its sanitization step checks valence and related graph-consistency rules.
 Sanitization must succeed, the assigned formal charges must sum to the specified
 charge, and the perceived molecule must have one connected component. Graph
-diversity counts canonical SMILES after removing stereochemical tags and explicit
+diversity counts canonical SMILES, standardized text encodings of molecular
+connectivity, after removing stereochemical tags and explicit
 hydrogens. Evaluator errors and unsupported outputs remain in the attempted-sample
 denominator.
+
+\paragraph{The 24-composition confirmation panel.}
+We next evaluate the frozen Gaussian, harmonic and two physical-update models on
+24 new compositions. The force-only update is chosen as the primary physical
+candidate before this evaluation. Starting from a pool of 256 distinct compositions
+outside the earlier candidate sets, reference qualification accepts 121. Fixed
+metadata ranks select eight compositions from each of the 17--20, 21--24 and
+25--28 atom bins. All 24 are absent from the processed OMol25 training and
+validation corpora. Reference coordinates are used solely for qualification.
+Each model generates 32 samples per composition in each continuation, giving
+6,144 raw outputs in total.
+
+

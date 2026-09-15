@@ -1,13 +1,11 @@
 \subsection{New compositions and independent physical evaluation}\label{sec:fresh-physics}
-We next evaluate the frozen Gaussian, harmonic and two physical-update models on
-24 new compositions. The force-only update is chosen as the primary physical
-candidate before this evaluation. Starting from a pool of 256 distinct compositions
-outside the earlier candidate sets, reference qualification accepts 121. Fixed
-metadata ranks select eight compositions from each of the 17--20, 21--24 and
-25--28 atom bins. All 24 are absent from the processed OMol25 training and
-validation corpora. Reference coordinates are used solely for qualification.
-Each model generates 32 samples per composition in each continuation, giving
-6,144 raw outputs in total.
+We evaluate frozen Gaussian, harmonic and physical-update models on 24 new
+compositions, selected by fixed metadata ranks after reference qualification.
+The force-only update is chosen before this evaluation. Eight compositions fall
+in each of the 17--20, 21--24 and 25--28 atom ranges, with zero exact composition
+overlap in either processed corpus. Each model generates 32 samples per composition
+and continuation, giving 6,144 raw outputs across four models. Selection details
+are provided in Appendix~\ref{app:data-evaluation}.
 
 \begin{table}[t]
 \centering

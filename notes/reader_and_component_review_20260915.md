@@ -70,3 +70,25 @@ overfull boxes. The independent scratch comparison remains incomplete: first-see
 Gaussian FM182/2048, harmonic FM223/2048, EDM301/2048 and GAGA321/2048 at128 calls.
 Do not turn the source ablation gain into superiority over diffusion. Await both
 initializations and the full audit before writing its comparative conclusions.
+
+## Final completed follow-ups
+
+The two-initialization EGNN audit is complete. At128 evaluations, Gaussian FM
+gets9.77%, harmonic FM11.11%, EDM12.62%, and GAGA13.92%. The source contrast
+is+1.34pp with composition interval[0.12,2.52]. Both source initializations
+improve. The diffusion models retain higher overall validity; this is reported
+in the main paper and is not presented as LatentSpring superiority.
+
+The displacement-only ablation is also complete. Force-shifted targets reduce
+energy by0.01939 eV/atom and force RMS by0.3926 eV/A relative to the same
+candidates before displacement. Both continuations improve and intervals exclude
+zero. Graph validity remains similar. Original force-dependent widths and
+candidate-selection rules are retained, so this isolates displacement rather
+than removing every form of physical information.
+
+All planned jobs are terminal. Ledgerv14 has139,968 neural records, including
+136,384 evaluation/internal-validation records and3,584 FIT records. This turn
+adds41,472 neural outputs and5,120 eSEN evaluation queries, with no new teacher
+or GFN2 queries. The source, SC, displacement and parameter-direction claims
+now have explicit controls. Jarzynski supports local work correction; its extra
+neural gain over the cheaper force update remains unestablished.

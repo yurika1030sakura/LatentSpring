@@ -22,7 +22,7 @@ of the method being submitted.
   This uses30000 continuation updates; backbones and pretraining histories differ.
 - Controlled molecular work: `rotor_work_v1.json`, `rotor_work_results_v1.json`,
   `rotor_work_energies_v1.csv`, and `rotor_work_audit_v1.json`.
-- Current campaign ledger: `generator_reference_registry_v13.json`.
+- Current campaign ledger: `generator_reference_registry_v14.json`.
   It distinguishes model outputs, numerical draws, diagnostic copies and oracle calls.
 
 All listed evidence files are under `research/evidence/`. The rotor configuration,
@@ -46,7 +46,7 @@ control and every prescribed sample size remain in the full result file.
 
 From `paper/`, run pdflatex, bibtex, and pdflatex twice on `tree_working`.
 The final build evidence records all recursively used section and figure hashes
-in `research/evidence/publication_build_v1.json`.
+in `research/evidence/publication_build_v2.json`.
 
 ## Training scope
 
@@ -56,3 +56,20 @@ OMol25 training. Core source controls share their data, backbone, initialization
 optimizer and inference budget. The separately adapted EDM has a larger continuation
 budget and different pretraining history, explicitly reported in the paper.
 A full-corpus run is not required to reproduce or support these scoped comparisons.
+
+## Expanded evidence and component tests
+
+- `wide_generalization_audit_v1.json`: frozen models on64 further compositions.
+- `matched_generators_audit_v1.json`: independent EGNN source and diffusion study,
+  with20,000 shared training rows and two unpretrained initializations.
+- `component_benefits_audit_v1.json`: SC controls with equal update/forward budgets
+  and physical-update direction versus a norm-matched direct update.
+- `force_shift_ablation_audit_v1.json`: the force displacement versus identical
+  local candidate draws before displacement.
+
+These audits are under `research/evidence/`. Run files and weights from the
+expanded campaign have been copied to permanent HOLY storage with every file
+verified byte-for-byte; their `runs/` entrypoints are retained. The archival
+manifest is `research/evidence/retained_benchmarks_v1.json`. Original scratch
+copies remain available. The standalone paper package includes its full notation
+guide and derivations; it does not redistribute the underlying licensed datasets.

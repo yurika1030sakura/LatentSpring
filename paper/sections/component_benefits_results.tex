@@ -9,7 +9,8 @@ use 128 network evaluations at generation.
 \begin{table}[t]
 \centering
 \caption{Self-conditioning ablation on the 24-composition panel. Each continuation
-has 768 raw attempts. The full model improves over both single-pass budgets.}
+has 768 raw attempts; the two counts give continuations 1 and 2. The full model
+improves over both single-pass budgets.}
 \begin{tabular}{lrrrr}
 \toprule
 Model & Updates & Training passes & Valid outputs & Rate (\%)\\
@@ -28,9 +29,8 @@ counts does not equate every operation or wall-clock cost; the comparison tests
 whether additional single-pass training recovers the observed validity gain.
 
 \subsection{Why subtract the replay update}\label{sec:update-ablation}
-A physical continuation also changes the model through ordinary refitting of
-generated anchors. We compare the paired update with direct physical continuation
-and a control that scales the direct update to the same parameter-space length.
+We compare the paired update with direct physical continuation and with a direct
+update scaled to the same parameter-space length.
 For this control,
 $\theta_{\rm control}=\theta_{\rm base}+alpha(\theta_{\rm physical}-\theta_{\rm base})$,
 where $\alpha$ is the ratio of the paired and direct update norms. These norms sum
@@ -63,3 +63,15 @@ paired and same-norm updates gives an energy change of $-0.03232$ eV/atom
 all-output comparisons have the same signs. Their graph-validity difference is
 $+0.39$ points with interval [-1.95,2.73]. The result supports the direction
 identified by replay subtraction, beyond simply limiting update magnitude.
+
+
+\paragraph{Contribution of the force displacement.}
+We also remove only the displacement from the local training targets, retaining
+the same Gaussian perturbations, candidate indices, widths, training schedule and
+paired parameter update. Compared with this control, the force-shifted targets
+lower energy by $0.01939$ eV/atom (95\% interval [-0.02417,-0.01455] for the signed
+difference) and force RMS by $0.3926$ eV/\AA\ ([-0.4696,-0.3263]) among jointly
+valid outputs. Both continuations improve. Graph validity is similar: the
+force-minus-control difference is $+0.39$ points with interval [-1.33,2.19].
+The original force-dependent widths and candidate-selection rule remain fixed,
+so this comparison identifies the contribution of the displacement itself.

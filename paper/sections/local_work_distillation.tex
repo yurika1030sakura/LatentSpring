@@ -94,6 +94,9 @@ learned network alone. Its temperature feature stays fixed throughout training
 and evaluation; 300 K determines the local teacher weights. Self-normalization
 introduces finite-particle bias, and the reported teacher ESS is computed over
 the eight local particles at each anchor.
+Effective sample size (ESS) is $(\sum_j w_j)^2/\sum_j w_j^2$ for candidate weights
+$w_j$. It equals the candidate count for equal weights and approaches one when
+a single candidate dominates.
 
 \input{sections/local_work_results}
 

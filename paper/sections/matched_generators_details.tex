@@ -1,0 +1,65 @@
+\section{Independent-backbone comparison}\label{app:matched-generators}
+This study tests the source on an independent architecture with no pretraining.
+All methods use the official EDM equivariant graph neural network (EGNN)
+\citep{edm}, with four message-passing layers, 256 hidden features and
+2,381,566 parameters. Within each of two independently initialized repetitions,
+all methods start from identical weights and receive the same minibatches.
+Atomic types are fixed inputs throughout training and generation.
+
+The common data comprise 20,000 OMol25 training rows spanning 8,323 compositions,
+plus 512 internal validation rows spanning 299 other compositions. Both sets use
+neutral organic singlets with 8--64 atoms. A composition hash separates training
+and internal validation. Reference selection requires the declared geometric and
+chemical-graph checks, without the additional scaffold-tree filter used for the
+pretrained-model study. None of the 64 evaluation compositions appears in either
+subset or either full processed corpus.
+
+Each model receives 30,000 AdamW updates at learning rate $10^{-4}$ and batch
+size 32, totaling 960,000 training presentations. Batches contain equal-sized
+molecules; selecting atom-count buckets in proportion to their populations gives
+uniform training-row marginals. We clip the gradient norm at one. Generation uses
+an exponential moving average of network weights at the fixed final update,
+with decay $\min(0.999,(1+s)/(10+s))$ at optimizer step $s$.
+Internal validation at 5,000, 15,000 and 30,000 updates diagnoses learning and
+does not select a checkpoint.
+
+The Gaussian and harmonic FM arms share the linear interpolation, atom matching
+and rotation pairing. Both predict velocity with a single EGNN evaluation and use
+64 midpoint steps for 128 network evaluations; this comparison has no
+self-conditioning. The harmonic source uses the same probability law as the
+main model. For its factorized affinities, independently drawing the $N-2$ entries
+of a Pr\"ufer sequence with probabilities $u_i/\sum_j u_j$ samples exactly that
+tree law. Decoding the sequence gives the tree used to place atoms.
+
+EDM predicts Gaussian coordinate noise under its original variance-preserving
+schedule. The position-conditional GAGA variant \citep{qu2026gaga} truncates this
+schedule at the published GEOM setting of 650 out of 1,000 steps. Its initial
+Gaussian variance is $\alpha_t^2 v+\sigma_t^2$, where $\alpha_t$ and $\sigma_t$
+are the schedule's signal and noise coefficients. The training-only estimate
+$v=3.0232257866$\,\AA$^2$ averages squared centered coordinates per independent
+coordinate. The truncation setting is transferred from GEOM and is not optimized
+on OMol25 evaluation outcomes.
+
+All models generate 32 raw structures per evaluation composition at 128 network
+evaluations. The complete EDM and GAGA schedules, including the final observation
+step, are also reported at 1,001 and 651 evaluations. No physical energy labels,
+bond supervision, energy-based selection or geometry relaxation enter this study.
+The A100, H200 and A100 MIG allocations are recorded in the scheduler metadata;
+matching training presentations and network-call counts does not match wall time.
+
+
+\begin{table}[h]
+\centering
+\caption{Independent diffusion models at both the common 128-evaluation budget
+and their full reverse schedules. Each initialization generates 2,048 outputs.}
+\begin{tabular}{lrrrr}
+\toprule
+Method & Evaluations & Valid, seed 1 & Valid, seed 2 & Rate (\%)\\
+\midrule
+EDM & 128 & 301 & 216 & 12.62\\
+EDM & 1,001 & 308 & 206 & 12.55\\
+GAGA & 128 & 321 & 249 & 13.92\\
+GAGA & 651 & 273 & 267 & 13.18\\
+\bottomrule
+\end{tabular}
+\end{table}

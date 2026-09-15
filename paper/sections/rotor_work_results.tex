@@ -11,14 +11,12 @@ von Mises reference of concentration one: a smooth circular distribution favorin
 angles near zero. The product retains this reference restraint and gives greater
 weight to lower-energy angles. Here $kT=k_B T_{\rm phys}$ at 300 K.
 
-Starting from $\phi\sim q_0$, use escorts $\psi_a(\phi)=\phi+a\sin\phi$ for
-$a\in\{-0.5,0,0.5\}$. Their positive Jacobian is $J_a=1+a\cos\phi$.
-The map $\psi_a$ changes the sampled angle; $a$ sets its strength, and $J_a$
-measures how it locally expands or compresses angular intervals. The complete
-generalized work includes both reference densities and $-kT\log J_a$
-(Appendix~\ref{app:rotor-work}). We compare complete work, energy-only weights,
-weights omitting the Jacobian, and unweighted endpoints, with shared draws and
-128 repetitions at each of 8, 32, 128, 512 and 2,048 samples.
+Three fixed angle transformations, including an unchanged-angle control,
+distort the starting distribution. Complete work corrects both the reference-density
+change and the local expansion or compression of angular intervals. We compare
+these weights with energy-only weights, weights omitting the volume correction,
+and unweighted samples. Each setting uses 128 repetitions at sample counts from
+8 to 2,048; Appendix~\ref{app:rotor-work} specifies the maps and work formula.
 
 \begin{figure}[t]
 \centering
