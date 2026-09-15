@@ -1,0 +1,79 @@
+{
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "warm_checkpoint": "runs/orbit_pairing_typed_v1/training/typed_rotation/last.ckpt",
+  "warm_checkpoint_sha256": "92269b5915da5ef057bde64067a84baaaf85a7d60470bdb2b027dc31624cfab9",
+  "data": "runs/tree_manifold_v1/s1/data/data.pt",
+  "data_sha256": "5e25c8d6e2cba64c29e6df3336d0cba1cea8d316065717af4b9285b9cf6259e4",
+  "data_selection": "runs/tree_manifold_v1/s1/data/selection.json",
+  "condition_manifest": "research/evidence/fresh_physics_panel_v1.json",
+  "condition_manifest_sha256": "0e039ae1f6dc070b71a28438c1c9d50e53023e7514e32f10ee39d64cb0d57395",
+  "conditions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "fm_steps": 3000,
+  "fm_seed": 33911,
+  "fm_lr": 2e-05,
+  "feedback_lr": 0.0003,
+  "edge_log_width": 0.2,
+  "self_conditioning": {
+    "zero_init": true,
+    "deep_supervision": true
+  },
+  "evaluation_seed": 37903,
+  "evaluation_batch": 16,
+  "samples_per_condition": 32,
+  "terminal_noise_std_A": 0.025,
+  "primitive_denoiser_evaluations_per_sample": 128,
+  "frozen": true,
+  "at_utc": "2026-09-15T07:37:30.023049+00:00",
+  "format": "sc_component_ablation_v1",
+  "midpoint_steps": 64,
+  "covariance_control": {
+    "covariance_trees": 128,
+    "covariance_seed": 30191
+  },
+  "primary": "Full harmonic-source SC reference versus no-SC at3000 equal optimizer updates and6000 equal primitive training-forward calls. All generation128 calls. No further hyperparameter selection.",
+  "data_scope": "Same audited TRAIN coordinate rows and composition exclusions; no scaffold or evaluation geometry used for fitting.",
+  "new_molecular_oracle_calls": 0,
+  "scientific_submission_ready": false,
+  "training_steps": 6000,
+  "evaluation_steps": [
+    3000,
+    6000
+  ],
+  "sc_reference": {
+    "report": "runs/fresh_physics_v1/s1/study/evaluation/harmonic_tree_results.json",
+    "report_sha256": "f5b77618474a8c275c2c3396ccc9fdd6e620d1a17fd14491f217b3a31345f04e",
+    "checkpoint": {
+      "path": "runs/source_sc_v1/s1/study/harmonic_tree/last.ckpt",
+      "sha256": "63ab39a35618601fb2a139faeb9fa5fdfac4df5c7a914eb4eb9e446275f1a7ec"
+    }
+  },
+  "scope": "Component ablation on the existing24-composition panel, with unchanged training rows, source, coupling and initialization. SC benefit is tested, not assumed.",
+  "new_neural_outputs_per_seed": 1536,
+  "new_physical_queries": 0
+}
