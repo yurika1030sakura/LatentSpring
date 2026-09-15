@@ -1,0 +1,49 @@
+{
+  "status": "preparing_matched_scratch_benchmarks_and_wide_evaluation",
+  "last_verified_paper_commit": "c82f492ccb42cce25c225261edf79282ce780c2e",
+  "current_method": "LatentSpring",
+  "paper_changed": false,
+  "implementation_tests": {
+    "passed": 4,
+    "seconds": 38.33
+  },
+  "training_data": {
+    "status": "complete",
+    "rows": 20000,
+    "validation_rows": 512,
+    "training_compositions": 8323,
+    "validation_compositions": 299,
+    "path": "runs/matched_generators_v1/data_v2/data.pt",
+    "selection": "runs/matched_generators_v1/data_v2/selection.json"
+  },
+  "panel": {
+    "status": "expanding_reference_pool_before_generation",
+    "initial_pool_candidates": 768,
+    "initial_qualified_by_size": {
+      "17-28": 66,
+      "29-40": 55,
+      "41-52": 40,
+      "53-64": 15
+    },
+    "target_compositions": 64,
+    "protocol": "research/evidence/generalization_pool_protocol_v2.json"
+  },
+  "jobs": {
+    "pool": "46558599",
+    "first_panel_failed": "46559185",
+    "first_data_failed": "46559186",
+    "qualification_incomplete": "46560355",
+    "data_complete": "46560356",
+    "gpu_smoke_complete": "46560304"
+  },
+  "planned_methods": [
+    "gaussian_fm",
+    "harmonic_fm",
+    "edm",
+    "gaga"
+  ],
+  "planned_independent_initializations": 2,
+  "no_new_generator_improvement_claim": true,
+  "new_molecular_oracle_calls": 0,
+  "notes": "notes/benchmark_expansion_20260915.md"
+}

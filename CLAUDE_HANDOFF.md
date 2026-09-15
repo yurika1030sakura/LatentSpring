@@ -1,3 +1,7 @@
+Current continuation: the user authorized stronger generator comparisons and broader evaluation.
+Read `research/BENCHMARK_EXPANSION_STATE_20260915.json` and
+`notes/benchmark_expansion_20260915.md` before the last publication checkpoint below.
+
 # LatentSpring: focused submission draft assembled
 
 Read `research/RAW_QUALITY_STATE_20260915.json`, `paper/REPRODUCIBILITY.md`,
