@@ -45,7 +45,7 @@ def main():
         path = processed/f'{split}_data_processed.pt'
         digest = file_hash(path)
         assert digest == state['protocol']['processed_sha256'][split]
-        data = torch.load(path, mmap=True, weights_only=False, map_location='cpu')
+        data = torch.load(str(path), mmap=True, weights_only=False, map_location='cpu')
         found = matching_rows(data['atom_types'].numpy(), data['node_idx_array'].numpy(), keys, weights)
         overlaps.update(k for k, indices in found.items() if indices)
         corpora[split] = dict(processed_sha256=digest, scanned_rows=len(data['node_idx_array']), matches=found)

@@ -28,7 +28,7 @@ def main():
     path = Path(spec['processed_train'])
     meta.verify_processed_file(path)
     assert meta.state['protocol']['processed_sha256']['train'] == spec['processed_train_sha256']
-    data = torch.load(path, map_location='cpu', mmap=True, weights_only=False)
+    data = torch.load(str(path), map_location='cpu', mmap=True, weights_only=False)
     excluded = set()
     for name, digest in spec['exclusion_manifests'].items():
         file = args.project/name
