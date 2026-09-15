@@ -47,7 +47,11 @@
     "large_gpu_probe_complete": "46561126",
     "wide": "46562196",
     "matched": "46562802",
-    "matched_cancelled_pending": "46562197"
+    "matched_cancelled_pending": "46562197",
+    "components": "46566308",
+    "wide_audit": "46569688",
+    "matched_audit": "46569690",
+    "matched_s1_gaussian_retry": "46569686"
   },
   "planned_methods": [
     "gaussian_fm",
@@ -69,5 +73,7 @@
   "source_commit": "af1939053240cc61a97dbda2aff2a0529335a3c3",
   "user_steering": "Explain every formula and symbol, and require direct evidence for claimed component benefits. Add harmonic-source SC and norm-matched parameter-update ablations.",
   "component_review": "notes/reader_and_component_review_20260915.md",
-  "followup_submission_issue": "gpu_test allows only2 submitted jobs; continuation submission was rejected while the2 original jobs were active. No continuation or audit jobs were created by that failed call."
+  "followup_submission_issue": "Original wide jobs completed within47min; no continuation required. Wide audit submitted without an expired dependency. Matched audit waits for original array and failed-initialization retry.",
+  "component_run": "runs/component_ablations_v1",
+  "wide_final_run": "runs/benchmark_expansion_v1/frozen_models"
 }

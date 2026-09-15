@@ -1,0 +1,22 @@
+{
+  "at_utc": "2026-09-15T08:28:21.755712+00:00",
+  "failed_task": "46562802_4",
+  "failure": "CUDA device busy or unavailable during initialization, before training.",
+  "retry_job": "46569686",
+  "excluded_node": "holygpu8a05402",
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--array=4",
+    "--exclude=holygpu8a05402",
+    "-J",
+    "lspring-matched-retry",
+    "--gres=gpu:1",
+    "--constraint=a100|h100|h200",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/launch_source/scripts/research/matched_generators.slurm",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/data_source_v2",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/launch_source",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/matched_generators_v1/training",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027"
+  ]
+}
