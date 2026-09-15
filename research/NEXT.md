@@ -1,3 +1,13 @@
+# Active physics-learning experiment
+
+User requested physics in learning and Jarzynski inclusion. Read
+`research/THERMAL_DISTILLATION_STATE_20260915.json` and
+`notes/escorted_work_teacher_20260915.md`. Job46514001 is active.
+All-output energy readout46510691 completed: pooled harmonic minus Gaussian
+-0.04059 eV/atom and-0.46347 eV/Angstrom mean force RMS; no Boltzmann claim.
+Do not train on evaluated structures or reinterpret local work ESS as global ESS.
+The earlier completed manuscript checkpoint follows.
+
 # Current harmonic-source paper and audited controls
 
 Read `research/HARMONIC_PAPER_STATE_20260915.json`,

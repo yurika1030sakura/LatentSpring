@@ -36,6 +36,7 @@ with a conditional paired 95\% interval of [5.08,12.50]. Both continuation seeds
 improve at the same denoiser-call budget. A narrower shell source and several
 learned additions fail their controls. A calibrated covariance-Gaussian control also loses in both panels, supporting
 a role for mixture structure beyond the tested second-moment approximation.
+An energy-model readout also finds lower mean energy and force magnitude.
 These results support a useful molecular source design in a limited domain;
 competitiveness against independent generators and thermal-distribution accuracy
 require separate evidence. The results support incorporating latent spatial structure into a molecular flow
@@ -318,6 +319,8 @@ The additional panel uses the same two models as development.}\label{fig:effects
 \end{figure}
 
 \input{sections/harmonic_sc_covariance_results}
+
+\input{sections/harmonic_energy_results}
 
 \input{sections/harmonic_native_results}
 
@@ -603,8 +606,12 @@ integral of the intrinsic velocity divergence. Our measured midpoint sampler
 followed by terminal Gaussian noise is not that exact diffeomorphism. A valid
 implementation would need either its own qualified map/Jacobian or a specified
 forward/reverse stochastic path law that includes the noise and every correction.
-We have not performed this reweighting for the source-SC results. No work-variance,
+We have not performed this global reweighting for the source-SC results. A
+separate local anchored work teacher is defined and tested in
+Appendix~\ref{app:local-work}. No global work-variance,
 free-energy, effective-sample-size or Boltzmann-distribution claim is inferred
 from their graph or geometry pass rates.
+
+\input{sections/local_work_distillation}
 
 \end{document}

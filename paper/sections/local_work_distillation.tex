@@ -1,0 +1,68 @@
+\section{Local force-escorted work distillation}\label{app:local-work}
+This separate experiment brings energy/force feedback into training while keeping
+the positive source-comparison checkpoints frozen. Energy-weighted flow matching
+and weighted physical-sample training already exist
+\citep{dern2025energyweighted,fab}; escorted work identities are also established
+\citep{escorted2008}. Our local construction is an application of these principles,
+not a new global Boltzmann-sampling theorem.
+
+\paragraph{A specified local reference and target.}
+For a generated FIT anchor $A$ with accepted perceived graph $G_A$, define
+$q_A(X)=\mathcal N_{\HH_N}(A,\sigma_A^2I)$.
+At $kT=0.0258519998$ eV (300 K), remove net force and set
+\begin{equation}
+ \sigma_A=\min\left(0.03\,\text{\AA},
+ \sqrt{\frac{0.10\,\text{\AA}\,kT}{\|F_+(A)\|}}\right),\qquad
+ \delta_A=\frac{\sigma_A^2}{kT}F_+(A).
+\end{equation}
+A vanishing force selects the maximal width. These quantities are fixed before
+drawing $X\sim q_A$. The escort $Y=X+\delta_A$ is a translation on the centered
+subspace and has determinant one. The local unnormalized target is
+\begin{equation}
+ \rho_A(Y)=q_A(Y)\exp\!\left[-\frac{E_+(Y)-E_+(A)}{kT}\right]
+ \mathbf1_{G_A}(Y),
+\end{equation}
+where the support requires the same labelled perceived bond orders, formal charges
+and radical counts, as well as the existing connected/nonoverlap assay. These are
+derived structural checks, not supplied bond labels or a bond-classification loss.
+This target includes a Gaussian restraint around $A$ and does not equal the
+unrestricted molecular Boltzmann law.
+
+\paragraph{Complete local work.}
+With reference Hamiltonian $H_0=-kT\log q_A$ and target Hamiltonian
+$H_1=H_0+E_+-E_+(A)$ plus hard support, the generalized quench work is
+\begin{equation}
+ W_A(X)=E_+(Y)-E_+(A)+kT[\log q_A(X)-\log q_A(Y)]
+\end{equation}
+on valid support, and $+\infty$ otherwise. Change of variables gives
+$\mathbb E_{q_A}[\exp(-W_A/kT)]=\int\rho_A(Y)\,dY$.
+The two reference-density terms correct for the escort's proposal shift.
+Energy difference alone would omit them. Two analytic tests verify constant work
+for a constant-force escort and the normalizer/weighted mean for a quadratic
+energy. These tests validate the local arithmetic, not a global molecular sampler.
+
+\paragraph{Training and controls.}
+Each continuation selects eight distinct 17--28-atom TRAIN compositions by a fixed
+metadata hash and generates 32 new FIT anchors per composition. They are excluded
+from the evaluated compositions. Invalid anchors are recorded rather than
+replenished. Each valid anchor produces eight escorted particles. Particles outside
+its declared support receive zero weight. The work arm samples training endpoints
+using self-normalized $\exp(-W_A/kT)$ weights; the unweighted escort arm samples the
+same valid particles uniformly. A replay arm uses the retained raw anchors, and a
+frozen model supplies the reference. All-zero-particle anchors are recorded and
+excluded identically from all student pools.
+
+Each student alternates 500 original-reference FM updates with 500 generated-FIT
+endpoint updates, sharing initialization, anchor draws, optimization and sampling
+budgets. No oracle is queried by the final generator. Physics enters through
+training targets. The generator retains its legacy constant temperature input;
+this is not a model trained to predict different temperatures. Finite-particle
+normalization biases the teacher relative to the exact normalized local target.
+Its ESS refers only to eight local particles, not global generator outputs.
+Original-reference mixing and unknown chemical-isomer weights further prevent a
+global equilibrium claim, even if the local identity is exact.
+
+\IfFileExists{sections/local_work_results.tex}{\input{sections/local_work_results}}{
+The frozen controlled experiment is in progress; no additional learned benefit
+or thermal-distribution accuracy is claimed before its complete audit.
+}

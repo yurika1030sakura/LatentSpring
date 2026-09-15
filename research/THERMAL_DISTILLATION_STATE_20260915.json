@@ -1,0 +1,29 @@
+{
+  "status": "all_students_trained_final_generation_and_physical_scoring_running",
+  "job_id": "46514001",
+  "run": "runs/thermal_distillation_v1",
+  "protocols": [
+    "research/evidence/thermal_distillation_s0_v1.json",
+    "research/evidence/thermal_distillation_s1_v1.json"
+  ],
+  "source_commit": "7ead293775e7f0f5d177acf02bc09b71d79a9214",
+  "energy_readout_job": "46510691",
+  "energy_readout_audit": "research/evidence/source_sc_energy_audit_v1.json",
+  "physics_method": "Force-escorted local Gaussian reference plus complete Jarzynski work weights, distilled through FM. Separate unweighted escort and replay controls.",
+  "new_global_boltzmann_claim": false,
+  "scientific_submission_ready": false,
+  "next": "Finish all4 methods for both continuations and physical output scoring, audit teacher work and model/data separation, then report the frozen gate without tuning.",
+  "energy_readout_summary": {
+    "pooled_energy_delta_eV_per_atom": -0.04059490829753139,
+    "pooled_force_rms_delta_eV_A": -0.46346905785336573,
+    "per_seed_energy_delta": [
+      -0.08049236896628453,
+      -0.0006974476287782694
+    ],
+    "per_seed_force_delta": [
+      -1.21995512810751,
+      0.29301701240077893
+    ],
+    "scope": "Source quality readout only. Force gain does not replicate in sign across both model seeds."
+  }
+}
