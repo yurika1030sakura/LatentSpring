@@ -1,0 +1,97 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-15T02:07:15.955305+00:00",
+  "model_seed": 1,
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "condition_manifest": "research/evidence/fresh_physics_panel_v1.json",
+  "condition_manifest_sha256": "0e039ae1f6dc070b71a28438c1c9d50e53023e7514e32f10ee39d64cb0d57395",
+  "overlap_audit": "research/evidence/fresh_physics_overlap_v1.json",
+  "overlap_audit_sha256": "8fb7ec3efa62b5074b4058b4147f4965bc72338b2d8542d4396102ca65ddafb5",
+  "methods": [
+    "gaussian",
+    "harmonic_tree",
+    "escort_delta",
+    "work_delta"
+  ],
+  "checkpoints": {
+    "gaussian": {
+      "path": "runs/source_sc_v1/s1/study/gaussian/last.ckpt",
+      "sha256": "ec0d7f9a9af059dede4ad7eb61471d101773ec8ffcaab85850e69d6b7bae8539"
+    },
+    "harmonic_tree": {
+      "path": "runs/source_sc_v1/s1/study/harmonic_tree/last.ckpt",
+      "sha256": "63ab39a35618601fb2a139faeb9fa5fdfac4df5c7a914eb4eb9e446275f1a7ec"
+    },
+    "escort_delta": {
+      "path": "runs/thermal_transfer_v1/s1/study/escort_delta/last.ckpt",
+      "sha256": "741bc082eabd8dae09ad6e5f5a1d03ac57b12c2f8dc716dd5fe027968061def4"
+    },
+    "work_delta": {
+      "path": "runs/thermal_transfer_v1/s1/study/work_delta/last.ckpt",
+      "sha256": "0e98b56e006ade1e360e9d25057cf1cd278ddf38364d18b741553d52ba4e5406"
+    }
+  },
+  "source_kinds": {
+    "gaussian": "gaussian",
+    "harmonic_tree": "harmonic_tree",
+    "escort_delta": "harmonic_tree",
+    "work_delta": "harmonic_tree"
+  },
+  "conditions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "samples_per_condition": 32,
+  "evaluation_batch": 16,
+  "midpoint_steps": 32,
+  "primitive_denoiser_calls_per_sample": 128,
+  "terminal_noise_std_A": 0.025,
+  "evaluation_seed": 37903,
+  "oracle_checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+  "oracle_interpreter": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python",
+  "oracle_worker_sha256": "ee784c39b042c2afa201612bb2dfbeb12ab28415ea5554d7698faf7b553b357c",
+  "esen_queries_per_seed": 6192,
+  "xtb_binary": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol/bin/xtb",
+  "xtb_binary_sha256": "85da9d385d12ac9674ac311f3cdc669bb90b0423680e33317fbc631af97f78cf",
+  "xtb_attempts_per_seed": 3120,
+  "xtb": {
+    "accuracy": 0.1,
+    "timeout_seconds": 90,
+    "restraint_eV_A2": 0.0
+  },
+  "xtb_energy_inversion_tolerance_eV": 0.0001,
+  "xtb_force_inversion_tolerance_eV_A": 0.001,
+  "parent_physics_audit_sha256": "4b1e0f7d8544fb355b394399a5676954f3e749638d83aed946baa63436c89db1",
+  "primary": "Confirm the preselected cheaper escort-difference model versus frozen harmonic on new compositions. Test graph support plus energy/force using both eSEN and independent GFN2 at frozen generated coordinates; no molecular optimization.",
+  "primary_gate": "Escort-difference common-graph energy per atom lower than harmonic in both model seeds and pooled conditional95 upper bound below zero in BOTH energy evaluators; observed pooled graph and distinct-connectivity loss no more than2pp. GFN2 must succeed on at least90% of graph-supported outputs of both methods, with at least19/24 comparable composition cells per seed. Report graph statistical noninferiority separately, not implied by the observed-rate rule.",
+  "secondary": "Harmonic versus Gaussian tests the source contribution. Work-difference versus escort-difference tests whether full local work adds benefit; no per-seed method selection. Report all conditions and all unconditioned/selected-support estimands.",
+  "failure_policy": "Every generated structure remains in validity denominators. Preserve all SCC failures and timeouts. GFN2 success-only and common-graph comparisons retain denominators and do not certify quantum accuracy. No configuration changes or extra draw budget based on these outcomes.",
+  "scope": "24 previously unevaluated compositions, selected by metadata and reference assay outside every old official candidate composition and both processed corpora. Existing two model seeds reused; no fresh training replication, population-wide or global Boltzmann guarantee.",
+  "reserved_outcomes_allowed": false,
+  "new_training_steps": 0,
+  "scientific_submission_ready": false,
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025"
+}
