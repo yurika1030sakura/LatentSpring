@@ -1,60 +1,40 @@
 # BGFM project guide
 
-LATEST: read `research/SOURCE_SC_STATE_20260914.json` and `research/NEXT.md`.
-Harmonic-tree source plus geometry SC has a positive frozen-composition result:
-+8.83pp graph support, conditional paired95[5.08,12.50], on10 new17-28-atom
-compositions using the same two model seeds. Shell-specific superiority fails.
-Both new jobs46497703/46503573 are complete. Preserve the frozen checkpoints;
-originality, external-generator comparison and Boltzmann claims remain unresolved.
-The following older checkpoint does not supersede these results.
+CURRENT: `research/HARMONIC_PAPER_STATE_20260915.json`, `research/NEXT.md`,
+`CLAUDE_HANDOFF.md`, and `research/ICLR_READINESS_20260914.md`.
+The complete internal harmonic-source manuscript is `paper/tree_working.tex` / PDF:
+6 main pages,11 total, clean compile. Scientific submission readiness remains false.
 
-CURRENT: read `research/ICLR_READINESS_20260914.md`,
-`research/DUAL_GEOMETRY_STATE_20260914.json`, `research/NEXT.md` and
-`CLAUDE_HANDOFF.md`. The ICLR goal is unachieved; the draft is not submission ready.
+Selected candidate: fixed random-tree harmonic source plus geometry-only
+self-conditioned flow matching, without supplied bond labels. Harmonic improves
+on isotropic Gaussian by5.86pp on12 development compositions and8.83pp on10
+additional compositions with frozen models. A calibrated covariance-Gaussian
+control loses by11.65pp and15.39pp; both model seeds favor harmonic in both panels.
+The covariance estimate has1.85–6.25% relative Frobenius error. The same two model
+seeds are reused across panels; do not call them four independent fits.
 
-There is a repeated useful BASELINE improvement: geometry self-conditioning raises
-graph support by5.47 pp, paired95[3.06,7.94], on12 reused monomer compositions.
-Counts/768: plain363/312, geometry417/342. Fresh source streams from the SAME
-trained models give plain384/327 and geometry410/369. These are not extra model
-replicates. Self-conditioning is prior art; this gain alone is not our new AI claim.
+The original30k endpoint checkpoint comparison is now complete:106/113 graph
+passes with native history,116/120 with fixed categories plus centered bootstrap,
+out of640 per stream. Native and adapted models have different training histories.
+This is a task-adapted reference, not native published FlowMol3 performance or SOTA.
 
-Proposed extra methods fail their frozen gates: coordinate-NLL source learning,
-static source-tree context, source utility adaptation, dynamic tree attention,
-fixed-tree product-coordinate flow, localized relation codes and internal geometry
-rescaling. Pair feedback counts422/334 versus geometry417/342 and pooled432/333;
-no extra learned relation gain. Internal time geometry328/315 loses to original
-384/327; fixed geometry167/156 is worse. Do not choose a source/model by seed.
+Random-tree identities, harmonic springs, self-conditioning and Jarzynski are
+prior art. The task-specific source-method contribution now has controlled utility
+evidence; sufficient ICLR novelty and independent-generator competitiveness remain
+unestablished. Jarzynski is retained in an explicit-assumptions appendix, not used
+to claim measured work reweighting, a Boltzmann law, final density or output ESS.
+All earlier failed source-learning, context, manifold and geometry variants remain.
 
-The fixed-tree manifold method achieves zero fragmentation but REDUCES chemical
-validity: Cartesian311/295, projected202/193, manifold165/156. Source law and support
-proofs pass; geometric connectivity is not a chemical-validity certificate.
-All completed studies, including1472 saved outputs from an interrupted gradient-
-bug variant, are preserved and audited. No quantum queries in these new studies.
-
-All current jobs are terminal:46434075 utility,46443856 interrupted dynamic,
-46446108 corrected dynamic,46457005 manifold,46473082 feedback,46485300 internal
-geometry. Query Slurm before assuming no later jobs. Registry:
-`research/evidence/generator_reference_registry_v8.json`. The manuscript
-`paper/tree_working.tex` records completed findings; no new-method win is claimed.
-
-Next priorities: verify original native endpoint-sampler performance and assess
-structured-source benefits against strong geometry-SC source controls, before more
-modules. The30,000-step primary checkpoint restores and its hash verifies, but that
-is not a native performance result. A fixed probabilistic prior can be an AI-method
-contribution; usefulness and originality, not extra parameter count, are the tests.
-Any successful candidate needs fresh composition evidence and appropriate generator
-comparisons. Current calibration does not establish a Boltzmann energy distribution.
-
-Preserve722 reserved outcomes, old evaluated cohorts,2560 orbit outputs,59328 stored
-tree/architecture evaluation outputs,1536 derived projection outputs and all their
-reference geometries outside fitting.3072 utility-bank outputs are FIT only.
-The new source/head-held data came from the training corpus; the earlier21 monomer
-compositions were absent from two verified processed corpora. Do not confuse those
-claims or certify unrecorded pretraining. Keep OMol25 primary, max_atoms200, bond
-loss zero, original charge/spin, BGFM interfaces, separate environments and no home
-writes. No final-density, output-ESS or thermal-law claim. The user handles submission.
+All current jobs are terminal:46504779/46506935 and earlier46497703/46503573.
+Query Slurm before assuming no later jobs. Latest registry is
+`research/evidence/generator_reference_registry_v10.json`:70336 tree/architecture
+evaluation outputs plus3072 FIT-bank outputs,1536 derived projections, and earlier
+orbit/physical cohorts remain protected from fitting. Reserved722 outcomes remain
+unqueried. Preserve OMol25, max_atoms200, bond loss zero, original charge/spin,
+BGFM interfaces, separate environments and no home writes. The user handles authors.
 
 Historical milestones below do not replace this checkpoint.
+
 
 ## Active takeover branch
 

@@ -1,67 +1,36 @@
-# ICLR readiness checkpoint
+# ICLR readiness checkpoint — refreshed September15
 
-Latest essential result (source-SC studies complete): the fixed harmonic-tree
-source improves graph support over unit Gaussian with the same geometry-SC
-backbone by5.86pp on12 development compositions. Frozen models then improve by
-8.83pp on10 additional reference-qualified compositions; conditional paired95
-[5.08,12.50], descriptive composition95[4.84,12.66]. Both existing model seeds
-improve; this is additional composition evidence, not new training replication.
-The shell-specific superiority hypothesis fails. See
-`notes/source_sc_results_20260914.md` and `research/SOURCE_SC_STATE_20260914.json`.
-Method usefulness in this limited setting is now supported; originality and
-competitive generator evidence still need to be established. No energy-law claim.
-The older checkpoint below records the state before this positive result.
+The internal manuscript has been rewritten around the supported harmonic-source
+candidate. It compiles cleanly:6 main pages,11 total. See
+`research/HARMONIC_PAPER_STATE_20260915.json` and `paper/tree_working.pdf`.
+The research goal remains unachieved and scientific submission readiness is false.
 
-The research goal is unachieved. The manuscript is an internal development draft.
-It is not scientifically submission ready and no acceptance probability is assigned.
+Evidence now supporting the candidate:
 
-What is currently demonstrated:
+- Harmonic source versus isotropic Gaussian: +5.86pp on12 development compositions;
+  +8.83pp on10 additional compositions, conditional paired95[5.08,12.50]. Same two
+  model seeds reused, with both improving. Additional compositions are17-28 atoms
+  and absent from both verified processed corpora.
+- Harmonic versus covariance Gaussian: +11.65pp and+15.39pp on the two panels;
+  all four continuation signs positive and both conditional intervals above zero.
+  The covariance control is approximate, with1.85–6.25% calibration error.
+- A task-adapted original endpoint baseline is now measured and audited. Its
+  different training history prevents a clean source-effect or SOTA claim.
+- All5376 new control/native outputs replay. Jobs46504779/46506935 are complete.
 
-- A normalized bond-free spatial tree-source implementation, checked source laws,
-  original electronic metadata and a reference-qualified monomer benchmark.
-- Repeated geometric improvements from structured sources in prior experiments,
-  but no established repeated learned-source chemical-validity increment.
-- A properly parameterized geometry self-conditioning baseline improves graph
-  support by5.47 percentage points over the one-pass baseline, with paired95
-  interval[3.06,7.94] and composition interval[4.10,6.77] on12 reused conditions.
-  Both training seeds improve. This is a known-technique baseline result.
+The method-level contribution is a physics-informed, topology-marginalized source
+for bond-free molecular FM. Existing random-tree theory, self-conditioning and
+Jarzynski cannot be claimed as new. Whether this specific contribution is novel
+and competitive enough for ICLR still needs stronger comparative evidence.
 
-What does not establish a new useful AI contribution:
+The measured physics application is the auxiliary Gaussian spring prior with
+atomic scales. Jarzynski is retained as an optional correction theory with explicit
+normalizability, invertibility and Jacobian/path-law assumptions. Current outputs
+have not undergone that correction, and no Boltzmann-distribution or ESS claim
+is supported. A new physical law is neither established nor a submission requirement.
 
-- Coordinate-NLL source heads, fixed source-tree context, source-utility learning,
-  current-geometry tree attention, fixed-tree product-coordinate flow and localized
-  relation feedback all fail their declared extra-benefit gates.
-- The product-coordinate flow guarantees contact connectivity, yet chemical graph
-  validity becomes substantially worse. A geometric guarantee alone is insufficient.
-- Relation-head weights learn from coordinates, but localized codes do not improve
-  consistently over geometry-only or pooled feedback. An active gradient is not
-  evidence of useful molecular generation.
-- None of these results establishes a calibrated Boltzmann energy distribution.
-
-Latest completed test:
-
-`research/DUAL_GEOMETRY_STATE_20260914.json` records a FAILED internal-geometry
-gate. Original/geometry-SC/fixed-geometry/time-geometry graph counts are
-384/410/167/328 and327/369/156/315 out of768. The time-scaled variant loses to the
-original representation. Geometry SC again improves on original with new draws
-from the same two trained models; this is a draw-stream confirmation, not new
-independent model training. The pooled improvement is4.43 percentage points,
-with paired95 interval[2.02,6.90] and descriptive composition95 interval[2.73,5.92].
-See `research/evidence/geometry_sc_fresh_stream_v1.json`.
-
-Next most useful bounded work:
-
-1. Audit the original native endpoint generator before further architectural
-   additions. The original30,000-step checkpoint restores and its hash verifies;
-   its native conditional sampling has not been measured by these displacement
-   adaptations. A successful restoration is not a performance result.
-2. Compare Gaussian/moment controls and structured sources under the stronger,
-   correctly parameterized geometry-SC backbone. Fixed prior design can itself
-   be an AI-method contribution; a new trained module is not universally required.
-   Its originality and usefulness still need support against relevant prior art.
-3. Freeze any chosen method before a new-composition confirmation. Do not tune
-   envelopes, priors or filters on this repeatedly used12-condition panel.
-
-No new experiment is currently queued. All reserved outcomes remain unqueried;
-all evaluated coordinates/results stay outside fitting. The user handles authors
-and submission. The ICLR goal remains unachieved. No energy-law claim is supported.
+Remaining substantive evidence: fair independent-generator comparisons, energy/
+geometry quality and broader robustness in the stated task. Prior failed shell,
+learned-source and neural-module experiments remain recorded. No new study is
+currently queued; no reserved722 outcomes were queried. Human authors handle final
+review and submission. No acceptance probability is assigned.

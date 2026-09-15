@@ -46,7 +46,7 @@ def main():
   for metric in ['graph_supported','geometrically_supported']:
    diff=np.stack([np.stack([flags(x,metric)-flags(y,metric) for x,y in zip(reports[s]['harmonic_tree'],reports[s][method])]) for s in [0,1]])
    comparisons['harmonic_tree minus '+method][metric]=intervals(diff,[0]*10,rng)
- write(a.out,dict(complete=True,summary=summary,comparisons=comparisons,artifacts=artifacts,new_outputs_replayed=total,new_training_runs=0,new_molecular_oracle_calls=0,scientific_submission_ready=False,
+ write(a.out,dict(complete=True,summary=summary,comparisons=comparisons,artifacts=artifacts,new_outputs_replayed=total,history_variant_note="clamped_history also centers the explicit first bootstrap endpoint; native_history preserves upstream bootstrap centering. It is not a pure categorical-history ablation.",new_training_runs=0,new_molecular_oracle_calls=0,scientific_submission_ready=False,
   scope='One original30k checkpoint, two sampling streams, native endpoint Euler and bootstrap/history at128 actual denoiser calls; current composition/no-bond interface clamped. This is task-adapted native sampling, not the published joint-generator benchmark. Adapted Gaussian/harmonic models have additional shared pretraining and3000 specialized updates. Training costs and conditioning procedures differ, so differences do not isolate source choice or prove SOTA.'))
 
 

@@ -1,0 +1,12 @@
+\paragraph{Original endpoint-checkpoint reference.}
+We also evaluate the original 30,000-step OMol25 checkpoint using its endpoint
+semantics, 127 Euler updates and first-step bootstrap/history conditioning, for
+128 actual denoiser calls. Current composition and the neutral/no-bond interface
+are clamped to define the same coordinate-generation task. Native predicted
+history gives 106/640 and 113/640 graph passes; a variant with fixed history categories and a centered first bootstrap gives 116/640 and 120/640. The two streams use the same original
+checkpoint, not two training replicates. All 2,560 outputs replay. The latter changes bootstrap centering as well as
+categorical history and is not a pure categorical-feedback ablation.
+This is a task-adapted reference, not the published joint-generation benchmark.
+The source-SC models have extra shared adaptation and 3,000 specialized updates;
+these differences cannot be attributed solely to source choice. The matched
+Gaussian and covariance-Gaussian continuations remain the primary source controls.

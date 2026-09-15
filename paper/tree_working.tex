@@ -17,7 +17,7 @@
 \author{Anonymous}
 \begin{document}
 \maketitle
-\begin{center}\textbf{Development draft. Competitive advantage and submission readiness remain unestablished.}\end{center}
+\begin{center}\textbf{Internal research draft. Results are scoped to the reported benchmark.}\end{center}
 \begin{abstract}
 Generating molecular coordinates without a supplied bond graph requires a model
 to create both spatial organization and chemical compatibility. Isotropic noise
@@ -29,16 +29,17 @@ ratio gives its normalized marginal density. Atomic radii and simple species
 propensities set the source; the selected method adds no learned source head.
 We combine it with geometry self-conditioning in a bond-free molecular
 flow-matching model. In matched OMol25 continuations, harmonic sources improve
-chemical-graph support over isotropic Gaussian sources by5.86 percentage points
-on12 development compositions. Frozen models improve by8.83 points on10 additional
+chemical-graph support over isotropic Gaussian sources by 5.86 percentage points
+on 12 development compositions. Frozen models improve by 8.83 points on 10 additional
 reference-qualified compositions absent from two verified processed corpora,
-with a conditional paired95\% interval of[5.08,12.50]. Both continuation seeds
+with a conditional paired 95\% interval of [5.08,12.50]. Both continuation seeds
 improve at the same denoiser-call budget. A narrower shell source and several
-learned additions fail their controls. These results support a useful molecular
-source design in a limited domain; attribution beyond covariance, competitiveness
-against independent generators, and thermal-distribution accuracy require separate
-evidence. The tree identities, self-conditioning and fluctuation relations are
-established tools, not new theorems claimed here.
+learned additions fail their controls. A calibrated covariance-Gaussian control also loses in both panels, supporting
+a role for mixture structure beyond the tested second-moment approximation.
+These results support a useful molecular source design in a limited domain;
+competitiveness against independent generators and thermal-distribution accuracy
+require separate evidence. The results support incorporating latent spatial structure into a molecular flow
+without supplied bond labels or an additional learned source model.
 \end{abstract}
 
 \section{Introduction}
@@ -67,13 +68,16 @@ We first test isotropic Gaussian, harmonic-tree and narrow shell-tree sources wi
 matched network weights at initialization, data rows, optimization and inference
 budgets. Harmonic trees perform best in both continuations. We then freeze the
 harmonic and Gaussian models and evaluate all remaining10 qualified compositions
-from the reference pool. Their positive result motivates this candidate; it does
-not turn either source normalization or self-conditioning into a novel theorem.
+from the reference pool. Their positive result motivates this candidate. A subsequent covariance-Gaussian
+control is also worse, supporting an effect beyond the tested covariance
+approximation. These results do not turn source normalization or self-conditioning
+into a novel theorem.
 
 Our contribution is a task-specific probabilistic source construction, its
 integration with a molecular flow, and controlled evidence for its utility.
 We make the physics connection explicit through a Gaussian spring energy and
-separate this auxiliary source energy from an electronic potential. A Jarzynski-type
+separate this auxiliary source energy from an electronic potential. Flow time is an interpolation parameter, not laboratory time; learned paths are
+not asserted to follow molecular dynamics. A Jarzynski-type
 reweighting connection is retained with its assumptions in Appendix~\ref{app:jarzynski};
 it is not used to infer equilibrium accuracy from geometric validity.
 
@@ -216,9 +220,9 @@ carry the constant no-bond interface. No bond-classification loss is introduced.
 The sampled tree is not supplied to the vector field. Self-conditioning and the
 endpoint-estimation identity are existing techniques shared by all primary arms.
 
-Generation integrates $v^{(1)}$ with32 midpoint steps and two passes per field
-call, totaling128 primitive denoiser evaluations per attempted sample, followed
-by0.025\,\AA\ centered Gaussian noise. We retain this numerical sampler exactly
+Generation integrates $v^{(1)}$ with 32 midpoint steps and two passes per field
+call, totaling 128 primitive denoiser evaluations per attempted sample, followed
+by 0.025\,\AA\ centered Gaussian noise. We retain this numerical sampler exactly
 for comparisons. Source normalization alone does not give the finite integrator
 plus noise a qualified final density. The main experiment uses FM only; existing
 force/energy training interfaces are not evidence for a thermal law, and the
@@ -229,10 +233,10 @@ independent-Gaussian velocity-to-score proxy is invalid for this source/coupling
 We evaluate coordinate generation for neutral-singlet organic compositions,
 containing C and H and elements from H/B/C/N/O/F/Si/P/S/Cl/Br/I.
 The implementation supports200 atoms; experiments are limited to8--40.
-Two continuations share one pretrained warm checkpoint. Each uses3,000 distinct
-OMol25 training rows and3,000 optimizer updates, with identical rows and initial
+Two continuations share one pretrained warm checkpoint. Each uses 3,000 distinct
+OMol25 training rows and 3,000 optimizer updates, with identical rows and initial
 weights across source arms within that continuation. The source is fixed and
-adds no fitted parameters. The vector-field parameter count is5,904,369.
+adds no fitted parameters. The vector-field parameter count is 5,904,369.
 Backbone learning rate is $2\cdot10^{-5}$; activated self-conditioning modules use
 $3\cdot10^{-4}$. Two differentiable passes are used for every primary source arm.
 
@@ -245,14 +249,14 @@ not supplied bond supervision, and limits claims about unrestricted OMol25.
 Additional training details and excluded alternatives are retained in the appendix.
 
 \paragraph{Panels and separation.}
-Original reference qualification identified31 accepted compositions among78
+Original reference qualification identified31 accepted compositions among 78
 metadata-eligible candidates. An earlier21-composition panel used up to8 per size
 bin; the present12-composition development panel is a fixed subset of that panel.
 After comparing all three source arms, we selected harmonic sources jointly
 across the two continuations and froze both harmonic and Gaussian models.
 We then evaluated \emph{all} remaining10 qualified compositions. They happen to
-have17--28 atoms; no generator output was used to filter them. Exact count-vector
-checks find no matching composition in3,902,107 processed training rows or39,415
+have 17--28 atoms; no generator output was used to filter them. Exact count-vector
+checks find no matching composition in 3,902,107 processed training rows or39,415
 validation rows. References qualify the assay and do not initialize the generator
 or enter fitting. Separation from these corpora does not certify unrecorded
 pretraining or all trajectory relations. The additional panel reuses the same
@@ -260,7 +264,7 @@ trained models, not two further independent training replicates.
 
 \paragraph{Metrics and uncertainty.}
 Every method attempts64 samples per composition. Geometry support requires
-contact connectivity and no short-distance overlap using1.25 and0.6 times summed
+contact connectivity and no short-distance overlap using 1.25 and 0.6 times summed
 covalent radii. Graph support additionally requires successful chemical-graph
 perception. This assay does not certify quantum stability, the complete electronic
 state or synthetic accessibility. Failed outputs and validator exceptions stay in
@@ -273,7 +277,7 @@ summarizes heterogeneity. Neither is a broad population-generalization certifica
 \begin{table}[t]
 \centering
 \caption{Chemical-graph support per attempted output. All primary arms share the
-geometry-SC backbone and128 primitive denoiser calls. The additional panel uses
+geometry-SC backbone and 128 primitive denoiser calls. The additional panel uses
 frozen models selected after the development comparison.}
 \begin{tabular}{llrrr}
 \toprule
@@ -287,21 +291,21 @@ Additional (10)  & 1 &326/640&---&413/640\\
 \end{tabular}\label{tab:main}
 \end{table}
 
-Harmonic trees improve graph support over isotropic Gaussian sources by5.86
-percentage points on the development panel, with conditional paired95\% interval
-[2.67,8.98] and descriptive composition interval[0.52,12.17]. Both continuation
+Harmonic trees improve graph support over isotropic Gaussian sources by 5.86
+percentage points on the development panel, with conditional paired 95\% interval
+[2.67,8.98] and descriptive composition interval [0.52,12.17]. Both continuation
 signs are positive, although the first gain is substantially larger.
 The narrow shell source fails its prespecified superiority gate and is worse than
-the harmonic tree by4.23 points, with paired interval[-7.29,-1.11].
+the harmonic tree by 4.23 points, with paired interval [-7.29,-1.11].
 
-On the additional10 compositions, harmonic sources improve graph support from
-52.73\% to61.56\%, or8.83 points, with paired interval[5.08,12.50] and descriptive
-composition interval[4.84,12.66]. Geometry support improves by9.69 points, with
-paired interval[6.33,12.89]. All graph-supported samples have distinct perceived
+On the additional 10 compositions, harmonic sources improve graph support from
+52.73\% to61.56\%, or8.83 points, with paired interval [5.08,12.50] and descriptive
+composition interval [4.84,12.66]. Geometry support improves by 9.69 points, with
+paired interval [6.33,12.89]. All graph-supported samples have distinct perceived
 connectivity within their composition in this panel. This is an assay-specific
 diversity readout; structural stereochemical novelty is not inferred from it.
-No validator exception occurs. Harmonic/Gaussian generation times are175.73/175.43
-seconds and178.20/177.74 seconds for640 samples. These measurements do not establish
+No validator exception occurs. Harmonic/Gaussian generation times are 175.73/175.43
+seconds and 178.20/177.74 seconds for 640 samples. These measurements do not establish
 a speed advantage. All2,560 additional-panel source and structural records replay.
 
 \begin{figure}[t]
@@ -313,19 +317,16 @@ them. Positive aggregate gains do not imply improvement for every composition.
 The additional panel uses the same two models as development.}\label{fig:effects}
 \end{figure}
 
-\IfFileExists{sections/harmonic_sc_covariance_results.tex}{\input{sections/harmonic_sc_covariance_results}}{
-\paragraph{Attribution control in progress.}
-A matched covariance-Gaussian control is frozen and running on the same backbone.
-Until it is complete, the primary comparison supports an advantage over isotropic
-noise, but does not isolate tree-mixture structure from second moments.
-}
+\input{sections/harmonic_sc_covariance_results}
+
+\input{sections/harmonic_native_results}
 
 \paragraph{What did not help.}
 We retain failed source-coordinate likelihood learning, source-utility adaptation,
 static and dynamic tree context, fixed-tree product coordinates, and localized
 edge-feedback experiments in the appendix. Their failures prevent an extra
 learned-module claim. Geometry self-conditioning improves the original one-pass
-shell baseline by5.47 points but is prior art. The harmonic-source result is a
+shell baseline by 5.47 points but is prior art. The harmonic-source result is a
 separate source comparison with that stronger mechanism shared by all arms.
 
 \section{Discussion and limitations}
@@ -339,10 +340,11 @@ are established. The contribution must be judged by its specific molecular
 instantiation and reproducible utility.
 
 Coverage remains small, models share a warm start, and the target is a selected
-neutral-organic subset. Native FlowMol3 unconditional validity and ET-Flow
+neutral-organic subset. A benefit at this continuation budget does not establish
+an asymptotic advantage after fully converged training. Native FlowMol3 unconditional validity and ET-Flow
 conditional-conformer metrics cannot be substituted for a matched generator
-comparison. The original native endpoint checkpoint requires its own task-adapted
-sampling audit.\IfFileExists{sections/harmonic_native_results.tex}{\input{sections/harmonic_native_results}}{} We do not claim superiority over those full published systems.
+comparison. The completed original-endpoint comparison is task-adapted and has a different
+training history. We do not claim superiority over those full published systems.
 An exact energy correction would additionally require qualified work/density
 accounting and overlap with the target distribution. Those requirements are
 independent of a graph-validity improvement. Appendix~\ref{app:jarzynski} retains
@@ -352,8 +354,8 @@ the nonequilibrium connection without presenting it as an evaluated contribution
 \subsubsection*{Reproducibility statement}
 Frozen protocols record data-order and generation seeds, source checkpoint hashes,
 all attempted structures, electronic conditions and oracle costs. Current audits
-replay68,032 generated-output source records (including3072 FIT-bank records),
-1,536 additional projected-coordinate readouts and5,120 stored physical rows;
+replay 73,408 generated-output source records (including3072 FIT-bank records),
+1,536 additional projected-coordinate readouts and 5,120 stored physical rows;
 they do not independently rerun optimizers, final neural generation or the oracle.
 The source-SC and frozen-composition confirmation audits join the moment-control, context, additional-composition, monomer, source-utility,
 dynamic-attention, product-coordinate and feedback audits are complete.
@@ -458,7 +460,7 @@ bank draws each. Twelve additional compositions are held out of source-head
 fitting, with four per size bin8--16,17--28,29--40. All36 originate from the flow's
 training corpus; this is not a global pretraining-disjoint test. The actual-utility,
 within-composition shuffled-utility and coordinate-NLL heads have equal capacity
-and30 training epochs, Adam learning rate0.003, gradient clipping5 and tree-KL
+and 30 training epochs, Adam learning rate0.003, gradient clipping5 and tree-KL
 penalty0.01. Together with the fixed source, all four receive64 fresh draws per
 held composition under each of two frozen decoders. The9216 completed attempts count
 both bank preparation and validation, and all source draws and structural assays
@@ -466,21 +468,21 @@ replay. The decoder state tensors remain exactly unchanged.
 
 
 \paragraph{Completed results.}
-Graph passes out of768 attempts per arm are461/462/423/476 for
-fixed/actual/shuffled/NLL under the first frozen decoder and410/392/410/409 under
+Graph passes out of 768 attempts per arm are 461/462/423/476 for
+fixed/actual/shuffled/NLL under the first frozen decoder and 410/392/410/409 under
 the second. Actual-minus-fixed pooled graph gain is$-1.11$ percentage points,
-paired95\% interval$[-3.84,1.76]$ and descriptive composition interval$[-3.58,0.91]$.
+paired 95\% interval$[-3.84,1.76]$ and descriptive composition interval$[-3.58,0.91]$.
 Actual-minus-shuffled is$+1.37$ points, with intervals$[-1.63,4.36]$ and
 $[-1.11,3.91]$. The development gate fails. Distinct connectivity sums are
-421/423/377/429 and373/352/377/375. Neither a repeated learned increment nor
+421/423/377/429 and 373/352/377/375. Neither a repeated learned increment nor
 broad failure of all utility-trained sources follows from this small pilot.
-The actual-head FIT-bank utility estimates improve by0.0262/0.0220, while shuffled
-heads improve their own shuffled objectives by0.0205/0.0154. These fitted-bank
+The actual-head FIT-bank utility estimates improve by 0.0262/0.0220, while shuffled
+heads improve their own shuffled objectives by 0.0205/0.0154. These fitted-bank
 readouts do not predict a repeated fresh benefit and do not uniquely distinguish
 finite-bank overfitting, composition shift and source-family limitations.
 
 Preparing each actual-utility model requires at least462.4/473.7 seconds for bank
-generation plus source training. The full four-arm jobs complete in24:02/24:43.
+generation plus source training. The full four-arm jobs complete in 24:02/24:43.
 The separate corpus-qualification stage was not timed, so the preparation numbers
 are lower bounds. No new quantum-energy queries were made. Both the earlier
 negative studies and this failed gate remain part of the evidence.
@@ -491,10 +493,10 @@ negative studies and this failed gate remain part of the evidence.
 \paragraph{Current-geometry structure.}
 A differentiable tree-marginal residual adapter was compared with independent
 edge mass and fixed tree affinities, under two newly matched3000-update training
-seeds and12 reused monomer development conditions. Graph passes out of768 are
-316/321/322/318 and312/300/298/295 for no block, learned tree, fixed tree affinities
+seeds and 12 reused monomer development conditions. Graph passes out of 768 are
+316/321/322/318 and 312/300/298/295 for no block, learned tree, fixed tree affinities
 and learned local mass. Learned-tree minus no block is$-0.46$ percentage points,
-paired95\% interval$[-1.95,1.11]$. Learned-tree minus local is$+0.52$ points,
+paired 95\% interval$[-1.95,1.11]$. Learned-tree minus local is$+0.52$ points,
 paired interval$[-0.59,1.56]$ and descriptive composition interval$[0.07,1.04]$.
 The gate fails; the favorable composition interval is not selected in isolation.
 A relative-edge-floor gradient defect was corrected before this final comparison.
@@ -506,12 +508,12 @@ A further prototype sampled a normalized coordination-sensitive heavy-core tree
 and terminal allocations, and generated bounded tree-edge radii with spherical
 directions. A product-space flow preserves contact connectivity by construction.
 The matched Cartesian flow, its deterministic final radial projection, and the
-trained product flow achieve graph counts311/202/165 and295/193/156 out of768.
+trained product flow achieve graph counts311/202/165 and 295/193/156 out of 768.
 Both constrained outputs have zero disconnected cases, but product-flow graph
-validity falls by18.55 points versus Cartesian flow, paired95\% interval
-$[-20.83,-16.28]$, and by4.82 points versus final projection,$[-6.90,-2.73]$.
+validity falls by 18.55 points versus Cartesian flow, paired 95\% interval
+$[-20.83,-16.28]$, and by 4.82 points versus final projection,$[-6.90,-2.73]$.
 Thus correct geometric support does not establish chemical validity or useful
-learning. The3072 neural outputs and1536 derived projections are all retained.
+learning. The3072 neural outputs and 1536 derived projections are all retained.
 
 \paragraph{Self-conditioning and unlabelled relation feedback.}
 Earlier source experiments used the explicitly declared memoryless one-pass
@@ -525,10 +527,10 @@ is added, and no chemical semantics are assigned to the four channels. Learning
 latent interactions is established prior art \citep{kipf2018nri}.
 
 The one-pass, geometry-only, pair-code and pooled-code models produce graph counts
-363/417/422/432 and312/342/334/333 out of768. All use128 primitive denoiser calls
-per sample; feedback uses32 midpoint steps with two passes, versus64 single-pass
+363/417/422/432 and 312/342/334/333 out of 768. All use128 primitive denoiser calls
+per sample; feedback uses 32 midpoint steps with two passes, versus 64 single-pass
 steps. Training updates match, but feedback training compute is higher. Geometry
-feedback improves graph support by5.47 points, paired95\% interval$[3.06,7.94]$
+feedback improves graph support by 5.47 points, paired 95\% interval$[3.06,7.94]$
 and descriptive composition interval$[4.10,6.77]$. This is a known-technique baseline
 improvement. Pair codes add$-0.20$ points versus geometry,$[-1.50,1.17]$, and$-0.59$
 versus pooled codes,$[-2.02,0.85]$. The relation-learning gate fails, despite verified
@@ -549,14 +551,14 @@ displacement head $X_t+V$. The standard endpoint/velocity identity motivates thi
 inductive bias but does not prove that arbitrary learned internal geometries are
 invalid. No network parameters were added.
 Graph counts for original/geometry-SC/fixed/time-scaled geometry were
-384/410/167/328 and327/369/156/315 out of768.
-Time-scaled minus original geometry is$-4.43$ percentage points, paired95\% interval$[-6.84,-2.02]$.
-Time-scaled minus fixed geometry is$+20.83$ percentage points, paired95\% interval$[+18.29,+23.44]$.
-Time-scaled minus geometry self-conditioning is$-8.85$ percentage points, paired95\% interval$[-11.46,-6.25]$.
+384/410/167/328 and 327/369/156/315 out of 768.
+Time-scaled minus original geometry is$-4.43$ percentage points, paired 95\% interval$[-6.84,-2.02]$.
+Time-scaled minus fixed geometry is$+20.83$ percentage points, paired 95\% interval$[+18.29,+23.44]$.
+Time-scaled minus geometry self-conditioning is$-8.85$ percentage points, paired 95\% interval$[-11.46,-6.25]$.
 The internal-geometry gate fails. All6144 source/output records and matching
 parameter counts, data and checkpoint recipes were audited. The original and
 geometry-SC references reuse their earlier trained checkpoints with new source
-streams; their4.43-point SC difference is not an extra model-training replicate.
+streams; their 4.43-point SC difference is not an extra model-training replicate.
 These results retain the known self-conditioning improvement and do not establish
 a new useful architecture or a calibrated energy distribution.
 

@@ -1,0 +1,159 @@
+{
+  "complete": true,
+  "summary": {
+    "0": {
+      "native_history": {
+        "attempted": 640,
+        "graph_supported": 106,
+        "geometrically_supported": 157,
+        "distinct_connectivity": 106,
+        "validator_errors": 0,
+        "generation_seconds": 179.56772277131677
+      },
+      "clamped_history": {
+        "attempted": 640,
+        "graph_supported": 116,
+        "geometrically_supported": 172,
+        "distinct_connectivity": 116,
+        "validator_errors": 0,
+        "generation_seconds": 180.0215409717057
+      },
+      "gaussian": {
+        "attempted": 640,
+        "graph_supported": 326,
+        "geometrically_supported": 402,
+        "distinct_connectivity": 326,
+        "validator_errors": 0,
+        "generation_seconds": 175.42712248582393
+      },
+      "harmonic_tree": {
+        "attempted": 640,
+        "graph_supported": 413,
+        "geometrically_supported": 490,
+        "distinct_connectivity": 413,
+        "validator_errors": 0,
+        "generation_seconds": 175.73093555867672
+      }
+    },
+    "1": {
+      "native_history": {
+        "attempted": 640,
+        "graph_supported": 113,
+        "geometrically_supported": 155,
+        "distinct_connectivity": 113,
+        "validator_errors": 0,
+        "generation_seconds": 182.784681689227
+      },
+      "clamped_history": {
+        "attempted": 640,
+        "graph_supported": 120,
+        "geometrically_supported": 177,
+        "distinct_connectivity": 120,
+        "validator_errors": 0,
+        "generation_seconds": 182.93251298484392
+      },
+      "gaussian": {
+        "attempted": 640,
+        "graph_supported": 349,
+        "geometrically_supported": 430,
+        "distinct_connectivity": 349,
+        "validator_errors": 0,
+        "generation_seconds": 177.7385270765517
+      },
+      "harmonic_tree": {
+        "attempted": 640,
+        "graph_supported": 375,
+        "geometrically_supported": 466,
+        "distinct_connectivity": 375,
+        "validator_errors": 0,
+        "generation_seconds": 178.2040984078776
+      }
+    }
+  },
+  "comparisons": {
+    "harmonic_tree minus native_history": {
+      "graph_supported": {
+        "mean": 0.44453125,
+        "paired_draw95": [
+          0.4125,
+          0.47734375
+        ],
+        "descriptive_composition95": [
+          0.36875,
+          0.509375
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.503125,
+        "paired_draw95": [
+          0.4703125,
+          0.53515625
+        ],
+        "descriptive_composition95": [
+          0.43671875,
+          0.56328125
+        ]
+      }
+    },
+    "harmonic_tree minus clamped_history": {
+      "graph_supported": {
+        "mean": 0.43125,
+        "paired_draw95": [
+          0.3984375,
+          0.4633007812499997
+        ],
+        "descriptive_composition95": [
+          0.3640625,
+          0.49609375
+        ]
+      },
+      "geometrically_supported": {
+        "mean": 0.47421875,
+        "paired_draw95": [
+          0.44296875,
+          0.50546875
+        ],
+        "descriptive_composition95": [
+          0.42109375,
+          0.52578125
+        ]
+      }
+    }
+  },
+  "artifacts": [
+    {
+      "stream": 0,
+      "method": "native_history",
+      "checkpoint_sha256": "4d5b3a188d81a75c2c4b1170b065a090b3535beae72c9ce196d5877e2dd38ff4",
+      "report_sha256": "4bcab8a2319ba33c0d352064c9d75c5c8b13e18888e7f955ea7c0045bb3e18b3",
+      "protocol_sha256": "bbae31ebed2288aa6132003747c034c9520cab6dd822b81c9365bdf94556cb49"
+    },
+    {
+      "stream": 0,
+      "method": "clamped_history",
+      "checkpoint_sha256": "4d5b3a188d81a75c2c4b1170b065a090b3535beae72c9ce196d5877e2dd38ff4",
+      "report_sha256": "87ea762fc603de4c4e9b4fcbe51e856ff872e562cafe8dc228b67c61b4b210f1",
+      "protocol_sha256": "bbae31ebed2288aa6132003747c034c9520cab6dd822b81c9365bdf94556cb49"
+    },
+    {
+      "stream": 1,
+      "method": "native_history",
+      "checkpoint_sha256": "4d5b3a188d81a75c2c4b1170b065a090b3535beae72c9ce196d5877e2dd38ff4",
+      "report_sha256": "4a43f1230d90f80b22f2ed948671f96b6ed85fa6339c4e19103cb1111ac5e166",
+      "protocol_sha256": "1516cffa16a83c3940141fe014115c7d0e42f50a869db040fe2abdb47290d325"
+    },
+    {
+      "stream": 1,
+      "method": "clamped_history",
+      "checkpoint_sha256": "4d5b3a188d81a75c2c4b1170b065a090b3535beae72c9ce196d5877e2dd38ff4",
+      "report_sha256": "5f2c6bb17b64982fb8113b2fbeee61b6b5b4992ad4bce5ed981604dae06563c3",
+      "protocol_sha256": "1516cffa16a83c3940141fe014115c7d0e42f50a869db040fe2abdb47290d325"
+    }
+  ],
+  "new_outputs_replayed": 2560,
+  "new_training_runs": 0,
+  "new_molecular_oracle_calls": 0,
+  "scientific_submission_ready": false,
+  "scope": "One original30k checkpoint, two sampling streams, native endpoint Euler and bootstrap/history at128 actual denoiser calls; current composition/no-bond interface clamped. This is task-adapted native sampling, not the published joint-generator benchmark. Adapted Gaussian/harmonic models have additional shared pretraining and3000 specialized updates. Training costs and conditioning procedures differ, so differences do not isolate source choice or prove SOTA.",
+  "history_variant_note": "clamped_history also centers the explicit first bootstrap endpoint; native_history preserves upstream bootstrap centering. It is not a pure categorical-history ablation. This annotation clarifies the frozen implementation; no outputs or metrics changed."
+}
