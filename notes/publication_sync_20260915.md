@@ -25,3 +25,14 @@ the matched-backbone study. Different pretraining histories and task adaptation
 prevent treating the EDM result as its published native benchmark or a universal
 SOTA comparison. A stronger fully matched contemporary generator study would
 support broader competitiveness claims; it is not invented by bibliography editing.
+
+## Completed local verification
+
+Both canonical and standalone manuscripts compile without unresolved references,
+overfull boxes or unstable labels. Their extracted PDF text is identical. Scientific
+main text ends on page 8, the AI-use statement ends on page 9, and both PDFs contain
+14 pages. All 21 exported source files match the recorded manifest; compiler
+intermediates are excluded from the ZIP. Current build evidence is
+`research/evidence/publication_build_v1.json`. The current and legacy PDF entrypoints
+contain the same LatentSpring manuscript. A scan of outgoing history found no
+credential patterns, and no outgoing Git blob exceeds the GitHub size limit.

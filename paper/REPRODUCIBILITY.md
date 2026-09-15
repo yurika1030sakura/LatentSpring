@@ -1,6 +1,8 @@
 # LatentSpring submission draft
 
-Canonical manuscript: `paper/tree_working.tex`; compiled PDF: `paper/tree_working.pdf`.
+Canonical manuscript: `paper/tree_working.tex`; compiled PDF: `paper/latentspring.pdf`.
+The default `main.tex` and legacy `bgfm_paper.tex` entrypoints use this manuscript.
+The self-contained `paper/latentspring_overleaf.zip` builds independently from `main.tex`.
 Submission title and plain-text abstract: `paper/submission_abstract.txt`.
 The working draft targets ICLR2027. It is not a published or accepted paper.
 
@@ -44,7 +46,7 @@ control and every prescribed sample size remain in the full result file.
 
 From `paper/`, run pdflatex, bibtex, and pdflatex twice on `tree_working`.
 The final build evidence records all recursively used section and figure hashes
-in `research/evidence/submission_manuscript_build_v2.json`.
+in `research/evidence/publication_build_v1.json`.
 
 ## Training scope
 

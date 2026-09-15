@@ -5,9 +5,12 @@ Read `research/RAW_QUALITY_STATE_20260915.json`, `paper/REPRODUCIBILITY.md`,
 `notes/paper_framing_20260915.md`, and `notes/rotor_work_results_20260915.md`.
 Canonical PDF: `paper/tree_working.pdf`; source: `paper/tree_working.tex`.
 Title: **LatentSpring: Physics-Informed Molecular Flow Matching from Atomic Composition**.
-The manuscript compiles cleanly:8 main pages (including the reproducibility/AI-use
-statements),14 total. Plain-text title/abstract is `paper/submission_abstract.txt`.
-Build hashes are in `research/evidence/submission_manuscript_build_v2.json`.
+The publication build has8 pages of scientific main text; the AI-use statement
+ends on page9, with14 pages total. Plain-text title/abstract is
+`paper/submission_abstract.txt`. Build hashes and standalone-package checks are in
+`research/evidence/publication_build_v1.json`. Default paper links and the
+Overleaf package now use LatentSpring. Publication details are recorded in
+`notes/publication_sync_20260915.md`.
 
 ## Current publication scope and user priorities
 
