@@ -30,9 +30,9 @@ chemical-graph validity by 6.91 percentage points over an isotropic Gaussian
 source. The gain also appears on an independently initialized EGNN backbone.
 Component controls establish benefits from geometry self-conditioning and the
 paired physical update, which lowers energy and force under both eSEN and
-independent GFN2-xTB evaluation. On molecular rotors, complete escorted-work
-weights recover specified local target distributions with 58.5\% lower
-distribution error than energy-only weights. The final generator uses one
+independent GFN2-xTB evaluation. A direct physical update of the same parameter
+norm raises energy, while replay subtraction lowers it, identifying a useful
+update direction beyond a change in step size. The final generator uses one
 network with 128 evaluations per sample, and all reported generation metrics
 use its unoptimized coordinates.
 \end{abstract}
@@ -65,9 +65,10 @@ We also transfer local physical feedback into the generator. Forces evaluated at
 generated training structures define nearby physical targets. A physical model
 and a matched replay model learn from the same reference data and training
 schedule, and their parameter difference provides the update to the base
-generator. This produces one network for inference. Known local reference
-densities additionally make complete escorted-work weights available, allowing
-direct tests of sampling-bias correction on molecular torsional targets.
+generator. This produces one network for inference. The source organizes the
+starting geometry, while replay subtraction forms an update from the difference
+between physical and replay training. We evaluate these roles through source controls, update-direction
+controls and independent physical scores.
 
 The contribution is a composition-based harmonic-mixture source, its integration
 with coordinate flow matching and paired physical learning, and controlled
@@ -82,8 +83,13 @@ for a supplied chemical graph \citep{shi2021confgf,xu2022geodiff}.
 FlowMol3 supplies our equivariant coordinate network \citep{flowmol3}:
 rotating its input rotates its predictions, and relabeling identical atoms
 relabels the outputs. We reuse its geometry self-conditioning modules.
-ET-Flow uses harmonic sources constructed from a supplied molecular graph
-\citep{etflow}. More general source adaptation includes guidance under a frozen
+HarmonicFlow combines harmonic sources and self-conditioned flow matching for
+ligand docking, and FlowSite extends it to binding-site design
+\citep{stark2024harmonicflow}. ET-Flow also uses a supplied molecular graph to
+construct its harmonic source \citep{etflow}. In these settings, the input graph
+specifies chemical connectivity. Our source instead averages over auxiliary
+spatial trees when only atomic composition is supplied. More general source
+adaptation includes guidance under a frozen
 field \citep{wang2026sourceguided} and learned conditional sources
 \citep{kim2026bettersource}. LatentSpring constructs its molecular source from
 atomic composition by integrating over auxiliary spatial trees.
@@ -111,8 +117,9 @@ to imposed flow fields with the corresponding volume correction
 \citep{escorted2008}. Targeted perturbation incorporates coordinate maps into
 free-energy reweighting \citep{jarzynski2002targeted}, and learned escorted
 protocols improve multistate free-energy estimation \citep{holdijk2026escorted}.
-We use these work identities with normalized local references to construct
-physical training targets for composition-conditioned generation.
+Our primary physical update learns from force-shifted targets. We separately
+study complete-work corrections for normalized local references, including
+controlled molecular rotors and their transfer to neural training.
 
 \begin{figure}[t]
 \centering
@@ -202,7 +209,12 @@ integrates to one over the centered coordinate space $\HH_N$.
 In the numerator, each affinity is multiplied by the density of its observed
 edge displacement. The factor $N^{3/2}$ accounts for expressing independent edge
 vectors as centered atomic coordinates. The matrix-tree theorem evaluates each
-tree sum as a matrix determinant, avoiding enumeration of all trees. The normalizing factor is derived in Appendix~\ref{app:proof}.
+tree sum as a matrix determinant, avoiding enumeration of all trees. The
+normalizing factor is derived in Appendix~\ref{app:proof}. Flow-matching training
+uses samples drawn by the tree-and-edge procedure above; the determinant gives
+an analytic description of the source and is not evaluated in the primary
+training objective. The local physical teacher below has its own Gaussian
+reference $q_A$.
 
 The term \emph{harmonic} refers to the quadratic spring energy associated with
 each Gaussian edge law. These virtual springs define a spatially organized random
@@ -306,25 +318,13 @@ neural generator; the two training copies are not evaluated during generation.
 Direct and
 paired-update results are reported in Appendix~\ref{app:local-work}.
 
-\paragraph{Correcting the distribution of local candidates.}
-Complete escorted-work weighting \citep{escorted2008} provides a local extension
-that favors lower-energy structures while retaining the Gaussian restraint around
-each anchor. Because the escort changes where candidates are sampled, energy
-differences alone do not give the target weights. For candidates retaining the
-anchor's inferred connectivity, define
-\begin{equation}
- W_A=E_+(Y)-E_+(A)+k_B T_{\rm phys}[\log q_A(X)-\log q_A(Y)].
- \label{eq:main-local-work}
-\end{equation}
-The work $W_A$ has energy units. Its first term measures the energy change;
-the logarithmic density ratio corrects the sampling shift.
-The map is a fixed translation, so its volume-change factor is one.
-Weights $\exp[-W_A/(k_B T_{\rm phys})]$ estimate the local target's normalizing
-constant and determine how often each candidate is used for training. We compare
-uniform and complete-work training weights, and use the
-less expensive force update as the primary candidate for the new-composition
-physical evaluation. Appendix~\ref{app:local-work} gives the target definition,
-particle construction and training controls.
+\paragraph{Distributional extensions.}
+The same local candidates also admit complete escorted-work weights when their
+Gaussian reference density and the coordinate-map volume change are included.
+Appendices~\ref{app:jarzynski}--\ref{app:rotor-work} develop this extension and
+test recovery of specified restrained targets. The primary generator uses the
+uniform force-shifted targets described above. Accurate sampling of a specified
+local distribution and reduction of generated energy are distinct objectives.
 
 \section{Experimental design}
 \paragraph{Task and training.}
@@ -397,18 +397,18 @@ of independent cycles is the inferred edge count minus atom count plus one.}\lab
 
 \input{sections/fresh_physics_results}
 
+\input{sections/paired_update_results}
+
 \subsection{Evidence for the training components}
 Self-conditioning improves graph validity by 7.23 percentage points at equal
 optimizer updates (95\% interval [4.69,9.77]) and by 12.43 points at equal
 training-pass count ([9.70,15.23]). Both continuations improve under both controls.
-The paired physical update lowers energy by 0.03232 eV/atom relative to a direct
-update with the same parameter norm. Removing the force displacement from
-otherwise matched local targets raises energy by 0.01939 eV/atom. These energy
-contrasts use paired outputs valid under both methods, with the same signs in
-the all-output comparisons. Appendix~\ref{app:components} reports the complete
+Removing the force displacement from otherwise matched local targets raises
+energy by 0.01939 eV/atom. This contrast uses paired outputs valid under both
+methods, with the same sign in the all-output comparison. Appendix~\ref{app:components} reports the complete
 budgets, validity rates, force scores and confidence intervals.
 
-\input{sections/rotor_work_results}
+\input{sections/primary_quality_results}
 
 \section{Discussion}
 LatentSpring organizes the starting distribution through latent connectivity and
@@ -547,11 +547,13 @@ Section~\ref{sec:flow}.
 \input{sections/local_work_distillation}
 
 \input{sections/rotor_work_details}
+\input{sections/rotor_work_results}
 
 \input{sections/generator_quality_details}
 
 \section{Training-component controls}\label{app:components}
 \input{sections/component_benefits_results}
+\input{sections/primary_quality_curve}
 
 \input{sections/curvature_work_details}
 

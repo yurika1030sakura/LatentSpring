@@ -1,3 +1,14 @@
+Current priority: follow the supplied manuscript review. Read
+`research/REVIEW_RESPONSE_STATE_20260915.json` and
+`notes/review_response_20260915.md` before older status entries.
+The main text now foregrounds source structure, replay subtraction, the same-norm
+control and absolute physical quality. Work/rotor theory remains in the appendices.
+Job46645569 runs the missing Gaussian physical-update factorial cell for both
+continuations, then resumes checkpointed GAGA seed0. GAGA seed1 is46635650_1;
+confirmation dispatcher46636422 has been redirected to the live dependencies.
+Source repetition array46643602 adds three new continuation seeds and budget
+curves. None of these pending results may be claimed as established in the paper.
+
 Current experiment status (2026-09-15): GAGA feedback training is active.
 Read `research/GAGA_FEEDBACK_STATE_20260915.json` and
 `notes/gaga_feedback_challenge_20260915.md` first. Jobs `46634916_0` and

@@ -1,3 +1,13 @@
+Latest local revision follows the supplied manuscript review. The primary source
+and paired physical-update results remain the established method. The new main
+absolute-quality table is computed from audited existing outputs by
+`scripts/research/plot_primary_quality.py`; its evidence is
+`research/evidence/primary_absolute_quality_v1.json`. It adds no generation or
+physical queries. HarmonicFlow/FlowSite is now included in related work.
+Work-correction experiments and their scoped outcomes remain in the appendices.
+New factorial and repetition studies are recorded separately in
+`research/REVIEW_RESPONSE_STATE_20260915.json`; their results are not yet claimed.
+
 # LatentSpring submission draft
 
 Canonical manuscript: `paper/tree_working.tex`; compiled PDF: `paper/latentspring.pdf`.
