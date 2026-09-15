@@ -1,0 +1,26 @@
+#!/bin/bash
+#SBATCH -J lspring-curvature-xtb
+#SBATCH --array=0-1%2
+#SBATCH -A ryl_lab
+#SBATCH -p sapphire,shared
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=32G
+#SBATCH --time=01:00:00
+#SBATCH -o /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/logs/%x-%A_%a.out
+#SBATCH -e /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/logs/%x-%A_%a.err
+set -euo pipefail
+SOURCE_ROOT="${1:?immutable source}"
+PROJECT="${2:?project root}"
+RUN_ROOT="${3:?output root}"
+FLOWMOL_ENV=/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol
+export PYTHONPATH="$SOURCE_ROOT" PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
+export LD_LIBRARY_PATH="$FLOWMOL_ENV/lib:${LD_LIBRARY_PATH:-}"
+export TMPDIR="${SLURM_TMPDIR:-/tmp}/lspring_curvature_xtb_${SLURM_JOB_ID}"
+export MPLCONFIGDIR="$TMPDIR/mpl" XDG_CACHE_HOME="$TMPDIR/cache"
+mkdir -p "$TMPDIR" "$MPLCONFIGDIR" "$XDG_CACHE_HOME"
+cd "$SOURCE_ROOT"
+exec "$FLOWMOL_ENV/bin/python" -u scripts/research/curvature_distillation_xtb.py \
+ --project "$PROJECT" --protocol "research/evidence/curvature_distillation_s${SLURM_ARRAY_TASK_ID}_v1.json" \
+ --generation "$RUN_ROOT/student/s${SLURM_ARRAY_TASK_ID}" --out "$RUN_ROOT/xtb/s${SLURM_ARRAY_TASK_ID}" \
+ --workers "$SLURM_CPUS_PER_TASK"

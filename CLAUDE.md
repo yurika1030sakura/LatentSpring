@@ -1,4 +1,10 @@
-Latest checkpoint: all expanded generator and component experiments are complete
+Active follow-up: the user authorized stronger physical-quality comparisons and
+a bounded Jarzynski improvement. Read
+`research/STRONGER_EVIDENCE_STATE_20260915.json`. The published manuscript remains
+the completed version below; curvature teacher ESS improved in both seeds, and
+new paired neural students are running. Teacher ESS is not yet neural benefit.
+
+Latest publication checkpoint: all expanded generator and component experiments are complete
 and audited. The manuscript now defines its symbols and method roles explicitly,
 includes a reader's guide and workflow figure, and reports direct component
 benefits. Scientific main text:9 pages; current build evidence is

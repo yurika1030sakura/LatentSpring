@@ -1,0 +1,37 @@
+{
+  "status": "curvature_students_running",
+  "published_manuscript_unchanged": true,
+  "published_github_main": "10f7b8d9f9118f4377137f8676e92c986a62a89c",
+  "quality_protocol_source": "4ed5d0a",
+  "curvature_pilot_source": "a100fb2",
+  "curvature_student_source": "f432158",
+  "jobs": {
+    "quality_gpu_original_cancelled_pending": "46617621",
+    "quality_gpu_h200_cancelled_pending": "46618335",
+    "quality_xtb_complete": "46617622",
+    "quality_gpu_complete": "46618987",
+    "curvature_pilot_complete": "46618223",
+    "curvature_full_teacher_and_students": "46619754"
+  },
+  "quality_audit": "research/evidence/generator_quality_audit_v1.json",
+  "curvature_pilot_audit": "research/evidence/curvature_escort_audit_v1.json",
+  "curvature_pilot_passed": true,
+  "curvature_pilot_mean_ess": {
+    "translation_24_particles": 2.038998804838968,
+    "isotropic_16_plus_8_pilot": 3.745778375291232,
+    "secant_16_plus_8_pilot": 6.6960425472785285
+  },
+  "curvature_student_methods": ["force24", "work24", "curvature_work16"],
+  "curvature_student_run": "runs/curvature_distillation_v1",
+  "curvature_student_gate": "Must verify raw neural output benefit and independent GFN2 readout; teacher ESS alone is not a neural improvement.",
+  "new_pilot_queries": 7168,
+  "new_quality_esen_queries": 33024,
+  "new_quality_xtb_attempts": 2198,
+  "planned_full_teacher_queries": 27920,
+  "planned_new_optimizer_steps": 6000,
+  "planned_new_neural_outputs": 4608,
+  "planned_neural_esen_queries": 9216,
+  "reserved_outcomes_queried": false,
+  "scheduler_note": "GPU requeue requests remained pending without running. Replaced with two gpu_test seed jobs, each processing four immutable quality chunks. Two rejected8-task gpu_test submissions hit QOSMaxSubmitJobPerUserLimit and created no job. No experiment budget or output changed.",
+  "next": "Finish paired student evaluation; independently audit teachers, training replay and raw outputs; run fixed-coordinate GFN2; update evidence ledger and manuscript only according to results."
+}

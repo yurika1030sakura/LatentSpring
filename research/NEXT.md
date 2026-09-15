@@ -1,4 +1,10 @@
-Latest checkpoint: all expanded generator and component experiments are complete
+Active follow-up: read `research/STRONGER_EVIDENCE_STATE_20260915.json`.
+Matched-generator physical readout is audited; the curvature-escort FIT pilot
+passed its equal-budget ESS gate. Job46619754 runs full teachers and paired
+neural students. Audit and independently score their raw outputs next. The
+published manuscript below has not yet incorporated this new campaign.
+
+Latest publication checkpoint: all expanded generator and component experiments are complete
 and audited. The manuscript now defines its symbols and method roles explicitly,
 includes a reader's guide and workflow figure, and reports direct component
 benefits. Scientific main text:9 pages; current build evidence is
