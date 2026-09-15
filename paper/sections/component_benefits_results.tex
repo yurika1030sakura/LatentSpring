@@ -32,7 +32,7 @@ whether additional single-pass training recovers the observed validity gain.
 We compare the paired update with direct physical continuation and with a direct
 update scaled to the same parameter-space length.
 For this control,
-$\theta_{\rm control}=\theta_{\rm base}+alpha(\theta_{\rm physical}-\theta_{\rm base})$,
+$\theta_{\rm control}=\theta_{\rm base}+\alpha(\theta_{\rm physical}-\theta_{\rm base})$,
 where $\alpha$ is the ratio of the paired and direct update norms. These norms sum
 squared changes over trainable parameters only. The resulting coefficients,
 0.2536 and 0.2564, are determined from training weights before generation.

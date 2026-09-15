@@ -1,8 +1,30 @@
+Current checkpoint (2026-09-15): the editorial and molecular-figure revision is
+complete locally. The paper explicitly defines flow inputs/outputs, uses actual
+molecular coordinates and includes supplementary flow/rotor animations. Its
+canonical build has 9 scientific main pages, 25 total pages and 24 cited references.
+The new standalone build and publication receipt are recorded in
+`research/evidence/publication_build_v3.json` and `publication_sync_v3.json` once
+synchronization finishes. Preserve Overleaf collaborator commit `0eecd2802fcd235e54e0e3f3ca50e7b3db44cf15`.
+
+The user has also authorized an attempt to improve on GAGA. The new experimental
+`cfm_mol/connectivity_feedback.py` has three passing mathematical/compatibility tests,
+but no trained-result claim. Next: freeze a validation-only selection protocol,
+compare geometry and auxiliary-tree feedback at accounted training/inference
+budgets, and evaluate the selected setting on fresh held-out compositions.
+Do not revise the paper's generator ranking before results support it.
+
+Historical checkpoints follow; the paragraph above takes precedence for current
+publication status. Full experiment records are in
+`research/STRONGER_EVIDENCE_STATE_20260915.json`.
+
 Active follow-up: the user authorized stronger physical-quality comparisons and
 a bounded Jarzynski improvement. Read
-`research/STRONGER_EVIDENCE_STATE_20260915.json`. The published manuscript remains
-the completed version below; curvature teacher ESS improved in both seeds, and
-new paired neural students are running. Teacher ESS is not yet neural benefit.
+`research/STRONGER_EVIDENCE_STATE_20260915.json`. All new experiments are audited:
+curvature improved teacher ESS but did not establish an extra neural advantage.
+The user now requests a systematic Luo/Shi AI-for-science writing/figure review,
+scientific correction of collaborator Overleaf edits, clear flow inputs/outputs,
+and molecular/atomic visuals. Preserve the collaborator's Overleaf commit
+`0eecd2802fcd235e54e0e3f3ca50e7b3db44cf15` when publishing the revised manuscript.
 
 Latest publication checkpoint: all expanded generator and component experiments are complete
 and audited. The manuscript now defines its symbols and method roles explicitly,

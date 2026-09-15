@@ -1,0 +1,52 @@
+\section{Physical quality of the matched generators}\label{app:generator-quality}
+We extend the independent EGNN comparison in
+Section~\ref{sec:matched-generators} with physical readouts of its 16,384 saved
+128-call outputs. The models, geometries, composition panel and generation
+budgets are unchanged. The readout protocol is fixed before any of these
+physical scores are evaluated. eSEN scores every output and its reflection;
+GFN2 scores every graph-valid output and both reference parities. All 2,198
+GFN2 calculations succeed, including 256 reference checks, whose inversion
+tests pass. The eSEN readout uses 33,024 evaluations.
+
+A quality yield is the fraction of \emph{all attempted outputs} that pass the
+chemical-graph assay and a specified physical threshold. Invalid structures
+therefore remain in the denominator. Figure~\ref{fig:generator-quality} varies
+the force-RMS threshold rather than assigning a single cutoff to physical
+validity. These thresholds describe the readout and do not certify a stationary
+geometry. The methods share the training budget and architecture specified in
+Appendix~\ref{app:matched-generators}; no physical update is added to these
+source and generator-objective controls.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{../research/figures/generator_quality_v1/quality_yield.pdf}
+\caption{Fraction of all attempts that are graph-valid and have force RMS below
+the horizontal-axis threshold. Each curve pools the two existing initialization
+seeds and all 64 compositions. GAGA has the largest pooled yield at most
+nontrivial thresholds under both potentials.}\label{fig:generator-quality}
+\end{figure}
+
+\begin{table}[h]
+\centering
+\caption{GFN2 readouts of the matched generators. Energy and force columns are
+medians over each method's graph-valid outputs; yield uses all 4,096 attempts
+per method. Reference-relative energy subtracts the energy of one OMol25
+geometry of the same composition. Generated connectivity may differ, so this
+quantity is not graph-specific strain energy.}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Method & Energy excess (eV/atom) & Force RMS (eV/\AA) & Yield at 5 eV/\AA\ (\%)\\
+\midrule
+Gaussian FM & 0.6820 & 5.2911 & 4.27\\
+Harmonic FM & 0.7114 & 5.8183 & 4.03\\
+EDM & 0.6799 & 5.8768 & 4.69\\
+GAGA & 0.6604 & 5.2785 & 6.15\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The source's gain in graph validity does not imply lower physical scores among
+the resulting valid structures. GAGA also has a stronger aggregate physical
+readout in this matched setting. The physical-learning experiments separately
+test whether local physical targets improve a fixed harmonic generator.

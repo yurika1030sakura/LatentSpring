@@ -77,3 +77,30 @@ Overleaf project at2f1f9c4. Remote references were verified, and fetching the
 Overleaf source reproduces the28-file export manifest. The original HOLY Overleaf
 checkout was fast-forwarded and is clean. This updates paper sources and PDFs;
 it does not submit to OpenReview or verify an Overleaf web compiler session.
+
+
+## Molecular-figure and scientific-language release (preparing publication)
+
+The manuscript now states the composition/electronic-state input, sampled source
+coordinates, time-dependent neural inputs, coordinate velocity output and final
+coordinates explicitly. Collaborator wording was reviewed against implementation;
+set notation, centering, neutral-singlet definitions and the coordinate-head role
+were corrected. The source density is consistently q0, the physical-update alpha
+is typeset correctly, and the midpoint-time sampler description follows code.
+
+The literature survey covers 32 identified Luo/Shi AI-for-science work families:
+30 full texts and two primary overviews. Original molecular artwork replaces the
+main schematics; the actual flow trajectory and prescribed rotor scan are also
+included as supplementary GIFs. No external paper artwork is republished.
+
+The new draft retains the complete matched-generator quality comparison and
+curvature-teacher/neural results. Teacher ESS improves; extra neural improvement
+from curvature work remains unestablished. The existing force-update generator
+remains the primary method. The separate new GAGA feedback module has passed
+three unit tests but has not yet been trained or claimed as a paper result.
+
+The canonical build has 9 scientific main pages, 25 total pages and 24 used
+citations, with no unresolved references, overfull boxes or unstable labels.
+Standalone export/build and remote verification follow before publication is
+recorded as complete. The Overleaf revision will descend from collaborator
+commit 0eecd2802fcd235e54e0e3f3ca50e7b3db44cf15.

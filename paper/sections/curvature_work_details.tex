@@ -1,0 +1,143 @@
+\section{Curvature-aware local work sampling}\label{app:curvature-work}
+The local force escort shifts every candidate in the same direction. Molecular
+energies also change more sharply along some displacement directions than
+others, such as bond stretching versus softer collective motion. We test whether
+estimating this local curvature improves the finite-particle work teacher while
+keeping its target distribution fixed.
+
+\paragraph{Fitting the local energy shape.}
+For this derivation, we flatten an anchor into a vector of $3N$ coordinates.
+The columns of $Q_N\in\mathbb R^{3N\times d}$ form an orthonormal basis of the
+centered coordinate space, where $d=3(N-1)$. A vector $u\in\mathbb R^d$
+specifies an independent displacement in angstroms, and $Q_Nu$ expresses it in
+the original atom coordinates. The vector $f_A$
+is the anchor force in the same basis. From eight independent pilot candidates,
+we collect displacement columns in $D$ and corresponding negative force-change
+columns in $G$. A matrix $B_A$ describes how force changes with displacement:
+$G\approx B_A D$. We fit a symmetric matrix by minimizing
+\begin{equation}
+ \|BD-G\|_F^2+\lambda\|B-\kappa I\|_F^2,
+ \qquad
+ \kappa=\max\!\left(0,\frac{\langle D,G\rangle_F}{\|D\|_F^2}\right),
+ \qquad \lambda=0.01\,\|D\|_F^2/K.
+\end{equation}
+Here $K$ is the number of graph-supported pilot columns, $\kappa$ is their
+average positive stiffness, and the second term regularizes directions poorly
+resolved by the pilot. Projecting the fitted matrix onto the positive
+semidefinite cone replaces its negative eigenvalues by zero and defines $B_A$.
+The isotropic control instead uses $B_A=\kappa I$, giving every direction the
+same fitted stiffness. The pilot is held fixed before drawing production
+candidates.
+
+\paragraph{An affine escort and its complete work.}
+The local quadratic approximation is
+$E_+(A+Q_Nu)-E_+(A)\approx-f_A^\top u+u^\top B_Au/2$.
+Multiplying its Boltzmann factor by the original Gaussian reference gives a
+Gaussian with adjusted mean and covariance. Define the dimensionless precision
+matrix $P_A=I+\sigma_A^2B_A/(k_B T_{\rm phys})$. Its eigenvalues are positive.
+For a source displacement $u$, the new displacement is
+\begin{equation}
+ v=P_A^{-1/2}u+b_A,\qquad
+ b_A=P_A^{-1}\frac{\sigma_A^2f_A}{k_B T_{\rm phys}},\qquad
+ \log J_A=-\tfrac12\log\det P_A.
+\end{equation}
+The inverse square root reduces perturbations more strongly in stiff directions;
+the mean shift also accounts for this stiffness. The Jacobian $J_A$ measures
+the map's volume change in the $d$ independent coordinates. We use the original
+reference width and temperature, so the restrained target is unchanged.
+With $X=A+Q_Nu$ and $Y=A+Q_Nv$, the complete work is
+\begin{equation}
+ W_A=E_+(Y)-E_+(A)+k_B T_{\rm phys}
+ [\log q_A(X)-\log q_A(Y)-\log J_A].
+\end{equation}
+Candidates outside the original same-graph support receive zero weight.
+This is a local application of targeted and escorted work reweighting
+\citep{jarzynski2002targeted,escorted2008}.
+
+To see why the map helps, write the actual energy as the fitted quadratic plus
+a remainder $R_A(v)$. Substitution into the work formula gives
+$W_A=-k_B T_{\rm phys}\log Z_{\rm quad}+R_A(v)$, where $Z_{\rm quad}$ is the
+normalizing integral of the Gaussian reference times the quadratic Boltzmann
+factor. The fitted quadratic term cancels from the work; only the remaining
+energy mismatch varies across supported particles. If the energy equals the
+fitted quadratic, all supported particles have equal weights. Tests verify the
+constant-work identity for an anisotropic quadratic energy and verify rotation
+equivariance of the fitted escort.
+
+\paragraph{Equal-budget molecular pilot.}
+We select the first four eligible anchors from each of eight existing training
+compositions in each continuation, without energy or ESS ranking. The
+translation control uses 24 fresh production candidates per anchor. Each fitted
+escort uses at most eight pilot energy/force queries and 16 fresh production
+candidates. Thus its maximum particle-query budget equals that of the
+translation control; common anchor queries and reflection evaluations are
+accounted for separately. All production energies are evaluated, including
+graph-invalid candidates. Pilot samples are not reused as production samples
+for the fitted maps.
+
+\begin{table}[h]
+\centering
+\caption{Local effective sample size (ESS) under complete work at a maximum
+24-particle query budget per anchor. Each continuation contains 32 anchors.
+The two fitted maps reserve eight queries for curvature estimation.}
+\begin{tabular}{lrrr}
+\toprule
+Escort & Production particles & ESS, continuation 1 & ESS, continuation 2\\
+\midrule
+Force translation &24&2.22&1.86\\
+Isotropic curvature &16&3.55&3.94\\
+Directional curvature &16&6.69&6.70\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The directional fit improves ESS over translation on 61 of 64 anchors.
+Its mean gain is 4.66 effective samples, with a composition-bootstrap 95\%
+interval of $[3.81,5.46]$. Same-graph retention is 99.51\%, versus 99.54\%
+for translation. Independent multivariate-Gaussian density calculations reproduce
+the stored complete work weights. A subsequent full teacher construction uses
+all 349 original eligible anchors with fresh production draws; mean ESS is
+2.32 versus 6.71 in the first continuation and 2.33 versus 6.37 in the second.
+These are local teacher diagnostics; the separate student comparison tests their
+effect on neural generation.
+
+\paragraph{Transfer into the molecular flow.}
+We train three physical students on these full teacher pools: uniform weighting
+of 24 force-translated candidates, complete-work weighting of the same 24
+candidates, and complete-work weighting of 16 curvature-adjusted candidates.
+Every student follows the same 1,000-update schedule and reference/anchor choices
+as the original physical continuation. We reuse its matched replay model and
+transfer the physical-minus-replay update with coefficient one. All 349 original
+anchors remain eligible. The two work-weighted methods have the same maximum
+particle-query budget; uniform force targets can omit particle-energy queries.
+The main comparison uses the original preselected eight-particle force model;
+this follow-up separately tests the larger candidate pools and curvature fit.
+
+\begin{table}[h]
+\centering
+\caption{Raw student outputs on the 24-composition panel, with 1,536 attempts
+per method across the two continuations. Energy differences compare each
+work-weighted student with the uniform-force student on paired jointly-valid
+outputs. All methods use 128 network evaluations per output.}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Teacher & Graph validity (\%) & eSEN change & GFN2 change\\
+ & & (eV/atom) & (eV/atom)\\
+\midrule
+Uniform force, 24 candidates &54.30&0&0\\
+Complete work, 24 candidates &53.39&$+0.00959$&$+0.00845$\\
+Curvature work, 16 candidates &53.32&$+0.00793$&$+0.00783$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Curvature-work versus translation-work energy changes are $-0.00184$ eV/atom
+under eSEN (95\% interval $[-0.00654,0.00289]$) and $-0.00068$ under GFN2
+($[-0.00484,0.00341]$), with opposite signs in the two continuations. The teacher's
+ESS gain therefore does not establish an additional neural-generation benefit.
+Uniform force targets give lower energy and force than either work-weighted
+student under both potentials. Relative to the frozen harmonic generator, this
+uniform-force continuation lowers energy by $0.02088$ eV/atom under eSEN and
+$0.01918$ under GFN2. The primary generator retains the inexpensive force-based
+physical-learning recipe.

@@ -18,69 +18,67 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-Generating three-dimensional molecules from atomic composition requires inferring
-spatial organization without a supplied chemical graph. We introduce LatentSpring,
-a flow-matching framework with a source distribution built from random harmonic
-networks over latent trees. Atomic identities and covalent radii determine the
-starting spatial structure, while a matrix-tree expression gives its normalized
-density after averaging over trees. In matched OMol25 continuations, the harmonic
-source raises raw chemical-graph validity by 6.91 percentage points across 64 new
-compositions spanning 17--64 atoms. Covariance controls and self-conditioning
-ablations identify contributions from mixture structure and provisional-geometry
-feedback. The source also improves a separately trained EGNN flow. We derive local physical training targets from forces and transfer
-their learned update relative to a matched replay continuation. This improves raw
-energy and force under eSEN and independent GFN2-xTB evaluation. A same-norm update
-control supports the contribution of the physical update direction. A molecular
-rotor experiment verifies complete escorted-work correction against resolved local
-target distributions. Generation uses one trained network with 128 evaluations
-per sample, without energy-based selection or geometry optimization at inference.
+Generating three-dimensional molecules from atomic composition requires organizing
+atoms before their chemical connectivity is known. We introduce LatentSpring, a
+composition-conditioned flow-matching method with a harmonic source defined by
+latent spatial trees. The source uses atomic identities and covalent radii to
+sample correlated starting coordinates; averaging over trees gives an explicitly
+normalized density. A paired physical-training step then learns from local
+force-guided targets and transfers the update relative to a matched replay model.
+On 64 new compositions spanning 17--64 atoms, the harmonic source improves raw
+chemical-graph validity by 6.91 percentage points over an isotropic Gaussian
+source. The gain also appears on an independently initialized EGNN backbone.
+Component controls establish benefits from geometry self-conditioning and the
+paired physical update, which lowers energy and force under both eSEN and
+independent GFN2-xTB evaluation. On molecular rotors, complete escorted-work
+weights recover specified local target distributions with 58.5\% lower
+distribution error than energy-only weights. The final generator uses one
+network with 128 evaluations per sample, and all reported generation metrics
+use its unoptimized coordinates.
 \end{abstract}
 
 \section{Introduction}
-Molecular generators must turn an unstructured coordinate distribution into a
-configuration compatible with its atoms. The source distribution determines part
-of this learning problem: independent Gaussian coordinates carry little molecular
-organization, while graph-conditioned harmonic priors encode relationships that
-must already be known. This distinction matters when the input specifies atomic
-composition and electronic conditions without a chemical graph, as in the
-bond-free OMol25 setting considered here.
+An atomic composition specifies which atoms are available, but leaves their
+chemical connectivity and three-dimensional arrangement unresolved. We study
+generation from this input, together with total charge and spin multiplicity.
+The model outputs atomic coordinates, from which chemical connectivity can be
+evaluated. This setting calls for both a useful spatial starting distribution and
+a way to incorporate physical information into the learned geometry.
 
-LatentSpring introduces spatial dependence before learning the transport, while
-leaving the final chemical graph unspecified. We sample a latent tree over atoms,
-draw Gaussian displacements along its edges at atom-dependent scales, integrate
-them into coordinates, and remove translation. Marginalizing the tree defines a
-mixture of harmonic networks. The tree is an auxiliary source variable: the neural
-field receives coordinates and molecular conditions, and can generate chemical
-connectivities different from the sampled source tree. A matrix-tree expression
-makes the mixture density explicit.
+Flow matching learns a transport from a source distribution to molecular
+structures \citep{lipman2023flowmatching}. An isotropic Gaussian provides a simple
+source, but its common coordinate scale carries little information about
+atom-specific geometry. Graph-conditioned harmonic sources supply such organization when a
+chemical graph is available. Our central question is how to obtain this benefit
+when the input contains atomic composition alone.
 
-We integrate this source with equivariant flow matching
-\citep{lipman2023flowmatching} and geometry self-conditioning (SC). Controlled comparisons hold the backbone, initialization,
-training data, optimization and inference budget fixed while changing the source.
-The harmonic mixture improves raw graph validity in both continuations and repeats
-its advantage on two subsequent composition panels. Comparing with both a narrower
-shell source and an approximate covariance-matched Gaussian distinguishes the
-useful source structure from simply imposing near-fixed distances or increasing
-second moments.
+LatentSpring builds a spatial source by sampling an auxiliary tree over the
+atoms. Gaussian edge displacements, scaled by atomic radii, determine correlated
+coordinates. Averaging over possible trees yields a normalized mixture of spring
+networks with a tractable matrix-tree density. The tree organizes the starting
+coordinates; the learned flow determines the final geometry and its inferred
+chemical connectivity. We combine this source with an equivariant coordinate
+network and geometry self-conditioning, which refines a prediction using its
+own provisional geometry.
 
-Physical feedback provides a second way to improve the generator. We construct
-local training samples using forces at generated anchors, fit a physical-target
-model and a matched replay model, and transfer the difference between their
-parameter updates. This brings physical information into the network itself.
-For energy reweighting, known local reference densities make the complete
-Jarzynski-type work tractable. We test the resulting generator on new compositions
-and examine the work correction separately on molecular torsional targets.
+We also transfer local physical feedback into the generator. Forces evaluated at
+generated training structures define nearby physical targets. A physical model
+and a matched replay model learn from the same reference data and training
+schedule, and their parameter difference provides the update to the base
+generator. This produces one network for inference. Known local reference
+densities additionally make complete escorted-work weights available, allowing
+direct tests of sampling-bias correction on molecular torsional targets.
 
-Our contributions are: (i) a normalized molecular harmonic-mixture source with
-latent spatial connectivity and no supplied bond graph; (ii) its integration with
-molecular flow matching and training-only physical feedback; and (iii) controlled
-source comparisons, tests on new compositions and evaluation under two energy
-models. The generator experiments measure structural validity and energy/force
-scores at raw coordinates. The work experiments test distribution recovery against
-explicit local reference targets.
+The contribution is a composition-based harmonic-mixture source, its integration
+with coordinate flow matching and paired physical learning, and controlled
+evidence for the resulting design. We test source structure, self-conditioning
+and physical-update direction separately, evaluate new compositions and an
+independent backbone, and score raw geometries under two energy models.
 
 \section{Related work}
 \paragraph{Molecular flows and source distributions.}
+Graph-conditioned methods such as ConfGF and GeoDiff generate conformations
+for a supplied chemical graph \citep{shi2021confgf,xu2022geodiff}.
 FlowMol3 supplies our equivariant coordinate network \citep{flowmol3}:
 rotating its input rotates its predictions, and relabeling identical atoms
 relabels the outputs. We reuse its geometry self-conditioning modules.
@@ -103,48 +101,60 @@ OMol25 provides molecular structures, energies and forces across electronic
 conditions \citep{omol25}. Energy-weighted flow matching \citep{dern2025energyweighted} and target-density
 training with importance sampling \citep{fab} incorporate physical information
 into generative models. Physical-reward fine-tuning offers a further route for
-molecular diffusion models \citep{zhou2025rlpf}. Jarzynski's equality relates
+molecular diffusion models \citep{zhou2025rlpf}, and physical simulations can
+supply fine-tuning data for protein conformation samplers \citep{lu2024fusing}.
+Jarzynski's equality relates
 nonequilibrium work to equilibrium free-energy differences; Hummer--Szabo
 reconstruction applies it to single-molecule pulling
 \citep{jarzynski1997master,hummerszabo2001}. Escorted transport extends this relation
 to imposed flow fields with the corresponding volume correction
-\citep{escorted2008}. We use normalized local references to specify the physical
-training targets and their complete work weights.
+\citep{escorted2008}. Targeted perturbation incorporates coordinate maps into
+free-energy reweighting \citep{jarzynski2002targeted}, and learned escorted
+protocols improve multistate free-energy estimation \citep{holdijk2026escorted}.
+We use these work identities with normalized local references to construct
+physical training targets for composition-conditioned generation.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{../research/figures/reader_overview_v1/method.pdf}
-\caption{LatentSpring separates generation from physical learning. Top: a
-random spring scaffold organizes the starting coordinates, and repeated network
-predictions generate the final geometry. Bottom: physical and replay continuations
-share their training schedule; their weight difference updates the base generator.
-Generation uses the resulting single model.}\label{fig:method}
+\includegraphics[width=\linewidth]{../research/figures/molecular_overview_v2/method.pdf}
+\caption{LatentSpring's inputs, outputs and physical learning.
+(a) An actual recorded flow for $\mathrm{C_{10}H_9N_3O_5}$. The source supplies
+random coordinates $X_0$; the network reads current coordinates, flow time and
+composition, and predicts movement vectors. Solid bonds are inferred only for
+the displayed final output; dashed source edges are auxiliary springs.
+(b) A generated training anchor from a separate composition supplies local
+physical targets and matched replay targets. Their learned parameter difference
+updates one generator. All displayed molecular coordinates are unoptimized.}\label{fig:method}
 \end{figure}
 
 \section{A harmonic source with latent connectivity}
-The input specifies which atoms are present, their total electrical charge, and
-their electronic spin state. It leaves the bonds and positions to be generated.
-For example, the composition $\mathrm{C_2H_6O}$ specifies two carbon atoms, six
-hydrogens and one oxygen, while allowing different molecular connectivities.
-We use $c$ as shorthand for this input: $z_i$ is the atomic number identifying
-the element of atom $i$, $Q$ is the net charge in elementary-charge units, and
-$S$ is the spin multiplicity. A neutral singlet has $Q=0$ and $S=1$.
+Our model takes an atomic composition and its electronic state as input and
+generates three-dimensional atomic coordinates. The input records the element
+of each atom through its atomic number $z_i$, the total charge $Q$ in
+elementary-charge units, and the spin multiplicity $S$. We collect these
+quantities as $c=((z_i)_{i=1}^{N},Q,S)$, retaining every atom, including repeated
+elements. A neutral singlet has $Q=0$ and $S=1$. For example,
+$\mathrm{C_2H_6O}$ specifies two carbon atoms, six hydrogens and one oxygen,
+while allowing different molecular connectivities. Chemical bonds are inferred
+from generated coordinates for evaluation; they are not supplied as training
+labels.
 
-There are $N$ atoms. Their positions form a matrix $X\in\RR^{N\times3}$ whose
-row $x_i$ contains the three coordinates of atom $i$, measured in angstroms.
-We subtract their mean position because the molecule's absolute location is
-arbitrary. We denote the resulting centered coordinate space by
+For the $N$ input atoms, their positions form a matrix $X\in\RR^{N\times3}$.
+Its row $x_i$ contains atom $i$'s three coordinates, measured in angstroms.
+We remove the molecule's arbitrary absolute location by subtracting the
+arithmetic mean of its coordinates. The resulting centered coordinate space is
 $\HH_N=\{X:\sum_i x_i=0\}$; it has $3(N-1)$ independent coordinates.
 
 \paragraph{A random scaffold for the starting coordinates.}
-We first connect the atoms by an auxiliary spanning tree $T$: a connected graph
+We first connect the atoms by an auxiliary spanning tree $T$, a connected graph
 with $N-1$ edges and no cycles. Its edges organize the starting cloud and do not
 specify the final chemical bonds. Each possible edge $(i,j)$ receives a positive
-weight $a_{ij}=a_{ji}$, called its affinity. A tree's probability is proportional
+weight $a_{ij}=a_{ji}$, called its affinity, for the connection between atoms
+$i$ and $j$. A tree's probability is proportional
 to the product of its edge affinities:
 \begin{equation}
  p(T\mid c)=\frac{\prod_{(i,j)\in T}a_{ij}}{\tau(a)},\qquad
- \tau(a)=\sum_{T\text{ spanning tree}}\prod_{(i,j)\in T}a_{ij}.
+ \tau(a)=\sum_T\prod_{(i,j)\in T}a_{ij}.
  \label{eq:tree-law}
 \end{equation}
 Here $\tau(a)$ sums those products over all spanning trees, making their
@@ -199,9 +209,19 @@ each Gaussian edge law. These virtual springs define a spatially organized rando
 starting distribution. The learned flow establishes the final molecular geometry.
 
 \section{Integration with molecular flow matching}\label{sec:flow}
-Flow matching learns how to move a random starting structure toward a training
-structure. We draw starting coordinates $X_0$ from the harmonic source and take
-reference coordinates $X_1$ from OMol25. Before pairing them, we match atoms of the
+The flow converts random coordinates $X_0\sim q_0(\cdot\mid c)$ into generated
+coordinates $X_{\rm gen}\in\HH_N$, conditional on the fixed atomic input $c$.
+At each step, its network reads the current coordinates $X_t$, the progress
+variable $t$, and $c$, and predicts a coordinate velocity
+$v_\theta(X_t,t;c)\in\RR^{N\times3}$: one movement vector for every atom.
+Integrating these predictions from $t=0$ to $t=1$ produces the molecular
+coordinates. The latent tree is used to sample $X_0$; it is not an additional
+chemical graph supplied to the network. Energy and force evaluations enter
+physical training below, while generation uses the resulting network alone.
+
+\paragraph{Constructing the training input and target.}
+We draw $X_0$ from the harmonic source and take reference coordinates $X_1$
+from OMol25. Before pairing them, we match atoms of the
 same type and rotate the structures to shorten their coordinate displacement.
 We then apply a shared random rotation, uniform over orientations, and a shared
 random relabeling of identical atoms. This preserves the source distribution
@@ -213,9 +233,10 @@ The training path is $X_t=(1-t)X_0+tX_1$. Its velocity is the constant matrix
 $V^*=X_1-X_0$, giving a supervised target for each atom's movement.
 
 \paragraph{Predicting with a provisional geometry.}
-The neural network's trainable weights are denoted by $\theta$. Its coordinate
-output is $D_\theta(X_t,t)$, which we convert to velocity as
-$v_\theta=D_\theta-X_t$. Geometry self-conditioning means giving the network its
+The trainable weights are denoted by $\theta$. The implementation retains
+FlowMol3's coordinate-shaped output head $D_\theta(X_t,t;c)$ and trains its
+increment $D_\theta-X_t$ as the velocity. We subtract the mean of these movement
+vectors to preserve centered coordinates. Geometry self-conditioning gives the network its
 own provisional endpoint as an additional input. A first evaluation predicts
 velocity $v^{(0)}$, yielding the endpoint estimate
 $\widehat X_1=X_t+(1-t)v^{(0)}$. The factor $1-t$ is the remaining interpolation
@@ -237,8 +258,9 @@ constant no-bond state. The FlowMol3 source comparisons share this coordinate-on
 objective and the same two-pass self-conditioning architecture.
 
 Generation repeatedly follows the learned velocity toward $t=1$. We use 32
-midpoint integration steps: each evaluates the velocity at the start and midpoint
-of an interval. Two self-conditioning passes per velocity evaluation give
+midpoint integration steps, each with two velocity evaluations. The first uses
+the current coordinates and the interval's midpoint time; the second uses the
+resulting half-step coordinates at that same time. Two self-conditioning passes per velocity evaluation give
 $32\times2\times2=128$ primitive network evaluations per attempted sample, followed
 by 0.025\,\AA\ centered Gaussian noise. The FlowMol3 source comparisons use this same
 sampler. We evaluate its raw coordinates directly, without subsequent energy
@@ -358,11 +380,33 @@ reports the detailed source, shell and covariance controls.
 
 \input{sections/wide_generalization_results}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{../research/figures/raw_molecular_gallery_v1/gallery.pdf}
+\caption{Raw outputs of the primary force-updated LatentSpring model with the
+same atomic composition and different inferred connectivities. The source trees
+are acyclic, while the generated structures can
+contain cycles. Examples are the first four valid, distinct-connectivity draws
+for the first CHON composition with valid outputs in continuation 1 of the
+24-composition panel.
+No energy ranking or geometry optimization selects or changes them. The number
+of independent cycles is the inferred edge count minus atom count plus one.}\label{fig:raw-examples}
+\end{figure}
+
 \input{sections/matched_generators_results}
 
 \input{sections/fresh_physics_results}
 
-\input{sections/component_benefits_results}
+\subsection{Evidence for the training components}
+Self-conditioning improves graph validity by 7.23 percentage points at equal
+optimizer updates (95\% interval [4.69,9.77]) and by 12.43 points at equal
+training-pass count ([9.70,15.23]). Both continuations improve under both controls.
+The paired physical update lowers energy by 0.03232 eV/atom relative to a direct
+update with the same parameter norm. Removing the force displacement from
+otherwise matched local targets raises energy by 0.01939 eV/atom. These energy
+contrasts use paired outputs valid under both methods, with the same signs in
+the all-output comparisons. Appendix~\ref{app:components} reports the complete
+budgets, validity rates, force scores and confidence intervals.
 
 \input{sections/rotor_work_results}
 
@@ -503,5 +547,12 @@ Section~\ref{sec:flow}.
 \input{sections/local_work_distillation}
 
 \input{sections/rotor_work_details}
+
+\input{sections/generator_quality_details}
+
+\section{Training-component controls}\label{app:components}
+\input{sections/component_benefits_results}
+
+\input{sections/curvature_work_details}
 
 \end{document}

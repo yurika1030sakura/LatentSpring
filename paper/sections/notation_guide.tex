@@ -3,6 +3,16 @@ The method has three stages: construct random starting coordinates from the
 atomic input, learn a flow toward molecular reference structures, and use physical
 targets to update the trained network. The symbols below refer to these stages.
 
+\paragraph{What the model receives and returns.}
+The requested input $c$ fixes the atoms and electronic state. Randomness enters
+through the sampled starting coordinates $X_0$. Each network call receives the
+current coordinates $X_t$, flow time $t$, and $c$; the two self-conditioning
+passes internally construct a provisional geometry. The predicted output is a
+velocity matrix with one three-dimensional movement vector per atom. Numerical
+integration and the specified terminal noise produce the returned coordinate
+matrix $X_{\rm gen}$. The original atomic identities, charge and spin accompany
+these coordinates. Chemical connectivity is inferred separately for evaluation.
+
 \begin{table}[h]
 \centering
 \small
@@ -20,10 +30,11 @@ $\ell_{ij}$, $\sigma_{ij}$, $h_{ij}$ & Characteristic separation from covalent
 radii, Gaussian displacement scale, and the probability density of one edge vector.\\
 $\tau(a)$, $q_0(X\mid c)$ & Sum of tree weights and the normalized distribution
 of starting coordinates after averaging over trees.\\
-$X_0$, $X_1$, $X_t$, $t$ & Starting, reference and intermediate coordinates;
-$t$ labels progress along their training interpolation.\\
+$X_0$, $X_1$, $X_t$, $X_{\rm gen}$, $t$ & Starting, reference, intermediate and
+returned coordinates; $t$ labels generation progress, not physical time.\\
 $V^*$, $v_\theta$, $D_\theta$ & Target velocity, predicted velocity, and the
-network coordinate output used to construct that prediction.\\
+coordinate-shaped network head whose centered increment $D_\theta-X_t$ is
+trained as the velocity.\\
 $v^{(0)}$, $v^{(1)}$, $\widehat X_1$ & First and second velocity predictions,
 and the provisional endpoint passed between them during self-conditioning.\\
 $\EE$, $\|\cdot\|_F^2$ & Average over the specified random draws, and the sum

@@ -85,11 +85,23 @@ def main():
     for filename in ['iclr2027_conference.sty', 'iclr2027_conference.bst', 'natbib.sty', 'fancyhdr.sty']:
         shutil.copyfile(paper/filename, out/filename)
         source_hashes['paper/'+filename] = sha(paper/filename)
+    for relative in ['research/figures/molecular_overview_v2/generation.gif',
+                     'research/figures/molecular_rotor_v2/rotor_scan.gif']:
+        source = root/relative
+        if source.exists():
+            target = out/'supplement'/source.name
+            target.parent.mkdir(exist_ok=True)
+            shutil.copyfile(source, target)
+            source_hashes[relative] = sha(source)
     (out/'README.md').write_text('# LatentSpring\n\n'
         'Physics-Informed Molecular Flow Matching from Atomic Composition.\n\n'
         'Set `main.tex` as the main document and compile with pdfLaTeX and BibTeX.\n'
         'This project includes every referenced section, figure, bibliography entry, '
-        'and local style file. The manuscript is an anonymous ICLR 2027 submission draft.\n')
+        'and local style file. The manuscript is an anonymous ICLR 2027 submission draft.\n\n'
+        'When included, `supplement/generation.gif` shows an actual recorded coordinate-flow '
+        'trajectory, and `supplement/rotor_scan.gif` shows a prescribed methyl rotation. '
+        'These animations are supplementary files; the PDF uses static snapshots. '
+        'Neither animation is a claim of physical molecular-dynamics simulation.\n')
     files = {str(p.relative_to(out)):sha(p) for p in sorted(out.rglob('*')) if p.is_file()}
     commit = subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
     manifest = dict(format='latentspring_overleaf_v1',source_commit=commit,

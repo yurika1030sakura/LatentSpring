@@ -22,7 +22,7 @@ of the method being submitted.
   This uses30000 continuation updates; backbones and pretraining histories differ.
 - Controlled molecular work: `rotor_work_v1.json`, `rotor_work_results_v1.json`,
   `rotor_work_energies_v1.csv`, and `rotor_work_audit_v1.json`.
-- Current campaign ledger: `generator_reference_registry_v14.json`.
+- Current campaign ledger: `generator_reference_registry_v15.json`.
   It distinguishes model outputs, numerical draws, diagnostic copies and oracle calls.
 
 All listed evidence files are under `research/evidence/`. The rotor configuration,
@@ -46,7 +46,7 @@ control and every prescribed sample size remain in the full result file.
 
 From `paper/`, run pdflatex, bibtex, and pdflatex twice on `tree_working`.
 The final build evidence records all recursively used section and figure hashes
-in `research/evidence/publication_build_v2.json`.
+in the latest `research/evidence/publication_build_v3.json`.
 
 ## Training scope
 
@@ -73,3 +73,38 @@ verified byte-for-byte; their `runs/` entrypoints are retained. The archival
 manifest is `research/evidence/retained_benchmarks_v1.json`. Original scratch
 copies remain available. The standalone paper package includes its full notation
 guide and derivations; it does not redistribute the underlying licensed datasets.
+
+## Latest physical readouts and work-sampling tests
+
+- `generator_quality_audit_v1.json`: unchanged matched-generator outputs scored
+  with eSEN and GFN2, with all-attempt physical-quality yields.
+- `curvature_escort_audit_v1.json` and `curvature_full_teacher_audit_v1.json`:
+  independent density checks and local ESS comparisons at matched maximum query
+  budgets. Curvature improves the teacher ESS.
+- `curvature_distillation_esen_audit_v1.json` and
+  `curvature_distillation_xtb_audit_v1.json`: paired neural students and
+  fixed-coordinate evaluation. The additional neural gain from curvature work
+  was not established; the primary model retains the force-based update.
+
+## Molecular figures and supplementary animations
+
+The main figures use original coordinate records, with element colors and rigid
+viewing rotations. They do not use generated artwork as molecular evidence.
+`molecular_overview_v2/provenance.json`, `molecular_rotor_v2/provenance.json` and
+`raw_molecular_gallery_v1/provenance.json` record their data sources and display
+rules under `research/figures/`.
+
+From the project root in the FlowMol environment, regenerate them with:
+
+```bash
+python -m scripts.research.make_molecular_overview
+python -m scripts.research.make_molecular_rotor_figure
+python -m scripts.research.make_molecular_gallery
+```
+
+The recorded trajectory is under `runs/editorial_review_20260915/trajectory/`.
+It replays 16 existing outputs, with maximum coordinate disagreement below
+5e-6 angstrom, and adds no benchmark outputs or energy queries. Its animation
+shows flow time. The rotor animation shows the prescribed torsional coordinate
+used in the controlled work experiment. The source package includes both GIFs
+as supplementary files, alongside static PDF figures.

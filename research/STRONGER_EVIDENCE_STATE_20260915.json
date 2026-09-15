@@ -1,5 +1,5 @@
 {
-  "status": "curvature_students_running",
+  "status": "editorial_revision_complete_publication_in_progress",
   "published_manuscript_unchanged": true,
   "published_github_main": "10f7b8d9f9118f4377137f8676e92c986a62a89c",
   "quality_protocol_source": "4ed5d0a",
@@ -11,7 +11,11 @@
     "quality_xtb_complete": "46617622",
     "quality_gpu_complete": "46618987",
     "curvature_pilot_complete": "46618223",
-    "curvature_full_teacher_and_students": "46619754"
+    "curvature_full_teacher_and_students": "46619754",
+    "curvature_xtb": "46620365",
+    "curvature_generation_audit": "46620648",
+    "curvature_xtb_audit": "46621626",
+    "visualization_trajectory": "46622549"
   },
   "quality_audit": "research/evidence/generator_quality_audit_v1.json",
   "curvature_pilot_audit": "research/evidence/curvature_escort_audit_v1.json",
@@ -21,7 +25,11 @@
     "isotropic_16_plus_8_pilot": 3.745778375291232,
     "secant_16_plus_8_pilot": 6.6960425472785285
   },
-  "curvature_student_methods": ["force24", "work24", "curvature_work16"],
+  "curvature_student_methods": [
+    "force24",
+    "work24",
+    "curvature_work16"
+  ],
   "curvature_student_run": "runs/curvature_distillation_v1",
   "curvature_student_gate": "Must verify raw neural output benefit and independent GFN2 readout; teacher ESS alone is not a neural improvement.",
   "new_pilot_queries": 7168,
@@ -33,5 +41,24 @@
   "planned_neural_esen_queries": 9216,
   "reserved_outcomes_queried": false,
   "scheduler_note": "GPU requeue requests remained pending without running. Replaced with two gpu_test seed jobs, each processing four immutable quality chunks. Two rejected8-task gpu_test submissions hit QOSMaxSubmitJobPerUserLimit and created no job. No experiment budget or output changed.",
-  "next": "Finish paired student evaluation; independently audit teachers, training replay and raw outputs; run fixed-coordinate GFN2; update evidence ledger and manuscript only according to results."
+  "next": "Publish and verify the rewritten manuscript and actual molecular media; then freeze and run the new GAGA feedback challenge.",
+  "curvature_teacher_audit": "research/evidence/curvature_full_teacher_audit_v1.json",
+  "curvature_student_esen_audit": "research/evidence/curvature_distillation_esen_audit_v1.json",
+  "curvature_student_xtb_audit": "research/evidence/curvature_distillation_xtb_audit_v1.json",
+  "curvature_neural_primary_gate": false,
+  "curvature_neural_decision": "Do not promote curvature work to the primary generator. ESS improved, but raw neural benefit over translation work was not replicated across seeds; force24 was better on energy and force.",
+  "all_experiment_jobs_terminal": true,
+  "editorial_request": {
+    "overleaf_reviewed_head": "0eecd2802fcd235e54e0e3f3ca50e7b3db44cf15",
+    "prior_overleaf_head": "2f1f9c4e22bab14691bdc42190b2eb53a1077379",
+    "review_note": "notes/overleaf_language_review_20260915.md",
+    "literature_corpus": "research/evidence/luo_shi_science_corpus_v1.json",
+    "scope": "Review all publicly identifiable Shitong Luo and Chence Shi AI-for-science papers for writing and figure style; rewrite manuscript with scientifically corrected collaborator style; make molecular/atomic figures and actual flow-time animation; explicitly define task and flow input/output."
+  },
+  "gaga_challenge": {
+    "status": "experimental_module_unit_tests_pass_training_not_launched",
+    "module": "cfm_mol/connectivity_feedback.py",
+    "tests": "3 passed; exact original distance context, EMA-copy isolation, tree marginal enumeration and equivariance",
+    "paper_claim_changed": false
+  }
 }

@@ -1,0 +1,540 @@
+{
+  "status": "systematic_editorial_review_complete_with_access_levels",
+  "rows": [
+    {
+      "id": "confgf",
+      "title": "Learning Gradient Fields for Molecular Conformation Generation",
+      "author_scope": "both",
+      "pdf_url": "https://proceedings.mlr.press/v139/shi21b/shi21b.pdf",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "46ba64de8318591a14f94ae9b2a97906560a52f7bb7ef7286bd530b27e2b9274",
+      "pages": 11,
+      "overview_page": 4,
+      "review": {
+        "input": "Chemical graph, noisy atom coordinates and noise level",
+        "model_output": "Coordinate score vectors; Langevin sampling returns conformations",
+        "visual_lesson": "A small molecule makes the chain-rule conversion and per-atom arrows concrete.",
+        "scientific_boundary": "Known chemical graph; its learned score is not our physical force or FM velocity."
+      }
+    },
+    {
+      "id": "cgcf",
+      "title": "Learning Neural Generative Dynamics for Molecular Conformation Generation",
+      "author_scope": "luo",
+      "pdf_url": "https://arxiv.org/pdf/2102.10240v1",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "f29d8bf3e2b5864e1a20ae520b11d8290e1d742549df106b3158ea61831d308a",
+      "pages": 17,
+      "overview_page": 4,
+      "review": {
+        "input": "Chemical graph and Gaussian latent distances",
+        "model_output": "Distance samples, reconstructed coordinates, then energy-based refinement",
+        "visual_lesson": "Label representations between stages and show the molecule after each conversion.",
+        "scientific_boundary": "Its inference includes coordinate reconstruction and MCMC refinement; ours reports raw coordinate-flow outputs."
+      }
+    },
+    {
+      "id": "dgsm",
+      "title": "Predicting Molecular Conformation via Dynamic Graph Score Matching",
+      "author_scope": "both",
+      "pdf_url": "https://proceedings.neurips.cc/paper/2021/file/a45a1d12ee0fb7f1f872ab91da18f899-Paper.pdf",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "5b67839e086cbc0448ae0bc8fad313f2d70abc07302f6d2488440b0f5ee0baba",
+      "pages": 12,
+      "overview_page": 2,
+      "review": {
+        "input": "Chemical graph and current spatial coordinates",
+        "model_output": "Coordinate scores using local and changing spatial neighborhoods",
+        "visual_lesson": "Show concrete molecular systems and the changing neighborhood that motivates the model.",
+        "scientific_boundary": "Spatial contact edges, chemical bonds and our latent source tree have different roles."
+      }
+    },
+    {
+      "id": "confvae",
+      "title": "An End-to-End Framework for Molecular Conformation Generation via Bilevel Programming",
+      "author_scope": "both",
+      "pdf_url": "https://proceedings.mlr.press/v139/xu21f/xu21f.pdf",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "24627fa080c41df245c1eedfb3e59d646c96e796542e539e3f8571909adbd347",
+      "pages": 11,
+      "overview_page": 4,
+      "review": {
+        "input": "Chemical graph and latent variables; coordinates provide training targets",
+        "model_output": "Conformations through differentiable distance reconstruction",
+        "visual_lesson": "Place actual molecular inputs and outputs around the nested optimization diagram.",
+        "scientific_boundary": "Bilevel coordinate reconstruction is part of its generator; not a postprocessing step in our method."
+      }
+    },
+    {
+      "id": "sbdd",
+      "title": "A 3D Generative Model for Structure-Based Drug Design",
+      "author_scope": "luo",
+      "pdf_url": "https://arxiv.org/pdf/2203.10446",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "313983f7ebefffe3fa05eae9359ed0efa268350240b3cd7bbe4285e686e0d040",
+      "pages": 15,
+      "overview_page": 4,
+      "review": {
+        "input": "Protein-pocket atoms and a partial generated molecule",
+        "model_output": "Spatial atom-occurrence probabilities and sequential atom placements",
+        "visual_lesson": "Repeated atom-level snapshots expose what changes at each generation step.",
+        "scientific_boundary": "Pocket-conditioned atom growth differs from fixed-composition coordinate generation."
+      }
+    },
+    {
+      "id": "pocket2mol",
+      "title": "Pocket2Mol: Efficient Molecular Sampling Based on 3D Protein Pockets",
+      "author_scope": "luo",
+      "pdf_url": "https://proceedings.mlr.press/v162/peng22b/peng22b.pdf",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "82feb0976fd88f3d0d6da187d242ada2b8e40cebc821e68ea3d4b6c82ffe08a9",
+      "pages": 12,
+      "overview_page": 3,
+      "review": {
+        "input": "Protein pocket and partial molecular structure",
+        "model_output": "Frontier, relative position, atom type and bond-type predictions",
+        "visual_lesson": "Number the stages and distinguish location prediction from type/bond prediction.",
+        "scientific_boundary": "It explicitly predicts bonds; we must not borrow that input/output description."
+      }
+    },
+    {
+      "id": "diffab",
+      "title": "Antigen-Specific Antibody Design and Optimization with Diffusion-Based Generative Models for Protein Structures",
+      "author_scope": "luo",
+      "pdf_url": "https://proceedings.neurips.cc/paper_files/paper/2022/file/3fa7d76a0dc1179f1e98d1bc62403756-Paper-Conference.pdf",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "53803b87aad4a76ceebf500372200544810b8160c5329f6423cfd0748ea5f971",
+      "pages": 14,
+      "overview_page": 2,
+      "review": {
+        "input": "Antigen and antibody framework context",
+        "model_output": "CDR sequence and structure through coupled diffusion",
+        "visual_lesson": "Explain the biological object and local geometric variables before the architecture.",
+        "scientific_boundary": "Sequence/structure co-design with supplied protein context is a different task."
+      }
+    },
+    {
+      "id": "rde",
+      "title": "Rotamer Density Estimator is an Unsupervised Learner of the Effect of Mutations on Protein-Protein Interaction",
+      "author_scope": "luo",
+      "pdf_url": "https://openreview.net/pdf?id=_X9Yl1K2mD",
+      "review_status": "primary_abstract_and_author_figure",
+      "full_text_access": "OpenReview/bioRxiv full text blocked; primary author overview, released code and figure inspected.",
+      "primary_url": "https://openreview.net/forum?id=_X9Yl1K2mD",
+      "author_project": "https://github.com/luost26/RDE-PPI",
+      "figure_sha256": "18c404b5f18ab2506f145ce7e0ece2c9f90e6fd385a4b7f0274b3a702799dec5",
+      "review": {
+        "input": "Protein local environment and residue/mutation information",
+        "model_output": "Rotamer densities, then mutation-effect estimates",
+        "visual_lesson": "A global complex view and a local rotamer zoom connect density to a physical interpretation.",
+        "scientific_boundary": "Density estimation of side chains is not composition-only molecular generation; reviewed through primary overview/code/figure only."
+      }
+    },
+    {
+      "id": "ebmfold",
+      "title": "EBM-Fold: Fully-Differentiable Protein Folding Powered by Energy-based Models",
+      "author_scope": "luo",
+      "pdf_url": "https://arxiv.org/pdf/2105.04771",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "39972645aea585b57bd86614e6a35e1f72634eba85ffa6166167981ce6fecac3",
+      "pages": 18,
+      "overview_page": 6,
+      "review": {
+        "input": "Protein geometric context and perturbed coordinate/distance representations",
+        "model_output": "Denoising correction fields used for backbone sampling",
+        "visual_lesson": "Show the molecule, its numerical representation, and the predicted correction together.",
+        "scientific_boundary": "Protein score-based folding does not validate our sampler as physical molecular dynamics."
+      }
+    },
+    {
+      "id": "omegafold",
+      "title": "High-resolution de novo structure prediction from primary sequence",
+      "author_scope": "luo",
+      "pdf_url": "https://www.biorxiv.org/content/10.1101/2022.07.21.500999v1.full.pdf",
+      "review_status": "primary_abstract_and_author_project",
+      "full_text_access": "bioRxiv PDF blocked; retrieved university PDF identified as lecture slides and excluded as primary paper.",
+      "primary_url": "https://www.biorxiv.org/content/10.1101/2022.07.21.500999v1",
+      "author_project": "https://github.com/HeliXonProtein/OmegaFold",
+      "review": {
+        "input": "A single amino-acid sequence",
+        "model_output": "A predicted protein structure through language and geometric modules",
+        "visual_lesson": "Make the input restriction visible and put a concrete structure at the output.",
+        "scientific_boundary": "Single-sequence protein prediction differs from sampling molecular compositions; full-paper access was limited."
+      }
+    },
+    {
+      "id": "oagnn",
+      "title": "Orientation-Aware Graph Neural Networks for Protein Structure Representation Learning",
+      "author_scope": "luo",
+      "pdf_url": "https://arxiv.org/pdf/2201.13299",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "bbc804fbfb8ea93e364a7e041f68204e038199b4987e5a121f14497fc06bc38c",
+      "pages": 24,
+      "overview_page": 2,
+      "review": {
+        "input": "Protein coordinates and local residue orientations",
+        "model_output": "Geometric features for graph-level or residue-level tasks",
+        "visual_lesson": "Use a global protein view plus an atomic coordinate-frame zoom.",
+        "scientific_boundary": "A representation-learning architecture is not itself a molecular generator."
+      }
+    },
+    {
+      "id": "pepflow",
+      "title": "Full-Atom Peptide Design based on Multi-modal Flow Matching",
+      "author_scope": "luo",
+      "pdf_url": "https://arxiv.org/pdf/2406.00735",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "3b841ca64beae4e1fcf9aa47b676ea83fc9c5d487633eb65918dd31f92be73c0",
+      "pages": 28,
+      "overview_page": 1,
+      "review": {
+        "input": "Protein receptor context and multimodal noisy peptide representations",
+        "model_output": "Peptide sequence, backbone geometry and side-chain variables",
+        "visual_lesson": "Color and label each generated variable rather than collapsing all channels into a generic latent.",
+        "scientific_boundary": "Its atom/residue variables and receptor conditioning differ from our fixed atomic identities."
+      }
+    },
+    {
+      "id": "pephar",
+      "title": "Hotspot-Driven Peptide Design via Multi-Fragment Autoregressive Extension",
+      "author_scope": "luo",
+      "pdf_url": "https://arxiv.org/pdf/2411.18463v1",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "414dee73a4a38ed36016b2cc0d65b99b0c4aab214e2026263ed2601a8641a20e",
+      "pages": 33,
+      "overview_page": 2,
+      "review": {
+        "input": "Target protein context, optionally supplied hotspot information",
+        "model_output": "Hotspots, growing peptide fragments and an assembled peptide",
+        "visual_lesson": "Tie each stage to a concrete problem: binding sites, bond geometry and assembly.",
+        "scientific_boundary": "Geometric correction is an explicit stage there; it cannot be implied in our raw-output evaluation."
+      }
+    },
+    {
+      "id": "fafe",
+      "title": "FAFE: Immune Complex Modeling with Geodesic Distance Loss on Noisy Group Frames",
+      "author_scope": "luo",
+      "pdf_url": "https://proceedings.mlr.press/v235/wu24g/wu24g.pdf",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "bf6e51125cd91cedc8347d549e2c6389bc5ebdd3047667379c3b59f3235ca8d9",
+      "pages": 21,
+      "overview_page": 3,
+      "review": {
+        "input": "Protein sequences and predicted/reference residue frames during training",
+        "model_output": "Improved complex structures after loss-based fine-tuning",
+        "visual_lesson": "Pair an actual structural failure with the mathematical mechanism and its measured effect.",
+        "scientific_boundary": "A well-motivated new loss can be AI novelty; novelty is not determined by whether a new network is added."
+      }
+    },
+    {
+      "id": "msm_mut",
+      "title": "Enhancing Protein Mutation Effect Prediction through a Retrieval-Augmented Framework",
+      "author_scope": "luo",
+      "pdf_url": "https://proceedings.neurips.cc/paper_files/paper/2024/file/5828b7516d6f117e8301120519366cdb-Paper-Conference.pdf",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "ea194be11498be66dd048a1b79e05eb611f0b331851e6ad8d884896d98168aab",
+      "pages": 24,
+      "overview_page": 3,
+      "review": {
+        "input": "Protein local structure motifs and a mutation query",
+        "model_output": "Retrieved motif features and mutation-effect predictions",
+        "visual_lesson": "Zoom from full structure to the local learned unit, then show the data flow.",
+        "scientific_boundary": "Retrieval-conditioned property prediction is not a baseline for raw 3D generation."
+      }
+    },
+    {
+      "id": "chemprojector",
+      "title": "Projecting Molecules into Synthesizable Chemical Spaces",
+      "author_scope": "luo",
+      "pdf_url": "https://arxiv.org/pdf/2406.04628",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "cf88cc7a09d7b735a598f796b91a16e1d0d6b125269c7e08a56225d2a73d5f16",
+      "pages": 16,
+      "overview_page": 2,
+      "review": {
+        "input": "An input molecular graph",
+        "model_output": "A synthesis-path representation and a synthesizable molecular analogue",
+        "visual_lesson": "Separate the scientific search space, encoded representation and final molecule.",
+        "scientific_boundary": "Synthesis-path validity is a different notion from our perceived-graph validity."
+      }
+    },
+    {
+      "id": "synformer",
+      "title": "Generative Artificial Intelligence for Navigating Synthesizable Chemical Space",
+      "author_scope": "luo",
+      "pdf_url": "https://arxiv.org/pdf/2410.03494",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "d7c5b21f784a7dd67609cb9068b3c8a6dfdb3aaa0652244ef2dadd79ffd2ee61",
+      "pages": 38,
+      "overview_page": 2,
+      "review": {
+        "input": "Molecular context when supplied, and reaction/building-block libraries",
+        "model_output": "Synthetic pathways and their resulting molecules",
+        "visual_lesson": "Show both the token sequence and the chemically meaningful output it encodes.",
+        "scientific_boundary": "Its output is a route and molecule, not an unoptimized coordinate array."
+      }
+    },
+    {
+      "id": "prexsyn",
+      "title": "Efficient and Programmable Exploration of Synthesizable Chemical Space",
+      "author_scope": "luo",
+      "pdf_url": "https://arxiv.org/pdf/2512.00384",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "295f5419e1311589e6752472c7b6d02c9db8c0e964fa805863744f4537fcb24d",
+      "pages": 19,
+      "overview_page": 5,
+      "review": {
+        "input": "Property queries, including logical compositions of conditions",
+        "model_output": "Synthesis-path tokens and property-conditioned molecules",
+        "visual_lesson": "Expose conditioning, data generation, network prediction and oracle feedback as separate stages.",
+        "scientific_boundary": "Programmable property control requires explicit training and testing; our temperature is not a learned generation condition."
+      }
+    },
+    {
+      "id": "antibody_pnas",
+      "title": "Deep learning guided optimization of human antibody against SARS-CoV-2 variants with broad neutralization",
+      "author_scope": "luo",
+      "pdf_url": null,
+      "review_status": "full_text_xml",
+      "primary_url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC8931377/fullTextXML",
+      "full_text_sha256": "9444cb3cc4fb3a63002e578c57d0562b3bada05ee9662fdd1d52ad62b890353a",
+      "review": {
+        "input": "Antibody-antigen structures and candidate mutations",
+        "model_output": "Predicted mutation effects and experimentally tested antibody variants",
+        "visual_lesson": "Separate the computational model diagram from the experimental evidence panels.",
+        "scientific_boundary": "Wet-lab validation in this study cannot be implied by our approximate energy evaluations."
+      }
+    },
+    {
+      "id": "graphaf",
+      "title": "GraphAF: a Flow-based Autoregressive Model for Molecular Graph Generation",
+      "author_scope": "shi",
+      "pdf_url": "https://arxiv.org/pdf/2001.09382",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "ea6d7c5a588d0f8e0f8e20ad8c8ae566937445cb70c557c96895f6d0df052b57",
+      "pages": 18,
+      "overview_page": 5,
+      "review": {
+        "input": "Partial molecular graph and Gaussian latent variables",
+        "model_output": "New atom and bond types in an autoregressive graph sequence",
+        "visual_lesson": "Use numbered stages and a legend for distinct kinds of edges and operations.",
+        "scientific_boundary": "Its chemical-rule filtering and bond generation are not part of our inference."
+      }
+    },
+    {
+      "id": "graph2graphs",
+      "title": "A Graph to Graphs Framework for Retrosynthesis Prediction",
+      "author_scope": "shi",
+      "pdf_url": "https://arxiv.org/pdf/2003.12725",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "d06c825be76b51dd24c8a6d1b8c0a8a01731bb0b82796bdc952eca0bdd39a2ad",
+      "pages": 10,
+      "overview_page": 3,
+      "review": {
+        "input": "A product molecular graph",
+        "model_output": "Reaction centers, synthons and reactant molecular graphs",
+        "visual_lesson": "Use a real reaction to make a one-to-many output interface obvious.",
+        "scientific_boundary": "Reaction graph translation is not coordinate flow matching."
+      }
+    },
+    {
+      "id": "mars",
+      "title": "MARS: Markov Molecular Sampling for Multi-objective Drug Discovery",
+      "author_scope": "shi",
+      "pdf_url": "https://arxiv.org/pdf/2103.10432",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "42d9ce9cade44c4b9ce2373b3bca0a2035d21817d6670f5a2b532d80421767af",
+      "pages": 19,
+      "overview_page": 4,
+      "review": {
+        "input": "A molecular graph and property objectives",
+        "model_output": "Proposed graph edits and accepted molecular candidates",
+        "visual_lesson": "Show proposal, evaluation and acceptance as distinct operations.",
+        "scientific_boundary": "Its MCMC and property-oracle calls belong to generation; our physical queries are training/evaluation costs."
+      }
+    },
+    {
+      "id": "nerm",
+      "title": "Non-Autoregressive Electron Redistribution Modeling for Reaction Prediction",
+      "author_scope": "shi",
+      "pdf_url": "https://arxiv.org/pdf/2106.07801",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "ae2fdb38dd79006d053e6157d21297172641b1062466d267963866b6d9182208",
+      "pages": 10,
+      "overview_page": 1,
+      "review": {
+        "input": "Mapped reactant molecular graphs",
+        "model_output": "Electron redistribution and the resulting product graph",
+        "visual_lesson": "Use a concrete chemical change to explain the predicted mathematical object.",
+        "scientific_boundary": "Electron flow here is not the coordinate-transport field used by our FM model."
+      }
+    },
+    {
+      "id": "geodiff",
+      "title": "GeoDiff: a Geometric Diffusion Model for Molecular Conformation Generation",
+      "author_scope": "shi",
+      "pdf_url": "https://arxiv.org/pdf/2203.02923",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "a04fb5119a4c95af54f762295261c9ed43aedce599dc929e73fbecd0c0924902",
+      "pages": 19,
+      "overview_page": 4,
+      "review": {
+        "input": "Chemical graph and noisy conformer coordinates",
+        "model_output": "Equivariant reverse-transition predictions and conformations",
+        "visual_lesson": "Use consistent views across noisy and clean molecular states.",
+        "scientific_boundary": "The graph is given; diffusion-time snapshots are not automatically physical-time dynamics."
+      }
+    },
+    {
+      "id": "torchdrug",
+      "title": "TorchDrug: A Powerful and Flexible Machine Learning Platform for Drug Discovery",
+      "author_scope": "shi",
+      "pdf_url": "https://arxiv.org/pdf/2202.08320",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "c070ecaf6b12de83b6e681b284e1bac25284fa3fb6689a571c797975e8251d13",
+      "pages": 8,
+      "overview_page": 2,
+      "review": {
+        "input": "Molecular, protein or biomedical graph data, depending on task",
+        "model_output": "Task-dependent features, predictions or generated graphs",
+        "visual_lesson": "A hierarchy diagram is useful for software interfaces; molecular papers still need concrete structures.",
+        "scientific_boundary": "Platform capabilities are not a claim that one generator solves all those tasks."
+      }
+    },
+    {
+      "id": "protseed",
+      "title": "Protein Sequence and Structure Co-Design with Equivariant Translation",
+      "author_scope": "shi",
+      "pdf_url": "https://arxiv.org/pdf/2210.08761v1",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "5ce2548ba6b8e1004c5582190b810a9a04c0f6e3a35bfdadaae071316df3f1f8",
+      "pages": 15,
+      "overview_page": 2,
+      "review": {
+        "input": "Protein context features plus current sequence and structure",
+        "model_output": "Joint sequence/structure updates and final protein designs",
+        "visual_lesson": "Show distinct tasks by their specific inputs and outputs before a shared architecture.",
+        "scientific_boundary": "Its supplied secondary structure/contact or backbone context differs from atomic composition alone."
+      }
+    },
+    {
+      "id": "e3bind",
+      "title": "E3Bind: An End-to-End Equivariant Network for Protein-Ligand Docking",
+      "author_scope": "shi",
+      "pdf_url": "https://arxiv.org/pdf/2210.06069",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "eb7729b5f8790afa073509da4527245faf20efe671b28c30cb275542e732769e",
+      "pages": 20,
+      "overview_page": 3,
+      "review": {
+        "input": "A ligand chemical graph and protein structure",
+        "model_output": "Iteratively updated ligand pose coordinates",
+        "visual_lesson": "Draw the geometric state before and after the update, with context alongside it.",
+        "scientific_boundary": "Docking with a known ligand graph is different from inferring molecular connectivity."
+      }
+    },
+    {
+      "id": "neural_physical",
+      "title": "Fusing Neural and Physical: Augment Protein Conformation Sampling with Tractable Simulations",
+      "author_scope": "shi",
+      "pdf_url": "https://arxiv.org/pdf/2402.10433",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "6d4f64b7b93b0f9c957ec4d92677a0f079ffebf51dab081b527a1ec95c168407",
+      "pages": 11,
+      "overview_page": 2,
+      "review": {
+        "input": "Pretrained protein sampler and initial conformations for a target",
+        "model_output": "Simulation-derived fine-tuning targets and a target-specific sampler",
+        "visual_lesson": "Separate physical data production from the trained model used afterward.",
+        "scientific_boundary": "Simulation-assisted physical fine-tuning is prior work; our local teacher and paired update need their own evidence."
+      }
+    },
+    {
+      "id": "atomic_fm",
+      "title": "Design of Ligand-Binding Proteins with Atomic Flow Matching",
+      "author_scope": "shi",
+      "pdf_url": "https://arxiv.org/pdf/2409.12080v1",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "ab35241546f7bbdf83a56257de63125cb35eaec9de2792d8df06fbe110f63cb8",
+      "pages": 17,
+      "overview_page": 2,
+      "review": {
+        "input": "A 2D ligand graph and noisy biotoken coordinates",
+        "model_output": "Joint ligand conformations and protein backbone structures",
+        "visual_lesson": "Name each generated object and illustrate why unknown binding pose matters.",
+        "scientific_boundary": "The paper does not require a bound ligand pose as input; our review corrected that initial assumption."
+      }
+    },
+    {
+      "id": "slm",
+      "title": "Structure Language Models for Protein Conformation Generation",
+      "author_scope": "shi",
+      "pdf_url": "https://arxiv.org/pdf/2410.18403",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "c535b533fc0f3523e117d8fe9f873eb6d15b2205c4212f00b930dd82ebe4d52b",
+      "pages": 34,
+      "overview_page": 2,
+      "review": {
+        "input": "Protein sequence and discrete structure-token representations",
+        "model_output": "Sampled structure tokens decoded into protein conformations",
+        "visual_lesson": "Draw the conversion between latent representation and physical structure explicitly.",
+        "scientific_boundary": "Structure-token diversity and physical trajectory fidelity are different claims."
+      }
+    },
+    {
+      "id": "protalign",
+      "title": "Property-driven Protein Inverse Folding With Multi-Objective Preference Alignment",
+      "author_scope": "shi",
+      "pdf_url": "https://arxiv.org/pdf/2603.06748",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "7601a76154adaf04b865c442b24722a6d59c8910422b36bc57d027a8369e69a2",
+      "pages": 24,
+      "overview_page": 2,
+      "review": {
+        "input": "Protein backbones and property-scored preference pairs",
+        "model_output": "Aligned inverse-folding sequence distributions",
+        "visual_lesson": "Separate sampling, scoring, pair construction and training in a feedback loop.",
+        "scientific_boundary": "Improved property scores do not require inventing a new physical law."
+      }
+    },
+    {
+      "id": "atmos",
+      "title": "Atomic Trajectory Modeling with State Space Models for Biomolecular Dynamics",
+      "author_scope": "shi",
+      "pdf_url": "https://arxiv.org/pdf/2603.17633",
+      "review_status": "full_text_and_overview_reviewed",
+      "pdf_sha256": "213d2c91fab482efe45b0df963eb8198912c91036784574730a35200a3f32e91",
+      "pages": 16,
+      "overview_page": 3,
+      "review": {
+        "input": "Current atomic configuration, chemical context and temporal state",
+        "model_output": "Temporally coupled subsequent atomic configurations",
+        "visual_lesson": "Use distinct encoders, state transitions and physical output frames with clear interfaces.",
+        "scientific_boundary": "It learns molecular-dynamics trajectories; our animation shows generation progress only."
+      }
+    }
+  ],
+  "discovery_sources": [
+    "https://luost.me/publications",
+    "https://chenceshi.com/",
+    "https://mila.quebec/en/directory/chence-shi",
+    "https://majianzhu.com/publication.html",
+    "https://api.openalex.org/"
+  ],
+  "scope": "Publicly identifiable AI-for-science work, deduplicated across arXiv/conference versions where appropriate. Bibliographic indexes are used for discovery; paper authorship and content are checked from primary documents. False-name matches in OpenAlex are excluded.",
+  "at_utc": "2026-09-15T17:16:39.514421+00:00",
+  "coverage": {
+    "identified_work_families": 32,
+    "full_paper_pdfs": 29,
+    "full_article_xml": 1,
+    "primary_overview_only": 2
+  },
+  "exclusions": [
+    "General 3D point-cloud vision papers and AutoInt recommendation models are outside the AI-for-science corpus.",
+    "Duplicate conference/preprint versions are one work family. OAGNN later journal extension is linked to its public preprint.",
+    "Withdrawn2012.12124 is an early NERM version, not an additional current method.",
+    "OpenAlex false-name matches in drilling, orthopedics and energy-system scheduling are excluded after authorship checks.",
+    "A university lecture deck mentioning OmegaFold was retrieved during discovery, identified, and not counted as the primary paper."
+  ],
+  "review_depth": "Editorial and visual review of task definition, model interface, argument structure, principal figures and evidence presentation. No independent reproduction of these papers is claimed."
+}
