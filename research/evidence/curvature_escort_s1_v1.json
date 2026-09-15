@@ -1,0 +1,135 @@
+{
+  "oracle_checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+  "oracle_interpreter": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "frozen": true,
+  "format": "curvature_escort_pilot_v1",
+  "model_seed": 1,
+  "at_utc": "2026-09-15T15:28:19.413534+00:00",
+  "teacher_files": [
+    {
+      "path": "runs/thermal_distillation_v1/s1/study/teacher/refined_c0.pt",
+      "sha256": "937d7fdb9093d093af4b2b4dfd7d979b31702f19708af2a92d866ca7adc834b5",
+      "condition_index": 0,
+      "anchor_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "composition_hex": "0800000000040301000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s1/study/teacher/refined_c1.pt",
+      "sha256": "bc108dee78b51b83f971daa61837cdc100faa2de739f5c4bb36c584c816e0559",
+      "condition_index": 1,
+      "anchor_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "composition_hex": "0e00000000090201000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s1/study/teacher/refined_c2.pt",
+      "sha256": "3461c9ed51680279d73496dbb0b6c9c46a904d1d0cffef6ca079e3bf106257ab",
+      "condition_index": 2,
+      "anchor_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "composition_hex": "0b000000010b0002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s1/study/teacher/refined_c3.pt",
+      "sha256": "43528fe6c07a593706f573d4996318698085988e188a510a81905e26a42fb4e8",
+      "condition_index": 3,
+      "anchor_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "composition_hex": "0d00000000060000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s1/study/teacher/refined_c4.pt",
+      "sha256": "3e3c084876b366660e3c351d547f14ac4460090d9df8b7ec7e58ef8b9255a96b",
+      "condition_index": 4,
+      "anchor_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "composition_hex": "0f00000000080000000000000000010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s1/study/teacher/refined_c5.pt",
+      "sha256": "0fce8562ca94792bf601674155ac467d95519671351c1761f62111bde5623e97",
+      "condition_index": 5,
+      "anchor_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "composition_hex": "0c00000000080000000000000001000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s1/study/teacher/refined_c6.pt",
+      "sha256": "7d8594b44f136a65c580a77727b24101ebb966670fa5431f67d97078444f7598",
+      "condition_index": 6,
+      "anchor_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "composition_hex": "0f00000000080202000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s1/study/teacher/refined_c7.pt",
+      "sha256": "0a2d35b56283a77800a4343e5b8d947c684758475820283f59dca2ba7f08598c",
+      "condition_index": 7,
+      "anchor_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "composition_hex": "0800000000050002000000000000000200000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ],
+  "oracle_worker": "scripts/research/oracle_worker.py",
+  "oracle_worker_sha256": "ee784c39b042c2afa201612bb2dfbeb12ab28415ea5554d7698faf7b553b357c",
+  "methods": [
+    "translation",
+    "isotropic",
+    "secant"
+  ],
+  "production_particles": {
+    "translation": 24,
+    "isotropic": 16,
+    "secant": 16
+  },
+  "pilot_candidates_per_anchor": 8,
+  "ridge_fraction": 0.01,
+  "temperature_K": 300,
+  "kT": 0.025851999786435,
+  "production_seed": 41304,
+  "maximum_new_esen_queries": 3584,
+  "selection": "First four existing eligible anchors in each of eight FIT compositions per continuation; no energy or ESS ranking. All original pilot particles and force queries are charged to fitted escorts.",
+  "target": "Exactly the original anchor-centered Gaussian times exp(-DeltaE/kT), restricted to the same chemical graph. Original anchor, sigma and temperature unchanged.",
+  "map": "Translation baseline: original force displacement. Isotropic and secant maps: mean and covariance of the Gaussian under a PSD local quadratic energy approximation, fitted from independent cached pilot forces. Complete work includes full Gaussian ratio and intrinsic log determinant.",
+  "cost": "Translation uses24 fresh production queries per anchor. Fitted maps use at most8 pilot queries plus16 fresh production queries. Anchor queries common; mirrored eSEN queries counted twice. No pilot particles enter fitted-map production estimators. All fresh proposals are queried, even when graph-invalid.",
+  "primary": "Absolute local production ESS under complete work per equal maximum24 particle-query budget. Translation has24 production particles, fitted maps16. Report per-seed means, paired anchor differences, all graph retention and zero-support cases.",
+  "gate": "Secant mean ESS exceeds translation in each seed, and pooled paired-anchor bootstrap95 lower bound for the ESS difference is positive. Graph-retention loss no more than2 percentage points in observed rate. Isotropic control tests whether a full curvature fit adds value.",
+  "statistical_scope": "FIT-only mechanism pilot. ESS is a finite-sample diagnostic, not proof of target accuracy or neural improvement. Promotion to molecular generation requires a separate student comparison.",
+  "new_training_steps": 0,
+  "new_neural_outputs": 0,
+  "reserved_outcomes_allowed": false
+}
