@@ -1,0 +1,27 @@
+{
+  "at_utc": "2026-09-15T07:10:14.822904+00:00",
+  "previous_job": "46562197",
+  "previous_observed_states": [
+    "46562197_0|PENDING",
+    "46562197_1|PENDING",
+    "46562197_2|PENDING",
+    "46562197_3|PENDING",
+    "46562197_4|PENDING",
+    "46562197_5|PENDING",
+    "46562197_6|PENDING",
+    "46562197_7|PENDING"
+  ],
+  "reason": "Original80GB-A100-only request remained pending with no start estimate. Broaden to compatible full A100/H100/H200 nodes; source, protocols, outputs and training budgets unchanged.",
+  "new_job": "46562802",
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--gres=gpu:1",
+    "--constraint=a100|h100|h200",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/launch_source/scripts/research/matched_generators.slurm",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/data_source_v2",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/launch_source",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/matched_generators_v1/training",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027"
+  ]
+}

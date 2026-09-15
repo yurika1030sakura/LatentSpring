@@ -67,3 +67,17 @@ larger batch32 probe uses at most6.72GB on an A100 MIG device. These probes are
 engineering runs; no benchmark-generation result has been inspected. Checkpoints
 include optimizer and EMA states for scheduler recovery. Completed generated
 files are reused with model/condition/seed/hash checks during recovery.
+
+The frozen-model comparison started as array46562196 on gpu_test. Larger molecules
+require substantially more inference time than the earlier17–28-atom panel.
+Requests to extend the running jobs' one-hour limit were rejected by Slurm.
+A per-composition continuation retains original raw samples and their logged
+timings, and generates only missing compositions after the original jobs stop.
+Missing timing, if any, is explicitly marked rather than reconstructed as an
+exact measurement. Original logs and interrupted fragments remain archived.
+
+The independent-training array46562197 remained entirely pending. It was held
+and cancelled before training, then replaced by46562802 with compatible
+A100/H100/H200 node features. The same immutable computational source, protocols,
+output directories and budgets are used. Hardware availability changes the
+allocation; it does not select methods, data or outcomes.
