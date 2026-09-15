@@ -1,0 +1,95 @@
+{
+  "complete": true,
+  "primary_gate": false,
+  "selected_challenger": "distance",
+  "selected_gaga_max_t": 650,
+  "graph_counts_by_seed": {
+    "distance": [
+      155,
+      165
+    ],
+    "tree": [
+      114,
+      84
+    ],
+    "harmonic_fm": [
+      107,
+      113
+    ],
+    "gaga_650": [
+      151,
+      131
+    ]
+  },
+  "attempts_per_method_seed": 1024,
+  "contrasts": {
+    "distance_minus_selected_gaga": {
+      "mean": 0.0185546875,
+      "by_seed": [
+        0.00390625,
+        0.033203125
+      ],
+      "ci95": [
+        -0.00341796875,
+        0.04443359375
+      ]
+    },
+    "tree_minus_selected_gaga": {
+      "mean": -0.041015625,
+      "by_seed": [
+        -0.0361328125,
+        -0.0458984375
+      ],
+      "ci95": [
+        -0.06396484375,
+        -0.01904296875
+      ]
+    },
+    "harmonic_fm_minus_selected_gaga": {
+      "mean": -0.0302734375,
+      "by_seed": [
+        -0.04296875,
+        -0.017578125
+      ],
+      "ci95": [
+        -0.048828125,
+        -0.0126953125
+      ]
+    },
+    "tree_minus_distance": {
+      "mean": -0.0595703125,
+      "by_seed": [
+        -0.0400390625,
+        -0.0791015625
+      ],
+      "ci95": [
+        -0.0810546875,
+        -0.03955078125
+      ]
+    }
+  },
+  "selection_sha256": "24146300e1a13513f4bc6fddc4dc808f0f653699b003f567fcff9ebf7ea2b1b0",
+  "report_sha256": {
+    "confirmation/s0/distance_results.json": "32d1a61e91c3fa1d4ddd7e6f2360ec5427e1806c8b6d266429c57fe283f5f4d7",
+    "confirmation/s0/tree_results.json": "d3ac38fa15338570156a1f616de7ae5895ca754aed86af336a9d603c2652e502",
+    "confirmation/s0/harmonic_fm_results.json": "77093e61ce5741e6e39a3d0509f7a2faf8e9350eef06eee9c84ed5a1a9baa288",
+    "confirmation/s0/gaga_650_results.json": "1ec922dad97974417f51472a8e81727689f492206a1e5ef2fcca79aab3467962",
+    "confirmation/s1/distance_results.json": "ee51adc49e840de4b1a6055ae14ac56b4b0f5d78af5e6b267bb51d22d9235782",
+    "confirmation/s1/tree_results.json": "daf2fc87d97f46e5aedc0a43dc9b7c6378fb2996e4cdc68017e9cc56344eb911",
+    "confirmation/s1/harmonic_fm_results.json": "20801c4dc5bc421344e209d0e49a4931708b47d86d24ac34f6ecb7bdc5efca80",
+    "confirmation/s1/gaga_650_results.json": "624861c6ca2e1125fce5dcc4730b6e1b3a0d76498bae178a6737924a4ff9b5db"
+  },
+  "all_saved_graph_assays_replayed": true,
+  "new_validation_outputs": 6144,
+  "new_confirmation_outputs": 8192,
+  "new_physical_queries": 0,
+  "reserved_outcomes_queried": false,
+  "inference_scope": "All attempts, raw unoptimized coordinates,128 backbone calls.",
+  "training_scope": "Each feedback model has15000 updates x32 examples x2 supervised backbone passes =960000 backbone example passes, equal to original30000 x32 one-pass models. Data presentations and optimizer updates differ; report measured runtime and never claim equal wall time.",
+  "statistics": {
+    "bootstrap_repetitions": 20000,
+    "bootstrap_seed": 43123,
+    "unit": "composition, with both model seeds kept together",
+    "interval_scope": "Conditional on these fitted models; secondary contrasts descriptive."
+  }
+}
