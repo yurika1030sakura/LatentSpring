@@ -3,16 +3,30 @@ The physical teacher combines local force-guided proposals with energy-weighted
 flow matching \citep{dern2025energyweighted,fab}. Normalized anchor references
 make the escorted-work weights explicit \citep{escorted2008}.
 
+\paragraph{Energy, force and mirror symmetry.}
+The energy model assigns a scalar $E(X)$ to a geometry and provides its force
+$F(X)=-\nabla_X E(X)$, a vector for each atom. The force points in the direction
+of decreasing energy. We average a geometry and its inversion through the origin:
+$E_+(X)=[E(X)+E(-X)]/2$ and $F_+(X)=[F(X)-F(-X)]/2$.
+The opposite sign in the force average preserves $F_+=-\nabla E_+$.
+This construction assigns equal energy to mirror-related geometries and opposite
+forces to their inverted coordinates. We remove the mean atom force before
+constructing displacements, keeping them in the centered coordinate space.
+
 \paragraph{Local reference and target.}
 For a generated training anchor $A$ with accepted perceived graph $G_A$, define
 $q_A(X)=\mathcal N_{\HH_N}(A,\sigma_A^2I)$.
-At $kT=0.0258519998$ eV (300 K), remove net force and set
+Write $kT=k_B T_{\rm phys}=0.0258519998$ eV for the thermal energy at 300 K.
+We set
 \begin{equation}
  \sigma_A=\min\left(0.03\,\text{\AA},
  \sqrt{\frac{0.10\,\text{\AA}\,kT}{\|F_+(A)\|}}\right),\qquad
  \delta_A=\frac{\sigma_A^2}{kT}F_+(A).
 \end{equation}
-A vanishing force selects the maximal width. These quantities are fixed before
+A vanishing force selects the maximal width. The force norm is the Frobenius
+norm over all atom-force components. These choices bound that same norm of the
+displacement by $0.10$\,\AA\ and the Gaussian width by $0.03$\,\AA.
+These quantities are fixed before
 drawing $X\sim q_A$. The escort $Y=X+\delta_A$ is a translation on the centered
 subspace and has determinant one. The local unnormalized target is
 \begin{equation}
@@ -23,6 +37,23 @@ where the support requires the same labelled perceived bond orders, formal charg
 and radical counts, together with the connected/nonoverlap assay. The graph is
 inferred from the anchor coordinates. The resulting target is a local energy tilt
 restrained around $A$ by $q_A$.
+
+\paragraph{Why the force displacement has this form.}
+Locally approximate the molecular energy by its value and force at the anchor:
+$E_+(Y)-E_+(A)\simeq-\langle F_+(A),Y-A\rangle_F$, where the inner product sums
+force times displacement over every atom and coordinate. Completing the square
+in the Gaussian gives
+\begin{equation}
+ q_A(Y)\exp\!\left[\frac{\langle F_+(A),Y-A\rangle_F}{kT}\right]
+ \ \propto\
+ \mathcal N_{\HH_N}\!\left(Y;A+\frac{\sigma_A^2}{kT}F_+(A),\sigma_A^2I\right).
+ \label{eq:linear-boltzmann-escort}
+\end{equation}
+Thus the force escort samples the local Boltzmann tilt exactly for a linearized
+energy, before applying the same-graph restriction. The Gaussian restraint acts
+like a virtual harmonic spring with stiffness $kT/\sigma_A^2$: the force shifts
+its mean by force divided by stiffness. This explains the displacement scale.
+The graph restriction subsequently truncates this local distribution.
 
 \paragraph{Complete local work.}
 With reference Hamiltonian $H_0=-kT\log q_A$ and target Hamiltonian
@@ -35,6 +66,12 @@ $\mathbb E_{q_A}[\exp(-W_A/kT)]=\int\rho_A(Y)\,dY$.
 The two reference-density terms correct for the escort's proposal shift.
 Analytic checks recover constant work for a constant-force escort and the
 normalizer and weighted mean for a quadratic energy.
+For the linearized energy in Equation~\eqref{eq:linear-boltzmann-escort},
+substitution gives the same work
+$W_A=-\sigma_A^2\|F_+(A)\|_F^2/(2kT)$ for every supported candidate.
+Uniform weights are therefore appropriate in this approximation. Complete-work
+weights use the actual nonlinear energy to correct deviations from it. This
+distinguishes the inexpensive force-only teacher from its energy-weighted extension.
 
 \paragraph{Training and controls.}
 Each continuation selects eight distinct 17--28-atom training compositions by a

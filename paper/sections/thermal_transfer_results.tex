@@ -3,7 +3,7 @@ We use parameter arithmetic \citep{ilharco2023arithmetic} to transfer the differ
 between physical and replay continuations from the same initialization:
 
 \begin{equation}
- \theta_{\rm new}=\theta_{\rm frozen}
+ \theta_{\rm final}=\theta_{\rm base}
    +(\theta_{\rm physical}-\theta_{\rm replay}),
 \end{equation}
 for both unweighted-escort and complete-work students. The coefficient is fixed
@@ -13,11 +13,11 @@ remain fixed.
 \begin{table}[t]
 \centering
 \caption{Paired physical updates on the development panel. Energy differences
-are relative to the frozen model on common graph support, with paired 95\%
+are relative to the frozen model among jointly valid outputs, with paired 95\%
 confidence intervals. This comparison follows the direct-distillation study.}
 \begin{tabular}{lrr}
 \toprule
-Model & Graph passes (two streams) & Energy change (eV/atom)\\
+Model & Graph-valid outputs (two streams) & Energy change (eV/atom)\\
 \midrule
 Frozen &418/640; 377/640&$0$\\
 Escort difference &407/640; 387/640&$-0.01554\;[-0.02084,-0.01031]$\\
@@ -27,12 +27,11 @@ Work difference &406/640; 382/640&$-0.01604\;[-0.02188,-0.01013]$\\
 \end{table}
 
 Both physical-update variants lower energy and force in both continuations.
-The work-difference variant reduces force RMS by 0.38403 eV/\AA\ on common graph
-support (interval $[-0.48124,-0.28932]$); all-attempt energy and force readouts
-also improve. Its observed graph-rate difference is $-0.55$ percentage points,
+The work-difference variant reduces force RMS by 0.38403 eV/\AA\ among jointly valid outputs (interval $[-0.48124,-0.28932]$); all-attempt energy and force readouts
+also improve. Its observed graph-validity-rate difference is $-0.55$ percentage points,
 with interval $[-2.58,1.56]$.
 
-The two physical-update variants have similar scores: their common-supported
+The two physical-update variants have similar scores: their jointly valid
 energy difference is $-0.00243$ eV/atom, with
 interval $[-0.00756,0.00264]$, while all-attempt energy difference is $+0.00022$
 with interval $[-0.00557,0.00649]$. Force and graph intervals also span zero.

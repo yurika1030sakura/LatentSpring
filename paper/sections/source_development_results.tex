@@ -1,0 +1,42 @@
+\begin{table}[t]
+\centering
+\caption{Chemical-graph validity per attempted output. All primary arms share the
+geometry-SC backbone and 128 primitive network evaluations. The additional panel uses
+frozen models selected after the development comparison.}
+\begin{tabular}{llrrr}
+\toprule
+Panel & Continuation & Gaussian & Shell tree & Harmonic tree\\
+\midrule
+Development (12) & 1 &357/768&417/768&436/768\\
+                 & 2 &377/768&342/768&388/768\\
+Additional (10)  & 1 &326/640&---&413/640\\
+                 & 2 &349/640&---&375/640\\
+\bottomrule
+\end{tabular}\label{tab:main}
+\end{table}
+
+Harmonic trees improve graph validity over isotropic Gaussian sources by 5.86
+percentage points on the development panel (95\% CI [2.67,8.98]; composition
+interval [0.52,12.17]). Both continuations improve, with a larger gain in the first.
+The harmonic source also outperforms the narrow shell by 4.23 points; the
+shell-minus-harmonic interval is [-7.29,-1.11].
+
+On the 10-composition confirmation panel, harmonic sources raise graph validity
+from 52.73\% to 61.56\%, a gain of 8.83 points (95\% CI [5.08,12.50]; composition
+interval [4.84,12.66]). Geometric validity improves by 9.69 points [6.33,12.89].
+Every graph-valid output has distinct perceived connectivity within its
+composition, and the evaluator encounters no exceptions. Generation takes nearly
+the same time for the two sources: harmonic/Gaussian timings are 175.73/175.43
+seconds and 178.20/177.74 seconds for 640 samples in the two continuations.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{../research/figures/harmonic_paper_v1/composition_effects.pdf}
+\caption{Harmonic-source graph-support gains vary across compositions and
+continuations. Points show individual continuation differences; bars average
+them. Both panels evaluate the same two trained models.}\label{fig:effects}
+\end{figure}
+
+\input{sections/harmonic_sc_covariance_results}
+
+

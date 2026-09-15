@@ -1,5 +1,5 @@
 {
-  "status": "independent_training_and_wide_evaluation_running",
+  "status": "wide_and_component_results_audited_independent_seed1_running",
   "last_verified_paper_commit": "c82f492ccb42cce25c225261edf79282ce780c2e",
   "current_method": "LatentSpring",
   "paper_changed": false,
@@ -51,7 +51,9 @@
     "components": "46566308",
     "wide_audit": "46569688",
     "matched_audit": "46569690",
-    "matched_s1_gaussian_retry": "46569686"
+    "matched_s1_gaussian_retry": "46569686",
+    "component_audit_complete": "46570777",
+    "gaga_s1_replacement": "46575165"
   },
   "planned_methods": [
     "gaussian_fm",
@@ -75,5 +77,20 @@
   "component_review": "notes/reader_and_component_review_20260915.md",
   "followup_submission_issue": "Original wide jobs completed within47min; no continuation required. Wide audit submitted without an expired dependency. Matched audit waits for original array and failed-initialization retry.",
   "component_run": "runs/component_ablations_v1",
-  "wide_final_run": "runs/benchmark_expansion_v1/frozen_models"
+  "wide_final_run": "runs/benchmark_expansion_v1/frozen_models",
+  "wide_audit": "research/evidence/wide_generalization_audit_v1.json",
+  "component_audit": "research/evidence/component_benefits_audit_v1.json",
+  "reader_rewrite": "paper/tree_working.tex",
+  "new_reader_diagram": "research/figures/reader_overview_v1/method.pdf",
+  "results": {
+    "wide_graph_gain_pp": 6.9091796875,
+    "wide_composition_interval_pp": [
+      4.736328125,
+      9.033203125
+    ],
+    "sc_gain_equal_updates_pp": 7.2265625,
+    "sc_gain_equal_training_forwards_pp": 12.434895833333332,
+    "paired_vs_norm_energy_eV_atom": -0.032320483252577595,
+    "paired_vs_norm_force_rms_eV_A": -0.4170442953446645
+  }
 }

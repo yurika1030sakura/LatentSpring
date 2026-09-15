@@ -4,12 +4,12 @@ composition-conditioned task. Positions follow its variance-preserving diffusion
 schedule, while clean atom categories are conditions during both training and
 sampling. The GEOM-pretrained checkpoint receives 30,000 updates on the same
 3,000 OMol25 training structures used by each source continuation, with its original
-$10^{-4}$ learning rate. We evaluate both 128 denoiser calls and the full 1,001-call
+$10^{-4}$ learning rate. We evaluate both 128 network evaluations and the full 1,001-call
 sampler, including the final observation step, on all 24 fresh compositions.
 
 \begin{table}[t]
 \centering
-\caption{Raw graph support of the independently adapted conditional EDM,
+\caption{Raw graph validity of the independently adapted conditional EDM,
 768 attempts per continuation. The harmonic and force-update models in
 Table~\ref{tab:fresh-graph} reach 52.73\% and 53.45\%, respectively, at 128 calls.}
 \begin{tabular}{lrrr}

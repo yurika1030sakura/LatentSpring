@@ -1,8 +1,8 @@
 \paragraph{Original endpoint-checkpoint reference.}
 We evaluate the original 30,000-step OMol25 checkpoint on the coordinate-generation
 task by clamping composition and the neutral/no-bond inputs. Its endpoint sampler
-uses 127 Euler updates and a first-step bootstrap, totaling 128 denoiser calls.
-Retaining predicted categorical history gives 106/640 and 113/640 graph passes in
+uses 127 Euler updates and a first-step bootstrap, totaling 128 network evaluations.
+Retaining predicted categorical history gives 106/640 and 113/640 graph-valid outputs in
 two sampling streams. Fixing the history categories and centering the first
 bootstrap gives 116/640 and 120/640. Both streams use the same checkpoint; the
 second variant changes both categorical history and bootstrap centering.

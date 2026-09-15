@@ -11,9 +11,9 @@ Each model generates 32 samples per composition in each continuation, giving
 
 \begin{table}[t]
 \centering
-\caption{Fresh 24-composition graph support, 768 attempts per continuation.
+\caption{Fresh 24-composition graph validity, 768 attempts per continuation.
 All rates describe raw outputs before any structural relaxation. All methods use
-128 primitive denoiser calls per attempted output.}
+128 primitive network evaluations per attempted output.}
 \begin{tabular}{lrrr}
 \toprule
 Model & Continuation 1 & Continuation 2 & Pooled rate\\
@@ -26,9 +26,9 @@ With complete-work update &426&383&52.67\%\\
 \end{tabular}\label{tab:fresh-graph}
 \end{table}
 
-The harmonic source improves graph support by 8.20 percentage points over
+The harmonic source improves graph validity by 8.20 percentage points over
 Gaussian (95\% CI $[5.08,11.33]$), with gains in both continuations. The force
-update changes graph support by $+0.72$ points relative to harmonic, with interval
+update changes graph validity by $+0.72$ points relative to harmonic, with interval
 $[-0.98,2.34]$, consistent with a similar support rate. Every accepted output has
 distinct perceived connectivity within its composition in these draws.
 
@@ -36,8 +36,8 @@ distinct perceived connectivity within its composition in these draws.
 Every output is evaluated at fixed coordinates with eSEN and gas-phase GFN2-xTB
 single-point energies and gradients \citep{gfn2xtb}. GFN2 provides an independent
 potential, used only for evaluation. Four of the 6,144 generated-geometry GFN2
-calculations fail; all four concern graph-rejected outputs. Calculations succeed
-for every graph-supported output, and reference inversion checks pass. Including
+calculations fail; all four concern graph-invalid outputs. Calculations succeed
+for every graph-valid output, and reference inversion checks pass. Including
 reference checks, evaluation costs 12,384 eSEN queries and 6,240 GFN2 attempts.
 eSEN scores use the parity averages defined in Section~\ref{sec:flow}. Force
 RMS is the square root of the mean squared atom-force norm.
@@ -45,7 +45,7 @@ RMS is the square root of the mean squared atom-force norm.
 \begin{table}[t]
 \centering
 \caption{Primary force-update change versus the frozen harmonic model on paired
-common-graph support. Both continuations improve under both potentials. Brackets
+jointly valid outputs. Both continuations improve under both potentials. Brackets
 give paired 95\% confidence intervals.}
 \small
 \setlength{\tabcolsep}{4pt}
@@ -68,7 +68,7 @@ comparison, aggregate energy also decreases, with a larger effect in one
 continuation than the other.
 
 The complete-work and force-only updates perform similarly within sampling
-uncertainty. Their energy difference on common graph support is $-0.00413$
+uncertainty. Their energy difference among jointly valid outputs is $-0.00413$
 eV/atom under eSEN, with interval $[-0.00903,0.00078]$, and $-0.00363$ under GFN2,
 with interval $[-0.00792,0.00075]$. Force and graph differences also have intervals
 spanning zero. The force-only update therefore offers comparable physical scores

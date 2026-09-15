@@ -1,13 +1,20 @@
 \subsection{Complete-work correction on molecular rotors}\label{sec:rotor-work}
 To test the work correction directly, we select three methyl rotors from training
 molecules in fixed data order, using geometry alone.
-Each rotor defines a constrained one-dimensional molecular curve. A periodic
-interpolant of 512 GFN2 energies supplies the potential $U(\phi)$; the target is
+Each rotor turns the three hydrogens of a methyl group around its bond axis while
+holding the other internal coordinates fixed. The rotation angle $\phi$ therefore
+specifies a one-dimensional family of three-dimensional molecular structures.
+A periodic interpolant of 512 GFN2 energies supplies their potential $U(\phi)$;
+$U(0)$ is the reference energy at angle zero. The target is
 $\rho(\phi)\propto q_0(\phi)\exp[-(U(\phi)-U(0))/kT]$, where $q_0$ is a normalized
-von Mises reference of concentration one and $kT$ corresponds to 300 K.
+von Mises reference of concentration one: a smooth circular distribution favoring
+angles near zero. The product retains this reference restraint and gives greater
+weight to lower-energy angles. Here $kT=k_B T_{\rm phys}$ at 300 K.
 
 Starting from $\phi\sim q_0$, use escorts $\psi_a(\phi)=\phi+a\sin\phi$ for
-$a\in\{-0.5,0,0.5\}$. Their positive Jacobian is $J_a=1+a\cos\phi$. The complete
+$a\in\{-0.5,0,0.5\}$. Their positive Jacobian is $J_a=1+a\cos\phi$.
+The map $\psi_a$ changes the sampled angle; $a$ sets its strength, and $J_a$
+measures how it locally expands or compresses angular intervals. The complete
 generalized work includes both reference densities and $-kT\log J_a$
 (Appendix~\ref{app:rotor-work}). We compare complete work, energy-only weights,
 weights omitting the Jacobian, and unweighted endpoints, with shared draws and
@@ -22,6 +29,10 @@ escorts; each case has 128 repetitions. Energy-only and incomplete-work controls
 retain bias as sampling increases. Unweighted endpoints have no free-energy
 estimator. Each target is a constrained molecular rotor at 300 K.}\label{fig:rotor-work}
 \end{figure}
+
+Total variation measures disagreement between the estimated and target angular
+probabilities, with zero indicating agreement. Free-energy RMSE measures error in
+the logarithm of the target normalizer, expressed in energy units.
 
 At 2,048 samples, complete work has lower mean total-variation error than both
 incomplete-weight controls in all six nonidentity cases. Across these cases,

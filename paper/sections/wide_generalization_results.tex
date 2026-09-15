@@ -1,0 +1,32 @@
+\subsection{Generalization across molecular sizes}\label{sec:wide}
+We evaluate the frozen source models on 64 further compositions, with 16 in each
+of four size ranges from 17 to 64 atoms. All are absent from both processed OMol25
+corpora and from the earlier generation panels. The models receive no additional
+training. Metadata ranks select each composition after the same reference-validity
+checks, with 32 draws per composition and model continuation.
+
+\begin{table}[t]
+\centering
+\caption{Raw chemical-graph validity on the 64-composition panel. Each size range
+contains 1,024 attempts per method across two continuations. Values are percentages;
+the final column reports percentage-point differences.}
+\begin{tabular}{lrrr}
+\toprule
+Atoms & Gaussian & Harmonic & Difference\\
+\midrule
+17--28 & 49.12 & 55.08 & +5.96\\
+29--40 & 24.02 & 38.28 & +14.26\\
+41--52 & 16.50 & 21.29 & +4.79\\
+53--64 & 9.77 & 12.40 & +2.64\\
+\midrule
+All 64 compositions &24.85&31.76&+6.91\\
+\bottomrule
+\end{tabular}\label{tab:wide}
+\end{table}
+
+The harmonic source improves the pooled rate in every size range. Overall it
+adds 6.91 percentage points, with a size-stratified composition-bootstrap 95\%
+interval of [4.74,9.03]. The two continuations improve by 11.18 and 2.64 points,
+respectively. Absolute validity decreases for larger molecules, while the source
+advantage remains positive in the aggregate. These results extend the source
+comparison beyond the original 17--28-atom confirmation range.

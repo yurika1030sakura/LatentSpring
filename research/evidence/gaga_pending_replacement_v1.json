@@ -1,0 +1,26 @@
+{
+  "at_utc": "2026-09-15T09:11:20.808573+00:00",
+  "previous_task": "46562802_7",
+  "previous_status": "cancelled_pending_without_training",
+  "new_job": "46575165",
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--array=7",
+    "-p",
+    "gpu_test",
+    "--gres=gpu:1",
+    "-J",
+    "lspring-gaga-s1",
+    "--time=03:00:00",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/launch_source/scripts/research/matched_generators.slurm",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/data_source_v2",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/launch_source",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/matched_generators_v1/training",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027"
+  ],
+  "audit_job": "46569690",
+  "audit_dependency": "afterany:46562802,afterok:46569686,afterok:46575165",
+  "audit_dependency_update_exit_code": 0,
+  "reason": "The last GAGA arm remained queued while gpu_test slots became free. Move the unchanged run to an available compatible A100 MIG allocation; no method or budget changes."
+}

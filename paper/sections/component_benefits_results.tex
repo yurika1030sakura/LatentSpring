@@ -1,0 +1,65 @@
+\subsection{What self-conditioning contributes}\label{sec:sc-ablation}
+To test the provisional-geometry feedback, we train the harmonic-source model
+with self-conditioning removed. Initialization, the 3,000 training structures,
+source law and pairing are unchanged. One readout uses 3,000 optimizer updates;
+a second uses 6,000, matching the self-conditioned model's number of backbone
+training evaluations. A single-pass model takes 64 midpoint steps, so all methods
+use 128 network evaluations at generation.
+
+\begin{table}[t]
+\centering
+\caption{Self-conditioning ablation on the 24-composition panel. Each continuation
+has 768 raw attempts. The full model improves over both single-pass budgets.}
+\begin{tabular}{lrrrr}
+\toprule
+Model & Updates & Training passes & Valid outputs & Rate (\%)\\
+\midrule
+Single pass &3,000&3,000&363;336&45.51\\
+Single pass &6,000&6,000&277;342&40.30\\
+Self-conditioned &3,000&6,000&435;375&52.73\\
+\bottomrule
+\end{tabular}\label{tab:sc-ablation}
+\end{table}
+
+Self-conditioning adds 7.23 percentage points at equal optimizer updates
+(95\% interval [4.69,9.77]) and 12.43 at equal training-pass count
+([9.70,15.23]). Both continuations improve under both comparisons. Matching pass
+counts does not equate every operation or wall-clock cost; the comparison tests
+whether additional single-pass training recovers the observed validity gain.
+
+\subsection{Why subtract the replay update}\label{sec:update-ablation}
+A physical continuation also changes the model through ordinary refitting of
+generated anchors. We compare the paired update with direct physical continuation
+and a control that scales the direct update to the same parameter-space length.
+For this control,
+$\theta_{\rm control}=\theta_{\rm base}+alpha(\theta_{\rm physical}-\theta_{\rm base})$,
+where $\alpha$ is the ratio of the paired and direct update norms. These norms sum
+squared changes over trainable parameters only. The resulting coefficients,
+0.2536 and 0.2564, are determined from training weights before generation.
+
+\begin{table}[t]
+\centering
+\caption{Physical-update controls on the ten-composition panel, using 1,280
+attempts per model. Energy differences are relative to the base model under eSEN,
+among paired outputs that are both graph-valid.}
+\small
+\begin{tabular}{lrr}
+\toprule
+Model & Graph validity (\%) & Energy change (eV/atom)\\
+\midrule
+Base &62.11&0\\
+Direct physical update &54.77&$+0.11080$\\
+Same-norm direct update &61.64&$+0.01893$\\
+Paired update &62.03&$-0.01554$\\
+\bottomrule
+\end{tabular}\label{tab:update-ablation}
+\end{table}
+
+The same-norm control largely preserves graph validity but raises energy relative
+to the base model. The paired update instead lowers it. Directly comparing the
+paired and same-norm updates gives an energy change of $-0.03232$ eV/atom
+([-0.03981,-0.02485]) and a force-RMS change of $-0.4170$ eV/\AA\
+([-0.5529,-0.2859]). Both continuations favor the paired direction, and the
+all-output comparisons have the same signs. Their graph-validity difference is
+$+0.39$ points with interval [-1.95,2.73]. The result supports the direction
+identified by replay subtraction, beyond simply limiting update magnitude.

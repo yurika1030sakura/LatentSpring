@@ -1,0 +1,61 @@
+\section{Reader's guide to the notation}\label{app:notation}
+The method has three stages: construct random starting coordinates from the
+atomic input, learn a flow toward molecular reference structures, and use physical
+targets to update the trained network. The symbols below refer to these stages.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{0.22\linewidth}p{0.71\linewidth}}
+\toprule
+Symbol & Meaning\\
+\midrule
+$N$, $z_i$, $Q$, $S$, $c$ & Number of atoms, element-identifying atomic numbers,
+net charge, and spin multiplicity; $c$ collects the atomic input.\\
+$X$, $x_i$, $\HH_N$ & Atomic coordinate matrix, the position of atom $i$, and
+the space where the mean atomic position is zero. Coordinates are in angstroms.\\
+$T$, $a_{ij}$, $u_i$ & Auxiliary spatial tree, its edge affinities, and the
+atom-dependent factors defining those affinities. These are source variables.\\
+$\ell_{ij}$, $\sigma_{ij}$, $h_{ij}$ & Characteristic separation from covalent
+radii, Gaussian displacement scale, and the probability density of one edge vector.\\
+$\tau(a)$, $q_0(X\mid c)$ & Sum of tree weights and the normalized distribution
+of starting coordinates after averaging over trees.\\
+$X_0$, $X_1$, $X_t$, $t$ & Starting, reference and intermediate coordinates;
+$t$ labels progress along their training interpolation.\\
+$V^*$, $v_\theta$, $D_\theta$ & Target velocity, predicted velocity, and the
+network coordinate output used to construct that prediction.\\
+$v^{(0)}$, $v^{(1)}$, $\widehat X_1$ & First and second velocity predictions,
+and the provisional endpoint passed between them during self-conditioning.\\
+$\EE$, $\|\cdot\|_F^2$ & Average over the specified random draws, and the sum
+of squared entries of a coordinate or force matrix.\\
+$\theta_{\rm base}$, $\theta_{\rm physical}$,
+$\theta_{\rm replay}$, $\theta_{\rm final}$ & Original trained weights, physical
+and replay continuations, and the resulting weights used for generation.\\
+$A$, $q_A$, $\sigma_A$, $\delta_A$ & Generated training anchor, Gaussian
+neighborhood around it, neighborhood scale, and force-derived displacement.\\
+$E_+$, $F_+$ & Mirror-symmetrized teacher energy and force, in eV and eV/\AA.
+The force is the negative coordinate gradient of this energy.\\
+$k_B T_{\rm phys}$, $W_A$ & Thermal energy at the teacher temperature and
+generalized work used to weight local candidate structures.\\
+$\Phi$, $J$, $Z$ & An imposed coordinate transformation, its local volume-change
+factor, and the integral that normalizes a target density.\\
+\bottomrule
+\end{tabular}
+\caption{Symbols used in the source construction, flow model and physical update.
+The tree $T$ and physical temperature $T_{\rm phys}$ denote different quantities.}
+\end{table}
+
+\paragraph{Structural and physical readouts.}
+Geometric validity checks that all atoms belong to one contact-connected structure
+and that no pair has an excessive short-distance overlap. Chemical-graph validity
+also requires a chemically consistent bond graph inferred from those coordinates.
+A pair of outputs is \emph{jointly valid} when both pass these checks; their
+inferred chemical graphs can differ. By contrast, the local physical teacher's
+same-graph restriction keeps the anchor's labeled bond orders, formal charges and
+radical counts fixed.
+
+Energy changes are compared within the same atomic composition and divided by
+its atom count. Force RMS is
+$[N^{-1}\sum_{i=1}^N\|F_i\|_2^2]^{1/2}$, the root mean squared magnitude of the
+atomic force vectors. Lower force RMS indicates smaller residual forces, while
+the energy score measures relative energetic preference under the chosen potential.

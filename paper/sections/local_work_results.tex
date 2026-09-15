@@ -7,7 +7,7 @@ resolution of the local target.
 
 \begin{table}[t]
 \centering
-\caption{Direct physics-distillation graph support per 640 attempts. The frozen
+\caption{Direct physics-distillation graph validity per 640 attempts. The frozen
 reference is not refitted; other arms have identical additional update budgets.}
 \begin{tabular}{lrrrr}
 \toprule
@@ -19,7 +19,7 @@ Continuation & Frozen & Replay & Unweighted escort & Complete work\\
 \end{tabular}\label{tab:local-work-direct}
 \end{table}
 
-On paired common-graph support, complete work versus the unweighted escort reduces
+Among paired outputs that are both graph-valid, complete work versus the unweighted escort reduces
 mean energy by 0.00758 eV/atom (conditional paired 95\% interval
 $[-0.01424,-0.00113]$ for the signed difference) and force RMS by 0.16174 eV/\AA\
 (interval $[-0.27660,-0.05590]$). Both continuations favor complete work.
@@ -27,7 +27,7 @@ The all-output comparison has the same direction.
 
 All three direct continuations reduce quality relative to the frozen model.
 Complete work has graph
-support 55.16\%, versus 62.11\% for frozen, and common-supported energy is
+validity 55.16\%, versus 62.11\% for frozen, and jointly valid energy is
 \emph{higher} by 0.10587 eV/atom (interval $[0.09009,0.12168]$).
 Replay also regresses on the mixed training targets. This motivates transferring
 the physical update relative to its matched replay continuation, as described
