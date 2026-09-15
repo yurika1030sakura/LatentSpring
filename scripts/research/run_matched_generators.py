@@ -6,6 +6,7 @@ import hashlib
 import json
 from pathlib import Path
 import time
+import datetime
 
 import numpy as np
 import torch
@@ -34,32 +35,50 @@ def batches(rows, steps, batch, seed):
 def evaluate(model, source, spec, kind, rows, seed, count, batch, calls, out, label):
     output = []
     model.eval()
+    model_digest = state_hash(model)
+    report_file = out/f'{label}_results.json'
+    if report_file.exists():
+        report = json.loads(report_file.read_text())
+        assert report['complete'] and report['model_state_sha256'] == model_digest
+        for row in report['rows']:
+            assert sha(out/f'{label}_c{row["condition_index"]}.pt') == row['sample_sha256']
+        return report
     for index, c in enumerate(rows):
         c = dict(c, numbers=c['atomic_numbers'])
-        positions, initial = [], []
-        start = time.perf_counter()
-        for begin in range(0, count, batch):
-            size = min(batch, count-begin)
-            x, x0 = sample(model, c['numbers'], kind, spec, source,
-                seed*1000003+index*100003+begin, size, calls)
-            if not torch.isfinite(x).all():
-                raise FloatingPointError('Nonfinite generated coordinates')
-            positions.append(x.cpu().double())
-            initial.append(x0.cpu().double())
-        torch.cuda.synchronize()
-        seconds = time.perf_counter()-start
-        x = torch.cat(positions)
         file = out/f'{label}_c{index}.pt'
-        torch.save(dict(positions=x, initial_positions=torch.cat(initial), condition=c,
-                        calls_per_sample=calls, evaluation_seed=seed), file)
+        if file.exists():
+            saved = torch.load(file, map_location='cpu', weights_only=False)
+            assert saved['model_state_sha256'] == model_digest and saved['condition'] == c
+            assert saved['calls_per_sample'] == calls and saved['evaluation_seed'] == seed
+            x, seconds = saved['positions'], saved['generation_seconds']
+            assert len(x) == count
+        else:
+            positions, initial = [], []
+            start = time.perf_counter()
+            for begin in range(0, count, batch):
+                size = min(batch, count-begin)
+                x, x0 = sample(model, c['numbers'], kind, spec, source,
+                    seed*1000003+index*100003+begin, size, calls)
+                if not torch.isfinite(x).all():
+                    raise FloatingPointError('Nonfinite generated coordinates')
+                positions.append(x.cpu().double())
+                initial.append(x0.cpu().double())
+            torch.cuda.synchronize()
+            seconds = time.perf_counter()-start
+            x = torch.cat(positions)
+            temporary = file.with_suffix('.tmp')
+            torch.save(dict(positions=x, initial_positions=torch.cat(initial), condition=c,
+                calls_per_sample=calls, evaluation_seed=seed, model_state_sha256=model_digest,
+                generation_seconds=seconds), temporary)
+            temporary.replace(file)
         result = dict(condition_index=index, condition=c, sample_sha256=sha(file), generation_seconds=seconds,
             final_geometry=geometry_counts(x, c['numbers']), **assess(x, c, list(range(len(x)))))
         output.append(result)
         print(json.dumps(dict(label=label, index=index, graph=result['graph_supported'], n=c['n_atoms'])), flush=True)
-    report = dict(complete=True, kind=kind, calls_per_sample=calls, rows=output,
+    report = dict(complete=True, kind=kind, calls_per_sample=calls, rows=output, model_state_sha256=model_digest,
         attempted=sum(r['attempted'] for r in output), graph_supported=sum(r['graph_supported'] for r in output),
         new_physical_queries=0)
-    write(out/f'{label}_results.json', report)
+    write(report_file, report)
     return report
 
 
@@ -67,9 +86,15 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for key in ['project', 'protocol', 'out']:
         parser.add_argument('--'+key, type=Path, required=True)
+    parser.add_argument('--resume', action='store_true')
     args = parser.parse_args()
     spec = json.loads(args.protocol.read_text())
-    assert spec['frozen'] and not args.out.exists()
+    assert spec['frozen']
+    if args.out.exists() and not args.resume:
+        raise FileExistsError(args.out)
+    if (args.out/'complete.json').exists():
+        assert json.loads((args.out/'complete.json').read_text())['protocol_sha256'] == sha(args.protocol)
+        return
     torch.set_num_threads(2)
     for key in ['data', 'condition_manifest']:
         assert sha(args.project/spec[key]) == spec[key+'_sha256']
@@ -82,7 +107,7 @@ def main():
     assert len(data['training']) == spec['training_rows']
     for rows in data.values():
         assert all(r['condition']['charge'] == 0 and r['condition']['spin_multiplicity'] == 1 for r in rows)
-    args.out.mkdir(parents=True)
+    args.out.mkdir(parents=True, exist_ok=args.resume)
     model = initialize(spec, 'cuda').train()
     assert model.norm_values[0] == 1., 'Harmonic scales are in Angstrom'
     initial_hash = state_hash(model)
@@ -90,10 +115,33 @@ def main():
     ema = copy.deepcopy(model).eval().requires_grad_(False)
     source = HarmonicSource(spec['edge_log_width'])
     schedule = batches(data['training'], spec['training_steps'], spec['batch_size'], spec['batch_seed'])
-    np.save(args.out/'batch_indices.npy', schedule)
-    write(args.out/'initialization.json', dict(state_sha256=initial_hash,
+    if (args.out/'batch_indices.npy').exists():
+        np.testing.assert_array_equal(np.load(args.out/'batch_indices.npy'), schedule)
+    else:
+        np.save(args.out/'batch_indices.npy', schedule)
+    initialization = dict(state_sha256=initial_hash,
         parameter_count=sum(p.numel() for p in model.parameters()), pretrained=False,
-        protocol_sha256=sha(args.protocol), batch_schedule_sha256=sha(args.out/'batch_indices.npy')))
+        protocol_sha256=sha(args.protocol), batch_schedule_sha256=sha(args.out/'batch_indices.npy'))
+    if (args.out/'initialization.json').exists():
+        assert json.loads((args.out/'initialization.json').read_text()) == initialization
+    else:
+        write(args.out/'initialization.json', initialization)
+    start_step, training_seconds = 0, 0.
+    if (args.out/'last.ckpt').exists():
+        saved = torch.load(args.out/'last.ckpt', map_location='cuda', weights_only=False)
+        assert saved['protocol_sha256'] == sha(args.protocol) and saved['initial_state_sha256'] == initial_hash
+        model.load_state_dict(saved['state_dict'], strict=True)
+        ema.load_state_dict(saved['ema_state_dict'], strict=True)
+        optimizer.load_state_dict(saved['optimizer_state_dict'])
+        start_step, training_seconds = saved['global_step'], saved['training_seconds']
+        del saved
+    attempts = args.out/'attempts'
+    attempts.mkdir(exist_ok=True)
+    attempt = len(list(attempts.glob('*.json')))
+    write(attempts/f'{attempt:03d}.json', dict(start_step=start_step,
+        at_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        discarded_prefix_compute_retained_in_previous_metrics=True))
+    metrics_file = args.out/('metrics.jsonl' if attempt == 0 else f'metrics_attempt{attempt:03d}.jsonl')
     validation_conditions, seen = [], set()
     for row in data['validation']:
         c = row['condition']
@@ -104,10 +152,13 @@ def main():
             break
     assert len(validation_conditions) == spec['validation_compositions']
     validation = args.out/'validation'
-    validation.mkdir()
+    validation.mkdir(exist_ok=True)
     start = time.perf_counter()
-    training_seconds = 0.
-    for step, indices in enumerate(schedule, 1):
+    if start_step in spec['validation_steps'] and not (validation/f'step{start_step}_results.json').exists():
+        evaluate(ema, source, spec, spec['kind'], validation_conditions,
+            spec['validation_seed'], spec['validation_samples'], spec['evaluation_batch'],
+            spec['inference_calls'][0], validation, f'step{start_step}')
+    for step, indices in enumerate(schedule[start_step:], start_step+1):
         tick = time.perf_counter()
         rows = [data['training'][int(i)] for i in indices]
         clean = torch.stack([r['positions'] for r in rows]).float().cuda()
@@ -129,7 +180,7 @@ def main():
             record = dict(step=step, loss=float(objective.detach()), gradient_norm=float(norm),
                 elapsed_seconds=time.perf_counter()-start, training_seconds=training_seconds,
                 examples_seen=step*spec['batch_size'])
-            with (args.out/'metrics.jsonl').open('a') as f:
+            with metrics_file.open('a') as f:
                 f.write(json.dumps(record)+'\n')
             print(json.dumps(record), flush=True)
         if step % spec['checkpoint_every'] == 0 or step == spec['training_steps']:
@@ -151,7 +202,7 @@ def main():
         primitive_training_calls=spec['training_steps']*spec['batch_size'],
         validation_used_for_model_selection=False, final_model='EMA at fixed final update'))
     final = args.out/'evaluation'
-    final.mkdir()
+    final.mkdir(exist_ok=True)
     for calls in spec['inference_calls']:
         evaluate(ema, source, spec, spec['kind'], panel, spec['evaluation_seed'],
             spec['samples_per_condition'], spec['evaluation_batch'], calls, final, f'{spec["kind"]}_{calls}')

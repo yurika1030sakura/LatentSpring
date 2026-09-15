@@ -1,5 +1,5 @@
 {
-  "status": "preparing_matched_scratch_benchmarks_and_wide_evaluation",
+  "status": "protocols_frozen_ready_to_launch",
   "last_verified_paper_commit": "c82f492ccb42cce25c225261edf79282ce780c2e",
   "current_method": "LatentSpring",
   "paper_changed": false,
@@ -17,7 +17,7 @@
     "selection": "runs/matched_generators_v1/data_v2/selection.json"
   },
   "panel": {
-    "status": "expanding_reference_pool_before_generation",
+    "status": "complete_frozen",
     "initial_pool_candidates": 768,
     "initial_qualified_by_size": {
       "17-28": 66,
@@ -26,7 +26,15 @@
       "53-64": 15
     },
     "target_compositions": 64,
-    "protocol": "research/evidence/generalization_pool_protocol_v2.json"
+    "protocol": "research/evidence/generalization_pool_protocol_v2.json",
+    "panel": "research/evidence/wide_generalization_panel_v1.json",
+    "composition_count": 64,
+    "qualified_by_size": {
+      "17-28": 125,
+      "29-40": 119,
+      "41-52": 72,
+      "53-64": 30
+    }
   },
   "jobs": {
     "pool": "46558599",
@@ -34,7 +42,9 @@
     "first_data_failed": "46559186",
     "qualification_incomplete": "46560355",
     "data_complete": "46560356",
-    "gpu_smoke_complete": "46560304"
+    "gpu_smoke_complete": "46560304",
+    "expanded_pool_complete": "46561125",
+    "large_gpu_probe_complete": "46561126"
   },
   "planned_methods": [
     "gaussian_fm",
@@ -45,5 +55,12 @@
   "planned_independent_initializations": 2,
   "no_new_generator_improvement_claim": true,
   "new_molecular_oracle_calls": 0,
-  "notes": "notes/benchmark_expansion_20260915.md"
+  "notes": "notes/benchmark_expansion_20260915.md",
+  "training_budget": {
+    "updates": 30000,
+    "batch_size": 32,
+    "presentations_per_arm": 960000,
+    "methods": 4,
+    "seeds": 2
+  }
 }

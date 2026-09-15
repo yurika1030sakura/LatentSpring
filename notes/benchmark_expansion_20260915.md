@@ -46,3 +46,24 @@ mixture covariance; initialization is reproducible and every objective has finit
 nonzero gradients; diffusion matches the existing conditional sampler; and the
 EGNN vector respects rotations. These are implementation checks, not evidence of
 competitive generation.
+
+The expanded pool now yields 125/119/72/30 qualified references in the four size
+strata. All qualified candidates have zero exact composition overlap in both
+processed corpora. The final 64-composition panel is frozen. Training preparation
+selected 20,000 rows (8,323 compositions) and 512 internal validation rows
+(299 compositions), with no composition overlap between those partitions or the
+new panel. No scaffold-tree filter was applied to these training rows.
+
+The formal independent benchmark uses batch32 and30,000 updates (960,000
+training presentations per arm), two independent initializations and four methods.
+All arms share the batch stream within each initialization. The train-only mean
+intrinsic coordinate variance for GAGA is3.0232257865777212 A^2. Fixed EMA outputs
+at the final update are evaluated; validation at5,000/15,000/30,000 diagnoses
+learning without model selection. The128-call comparison is primary; full EDM
+(1001) and truncated GAGA (651) schedules are also retained.
+
+GPU probes exercised all objectives on actual40- and64-atom FIT structures. The
+larger batch32 probe uses at most6.72GB on an A100 MIG device. These probes are
+engineering runs; no benchmark-generation result has been inspected. Checkpoints
+include optimizer and EMA states for scheduler recovery. Completed generated
+files are reused with model/condition/seed/hash checks during recovery.
