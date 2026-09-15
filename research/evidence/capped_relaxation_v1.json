@@ -1,0 +1,43 @@
+{
+  "format": "capped_relaxation_v1",
+  "frozen": true,
+  "at_utc": "2026-09-15T03:31:45.651668+00:00",
+  "xtb_binary": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol/bin/xtb",
+  "xtb_binary_sha256": "85da9d385d12ac9674ac311f3cdc669bb90b0423680e33317fbc631af97f78cf",
+  "methods": [
+    "harmonic_tree",
+    "escort_delta"
+  ],
+  "sample_indices": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "step_caps": [
+    5,
+    20
+  ],
+  "force_tolerance_eV_A": 0.05,
+  "max_step_A": 0.1,
+  "workers": 8,
+  "trajectories": 408,
+  "singlepoint": {
+    "accuracy": 0.1,
+    "timeout_seconds": 90,
+    "restraint_eV_A2": 0.0
+  },
+  "cached_xtb_sha256": {
+    "0": "07b0f46c3b7201f4d6d5f1289384182083f2090157f1b09f094a55ce26df7e5b",
+    "1": "c8924cca1f54ec85ac5627803b692a5c76d819c74d7c0ff18891d3e4869d5fb6"
+  },
+  "generation_report_sha256": {
+    "0/harmonic_tree": "a631ba8accff004820288ab1fdef56c02c473d8f82e75772f18852a0f47890a2",
+    "0/escort_delta": "fc8b4a1f2ab4e1e7c88bda0f1ab600bbf68d56a0edae2d1d1fe6500fc3cb72e8",
+    "1/harmonic_tree": "f5b77618474a8c275c2c3396ccc9fdd6e620d1a17fd14491f217b3a31345f04e",
+    "1/escort_delta": "5168d817c41f16be4a076c63ebe67724244f79feb57f2439e204e408838a1569"
+  },
+  "selection": "First four fixed draw indices for every fresh24 composition and both models/seeds, irrespective of graph validity or energy;24 original reference controls.",
+  "scope": "Separate diagnostic of the old frozen raw outputs. ASE BFGS at most20 steps, original energy/force reused for initial state, later GFN2 singlepoints counted. This explicitly optimizes COPIES for evaluation only; no optimized output replaces raw generation or enters training. Convergence is a force threshold, not a Hessian/stable-minimum or thermal-distribution certificate.",
+  "scientific_submission_ready": false
+}
