@@ -1,0 +1,29 @@
+{
+  "job": "46579326",
+  "source_commit": "4e2cc1b2926daad3a59f7805787d49491a79ab55",
+  "command": [
+    "sbatch",
+    "--parsable",
+    "--array=0-1%2",
+    "-A",
+    "ryl_lab",
+    "-p",
+    "gpu_requeue",
+    "--gres=gpu:1",
+    "--constraint=a100|h100|h200",
+    "-c",
+    "4",
+    "--mem=40G",
+    "--time=01:00:00",
+    "-J",
+    "lspring-shift-control",
+    "-o",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/logs/lspring-shift-control-%A_%a.out",
+    "-e",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/logs/lspring-shift-control-%A_%a.err",
+    "--chdir",
+    "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/data_source_v2",
+    "--wrap",
+    "export PYTHONPATH=/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/data_source_v2 PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MPLCONFIGDIR=/tmp/latentspring_shift_mpl; /n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol/bin/python -u /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/force_shift_source/scripts/research/run_force_shift_ablation.py --project /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027 --protocol /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/benchmark_expansion_v1/force_shift_source/research/evidence/force_shift_ablation_s${SLURM_ARRAY_TASK_ID}_v1.json --out /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/component_ablations_v1/shift/s${SLURM_ARRAY_TASK_ID}"
+  ]
+}
