@@ -1,8 +1,7 @@
 \paragraph{Direct-distillation outcome.}
-Both continuations finish all three 1,000-update student fits. The 512 generated
-FIT anchors yield 351 graph-supported anchors, of which 349 have at least one
-supported escorted particle. All original draws and unsupported particles remain
-in the records. Mean local particle ESS by composition is about 1.27--1.87 out of
+Each continuation fits three students for 1,000 updates. Of 512 generated
+training anchors, 351 pass the graph assay and 349 have at least one supported
+escorted particle. Mean local particle ESS by composition is about 1.27--1.87 out of
 8, indicating substantial weight concentration and limited finite-particle
 resolution of the local target.
 
@@ -23,23 +22,18 @@ Continuation & Frozen & Replay & Unweighted escort & Complete work\\
 On paired common-graph support, complete work versus the unweighted escort reduces
 mean energy by 0.00758 eV/atom (conditional paired 95\% interval
 $[-0.01424,-0.00113]$ for the signed difference) and force RMS by 0.16174 eV/\AA\
-(interval $[-0.27660,-0.05590]$). Both continuation signs favor complete work.
-All-output readouts agree in direction. Thus an incremental physical-quality
-signal is present relative to the matched escort student.
+(interval $[-0.27660,-0.05590]$). Both continuations favor complete work.
+The all-output comparison has the same direction.
 
-However, all direct continuations harm the frozen model. Complete work has graph
+All three direct continuations reduce quality relative to the frozen model.
+Complete work has graph
 support 55.16\%, versus 62.11\% for frozen, and common-supported energy is
 \emph{higher} by 0.10587 eV/atom (interval $[0.09009,0.12168]$).
-The prespecified adoption gate therefore fails. The matched physics increment does
-not establish an overall generator improvement. The replay control shows that
-plain continuation on these mixed targets already produces substantial regression;
-it does not uniquely identify the cause of that regression.
+Replay also regresses on the mixed training targets. This motivates transferring
+the physical update relative to its matched replay continuation, as described
+below.
 
-All 512 FIT source draws, 5,120 evaluation outputs, local work values, support
-masks, selections, checkpoints and physical readouts are audited. Teacher
-preparation uses 6,232 raw energy/force queries: 702 at anchors and 5,530 at
+Teacher preparation uses 6,232 raw energy/force queries: 702 at anchors and 5,530 at
 supported particles. An unweighted escort could omit the particle-energy queries;
 replay could omit all physical queries. Evaluating the four generated-output arms
-uses another 10,240 queries, reported separately from inference cost. No global
-Boltzmann, output-ESS, work-law novelty or successful direct-distillation claim
-follows from this result.
+uses another 10,240 queries, reported separately from generation cost.

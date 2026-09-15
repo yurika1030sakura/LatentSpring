@@ -3,7 +3,7 @@ We additionally adapt the official EGNN/EDM backbone \citep{edm} to the same
 composition-conditioned task. Positions follow its variance-preserving diffusion
 schedule, while clean atom categories are conditions during both training and
 sampling. The GEOM-pretrained checkpoint receives 30,000 updates on the same
-3,000 OMol25 FIT rows used by each source continuation, with its original
+3,000 OMol25 training structures used by each source continuation, with its original
 $10^{-4}$ learning rate. We evaluate both 128 denoiser calls and the full 1,001-call
 sampler, including the final observation step, on all 24 fresh compositions.
 
@@ -22,11 +22,13 @@ EDM, 1,001 calls &93&106&12.96\%\\
 \end{tabular}\label{tab:edm}
 \end{table}
 
-This complements the matched source ablations by testing a different pretrained
-backbone and generative objective. The backbones and pretraining histories differ:
-EDM has 2.38 million parameters and one denoiser pass per update, versus 5.90 million
-and two for the source-SC models. Its longer continuation strengthens task adaptation,
-but does not match total pretraining resources or certify separation from its GEOM
-pretraining data. The table reports this conditional adaptation protocol, not
-EDM's published joint-generation benchmark. Equal call counts also differ in
-FLOPs; generation and training times are recorded separately.
+This comparison tests adaptation to the same task and training data with a
+different pretrained architecture and objective. EDM has 2.38 million parameters
+and one denoiser pass per update; LatentSpring has 5.90 million and two. The longer
+EDM continuation takes 481.51/463.61 seconds, compared with approximately
+570--590 seconds for the source-model continuations. Its 128-call sampler takes
+48.54/47.94 seconds per 768 outputs, and its 1,001-call sampler takes
+377.65/374.12 seconds. These timings distinguish call count from computational
+cost. Pretraining histories differ, and composition-overlap checks cover the
+processed OMol25 corpora. The matched Gaussian--harmonic experiments provide the
+controlled comparison of source choice.

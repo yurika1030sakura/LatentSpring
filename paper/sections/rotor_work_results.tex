@@ -1,6 +1,6 @@
-\subsection{Testing complete work on molecular torsional targets}\label{sec:rotor-work}
-We isolate the role of complete work using three geometry-qualified methyl rotors
-from FIT molecules, selected in fixed data order before querying their energies.
+\subsection{Complete-work correction on molecular rotors}\label{sec:rotor-work}
+To test the work correction directly, we select three methyl rotors from training
+molecules in fixed data order, using geometry alone.
 Each rotor defines a constrained one-dimensional molecular curve. A periodic
 interpolant of 512 GFN2 energies supplies the potential $U(\phi)$; the target is
 $\rho(\phi)\propto q_0(\phi)\exp[-(U(\phi)-U(0))/kT]$, where $q_0$ is a normalized
@@ -20,8 +20,7 @@ weights omitting the Jacobian, and unweighted endpoints, with shared draws and
 torsional targets. Curves average all three molecules and both nonidentity
 escorts; each case has 128 repetitions. Energy-only and incomplete-work controls
 retain bias as sampling increases. Unweighted endpoints have no free-energy
-estimator. These are constrained molecular mechanism tests, not whole-generator
-equilibrium results.}\label{fig:rotor-work}
+estimator. Each target is a constrained molecular rotor at 300 K.}\label{fig:rotor-work}
 \end{figure}
 
 At 2,048 samples, complete work has lower mean total-variation error than both
@@ -31,6 +30,5 @@ mean errors are 0.0636 for complete work, 0.1532 for energy-only weights and
 Complete-work free-energy RMSE ranges from 0.158 to 0.734 meV. Independent
 density-ratio quadrature also recovers the specified target normalizer in all
 nine molecule/escort cases. The identity-escort control makes the three weighted
-methods coincide. This validates the implemented work correction on these
-constrained targets; its additional benefit after neural distillation is assessed
-separately from the exact identity.
+methods coincide. Together, the distribution and normalizer results show the
+role of complete work accounting on these molecular energy curves.

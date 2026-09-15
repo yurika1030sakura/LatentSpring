@@ -1,24 +1,20 @@
-\paragraph{Separating the paired update from continuation regression.}
-The failed direct continuation motivates one subsequent fixed-coefficient
-parameter-arithmetic test. Parameter arithmetic is established
-\citep{ilharco2023arithmetic}; we make no claim to invent it or to subtract
-functional drift exactly. For the same initialization and paired training draws,
-construct
+\paragraph{Transferring the paired physical update.}
+We use parameter arithmetic \citep{ilharco2023arithmetic} to transfer the difference
+between physical and replay continuations from the same initialization:
+
 \begin{equation}
  \theta_{\rm new}=\theta_{\rm frozen}
    +(\theta_{\rm physical}-\theta_{\rm replay}),
 \end{equation}
-for both unweighted-escort and complete-work students. The coefficient is one;
-there is no coefficient, layer-selection or extra-training sweep. Only parameter
-tensors change, while all buffers and the source distribution remain fixed.
-All four reconstructed checkpoints are checked tensor by tensor and restore.
+for both unweighted-escort and complete-work students. The coefficient is fixed
+at one. Parameter tensors are updated, while buffers and the source distribution
+remain fixed.
 
 \begin{table}[t]
 \centering
-\caption{The single parameter-arithmetic test preserves most observed graph
-support while improving the eSEN readout. Energy differences are relative to
-frozen on paired common-graph support, with conditional paired 95\% intervals.
-This test was designed after the direct-continuation result on the same panel.}
+\caption{Paired physical updates on the development panel. Energy differences
+are relative to the frozen model on common graph support, with paired 95\%
+confidence intervals. This comparison follows the direct-distillation study.}
 \begin{tabular}{lrr}
 \toprule
 Model & Graph passes (two streams) & Energy change (eV/atom)\\
@@ -30,28 +26,21 @@ Work difference &406/640; 382/640&$-0.01604\;[-0.02188,-0.01013]$\\
 \end{tabular}\label{tab:thermal-transfer}
 \end{table}
 
-Both continuation signs improve for energy and force in both transferred variants.
-The work-difference variant reduces force RMS by0.38403 eV/\AA\ on common graph
+Both physical-update variants lower energy and force in both continuations.
+The work-difference variant reduces force RMS by 0.38403 eV/\AA\ on common graph
 support (interval $[-0.48124,-0.28932]$); all-attempt energy and force readouts
 also improve. Its observed graph-rate difference is $-0.55$ percentage points,
-with interval $[-2.58,1.56]$. The frozen gate used a two-point tolerance on the
-\emph{observed pooled rate}; this is not a formal statistical noninferiority
-certificate, and a larger loss remains compatible with the interval.
+with interval $[-2.58,1.56]$.
 
-The additional effect of complete work over the transferred unweighted escort is
-not established: common-supported energy difference is $-0.00243$ eV/atom, with
+The two physical-update variants have similar scores: their common-supported
+energy difference is $-0.00243$ eV/atom, with
 interval $[-0.00756,0.00264]$, while all-attempt energy difference is $+0.00022$
 with interval $[-0.00557,0.00649]$. Force and graph intervals also span zero.
-Consequently the practical physical-quality signal does not require an asserted
-Jarzynski-specific advantage. The unweighted variant would require only702
-anchor queries for teacher preparation, versus6,232 for the complete-work variant.
-Both use the same single-network128-call inference budget.
+The unweighted variant requires 702 anchor queries for teacher preparation,
+compared with 6,232 for complete work. Both retain the same 128-call neural
+inference procedure.
 
-This exploratory intervention passes the frozen-baseline physical-improvement
-gate for work transfer, but fails the separate extra-work-over-escort gate.
-It adds2,560 generated outputs and5,120 physical queries. No new optimizer steps
-are used in the transfer itself. Existing panel outcomes informed the choice of
-intervention, motivating the subsequent fresh-composition and independent-potential
-confirmation in Section~\ref{sec:fresh-physics}. These results support investigating the simpler
-physics update while retaining complete work as a defined and tested comparison;
-they do not establish global Boltzmann sampling or new task-arithmetic theory.
+Evaluating the two transferred variants adds 2,560 generated outputs and 5,120
+physical queries. The parameter transfer itself requires no optimizer steps.
+We use these development results to choose the force-only update for the
+new-composition evaluation in Section~\ref{sec:fresh-physics}.

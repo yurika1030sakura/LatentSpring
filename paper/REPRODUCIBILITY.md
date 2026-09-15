@@ -44,7 +44,7 @@ control and every prescribed sample size remain in the full result file.
 
 From `paper/`, run pdflatex, bibtex, and pdflatex twice on `tree_working`.
 The final build evidence records all recursively used section and figure hashes
-in `research/evidence/submission_manuscript_build_v1.json`.
+in `research/evidence/submission_manuscript_build_v2.json`.
 
 ## Training scope
 

@@ -1,8 +1,8 @@
 # Scoped ICLR submission candidate
 
-The focused manuscript is assembled, compiled and ready for review:9 main pages,
-16 total. See `paper/tree_working.pdf`, `paper/submission_abstract.txt`, and
-`research/evidence/submission_manuscript_build_v1.json`. Planned source, physical,
+The focused manuscript is assembled, compiled and ready for review:8 main pages,
+14 total. See `paper/tree_working.pdf`, `paper/submission_abstract.txt`, and
+`research/evidence/submission_manuscript_build_v2.json`. Planned source, physical,
 independent-generator and molecular-work studies are complete and audited.
 
 Supported contributions are the latent-connectivity harmonic source, controlled

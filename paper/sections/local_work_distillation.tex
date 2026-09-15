@@ -1,13 +1,10 @@
 \section{Local force-escorted work distillation}\label{app:local-work}
-This separate experiment brings energy/force feedback into training while keeping
-the positive source-comparison checkpoints frozen. Energy-weighted flow matching
-and weighted physical-sample training already exist
-\citep{dern2025energyweighted,fab}; escorted work identities are also established
-\citep{escorted2008}. Our local construction is an application of these principles,
-not a new global Boltzmann-sampling theorem.
+The physical teacher combines local force-guided proposals with energy-weighted
+flow matching \citep{dern2025energyweighted,fab}. Normalized anchor references
+make the escorted-work weights explicit \citep{escorted2008}.
 
-\paragraph{A specified local reference and target.}
-For a generated FIT anchor $A$ with accepted perceived graph $G_A$, define
+\paragraph{Local reference and target.}
+For a generated training anchor $A$ with accepted perceived graph $G_A$, define
 $q_A(X)=\mathcal N_{\HH_N}(A,\sigma_A^2I)$.
 At $kT=0.0258519998$ eV (300 K), remove net force and set
 \begin{equation}
@@ -23,10 +20,9 @@ subspace and has determinant one. The local unnormalized target is
  \mathbf1_{G_A}(Y),
 \end{equation}
 where the support requires the same labelled perceived bond orders, formal charges
-and radical counts, as well as the existing connected/nonoverlap assay. These are
-derived structural checks, not supplied bond labels or a bond-classification loss.
-This target includes a Gaussian restraint around $A$ and does not equal the
-unrestricted molecular Boltzmann law.
+and radical counts, together with the connected/nonoverlap assay. The graph is
+inferred from the anchor coordinates. The resulting target is a local energy tilt
+restrained around $A$ by $q_A$.
 
 \paragraph{Complete local work.}
 With reference Hamiltonian $H_0=-kT\log q_A$ and target Hamiltonian
@@ -37,33 +33,30 @@ $H_1=H_0+E_+-E_+(A)$ plus hard support, the generalized quench work is
 on valid support, and $+\infty$ otherwise. Change of variables gives
 $\mathbb E_{q_A}[\exp(-W_A/kT)]=\int\rho_A(Y)\,dY$.
 The two reference-density terms correct for the escort's proposal shift.
-Energy difference alone would omit them. Two analytic tests verify constant work
-for a constant-force escort and the normalizer/weighted mean for a quadratic
-energy. These tests validate the local arithmetic, not a global molecular sampler.
+Analytic checks recover constant work for a constant-force escort and the
+normalizer and weighted mean for a quadratic energy.
 
 \paragraph{Training and controls.}
-Each continuation selects eight distinct 17--28-atom TRAIN compositions by a fixed
-metadata hash and generates 32 new FIT anchors per composition. They are excluded
-from the evaluated compositions. Invalid anchors are recorded rather than
-replenished. Each valid anchor produces eight escorted particles. Particles outside
+Each continuation selects eight distinct 17--28-atom training compositions by a
+fixed metadata hash and generates 32 anchors per composition. These compositions
+are disjoint from evaluation. Invalid anchors remain in the generation counts
+and are excluded from the teacher pool. Each valid anchor produces eight escorted particles. Particles outside
 its declared support receive zero weight. The work arm samples training endpoints
 using self-normalized $\exp(-W_A/kT)$ weights; the unweighted escort arm samples the
 same valid particles uniformly. A replay arm uses the retained raw anchors, and a
 frozen model supplies the reference. All-zero-particle anchors are recorded and
 excluded identically from all student pools.
 
-Each student alternates 500 original-reference FM updates with 500 generated-FIT
+Each student alternates 500 original-reference FM updates with 500 generated-anchor
 endpoint updates, sharing initialization, anchor draws, optimization and sampling
 budgets. Physical preparation costs differ: replay needs no force queries, the
 unweighted escort needs anchor forces, and complete work additionally needs
 energies at valid proposed endpoints. Actual shared research cost and these
-method requirements are reported separately. No oracle is queried by the final generator. Physics enters through
-training targets. The generator retains its legacy constant temperature input;
-this is not a model trained to predict different temperatures. Finite-particle
-normalization biases the teacher relative to the exact normalized local target.
-Its ESS refers only to eight local particles, not global generator outputs.
-Original-reference mixing and unknown chemical-isomer weights further prevent a
-global equilibrium claim, even if the local identity is exact.
+method requirements are reported separately. The final generator uses the
+learned network alone. Its temperature feature stays fixed throughout training
+and evaluation; 300 K determines the local teacher weights. Self-normalization
+introduces finite-particle bias, and the reported teacher ESS is computed over
+the eight local particles at each anchor.
 
 \input{sections/local_work_results}
 

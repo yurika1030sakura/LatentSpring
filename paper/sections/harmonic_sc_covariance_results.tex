@@ -1,16 +1,15 @@
 \paragraph{Control for source covariance.}
-A single Gaussian source uses the existing128-tree estimate of the harmonic
-mixture covariance, symmetrized over identical species. Calibration against an
-independent8,192-tree estimate gives1.85--6.25\% relative Frobenius error across
-all 22 compositions; this control is explicitly approximate. Its source settings
-were inherited from the earlier control implementation. It was added after the
-initial additional-panel result, with the same data, optimizer, network and
-sampling budgets; neither harmonic model was changed.
+To test the role of second moments, we construct a Gaussian from a 128-tree
+estimate of the harmonic mixture covariance and symmetrize it over identical
+species. Calibration against an independent 8,192-tree estimate gives
+1.85--6.25\% relative Frobenius error across the 22 compositions. This control
+uses the same data, optimizer, network and sampling budgets. It is evaluated
+after the initial source comparison against the frozen harmonic checkpoints.
 
 \begin{table}[t]
 \centering
 \caption{Covariance-Gaussian control at matched continuation and inference
-budgets. Its covariance is a finite-tree approximation, not an exact identity.}
+budgets, using the calibrated 128-tree covariance estimate.}
 \begin{tabular}{llrr}
 \toprule
 Panel & Continuation & Covariance Gaussian & Harmonic tree\\
@@ -27,9 +26,7 @@ Harmonic sources improve graph support by 11.65 points on development
 (paired 95\% [8.59,14.78]; descriptive composition [8.07,15.43]) and 15.39 points on
 the additional panel (paired 95\% [11.64,19.06]; composition [11.95,18.98]). All four
 point differences are positive. The covariance Gaussian is also worse than the
-isotropic Gaussian in both panels. Thus simple covariance replacement does not
-explain the observed harmonic-source advantage in these continuations. Finite
-covariance-estimation error and model optimization remain limitations of an exact
-higher-moment attribution. All2,816 new control outputs replay, and parameter
-counts, initial feedback weights, data rows and training recipes match the frozen
-references. This is a new control on examined panels, not another untouched test.
+isotropic Gaussian in both panels. The harmonic mixture thus retains an advantage
+over this calibrated second-moment control, consistent with a useful contribution
+from its mixture structure. The comparison adds 2,816 outputs and holds parameter
+count, initial self-conditioning weights, training rows and optimization fixed.

@@ -4,9 +4,9 @@ Read `research/RAW_QUALITY_STATE_20260915.json`, `paper/REPRODUCIBILITY.md`,
 `notes/paper_framing_20260915.md`, and `notes/rotor_work_results_20260915.md`.
 Canonical PDF: `paper/tree_working.pdf`; source: `paper/tree_working.tex`.
 Title: **LatentSpring: Physics-Informed Molecular Flow Matching from Atomic Composition**.
-The manuscript compiles cleanly:9 main pages (including the reproducibility/AI-use
-statements),16 total. Plain-text title/abstract is `paper/submission_abstract.txt`.
-Build hashes are in `research/evidence/submission_manuscript_build_v1.json`.
+The manuscript compiles cleanly:8 main pages (including the reproducibility/AI-use
+statements),14 total. Plain-text title/abstract is `paper/submission_abstract.txt`.
+Build hashes are in `research/evidence/submission_manuscript_build_v2.json`.
 
 ## Current publication scope and user priorities
 

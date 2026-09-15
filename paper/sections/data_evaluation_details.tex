@@ -1,0 +1,23 @@
+\section{Data selection and structural evaluation}\label{app:data-evaluation}
+Training data are selected in a fixed shuffled order from the processed OMol25
+training corpus, excluding the evaluation compositions. The first 3,000 eligible
+structures form each continuation's training set. Eligibility requires the atom,
+element and electronic-state conditions in Section 5, the structural assay below,
+and a geometric scaffold filter.
+
+The scaffold filter considers pairs whose distance divided by the sum of covalent
+radii lies strictly between 0.6501 and 1.1999. Kruskal's algorithm constructs a
+minimum normalized-distance spanning tree from these pairs. A structure is accepted
+if the tree is connected and its degrees are at most 1 for H/F/Cl/Br/I, 4 for
+B/C/N/Si, 3 for O, and 6 for P/S. The scaffold is used only to select training
+coordinates; the molecular flow uses its own sampled harmonic source.
+
+Structural evaluation uses RDKit 2025.03.2. After the contact-connectivity and
+overlap checks, \texttt{DetermineBonds} assigns bonds at the specified total charge,
+with \texttt{covFactor=1.25}, \texttt{useVdw=True},
+\texttt{allowChargedFragments=True}, and \texttt{embedChiral=False}.
+Sanitization must succeed, the assigned formal charges must sum to the specified
+charge, and the perceived molecule must have one connected component. Graph
+diversity counts canonical SMILES after removing stereochemical tags and explicit
+hydrogens. Evaluator errors and unsupported outputs remain in the attempted-sample
+denominator.

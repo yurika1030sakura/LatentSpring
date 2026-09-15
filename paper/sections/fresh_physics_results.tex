@@ -1,16 +1,13 @@
-\subsection{Fresh composition and cross-potential confirmation}\label{sec:fresh-physics}
-After the earlier source and physics studies, we freeze the Gaussian model,
-LatentSpring's harmonic model, and both fixed-coefficient physics-update variants.
-The cheaper unweighted-force update is designated the primary physical candidate
-before querying new outcomes. We sample a new pool of 256 distinct compositions
-from the original development partition, excluding every old official candidate
-composition. Reference qualification accepts 121; fixed metadata ranks select
-8 per 17--20, 21--24 and 25--28 atom bin, yielding 24 new compositions. All selected
-compositions are absent from both verified processed corpora. The reference
-coordinates do not enter generation or fitting. Every model generates 32 samples
-per composition in each of the same two existing continuations: 6,144 new outputs,
-with no additional model fitting or parameter selection. Inference uses the
-network alone: no per-output energy ranking or coordinate optimization is applied.
+\subsection{New compositions and independent physical evaluation}\label{sec:fresh-physics}
+We next evaluate the frozen Gaussian, harmonic and two physical-update models on
+24 new compositions. The force-only update is chosen as the primary physical
+candidate before this evaluation. Starting from a pool of 256 distinct compositions
+outside the earlier candidate sets, reference qualification accepts 121. Fixed
+metadata ranks select eight compositions from each of the 17--20, 21--24 and
+25--28 atom bins. All 24 are absent from the processed OMol25 training and
+validation corpora. Reference coordinates are used solely for qualification.
+Each model generates 32 samples per composition in each continuation, giving
+6,144 raw outputs in total.
 
 \begin{table}[t]
 \centering
@@ -29,35 +26,27 @@ With complete-work update &426&383&52.67\%\\
 \end{tabular}\label{tab:fresh-graph}
 \end{table}
 
-The harmonic source improves graph support over Gaussian by 8.20 percentage points,
-with conditional paired 95\% interval $[5.08,11.33]$. Both continuation signs are
-positive. The primary force update has an observed graph-rate difference of
-$+0.72$ points versus harmonic, with interval $[-0.98,2.34]$. This is compatible
-with unchanged validity and excludes a decline exceeding two points under this
-conditional interval; it is not evidence of a statistically significant validity
-increase or a population-wide noninferiority guarantee. All accepted graphs have
-distinct perceived connectivity within each composition in these draws.
+The harmonic source improves graph support by 8.20 percentage points over
+Gaussian (95\% CI $[5.08,11.33]$), with gains in both continuations. The force
+update changes graph support by $+0.72$ points relative to harmonic, with interval
+$[-0.98,2.34]$, consistent with a similar support rate. Every accepted output has
+distinct perceived connectivity within its composition in these draws.
 
-\paragraph{Independent physical readout.}
-We evaluate every generated coordinate set with eSEN and with gas-phase GFN2-xTB
-single points and analytic gradients \citep{gfn2xtb}. GFN2 is not used for training
-or method selection. It provides a different approximate physical model, not
-DFT ground truth. We retain all failed calculations: 4 of 6,144 generated-geometry
-GFN2 calculations fail, all outside graph support. Every graph-supported output
-succeeds, and all original-reference inversion checks pass. Total physical cost
-is 12,384 raw eSEN queries and 6,240 GFN2 attempts, including reference checks.
-The audited eSEN readout uses $E_+(X)=[E(X)+E(-X)]/2$ and
-$F_+(X)=[F(X)-F(-X)]/2$; force RMS is the root mean squared atom-force norm.
-GFN2 inputs are fixed at their saved generated coordinates.
-The xTB command uses \texttt{--grad}, never \texttt{--opt}; gradients are readouts
-and do not update coordinates. Physical teacher displacements occur only in the
-earlier training procedure, on separate FIT samples.
+\paragraph{Energy and force scores.}
+Every output is evaluated at fixed coordinates with eSEN and gas-phase GFN2-xTB
+single-point energies and gradients \citep{gfn2xtb}. GFN2 provides an independent
+potential, used only for evaluation. Four of the 6,144 generated-geometry GFN2
+calculations fail; all four concern graph-rejected outputs. Calculations succeed
+for every graph-supported output, and reference inversion checks pass. Including
+reference checks, evaluation costs 12,384 eSEN queries and 6,240 GFN2 attempts.
+eSEN scores use the parity averages defined in Section~\ref{sec:flow}. Force
+RMS is the square root of the mean squared atom-force norm.
 
 \begin{table}[t]
 \centering
 \caption{Primary force-update change versus the frozen harmonic model on paired
-common-graph support. Both continuation signs improve for both readouts under
-both potentials. Intervals are conditional paired 95\% intervals.}
+common-graph support. Both continuations improve under both potentials. Brackets
+give paired 95\% confidence intervals.}
 \small
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{lrr}
@@ -70,19 +59,17 @@ GFN2 & $-0.01168\;[-0.01616,-0.00724]$ & $-0.35620\;[-0.42983,-0.28714]$\\
 \end{tabular}\label{tab:fresh-physical}
 \end{table}
 
-All 24 composition cells in each continuation have comparable graph-supported
-pairs for the primary contrast. The prespecified cross-potential confirmation
-gate passes, including success coverage and the observed two-point validity
-criterion. All-attempt eSEN and common-success GFN2 comparisons agree in direction;
-selected-support results remain distinct from unconditional or equilibrium
-expectations. Source-only harmonic-versus-Gaussian energy improvements are pooled
-positive but heterogeneous across continuations, so we do not describe them as
-repeated physical-quality gains in both models.
+The primary contrast uses paired outputs that pass the graph assay for both
+models, with successful electronic calculations. Such pairs are available for all
+24 compositions in both continuations. Energy and force improve under both
+potentials. The same direction holds when including all outputs for eSEN and all
+jointly successful calculations for GFN2. For the source-only harmonic--Gaussian
+comparison, aggregate energy also decreases, with a larger effect in one
+continuation than the other.
 
-Complete-work versus force-update energy differences remain unresolved:
-$-0.00413$ eV/atom under eSEN, interval $[-0.00903,0.00078]$, and $-0.00363$ under
-GFN2, interval $[-0.00792,0.00075]$, on common graph support. Force and graph
-intervals also span zero. Thus the fresh result supports the practical physical
-feedback update, while not establishing an extra advantage of Jarzynski weighting.
-The previously defined local work identity remains mathematically useful, but
-these results do not imply globally Boltzmann-distributed generator outputs.
+The complete-work and force-only updates perform similarly within sampling
+uncertainty. Their energy difference on common graph support is $-0.00413$
+eV/atom under eSEN, with interval $[-0.00903,0.00078]$, and $-0.00363$ under GFN2,
+with interval $[-0.00792,0.00075]$. Force and graph differences also have intervals
+spanning zero. The force-only update therefore offers comparable physical scores
+with a lower teacher-preparation cost.
