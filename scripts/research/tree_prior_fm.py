@@ -66,7 +66,7 @@ def restore_model(cfg,state):
     return model.cuda().float()
 
 
-def evaluate(model,prior,method,cfg,protocol,protocol_hash,out,checkpoint_hash,manifest):
+def evaluate(model,prior,method,cfg,protocol,protocol_hash,out,checkpoint_hash,manifest,sampler=None):
     model.eval();model.requires_grad_(False);rows=[]
     context_mode=protocol.get('context_modes',{}).get(method)
     if context_mode:
@@ -91,7 +91,7 @@ def evaluate(model,prior,method,cfg,protocol,protocol_hash,out,checkpoint_hash,m
             init=torch.stack(init);initial.append(init)
             if context_mode:attach_context(graph,matrices,nbi)
             with torch.no_grad():
-                final=sample_clamped_flow(model,graph,nbi,uem,x0=init.reshape(-1,3).cuda().float(),
+                final=(sample_clamped_flow if sampler is None else sampler)(model,graph,nbi,uem,x0=init.reshape(-1,3).cuda().float(),
                     n_ode_steps=protocol['midpoint_steps'],terminal_time=1.,parameterization='displacement')
             final=final.reshape(batch,n,3).double();final=final-final.mean(1,keepdim=True)
             noise_seed=protocol['evaluation_seed']*2000003+index*100003+begin

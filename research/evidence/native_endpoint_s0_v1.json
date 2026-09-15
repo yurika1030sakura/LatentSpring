@@ -1,0 +1,45 @@
+{
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "condition_manifest": "research/evidence/source_sc_confirmation_panel_v1.json",
+  "condition_manifest_sha256": "934311077b9cf8649f6193d30f65f942a406270fe9b23f20c9da2533b1c04de6",
+  "conditions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "evaluation_seed": 35803,
+  "evaluation_batch": 16,
+  "samples_per_condition": 64,
+  "terminal_noise_std_A": 0.025,
+  "primitive_denoiser_evaluations_per_sample": 128,
+  "frozen": true,
+  "at_utc": "2026-09-15T00:00:02.167022+00:00",
+  "format": "native_endpoint_comparison_v1",
+  "checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/runs/abl/a1_fm_only_s2/lightning_logs/version_30674367/checkpoints/midstep-step=30000.ckpt",
+  "checkpoint_sha256": "4d5b3a188d81a75c2c4b1170b065a090b3535beae72c9ce196d5877e2dd38ff4",
+  "global_step": 30000,
+  "methods": [
+    "native_history",
+    "clamped_history"
+  ],
+  "history_modes": {
+    "native_history": "native",
+    "clamped_history": "clamped"
+  },
+  "midpoint_steps": 127,
+  "actual_integrator": "Native endpoint Euler with127 updates, first-step bootstrap and128 primitive denoises; midpoint_steps field is a legacy callback slot, not the actual solver.",
+  "source_prior_kind": "gaussian",
+  "parent_confirmation_protocol_sha256": "475964cc945195c199da64c253f993d30202ac3ac764b6c0a2ff5311c3173bfb",
+  "parent_confirmation_audit_sha256": "47c4909f6d676febfb4491da0c7c2eb42c0815e4cddad083ad8d4557b43a4be7",
+  "scope": "Single original30k-step OMol25 checkpoint with two sampling streams. Both histories keep current atomic composition and neutral/no-bond inputs fixed. Native history retains previous predicted categorical probabilities; clamped history uses known categories. No native joint-generation benchmark or matched total-training-cost claim.",
+  "new_outputs_this_stream": 1280,
+  "scientific_submission_ready": false
+}
