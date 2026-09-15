@@ -112,7 +112,7 @@ def evaluate(model,prior,method,cfg,protocol,protocol_hash,out,checkpoint_hash,m
         print(json.dumps({k:row[k] for k in ['method','condition_index','graph_supported','geometrically_supported','initial_geometry','final_geometry','generation_seconds']}),flush=True)
     write(out/f'{method}_results.json',dict(complete=True,protocol_sha256=protocol_hash,checkpoint_sha256=checkpoint_hash,rows=rows,
         new_molecular_oracle_calls=0,scientific_submission_ready=False,
-        scope='Nominal source laws are explicitly sampled; latent trees are not chemical bonds. Finite midpoint integration plus noise output has no qualified density or thermal-law claim.'))
+        scope=protocol.get('sampler_scope','Nominal source laws are explicitly sampled; latent trees are not chemical bonds. Finite midpoint integration plus noise output has no qualified density or thermal-law claim.')))
 
 
 def main():
