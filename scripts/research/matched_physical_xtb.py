@@ -42,16 +42,27 @@ def main():
     write(args.out/'tasks.json',dict(complete=True,protocol_sha256=ph,tasks=[dict(task=t,condition=c) for t,c in tasks],sources=sources))
     version=subprocess.run([str(binary),'--version'],capture_output=True,text=True,check=True)
     result=dict(complete=False,protocol_sha256=ph,tasks_sha256=sha(args.out/'tasks.json'),rows=[],requested_attempts=len(tasks),xtb_binary_sha256=sha(binary),version=version.stdout+version.stderr)
-    start=time.perf_counter()
+    start=time.perf_counter();new_tasks=tasks
+    if spec.get('reuse_xtb_run'):
+        previous=args.project/spec['reuse_xtb_run'];old=json.loads((previous/'results.json').read_text())
+        assert old['complete'] and sha(previous/'results.json')==spec['reuse_xtb_result_sha256']
+        old_tasks={r['task']['task_id']:r for r in json.loads((previous/'tasks.json').read_text())['tasks']}
+        old_rows={r['task_id']:r for r in old['rows']};new_tasks=[];(args.out/'details').mkdir()
+        for task,condition in tasks:
+            if task['method']=='gaga_physical':new_tasks.append((task,condition));continue
+            assert old_tasks[task['task_id']]==dict(task=task,condition=condition)
+            (args.out/'details'/task['task_id']).symlink_to((previous/'details'/task['task_id']).resolve(),target_is_directory=True)
+            result['rows'].append(old_rows[task['task_id']])
+        result['reused_attempts']=len(result['rows']);result['reused_result_sha256']=spec['reuse_xtb_result_sha256']
     def work(task,condition):
         row=run_task(task,condition,binary,args.out,spec['xtb']);row.update(condition_index=task['condition_index'],sample_index=task['sample_index']);return row
     with ThreadPoolExecutor(max_workers=args.workers) as executor:
-        for future in as_completed([executor.submit(work,t,c) for t,c in tasks]):
+        for future in as_completed([executor.submit(work,t,c) for t,c in new_tasks]):
             result['rows'].append(future.result())
             if len(result['rows'])%256==0:
                 result['seconds']=time.perf_counter()-start;write(args.out/'results.json',result)
                 print(json.dumps(dict(completed=len(result['rows']),failed=sum(not r['success'] for r in result['rows']))),flush=True)
-    result['rows'].sort(key=lambda r:r['task_id']);result.update(complete=True,attempted=len(result['rows']),failed=sum(not r['success'] for r in result['rows']),seconds=time.perf_counter()-start)
+    result['rows'].sort(key=lambda r:r['task_id']);result.update(complete=True,attempted=len(result['rows']),new_attempts=len(new_tasks),failed=sum(not r['success'] for r in result['rows']),seconds=time.perf_counter()-start)
     write(args.out/'results.json',result)
 
 

@@ -29,7 +29,8 @@ def main():
     graph=np.zeros(shape,bool);energy={k:np.full(shape,np.nan) for k in ['esen','xtb']};force={k:np.full(shape,np.nan) for k in energy};success={k:np.zeros(shape,bool) for k in energy}
     sources=[];teacher_queries=0;esen_queries=0;xtb_attempts=0
     for seed in [0,1]:
-        pp=args.project/f'research/evidence/matched_physical_s{seed}_v1.json';spec=json.loads(pp.read_text());ph=sha(pp)
+        version='v2' if (args.run/'corrected_run.json').exists() else 'v1'
+        pp=args.project/f'research/evidence/matched_physical_s{seed}_{version}.json';spec=json.loads(pp.read_text());ph=sha(pp)
         root=args.run/f's{seed}/study';done=json.loads((root/'complete.json').read_text());assert done['complete'] and done['protocol_sha256']==ph
         panel=json.loads((args.project/spec['panel']).read_text())['test_rows'];data=torch.load(args.project/spec['data'],map_location='cpu',weights_only=False)['training']
         teacher_conditions=[data[i]['condition'] for i in spec['teacher_rows']]
@@ -64,7 +65,9 @@ def main():
             for role in ['replay','physical']:
                 log=[json.loads(l) for l in (folder/role/'metrics.jsonl').read_text().splitlines()];assert len(log)==arm['student_steps']
                 training=json.loads((folder/role/'training.json').read_text());assert training['complete'] and training['backbone_example_passes']==2000
-                file=folder/role/'last.ckpt';assert sha(file)==training['checkpoint_sha256'];saved=torch.load(file,map_location='cpu',weights_only=False);assert saved['protocol_sha256']==ph;states[role]=saved['state_dict']
+                file=folder/role/'last.ckpt';assert sha(file)==training['checkpoint_sha256'];saved=torch.load(file,map_location='cpu',weights_only=False)
+                assert saved['protocol_sha256']==spec.get('reused_arm_protocol_sha256',{}).get(name,ph);states[role]=saved['state_dict']
+                torch.testing.assert_close(states[role]['gamma.gamma'],parent['gamma.gamma'],atol=0,rtol=0)
                 rng=torch.Generator().manual_seed(spec['training_seed']+17)
                 for step,row in enumerate(log,1):
                     if step%2:
@@ -74,7 +77,7 @@ def main():
                         particle=-1 if role=='replay' else int(torch.searchsorted(w.cumsum(0),u,right=True).clamp_max(7))
                         label=dict(kind='generated_fit',pool=index,row=j,uniform_draw=u,particle=particle);condition=entry['condition']
                     assert row['step']==step and row['selection']==label and row['composition']==condition['composition_hex']
-            final=torch.load(folder/'paired.ckpt',map_location='cpu',weights_only=False);assert final['protocol_sha256']==ph
+            final=torch.load(folder/'paired.ckpt',map_location='cpu',weights_only=False);assert final['protocol_sha256']==spec.get('reused_arm_protocol_sha256',{}).get(name,ph)
             for key,value in parent.items():
                 expected=value+(states['physical'][key]-states['replay'][key]) if value.is_floating_point() else value
                 torch.testing.assert_close(final['state_dict'][key],expected,atol=0,rtol=0)
@@ -94,7 +97,7 @@ def main():
                 assert torch.isfinite(e).all() and torch.isfinite(f).all()
                 energy['esen'][seed,mi,i]=e.numpy()/panel[i]['n_atoms'];force['esen'][seed,mi,i]=f.square().sum(-1).mean(-1).sqrt().numpy();success['esen'][seed,mi,i]=True
             sources.append(dict(seed=seed,method=label,report_sha256=sha(report_path)))
-        assert quality['queries']==done['evaluation_raw_queries']==8256;esen_queries+=quality['queries']
+        assert quality['queries']==done['evaluation_raw_queries']==8256;esen_queries+=quality.get('new_queries',quality['queries'])
         xtb=args.run/f's{seed}/xtb';r=json.loads((xtb/'results.json').read_text());assert r['complete'] and r['protocol_sha256']==ph and r['attempted']==4160 and r['tasks_sha256']==sha(xtb/'tasks.json')
         tasks=json.loads((xtb/'tasks.json').read_text());mapping={v['task']['task_id']:v for v in tasks['tasks']};references={}
         for row in r['rows']:
@@ -110,7 +113,7 @@ def main():
                 parsed=parse_singlepoint((directory/'stdout.txt').read_text(),(directory/'stderr.txt').read_text(),row['returncode'],gradient,c['n_atoms']);assert parsed['success']==row['success']
                 if parsed['success']:assert parsed['energy_eV']==row['energy_eV'];np.testing.assert_array_equal(parsed['force_eV_A'],row['force_eV_A'])
             else:assert not row['success'] and row['failure']=='single_point_timeout'
-            xtb_attempts+=1
+            if not spec.get('reuse_xtb_run') or task['method']=='gaga_physical':xtb_attempts+=1
             if task['method']=='reference':references[row['task_id']]=row;continue
             mi=labels.index(task['method']);j=task['sample_index'];success['xtb'][seed,mi,i,j]=row['success']
             if row['success']:energy['xtb'][seed,mi,i,j]=row['energy_eV']/c['n_atoms'];force['xtb'][seed,mi,i,j]=np.sqrt(np.mean(np.sum(np.asarray(row['force_eV_A'])**2,axis=-1)))
@@ -134,8 +137,9 @@ def main():
         for name,left,right in [('adapted_fm_minus_adapted_gaga',1,3),('physical_in_fm',1,0),('physical_in_gaga',3,2)]:contrasts[kind][name]=metric(yield5[:,left].astype(float)-yield5[:,right].astype(float))
     gate=all(min(contrasts[k]['adapted_fm_minus_adapted_gaga']['by_seed'])>0 and contrasts[k]['adapted_fm_minus_adapted_gaga']['ci95'][0]>0 for k in energy)
     file=args.out.with_suffix('.npz');np.savez_compressed(file,graph=graph,**{f'{k}_energy':v for k,v in energy.items()},**{f'{k}_force':v for k,v in force.items()},**{f'{k}_success':v for k,v in success.items()})
+    corrected=(args.run/'corrected_run.json').exists()
     write(args.out,dict(complete=True,primary_gate=gate,methods=labels,summary=summary,contrasts=contrasts,sources=sources,arrays_file=file.name,arrays_sha256=sha(file),
-        new_fit_outputs=2048,new_evaluation_outputs=4096,new_optimizer_steps=12000,new_teacher_queries=teacher_queries,new_evaluation_esen_queries=esen_queries,new_xtb_attempts=xtb_attempts,
+        fixed_noise_schedules_verified=True,new_fit_outputs=0 if corrected else 2048,new_evaluation_outputs=2048 if corrected else 4096,new_optimizer_steps=8000 if corrected else 12000,new_teacher_queries=0 if corrected else teacher_queries,new_evaluation_esen_queries=esen_queries,new_xtb_attempts=xtb_attempts,
         raw_graphs_teacher_selection_and_parameter_updates_replayed=True,physical_readouts_reparsed=True,reserved_outcomes_queried=False,
         scope='Fixed follow-up on the already evaluated32-composition panel. Each parent has960000 retained backbone training passes; each physical/replay student adds2000. All generators use128 inference calls. No wall-time or global-equilibrium equality is claimed.'))
     print(json.dumps(dict(complete=True,primary_gate=gate,contrasts=contrasts)),flush=True)

@@ -16,8 +16,8 @@ from scripts.research.run_matched_generators import write
 from scripts.research.train_electronic_fm import sha
 
 
-def make_model(arm,state):
-    model=base.initialize(arm['spec'],'cuda')
+def make_model(arm,state,device='cuda'):
+    model=base.initialize(arm['spec'],device)
     if arm['spec'].get('context')=='distance':feedback.install(model)
     model.load_state_dict(state,strict=True)
     assert sum(p.numel() for p in model.parameters())==2381566 and model.norm_values[0]==1.
@@ -79,9 +79,9 @@ def main():
             attempted=512,retained_anchors=sum(len(p['raw_positions']) for p in pools),conditions=len(pools),raw_report_sha256=sha(raw/'fit_results.json')))
         states={};names=None
         for role in ['replay','physical']:
-            torch.manual_seed(spec['training_seed']);model=make_model(arm,state).train().requires_grad_(True);context=make_context(arm,source)
-            optimizer=torch.optim.AdamW(model.parameters(),lr=spec['learning_rate'],amsgrad=True,weight_decay=1e-12)
-            names={n for n,_ in model.named_parameters()};rng=torch.Generator().manual_seed(spec['training_seed']+17)
+            torch.manual_seed(spec['training_seed']);model=make_model(arm,state).train();context=make_context(arm,source)
+            optimizer=torch.optim.AdamW([p for p in model.parameters() if p.requires_grad],lr=spec['learning_rate'],amsgrad=True,weight_decay=1e-12)
+            names={n for n,p in model.named_parameters() if p.requires_grad};rng=torch.Generator().manual_seed(spec['training_seed']+17)
             target_dir=folder/role;target_dir.mkdir();tick=time.perf_counter()
             for step in range(1,arm['student_steps']+1):
                 if step%2:

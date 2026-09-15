@@ -1,0 +1,22 @@
+{
+  "at_utc": "2026-09-15T23:46:21.475427+00:00",
+  "status": "gaga_adaptation_v1_not_comparable_fixed_schedule_was_unfrozen",
+  "cause": "New adapter called model.requires_grad_(True), changing predefined gamma.gamma from frozen to trainable. Original parent training leaves it frozen.",
+  "max_paired_gamma_change_by_seed": [
+    0.008184880018234253,
+    0.009169816970825195
+  ],
+  "fm_gamma_change_by_seed": [
+    0.0,
+    0.0
+  ],
+  "retained_valid_fm_result": "The full-strength EGNN FM update reduces graph validity and joint quality; this negative result is retained and is not explained by the schedule issue.",
+  "correction": "Retrain only GAGA physical/replay students with the original fixed schedule, using the same cached teacher pools, exact recorded target selections, learning rate, steps and coefficient. Reuse unchanged FM and baseline outputs. No outcome-dependent tuning.",
+  "parameter_counts": {
+    "total_parameters_including_fixed_schedule": 2381566,
+    "trainable_parameters": 2380565,
+    "fixed_schedule_values": 1001
+  },
+  "prior_numerical_audit": "runs/matched_physical_v1/audit.json",
+  "prior_results_preserved": true
+}
