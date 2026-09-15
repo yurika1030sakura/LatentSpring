@@ -36,3 +36,24 @@ intermediates are excluded from the ZIP. Current build evidence is
 `research/evidence/publication_build_v1.json`. The current and legacy PDF entrypoints
 contain the same LatentSpring manuscript. A scan of outgoing history found no
 credential patterns, and no outgoing Git blob exceeds the GitHub size limit.
+
+## Remote replacement completed
+
+GitHub main now contains the audited release at
+`cb488cfcdbf1ee51f78e3994493b905d63c4c6c8`. The earlier main is retained at
+`archive/bgfm-before-latentspring-20260915` and as a merge parent. The default README,
+PDF, LaTeX entrypoints and standalone archive all use LatentSpring.
+
+The original Overleaf project's main branch is now
+`e2d291cceccf7a3d573f8521ed7e2b69d7e465da`. A fetch after the push confirms its
+source commit; all exported files match the independently compiled package's
+manifest. The existing HOLY Overleaf checkout was also advanced with a fast-forward
+merge and is clean. The Overleaf web project display name and cloud compiler state
+were not changed through Git.
+
+- GitHub: https://github.com/yurika1030sakura/bgfm
+- Overleaf: https://www.overleaf.com/project/6a4307765d3baef16c61ccb1
+
+These are publication-source updates, not an OpenReview submission. The manuscript
+is an anonymous submission draft; author and submission metadata remain with the
+user. This synchronization receipt is a subsequent documentation-only commit.
