@@ -13,7 +13,7 @@
 \newcommand{\HH}{\mathcal H}
 \newcommand{\EE}{\mathbb E}
 \newcommand{\RR}{\mathbb R}
-\title{Topology-Marginalized Harmonic Sources\\for Bond-Free Molecular Flow Matching}
+\title{LatentSpring: Physics-Informed Molecular Flow Matching\\from Atomic Composition}
 \author{Anonymous}
 \begin{document}
 \maketitle
@@ -22,8 +22,8 @@
 Generating molecular coordinates without a supplied bond graph requires a model
 to create both spatial organization and chemical compatibility. Isotropic noise
 ignores atomic scales, whereas graph-conditioned harmonic priors require the
-connectivity that this task leaves unspecified. We study a harmonic source that
-marginalizes over random dependence trees on the given atoms. Each component is
+connectivity that this task leaves unspecified. We introduce LatentSpring, a molecular flow-matching framework whose harmonic
+source marginalizes over random dependence trees on the given atoms. Each component is
 a Gaussian spring network on the translation-free subspace, and a matrix-tree
 ratio gives its normalized marginal density. Atomic radii and simple species
 propensities set the source; the selected method adds no learned source head.
@@ -37,12 +37,13 @@ improve at the same denoiser-call budget. A narrower shell source and several
 learned additions fail their controls. A calibrated covariance-Gaussian control also loses in both panels, supporting
 a role for mixture structure beyond the tested second-moment approximation.
 An energy-model readout also finds lower mean energy and force magnitude.
-These results support a useful molecular source design in a limited domain;
-competitiveness against independent generators and thermal-distribution accuracy
-require separate evidence. The results support incorporating latent spatial structure into a molecular flow
-without supplied bond labels or an additional learned source model. A separate
-exploratory physics-feedback test improves energy and force after paired parameter
-transfer, without establishing an extra benefit from work weighting.
+A subsequent frozen 24-composition test repeats the source advantage and confirms
+physical-update energy and force gains under both eSEN and independent GFN2-xTB.
+All outputs are evaluated before structural relaxation; the practical physics
+variant reaches 53.45\% graph support. These results support a useful source and
+physics-learning design in a limited domain. Competitiveness against independent
+generators, an extra benefit from work weighting, and thermal-distribution accuracy
+remain unestablished.
 \end{abstract}
 
 \section{Introduction}
@@ -55,7 +56,8 @@ known chemical graphs \citep{etflow}. Our setting instead provides atomic
 composition and electronic conditions but no chemical bonds. A prior requiring
 the target graph would change the task.
 
-We investigate a source that integrates over possible spatial dependence trees.
+LatentSpring integrates over possible spatial dependence trees to define its
+coordinate source.
 A sampled tree connects Gaussian edge displacements whose scales depend on atomic
 radii. Integrating these displacements and removing translation gives a
 configuration with correlated atomic positions. The latent edges describe the
@@ -122,8 +124,9 @@ energy-correction construction in Appendix~\ref{app:jarzynski}.
 \includegraphics[width=\linewidth]{../research/figures/harmonic_paper_v1/method.pdf}
 \caption{Implemented generation path. Atomic radii and species propensities define
 a random harmonic network used to draw coordinates. The field receives the
-coordinates and fixed conditions, not the sampled tree. No energy reweighting is
-used in the reported generation results.}\label{fig:method}
+coordinates and fixed conditions, not the sampled tree. Generation uses no
+per-output energy selection or structural relaxation. Physics-update variants
+incorporate physical feedback during training.}\label{fig:method}
 \end{figure}
 
 \section{A harmonic source with latent connectivity}
@@ -227,7 +230,7 @@ Generation integrates $v^{(1)}$ with 32 midpoint steps and two passes per field
 call, totaling 128 primitive denoiser evaluations per attempted sample, followed
 by 0.025\,\AA\ centered Gaussian noise. We retain this numerical sampler exactly
 for comparisons. Source normalization alone does not give the finite integrator
-plus noise a qualified final density. The main experiment uses FM only; existing
+plus noise a qualified final density. Source-comparison training uses FM only; existing
 force/energy training interfaces are not evidence for a thermal law, and the
 independent-Gaussian velocity-to-score proxy is invalid for this source/coupling.
 
@@ -266,7 +269,8 @@ pretraining or all trajectory relations. The additional panel reuses the same
 trained models, not two further independent training replicates.
 
 \paragraph{Metrics and uncertainty.}
-Every method attempts64 samples per composition. Geometry support requires
+The first two panels use 64 samples per composition; the fresh cross-potential
+panel uses 32. Geometry support requires
 contact connectivity and no short-distance overlap using 1.25 and 0.6 times summed
 covalent radii. Graph support additionally requires successful chemical-graph
 perception. This assay does not certify quantum stability, the complete electronic
@@ -342,8 +346,10 @@ student, but all direct continuations harm the frozen generator. A subsequent
 fixed-coefficient parameter-difference test largely restores observed graph
 support while reducing energy and force in both continuations. Complete-work and
 unweighted versions perform similarly after transfer; a Jarzynski-specific extra
-benefit is not established. This is exploratory evidence on an examined panel,
-not an independent confirmation or a global Boltzmann claim.
+benefit is not established. This development result selects the candidate for the subsequent fresh
+composition test below; it is not a global Boltzmann claim.
+
+\input{sections/fresh_physics_results}
 
 \section{Discussion and limitations}
 A simple fixed probabilistic source now has a positive controlled result and a
@@ -355,7 +361,8 @@ specification, but the underlying tree identities and Gaussian spring physics
 are established. The contribution must be judged by its specific molecular
 instantiation and reproducible utility.
 
-Coverage remains small, models share a warm start, and the target is a selected
+The fresh cross-potential test strengthens the practical quality evidence.
+Coverage remains limited, models share a warm start, and the target is a selected
 neutral-organic subset. A benefit at this continuation budget does not establish
 an asymptotic advantage after fully converged training. Native FlowMol3 unconditional validity and ET-Flow
 conditional-conformer metrics cannot be substituted for a matched generator
@@ -371,11 +378,11 @@ work teacher is evaluated separately in Appendix~\ref{app:local-work}.
 \subsubsection*{Reproducibility statement}
 Frozen protocols record data-order and generation seeds, source checkpoint hashes,
 all attempted structures, electronic conditions and oracle costs. Current audits
-replay 81,600 generated-output source records (including 3,584 FIT records),
-1,536 additional projected-coordinate readouts and 31,872 stored source/teacher physical rows;
+replay 87,744 generated-output source records (including 3,584 FIT records),
+1,536 additional projected-coordinate readouts and 44,256 stored source/teacher eSEN rows and 6,240 fresh GFN2 attempts;
 they do not independently rerun optimizers, final neural generation or the oracle.
-The source-SC and frozen-composition confirmation audits join the moment-control, context, additional-composition, monomer, source-utility,
-dynamic-attention, product-coordinate and feedback audits are complete.
+Source-SC, frozen-composition confirmation, moment-control, context, monomer,
+source-utility, dynamic-attention, product-coordinate and feedback audits are complete.
 Original-reference calibration is separate from generation and fitting.
 Implementation tests cover normalization,
 Jacobians, weighted-tree sampling, symmetry, density gradients and source-law guards.

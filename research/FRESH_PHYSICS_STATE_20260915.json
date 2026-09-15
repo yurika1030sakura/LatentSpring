@@ -1,0 +1,59 @@
+{
+  "status": "complete",
+  "generation_job": "46531691",
+  "generation_run": "runs/fresh_physics_v1",
+  "xtb_run": "runs/fresh_physics_xtb_v1",
+  "protocols": [
+    "research/evidence/fresh_physics_s0_v1.json",
+    "research/evidence/fresh_physics_s1_v1.json"
+  ],
+  "panel": "research/evidence/fresh_physics_panel_v1.json",
+  "compositions": 24,
+  "samples_per_condition": 32,
+  "models": [
+    "gaussian",
+    "harmonic_tree",
+    "escort_delta",
+    "work_delta"
+  ],
+  "new_training_steps": 0,
+  "primary": "Preselected cheaper escort-difference versus frozen harmonic on new compositions, checked by both eSEN and GFN2. No outcome-driven changes.",
+  "scientific_submission_ready": false,
+  "xtb_job": "46531808",
+  "method_name": "LatentSpring",
+  "paper_title": "LatentSpring: Physics-Informed Molecular Flow Matching from Atomic Composition",
+  "source_commit": "c1596740e1021bfd9f80c93e281767b772a11cda",
+  "generation_job_status": "COMPLETED",
+  "xtb_job_status": "COMPLETED",
+  "new_neural_evaluation_outputs": 6144,
+  "new_raw_esen_queries": 12384,
+  "new_gfn2_attempts": 6240,
+  "gfn2_generated_failures": 4,
+  "cross_potential_confirmation_gate": true,
+  "raw_graph_supported": 821,
+  "raw_attempts": 1536,
+  "raw_graph_rate": 0.5345052083333334,
+  "coordinate_optimization_at_inference": false,
+  "per_output_energy_selection": false,
+  "physics_feedback": "Separate FIT teacher and network parameter update; inference remains network-only.",
+  "audits": [
+    "research/evidence/fresh_physics_esen_audit_v1.json",
+    "research/evidence/fresh_physics_xtb_audit_v1.json",
+    "research/evidence/fresh_raw_failure_breakdown_v1.json"
+  ],
+  "result_note": "notes/fresh_physics_results_20260915.md",
+  "registry": "research/evidence/generator_reference_registry_v12.json",
+  "user_priority": "Directly valid generated structures requiring little optional relaxation.",
+  "global_stochastic_path_extension": "Deferred after user clarified raw-generation priority; no new sampler implemented or job launched.",
+  "next_step": "Target contact disconnection using FIT-only development; preserve fresh24 as evaluation-only and account for its now-observed outcomes. Measure any few-relaxation claim explicitly with a matched capped assay.",
+  "remaining_evidence": [
+    "Higher raw graph support and measured relaxation burden",
+    "Fair independent-generator comparison",
+    "Broader task coverage"
+  ],
+  "reserved_outcomes_unqueried": 722,
+  "manuscript": "paper/tree_working.pdf",
+  "main_pages": 9,
+  "total_pages": 16,
+  "build_evidence": "research/evidence/fresh_physics_manuscript_build_v1.json"
+}

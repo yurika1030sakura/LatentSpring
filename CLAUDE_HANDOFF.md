@@ -1,47 +1,76 @@
-# Completed physics-learning result; freeze before confirmation
+# LatentSpring: completed fresh confirmation; raw generation is the priority
 
-Read `research/THERMAL_DISTILLATION_STATE_20260915.json`,
-`notes/thermal_learning_results_20260915.md` and
-`notes/escorted_work_teacher_20260915.md`. All jobs46510691/46514001/46521662
-are complete. No new job is queued. The updated manuscript compiles cleanly:
-7 main pages,14 total. Latest registry isv11.
+Read `research/FRESH_PHYSICS_STATE_20260915.json` and
+`notes/fresh_physics_results_20260915.md`. The manuscript is
+`paper/tree_working.tex` / `paper/tree_working.pdf`, titled
+**LatentSpring: Physics-Informed Molecular Flow Matching from Atomic Composition**.
+It compiles cleanly: 9 main pages, 16 total. Scientific submission readiness is false.
 
-The original harmonic-source evidence remains unchanged: +8.83pp versus unit
-Gaussian on10 additional compositions and+15.39pp versus the approximate covariance
-Gaussian. A new pooled physical readout favors harmonic by0.04059 eV/atom and
-0.46347 eV/Angstrom force RMS, but the first continuation dominates; the second
-force difference is unfavorable. Do not describe this as two-seed physical
-replication.
+Jobs46531691_0/1 (generation/eSEN) and46531808_0/1 (GFN2) are complete.
+No new BGFM study was submitted after these jobs; unrelated user jobs may be live.
+Re-query specific jobs before recovery. Latest registry: v12.
 
-A local force-escorted Jarzynski teacher has actually been implemented, tested,
-used for fitting and audited. Eight particles per FIT anchor approximate a
-Gaussian-restrained local energy tilt. The full work includes both Gaussian
-reference densities; global generator density and equilibrium isomer weights
-remain unknown. Local ESS1.27–1.87/8 signals weight concentration.
+## Completed result
 
-Direct replay/escort/work continuations all harm frozen quality. Complete work
-improves versus its matched escort student, but the adoption gate fails.
-A single coefficient1 parameter-arithmetic test uses
-  theta_new = theta_frozen + (theta_physics - theta_replay).
-Both variants improve energy and force in both existing continuations and largely
-restore observed graph support. Work-difference versus frozen has common-supported
-energy change-0.01604 eV/atom[conditional95 -0.02188,-0.01013] and force RMS change
--0.38403 eV/Angstrom. Graph counts406/382 versus frozen418/377 (each/640).
-The observed loss0.55pp is within the declared2pp gate, but its CI does not prove
-statistical noninferiority. The frozen-improvement gate passes; the extra-work
-versus unweighted-escort gate fails (energy CI spans zero).
+Frozen24 new compositions, two existing model continuations, four models and32
+samples per composition give6,144 new raw outputs. Old official candidates and
+composition matches in both verified processed corpora are excluded. No fitting,
+coefficient changes or model selection occurred on these new outcomes.
 
-Prefer the simpler escort-difference candidate for the next practical confirmation:
-energy/force effects are comparable and it needs702 teacher anchor queries,
-where complete work needs6232. Retain the work model, its identity and all results.
-The method-specific contribution is not a new Jarzynski identity, energy-weighted
-FM principle, or task-arithmetic operation; all have direct prior art. AI novelty
-remains a scoped construction/utility claim, not an established ICLR verdict.
+Raw graph support: Gaussian44.53%, harmonic52.73%, force update53.45%, complete-work
+update52.67%. Harmonic minus Gaussian is+8.20pp, conditional paired95[5.08,11.33].
+Force update minus harmonic is+0.72pp[-0.98,2.34], not an established extra validity
+gain. Both force-update continuations improve energy and force under both eSEN
+and independent GFN2. Common-graph energy changes are-0.01308 eV/atom under eSEN
+and-0.01168 under GFN2; both paired intervals exclude zero. The prespecified
+cross-potential gate passes. Source-only physics is heterogeneous across seeds.
+Extra complete-work advantage over force update remains unestablished.
 
-Next essential work: independent new-composition confirmation of the fixed physics
-candidate and an independent physical/strong-generator comparison. Do not run a
-coefficient, layer, learning-rate or architecture sweep on this reused10-case
-panel. Keep original harmonic models frozen. Current physics improvements are
-surrogate-based, post-result exploratory evidence, not a global Boltzmann law.
-Reserved722 outcomes remain unqueried; evaluated data remain outside fitting.
-Scientific submission readiness stays false. The user handles authors/submission.
+GFN2 has4 generated failures/6144, all graph-rejected. All graph-supported outputs
+and96 reference calculations succeed. Total new costs:12384 eSEN queries and6240
+GFN2 attempts. Both are approximate evaluators, not DFT or equilibrium certification.
+Same two trained models are reused; this is new-composition evidence, not additional
+independent model replication.
+
+## User correction: directly valid output with little relaxation
+
+All reported coordinates are raw generator outputs. xTB uses `--grad`, never
+`--opt`. All input coordinates and atom symbols match the frozen generated samples.
+No per-output energy ranking, force correction or geometry optimization occurs
+at inference. Physical teacher displacements and updates occur on separate FIT
+samples during learning. Preserve this distinction in every claim.
+
+Current force-update failures/1536:474 disconnected only,3 overlap only,7 both,
+231 geometry-supported but graph-rejected;821 graph-supported. Disconnection
+therefore affects481/1536 (31.32%), the largest failure category. Do not interpret
+graph rejection as a uniquely diagnosed chemical defect. The existing raw assay
+is unchanged. Lower force does not establish few relaxation steps or stable minima.
+
+Next essential work: one targeted connectivity intervention developed on FIT-only
+data, consulting failed tree-context/product-coordinate/edge-feedback results.
+Preserve all frozen harmonic and physics checkpoints. Raw generation is the primary
+metric. A separate matched capped-relaxation assay can measure steps, coordinate
+change, graph retention, failures and total cost before claiming little optimization.
+Keep original coordinates and raw validity visible. Do not tune on fresh24 and
+then describe it as untouched confirmation. A fair independent-generator comparison
+and broader coverage remain substantive gaps.
+
+The proposed additional global stochastic-path/Jarzynski reconstruction is deferred
+following the user's raw-quality clarification. No such new sampler was implemented
+or submitted. No architecture or coefficient sweep is queued.
+
+Jarzynski remains the already implemented and audited LOCAL work teacher and
+comparison. No global Boltzmann output law, final output density, equilibrium isomer
+weights or output ESS is established. Established random-tree theory, self-conditioning,
+energy-weighted FM, escorted work and task arithmetic must be credited. The scoped
+molecular source/learning construction has useful evidence; ICLR acceptance or
+sufficient novelty is not guaranteed. Current gains are not a matched comparison
+against the original BGFM loss model.
+
+Registryv12:84160 evaluation NN outputs+3584 FIT=87744 total;44256 source/teacher
+eSEN rows plus6240 fresh GFN2 attempts, counted separately. Earlier local proposals,
+projected coordinates and physical campaigns retain their separate ledgers.
+Reserved722 outcomes remain unqueried; all evaluation data remain outside fitting.
+Keep OMol25, max_atoms200, bond loss zero, original electronic conditions, runtime
+patch architecture, NaN guards, two environments and no home writes. The user
+handles authors and submission.
