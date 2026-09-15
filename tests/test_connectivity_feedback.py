@@ -39,3 +39,26 @@ def test_tree_feedback_velocity_is_rotation_and_permutation_equivariant():
     y=prediction(model,x,t,z,spec,context)
     yr=prediction(model,x[:,perm]@r,t,z[:,perm],spec,context)
     torch.testing.assert_close(yr,y[:,perm]@r,atol=3e-6,rtol=3e-5)
+
+
+def test_two_pass_objective_has_finite_gradients_and_sampler_counts_both_passes():
+    from cfm_mol.connectivity_feedback import loss,sample
+    spec=json.loads(Path('research/evidence/matched_generators_harmonic_fm_s0_v1.json').read_text())
+    spec['two_pass']=True
+    clean=base.center(torch.randn(2,5,3));z=torch.tensor([[6,6,8,1,1]]*2)
+    source=base.HarmonicSource()
+    for kind in ['distance','tree']:
+        model=install(base.initialize(spec,'cpu'))
+        context=GeometryContext(source,kind)
+        objective=loss(model,clean,z,spec,source,context,43217)
+        objective.backward()
+        gradients=[p.grad for p in model.parameters() if p.grad is not None]
+        assert gradients and all(torch.isfinite(g).all() for g in gradients)
+        assert sum(float(g.square().sum()) for g in gradients)>0
+        calls=[]
+        handle=model.dynamics.egnn.register_forward_hook(lambda *_:calls.append(1))
+        result,_=sample(model,z[0].tolist(),spec,source,context,43219,2,128)
+        handle.remove()
+        assert len(calls)==128
+        assert result.shape==(2,5,3) and torch.isfinite(result).all()
+        torch.testing.assert_close(result.mean(1),torch.zeros(2,3),atol=1e-6,rtol=0)

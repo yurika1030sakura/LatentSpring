@@ -1,0 +1,45 @@
+{
+  "format": "gaga_feedback_v1",
+  "frozen": true,
+  "at_utc": "2026-09-15T18:43:41.591332+00:00",
+  "panel": "research/evidence/gaga_feedback_panel_v1.json",
+  "panel_sha256": "a097fe0b72cd9c186400c32911d436451abc10112fa54cafd2ef1b77f539cd5a",
+  "seeds": [
+    0,
+    1
+  ],
+  "challengers": [
+    "distance",
+    "tree"
+  ],
+  "gaga_sampling_max_t": [
+    350,
+    500,
+    650
+  ],
+  "validation_samples": 16,
+  "test_samples": 32,
+  "evaluation_batch": 8,
+  "calls_per_sample": 128,
+  "challenger_selection": "Highest pooled validation graph validity across both seeds; tie favors distance. One shared choice for both seeds.",
+  "gaga_selection": "Highest pooled validation graph validity across both seeds; ties favor larger maximum timestep. The training checkpoint is always the original fixed650 model.",
+  "confirmation": "Always report both feedback challengers, original harmonic FM, selected GAGA and original GAGA650, deduplicating identical GAGA settings.",
+  "primary_gate": "Selected challenger minus validation-selected GAGA has positive raw graph-validity difference in each seed and a positive lower bound of the paired composition bootstrap95 interval.",
+  "statistics": {
+    "bootstrap_repetitions": 20000,
+    "bootstrap_seed": 43123,
+    "unit": "composition, with both model seeds kept together",
+    "interval_scope": "Conditional on these fitted models; secondary contrasts descriptive."
+  },
+  "training_budget": "Each feedback model has15000 updates x32 examples x2 supervised backbone passes =960000 backbone example passes, equal to original30000 x32 one-pass models. Data presentations and optimizer updates differ; report measured runtime and never claim equal wall time.",
+  "architecture": "Same2381566 trainable parameters and initial tensor state; replace the existing second invariant edge channel with detached provisional-geometry context.",
+  "tree_scope": "Effective-resistance inclusion probabilities of a regularized auxiliary weighted-tree law; not supplied chemical bonds or the exact posterior of the unchanged source.",
+  "source_and_inference": "Original harmonic source, raw coordinates and128 backbone calls; no energy ranking, optimization or bond labels.",
+  "expected_new_training_steps": 60000,
+  "expected_training_presentations": 1920000,
+  "expected_training_backbone_example_passes": 3840000,
+  "expected_validation_outputs": 6144,
+  "maximum_confirmation_outputs": 10240,
+  "new_physical_queries": 0,
+  "reserved_outcomes_allowed": false
+}
