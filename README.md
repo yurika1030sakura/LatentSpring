@@ -1,53 +1,49 @@
-# Boltzmann-Guided Flow Matching (BGFM)
+# LatentSpring
 
-Bond-free FlowMol3 on OMol25, with the loss family
-`L_FM + lambda_1 L_force + lambda_2 L_energy (+ lambda_3 L_anchor)`.
+**Physics-Informed Molecular Flow Matching from Atomic Composition**
 
-**Research status, 2026-09-08: not submission-ready.** The archived results
-show local ordering under a legacy scalar readout, not validated Boltzmann
-sampling. The implementation/evidence audit found an endpoint-as-velocity
-error in the energy routine, omitted trajectory/prior gradients, strong
-solver sensitivity, and no demonstrated generation-strain improvement.
+LatentSpring generates molecular coordinates from atomic composition using a
+harmonic source with latent spatial connectivity. Physical feedback enters through
+training targets, while generation uses a single neural model.
 
-Start with [the audit](audit/20260908/REVIEW.md),
-[recomputed evidence](audit/20260908/evidence.md), and
-[the current project guide](CLAUDE.md). The previous broad consistency and
-83-element sampling claims are not supported by these experiments.
+- [Current manuscript (PDF)](paper/latentspring.pdf)
+- [LaTeX entrypoint](paper/main.tex)
+- [Title and abstract](paper/submission_abstract.txt)
+- [Reproducibility guide](paper/REPRODUCIBILITY.md)
 
-## Reproduce the evidence
+## Method and evidence
 
-```bash
-python scripts/audit_iclr_evidence.py --out /tmp/bgfm-evidence
-```
+The source marginalizes over random harmonic trees, giving a normalized density
+without supplied chemical bonds. Matched OMol25 continuations improve raw graph
+support over Gaussian sources across three composition panels. A physical training
+update lowers raw energy and force under eSEN and independent GFN2-xTB evaluation.
+A controlled molecular-rotor study tests complete escorted-work correction against
+resolved local target distributions.
 
-No GPU, model download or ML library is needed. The script joins re-scores by
-record identity, checks their archived scalar values, compares the same
-checkpoints at 12/24/48 steps, and reports seed-level uncertainty and failures.
-The group membership mask is an archived input, not a fresh identity audit.
+The experiments use pretrained backbones and selected OMol25 training subsets.
+Generator quality, local work correction, and full molecular equilibrium are
+separate evaluation questions. The paper states the task and comparison settings
+for each reported result.
 
-## Corrected implementation
-
-`cfm_mol/clamped_density.py` converts the actual endpoint head to velocity,
-centers the differentiated field, uses deterministic midpoint stages, and
-retains trajectory and prior gradients. It defines a clamped positional
-`q_T`, default `T=0.95`; it does not score the joint CTMC/retracted sampler.
-No reported molecular result was obtained with this correction.
-
-The original routine is preserved for reproducibility. New training must
-explicitly select `energy_density_options.mode: clamped_cnf` and use a new
-run identifier. The smoke config under `configs/audit/` is experimental.
-
-## Tests and manuscript
-
-Use the flowmol environment, isolated from user-site packages:
+## Build the paper
 
 ```bash
-PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/tmp/bgfm-mpl \
-  envs/flowmol/bin/python -m pytest tests/ -q -o cache_dir=/tmp/bgfm-pytest
-bash paper/build.sh /tmp/bgfm-paper-build
+bash paper/build.sh /tmp/latentspring-paper-build
 ```
 
-The paper is a working revision incorporating the audit, not a declaration
-of ICLR readiness. The build enforces the nine-page main-text limit.
-Keep fairchem in the separate omol25 environment. Keep generated data,
-checkpoints and caches out of the home directory.
+The main document is `paper/main.tex`. `paper/bgfm_paper.tex` and its PDF remain
+compatible entrypoints for previous links and now display LatentSpring.
+A self-contained Overleaf source archive is provided at
+[paper/latentspring_overleaf.zip](paper/latentspring_overleaf.zip).
+
+## Code and experiments
+
+Core implementation is in `cfm_mol/`; controlled experiment scripts and frozen
+protocols are under `scripts/research/` and `research/evidence/`. Start with
+[CLAUDE.md](CLAUDE.md) and [the current handoff](CLAUDE_HANDOFF.md) for architecture,
+environments and experiment provenance. Training/inference and energy evaluation
+use separate environments because of their PyTorch dependencies.
+
+This repository developed from BGFM. Earlier implementations and exploratory
+results are retained for reproducibility; the current manuscript and default
+paper entrypoints are LatentSpring.

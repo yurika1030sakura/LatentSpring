@@ -55,8 +55,8 @@ field receives coordinates and molecular conditions, and can generate chemical
 connectivities different from the sampled source tree. A matrix-tree expression
 makes the mixture density and its posterior-averaged elastic coupling explicit.
 
-We integrate this source with equivariant flow matching and geometry
-self-conditioning (SC). Controlled comparisons hold the backbone, initialization,
+We integrate this source with equivariant flow matching
+\citep{lipman2023flowmatching} and geometry self-conditioning (SC). Controlled comparisons hold the backbone, initialization,
 training data, optimization and inference budget fixed while changing the source.
 The harmonic mixture improves raw graph support in both continuations and repeats
 its advantage on two subsequent composition panels. Comparing with both a narrower
@@ -100,9 +100,10 @@ covariance controls test which aspects of this structure help the molecular flow
 
 \paragraph{Physical feedback and nonequilibrium work.}
 OMol25 provides molecular structures, energies and forces across electronic
-conditions \citep{omol25}. Energy-weighted flow matching and physical-reward
-fine-tuning use such information to shape generative models
-\citep{dern2025energyweighted,fab,zhou2025rlpf}. Jarzynski's equality relates
+conditions \citep{omol25}. Energy-weighted flow matching \citep{dern2025energyweighted} and target-density
+training with importance sampling \citep{fab} incorporate physical information
+into generative models. Physical-reward fine-tuning offers a further route for
+molecular diffusion models \citep{zhou2025rlpf}. Jarzynski's equality relates
 nonequilibrium work to equilibrium free-energy differences; Hummer--Szabo
 reconstruction applies it to single-molecule pulling
 \citep{jarzynski1997master,hummerszabo2001}. Escorted transport extends this relation
@@ -368,8 +369,9 @@ and work identities. Source data and pretrained backbones retain their original
 licenses and access requirements.
 
 \subsubsection*{AI use statement}
-AI tools assisted research exploration, literature checks, mathematical derivation,
-implementation, testing, experiment orchestration, analysis and drafting.
+OpenAI Codex and Claude Code assisted literature review, hypothesis and experiment
+design, mathematical derivation and proof writing, code implementation, data
+preprocessing, testing, experimental analysis, and manuscript drafting and editing.
 
 \label{endofmaintext}
 \bibliography{refs,tree_refs}
