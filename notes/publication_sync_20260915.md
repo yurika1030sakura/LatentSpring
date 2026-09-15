@@ -71,3 +71,9 @@ pages total. Their extracted text is identical; all28 exported source files matc
 the manifest. There are19 verified cited references. Build evidence is
 `research/evidence/publication_build_v2.json`. The updated package source is
 `runs/publication_20260915/overleaf_source_v3`.
+
+The expanded release was pushed to GitHub main at a1ab01c and to the existing
+Overleaf project at2f1f9c4. Remote references were verified, and fetching the
+Overleaf source reproduces the28-file export manifest. The original HOLY Overleaf
+checkout was fast-forwarded and is clean. This updates paper sources and PDFs;
+it does not submit to OpenReview or verify an Overleaf web compiler session.
