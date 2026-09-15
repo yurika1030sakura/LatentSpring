@@ -70,9 +70,10 @@ five independent pretraining runs or a controlled dataset-size study.
 
 The unstarted normal-GPU array46643602 was cancelled. Dispatcher46654304 waits
 for GAGA seed1, then submits the unchanged original136257b experiment source to
-gpu_test, running seeds2,3,4 sequentially. Its GPU job will be recorded in
-`runs/source_replication_v1/gpu_test_submission.json`. Audit46654303 is held until
-the dispatcher assigns that GPU dependency and releases it. The earlier audit
+gpu_test, running seeds2,3,4 sequentially. GPU job46656786 is now running; its receipt is in
+`runs/source_replication_v1/gpu_test_submission.json`. The first1000-step readout
+is complete and training has resumed. Audit46654303 is released and waits for
+that GPU job to finish. The earlier audit
 46647904 was automatically cancelled with its old parent; no computation was lost.
 Results/checkpoints are in netscratch via `runs/source_replication_v1/results`.
 

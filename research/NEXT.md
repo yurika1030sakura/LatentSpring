@@ -1,3 +1,9 @@
+Live execution update: source-repetition GPU job46656786 is RUNNING; seed2 has
+completed its1000-step readout and resumed fitting. Seeds3/4 follow in the same
+allocation; audit46654303 waits for completion. GAGA seed1 is complete and seed0
+continues in46645569; dispatcher46636422 will launch their frozen confirmation.
+See the review-response and GAGA state JSON files for the authoritative records.
+
 Publication update: the reviewer-directed revision and completed source/physics
 factorial are pushed and remotely verified. GitHub release f32e843; Overleaf
 f3d2a79. See publication_sync_v4.json and publication_build_v4.json in
