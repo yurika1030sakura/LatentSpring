@@ -1,0 +1,22 @@
+#!/bin/bash
+#SBATCH -J bgfm-rotor-work
+#SBATCH -A ryl_lab
+#SBATCH -p sapphire,shared
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=32G
+#SBATCH --time=02:00:00
+#SBATCH -o /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/logs/%x-%j.out
+#SBATCH -e /n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/logs/%x-%j.err
+set -euo pipefail
+SOURCE_ROOT="${1:?source required}"
+RUN_ROOT="${2:?unique output required}"
+PROJECT="${3:?project required}"
+STORE=/n/holylabs/woo_lab/Lab/yulili/bgfm
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH="$SOURCE_ROOT"
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
+export LD_LIBRARY_PATH="$STORE/envs/flowmol/lib:${LD_LIBRARY_PATH:-}"
+export TMPDIR="$RUN_ROOT/runtime/tmp" MPLCONFIGDIR="$RUN_ROOT/runtime/mpl" XDG_CACHE_HOME="$RUN_ROOT/runtime/cache"
+mkdir -p "$TMPDIR" "$MPLCONFIGDIR" "$XDG_CACHE_HOME"
+cd "$SOURCE_ROOT"
+"$STORE/envs/flowmol/bin/python" -u scripts/research/run_rotor_work.py \
+ --project "$PROJECT" --protocol research/evidence/rotor_work_v1.json --out "$RUN_ROOT/study"

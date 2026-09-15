@@ -1,0 +1,53 @@
+{
+  "status": "running",
+  "scientific_submission_ready": false,
+  "method_name": "LatentSpring",
+  "connectivity": {
+    "job": "46541711",
+    "run": "runs/endpoint_connectivity_v1",
+    "source_commit": "ddd9dae19a03857770964a493ce74ff3b76d970b",
+    "protocols": [
+      "research/evidence/endpoint_connectivity_s0_v1.json",
+      "research/evidence/endpoint_connectivity_s1_v1.json"
+    ],
+    "status": "complete_audited",
+    "audit": "research/evidence/endpoint_connectivity_audit_v1.json",
+    "primary_gate": false,
+    "adopted": false
+  },
+  "independent_generator": {
+    "run": "runs/conditional_edm_gpu_test_v1",
+    "protocols": [
+      "research/evidence/conditional_edm_s0_v1.json",
+      "research/evidence/conditional_edm_s1_v1.json"
+    ],
+    "source_commit": "c625766",
+    "status": "submitted",
+    "job": "46543959",
+    "partition": "gpu_test",
+    "partition_change_at_utc": "2026-09-15T03:49:28.381945+00:00",
+    "partition_change_reason": "Original regular GPU queue remained pending; original two gpu_test slots are now free. Same job, source and limits.",
+    "previous_job": "46543268",
+    "previous_status": "cancelled_while_pending_without_training",
+    "partition_change_result": "In-place partition updates rejected by scheduler plugin despite stored GPU request; cancelled pending job and resubmitted identical source and protocol via original gpu_test launcher."
+  },
+  "relaxation": {
+    "run": "runs/capped_relaxation_v1",
+    "protocol": "research/evidence/capped_relaxation_v1.json",
+    "source_commit": "c625766",
+    "status": "complete_audited",
+    "separate_from_raw_generator": true,
+    "job": "46542830",
+    "audit": "research/evidence/capped_relaxation_audit_v1.json",
+    "generated_force_converged_by20": 0,
+    "generated_attempts": 384,
+    "reference_force_converged_by20": 1,
+    "reference_attempts": 24,
+    "new_raw_singlepoint_attempts": 8142
+  },
+  "last_complete": "research/FRESH_PHYSICS_STATE_20260915.json",
+  "extra_smoke_gfn2_queries": 1,
+  "user_priority": "Directly valid raw outputs and useful scoped ICLR contribution; no unearned novelty or readiness claim.",
+  "reserved_outcomes_unqueried": 722,
+  "manuscript_rebuild_pending": true
+}

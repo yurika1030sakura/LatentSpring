@@ -1,0 +1,39 @@
+\section{Separate capped-relaxation diagnostic}\label{app:relaxation}
+To measure relaxation burden directly, select draw indices 0--3 for each of the
+24 fresh compositions, both existing continuations, and the frozen harmonic and
+force-update variants: 384 generated structures. Include one original data
+reference per composition, giving 408 trajectories. Selection uses no energy or
+graph filtering. ASE BFGS optimizes copies with a maximum step of 0.1\,\AA\ and
+maximum-atom-force convergence threshold of 0.05 eV/\AA, recording steps 0, 5 and 20.
+Initial single-point values are reused; subsequent steps use the same GFN2-xTB
+potential and original electronic conditions. These optimized copies never replace
+raw generation or enter training. The diagnostic uses 8,142 new single-point
+attempts, plus one separately recorded integration-smoke query.
+
+\begin{table}[h]
+\centering
+\caption{Capped-relaxation readouts. Graph columns count accepted geometries at
+each stage; ``same at 20'' additionally requires the original raw perceived graph
+to be retained. RMSD aligns labeled atoms by proper rotation and translation.}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrrr}
+\toprule
+Variant & Raw & 5 steps & 20 steps & Same at 20 & Median RMSD\\
+\midrule
+Harmonic &95/192&108/192&106/192&51/95&0.386\,\AA\\
+Force update &108/192&108/192&106/192&53/108&0.387\,\AA\\
+Original reference &24/24&23/24&23/24&22/24&0.161\,\AA\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No generated trajectory reaches the force threshold at either cap; one reference
+does at 20 steps. One force-update trajectory has an SCC failure at step 7 and
+remains in the denominator as unavailable at step 20. RMSD summaries condition on
+available trajectories. The force-update minus harmonic graph-rate difference is
+zero at both caps, with conditional paired 95\% interval $[-4.17,4.17]$ percentage
+points. These results do not establish reduced relaxation burden. The low reference
+convergence rate also shows that the original data coordinates cannot be assumed
+to be GFN2 minima. Force convergence alone would not certify a positive Hessian or
+a stable minimum. This diagnostic makes no equilibrium-distribution claim.

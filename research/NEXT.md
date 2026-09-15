@@ -1,3 +1,14 @@
+# Active raw-quality and independent-generator studies
+
+Read `research/RAW_QUALITY_STATE_20260915.json`. Connectivity job46541711_0/1
+trains replay/local/tree controls and evaluates all six frozen variants on the
+reused12 development compositions. New conditional EDM adaptation is implemented
+and CPU-validated; submit its frozen two-seed launcher once GPU submission slots
+are free. Capped relaxation is a separate CPU diagnostic on COPIES of prior raw
+outputs; original inference still has no optimizer. Track its job in the state.
+All new claims await completed audits. No new architecture sweep or global-path
+sampler was started. The completed checkpoint below remains unchanged.
+
 # LatentSpring: completed fresh confirmation; raw generation is the priority
 
 Read `research/FRESH_PHYSICS_STATE_20260915.json` and

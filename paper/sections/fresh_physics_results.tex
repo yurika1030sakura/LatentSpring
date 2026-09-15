@@ -46,7 +46,9 @@ DFT ground truth. We retain all failed calculations: 4 of 6,144 generated-geomet
 GFN2 calculations fail, all outside graph support. Every graph-supported output
 succeeds, and all original-reference inversion checks pass. Total physical cost
 is 12,384 raw eSEN queries and 6,240 GFN2 attempts, including reference checks.
-The eSEN paired-inversion convention and fixed-coordinate GFN2 inputs are audited.
+The audited eSEN readout uses $E_+(X)=[E(X)+E(-X)]/2$ and
+$F_+(X)=[F(X)-F(-X)]/2$; force RMS is the root mean squared atom-force norm.
+GFN2 inputs are fixed at their saved generated coordinates.
 The xTB command uses \texttt{--grad}, never \texttt{--opt}; gradients are readouts
 and do not update coordinates. Physical teacher displacements occur only in the
 earlier training procedure, on separate FIT samples.
@@ -85,12 +87,3 @@ feedback update, while not establishing an extra advantage of Jarzynski weightin
 The previously defined local work identity remains mathematically useful, but
 these results do not imply globally Boltzmann-distributed generator outputs.
 
-\paragraph{Raw-output failure diagnosis.}
-The primary variant passes the graph assay on 821 of 1,536 outputs. Disjoint
-failures comprise 474 disconnected-only geometries, 3 overlap-only geometries,
-7 with both defects, and 231 geometrically supported outputs rejected by graph
-perception. Thus disconnected outputs account for 481/1,536 (31.32\%), making
-connectivity the largest diagnosed failure category. This is a descriptive
-post-evaluation diagnosis, with the original assay and denominator unchanged.
-Lower raw force does not by itself establish fewer relaxation steps or proximity
-to a stable minimum; those claims require a separate matched relaxation assay.
