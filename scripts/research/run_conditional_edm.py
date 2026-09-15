@@ -113,14 +113,30 @@ def main():
     panel = json.loads((args.project/spec['condition_manifest']).read_text())['rows']
     excluded = {r['composition_hex'] for r in panel}
     training = data['training']
-    assert len(training) == spec['training_steps']
+    assert len(training) * spec.get('training_passes', 1) == spec['training_steps']
     assert all(r['condition']['composition_hex'] not in excluded for r in training)
     assert all(r['condition']['charge'] == 0 and r['condition']['spin_multiplicity'] == 1 for r in training)
     model = build(spec, 'cuda').train()
     args.out.mkdir(parents=True)
     optimizer = torch.optim.AdamW(model.parameters(), lr=spec['learning_rate'], amsgrad=True, weight_decay=1e-12)
+    start_step = 0
+    prior_seconds = 0.
+    if spec.get('resume'):
+        reference = spec['resume']
+        for key in ['checkpoint','metrics','training_report']:
+            assert sha(args.project/reference[key]) == reference[key+'_sha256']
+        prior = torch.load(args.project/reference['checkpoint'], map_location='cuda', weights_only=False)
+        model.load_state_dict(prior['state_dict'], strict=True)
+        optimizer.load_state_dict(prior['optimizer_state_dict'])
+        old_metrics = (args.project/reference['metrics']).read_text()
+        old_rows = [json.loads(line) for line in old_metrics.splitlines()]
+        start_step = reference['completed_steps']
+        assert len(old_rows) == start_step and old_rows[-1]['step'] == start_step
+        (args.out/'metrics.jsonl').write_text(old_metrics)
+        prior_seconds = json.loads((args.project/reference['training_report']).read_text())['seconds']
     start = time.perf_counter()
-    for step, row in enumerate(training, 1):
+    for step in range(start_step+1, spec['training_steps']+1):
+        row = training[(step-1) % len(training)]
         c = row['condition']
         clean = center(row['positions'][None].cuda().float()) / model.norm_values[0]
         rng = torch.Generator(device='cuda').manual_seed(spec['training_seed'] * 1000003 + step)
@@ -145,9 +161,10 @@ def main():
             print(json.dumps(record), flush=True)
     checkpoint = args.out/'last.ckpt'
     torch.save(dict(state_dict=model.state_dict(), protocol_sha256=ph, optimizer_state_dict=optimizer.state_dict()), checkpoint)
-    write(args.out/'training.json', dict(complete=True, steps=len(training), seconds=time.perf_counter()-start,
+    write(args.out/'training.json', dict(complete=True, steps=spec['training_steps'], seconds=prior_seconds+time.perf_counter()-start,
+        new_steps=spec['training_steps']-start_step, new_seconds=time.perf_counter()-start,
         parameter_count=sum(p.numel() for p in model.parameters()), checkpoint_sha256=sha(checkpoint),
-        primitive_denoiser_training_forwards=len(training)))
+        primitive_denoiser_training_forwards=spec['training_steps']))
     del optimizer
     gc.collect()
     torch.cuda.empty_cache()
@@ -179,7 +196,7 @@ def main():
             print(json.dumps({k:row[k] for k in ['method','condition_index','graph_supported','geometrically_supported']}), flush=True)
         write(out/f'{method}_results.json', dict(complete=True, protocol_sha256=ph, rows=rows,
             scope=spec['scope'], checkpoint_sha256=sha(checkpoint)))
-    write(args.out/'complete.json', dict(complete=True, protocol_sha256=ph, new_training_steps=len(training),
+    write(args.out/'complete.json', dict(complete=True, protocol_sha256=ph, new_training_steps=spec['training_steps']-start_step,
         new_neural_outputs=len(panel)*spec['samples_per_condition']*len(spec['inference_calls']),
         new_physical_queries=0, scientific_submission_ready=False))
 

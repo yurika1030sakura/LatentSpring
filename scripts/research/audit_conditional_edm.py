@@ -26,11 +26,12 @@ def independent_intervals(left,right,rng,repeats=5000):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for k in ['project','run','out']:p.add_argument('--'+k,type=Path,required=True)
+    p.add_argument('--protocol-stem',default='conditional_edm')
     a=p.parse_args();assert not a.out.exists();torch.set_num_threads(2)
     methods=['edm_128','edm_1001'];graph=np.zeros((2,2,24,32),bool);geometry=graph.copy()
     summary={};artifacts=[]
     for seed in [0,1]:
-        pp=a.project/f'research/evidence/conditional_edm_s{seed}_v1.json';spec=json.loads(pp.read_text());ph=sha(pp)
+        pp=a.project/f'research/evidence/{a.protocol_stem}_s{seed}_v1.json';spec=json.loads(pp.read_text());ph=sha(pp)
         root=a.run/f's{seed}/study';done=json.loads((root/'complete.json').read_text())
         assert done['complete'] and done['protocol_sha256']==ph and done['new_neural_outputs']==1536
         model=build(spec,'cpu');saved=torch.load(root/'last.ckpt',map_location='cpu',weights_only=False)
@@ -39,8 +40,8 @@ def main():
         training=json.loads((root/'training.json').read_text());assert training['complete'] and training['checkpoint_sha256']==sha(root/'last.ckpt')
         data=torch.load(a.project/spec['data'],map_location='cpu',weights_only=False)
         records=[json.loads(line) for line in (root/'metrics.jsonl').read_text().splitlines()]
-        assert len(records)==spec['training_steps']==len(data['training'])==3000
-        assert [r['processed_index'] for r in records]==[r['condition']['processed_index'] for r in data['training']]
+        assert len(data['training'])==3000 and len(records)==spec['training_steps']==3000*spec.get('training_passes',1)
+        assert [r['processed_index'] for r in records]==[data['training'][i%3000]['condition']['processed_index'] for i in range(len(records))]
         assert all(np.isfinite([r['loss'],r['gradient_norm']]).all() for r in records)
         del model,saved,data
         summary[seed]={};initials={}
