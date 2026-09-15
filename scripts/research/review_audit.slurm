@@ -11,7 +11,7 @@ set -euo pipefail
 SOURCE="${1:?immutable source}"
 PROJECT="${2:?project data root}"
 RUN_ROOT="${3:?run root}"
-KIND="${4:?factorial or replication}"
+KIND="${4:?factorial, replication or matched_physical}"
 FLOWMOL_ENV=/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol
 export PYTHONPATH="$SOURCE" PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 MKL_NUM_THREADS=2
@@ -21,6 +21,8 @@ if [[ "$KIND" == factorial ]]; then
  script=scripts/research/audit_source_physical_factorial.py
 elif [[ "$KIND" == replication ]]; then
  script=scripts/research/audit_source_replication.py
+elif [[ "$KIND" == matched_physical ]]; then
+ script=scripts/research/audit_matched_physical.py
 else
  exit 2
 fi
