@@ -50,3 +50,19 @@ Runner: `scripts/research/run_gaga_feedback.py`.
 The Slurm array runs the two seeds independently, with distance, tree and validation
 baselines in sequence within each seed. All source and protocols are snapshotted
 before submission. Publication conclusions stay unchanged until audited results.
+
+
+## Execution
+
+Training source: a19c95f. Seed0 runs as46634916_0. Seed1's first launch46634916_1
+failed in a startup assertion before model initialization: its original baseline
+seed is41401, whereas the assertion had assumed40402. The replacement validates
+seeds against the actual frozen baseline protocol and preserves every seed/data
+setting. Replacement46635650_1 and confirmation code use source5ab8586.
+
+Direct confirmation submission was rejected by gpu_test's submission-count limit;
+no confirmation job was created by that attempt. Dependency dispatch46636422 uses
+source de00842 and submits the already frozen confirmation job once both training
+jobs finish successfully and release their GPU submission slots. Submission
+receipts and all failed attempts remain under runs/gaga_feedback_v1. The paper's
+claims and PDF are unchanged by these ongoing experiments.

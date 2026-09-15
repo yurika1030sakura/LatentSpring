@@ -1,5 +1,5 @@
 {
-  "status": "molecular_manuscript_published_gaga_feedback_challenge_active",
+  "status": "molecular_manuscript_published_gaga_feedback_training_active",
   "published_manuscript_unchanged": false,
   "published_github_main": "398a82511b6aa625306ffcaf26a9b6f38e8c3fbc",
   "quality_protocol_source": "4ed5d0a",
@@ -41,13 +41,13 @@
   "planned_neural_esen_queries": 9216,
   "reserved_outcomes_queried": false,
   "scheduler_note": "GPU requeue requests remained pending without running. Replaced with two gpu_test seed jobs, each processing four immutable quality chunks. Two rejected8-task gpu_test submissions hit QOSMaxSubmitJobPerUserLimit and created no job. No experiment budget or output changed.",
-  "next": "Freeze and run the GAGA feedback challenge using validation-only choices and fresh held-out confirmation; update manuscript only when supported.",
+  "next": "Monitor the active GAGA feedback seeds; validation selection and fresh confirmation are chained through a dependency dispatch job. Keep published conclusions unchanged until audited outcomes.",
   "curvature_teacher_audit": "research/evidence/curvature_full_teacher_audit_v1.json",
   "curvature_student_esen_audit": "research/evidence/curvature_distillation_esen_audit_v1.json",
   "curvature_student_xtb_audit": "research/evidence/curvature_distillation_xtb_audit_v1.json",
   "curvature_neural_primary_gate": false,
   "curvature_neural_decision": "Do not promote curvature work to the primary generator. ESS improved, but raw neural benefit over translation work was not replicated across seeds; force24 was better on energy and force.",
-  "all_experiment_jobs_terminal": true,
+  "all_experiment_jobs_terminal": false,
   "editorial_request": {
     "overleaf_reviewed_head": "0eecd2802fcd235e54e0e3f3ca50e7b3db44cf15",
     "prior_overleaf_head": "2f1f9c4e22bab14691bdc42190b2eb53a1077379",
@@ -56,10 +56,16 @@
     "scope": "Review all publicly identifiable Shitong Luo and Chence Shi AI-for-science papers for writing and figure style; rewrite manuscript with scientifically corrected collaborator style; make molecular/atomic figures and actual flow-time animation; explicitly define task and flow input/output."
   },
   "gaga_challenge": {
-    "status": "experimental_module_unit_tests_pass_training_not_launched",
+    "status": "both_seed_training_jobs_running",
     "module": "cfm_mol/connectivity_feedback.py",
-    "tests": "3 passed; exact original distance context, EMA-copy isolation, tree marginal enumeration and equivariance",
-    "paper_claim_changed": false
+    "tests": "4 passed including finite training gradients and128 actual sampler calls",
+    "paper_claim_changed": false,
+    "state": "research/GAGA_FEEDBACK_STATE_20260915.json",
+    "training_jobs": [
+      "46634916_0",
+      "46635650_1"
+    ],
+    "confirmation_dispatch_job": "46636422"
   },
   "published_overleaf_main": "239932c45525fbf453966431c1be5643d4174655",
   "publication_receipt": "research/evidence/publication_sync_v3.json"

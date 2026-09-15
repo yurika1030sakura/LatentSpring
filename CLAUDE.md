@@ -1,3 +1,15 @@
+Current experiment status (2026-09-15): GAGA feedback training is active.
+Read `research/GAGA_FEEDBACK_STATE_20260915.json` and
+`notes/gaga_feedback_challenge_20260915.md` first. Jobs `46634916_0` and
+`46635650_1` train two feedback models per seed, then evaluate validation baselines.
+Job `46636422` waits for both and dispatches validation selection, fresh-panel
+confirmation and a raw-output audit. The eventual confirmation GPU job will be
+recorded in `runs/gaga_feedback_v1/confirmation_dispatched.json`.
+The original seed1 startup failure occurred before training; it was a seed-check
+bug, fixed while preserving the frozen baseline seed41401. No outcome or protocol
+was changed. No new generator improvement is established yet. The published
+manuscript remains the verified molecular-figure release below.
+
 Current checkpoint (2026-09-15): the editorial and molecular-figure revision is
 published and remotely verified. The paper explicitly defines flow inputs/outputs, uses actual
 molecular coordinates and includes supplementary flow/rotor animations. Its

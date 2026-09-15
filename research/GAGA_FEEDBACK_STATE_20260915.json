@@ -1,13 +1,32 @@
 {
-  "status": "protocol_frozen_ready_for_training",
+  "status": "both_seed_training_jobs_running",
   "at_utc": "2026-09-15T18:44:59.048673+00:00",
   "protocol": "research/evidence/gaga_feedback_campaign_v1.json",
   "panel": "research/evidence/gaga_feedback_panel_v1.json",
   "run_root": "runs/gaga_feedback_v1",
   "tests": "4 passed in3.29s; exact old channel, tree law, equivariance, finite gradients and128 actual sampler calls",
-  "training_jobs": [],
+  "training_jobs": [
+    "46634916_0",
+    "46635650_1"
+  ],
   "confirmation_job": null,
   "results_available": false,
   "published_paper_changed": false,
-  "next": "Snapshot and submit two seed jobs; then select settings from validated outcomes before any fresh-panel generation."
+  "next": "Training jobs46634916_0 and46635650_1 run distance/tree/baseline validation; dependency dispatch submits frozen confirmation after both finish. Check runs/gaga_feedback_v1/confirmation_dispatched.json for its eventual GPU job.",
+  "source_commit": "a19c95fe82af933f84ca1b12809141dc4ed13e31",
+  "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/gaga_feedback_v1/source",
+  "failed_startup_job": "46634916_1",
+  "failure_reason": "Incorrect hardcoded seed increment in startup validation; fixed by comparing against original frozen baseline protocol. Original seed41401 retained; failure occurred before model initialization or training.",
+  "followup_source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/gaga_feedback_v1/followup_source",
+  "followup_source_commit": "5ab85860370d2bd8b04a8b34917a4b3ea24dbef2",
+  "confirmation_dispatch_job": "46636422",
+  "confirmation_dependency": "afterok:46634916_0:46635650_1",
+  "confirmation_dispatch_source_commit": "de00842959895920c865edbaf93217e7f35e5ee8",
+  "confirmation_submission_rejected": "QOSMaxSubmitJobPerUserLimit; no job created",
+  "last_scheduler_check_utc": "2026-09-15T18:52:16.580145+00:00",
+  "last_scheduler_rows": [
+    "46635650_1|RUNNING|1:46|holygpu7c26203",
+    "46634916_0|RUNNING|5:48|holygpu7c26202",
+    "46636422|PENDING|0:00|(Dependency)"
+  ]
 }
