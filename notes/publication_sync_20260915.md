@@ -104,3 +104,17 @@ citations, with no unresolved references, overfull boxes or unstable labels.
 Standalone export/build and remote verification follow before publication is
 recorded as complete. The Overleaf revision will descend from collaborator
 commit 0eecd2802fcd235e54e0e3f3ca50e7b3db44cf15.
+
+
+### Molecular release synchronized and verified
+
+GitHub main received release `398a82511b6aa625306ffcaf26a9b6f38e8c3fbc` (full ID in publication_sync_v3.json),
+and Overleaf main received `239932c45525fbf453966431c1be5643d4174655`.
+The Overleaf commit directly preserves collaborator `0eecd28` as its parent.
+Both remote heads were fetched after pushing. All 34 exported source/media files
+and the manifest match the locally compiled standalone package byte for byte.
+Canonical and standalone PDF text is identical; both have 9 scientific main pages
+and 25 total pages. The source ZIP includes 24 used references and two GIFs.
+The original HOLY Overleaf checkout is fast-forwarded and clean. Cloud compilation
+and OpenReview submission are not claimed. The GAGA feedback challenge remains
+separate ongoing research with three passing module tests and no trained result.

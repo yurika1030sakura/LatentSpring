@@ -1,10 +1,10 @@
 Current checkpoint (2026-09-15): the editorial and molecular-figure revision is
-complete locally. The paper explicitly defines flow inputs/outputs, uses actual
+published and remotely verified. The paper explicitly defines flow inputs/outputs, uses actual
 molecular coordinates and includes supplementary flow/rotor animations. Its
 canonical build has 9 scientific main pages, 25 total pages and 24 cited references.
 The new standalone build and publication receipt are recorded in
-`research/evidence/publication_build_v3.json` and `publication_sync_v3.json` once
-synchronization finishes. Preserve Overleaf collaborator commit `0eecd2802fcd235e54e0e3f3ca50e7b3db44cf15`.
+`research/evidence/publication_build_v3.json` and
+`research/evidence/publication_sync_v3.json`. GitHub release: `398a825`; Overleaf: `239932c`. Preserve Overleaf collaborator commit `0eecd2802fcd235e54e0e3f3ca50e7b3db44cf15`.
 
 The user has also authorized an attempt to improve on GAGA. The new experimental
 `cfm_mol/connectivity_feedback.py` has three passing mathematical/compatibility tests,
