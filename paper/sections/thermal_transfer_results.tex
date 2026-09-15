@@ -1,0 +1,57 @@
+\paragraph{Separating the paired update from continuation regression.}
+The failed direct continuation motivates one subsequent fixed-coefficient
+parameter-arithmetic test. Parameter arithmetic is established
+\citep{ilharco2023arithmetic}; we make no claim to invent it or to subtract
+functional drift exactly. For the same initialization and paired training draws,
+construct
+\begin{equation}
+ \theta_{\rm new}=\theta_{\rm frozen}
+   +(\theta_{\rm physical}-\theta_{\rm replay}),
+\end{equation}
+for both unweighted-escort and complete-work students. The coefficient is one;
+there is no coefficient, layer-selection or extra-training sweep. Only parameter
+tensors change, while all buffers and the source distribution remain fixed.
+All four reconstructed checkpoints are checked tensor by tensor and restore.
+
+\begin{table}[t]
+\centering
+\caption{The single parameter-arithmetic test preserves most observed graph
+support while improving the eSEN readout. Energy differences are relative to
+frozen on paired common-graph support, with conditional paired 95\% intervals.
+This test was designed after the direct-continuation result on the same panel.}
+\begin{tabular}{lrr}
+\toprule
+Model & Graph passes (two streams) & Energy change (eV/atom)\\
+\midrule
+Frozen &418/640; 377/640&$0$\\
+Escort difference &407/640; 387/640&$-0.01554\;[-0.02084,-0.01031]$\\
+Work difference &406/640; 382/640&$-0.01604\;[-0.02188,-0.01013]$\\
+\bottomrule
+\end{tabular}\label{tab:thermal-transfer}
+\end{table}
+
+Both continuation signs improve for energy and force in both transferred variants.
+The work-difference variant reduces force RMS by0.38403 eV/\AA\ on common graph
+support (interval $[-0.48124,-0.28932]$); all-attempt energy and force readouts
+also improve. Its observed graph-rate difference is $-0.55$ percentage points,
+with interval $[-2.58,1.56]$. The frozen gate used a two-point tolerance on the
+\emph{observed pooled rate}; this is not a formal statistical noninferiority
+certificate, and a larger loss remains compatible with the interval.
+
+The additional effect of complete work over the transferred unweighted escort is
+not established: common-supported energy difference is $-0.00243$ eV/atom, with
+interval $[-0.00756,0.00264]$, while all-attempt energy difference is $+0.00022$
+with interval $[-0.00557,0.00649]$. Force and graph intervals also span zero.
+Consequently the practical physical-quality signal does not require an asserted
+Jarzynski-specific advantage. The unweighted variant would require only702
+anchor queries for teacher preparation, versus6,232 for the complete-work variant.
+Both use the same single-network128-call inference budget.
+
+This exploratory intervention passes the frozen-baseline physical-improvement
+gate for work transfer, but fails the separate extra-work-over-escort gate.
+It adds2,560 generated outputs and5,120 physical queries. No new optimizer steps
+are used in the transfer itself. Existing panel outcomes informed the choice of
+intervention, so independent composition confirmation and physical-model
+validation remain necessary. These results support investigating the simpler
+physics update while retaining complete work as a defined and tested comparison;
+they do not establish global Boltzmann sampling or new task-arithmetic theory.

@@ -1,52 +1,47 @@
-# Active physics-learning experiment
+# Completed physics-learning result; freeze before confirmation
 
-User requested physics in learning and Jarzynski inclusion. Read
-`research/THERMAL_DISTILLATION_STATE_20260915.json` and
-`notes/escorted_work_teacher_20260915.md`. Job46514001 is active.
-All-output energy readout46510691 completed: pooled harmonic minus Gaussian
--0.04059 eV/atom and-0.46347 eV/Angstrom mean force RMS; no Boltzmann claim.
-Do not train on evaluated structures or reinterpret local work ESS as global ESS.
-The earlier completed manuscript checkpoint follows.
+Read `research/THERMAL_DISTILLATION_STATE_20260915.json`,
+`notes/thermal_learning_results_20260915.md` and
+`notes/escorted_work_teacher_20260915.md`. All jobs46510691/46514001/46521662
+are complete. No new job is queued. The updated manuscript compiles cleanly:
+7 main pages,14 total. Latest registry isv11.
 
-# Current harmonic-source paper and audited controls
+The original harmonic-source evidence remains unchanged: +8.83pp versus unit
+Gaussian on10 additional compositions and+15.39pp versus the approximate covariance
+Gaussian. A new pooled physical readout favors harmonic by0.04059 eV/atom and
+0.46347 eV/Angstrom force RMS, but the first continuation dominates; the second
+force difference is unfavorable. Do not describe this as two-seed physical
+replication.
 
-Read `research/HARMONIC_PAPER_STATE_20260915.json`,
-`notes/source_sc_covariance_results_20260915.md`,
-`notes/harmonic_novelty_and_physics_20260915.md` and
-`notes/native_endpoint_results_20260915.md`.
-The complete internal manuscript is `paper/tree_working.tex` / `.pdf`:
-6 main pages,11 total, clean compile and no unresolved references or overfull boxes.
+A local force-escorted Jarzynski teacher has actually been implemented, tested,
+used for fitting and audited. Eight particles per FIT anchor approximate a
+Gaussian-restrained local energy tilt. The full work includes both Gaussian
+reference densities; global generator density and equilibrium isomer weights
+remain unknown. Local ESS1.27–1.87/8 signals weight concentration.
 
-The harmonic source beats isotropic Gaussian by5.86pp on12 development
-compositions and8.83pp on10 additional compositions using frozen models.
-It also beats the calibrated covariance Gaussian by11.65pp and15.39pp;
-both continuation seeds favor harmonic in both panels. Covariance estimation
-uses128 trees and has1.85–6.25% Frobenius error against8192-tree calibration.
-This supports a source-structure benefit beyond the tested covariance
-approximation; exact-moment or universal causal attribution is not established.
+Direct replay/escort/work continuations all harm frozen quality. Complete work
+improves versus its matched escort student, but the adoption gate fails.
+A single coefficient1 parameter-arithmetic test uses
+  theta_new = theta_frozen + (theta_physics - theta_replay).
+Both variants improve energy and force in both existing continuations and largely
+restore observed graph support. Work-difference versus frozen has common-supported
+energy change-0.01604 eV/atom[conditional95 -0.02188,-0.01013] and force RMS change
+-0.38403 eV/Angstrom. Graph counts406/382 versus frozen418/377 (each/640).
+The observed loss0.55pp is within the declared2pp gate, but its CI does not prove
+statistical noninferiority. The frozen-improvement gate passes; the extra-work
+versus unweighted-escort gate fails (energy CI spans zero).
 
-The original30k endpoint checkpoint was also evaluated with two sampling streams,
-original endpoint semantics,127 Euler steps and128 actual denoiser calls. Counts
-are106/113 with native predicted history and116/120 with fixed-category history
-and centered bootstrap, versus the adapted harmonic413/375, each out of640.
-This is task adaptation with different training histories, not a published native
-benchmark reproduction or an equal-total-training-cost source ablation.
-The fixed-category variant changes bootstrap centering as well as categories.
+Prefer the simpler escort-difference candidate for the next practical confirmation:
+energy/force effects are comparable and it needs702 teacher anchor queries,
+where complete work needs6232. Retain the work model, its identity and all results.
+The method-specific contribution is not a new Jarzynski identity, energy-weighted
+FM principle, or task-arithmetic operation; all have direct prior art. AI novelty
+remains a scoped construction/utility claim, not an established ICLR verdict.
 
-All jobs are terminal:46504779 covariance and46506935 native, as well as previous
-46497703/46503573. No new experiment is queued. Registryv10 includes all outputs.
-Keep the selected harmonic models frozen. No architecture or hyperparameter sweep.
-
-AI contribution claim: explicit random-tree harmonic source and its integration
-into composition-conditioned, bond-free molecular FM. Random-tree priors,
-self-conditioning and Jarzynski are established. Distinctive task-specific utility
-now has controlled support; sufficient ICLR originality is not yet established.
-Physics is the auxiliary spring prior and atomic scales. Jarzynski remains in
-an assumptions-explicit appendix; no work weights, Boltzmann law or output ESS
-were measured for current samples.
-
-Next essential evidence concerns competitiveness with independently trained
-molecular generators and energy/geometry quality under the same task, plus broader
-robustness. Do not claim SOTA or demand every composition win. Research goal remains
-unachieved; the draft is not scientifically submission ready. Reserved722 outcomes
-remain unqueried. The user handles authors and submission.
+Next essential work: independent new-composition confirmation of the fixed physics
+candidate and an independent physical/strong-generator comparison. Do not run a
+coefficient, layer, learning-rate or architecture sweep on this reused10-case
+panel. Keep original harmonic models frozen. Current physics improvements are
+surrogate-based, post-result exploratory evidence, not a global Boltzmann law.
+Reserved722 outcomes remain unqueried; evaluated data remain outside fitting.
+Scientific submission readiness stays false. The user handles authors/submission.

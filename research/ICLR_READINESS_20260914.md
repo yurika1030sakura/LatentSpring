@@ -1,5 +1,15 @@
 # ICLR readiness checkpoint — refreshed September15
 
+Latest completed physics-learning evidence (September15): see
+`research/THERMAL_DISTILLATION_STATE_20260915.json`. Direct continuation fails,
+while a single paired-update transfer lowers energy and force in both model
+continuations with a small observed graph-rate loss. Complete-work weighting
+has no established extra advantage over the cheaper unweighted escort after
+useful transfer. This is post-result evidence on a reused panel, requiring
+independent confirmation. Jarzynski is implemented locally and audited; no
+global Boltzmann claim follows. The current draft is7 main pages,14 total.
+The earlier checkpoint below remains historical where superseded.
+
 The internal manuscript has been rewritten around the supported harmonic-source
 candidate. It compiles cleanly:6 main pages,11 total. See
 `research/HARMONIC_PAPER_STATE_20260915.json` and `paper/tree_working.pdf`.

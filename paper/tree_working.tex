@@ -40,7 +40,9 @@ An energy-model readout also finds lower mean energy and force magnitude.
 These results support a useful molecular source design in a limited domain;
 competitiveness against independent generators and thermal-distribution accuracy
 require separate evidence. The results support incorporating latent spatial structure into a molecular flow
-without supplied bond labels or an additional learned source model.
+without supplied bond labels or an additional learned source model. A separate
+exploratory physics-feedback test improves energy and force after paired parameter
+transfer, without establishing an extra benefit from work weighting.
 \end{abstract}
 
 \section{Introduction}
@@ -332,6 +334,17 @@ learned-module claim. Geometry self-conditioning improves the original one-pass
 shell baseline by 5.47 points but is prior art. The harmonic-source result is a
 separate source comparison with that stronger mechanism shared by all arms.
 
+\paragraph{Physics feedback in learning.}
+We additionally test a local force-escorted teacher with complete Jarzynski work
+weights and matched unweighted/replay controls (Appendix~\ref{app:local-work}).
+Complete work improves physical readouts relative to its matched unweighted
+student, but all direct continuations harm the frozen generator. A subsequent
+fixed-coefficient parameter-difference test largely restores observed graph
+support while reducing energy and force in both continuations. Complete-work and
+unweighted versions perform similarly after transfer; a Jarzynski-specific extra
+benefit is not established. This is exploratory evidence on an examined panel,
+not an independent confirmation or a global Boltzmann claim.
+
 \section{Discussion and limitations}
 A simple fixed probabilistic source now has a positive controlled result and a
 positive additional-composition test. The useful candidate is a random harmonic
@@ -351,14 +364,15 @@ training history. We do not claim superiority over those full published systems.
 An exact energy correction would additionally require qualified work/density
 accounting and overlap with the target distribution. Those requirements are
 independent of a graph-validity improvement. Appendix~\ref{app:jarzynski} retains
-the nonequilibrium connection without presenting it as an evaluated contribution.
+the global nonequilibrium connection as a conditional extension; the local
+work teacher is evaluated separately in Appendix~\ref{app:local-work}.
 \label{endofmaintext}
 
 \subsubsection*{Reproducibility statement}
 Frozen protocols record data-order and generation seeds, source checkpoint hashes,
 all attempted structures, electronic conditions and oracle costs. Current audits
-replay 73,408 generated-output source records (including3072 FIT-bank records),
-1,536 additional projected-coordinate readouts and 5,120 stored physical rows;
+replay 81,600 generated-output source records (including 3,584 FIT records),
+1,536 additional projected-coordinate readouts and 31,872 stored source/teacher physical rows;
 they do not independently rerun optimizers, final neural generation or the oracle.
 The source-SC and frozen-composition confirmation audits join the moment-control, context, additional-composition, monomer, source-utility,
 dynamic-attention, product-coordinate and feedback audits are complete.

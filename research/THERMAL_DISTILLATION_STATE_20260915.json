@@ -1,5 +1,5 @@
 {
-  "status": "all_students_trained_final_generation_and_physical_scoring_running",
+  "status": "complete_physics_transfer_signal_no_extra_work_gain",
   "job_id": "46514001",
   "run": "runs/thermal_distillation_v1",
   "protocols": [
@@ -25,5 +25,39 @@
       0.29301701240077893
     ],
     "scope": "Source quality readout only. Force gain does not replicate in sign across both model seeds."
-  }
+  },
+  "distillation_audit": "research/evidence/thermal_distillation_audit_v1.json",
+  "work_weighting_adoption_gate": false,
+  "local_work_increment": {
+    "energy_per_atom_common_graph": -0.007583471474052657,
+    "paired95": [
+      -0.014242639329532467,
+      -0.0011298938885106905
+    ],
+    "force_rms_common_graph": -0.16174409429895792
+  },
+  "work_vs_frozen": {
+    "energy_per_atom_common_graph": 0.10587027330121394,
+    "graph_rate_difference": -0.06953125
+  },
+  "transfer": {
+    "status": "complete_audited",
+    "job_id": "46521662",
+    "run": "runs/thermal_transfer_v1",
+    "audit": "research/evidence/thermal_transfer_audit_v1.json",
+    "coefficient": 1.0,
+    "improvement_vs_frozen_gate": true,
+    "extra_work_vs_escort_gate": false
+  },
+  "all_jobs_terminal": true,
+  "teacher_raw_queries": 6232,
+  "output_energy_readout_queries": 10240,
+  "paired_update_readout_queries": 5120,
+  "initial_source_energy_readout_queries": 5160,
+  "total_new_raw_oracle_calls": 26752,
+  "new_neural_generation_outputs": 8192,
+  "local_escorted_proposals": 2808,
+  "supported_local_escorted_proposals": 2765,
+  "current_recommendation": "Keep original harmonic checkpoints frozen. Treat the simpler escort-difference transfer as the practical exploratory physics candidate; retain complete-work comparison and theory, but do not claim its extra superiority. Confirm on new compositions and an independent physical evaluator before promoting.",
+  "global_boltzmann_sampling_demonstrated": false
 }

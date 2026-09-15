@@ -54,7 +54,10 @@ excluded identically from all student pools.
 
 Each student alternates 500 original-reference FM updates with 500 generated-FIT
 endpoint updates, sharing initialization, anchor draws, optimization and sampling
-budgets. No oracle is queried by the final generator. Physics enters through
+budgets. Physical preparation costs differ: replay needs no force queries, the
+unweighted escort needs anchor forces, and complete work additionally needs
+energies at valid proposed endpoints. Actual shared research cost and these
+method requirements are reported separately. No oracle is queried by the final generator. Physics enters through
 training targets. The generator retains its legacy constant temperature input;
 this is not a model trained to predict different temperatures. Finite-particle
 normalization biases the teacher relative to the exact normalized local target.
@@ -62,7 +65,6 @@ Its ESS refers only to eight local particles, not global generator outputs.
 Original-reference mixing and unknown chemical-isomer weights further prevent a
 global equilibrium claim, even if the local identity is exact.
 
-\IfFileExists{sections/local_work_results.tex}{\input{sections/local_work_results}}{
-The frozen controlled experiment is in progress; no additional learned benefit
-or thermal-distribution accuracy is claimed before its complete audit.
-}
+\input{sections/local_work_results}
+
+\input{sections/thermal_transfer_results}

@@ -1,39 +1,41 @@
 # BGFM project guide
 
-CURRENT: `research/HARMONIC_PAPER_STATE_20260915.json`, `research/NEXT.md`,
-`CLAUDE_HANDOFF.md`, and `research/ICLR_READINESS_20260914.md`.
-The complete internal harmonic-source manuscript is `paper/tree_working.tex` / PDF:
-6 main pages,11 total, clean compile. Scientific submission readiness remains false.
+CURRENT: read `research/THERMAL_DISTILLATION_STATE_20260915.json`,
+`research/NEXT.md`, `CLAUDE_HANDOFF.md` and `notes/thermal_learning_results_20260915.md`.
+The manuscript `paper/tree_working.tex` / PDF is updated:7 main pages,14 total,
+clean compile. Scientific submission readiness remains false.
 
-Selected candidate: fixed random-tree harmonic source plus geometry-only
-self-conditioned flow matching, without supplied bond labels. Harmonic improves
-on isotropic Gaussian by5.86pp on12 development compositions and8.83pp on10
-additional compositions with frozen models. A calibrated covariance-Gaussian
-control loses by11.65pp and15.39pp; both model seeds favor harmonic in both panels.
-The covariance estimate has1.85–6.25% relative Frobenius error. The same two model
-seeds are reused across panels; do not call them four independent fits.
+Original harmonic-source gains remain: +8.83pp versus Gaussian and+15.39pp versus
+calibrated covariance Gaussian on the additional composition panel. Its new
+physical readout is pooled-positive but heterogeneous across the two continuations.
+The original endpoint baseline was evaluated; its different training history
+precludes claiming native published FlowMol3 or SOTA superiority.
 
-The original30k endpoint checkpoint comparison is now complete:106/113 graph
-passes with native history,116/120 with fixed categories plus centered bootstrap,
-out of640 per stream. Native and adapted models have different training histories.
-This is a task-adapted reference, not native published FlowMol3 performance or SOTA.
+Physics/Jarzynski has now been tested in learning. Complete local work improves
+versus matched unweighted-escort training, but all direct continuations degrade
+the frozen generator. A fixed coefficient1 paired-parameter-difference transfer
+recovers most observed validity while lowering surrogate energy and force in both
+continuations. Work-difference versus frozen passes its declared point-validity /
+energy gate, but extra-work versus escort-difference does not. The simpler escort
+difference is the practical candidate for new confirmation; preserve both and
+all original frozen harmonic checkpoints. No coefficient or architecture sweep.
 
-Random-tree identities, harmonic springs, self-conditioning and Jarzynski are
-prior art. The task-specific source-method contribution now has controlled utility
-evidence; sufficient ICLR novelty and independent-generator competitiveness remain
-unestablished. Jarzynski is retained in an explicit-assumptions appendix, not used
-to claim measured work reweighting, a Boltzmann law, final density or output ESS.
-All earlier failed source-learning, context, manifold and geometry variants remain.
+Jarzynski here defines a Gaussian-restrained LOCAL teacher with complete reference
+log-density terms. Finite-particle local ESS is not global output ESS. No global
+Boltzmann distribution, final generator density, equilibrium isomer weights or
+quantum accuracy is established. Random-tree priors, self-conditioning, energy-
+weighted FM, escorted work and task arithmetic are prior art. The task-specific
+AI contribution has controlled utility evidence; ICLR-level novelty is not assured.
 
-All current jobs are terminal:46504779/46506935 and earlier46497703/46503573.
-Query Slurm before assuming no later jobs. Latest registry is
-`research/evidence/generator_reference_registry_v10.json`:70336 tree/architecture
-evaluation outputs plus3072 FIT-bank outputs,1536 derived projections, and earlier
-orbit/physical cohorts remain protected from fitting. Reserved722 outcomes remain
-unqueried. Preserve OMol25, max_atoms200, bond loss zero, original charge/spin,
-BGFM interfaces, separate environments and no home writes. The user handles authors.
+All jobs46510691/46514001/46521662 are terminal. Query Slurm before assuming no later
+jobs. Registryv11 distinguishes78016 tree/architecture evaluation outputs and3584
+FIT outputs,2808 new local escorted proposals,1536 older derived projections and
+31872 source/teacher raw physical readout rows. Reserved722 outcomes are unqueried.
+Maintain OMol25, max_atoms200, bond loss zero, original charge/spin, BGFM interfaces,
+two separate environments and no home writes. The user handles authors/submission.
 
 Historical milestones below do not replace this checkpoint.
+
 
 
 ## Active takeover branch
