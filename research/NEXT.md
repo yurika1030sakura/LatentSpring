@@ -1,3 +1,16 @@
+Latest review follow-up: the source-by-physical-update factorial is COMPLETE and
+independently audited. See `research/evidence/source_physical_factorial_audit_v1.json`.
+At GFN2 force RMS<=5 eV/A, all-attempt joint yields are35.68% Gaussian,
+40.625% Gaussian+physics,44.53% harmonic,47.59% harmonic+physics. Physical
+training helps both sources in both continuations. The pooled source difference
+with physics is+6.97pp, but continuation-specific joint-yield signs differ.
+Three extra source continuations and budget curves remain in progress; read
+`research/REVIEW_RESPONSE_STATE_20260915.json` for live scheduling. Normal GPU
+array46643602 was cancelled while unstarted; dispatcher46654304 submits
+the unchanged three repeats to gpu_test after GAGA seed1 finishes. The actual
+repeat GPU job is recorded in `runs/source_replication_v1/gpu_test_submission.json`.
+The matched GAGA comparison with physical adaptation is still an open follow-up.
+
 Current priority: follow the supplied manuscript review. Read
 `research/REVIEW_RESPONSE_STATE_20260915.json` and
 `notes/review_response_20260915.md` before older status entries.

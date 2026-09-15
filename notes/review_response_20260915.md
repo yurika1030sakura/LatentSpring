@@ -1,71 +1,88 @@
 # Response to the supplied manuscript review
 
-The review at `review/review_20260915.md` is preserved verbatim from the user's
-home-folder input. Its scientific priorities now govern this follow-up.
+The supplied review is preserved in `review/review_20260915.md`. Its priorities
+now govern this follow-up: demonstrate the complete method, test training-repeat
+and budget dependence, and center the effective source and physical update.
 
-## Changes made to the manuscript
+## Completed matched experiment
 
-- The main story centers the composition-only latent-tree source and the
-  physical-versus-replay update direction. The same-norm direct-update table is
-  now in the main text.
-- HarmonicFlow/FlowSite is cited from the ICML2024 PMLR record:
-  https://proceedings.mlr.press/v235/stark24a.html. The distinction is an
-  unavailable chemical input graph, not first use of harmonic/self-conditioned FM.
-- The source-density equation is explicitly an analytic property. Primary FM uses
-  source samples and does not evaluate the determinant; the physical teacher uses
-  its separate Gaussian anchor reference q_A.
-- The rotor58.5% result is removed from the abstract. The complete work/rotor
-  development remains in the appendices; curvature ESS and its lack of established
-  extra student benefit remain reported. No more rotor/curvature studies are planned.
-- Absolute physical quality is visible in a new main table and appendix curves.
-  This reuses the already audited raw24-composition outputs with zero new samples
-  or oracle calls. GFN2 joint graph/force<=5 yield is35.68% for Gaussian,
-  44.53% for harmonic, and47.59% for harmonic plus paired physics. The last
-  increment is3.06pp, with composition95 interval[1.04,5.21] and positive changes
-  in both continuations. Medians use each method's own valid subset; yields use
-  all attempts. These are descriptive readouts, not an equilibrium test.
+The missing Gaussian physical-update cell is trained and independently audited.
+Both source models use the same original physical recipe:256 native-source FIT
+starts per continuation on the same eight training compositions, eight local
+particles, no replenishment, and two1000-step physical/replay students. Each
+source has its own generated anchors. The maximum preparation budget is shared;
+actual eligible-anchor counts and query costs are reported separately.
 
-## Highest-priority experiment: complete the source/physics factorial
+GFN2 joint graph/force<=5 yields on1536 raw attempts per model are:
 
-`source_physical_factorial_s{0,1}_v1.json` freezes the new Gaussian physical cell.
-Each Gaussian base generates its own256 FIT starts on the same eight original
-TRAIN compositions. The original eight-particle teacher recipe, step sizes,
-training schedules and maximum preparation budget are preserved. Actual teacher
-support and query counts are reported; starts are never replenished. Two1000-step
-students are differenced with coefficient1, exactly as for the harmonic model.
-The three old cells are reused. The new raw coordinates receive eSEN and
-independent GFN2 readouts. This is a fixed follow-up on the previously evaluated
-24-composition panel, not a newly untouched panel.
+| Model | Graph validity | Joint quality yield |
+|---|---:|---:|
+| Gaussian |44.53%|35.68%|
+| Gaussian + paired physics |46.61%|40.625%|
+| Harmonic |52.73%|44.53%|
+| Harmonic + paired physics |53.45%|47.59%|
 
-The initial gpu_requeue submission46643140 remained pending. To prioritize this
-short study, the first GAGA seed was paused after its distance checkpoint reached
-15000 steps; its nascent tree prefix is retained in the execution records.
-Job46645569 runs this factorial first and then resumes GAGA seed0 from its saved
-state. The other seed46635650_1 continues unchanged. The confirmation dispatch
-46636422 now depends on these live jobs. No model/protocol choice changed.
+Physical training improves joint yield within both sources in both continuations.
+The harmonic-minus-Gaussian contrast with physics is+6.97pp pooled
+(composition95 interval[3.26,10.61]), with individual contrasts+16.28/-2.34pp.
+Raw graph-validity gains with physics are positive in both continuations.
+Gaussian physical adaptation also lowers paired, jointly valid energy and force
+under both eSEN and independent GFN2. Thus there are distinct source and update
+benefits, while source variability remains important; positive interaction or
+universal source superiority is not claimed.
 
-The factorial auditor replays teacher proposals/support, uniform target selection,
-paired parameter arithmetic, raw graph assays, parity-averaged eSEN values and
-GFN2 output parsing. It reports within-source physical gains and between-source
-gains with/without physics. A positive statistical interaction is not assumed.
+The new cell adds512 FIT starts,1536 evaluation outputs,8348 eSEN queries and1632
+GFN2 attempts. One GFN2 failure concerns a graph-invalid output. All valid outputs
+and reference inversion checks succeed. Audit46647903 reconstructs teacher
+proposals/support, uniform candidate selection, parameter arithmetic, structural
+assays, parity averages and raw GFN2 parsing. The evidence is
+`research/evidence/source_physical_factorial_audit_v1.json` and its NPZ; paired
+contrasts are reproducible with `summarize_source_physical_factorial.py`.
+Ledger v16 includes this completed study. The three old cells are reused; this
+is a fixed follow-up on the already evaluated24-composition panel.
 
-## Replication and budget dependence
+## Manuscript changes
 
-Array46643602 adds three prespecified primary-backbone continuations for both
-Gaussian and harmonic sources. Along with the original two, there will be five
-stochastic continuations of a shared pretrained model on two fixed3000-row blocks.
-These are not five independent pretraining runs. Checkpoints at1000,3000,6000
-updates are retained; all outcomes are reported and no checkpoint is selected.
-At3000 steps each model generates32 outputs for each of the original64 test
-compositions. The other budgets use16. This measures training-budget dependence,
-not isolated dataset-size efficiency. Results/checkpoints are stored in netscratch
-through `runs/source_replication_v1/results`.
+The abstract and main text now center the structured source, replay subtraction,
+the same-norm control and the complete four-cell physical-quality comparison.
+The full force-threshold curves appear in the appendix. The source determinant
+is explicitly an analytic property, not evaluated in primary FM training; the
+physical teacher has its separate Gaussian anchor reference q_A.
 
-## Remaining evidence boundary
+HarmonicFlow/FlowSite is cited from its ICML2024 PMLR record:
+https://proceedings.mlr.press/v235/stark24a.html. The distinction is lack of a
+supplied chemical graph, not first use of harmonic/self-conditioned flow matching.
+The independent EGNN comparison now explicitly states that those runs omit
+self-conditioning and physical adaptation. It is not presented as a comparison
+of the full pipelines.
 
-The complete source-by-physics result and the extra repetitions are still pending.
-The running matched EGNN/GAGA feedback study provides a stronger architectural
-comparison, but does not yet supply a comparison where both final methods receive
-matched physical feedback. That point remains open and must not be labeled solved
-by the current main-backbone factorial or by the new absolute-quality summary.
-Published result claims remain based on completed audits until these jobs finish.
+The rotor58.5% number is removed from the abstract. Complete work, rotor recovery
+and curvature results remain as theoretical extensions and boundary analyses in
+the appendices. No further rotor/curvature study is planned. The current local
+build has9 scientific main pages,26 total pages and25 citations.
+
+## Active experiments and remaining gap
+
+Three additional paired source continuations retain1000/3000/6000-step checkpoints
+and every outcome. Together with the original two there will be five stochastic
+continuations of one pretrained model on two fixed3000-row blocks. These are not
+five independent pretraining runs or a controlled dataset-size study.
+
+The unstarted normal-GPU array46643602 was cancelled. Dispatcher46654304 waits
+for GAGA seed1, then submits the unchanged original136257b experiment source to
+gpu_test, running seeds2,3,4 sequentially. Its GPU job will be recorded in
+`runs/source_replication_v1/gpu_test_submission.json`. Audit46654303 is held until
+the dispatcher assigns that GPU dependency and releases it. The earlier audit
+46647904 was automatically cancelled with its old parent; no computation was lost.
+Results/checkpoints are in netscratch via `runs/source_replication_v1/results`.
+
+GAGA seed1 remains46635650_1. Job46645569 finished the factorial and resumed GAGA
+seed0 from its saved distance checkpoint. Its small interrupted tree prefix is
+preserved in the logs as discarded execution, not unique training progress.
+Confirmation dispatcher46636422 depends on the live seed jobs. No GAGA method
+choice or numerical protocol was changed by the scheduling switch.
+
+A comparison where the strong GAGA baseline also receives matched physical
+adaptation remains open. Neither the primary-backbone factorial nor the ongoing
+raw-GAGA feedback test alone closes that gap. New repetition and GAGA outcomes
+must be audited before the paper's claims are expanded.

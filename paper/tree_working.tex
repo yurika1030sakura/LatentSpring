@@ -28,11 +28,11 @@ force-guided targets and transfers the update relative to a matched replay model
 On 64 new compositions spanning 17--64 atoms, the harmonic source improves raw
 chemical-graph validity by 6.91 percentage points over an isotropic Gaussian
 source. The gain also appears on an independently initialized EGNN backbone.
-Component controls establish benefits from geometry self-conditioning and the
-paired physical update, which lowers energy and force under both eSEN and
-independent GFN2-xTB evaluation. A direct physical update of the same parameter
-norm raises energy, while replay subtraction lowers it, identifying a useful
-update direction beyond a change in step size. The final generator uses one
+On 24 compositions, paired physical training improves joint structural and force
+quality for both sources. With the same adaptation recipe, the harmonic source
+reaches 47.59\% graph-valid yield at a 5 eV/\AA\ force-RMS threshold, compared with
+40.63\% for Gaussian under independent GFN2-xTB evaluation. A same-norm control
+identifies the benefit of the replay-subtracted update direction. The final generator uses one
 network with 128 evaluations per sample, and all reported generation metrics
 use its unoptimized coordinates.
 \end{abstract}
@@ -553,6 +553,7 @@ Section~\ref{sec:flow}.
 
 \section{Training-component controls}\label{app:components}
 \input{sections/component_benefits_results}
+\input{sections/source_physical_factorial_details}
 \input{sections/primary_quality_curve}
 
 \input{sections/curvature_work_details}

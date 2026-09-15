@@ -3,7 +3,9 @@ We repeat the source comparison on an independent EGNN backbone and compare with
 position-conditional EDM and GAGA \citep{edm,qu2026gaga}. All four methods train
 from scratch on the same 20,000 OMol25 rows, with identical architecture and
 initial weights within each of two repetitions. Each receives 30,000 updates at
-batch size 32. The FM arms share their training path and atom pairing; their
+batch size 32. These runs omit self-conditioning and physical adaptation to
+compare the source and generator objectives on a shared backbone. The FM arms
+share their training path and atom pairing; their
 source distribution is the only difference. Appendix~\ref{app:matched-generators}
 gives the protocol and the transferred GAGA truncation setting.
 

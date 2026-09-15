@@ -1,33 +1,45 @@
-\subsection{Absolute physical quality of raw generations}\label{sec:absolute-quality}
-To measure usable output yield, we count samples that both pass the chemical-graph
-assay and meet a chosen force-RMS threshold, then divide by every attempted output.
-This retains invalid structures and failed energy calculations in the denominator.
-Figure~\ref{fig:primary-quality} in Appendix~\ref{app:components} shows the
-full threshold readout on the same
-24-composition panel under both potentials.
+\subsection{Source and physical adaptation}\label{sec:absolute-quality}
+We complete the comparison of sources and physical updates by applying the same paired physical
+recipe to the Gaussian-source generator. Each source generates its own training
+anchors on the same eight training compositions, with the same maximum proposal
+budget and training schedule. The Gaussian physical model is evaluated on the
+existing 24-composition panel; the other three cells reuse their original outputs.
+Appendix~\ref{sec:factorial-details} gives the protocol and preparation costs.
+
+Joint quality yield counts outputs that pass the chemical-graph assay and meet a
+force-RMS threshold, divided by every attempted output. Invalid structures and
+failed energy calculations remain in the denominator. Table~\ref{tab:absolute-quality}
+reports this yield at 5 eV/\AA\ under independent GFN2 evaluation.
 
 \begin{table}[t]
 \centering
-\caption{Absolute GFN2 quality on 1,536 attempts per model. Force medians use
-each model's own graph-valid outputs; joint yield uses all attempts and requires
-graph validity and force RMS at most 5 eV/\AA.}
+\caption{Sources and physical updates compared on 1,536 raw attempts per model.
+Force medians use each model's own successful, graph-valid outputs; joint yield
+uses all attempts and requires graph validity and force RMS at most 5 eV/\AA.}
 \small
 \begin{tabular}{lrrr}
 \toprule
 Model & Graph validity (\%) & Median force (eV/\AA) & Joint yield (\%)\\
 \midrule
 Gaussian source &44.53&3.404&35.68\\
+Gaussian + paired update &46.61&3.222&40.63\\
 Harmonic source &52.73&3.287&44.53\\
-Harmonic + paired physical update &53.45&3.037&47.59\\
+Harmonic + paired update &53.45&3.037&47.59\\
 \bottomrule
 \end{tabular}\label{tab:absolute-quality}
 \end{table}
 
-At the 5 eV/\AA\ threshold, the paired physical update raises joint yield by
-3.06 percentage points over the harmonic base under GFN2
-(composition-bootstrap 95\% interval [1.04,5.21]). The increases are 3.13 and
-2.99 points in the two continuations. Under eSEN the gain is 3.32 points
-([1.11,5.60]). These are absolute quality readouts of already audited outputs;
-the curves show how yield changes as the required residual force is tightened.
-The physical update improves the fraction meeting a common force criterion
-while preserving a similar graph-validity rate.
+Paired physical training raises GFN2 joint yield by 4.95 percentage points for
+Gaussian (composition-bootstrap 95\% interval [2.86,7.10]) and 3.06 points for
+harmonic ([1.04,5.14]), with positive changes in both continuations for both
+sources. It also lowers the Gaussian model's paired, jointly valid energy by
+0.01465 eV/atom and force RMS by 0.4618 eV/\AA. Thus the physical update benefits
+both choices of source.
+
+With physical training applied to both, harmonic improves pooled graph validity
+by 6.84 points ([4.23,9.51]) and joint yield by 6.97 points ([3.26,10.61]).
+The graph-validity difference is positive in both continuations; the joint-yield
+differences are +16.28 and $-2.34$ points, showing substantial continuation
+variation. Both within-source physical improvements and the pooled source
+advantage also appear under eSEN. Figure~\ref{fig:primary-quality} in
+Appendix~\ref{app:components} shows the complete force-threshold curves.

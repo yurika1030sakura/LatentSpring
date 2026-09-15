@@ -1,5 +1,5 @@
 {
-  "status": "review_followup_in_progress",
+  "status": "factorial_complete_manuscript_revised_replication_and_gaga_active",
   "review": "review/review_20260915.md",
   "review_sha256": "36b3410708801835d45c33408a2ecfef8a70f00d0faf730cd7f6e651902552dc",
   "at_utc": "2026-09-15T19:20:17.188586+00:00",
@@ -7,30 +7,29 @@
     {
       "id": "factorial",
       "task": "Complete Gaussian/Harmonic source x paired physical update on the same primary backbone; apply the original physical-teacher recipe to the Gaussian generator.",
-      "status": "running"
+      "status": "completed_and_audited"
     },
     {
       "id": "replication",
       "task": "Add three new paired primary-model continuation seeds and training-budget curves, retaining all seeds and budget points.",
-      "status": "submitted"
+      "status": "queued_after_gaga_seed1"
     },
     {
       "id": "writing",
       "task": "Center source and replay subtraction; promote same-norm control and absolute joint physical quality; move detailed work/rotor material to theoretical extension.",
-      "status": "locally_revised_and_compiled"
+      "status": "revised_with_audited_factorial_and_compiled"
     },
     {
       "id": "baselines",
       "task": "Retain running matched GAGA study and extend fair physical feedback after baseline outcome audit.",
-      "status": "ongoing"
+      "status": "gaga_feedback_running_physical_extension_pending"
     }
   ],
   "new_rotor_or_curvature_studies": false,
   "published_manuscript_unchanged": true,
-  "results_not_yet_established": true,
   "factorial_job": "46645569",
   "factorial_source_commit": "f2535de58beaff88e0c8de4a5a00e92ca6756d41",
-  "replication_job": "46643602",
+  "replication_job": null,
   "replication_source_commit": "136257b22706e1a87ef79bf47663855a42a362b0",
   "replication_result_root": "/n/netscratch/ryl_lab/Lab/yulili_cfm_mol/source_replication_20260915_v1",
   "factorial_original_pending_job_cancelled": "46643140",
@@ -44,15 +43,26 @@
       "job_id": "46647903"
     },
     "replication": {
-      "returncode": 0,
-      "stdout": "46647904\n",
-      "stderr": "",
-      "dependency": "46643602",
-      "job_id": "46647904"
+      "job_id": "46654303",
+      "status": "held_until_gpu_submission"
     }
   },
   "audit_source_commit": "bccbc512467a610ebff60707498dcbc0d33ae651",
   "primary_absolute_quality": "research/evidence/primary_absolute_quality_v1.json",
   "remaining_matched_physical_baseline_gap": true,
-  "response_note": "notes/review_response_20260915.md"
+  "response_note": "notes/review_response_20260915.md",
+  "factorial_raw_jobs_complete": true,
+  "factorial_audit_released_after_actual_completion": true,
+  "factorial_audit_partition": "test",
+  "factorial_audit_released_utc": "2026-09-15T20:08:33.248511+00:00",
+  "factorial_audit": "research/evidence/source_physical_factorial_audit_v1.json",
+  "factorial_result": "Paired physics improves joint quality within both sources in both continuations. Harmonic+physics pooled GFN2 joint yield47.59% versus Gaussian+physics40.625%; source contrast+6.97pp with95 interval[3.26,10.61], but per-continuation contrasts differ in sign.",
+  "ledger": "research/evidence/generator_reference_registry_v16.json",
+  "replication_original_pending_array_cancelled": "46643602",
+  "replication_dispatch_job": "46654304",
+  "replication_audit_job": "46654303",
+  "replication_scheduler_note": "Original normal-GPU array never started; unchanged repeats will run sequentially after GAGA seed1 releases a gpu_test slot. Audit is held until the actual GPU dependency is registered.",
+  "factorial_results_established": true,
+  "replication_results_available": false,
+  "gaga_full_results_available": false
 }
