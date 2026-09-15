@@ -1,0 +1,110 @@
+{
+  "frozen": true,
+  "at_utc": "2026-09-15T09:42:57.328575+00:00",
+  "format": "force_shift_ablation_v1",
+  "model_seed": 0,
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "config_sha256": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+  "data": "runs/tree_manifold_v1/s0/data/data.pt",
+  "data_sha256": "8abe2cb06071bfccbb56a41a847e61c7a74f151a17f2433721027868e85fbda8",
+  "warm_checkpoint": "runs/source_sc_v1/s0/study/harmonic_tree/last.ckpt",
+  "warm_checkpoint_sha256": "5447887b0ecd80b76a38a28c083b3505068215daec9b0b70d8d1507b6f72a05e",
+  "condition_manifest": "research/evidence/source_sc_confirmation_panel_v1.json",
+  "condition_manifest_sha256": "934311077b9cf8649f6193d30f65f942a406270fe9b23f20c9da2533b1c04de6",
+  "conditions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9
+  ],
+  "teacher_training_rows": [
+    2540,
+    1281,
+    2749,
+    1365,
+    235,
+    2810,
+    751,
+    79
+  ],
+  "teacher_compositions": 8,
+  "minimum_teacher_compositions": 4,
+  "teacher_draws_per_composition": 32,
+  "teacher_seed": 36603,
+  "training_seed": 36711,
+  "training_steps": 1000,
+  "fm_lr": 2e-05,
+  "feedback_lr": 0.0003,
+  "thermal_teacher": {
+    "kT": 0.025851999786435,
+    "particles": 8,
+    "max_sigma": 0.03,
+    "max_shift": 0.1
+  },
+  "temperature_K": 300,
+  "model_input_kT_eV": 1.0,
+  "temperature_conditioning_trained": false,
+  "midpoint_steps": 32,
+  "primitive_denoiser_calls": 128,
+  "samples_per_condition": 64,
+  "evaluation_batch": 16,
+  "evaluation_seed": 36803,
+  "terminal_noise_std_A": 0.025,
+  "oracle_checkpoint": "/n/holylabs/woo_lab/Lab/yulili/bgfm/checkpoints/omol25/esen_sm_conserving_all.pt",
+  "oracle_interpreter": "/n/holylabs/woo_lab/Lab/yulili/bgfm/envs/omol25/bin/python",
+  "oracle_worker_sha256": "ee784c39b042c2afa201612bb2dfbeb12ab28415ea5554d7698faf7b553b357c",
+  "oracle_sha256": "01f63da2d071e39fc46a5f22f8369d0fc9de317ab2ef361a76603f5661238025",
+  "selection": "First8 distinct17-28-atom TRAIN compositions by fixed metadata hash; generator teacher samples are FIT only and disjoint from every evaluated composition. Generated graph-invalid starts are recorded and excluded identically from replay and physics pools; no replenishment. Anchors with no supported escorted particle are recorded and removed identically from all student pools; their zero normalizer estimates are not hidden.",
+  "objective": "Alternate original-reference FM and FIT teacher-endpoint FM. Replay uses original retained anchors. Escort uses uniform valid force-escorted particles. Work uses the SAME particles with full local Jarzynski work weights. Identical model initialization, anchor choices, RNG draws, optimizer and inference budgets. No Gaussian FM score proxy or bond loss.",
+  "physical_target": "Conditional on anchor A, q0=N_H(A,sigma_A^2 I) with sigma chosen from its force norm before source draws. The escort translates by delta=sigma_A^2 F_plus(A)/kT and has intrinsic Jacobian1. Target rho_A(Y)=q0(Y|A)*exp[-(E_plus(Y)-E_plus(A))/kT]*same_graph(Y,A). Work includes energy change and both Gaussian reference log densities. This is an anchored restrained local ensemble, not a global Boltzmann generator.",
+  "primary": "Remove only the force displacement from the same cached candidate targets; keep widths, candidate selection, original-reference updates and parameter-transfer operation fixed. Compare to the existing paired force update.",
+  "scientific_submission_ready": false,
+  "selection_log": "runs/thermal_distillation_v1/s0/study/escort/metrics.jsonl",
+  "selection_log_sha256": "644f9341ee7ac0d2d41b60e905b1859840d411857bac7ee282c013e7cdf7e876",
+  "replay_checkpoint": "runs/thermal_distillation_v1/s0/study/replay/last.ckpt",
+  "replay_checkpoint_sha256": "f6676cfabe2990dfeabb5ba0b7c5dec6845eac968ad8b633089429db23a6617e",
+  "teacher_files": [
+    {
+      "path": "runs/thermal_distillation_v1/s0/study/teacher/refined_c0.pt",
+      "sha256": "92cecee7c0386d1f6475126e894b2254f9f56ee002efaba2e1ebd59f08f385bf"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s0/study/teacher/refined_c1.pt",
+      "sha256": "076e545225391289e49fd79b1f03268c04311ddb2bd96978b684c4beee64f83a"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s0/study/teacher/refined_c2.pt",
+      "sha256": "58853e1367c9a083b5eee139907230f07b31af077c841a3d4ee8977db452a8b8"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s0/study/teacher/refined_c3.pt",
+      "sha256": "661ba8c36e284593ec18b26f36014e0c7ebc09de573333d5387f535124da6027"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s0/study/teacher/refined_c4.pt",
+      "sha256": "45e704de1899cdef88c6664d8bf08f341bf1d57e63bbb16600c99620c7322eac"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s0/study/teacher/refined_c5.pt",
+      "sha256": "d3902aa6813416dd7a37df0347bc2f1c224a6e4d31c6304495700596e08fa991"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s0/study/teacher/refined_c6.pt",
+      "sha256": "61fcd63245e1b8d8dc2199709f8de9bdd207cc059152efd63b06f2a9cf6eb6d3"
+    },
+    {
+      "path": "runs/thermal_distillation_v1/s0/study/teacher/refined_c7.pt",
+      "sha256": "ad3b8ee0b77f8daf999e2c5dd286d43325ae383818864efc0743584e95d564a2"
+    }
+  ],
+  "oracle_worker": "runs/benchmark_expansion_v1/data_source_v2/scripts/research/oracle_worker.py",
+  "scope": "A displacement ablation, not a completely physics-free baseline: original force-dependent widths and candidate-selection rules are deliberately retained. Exactly replay physical-student training selections. No new teacher queries.",
+  "new_neural_outputs_per_seed": 640,
+  "new_raw_esen_queries_per_seed": 1280
+}
