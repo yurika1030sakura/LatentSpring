@@ -29,7 +29,7 @@ def main():
     torch.set_num_threads(2)
     root = args.project
     sc_rows, sc_summary, norms, rows, energies, forces = {}, {}, {}, {}, {}, {}
-    artifacts = []
+    artifacts, source_errors = [], []
     for seed in [0, 1]:
         sc_rows[seed], sc_summary[seed] = {}, {}
         specfile = root/f'research/evidence/sc_component_ablation_s{seed}_v1.json'
@@ -46,7 +46,7 @@ def main():
         assert reference_state['research_protocol']['geometry_self_conditioning']['deep_supervision']
         report = read(file)
         sc_rows[seed]['sc_3000'] = check_rows(file.parent, 'harmonic_tree', report, panel,
-            spec['samples_per_condition'], prior, spec['evaluation_seed'])
+            spec['samples_per_condition'], prior, spec['evaluation_seed'], source_atol=1e-12, source_errors=source_errors)
         for steps in [3000, 6000]:
             stage = folder/f'step{steps}'
             training = read(stage/'training.json')
@@ -62,7 +62,7 @@ def main():
             assert report['protocol_sha256'] == sha(specfile)
             assert report['checkpoint_sha256'] == training['checkpoint_sha256']
             sc_rows[seed][f'no_sc_{steps}'] = check_rows(reportfile.parent, 'no_sc', report, panel,
-                spec['samples_per_condition'], prior, spec['evaluation_seed'])
+                spec['samples_per_condition'], prior, spec['evaluation_seed'], source_atol=1e-12, source_errors=source_errors)
             artifacts.append(dict(kind='sc', seed=seed, steps=steps, report_sha256=sha(reportfile)))
         sc_summary[seed] = {k:totals(v) for k,v in sc_rows[seed].items()}
         print(json.dumps(dict(seed=seed, sc=sc_summary[seed])), flush=True)
@@ -108,7 +108,7 @@ def main():
             reportfile = directory/'evaluation'/f'{label}_results.json'
             report = read(reportfile)
             rows[seed][name] = check_rows(reportfile.parent, label, report, panel,
-                spec['samples_per_condition'], prior, spec['evaluation_seed'])
+                spec['samples_per_condition'], prior, spec['evaluation_seed'], source_atol=1e-12, source_errors=source_errors)
             quality = read(directory/'physical_eval/results.json')
             assert quality['complete']
             metadata = {r['condition_index']:r for r in quality['rows'] if r['method'] == label}
@@ -155,6 +155,8 @@ def main():
         update_direction=dict(summary={s:{k:totals(v) for k,v in rr.items()} for s,rr in rows.items()},
             controls=norms, comparisons=comparisons), artifacts=artifacts,
         new_neural_outputs=4352, new_raw_esen_queries=2560, audit_new_queries=0,
+        maximum_source_replay_error_A=max(source_errors), source_replay_atol_A=1e-12,
+        source_replay_note='Cross-CPU double-precision matrix multiplication may differ in final bits. Seeds and auxiliary tree edges must still match exactly; raw samples and readout hashes are unchanged.',
         scope='Two explicit component tests on existing evaluation panels; all prescribed controls retained. Intervals condition on fitted models.')
     args.out.write_text(json.dumps(result, indent=2)+'\n')
     print(json.dumps(dict(sc=sc_comparisons, paired_vs_norm=comparisons['paired minus norm_direct'])), flush=True)

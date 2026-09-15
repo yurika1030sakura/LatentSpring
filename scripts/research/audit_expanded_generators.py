@@ -31,7 +31,8 @@ def totals(rows):
     return result
 
 
-def check_rows(directory, label, report, panel, count, source=None, source_seed=None):
+def check_rows(directory, label, report, panel, count, source=None, source_seed=None,
+               source_atol=0., source_errors=None):
     assert report['complete'] and len(report['rows']) == len(panel)
     assert [r['condition_index'] for r in report['rows']] == list(range(len(panel)))
     for index, row in enumerate(report['rows']):
@@ -55,7 +56,9 @@ def check_rows(directory, label, report, panel, count, source=None, source_seed=
             assert saved['seeds'] == expected
             for j, seed in enumerate(expected):
                 replay, edges = sample_source(source, c['numbers'], c['charge'], c['spin_multiplicity'], seed)
-                torch.testing.assert_close(replay, x0[j], rtol=0, atol=0)
+                if source_errors is not None:
+                    source_errors.append(float((replay-x0[j]).abs().max()))
+                torch.testing.assert_close(replay, x0[j], rtol=0, atol=source_atol)
                 assert edges == saved['auxiliary_tree_edges'][j]
         else:
             assert saved['model_state_sha256'] == report['model_state_sha256']
