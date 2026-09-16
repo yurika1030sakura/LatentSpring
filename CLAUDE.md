@@ -1,3 +1,26 @@
+Latest matched-physics qualification: the fixed-strength EGNN FM adaptation
+has a VALID negative result (graph validity and joint quality collapse); do not
+explain it away as the GAGA implementation bug. GAGA v1 also accidentally unfroze
+its predefined gamma.gamma schedule, so that half is not the intended fixed-
+schedule comparison. The adapter now preserves original trainability flags, and
+a regression test proves the schedule stays unchanged through an optimizer step.
+Correction job46674037 retrains ONLY GAGA from cached teachers and exact
+old target choices; audit46674039 follows. No learning rate, coefficient,
+or FM result is changed. See `research/MATCHED_PHYSICAL_STATE_20260915.json` and
+`research/evidence/matched_physical_v1_qualification.json`. The main FlowMol
+four-cell result remains its own completed study. Wider transfer is unproven;
+validation-based strength control would require a separate protocol and test.
+
+Current continuation: the raw GAGA feedback challenge is COMPLETE. Distance
+self-conditioning has15.625% versus13.7695% GAGA validity on its32-composition
+panel, but the composition95 interval for the difference includes zero. Global
+tree feedback loses and is not adopted. Read `research/GAGA_FEEDBACK_STATE_20260915.json`.
+The equal-pass physical comparison is now running as46669949, with dependent
+audit46670954. See `research/MATCHED_PHYSICAL_STATE_20260915.json` and
+`notes/matched_physical_comparison_20260915.md`. Source repetitions46656786 remain
+separate. The published paper still contains the previously verified factorial;
+no new GAGA superiority or physical-adaptation outcome is claimed yet.
+
 Live execution update: source-repetition GPU job46656786 is RUNNING; seed2 has
 completed its1000-step readout and resumed fitting. Seeds3/4 follow in the same
 allocation; audit46654303 waits for completion. GAGA seed1 is complete and seed0
