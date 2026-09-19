@@ -15,6 +15,7 @@ def main():
     for key in ['project','run','protocol','out']:p.add_argument('--'+key,type=Path,required=True)
     a=p.parse_args();spec=json.loads(a.protocol.read_text());assert spec['frozen']
     audit=json.loads((a.run/'audit.json').read_text());assert audit['complete']
+    n_conditions=spec.get('condition_count',3);count=spec.get('samples_per_condition',128)
     if 'native_audit_sha256' in spec:assert sha(a.run/'audit.json')==spec['native_audit_sha256']
     else:assert audit['protocol_sha256']==spec['native_protocol_sha256']
     binary=Path(spec['xtb_binary']);assert sha(binary)==spec['xtb_binary_sha256']
@@ -27,10 +28,10 @@ def main():
             with np.load(file) as f:positions=f['raw_positions'].copy()
             c=row['condition'];graphs[arm,i]=np.array([r['graph_supported'] for r in armrows[i]['records']]);sources[str(file)]=sha(file)
             for j,x in enumerate(positions):
-                task=dict(task_id=f'{arm}_c{i}_s{j}',method=arm,replica=0,parent_id=i*128+j,
+                task=dict(task_id=f'{arm}_c{i}_s{j}',method=arm,replica=0,parent_id=i*count+j,
                     inversion_check=False,positions=x.tolist(),condition_index=i,sample_index=j)
                 tasks.append((task,c))
-    assert len(tasks)==1152;a.out.mkdir(parents=True,exist_ok=False)
+    assert len(tasks)==3*n_conditions*count;a.out.mkdir(parents=True,exist_ok=False)
     write(a.out/'tasks.json',dict(protocol_sha256=sha(a.protocol),tasks=[dict(task=t,condition=c) for t,c in tasks],sources=sources))
     rows=[]
     def work(t,c):
@@ -39,7 +40,7 @@ def main():
         for f in as_completed([pool.submit(work,t,c) for t,c in tasks]):
             rows.append(f.result())
             if len(rows)%128==0:write(a.out/'progress.json',dict(complete=False,completed=len(rows)))
-    mapping={t['task_id']:t for t,c in tasks};arrays={arm:dict(force=np.full((3,128),np.inf),success=np.zeros((3,128),bool)) for arm in ['base','proposal_min','full_work_min']}
+    mapping={t['task_id']:t for t,c in tasks};arrays={arm:dict(force=np.full((n_conditions,count),np.inf),success=np.zeros((n_conditions,count),bool)) for arm in ['base','proposal_min','full_work_min']}
     for r in rows:
         t=mapping[r['task_id']];folder=a.out/'details'/r['task_id']
         assert sha(folder/'input.xyz')==r['input_xyz_sha256'] and sha(folder/'stdout.txt')==r['stdout_sha256'] and sha(folder/'stderr.txt')==r['stderr_sha256']
@@ -54,9 +55,9 @@ def main():
             arrays[t['method']]['force'][i,j]=np.sqrt(np.square(r['force_eV_A']).sum(-1).mean())
     summary={}
     for arm,d in arrays.items():
-        graph=np.stack([graphs[arm,i] for i in range(3)]);valid=graph & d['success']
-        summary[arm]=dict(attempted=384,graph_valid=int(graph.sum()),gfn2_failures=int((~d['success']).sum()),
-            median_valid_force=float(np.median(d['force'][valid])),
+        graph=np.stack([graphs[arm,i] for i in range(n_conditions)]);valid=graph & d['success']
+        summary[arm]=dict(attempted=n_conditions*count,graph_valid=int(graph.sum()),gfn2_failures=int((~d['success']).sum()),
+            median_valid_force=float(np.median(d['force'][valid])) if valid.any() else None,
             joint_yield=[dict(threshold=t,mean=float((valid & (d['force']<=t)).mean()),by_composition=(valid & (d['force']<=t)).mean(-1).tolist()) for t in spec['thresholds']])
     result=dict(complete=True,protocol_sha256=sha(a.protocol),tasks_sha256=sha(a.out/'tasks.json'),rows=rows,summary=summary,
         new_gfn2_attempts=len(rows),new_neural_outputs=0,new_esen_queries=0,scope=spec['scope'])

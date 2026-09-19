@@ -1,0 +1,19 @@
+{
+  "name": "LatentSpring direct weighted-target candidate",
+  "status": "primary_development_candidate",
+  "training_module": "scripts.research.train_weighted_minima",
+  "generation_module": "scripts.research.generate_weighted_minima",
+  "backbone": "Existing5.90M FlowMol with harmonic source and two-pass geometry self-conditioning",
+  "representative_checkpoint": "runs/weighted_minima_native_v1/results/full_work_min/last.ckpt",
+  "checkpoint_sha256": "637c4d881484bb7480246a25e22453d213fe653805cc3d39a2cab08b35961ea5",
+  "checkpoint_choice": "First preregistered pilot seed, not chosen from the repetition outcomes.",
+  "controls": [
+    "unadapted parent",
+    "proposal-weighted minima"
+  ],
+  "evidence": "research/evidence/weighted_minima_replication_summary_v1.json",
+  "validated_scope": "Three training compositions/four fixed restricted two-torsion MMFF graphs; one temperature.",
+  "generalization_protocol": "research/evidence/weighted_minima_generalization_v1.json",
+  "global_boltzmann_claim": false,
+  "main_paper_method_replaced": false
+}
