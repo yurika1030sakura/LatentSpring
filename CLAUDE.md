@@ -1,68 +1,30 @@
-Latest2026-09-19 result: trajectory_connection_v1 is COMPLETE and audited.
-Force-head joint yield43.55% versus parent42.38%: +1.17pp [-1.17,3.32], positive
-in both fits but NOT a confirmed parent gain. Versus the matched FM head the
-improvement is+2.34pp [0.39,4.49]. Work adds no confirmed gain. Main-method
-adoption remains false. Read research/TRAJECTORY_CONNECTION_STATE_20260919.json
-and notes/trajectory_connection_20260919.md. All jobs are terminal; costs are
-complete in registry v26. There is no BGFM experiment currently queued.
-Before scaling this small head, examine its limited TRAIN fit (about5-6% error
-reduction for force supervision). Do not repeat the same recipe or call the
-positive control contrast a proven advantage over the parent or GAGA.
-The manuscript remains the published build v7: GitHub PDF and43 Overleaf files
-were verified; publication_sync_v7.json records the release. The new experimental
-head has not replaced the supported paper method. Historical running statuses
-below do not override this checkpoint.
+# Current checkpoint —2026-09-19
 
-Current2026-09-19 checkpoint: physical_connection_v1 is COMPLETE, with no parent
-improvement (32.62% versus33.40% joint GFN2 force<=5 yield). Read
-research/PHYSICAL_CONNECTION_STATE_20260919.json; all costs are in registry v24.
-The next bounded candidate is trajectory_connection_v1: the same frozen-parent
-head learns from actual TRAIN parent states, with matched force and complete
-local-work targets. Protocol is frozen before generation. No thermal or useful
-neural work advantage has been established. Publication build v7 adds the broad physical-target control appendix and is
-pushed/verified on GitHub c1de73d and Overleaf9805067. See publication_sync_v7.json.
-Trajectory teacher47257342 is COMPLETE:256 FIT outputs,512 states and9216
-physical queries, fully replayed. Local particle ESS median1.37/8; no fallback
-states. Costs are included in registry v25. Fit jobs47258410_0 and47258728_1
-have completed all six2000-step fits and now generate raw validation outputs.
-Source7835673 is frozen; automatic GFN2 and audit47258729 follow. Read
-research/TRAJECTORY_CONNECTION_STATE_20260919.json before resuming.
-Earlier running-study statements below are historical, not live status.
+Read research/CONTEXT_CONFIRMATION_STATE_20260919.json and
+notes/gaga_status_20260919_zh.md. Job47277628 runs two seeds: cached-feedback
+internal validation, a parameter-matched wide-head fit, then a fresh common-panel
+comparison of parent/pair-long/pair-wide/context/GAGA128/GAGA651. Outcomes pending.
+The full FlowMol and GAGA systems have different architectures, training data,
+histories and costs; this comparison is not a shared-backbone ablation.
 
-The broad physical-target study is COMPLETE and audited. Corrected-reference
-FT improves held-out GFN2 joint yield over matched original-reference FT by5.66pp
-[2.54,8.59], positive in both runs. Its1.37pp gain over the parent is uncertain
-[-3.52,6.05] and has mixed seed signs. See broad_physical_endpoints_audit_v1.json.
+Capacity study47274322 is COMPLETE and audited. At20000 updates, the contextual
+head predicts physical corrections with about15% lower internal validation MSE
+than the original small head. Its37586 parameters motivate the new37540-parameter
+wide-pair control. No external generation improvement follows from this fit metric.
+The previous trajectory head gave+1.17pp [-1.17,3.32] versus its parent, so its
+primary gate was false. Work added no established neural gain. Registry v27
+includes completed capacity costs; current validation/confirmation is not yet in it.
 
-Next active model is an8178-parameter bounded physical-connection head on a
-FROZEN parent. Read research/PHYSICAL_CONNECTION_STATE_20260919.json and
-notes/physical_connection_20260919.md. Array47245883, audit47245885. Controls are
-parent+zero head, full FT+zero head, reference-target head, physical-target head;
-all use128 backbone +64 small-head calls. Nine relevant tests pass. Performance
-of the trained head is not yet established. Do not claim128 TOTAL neural calls.
+Shared-EGNN GAGA superiority remains unestablished: graph15.63 vs13.77% with
+CI crossing zero; calibrated GFN2 joint4.25 vs4.59%. Do not compare the FlowMol
+43.55% from another panel to these numbers. User wants Chinese answers and
+substantive improvements, not small control gains presented as a GAGA victory.
 
-Current work (2026-09-19): read `research/BROAD_ENDPOINTS_STATE_20260919.json`.
-The128-composition Cartesian TRAIN target bank is complete and numerically replayed.
-Median eSEN force RMS2.0053 ->0.05038 eV/A;110/128 meet the max-force0.1
-criterion,124 reduce RMS force. All128 references are retained, including stalled
-or unconverged cases. This is EMPIRICAL physical endpoint learning, not a thermal
-or Jarzynski-weight benefit claim. See broad_physical_endpoints_v1.json.
-
-GPU array47241456 trains original-reference vs capped-relaxed-reference FM on
-the same128 compositions,2000 steps per method, two seeds from the same5.90M
-parent. A fresh16-composition panel (17-40 atoms) is frozen; generation has128
-calls and no terminal noise or online optimization. Independent GFN2 and a raw
-output/teacher/parameter audit follow automatically. Do not infer generator
-improvement from better teacher labels. Read the state JSON for job IDs/status.
-
-The earlier3-composition weighted-minima prototype helped TRAIN cases but did not
-establish held-out quality gains; keep that qualification. GAGA calibration is
-complete with no reliable superiority. Current published paper and figures remain
-the verified release in publication_sync_v6.json; new results are not in the paper.
-For figure work use `.agents/skills/scientific-figure-design/SKILL.md`.
-User wants Chinese replies. Never write to home or push the home `origin` remote.
-
-Historical method details below do not override the current state JSON.
+Published paper remains verified build v7 / publication_sync_v7.json, with43
+Overleaf export files. New candidate heads are not the manuscript's main method.
+Never write to home, never push the home origin remote, and keep the two Torch
+environments separate. For figures use .agents/skills/scientific-figure-design/.
+Historical statuses below do not override this checkpoint.
 
 # BGFM project guide
 

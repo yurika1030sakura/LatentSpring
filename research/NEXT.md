@@ -1,46 +1,38 @@
-Latest2026-09-19 result: trajectory_connection_v1 is COMPLETE and audited.
-Force-head joint yield43.55% versus parent42.38%: +1.17pp [-1.17,3.32], positive
-in both fits but NOT a confirmed parent gain. Versus the matched FM head the
-improvement is+2.34pp [0.39,4.49]. Work adds no confirmed gain. Main-method
-adoption remains false. Read research/TRAJECTORY_CONNECTION_STATE_20260919.json
-and notes/trajectory_connection_20260919.md. All jobs are terminal; costs are
-complete in registry v26. There is no BGFM experiment currently queued.
-Before scaling this small head, examine its limited TRAIN fit (about5-6% error
-reduction for force supervision). Do not repeat the same recipe or call the
-positive control contrast a proven advantage over the parent or GAGA.
-The manuscript remains the published build v7: GitHub PDF and43 Overleaf files
-were verified; publication_sync_v7.json records the release. The new experimental
-head has not replaced the supported paper method. Historical running statuses
-below do not override this checkpoint.
+# Current checkpoint —2026-09-19
 
-Current2026-09-19 checkpoint: physical_connection_v1 is COMPLETE, with no parent
-improvement (32.62% versus33.40% joint GFN2 force<=5 yield). Read
-research/PHYSICAL_CONNECTION_STATE_20260919.json; all costs are in registry v24.
-The next bounded candidate is trajectory_connection_v1: the same frozen-parent
-head learns from actual TRAIN parent states, with matched force and complete
-local-work targets. Protocol is frozen before generation. No thermal or useful
-neural work advantage has been established. Publication build v7 adds the broad physical-target control appendix and is
-pushed/verified on GitHub c1de73d and Overleaf9805067. See publication_sync_v7.json.
-Trajectory teacher47257342 is COMPLETE:256 FIT outputs,512 states and9216
-physical queries, fully replayed. Local particle ESS median1.37/8; no fallback
-states. Costs are included in registry v25. Fit jobs47258410_0 and47258728_1
-have completed all six2000-step fits and now generate raw validation outputs.
-Source7835673 is frozen; automatic GFN2 and audit47258729 follow. Read
-research/TRAJECTORY_CONNECTION_STATE_20260919.json before resuming.
-Earlier running-study statements below are historical, not live status.
+Read research/CONTEXT_CONFIRMATION_STATE_20260919.json and
+notes/gaga_status_20260919_zh.md. Job47277628 runs two seeds: cached-feedback
+internal validation, a parameter-matched wide-head fit, then a fresh common-panel
+comparison of parent/pair-long/pair-wide/context/GAGA128/GAGA651. Outcomes pending.
+The full FlowMol and GAGA systems have different architectures, training data,
+histories and costs; this comparison is not a shared-backbone ablation.
 
-# Current next steps
+Capacity study47274322 is COMPLETE and audited. At20000 updates, the contextual
+head predicts physical corrections with about15% lower internal validation MSE
+than the original small head. Its37586 parameters motivate the new37540-parameter
+wide-pair control. No external generation improvement follows from this fit metric.
+The previous trajectory head gave+1.17pp [-1.17,3.32] versus its parent, so its
+primary gate was false. Work added no established neural gain. Registry v27
+includes completed capacity costs; current validation/confirmation is not yet in it.
 
-- Read research/PHYSICAL_CONNECTION_STATE_20260919.json. Monitor47245883 and
-  its audit47245885; preserve the frozen protocol and all controls.
-- The preceding128-composition study is complete: physical labels beat matched
-  reference-only FT, but parent superiority remains uncertain. Do not relaunch it.
-- The correction head reuses the teacher bank; it makes no new teacher calls.
-  It freezes parent tensors and learns a bounded equivariant pair residual from
-  current/parent-predicted geometry. No supplied graph or oracle at inference.
-- Inference accounting is128 backbone calls PLUS64 small-head calls for EVERY
-  comparison model, with zero heads attached to the controls.
-- New broad-target results have a scoped appendix section; build and publish it
-  once the current paper revision is ready. The previous published figures stay.
-- Preserve Jarzynski's local scope; the current empirical-reference bank is not
-  a thermally calibrated multi-basin distribution.
+Shared-EGNN GAGA superiority remains unestablished: graph15.63 vs13.77% with
+CI crossing zero; calibrated GFN2 joint4.25 vs4.59%. Do not compare the FlowMol
+43.55% from another panel to these numbers. User wants Chinese answers and
+substantive improvements, not small control gains presented as a GAGA victory.
+
+Published paper remains verified build v7 / publication_sync_v7.json, with43
+Overleaf export files. New candidate heads are not the manuscript's main method.
+Never write to home, never push the home origin remote, and keep the two Torch
+environments separate. For figures use .agents/skills/scientific-figure-design/.
+Historical statuses below do not override this checkpoint.
+
+## Next actions
+
+1. Monitor47277628 and its dependent audit recorded in CONTEXT_CONFIRMATION_STATE.
+2. Verify all fresh comparisons, including both GAGA call budgets, both seeds and
+   all attempted structures. Use raw coordinates and fixed-coordinate GFN2 only.
+3. Count cached validation2048 outputs and fresh confirmation3072 separately.
+   Wide-control training adds40000 updates. Existing capacity80000 is already v27.
+4. Promote a candidate only after actual generation evidence; retain the same-size
+   control and do not attribute a full-system result solely to the small head.
+5. Publish completed code/results. Change the paper only for a supported contribution.
