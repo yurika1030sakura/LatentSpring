@@ -1,62 +1,25 @@
-The8-composition follow-up is now complete for all3 fitted seeds. Mean GFN2
-joint yield at force<=5 is50.26% parent,49.74% proposal minima,47.66% weighted
-minima; graph validity is56.77%,59.64%,56.51%, respectively. The clear closed-set
-physics gains are not established on these unseen compositions. This argues for
-broader training-target coverage, not promoting the narrow-teacher checkpoint to
-replace the published main method. No global Boltzmann or reliable GAGA-win claim
-is supported. All jobs47221006/47225156/47226653/47232494 are complete. Read
-weighted_minima_generalization_summary_v1.json and ledger_v22 before older statuses.
-The new figures/skill are published and verified in publication_sync_v6.json.
+Current work (2026-09-19): read `research/BROAD_ENDPOINTS_STATE_20260919.json`.
+The128-composition Cartesian TRAIN target bank is complete and numerically replayed.
+Median eSEN force RMS2.0053 ->0.05038 eV/A;110/128 meet the max-force0.1
+criterion,124 reduce RMS force. All128 references are retained, including stalled
+or unconverged cases. This is EMPIRICAL physical endpoint learning, not a thermal
+or Jarzynski-weight benefit claim. See broad_physical_endpoints_v1.json.
 
-Latest completed comparison: validation selected physical strength1/16 for FM
-and1/4 for GAGA. The new16-composition comparison and independentGFN2 audit are
-complete; no reliable GAGA superiority was established. See
-`research/evidence/physical_strength_summary_v1.json`. The native weighted-target
-candidate remains the active development route, with8-composition generalization
-job47232494. Three TRAIN-composition gains alone do not establish that transfer.
-New figure release is verified in publication_sync_v6.json (Overleaf2bc0a85).
+GPU array47241456 trains original-reference vs capped-relaxed-reference FM on
+the same128 compositions,2000 steps per method, two seeds from the same5.90M
+parent. A fresh16-composition panel (17-40 atoms) is frozen; generation has128
+calls and no terminal noise or online optimization. Independent GFN2 and a raw
+output/teacher/parameter audit follow automatically. Do not infer generator
+improvement from better teacher labels. Read the state JSON for job IDs/status.
 
-Figure work: use the project skill `.agents/skills/scientific-figure-design/SKILL.md`.
-It was built from online Nature/MIT/PLOS/PyMOL guidance and exercised on actual
-molecular scenes. The selected outline renders and5.5-inch layouts are under
-`research/figures/molecular_design_v2`; current build receipt is publication_build_v6.
+The earlier3-composition weighted-minima prototype helped TRAIN cases but did not
+establish held-out quality gains; keep that qualification. GAGA calibration is
+complete with no reliable superiority. Current published paper and figures remain
+the verified release in publication_sync_v6.json; new results are not in the paper.
+For figure work use `.agents/skills/scientific-figure-design/SKILL.md`.
+User wants Chinese replies. Never write to home or push the home `origin` remote.
 
-Direct weighted-target models are now the primary DEVELOPMENT candidate:
-`configs/research/latentspring_minima_candidate_v1.json`. All3 fine-tuning seeds
-are complete. At GFN2 force<=1, mean joint yields are12.85% parent,48.00% proposal
-minima,50.61% weighted minima. Weighted minus proposal is positive2/3 seeds.
-All of this remains a3-TRAIN-composition pilot; no global Boltzmann or GAGA-win
-claim. A frozen8-unseen-composition follow-up is in weighted_minima_generalization_v1.
-See its runs/.../submission.json for the actual GPU job. Paper's main method is
-not replaced solely on these closed-set outcomes. Detailed adoption decisions:
-`notes/suggestions_adoption_zh_20260919.md`. Older statuses below are historical.
-
-Publication verified: GitHub paper release8446040 and Overleaf f58c9ec preserve
-collaborator1b64efd. Buildv5 has9 scientific pages,29 total,25 citations; all42
-export files match remotely. Native pilot independentGFN2 is complete: joint
-force<=1 yields13.80% parent,48.70% proposal-minima,55.21% complete-work minima.
-These are3 TRAIN compositions/one seed, not new main-paper claims. Two repeats
-run as47226653. GAGA calibration47221006 and dependentGFN2 audit47225156 remain
-active. Official abstract deadline wasSep18AoE; registration confirmation is
-pending from the user. Full paper deadlineSep25AoE. See requirements_v1 evidence.
-
-Current status (2026-09-19): read `research/SUGGESTIONS_STATE_20260919.json` and
-`notes/suggestions_review_20260919.md` first. All original repetitions and corrected
-matched-physics runs are COMPLETE. Five source runs average+3.89pp at3000 updates
-(4/5 positive); all3 new runs improve at6000. The fixed-strength EGNN physical
-update harms both families even with GAGA's noise schedule correctly frozen.
-A new validation-only strength calibration with equal choices for FM/GAGA runs
-as47221006; confirmation uses16 previously ungenerated compositions.
-
-The supplied weighted-endpoint branch passes27 tests in the REAL DGL/FlowMol
-environment. Native5.90M pilot47220840 is complete: raw graph yields283/384 base,
-334/384 proposal minima,325/384 complete-work minima. This is a3-composition
-closed-set integration pilot, NOT a GAGA win, full-dimensional equilibrium result,
-or work-specific neural improvement. Do not add it to the main paper as such.
-The manuscript adopts the reviewed prose, includes all5 source runs and the
-completed GAGA follow-ups, and uses actual-coordinate PyMOL figures. Read the
-latest build/sync receipt for publication status; older chronological notes below
-are historical, not live job status.
+Historical method details below do not override the current state JSON.
 
 # BGFM project guide
 
