@@ -1,3 +1,21 @@
+The8-composition follow-up is now complete for all3 fitted seeds. Mean GFN2
+joint yield at force<=5 is50.26% parent,49.74% proposal minima,47.66% weighted
+minima; graph validity is56.77%,59.64%,56.51%, respectively. The clear closed-set
+physics gains are not established on these unseen compositions. This argues for
+broader training-target coverage, not promoting the narrow-teacher checkpoint to
+replace the published main method. No global Boltzmann or reliable GAGA-win claim
+is supported. All jobs47221006/47225156/47226653/47232494 are complete. Read
+weighted_minima_generalization_summary_v1.json and ledger_v22 before older statuses.
+The new figures/skill are published and verified in publication_sync_v6.json.
+
+Latest completed comparison: validation selected physical strength1/16 for FM
+and1/4 for GAGA. The new16-composition comparison and independentGFN2 audit are
+complete; no reliable GAGA superiority was established. See
+`research/evidence/physical_strength_summary_v1.json`. The native weighted-target
+candidate remains the active development route, with8-composition generalization
+job47232494. Three TRAIN-composition gains alone do not establish that transfer.
+New figure release is verified in publication_sync_v6.json (Overleaf2bc0a85).
+
 Figure work: use the project skill `.agents/skills/scientific-figure-design/SKILL.md`.
 It was built from online Nature/MIT/PLOS/PyMOL guidance and exercised on actual
 molecular scenes. The selected outline renders and5.5-inch layouts are under

@@ -1,3 +1,26 @@
+The8-composition follow-up is now complete for all3 fitted seeds. Mean GFN2
+joint yield at force<=5 is50.26% parent,49.74% proposal minima,47.66% weighted
+minima; graph validity is56.77%,59.64%,56.51%, respectively. The clear closed-set
+physics gains are not established on these unseen compositions. This argues for
+broader training-target coverage, not promoting the narrow-teacher checkpoint to
+replace the published main method. No global Boltzmann or reliable GAGA-win claim
+is supported. All jobs47221006/47225156/47226653/47232494 are complete. Read
+weighted_minima_generalization_summary_v1.json and ledger_v22 before older statuses.
+The new figures/skill are published and verified in publication_sync_v6.json.
+
+Current model candidate: configs/research/latentspring_minima_candidate_v1.json.
+Three native training repetitions are complete, summary in
+weighted_minima_replication_summary_v1.json. Direct-target learning improves the
+closed-set task; extra work-weight benefit versus proposal is2/3 positive seeds.
+The8-composition frozen follow-up47232494 is the immediate generalization check.
+If benefits do not transfer, broaden TRAIN teacher coverage and validate that
+change internally; do not retune on these evaluation compositions or relabel the
+restricted two-torsion teacher as a full-dimensional equilibrium teacher.
+
+Calibrated GAGA comparison47221006/47225156 is COMPLETE; its superiority gate is
+false. Read physical_strength_summary_v1.json. Figure skill and new publication
+are completed and verified in publication_sync_v6.json; avoid repeating that work.
+
 Immediate next checkpoints:47221006/47225156 finish validation-selected GAGA
 comparison;47226653 repeats the promising native endpoint pilot with GFN2.
 Both have frozen protocols and all-control reporting. Publication is verified
