@@ -1,20 +1,22 @@
-\paragraph{Energy and force evaluation of the frozen generators.}
-We score every output on the ten-composition panel and each original reference
-with the same conservative eSEN checkpoint at its original charge and spin.
-We use the parity averages
+\paragraph{Physical evaluation of the frozen source models.}
+This evaluation concerns the pretrained source models on the 10-composition
+additional test set. We score every generated output and its original reference
+with the same conservative eSEN checkpoint at the original charge and spin.
+Energies and forces are averaged over inversions as
 $E_+(X)=[E(X)+E(-X)]/2$ and $F_+(X)=[F(X)-F(-X)]/2$.
-Differences are paired within composition before averaging;
-energies per atom also subtract that composition's reference energy, which
-cancels in the paired difference. There are 5,160 raw energy/force queries,
-including both inversions of the references in each continuation.
+We pair differences within composition before averaging. Per-atom energies also
+subtract the composition's reference energy; that reference cancels in a paired
+model difference. The evaluation uses 5,160 raw energy/force queries, including
+both inversions of references in each fine-tuning run.
 
 \begin{table}[t]
 \centering
-\caption{Harmonic minus isotropic Gaussian physical readouts on the frozen
-additional panel. Brackets give paired 95\% confidence intervals.}
+\caption{Harmonic-minus-Gaussian eSEN scores on the frozen models' 10-composition
+test. Negative values favor harmonic. Rows distinguish all attempts from paired
+outputs that are both graph-valid. Brackets give paired 95\% confidence intervals.}
 \begin{tabular}{llrr}
 \toprule
-Readout & Support & Difference & Interval\\
+Metric & Outputs & Difference & Interval\\
 \midrule
 Energy (eV/atom) & All attempts & $-0.0406$ & $[-0.0579,-0.0232]$\\
                 & Both outputs valid & $-0.0340$ & $[-0.0692,-0.0003]$\\
@@ -24,13 +26,13 @@ Force RMS (eV/\AA) & All attempts & $-0.4635$ & $[-0.6782,-0.2512]$\\
 \end{tabular}\label{tab:physical}
 \end{table}
 
-Force RMS means the square root of the per-atom mean squared force norm,
-then averaged over samples. The joint-validity statistic uses only paired outputs
-accepted by both methods, with 3--35 pairs per composition/continuation cell.
-All-attempt statistics also include graph-invalid outputs. We report both to
-separate the aggregate score from the score among jointly supported structures.
+For each sample, force RMS is the square root of the mean squared atomic force
+norm; we then average this value over samples. The jointly valid comparison
+retains only pairs accepted under both models, with 3--35 pairs in each
+composition/run combination. The all-attempt comparison also includes graph-invalid
+outputs. Reporting both distinguishes overall scores from scores on pairs that
+remain valid under both methods.
 
-The aggregate improvement is concentrated in the first continuation. All-attempt
-energy differences are
-$-0.08049$ and $-0.00070$ eV/atom; force-RMS differences are $-1.21996$ and
-$+0.29302$ eV/\AA, respectively.
+Most of the aggregate improvement comes from run 1. The all-attempt energy
+differences are $-0.08049$ and $-0.00070$ eV/atom in runs 1 and 2, respectively;
+the force-RMS differences are $-1.21996$ and $+0.29302$ eV/\AA.

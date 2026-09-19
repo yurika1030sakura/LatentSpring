@@ -1,16 +1,16 @@
 \subsection{What self-conditioning contributes}\label{sec:sc-ablation}
-To test the provisional-geometry feedback, we train the harmonic-source model
-with self-conditioning removed. Initialization, the 3,000 training structures,
-source law and pairing are unchanged. One readout uses 3,000 optimizer updates;
-a second uses 6,000, matching the self-conditioned model's number of backbone
-training evaluations. A single-pass model takes 64 midpoint steps, so all methods
-use 128 network evaluations at generation.
+We remove self-conditioning from the harmonic-source model while keeping its
+initialization, 3,000 training structures, source distribution, and pairing
+procedure unchanged. One single-pass model receives 3,000 optimizer updates.
+A second receives 6,000, matching the self-conditioned model's number of
+backbone training evaluations. Both single-pass models use 64 midpoint steps at
+generation, so every model uses 128 network calls per output.
 
 \begin{table}[t]
 \centering
-\caption{Self-conditioning ablation on the 24-composition panel. Each continuation
-has 768 raw attempts; the two counts give continuations 1 and 2. The full model
-improves over both single-pass budgets.}
+\caption{Self-conditioning ablation on 24 compositions. Each run has 768 raw
+attempts; the valid-output column lists runs 1 and 2. The self-conditioned model
+outperforms both single-pass training budgets.}
 \begin{tabular}{lrrrr}
 \toprule
 Model & Updates & Training passes & Valid outputs & Rate (\%)\\
@@ -22,21 +22,22 @@ Self-conditioned &3,000&6,000&435;375&52.73\\
 \end{tabular}\label{tab:sc-ablation}
 \end{table}
 
-Self-conditioning adds 7.23 percentage points at equal optimizer updates
-(95\% interval [4.69,9.77]) and 12.43 at equal training-pass count
-([9.70,15.23]). Both continuations improve under both comparisons. Matching pass
-counts does not equate every operation or wall-clock cost; the comparison tests
-whether additional single-pass training recovers the observed validity gain.
-
-The update-direction control appears in Section~\ref{sec:update-ablation}.
+Self-conditioning improves graph validity by 7.23 percentage points at equal
+optimizer updates (95\% interval [4.69,9.77]) and by 12.43 points at equal
+training forward passes ([9.70,15.23]). Both runs improve in both comparisons.
+Matching pass counts does not match every operation or wall-clock cost. This
+control asks whether additional single-pass training recovers the validity gain;
+it does not in these runs. The update-direction control is reported in
+Section~\ref{sec:update-ablation}.
 
 \paragraph{Contribution of the force displacement.}
-We also remove only the displacement from the local training targets, retaining
-the same Gaussian perturbations, candidate indices, widths, training schedule and
-paired parameter update. Compared with this control, the force-shifted targets
-lower energy by $0.01939$ eV/atom (95\% interval [-0.02417,-0.01455] for the signed
-difference) and force RMS by $0.3926$ eV/\AA\ ([-0.4696,-0.3263]) among jointly
-valid outputs. Both continuations improve. Graph validity is similar: the
-force-minus-control difference is $+0.39$ points with interval [-1.33,2.19].
-The original force-dependent widths and candidate-selection rule remain fixed,
-so this comparison identifies the contribution of the displacement itself.
+We also remove only the force shift from local training targets. Gaussian
+perturbations, candidate indices, widths, training schedule, and the paired
+parameter update remain unchanged. Relative to this control, force-shifted
+targets lower energy on paired, jointly valid outputs by $0.01939$ eV/atom
+(95\% interval [-0.02417,-0.01455] for the signed difference) and force RMS by
+$0.3926$ eV/\AA\ ([-0.4696,-0.3263]). Both runs improve. Graph validity remains
+similar: force minus control is $+0.39$ percentage points, with interval
+[-1.33,2.19]. Because the original force-dependent widths and candidate-selection
+rule remain fixed, this ablation tests the displacement itself, not the removal
+of all force information.

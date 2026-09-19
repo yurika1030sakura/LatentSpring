@@ -1,11 +1,12 @@
-\paragraph{Original endpoint-checkpoint reference.}
-We evaluate the original 30,000-step OMol25 checkpoint on the coordinate-generation
-task by clamping composition and the neutral/no-bond inputs. Its endpoint sampler
-uses 127 Euler updates and a first-step bootstrap, totaling 128 network evaluations.
-Retaining predicted categorical history gives 106/640 and 113/640 graph-valid outputs in
-two sampling streams. Fixing the history categories and centering the first
-bootstrap gives 116/640 and 120/640. Both streams use the same checkpoint; the
-second variant changes both categorical history and bootstrap centering.
-The LatentSpring source models additionally receive shared task adaptation and
-3,000 specialized updates. We therefore use the matched Gaussian and
-covariance-Gaussian continuations to assess the effect of source choice.
+\paragraph{The original endpoint checkpoint.}
+We also evaluate the original 30,000-step OMol25 checkpoint on coordinate
+generation, fixing the composition and neutral/no-bond inputs. Its endpoint
+sampler uses a first-step bootstrap and 127 Euler updates, for 128 network
+calls. Keeping the model's predicted categorical history gives 106/640 and
+113/640 graph-valid outputs in two sampling streams. Fixing the history
+categories and centering the initial bootstrap gives 116/640 and 120/640.
+Both streams use the same checkpoint; the second variant changes both history
+handling and bootstrap centering. LatentSpring's source models additionally
+receive shared task adaptation and 3,000 specialized updates. The matched
+Gaussian and covariance-Gaussian fine-tuning runs therefore provide the
+controlled tests of source choice.

@@ -1,46 +1,50 @@
 \section{Molecular rotor work protocol}\label{app:rotor-work}
-The three training molecules are \texttt{C=C(N)N(C)C(N)=O},
-\texttt{CCOC(C)(C)N}, and \texttt{CC(=O)NCC=O}. Selection examines the first five
-rows of an existing training subset, accepts the first three distinct compositions
-with a methyl rotor preserving the labeled perceived graph on a 64-angle grid,
-and queries no energy during selection. Only methyl hydrogens rotate around the
-carbon--anchor axis; the remaining internal coordinates stay fixed. Overall
-translation is removed. The reference and target densities are defined with
-respect to the periodic angle measure $d\phi$ on $[-\pi,\pi)$.
+We use a controlled one-dimensional motion to test the work correction on
+molecular energy curves. The three training molecules are
+\texttt{C=C(N)N(C)C(N)=O}, \texttt{CCOC(C)(C)N}, and \texttt{CC(=O)NCC=O}.
+We inspect the first five rows of an existing training subset and take the first
+three distinct compositions with a methyl rotor that preserves the inferred
+labeled graph on a 64-angle grid. Selection uses no energy queries. Only the
+methyl hydrogens rotate around the carbon--anchor axis; other internal
+coordinates remain fixed. We remove overall translation and define densities
+with respect to the periodic angle measure $d\phi$ on $[-\pi,\pi)$.
 
-The starting angular density is $q_0(\phi)=\exp(\cos\phi)/(2\pi I_0(1))$,
-where $2\pi I_0(1)=\int_{-\pi}^{\pi}\exp(\cos u)\,du$ is its normalizing
-integral. Define the reference Hamiltonian (energy function)
-$H_0=-kT\log q_0$ and target Hamiltonian $H_1=H_0+U-U(0)$. The imposed map is $\psi_a(\phi)=\phi+a\sin\phi$, with
-$a\in\{-0.5,0,0.5\}$ controlling its strength. Its local volume factor is
-$J_a(\phi)=1+a\cos\phi$. The condition $|a|<1$ holds, so it is a smooth, invertible transformation of the periodic angle. Its complete work is
+\paragraph{Reference, target, and coordinate map.}
+The starting density is $q_0(\phi)=\exp(\cos\phi)/(2\pi I_0(1))$, with
+normalizing integral $2\pi I_0(1)=\int_{-\pi}^{\pi}\exp(\cos u)\,du$.
+This is a circular reference distribution, distinct from the coordinate source
+used by the neural generator. Its reference Hamiltonian is $H_0=-kT\log q_0$,
+and the target Hamiltonian is $H_1=H_0+U-U(0)$. We transform angles with
+$\psi_a(\phi)=\phi+a\sin\phi$ for $a\in\{-0.5,0,0.5\}$. The derivative,
+$J_a(\phi)=1+a\cos\phi$, is the local volume-change factor. Since $|a|<1$,
+this map is smooth and invertible on the circle. Its complete work is
 \begin{equation}
  W_a(\phi)=U(\psi_a(\phi))-U(0)+kT\left[
  \log q_0(\phi)-\log q_0(\psi_a(\phi))-\log J_a(\phi)\right].
 \end{equation}
-Change of variables gives
+The density terms correct the changed angular sampling distribution, and the
+Jacobian term corrects expansion or compression of angular intervals. Changing
+variables gives
 \begin{equation}
  \EE_{q_0}e^{-W_a/kT}
  =\int_{-\pi}^{\pi}q_0(y)e^{-[U(y)-U(0)]/kT}\,dy=Z_1/Z_0,
  \qquad Z_0=1.
 \end{equation}
-The logarithmic Jacobian accounts for the compression or expansion caused by
-the imposed escort.
 
-All 1,536 single-point calculations succeed. The reference potential is a
-periodic cubic interpolant of 512 GFN2 values per rotor.
-Its 256-knot interpolation error at the additional midpoints is at most
-$10^{-8}$ eV in this study. Increasing the reference quadrature from
-32,768 to 65,536 points changes the free energy by less than
-$10^{-10}$ eV. These checks quantify interpolation and quadrature error for the GFN2-based
-reference potential.
+\paragraph{Numerical reference.}
+All 1,536 single-point calculations succeed. For each rotor, we construct a
+periodic cubic interpolation of 512 GFN2 energy values. The 256-knot interpolation
+has error at most $10^{-8}$ eV at the additional midpoint samples in this study.
+Increasing the reference quadrature from 32,768 to 65,536 points changes free
+energy by less than $10^{-10}$ eV. These checks assess interpolation and numerical
+integration errors for the GFN2-based reference curve.
 
-Total variation uses 64 equal angular bins, with reference probabilities obtained
-by dense quadrature. Self-normalized estimates of target observables have
-finite-sample bias; the mean unnormalized weight is an unbiased normalizer
-estimator.
-The reported free energy is $-kT\log\widehat Z$, with its finite-sample bias included
-in RMSE. At 2,048 draws, complete-work ESS ranges from 788 to 1,892 across the six
-nonidentity cases. Some incomplete weights have higher ESS despite their biased
-target. Correct target recovery therefore depends on the work definition as well
-as the concentration of the weights.
+\paragraph{Estimators and finite-sample effects.}
+We compute total variation on 64 equal angular bins, using dense quadrature for
+the target probabilities. Self-normalized estimates of observables have
+finite-sample bias, whereas the average unnormalized weight is an unbiased
+estimator of the normalizing constant. The free-energy estimate is
+$-kT\log\widehat Z$; its RMSE includes the bias introduced at finite sample
+size. At 2,048 draws, complete-work ESS ranges from 788 to 1,892 across the six
+nonidentity cases. Some incomplete weights have higher ESS despite targeting the
+wrong distribution. ESS alone therefore does not establish correct target recovery.

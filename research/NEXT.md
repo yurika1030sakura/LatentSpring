@@ -1,3 +1,21 @@
+Current status (2026-09-19): read `research/SUGGESTIONS_STATE_20260919.json` and
+`notes/suggestions_review_20260919.md` first. All original repetitions and corrected
+matched-physics runs are COMPLETE. Five source runs average+3.89pp at3000 updates
+(4/5 positive); all3 new runs improve at6000. The fixed-strength EGNN physical
+update harms both families even with GAGA's noise schedule correctly frozen.
+A new validation-only strength calibration with equal choices for FM/GAGA runs
+as47221006; confirmation uses16 previously ungenerated compositions.
+
+The supplied weighted-endpoint branch passes27 tests in the REAL DGL/FlowMol
+environment. Native5.90M pilot47220840 is complete: raw graph yields283/384 base,
+334/384 proposal minima,325/384 complete-work minima. This is a3-composition
+closed-set integration pilot, NOT a GAGA win, full-dimensional equilibrium result,
+or work-specific neural improvement. Do not add it to the main paper as such.
+The manuscript adopts the reviewed prose, includes all5 source runs and the
+completed GAGA follow-ups, and uses actual-coordinate PyMOL figures. Read the
+latest build/sync receipt for publication status; older chronological notes below
+are historical, not live job status.
+
 Latest matched-physics qualification: the fixed-strength EGNN FM adaptation
 has a VALID negative result (graph validity and joint quality collapse); do not
 explain it away as the GAGA implementation bug. GAGA v1 also accidentally unfroze

@@ -1,18 +1,22 @@
 \subsection{Generalization across molecular sizes}\label{sec:wide}
-We evaluate the frozen source models on 64 further compositions, with 16 in each
-of four size ranges from 17 to 64 atoms. All are absent from both processed OMol25
-corpora and from the earlier generation panels. The models receive no additional
-training. Metadata ranks select each composition after the same reference-validity
-checks, with 32 draws per composition and model continuation.
+We test whether the source advantage persists for larger molecules without
+further training. The evaluation set contains 64 new compositions, with 16 in
+each of four size ranges spanning 17--64 atoms. None appears in either processed
+OMol25 corpus or in the earlier evaluation sets. We select them by fixed metadata
+ranks after the same reference-validity checks, then generate 32 samples per
+composition in each fine-tuning run.
 
-Across all 64 compositions, Gaussian sources yield 24.85\% graph validity and
-harmonic sources yield 31.76\%. Appendix~\ref{app:wide-size} gives the full
-size-stratified rates.
+Across all 64 compositions, graph validity is 24.85\% with the Gaussian source
+and 31.76\% with the harmonic source. The pooled harmonic result is higher in
+every size range (Appendix~\ref{app:wide-size}). The overall gain is 6.91
+percentage points, with a 95\% interval of [4.74,9.03] from resampling compositions
+within size ranges. The two fine-tuning runs improve by 11.18 and 2.64 points,
+respectively. Validity decreases as molecules become larger, but the aggregate
+source advantage remains positive beyond the original 17--28-atom test range.
 
-
-The harmonic source improves the pooled rate in every size range. Overall it
-adds 6.91 percentage points, with a size-stratified composition-bootstrap 95\%
-interval of [4.74,9.03]. The two continuations improve by 11.18 and 2.64 points,
-respectively. Absolute validity decreases for larger molecules, while the source
-advantage remains positive in the aggregate. These results extend the source
-comparison beyond the original 17--28-atom confirmation range.
+Three further fine-tuning runs bring the 3,000-update comparison to five runs.
+The average improvement is 3.89 points, positive in four runs, with a
+between-run standard deviation of 5.27 points. For the three new runs, the average
+advantage changes from $-1.66$ points at 1,000 updates to $+1.87$ at 3,000 and
+$+3.94$ at 6,000. All three favor the harmonic source at 6,000 updates.
+Appendix~\ref{app:source-replication} reports every run and training budget.

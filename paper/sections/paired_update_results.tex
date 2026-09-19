@@ -1,17 +1,19 @@
 \subsection{Why subtract the replay update}\label{sec:update-ablation}
-We compare the paired update with direct physical continuation and with a direct
-update scaled to the same parameter-space length.
-For this control,
+Does replay subtraction help because it changes the update direction, or simply
+because it reduces the update size? We compare the paired update with direct
+physical fine-tuning and a direct update rescaled to the same parameter norm.
+The rescaled control is
 $\theta_{\rm control}=\theta_{\rm base}+\alpha(\theta_{\rm physical}-\theta_{\rm base})$,
-where $\alpha$ is the ratio of the paired and direct update norms. These norms sum
-squared changes over trainable parameters only. The resulting coefficients,
-0.2536 and 0.2564, are determined from training weights before generation.
+where $\alpha$ is the ratio of paired to direct update norms. Each norm is the
+square root of the summed squared changes in model parameters; buffers are excluded.
+The coefficients are 0.2536 and 0.2564 in the two
+runs, determined from the trained weights before generating evaluation samples.
 
 \begin{table}[t]
 \centering
-\caption{Physical-update controls on the ten-composition panel, using 1,280
-attempts per model. Energy differences are relative to the base model under eSEN,
-among paired outputs that are both graph-valid.}
+\caption{Update controls on 10 compositions, with 1,280 generation attempts per
+model. Energy changes are measured with eSEN relative to the base model, using
+paired outputs that are graph-valid under both models.}
 \small
 \begin{tabular}{lrr}
 \toprule
@@ -25,11 +27,11 @@ Paired update &62.03&$-0.01554$\\
 \end{tabular}\label{tab:update-ablation}
 \end{table}
 
-The same-norm control largely preserves graph validity but raises energy relative
-to the base model. The paired update instead lowers it. Directly comparing the
-paired and same-norm updates gives an energy change of $-0.03232$ eV/atom
-([-0.03981,-0.02485]) and a force-RMS change of $-0.4170$ eV/\AA\
-([-0.5529,-0.2859]). Both continuations favor the paired direction, and the
-all-output comparisons have the same signs. Their graph-validity difference is
-$+0.39$ points with interval [-1.95,2.73]. The result supports the direction
-identified by replay subtraction, beyond simply limiting update magnitude.
+The rescaled direct update largely preserves graph validity but increases energy
+relative to the base model. The paired update lowers energy instead.
+Paired minus same-norm direct gives $-0.03232$ eV/atom in energy
+([-0.03981,-0.02485]) and $-0.4170$ eV/\AA\ in force RMS
+([-0.5529,-0.2859]). Both runs favor the paired direction, and comparisons using
+all outputs have the same signs. The graph-validity difference is $+0.39$
+percentage points, with interval [-1.95,2.73]. These results support a benefit
+from the replay-subtracted direction, rather than update size alone.

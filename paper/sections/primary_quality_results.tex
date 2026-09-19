@@ -1,21 +1,24 @@
 \subsection{Source and physical adaptation}\label{sec:absolute-quality}
-We complete the comparison of sources and physical updates by applying the same paired physical
-recipe to the Gaussian-source generator. Each source generates its own training
-anchors on the same eight training compositions, with the same maximum proposal
-budget and training schedule. The Gaussian physical model is evaluated on the
-existing 24-composition panel; the other three cells reuse their original outputs.
-Appendix~\ref{sec:factorial-details} gives the protocol and preparation costs.
+We next apply the same paired physical update to the Gaussian-source generator,
+completing a comparison of both sources with and without physical adaptation.
+Each source supplies its own generated anchors on the same eight training
+compositions. The maximum proposal budget and training schedule are matched.
+We evaluate the new Gaussian physical model on the existing 24-composition set
+and reuse the saved outputs for the other three settings.
+Appendix~\ref{sec:factorial-details} reports preparation costs and the protocol.
 
-Joint quality yield counts outputs that pass the chemical-graph assay and meet a
-force-RMS threshold, divided by every attempted output. Invalid structures and
-failed energy calculations remain in the denominator. Table~\ref{tab:absolute-quality}
-reports this yield at 5 eV/\AA\ under independent GFN2 evaluation.
+We measure \emph{joint quality yield}: the fraction of all generation attempts
+that are graph-valid and have force RMS at or below a specified threshold.
+Invalid outputs and failed energy calculations remain in the denominator.
+Table~\ref{tab:absolute-quality} uses a 5 eV/\AA\ threshold under independent
+GFN2 evaluation.
 
 \begin{table}[t]
 \centering
-\caption{Sources and physical updates compared on 1,536 raw attempts per model.
-Force medians use each model's own successful, graph-valid outputs; joint yield
-uses all attempts and requires graph validity and force RMS at most 5 eV/\AA.}
+\caption{Source and physical-update comparison under GFN2-xTB, with 1,536 raw
+attempts per model. Median force RMS uses each model's own graph-valid outputs
+with successful calculations. Joint yield uses all attempts and requires both
+graph validity and force RMS at most 5 eV/\AA.}
 \small
 \begin{tabular}{lrrr}
 \toprule
@@ -29,17 +32,17 @@ Harmonic + paired update &53.45&3.037&47.59\\
 \end{tabular}\label{tab:absolute-quality}
 \end{table}
 
-Paired physical training raises GFN2 joint yield by 4.95 percentage points for
-Gaussian (composition-bootstrap 95\% interval [2.86,7.10]) and 3.06 points for
-harmonic ([1.04,5.14]), with positive changes in both continuations for both
-sources. It also lowers the Gaussian model's paired, jointly valid energy by
-0.01465 eV/atom and force RMS by 0.4618 eV/\AA. Thus the physical update benefits
-both choices of source.
+The paired update improves GFN2 joint yield for both sources: by 4.95 percentage
+points for Gaussian (composition-bootstrap 95\% interval [2.86,7.10]) and
+3.06 points for harmonic ([1.04,5.14]). Both runs improve for both sources.
+On paired, jointly valid outputs, the Gaussian update also lowers energy by
+0.01465 eV/atom and force RMS by 0.4618 eV/\AA.
 
-With physical training applied to both, harmonic improves pooled graph validity
-by 6.84 points ([4.23,9.51]) and joint yield by 6.97 points ([3.26,10.61]).
-The graph-validity difference is positive in both continuations; the joint-yield
-differences are +16.28 and $-2.34$ points, showing substantial continuation
-variation. Both within-source physical improvements and the pooled source
-advantage also appear under eSEN. Figure~\ref{fig:primary-quality} in
-Appendix~\ref{app:components} shows the complete force-threshold curves.
+After physical adaptation, harmonic exceeds Gaussian by 6.84 points in pooled
+graph validity ([4.23,9.51]) and 6.97 points in joint yield ([3.26,10.61]).
+The validity difference is positive in both runs, but the joint-yield differences
+are +16.28 and $-2.34$ points. Thus the pooled advantage coexists with substantial
+variation between fine-tuning runs. eSEN also shows the within-source benefits of
+physical adaptation and the pooled harmonic-source advantage.
+Figure~\ref{fig:primary-quality} in Appendix~\ref{app:components} plots the
+results across force thresholds.

@@ -1,44 +1,44 @@
 \subsection{Matched experiment on sources and physical adaptation}\label{sec:factorial-details}
-The Gaussian cell follows the same native-source teacher construction as the
-harmonic cell. For each continuation, the frozen Gaussian model generates 32
-anchors for each of the same eight training compositions. All 256 attempts are
-retained in the record; invalid anchors are excluded without replenishment.
-The eight-particle force-escort recipe, temperature, perturbation bounds, source
-seeds and 1,000-step training schedule are unchanged. Each physical student has
-its own replay student initialized from the same Gaussian base. Their parameter
-difference is added to that base with coefficient one. The reference examples,
-source randomness, training times and teacher-selection draws are paired within
-each physical/replay comparison.
+To complete the four-setting comparison, we construct physical targets from the
+Gaussian model's own outputs using the same procedure as for harmonic. In each
+run, the frozen Gaussian model generates 32 anchors for each of the same eight
+training compositions. We record all 256 attempts and discard invalid anchors
+without replacing them. We retain the eight-candidate force-escort procedure,
+temperature, perturbation bounds, source seeds, and 1,000-update training schedule.
+For each physical student, we train a matched replay student from the same
+Gaussian base and add their parameter difference to that base with coefficient
+one. Within each physical/replay pair, reference examples, source randomness,
+training times, and teacher-selection draws are paired.
 
-The two Gaussian continuations retain 160 and 138 anchors after the common
-candidate-support checks. Teacher preparation uses 5,276 raw eSEN queries in
-total, including the original recipe's stored complete-work diagnostics; the
-students use uniform weights over supported force-shifted candidates. This
-preserves the original maximum preparation budget while allowing actual
-source-specific support and query counts to differ. Four new 1,000-step student
-fits produce the two paired Gaussian updates. The harmonic physical cell and
-both unadapted cells reuse their previously audited checkpoints and outputs.
+The two Gaussian runs retain 160 and 138 anchors after candidate-support checks.
+Teacher preparation uses 5,276 raw eSEN queries, including complete-work
+diagnostics stored by the original procedure. The students themselves sample
+uniformly from the allowed force-shifted candidates. We preserve the original
+maximum preparation budget, but actual valid-anchor counts and query counts can
+differ by source. Four new student fits of 1,000 updates produce the two paired
+Gaussian models. The harmonic physical model and the two unadapted models reuse
+their previously audited checkpoints and outputs.
 
-The new Gaussian physical models generate 1,536 unoptimized evaluation outputs
-on the existing 24-composition panel at 128 network calls per attempt. Their
-eSEN readout adds 3,072 queries, and GFN2 evaluation adds 1,632 attempts including
-reference inversion checks. One GFN2 calculation fails, on a graph-invalid
-output; every graph-valid output and every reference check succeeds. The audit
-reconstructs teacher proposals and graph restrictions, replays the uniform
-candidate draws and parameter arithmetic, and reparses the raw structural and
-physical evaluations. This is a fixed follow-up on an already evaluated panel.
+The Gaussian physical models generate 1,536 unoptimized outputs on the existing
+24-composition set at 128 network calls per attempt. eSEN evaluation adds
+3,072 queries, and GFN2 adds 1,632 attempts including reference inversion checks.
+One GFN2 calculation fails on a graph-invalid output; every graph-valid output
+and reference calculation succeeds. The experiment's audit reconstructs target
+proposals and graph restrictions, replays uniform candidate draws and parameter
+arithmetic, and reparses the structural and physical scores. This is a fixed
+follow-up on a previously evaluated set, not a new held-out composition test.
 
-For Gaussian, the physical-minus-base energy change among paired, jointly valid
-outputs is $-0.01596$ eV/atom under eSEN (95\% interval [-0.02182,-0.01021]) and
-$-0.01465$ under GFN2 ([-0.02041,-0.00929]). Force-RMS changes are
-$-0.3795$ eV/\AA\ ([-0.4618,-0.3045]) and $-0.4618$
-([-0.6195,-0.3370]), respectively. These results show that replay-subtracted
-physical learning also benefits the Gaussian source.
+For Gaussian, physical adaptation changes energy on paired, jointly valid outputs
+by $-0.01596$ eV/atom under eSEN (95\% interval [-0.02182,-0.01021]) and
+$-0.01465$ under GFN2 ([-0.02041,-0.00929]). The corresponding force-RMS changes
+are $-0.3795$ eV/\AA\ ([-0.4618,-0.3045]) and $-0.4618$
+([-0.6195,-0.3370]). The paired physical update therefore also benefits the
+Gaussian-source generator.
 
-At force RMS at most 5 eV/\AA, the GFN2 physical-update gains in continuations
-1 and 2 are 4.56 and 5.34 percentage points for Gaussian, and 3.13 and 2.99 for
-harmonic. The harmonic-minus-Gaussian contrast after physical training is
-16.28 and $-2.34$ points across the two continuations, although its pooled
-difference is positive. Thus pooled source improvement and training-repeat
-variability are both visible. These results support separate benefits from the
-source and the update; they do not imply a positive statistical interaction.
+At a force-RMS threshold of 5 eV/\AA, GFN2 joint-yield improvements in runs 1
+and 2 are 4.56 and 5.34 percentage points for Gaussian and 3.13 and 2.99 for
+harmonic. After physical adaptation, harmonic minus Gaussian is 16.28 points
+in run 1 and $-2.34$ points in run 2, despite a positive pooled difference.
+Thus the results show both separate source/update benefits and variability
+between runs. They do not establish a positive statistical interaction between
+the source and physical update.

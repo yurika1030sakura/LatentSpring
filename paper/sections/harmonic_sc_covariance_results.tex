@@ -1,18 +1,20 @@
 \paragraph{Control for source covariance.}
-To test the role of second moments, we construct a Gaussian from a 128-tree
-estimate of the harmonic mixture covariance and symmetrize it over identical
-species. Calibration against an independent 8,192-tree estimate gives
-1.85--6.25\% relative Frobenius error across the 22 compositions. This control
-uses the same data, optimizer, network and sampling budgets. It is evaluated
-after the initial source comparison against the frozen harmonic checkpoints.
+To test whether the source benefit is explained by its covariance, we compare
+against a single Gaussian with approximately the same covariance as the harmonic
+mixture. We estimate that covariance from 128 trees and average over permutations
+of identical atom species. An independent 8,192-tree estimate gives a relative
+Frobenius error of 1.85--6.25\% across the 22 compositions. We match the training
+data, optimizer, network, and sampling budgets. This follow-up compares the new
+Gaussian models with the already frozen harmonic checkpoints.
 
 \begin{table}[t]
 \centering
-\caption{Covariance-Gaussian control at matched continuation and inference
-budgets, using the calibrated 128-tree covariance estimate.}
+\caption{Covariance-matched Gaussian versus harmonic source. Entries count
+valid outputs over all attempts. Training and inference budgets are matched;
+the Gaussian uses the calibrated covariance estimate from 128 trees.}
 \begin{tabular}{llrr}
 \toprule
-Panel & Continuation & Covariance Gaussian & Harmonic tree\\
+Set & Run & Covariance Gaussian & Harmonic tree\\
 \midrule
 Development & 1 &332/768&436/768\\
             & 2 &313/768&388/768\\
@@ -22,11 +24,12 @@ Additional  & 1 &286/640&413/640\\
 \end{tabular}\label{tab:covariance}
 \end{table}
 
-Harmonic sources improve graph validity by 11.65 points on development
-(paired 95\% [8.59,14.78]; descriptive composition [8.07,15.43]) and 15.39 points on
-the additional panel (paired 95\% [11.64,19.06]; composition [11.95,18.98]). All four
-point differences are positive. The covariance Gaussian is also worse than the
-isotropic Gaussian in both panels. The harmonic mixture thus retains an advantage
-over this calibrated second-moment control, consistent with a useful contribution
-from its mixture structure. The comparison adds 2,816 outputs and holds parameter
-count, initial self-conditioning weights, training rows and optimization fixed.
+Harmonic improves graph validity over this Gaussian by 11.65 percentage points
+on development (paired 95\% interval [8.59,14.78]; descriptive composition interval
+[8.07,15.43]) and 15.39 points on the additional set (paired [11.64,19.06];
+composition [11.95,18.98]). The difference is positive in both runs on both sets.
+The covariance-matched Gaussian also performs worse than the isotropic Gaussian.
+These results support a benefit beyond this calibrated second-moment approximation,
+consistent with a contribution from the mixture structure. The comparison adds
+2,816 outputs while holding parameter count, initial self-conditioning weights,
+training structures, and optimization fixed.

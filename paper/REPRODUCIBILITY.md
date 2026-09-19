@@ -1,3 +1,12 @@
+Current revision (2026-09-19): five source runs and all training-budget points are
+reported in source_replication_audit_v1.json; corrected EGNN transfer is in
+matched_physical_audit_v2.json. Ledger v18 counts the completed work, including
+superseded attempts. The weighted-endpoint native pilot is separate from paper
+claims. PyMOL artwork comes from saved raw coordinates; rebuild with
+scripts/research/render_paper_molecules.py (FlowMol export/compose, chemistry render).
+Build both manuscript packages with scripts/research/build_submission.py.
+Latest build receipt: research/evidence/publication_build_v5.json.
+
 The source-by-physical-update factorial is now complete. Its audit and paired
 energy/force summaries are in `research/evidence/source_physical_factorial_*v1.*`.
 The revised main table includes both sources with and without the same physical
