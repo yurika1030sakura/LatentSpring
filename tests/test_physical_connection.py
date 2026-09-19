@@ -1,7 +1,8 @@
 import copy
 from types import SimpleNamespace
 import torch
-from cfm_mol.physical_connection import PhysicalConnection,patch_physical_connection
+import pytest
+from cfm_mol.physical_connection import PhysicalConnection,ContextualPhysicalConnection,patch_physical_connection
 
 
 def inputs():
@@ -12,8 +13,10 @@ def inputs():
     return x,h,types,t,batch,*edges
 
 
-def test_zero_initialization_centering_rotation_permutation_and_bound():
-    model=PhysicalConnection([6,7,8,1]).double();args=inputs()
+@pytest.mark.parametrize('context',[False,True])
+def test_zero_initialization_centering_rotation_permutation_and_bound(context):
+    cls=ContextualPhysicalConnection if context else PhysicalConnection
+    model=cls([6,7,8,1]).double();args=inputs()
     assert torch.equal(model(*args),torch.zeros_like(args[0]))
     torch.nn.init.normal_(model.pair_network[-1].weight,std=.5)
     x,h,types,t,batch,src,dst=args;y=model(*args)
@@ -26,7 +29,8 @@ def test_zero_initialization_centering_rotation_permutation_and_bound():
     assert torch.isfinite(collision).all()
 
 
-def test_native_backbone_identity_then_nonzero_learning_with_frozen_parent():
+@pytest.mark.parametrize('context',[False,True])
+def test_native_backbone_identity_then_nonzero_learning_with_frozen_parent(context):
     from flowmol.models.ctmc_vector_field import CTMCVectorField
     from flowmol.models.interpolant_scheduler import InterpolantScheduler
     from test_clamped_density import graph_batch
@@ -44,7 +48,7 @@ def test_native_backbone_identity_then_nonzero_learning_with_frozen_parent():
     graph.edata['e_t']=graph.edata['e_1_true'];t=torch.tensor([.7])
     with deterministic_field(field):before=field(graph,t,node_batch_idx=nbi,upper_edge_mask=uem)['x'].detach().clone()
     parent={n:p.detach().clone() for n,p in field.named_parameters()}
-    patch_physical_connection(model,atomic_numbers=[6,7,8],embedding_dim=16,hidden_dim=64,velocity_scale=1.,gate_power=2)
+    patch_physical_connection(model,atomic_numbers=[6,7,8],embedding_dim=16,hidden_dim=64,velocity_scale=1.,gate_power=2,**(dict(context_layers=2,context_width=32) if context else {}))
     with deterministic_field(field):after=field(graph,t,node_batch_idx=nbi,upper_edge_mask=uem)['x']
     torch.testing.assert_close(after,before,atol=0,rtol=0)
     opt=torch.optim.AdamW(field.physical_connection.parameters(),lr=.001)
