@@ -1,0 +1,45 @@
+{
+  "format": "cached_feedback_v1",
+  "frozen": true,
+  "at_utc": "2026-09-19T20:06:39.625786+00:00",
+  "replicas": [
+    {
+      "protocol": "research/evidence/gaga_feedback_distance_s0_v1.json",
+      "protocol_sha256": "7f98ec04fba2d53a816764ce137d3605fe4a65b026e3caf88d0084aa9f3e5196",
+      "checkpoint": "runs/gaga_feedback_v1/training/s0/distance/last.ckpt",
+      "checkpoint_sha256": "783fba5bfe50bb7e8327414d9e60ab6f6f6370c49c0a0def84c7820b8af8bff5",
+      "reference_reports": {
+        "distance": {
+          "path": "runs/gaga_feedback_v1/training/s0/distance/validation/distance_results.json",
+          "sha256": "9c5e6ce44d498f4fa4fc0623d3a8340bc5114ca0bafebbb2b531e0144f9c4fec"
+        },
+        "gaga": {
+          "path": "runs/gaga_feedback_v1/training/s0/baselines/gaga_650_results.json",
+          "sha256": "9e26aca5e188b4d0abd5f5cee3d4bd5068ef4c54f5e36805d4e241eb7618e5ee"
+        }
+      }
+    },
+    {
+      "protocol": "research/evidence/gaga_feedback_distance_s1_v1.json",
+      "protocol_sha256": "8e9aa1fbfc70608066a5b6547e7cc981d51f52698c8757161a856b75cc6e496a",
+      "checkpoint": "runs/gaga_feedback_v1/training/s1/distance/last.ckpt",
+      "checkpoint_sha256": "6cecd9d57c4345e16211eb0762173fde5b7412fc7eb2baf5f16081ffede441dc",
+      "reference_reports": {
+        "distance": {
+          "path": "runs/gaga_feedback_v1/training/s1/distance/validation/distance_results.json",
+          "sha256": "a70c240ff7df39bb32ba720aee511d4013514bda2252dedf44aef85bf7d94923"
+        },
+        "gaga": {
+          "path": "runs/gaga_feedback_v1/training/s1/baselines/gaga_650_results.json",
+          "sha256": "0b6f05a6f08b11f7b1ff3098cce2988cada72b99af01150d3284292d974cc7bc"
+        }
+      }
+    }
+  ],
+  "calls": [
+    64,
+    128
+  ],
+  "scope": "Internal validation only, using frozen matched-EGNN distance-feedback models. Stateful reuse changes the sampling process; it does not integrate the old two-pass ODE. No new training, no physical oracle and no fresh confirmation outcomes.",
+  "selection": "Advance cached128 only if its pooled graph validity exceeds original distance128 by at least2 percentage points and both seeds improve. Cached64 is a cost diagnostic. A GAGA superiority claim requires separate fresh confirmation."
+}

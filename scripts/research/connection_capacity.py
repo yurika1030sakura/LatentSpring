@@ -55,7 +55,7 @@ def main():
     assert not {rows[i]['condition']['composition_hex'] for i in train}&{rows[i]['condition']['composition_hex'] for i in validation}
     cache=cache_rows(rows,spec['pair_config'],'cuda');a.out.mkdir(parents=True,exist_ok=False);seed=spec['seeds'][a.seed_index]
     results={};checkpoints={};total_steps=0;diagnostic_forwards=0
-    for kind in ['pair','context']:
+    for kind in spec.get('variants',['pair','context']):
         torch.manual_seed(seed);config=spec[kind+'_config'];head=make_physical_connection(**config).cuda().float().train()
         optimizer=torch.optim.AdamW(head.parameters(),lr=spec['learning_rate'],weight_decay=1e-12);rng=np.random.default_rng(seed)
         tick=time.perf_counter();history=[];directory=a.out/kind;directory.mkdir()

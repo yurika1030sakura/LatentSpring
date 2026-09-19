@@ -29,8 +29,10 @@ def evaluate(model,source,spec,context,rows,seed,count,out,label):
     out.mkdir(parents=True,exist_ok=True)
     model.eval()
     digest=base.state_hash(model)
+    calls=spec.get('evaluation_calls',128)
     settings=dict(kind=spec['kind'],context=spec.get('context'),two_pass=spec.get('two_pass',False),
-        gaga_max_t=spec['gaga_max_t'],calls=128,seed=seed,count=count,batch=spec['evaluation_batch'])
+        gaga_max_t=spec['gaga_max_t'],calls=calls,seed=seed,count=count,batch=spec['evaluation_batch'])
+    if 'cached_feedback' in spec:settings['cached_feedback']=spec['cached_feedback']
     report_path=out/(label+'_results.json')
     if report_path.exists():
         report=json.loads(report_path.read_text())
@@ -50,9 +52,9 @@ def evaluate(model,source,spec,context,rows,seed,count,out,label):
                 size=min(spec['evaluation_batch'],count-begin)
                 rng_seed=seed*1000003+index*100003+begin
                 if context is None:
-                    x,x0=base.sample(model,c['numbers'],spec['kind'],spec,source,rng_seed,size,128)
+                    x,x0=base.sample(model,c['numbers'],spec['kind'],spec,source,rng_seed,size,calls)
                 else:
-                    x,x0=feedback.sample(model,c['numbers'],spec,source,context,rng_seed,size,128)
+                    x,x0=feedback.sample(model,c['numbers'],spec,source,context,rng_seed,size,calls)
                 if not torch.isfinite(x).all():raise FloatingPointError('Nonfinite generated coordinates')
                 positions.append(x.cpu().double());initial.append(x0.cpu().double())
             torch.cuda.synchronize()

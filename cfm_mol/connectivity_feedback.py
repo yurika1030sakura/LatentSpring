@@ -115,6 +115,9 @@ def loss(model,clean,numbers,spec,source,context,seed):
 
 @torch.no_grad()
 def sample(model,numbers,spec,source,context,seed,batch,calls=128):
+    if spec.get('cached_feedback'):
+        from .cached_geometry_feedback import sample_cached
+        return sample_cached(model,numbers,spec,source,context,seed,batch,calls)
     device=next(model.parameters()).device;z=torch.tensor(numbers,device=device)[None].expand(batch,-1)
     rng=torch.Generator(device=device).manual_seed(seed);kind=spec['kind'];passes=2 if spec['two_pass'] else 1
     if kind=='harmonic_fm':
