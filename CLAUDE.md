@@ -9,7 +9,8 @@ pushed/verified on GitHub c1de73d and Overleaf9805067. See publication_sync_v7.j
 Trajectory teacher47257342 is COMPLETE:256 FIT outputs,512 states and9216
 physical queries, fully replayed. Local particle ESS median1.37/8; no fallback
 states. Costs are included in registry v25. Fit jobs47258410_0 and47258728_1
-are running from frozen source7835673, with automatic audit47258729. Read
+have completed all six2000-step fits and now generate raw validation outputs.
+Source7835673 is frozen; automatic GFN2 and audit47258729 follow. Read
 research/TRAJECTORY_CONNECTION_STATE_20260919.json before resuming.
 Earlier running-study statements below are historical, not live status.
 
