@@ -1,27 +1,6 @@
 {
-  "status": "complete_audited",
-  "job_id": "47277628",
-  "source_commit": "376394b76608812a8f0590b76e9065a4beeaab0d",
-  "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/context_confirmation_v1/source",
-  "run_root": "runs/context_confirmation_v1",
-  "protocol": "research/evidence/context_confirmation_v1.json",
-  "cached_protocol": "research/evidence/cached_feedback_v1.json",
-  "submission_stderr": "",
-  "tests_passed": 15,
-  "external_generation_gain_established": true,
-  "gaga_superiority_established": false,
-  "audit": {
-    "submitted": true,
-    "job_id": "47279118",
-    "source_commit": "227aed01ffc9081ff2b1e1502cbc0170addab6bd",
-    "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/context_confirmation_v1/audit_source",
-    "stderr": "",
-    "dependency": "47277628"
-  },
-  "evidence": "research/evidence/context_confirmation_audit_v1.json",
-  "full_system_gaga_gain": true,
-  "shared_backbone_gaga_superiority_established": false,
-  "contextual_gain_over_matched_size": false,
+  "complete": true,
+  "protocol_sha256": "aac041aacbe3261be65267f2a8a3b23b50da07947f32979afc06ea6fd0c3a07e",
   "summary": {
     "base": {
       "graph_rate": 0.494140625,
@@ -476,5 +455,201 @@
         0.439453125
       ]
     }
-  }
+  },
+  "primary_gate": true,
+  "contextual_gain_over_matched_size": false,
+  "full_system_gaga_gain": true,
+  "shared_backbone_gaga_superiority_established": false,
+  "comparison_scope": "GAGA is the existing position-conditional OMol25 adaptation, at128 and its complete651 calls. Full FlowMol and EGNN systems differ in architecture, capacity, training data/history and cost. This is a common-task full-model comparison, not a matched-backbone ablation or native published GAGA reproduction. Earlier shared-EGNN comparisons remain separately reported.",
+  "fits": {
+    "0": {
+      "original": {
+        "pair": {
+          "step": 20000,
+          "fit": {
+            "zero_mse": 0.044714317884427146,
+            "mse": 0.03528735429608787,
+            "fractional_reduction": 0.21082651003880004,
+            "mean_direction_cosine": 0.4456212045928017
+          },
+          "validation": {
+            "zero_mse": 0.046213715853809845,
+            "mse": 0.03984390033292584,
+            "fractional_reduction": 0.1378338747101393,
+            "mean_direction_cosine": 0.4223793827150075
+          },
+          "seconds": 58.999445144989295
+        },
+        "context": {
+          "step": 20000,
+          "fit": {
+            "zero_mse": 0.044714317884427146,
+            "mse": 0.02936150089590228,
+            "fractional_reduction": 0.34335348753853756,
+            "mean_direction_cosine": 0.5538805457981653
+          },
+          "validation": {
+            "zero_mse": 0.046213715853809845,
+            "mse": 0.03433092764680623,
+            "fractional_reduction": 0.2571268721301925,
+            "mean_direction_cosine": 0.5153810264891945
+          },
+          "seconds": 110.99124703501002
+        }
+      },
+      "wide": {
+        "wide": {
+          "step": 20000,
+          "fit": {
+            "zero_mse": 0.044714317884427146,
+            "mse": 0.0333402324022245,
+            "fractional_reduction": 0.2543723357605763,
+            "mean_direction_cosine": 0.5045125526460955
+          },
+          "validation": {
+            "zero_mse": 0.046213715853809845,
+            "mse": 0.03798670984360797,
+            "fractional_reduction": 0.17802087233640274,
+            "mean_direction_cosine": 0.47056532167698606
+          },
+          "seconds": 58.85246245699818
+        }
+      }
+    },
+    "1": {
+      "original": {
+        "pair": {
+          "step": 20000,
+          "fit": {
+            "zero_mse": 0.044714317884427146,
+            "mse": 0.03633004227716204,
+            "fractional_reduction": 0.1875076262805997,
+            "mean_direction_cosine": 0.44222348342797585
+          },
+          "validation": {
+            "zero_mse": 0.046213715853809845,
+            "mse": 0.040461197877448285,
+            "fractional_reduction": 0.12447642155759098,
+            "mean_direction_cosine": 0.41226674852805445
+          },
+          "seconds": 59.84218786400743
+        },
+        "context": {
+          "step": 20000,
+          "fit": {
+            "zero_mse": 0.044714317884427146,
+            "mse": 0.02941950903156491,
+            "fractional_reduction": 0.3420561819235316,
+            "mean_direction_cosine": 0.5602370095390748
+          },
+          "validation": {
+            "zero_mse": 0.046213715853809845,
+            "mse": 0.034106881721527316,
+            "fractional_reduction": 0.26197491174656207,
+            "mean_direction_cosine": 0.5308886724669719
+          },
+          "seconds": 112.7876455069927
+        }
+      },
+      "wide": {
+        "wide": {
+          "step": 20000,
+          "fit": {
+            "zero_mse": 0.044714317884427146,
+            "mse": 0.034343690332813516,
+            "fractional_reduction": 0.23193080074303118,
+            "mean_direction_cosine": 0.48006117089547234
+          },
+          "validation": {
+            "zero_mse": 0.046213715853809845,
+            "mse": 0.039090982947527664,
+            "fractional_reduction": 0.15412595102315252,
+            "mean_direction_cosine": 0.4384812413773034
+          },
+          "seconds": 59.86980687000323
+        }
+      }
+    }
+  },
+  "provenance": [
+    {
+      "replica": 0,
+      "method": "base",
+      "generation_sha256": "a7eb81dfbf9204f2504547efcf0d5f22231e9d9d6f3eb9d972143aa2872a8e52",
+      "checkpoint_sha256": "636c3dc39e7b6813a7d5629d07b510c46fde52fdb0b72ffa392ef9476569e44c"
+    },
+    {
+      "replica": 0,
+      "method": "pair_long",
+      "generation_sha256": "171b4b2985dad3a50067e3bde8be45f3d4769e71dbd3d8e60bf0934bc7f622e1",
+      "checkpoint_sha256": "97f9bfd867918472888f4a158c3d15e4f4dd303e5a30e061f8f865166a97f5a9"
+    },
+    {
+      "replica": 0,
+      "method": "pair_wide",
+      "generation_sha256": "8c78b325b853468fe9af2c81781b938b292c256edbc1b7802325e995e769c89c",
+      "checkpoint_sha256": "b87544ed967f41e46f476267b7b10425e2e4b74792fe9636b544ef65c12607f7"
+    },
+    {
+      "replica": 0,
+      "method": "context",
+      "generation_sha256": "455049005063bdc6579bf328d3298c2543b798fec8bc489f223a65ad6bad138f",
+      "checkpoint_sha256": "e6b30ef9cb90a5e5799012329e7ab24670b56925a687beafd28a607935132627"
+    },
+    {
+      "replica": 0,
+      "method": "gaga",
+      "generation_sha256": "fbb12ab74ff26a7117df38fcd19ac35bfa0e38b6413bbd3388a27fd259520f85",
+      "checkpoint_sha256": "480a54f903678b6547d76cc153878df93725d7b724522d87093215040efd3e0d"
+    },
+    {
+      "replica": 0,
+      "method": "gaga_full",
+      "generation_sha256": "3237c22f6f4c81f9cbd9deeab666b5256886d42e87498c0db6cc951455c693bc",
+      "checkpoint_sha256": "480a54f903678b6547d76cc153878df93725d7b724522d87093215040efd3e0d"
+    },
+    {
+      "replica": 1,
+      "method": "base",
+      "generation_sha256": "80614055b48961197e82af164029df5f4efbfa6fc1c2da1763818374ad1cf6ab",
+      "checkpoint_sha256": "d5ed79333fa1eed6bb6c1d11c964a48cc1037caf247151699e10a76b0b9d16b0"
+    },
+    {
+      "replica": 1,
+      "method": "pair_long",
+      "generation_sha256": "d0e70b330a80e5e1ab744334016a8223326b206a2db41e47689625d4cc87274c",
+      "checkpoint_sha256": "2581d9e210583841a3738faf2655ad6ca3692a85650a8bba82b1d7a481b2fc39"
+    },
+    {
+      "replica": 1,
+      "method": "pair_wide",
+      "generation_sha256": "7826498457aee63b79b91c2b255654b0847fa1569e2a0ced5f91821c523b3143",
+      "checkpoint_sha256": "b4fc0cb4d0f4156f6e4c27d48135d092273356306a640e3abe38bbfe2fbdbb0a"
+    },
+    {
+      "replica": 1,
+      "method": "context",
+      "generation_sha256": "d0e35bfe09dc49f5b0f67dfbee64c52a4563470e6aa4c2b2a29dac8936e4ea31",
+      "checkpoint_sha256": "9da377420a0d17df3a9384e2efcbe2ab5c5bb633cdfd9b10e4506887a3b53d2b"
+    },
+    {
+      "replica": 1,
+      "method": "gaga",
+      "generation_sha256": "ebde38c4da4b45c3e3c994f992a3d59309a4f5b55a71e1a1aebd9296ecd41882",
+      "checkpoint_sha256": "4b77970c5a445a2bd7264a1054836791d92128f2684975f7e41144dda2286fea"
+    },
+    {
+      "replica": 1,
+      "method": "gaga_full",
+      "generation_sha256": "70ec3154eecc74ea43e19d0a6967b7028ca044ce4c411a60860583d4e81e4e12",
+      "checkpoint_sha256": "4b77970c5a445a2bd7264a1054836791d92128f2684975f7e41144dda2286fea"
+    }
+  ],
+  "arrays_sha256": "8737dbbf0e50ceb75994d303a699f4a73adfb779be72eb24d0402547562c0520",
+  "new_neural_outputs": 3072,
+  "new_gfn2_attempts": 3072,
+  "new_optimizer_steps": 40000,
+  "new_esen_queries": 0,
+  "scope": "Fresh16-composition full-model confirmation and physical-head ablations. Separate physical-target prediction from actual generation gains. No global Boltzmann or GAGA-family superiority claim.",
+  "interval_scope": "Composition bootstrap conditional on the fitted systems. FlowMol uses one shared pretrained parent; GAGA uses two independently initialized EGNN fits."
 }
