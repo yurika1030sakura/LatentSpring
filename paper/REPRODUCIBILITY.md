@@ -1,3 +1,10 @@
+Latest figure design uses the project skill in
+`.agents/skills/scientific-figure-design/SKILL.md`, the scripted PyMOL renderer,
+and `scripts/research/redesign_molecular_figures.py`. Main diagrams are designed
+at the actual5.5-inch placement width with7.5-point or larger labels. The selected
+style is outline; soft-light alternatives are retained for comparison. Data and
+molecular coordinates are unchanged. Build receipt: publication_build_v6.json.
+
 Current revision (2026-09-19): five source runs and all training-budget points are
 reported in source_replication_audit_v1.json; corrected EGNN transfer is in
 matched_physical_audit_v2.json. Ledger v18 counts the completed work, including

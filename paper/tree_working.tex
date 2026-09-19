@@ -126,17 +126,17 @@ references, controlled molecular rotors, and subsequent neural training.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{../research/figures/pymol_molecules_v1/method.pdf}
+\includegraphics[width=\linewidth]{../research/figures/molecular_design_v2/method_outline.pdf}
 \caption{How LatentSpring generates coordinates and learns from physical targets.
-(a) A recorded flow for $\mathrm{C_{10}H_9N_3O_5}$. Starting from random coordinates
-$X_0$, the network predicts a movement vector for each atom from its current
-coordinates, flow time, and composition. Dashed source edges are auxiliary
-springs; solid bonds are inferred only for the displayed final output.
-(b) Generated training structures provide anchors for nearby force-shifted
-targets. Two model copies learn from these targets and the
-original anchor, respectively. Their parameter difference is added to the base
-model. Carbon, hydrogen, nitrogen, and oxygen are gray, white, blue, and red.
-None of the displayed coordinates has been optimized.}\label{fig:method}
+(a) Source and raw output from a recorded flow for neutral singlet
+$\mathrm{C_{10}H_9N_3O_5}$. The shared network first forms a provisional geometry,
+then refines its velocity prediction from current coordinates, time, and
+composition. Dashed source edges are auxiliary springs; solid output bonds are
+inferred from coordinates. (b) An actual training anchor and a nearby
+force-shifted target share a viewing orientation. (c) Two copies learn from the
+shifted targets and original anchors; their parameter difference is added to the
+base model. Carbon, hydrogen, nitrogen, and oxygen are gray, white, blue, and red.
+The coordinates are unoptimized.}\label{fig:method}
 \end{figure}
 
 \section{A harmonic source with latent connectivity}
@@ -370,7 +370,7 @@ reports the source, shell-tree, and covariance controls.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{../research/figures/pymol_molecules_v1/gallery.pdf}
+\includegraphics[width=\linewidth]{../research/figures/molecular_design_v2/gallery_outline.pdf}
 \caption{Different connectivities generated from the same atomic composition by
 the primary force-updated LatentSpring model. The initial trees have no cycles,
 but the generated molecules can contain rings. We show the first four graph-valid

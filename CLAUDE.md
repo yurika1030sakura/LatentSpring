@@ -1,3 +1,18 @@
+Figure work: use the project skill `.agents/skills/scientific-figure-design/SKILL.md`.
+It was built from online Nature/MIT/PLOS/PyMOL guidance and exercised on actual
+molecular scenes. The selected outline renders and5.5-inch layouts are under
+`research/figures/molecular_design_v2`; current build receipt is publication_build_v6.
+
+Direct weighted-target models are now the primary DEVELOPMENT candidate:
+`configs/research/latentspring_minima_candidate_v1.json`. All3 fine-tuning seeds
+are complete. At GFN2 force<=1, mean joint yields are12.85% parent,48.00% proposal
+minima,50.61% weighted minima. Weighted minus proposal is positive2/3 seeds.
+All of this remains a3-TRAIN-composition pilot; no global Boltzmann or GAGA-win
+claim. A frozen8-unseen-composition follow-up is in weighted_minima_generalization_v1.
+See its runs/.../submission.json for the actual GPU job. Paper's main method is
+not replaced solely on these closed-set outcomes. Detailed adoption decisions:
+`notes/suggestions_adoption_zh_20260919.md`. Older statuses below are historical.
+
 Publication verified: GitHub paper release8446040 and Overleaf f58c9ec preserve
 collaborator1b64efd. Buildv5 has9 scientific pages,29 total,25 citations; all42
 export files match remotely. Native pilot independentGFN2 is complete: joint
