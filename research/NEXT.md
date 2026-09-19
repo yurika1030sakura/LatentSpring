@@ -6,10 +6,11 @@ head learns from actual TRAIN parent states, with matched force and complete
 local-work targets. Protocol is frozen before generation. No thermal or useful
 neural work advantage has been established. Publication build v7 adds the broad physical-target control appendix and is
 pushed/verified on GitHub c1de73d and Overleaf9805067. See publication_sync_v7.json.
-Trajectory teacher47257342 is running; a two-seed array submission hit the
-gpu_test per-user submit limit and must be retried after teacher completion.
-The frozen fit source is runs/trajectory_connection_v1/fit_source (7835673).
-Read research/TRAJECTORY_CONNECTION_STATE_20260919.json before resuming.
+Trajectory teacher47257342 is COMPLETE:256 FIT outputs,512 states and9216
+physical queries, fully replayed. Local particle ESS median1.37/8; no fallback
+states. Costs are included in registry v25. Fit jobs47258410_0 and47258728_1
+are running from frozen source7835673, with automatic audit47258729. Read
+research/TRAJECTORY_CONNECTION_STATE_20260919.json before resuming.
 Earlier running-study statements below are historical, not live status.
 
 # Current next steps
