@@ -38,7 +38,7 @@ def main():
     if cfg['dataset']['max_atoms']!=200 or cfg['mol_fm']['total_loss_weights']['e']!=0:
         raise ValueError('Expected the original bond-free configuration')
     state=torch.load(a.checkpoint,map_location='cpu',weights_only=not a.allow_legacy_pickle)
-    recipe=state['research_protocol'];target=recipe['mass_preserving_minima']
+    recipe=state['research_protocol'];target=recipe.get('direct_endpoint_training') or recipe['mass_preserving_minima']
     if recipe.get('position_parameterization')!='displacement':raise ValueError('Wrong head semantics')
     if target['terminal_noise_std_A']!=0:raise ValueError('Unexpected terminal noise declaration')
     model=model_from_config(cfg);prepare_research_backbone(model,recipe)

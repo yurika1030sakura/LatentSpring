@@ -19,8 +19,9 @@ def main():
     if 'native_audit_sha256' in spec:assert sha(a.run/'audit.json')==spec['native_audit_sha256']
     else:assert audit['protocol_sha256']==spec['native_protocol_sha256']
     binary=Path(spec['xtb_binary']);assert sha(binary)==spec['xtb_binary_sha256']
+    methods=spec.get('methods',['base','proposal_min','full_work_min'])
     tasks=[];graphs={};sources={}
-    for arm in ['base','proposal_min','full_work_min']:
+    for arm in methods:
         folder=a.run/(arm+'_raw');report=json.loads((folder/'generation.json').read_text());assert report['complete']
         armrows=[r for r in audit['rows'] if r['arm']==arm]
         for i,row in enumerate(report['rows']):
@@ -28,10 +29,10 @@ def main():
             with np.load(file) as f:positions=f['raw_positions'].copy()
             c=row['condition'];graphs[arm,i]=np.array([r['graph_supported'] for r in armrows[i]['records']]);sources[str(file)]=sha(file)
             for j,x in enumerate(positions):
-                task=dict(task_id=f'{arm}_c{i}_s{j}',method=arm,replica=0,parent_id=i*count+j,
+                task=dict(task_id=f'{arm}_c{i}_s{j}',method=arm,replica=spec.get('replica',0),parent_id=i*count+j,
                     inversion_check=False,positions=x.tolist(),condition_index=i,sample_index=j)
                 tasks.append((task,c))
-    assert len(tasks)==3*n_conditions*count;a.out.mkdir(parents=True,exist_ok=False)
+    assert len(tasks)==len(methods)*n_conditions*count;a.out.mkdir(parents=True,exist_ok=False)
     write(a.out/'tasks.json',dict(protocol_sha256=sha(a.protocol),tasks=[dict(task=t,condition=c) for t,c in tasks],sources=sources))
     rows=[]
     def work(t,c):
@@ -40,7 +41,7 @@ def main():
         for f in as_completed([pool.submit(work,t,c) for t,c in tasks]):
             rows.append(f.result())
             if len(rows)%128==0:write(a.out/'progress.json',dict(complete=False,completed=len(rows)))
-    mapping={t['task_id']:t for t,c in tasks};arrays={arm:dict(force=np.full((n_conditions,count),np.inf),success=np.zeros((n_conditions,count),bool)) for arm in ['base','proposal_min','full_work_min']}
+    mapping={t['task_id']:t for t,c in tasks};arrays={arm:dict(force=np.full((n_conditions,count),np.inf),success=np.zeros((n_conditions,count),bool)) for arm in methods}
     for r in rows:
         t=mapping[r['task_id']];folder=a.out/'details'/r['task_id']
         assert sha(folder/'input.xyz')==r['input_xyz_sha256'] and sha(folder/'stdout.txt')==r['stdout_sha256'] and sha(folder/'stderr.txt')==r['stderr_sha256']
