@@ -14,8 +14,9 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--project',type=Path,required=True)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--protocol',type=Path)
     args=parser.parse_args();root=args.project;out=args.out
-    protocol_path=Path(__file__).resolve().parents[2]/'research/evidence/weighted_minima_native_v1.json'
+    protocol_path=args.protocol or Path(__file__).resolve().parents[2]/'research/evidence/weighted_minima_native_v1.json'
     spec=json.loads(protocol_path.read_text());assert spec['frozen']
     for key,digest in spec['inputs'].items():assert file_sha256(root/key)==digest,key
     out.mkdir(parents=True,exist_ok=False)

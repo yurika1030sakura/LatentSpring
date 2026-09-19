@@ -1,0 +1,35 @@
+{
+  "frozen": true,
+  "checkpoint": "runs/source_sc_v1/s0/study/harmonic_tree/last.ckpt",
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "conditions": "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/pilot_inputs/composition_conditions.json",
+  "stores": {
+    "proposal_min": "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/cartesian_diagnostic/endpoints_proposal_min_260938",
+    "full_work_min": "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/cartesian_diagnostic/endpoints_full_work_min_260938"
+  },
+  "steps": 500,
+  "seed": 260939,
+  "evaluation_seed": 260949,
+  "samples": 128,
+  "terminal_noise_A": 0.0,
+  "endpoint_noise_A": 0.005,
+  "teacher_temperature_K": 300.0,
+  "scope": "Native architecture integration and closed-set raw geometry pilot on three compositions/four fixed two-torsion MMFF graphs. No held-out, full-dimensional equilibrium, GAGA superiority, or primary-paper result claim.",
+  "inputs": {
+    "runs/source_sc_v1/s0/study/harmonic_tree/last.ckpt": "5447887b0ecd80b76a38a28c083b3505068215daec9b0b70d8d1507b6f72a05e",
+    "configs/sweep/a1_fm_only_s2.yaml": "edef68a26aa2e1966328fc710712d6e7d85c5c6f7505750d4d44f188b7dd0bc9",
+    "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/pilot_inputs/composition_conditions.json": "d467812781ee258d617f3a5464d79944b2bbad2559d14b1a77c435dd9080ed60",
+    "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/cartesian_diagnostic/endpoints_proposal_min_260938/group_0000.npz": "d96712ceb4a10f46740c39fc9cc1c1c7431785a47d111687dedfd2de8e17d0e5",
+    "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/cartesian_diagnostic/endpoints_proposal_min_260938/group_0001.npz": "889f8dcd3684b25d255ead408ed1892bc131e36d373508ca903a742dfae2eff9",
+    "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/cartesian_diagnostic/endpoints_proposal_min_260938/group_0002.npz": "58764ad4ae94e11c8dbf628dab8aa4a9abf0ddf392b9c45916762e4c4019fa5b",
+    "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/cartesian_diagnostic/endpoints_proposal_min_260938/group_0003.npz": "f1bfb0c231ccdca167051459eb01d9944b402a86ed52cf5bccde2a4e5b7f93fe",
+    "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/cartesian_diagnostic/endpoints_proposal_min_260938/manifest.json": "2d0952c1d17f0d5f775a8e4e2f1b9c50583e993b5af38ef2f6999812ab7fe1c7",
+    "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/cartesian_diagnostic/endpoints_full_work_min_260938/group_0000.npz": "5f1dcca5547d3d9e63a2155424d0cffd7a9a0c5d3d61eb8d687881bb7473d03e",
+    "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/cartesian_diagnostic/endpoints_full_work_min_260938/group_0001.npz": "e5ced9d1a3385dd8087b9d84f0449d40f3ecea3492bfc7f20b3f4620e9e14d7e",
+    "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/cartesian_diagnostic/endpoints_full_work_min_260938/group_0002.npz": "21dec2f403bd429ca84b8f6514bfd7f9292f79e480ad1ea5846c327330eccc2b",
+    "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/cartesian_diagnostic/endpoints_full_work_min_260938/group_0003.npz": "d2a8244fa06d6bb4d6502a66cea2302cf0a2604417f1c2bd74313581654fafcf",
+    "runs/suggestions_20260919/bgfm_with_weighted_minima/bgfm-main/research/integration_20260918/cartesian_diagnostic/endpoints_full_work_min_260938/manifest.json": "9b0bd384f6290ce48ecf7b7797359621389bb057444820fe0ebc27ec49159362"
+  },
+  "replication_of": "research/evidence/weighted_minima_native_v1.json",
+  "changes": "Only training and evaluation random seeds. Same parent, teacher bank, data,500 updates, both target controls, and sampler. All seeds reported."
+}

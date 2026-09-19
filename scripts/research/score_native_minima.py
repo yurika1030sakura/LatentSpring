@@ -14,8 +14,9 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for key in ['project','run','protocol','out']:p.add_argument('--'+key,type=Path,required=True)
     a=p.parse_args();spec=json.loads(a.protocol.read_text());assert spec['frozen']
-    assert sha(a.run/'audit.json')==spec['native_audit_sha256']
     audit=json.loads((a.run/'audit.json').read_text());assert audit['complete']
+    if 'native_audit_sha256' in spec:assert sha(a.run/'audit.json')==spec['native_audit_sha256']
+    else:assert audit['protocol_sha256']==spec['native_protocol_sha256']
     binary=Path(spec['xtb_binary']);assert sha(binary)==spec['xtb_binary_sha256']
     tasks=[];graphs={};sources={}
     for arm in ['base','proposal_min','full_work_min']:
