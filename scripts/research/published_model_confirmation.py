@@ -35,7 +35,8 @@ def run(root,protocol,out,si):
     cfgfile=root/s['config'];assert sha(cfgfile)==s['config_sha256'];cfg=read_config_file(cfgfile);cfg['mol_fm'].pop('bgfm',None)
     assert cfg['dataset']['max_atoms']==200 and cfg['mol_fm']['total_loss_weights']['e']==0
     state=torch.load(path,map_location='cpu',weights_only=False);model=restore_model(cfg,state);prior=prior_from_checkpoint(state);torch.set_num_threads(2)
-    out.mkdir(parents=True,exist_ok=False);native=out/'native';native.mkdir();manifest=out/'conditions.json';write(manifest,dict(rows=s['test_rows']))
+    out.mkdir(parents=True,exist_ok=False);native=out/'native';native.mkdir();manifest=out/'conditions.json'
+    write(manifest,dict(complete=True,role='new_development',rows=s['test_rows']))
     p=dict(s,evaluation_seed=s['evaluation_seeds'][si],terminal_noise_std_A=source['terminal_noise_A']);captured=[];counter=[0]
     def capture(model,graph,nbi,uem,**kwargs):
         y=sample_clamped_flow(model,graph,nbi,uem,**kwargs);batch=graph.batch_size;n=len(y)//batch
