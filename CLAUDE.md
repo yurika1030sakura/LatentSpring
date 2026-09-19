@@ -1,29 +1,43 @@
 # Current checkpoint —2026-09-19
 
-Read research/CONTEXT_CONFIRMATION_STATE_20260919.json and
-notes/gaga_status_20260919_zh.md. Job47277628 runs two seeds: cached-feedback
-internal validation, a parameter-matched wide-head fit, then a fresh common-panel
-comparison of parent/pair-long/pair-wide/context/GAGA128/GAGA651. Outcomes pending.
-The full FlowMol and GAGA systems have different architectures, training data,
-histories and costs; this comparison is not a shared-backbone ablation.
+All new studies are COMPLETE and audited. Read
+research/evidence/published_model_confirmation_audit_v1.json,
+research/evidence/context_confirmation_audit_v1.json, and
+research/evidence/common_model_diagnostics_v1.json.
 
-Capacity study47274322 is COMPLETE and audited. At20000 updates, the contextual
-head predicts physical corrections with about15% lower internal validation MSE
-than the original small head. Its37586 parameters motivate the new37540-parameter
-wide-pair control. No external generation improvement follows from this fit metric.
-The previous trajectory head gave+1.17pp [-1.17,3.32] versus its parent, so its
-primary gate was false. Work added no established neural gain. Registry v27
-includes completed capacity costs; current validation/confirmation is not yet in it.
+On one common16-composition panel, joint graph-valid/GFN2-force<=5 yield is
+38.87% for the frozen parent,46.88% for the8178-parameter20k-update force head,
+46.09% for a37540-parameter wide head,46.68% for the37586-parameter contextual
+head,9.77% for GAGA128 and12.11% for GAGA651. The preselected contextual-head
+comparison passes: +7.81pp [4.88,10.94] over parent. Extra neighborhood complexity
+has no established generation benefit. All three long fits improve the parent.
+The paper's existing paired-update model is38.09%, or40.04% without terminal
+noise. A declared later same-data2k/20k ablation gives+3.71pp [1.76,5.86].
 
-Shared-EGNN GAGA superiority remains unestablished: graph15.63 vs13.77% with
-CI crossing zero; calibrated GFN2 joint4.25 vs4.59%. Do not compare the FlowMol
-43.55% from another panel to these numbers. User wants Chinese answers and
-substantive improvements, not small control gains presented as a GAGA victory.
+These are COMPLETE-SYSTEM comparisons with different backbone sizes, histories,
+training data and physical supervision. The older SHARED-EGNN GAGA comparison
+still has uncertain ordering; do not call the entire36-point gap a new-head or
+matched-algorithm gain. Main generator conditions remain neutral organics.
 
-Published paper remains verified build v7 / publication_sync_v7.json, with43
-Overleaf export files. New candidate heads are not the manuscript's main method.
-Never write to home, never push the home origin remote, and keep the two Torch
-environments separate. For figures use .agents/skills/scientific-figure-design/.
+Model recipe: configs/research/latentspring_force_correction_v1.json.
+Run with python -m scripts.generate_latentspring in the flowmol environment;
+its checkpoint/config/condition arguments match the underlying audited generator.
+No energy calls or optimization occur during generation. No global Boltzmann
+or minimum-energy guarantee is established. Jarzynski remains scoped to the
+local-work theory and controlled molecular experiments.
+
+Publication build v8 adds the model/controls, common-panel GAGA results, and a
+readable result figure. It compiles to9 main scientific pages/33 total, with27
+cited references and46 standalone files. Publication sync v8 will record verified
+remote commits. Registry v29 includes completed costs, distinguishing1024 new
+supplemental neural trajectories from512 extra noise-derived output records.
+No BGFM experiment is currently queued. The two manifest failures occurred
+before any generation and are preserved in PUBLISHED_MODEL_CONFIRMATION_STATE.
+
+Never write to home or push the home origin remote. Keep the two Torch
+environments separate. User wants Chinese replies, essential work, useful
+improvements, clear input/output definitions and scientifically faithful figures.
+For figure work use .agents/skills/scientific-figure-design/SKILL.md.
 Historical statuses below do not override this checkpoint.
 
 # BGFM project guide

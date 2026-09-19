@@ -6,6 +6,24 @@ All methods use the official EDM equivariant graph neural network (EGNN)
 Within each repetition, all methods start from identical weights and receive the
 same minibatches. Atom types are fixed inputs throughout training and generation.
 
+\begin{table}[t]
+\centering
+\caption{Graph validity on the 64-composition set for models trained from scratch on
+the same 2.38-million-parameter EGNN. Each seed has 2,048 generation attempts at
+128 network forward passes per output. Counts are graph-valid outputs; the final
+column pools both seeds.}
+\begin{tabular}{lrrr}
+\toprule
+Method & Valid, seed 1 & Valid, seed 2 & Pooled rate (\%)\\
+\midrule
+Gaussian FM & 182 & 218 & 9.77\\
+Harmonic FM & 223 & 232 & 11.11\\
+EDM & 301 & 216 & 12.62\\
+GAGA & 321 & 249 & 13.92\\
+\bottomrule
+\end{tabular}\label{tab:matched-generators}
+\end{table}
+
 \paragraph{Data.}
 The shared data contain 20,000 OMol25 training structures from 8,323 compositions
 and 512 internal validation structures from 299 other compositions. Both sets

@@ -21,6 +21,14 @@ def build(folder,stem,logdir):
         (logdir/f'{stem}_{index}.log').write_text(p.stdout+p.stderr)
         if p.returncode:raise RuntimeError((p.stdout+p.stderr)[-3000:])
     log=(folder/(stem+'.log')).read_text()
+    # Long appendices can require an additional pass after page/float labels
+    # settle. Rerun only while LaTeX actually requests it, with a finite limit.
+    for extra in range(4):
+        if 'Rerun to get cross-references right' not in log:break
+        p=subprocess.run(['pdflatex','-interaction=nonstopmode','-halt-on-error',stem+'.tex'],cwd=folder,text=True,capture_output=True)
+        (logdir/f'{stem}_labels_{extra}.log').write_text(p.stdout+p.stderr)
+        if p.returncode:raise RuntimeError((p.stdout+p.stderr)[-3000:])
+        log=(folder/(stem+'.log')).read_text()
     assert not re.search(r'Overfull \\[hv]box|There were undefined references|Rerun to get cross-references right',log)
     assert not re.search(r'(Citation|Reference) .* undefined',log)
     aux=(folder/(stem+'.aux')).read_text()
@@ -35,7 +43,9 @@ def build(folder,stem,logdir):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--project',type=Path,required=True);p.add_argument('--export',type=Path,required=True)
-    p.add_argument('--receipt',type=Path,required=True);a=p.parse_args()
+    p.add_argument('--receipt',type=Path,required=True)
+    p.add_argument('--ledger',default='research/evidence/generator_reference_registry_v18.json')
+    a=p.parse_args()
     root=a.project.resolve();paper=root/'paper';export=a.export.resolve();export.mkdir(parents=True,exist_ok=False)
     logdir=export.parent/(export.name+'_logs');logdir.mkdir(exist_ok=True)
     canonical=build(paper,'tree_working',logdir);inputs={};files={};sources={}
@@ -82,7 +92,7 @@ def main():
         canonical_and_standalone_pdf_text_identical=True,export_manifest_verified=True,
         exported_source_files=len(exported),export_path=str(export),
         cited_references=len(re.findall(r'\\bibitem', (paper/'tree_working.bbl').read_text())),
-        archive_sha256=sha(paper/'latentspring_overleaf.zip'),ledger='research/evidence/generator_reference_registry_v18.json')
+        archive_sha256=sha(paper/'latentspring_overleaf.zip'),ledger=a.ledger,ledger_sha256=sha(root/a.ledger))
     a.receipt.write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps({k:v for k,v in receipt.items() if k!='input_sha256'}),flush=True)
 
 

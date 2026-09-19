@@ -1,0 +1,48 @@
+{
+  "name": "LatentSpring",
+  "variant": "learned_force_correction",
+  "status": "validated_research_variant",
+  "checkpoints": [
+    {
+      "path": "runs/context_confirmation_v1/s0/sampling/pair_long.ckpt",
+      "sha256": "97f9bfd867918472888f4a158c3d15e4f4dd303e5a30e061f8f865166a97f5a9",
+      "head_seed": 56001
+    },
+    {
+      "path": "runs/context_confirmation_v1/s1/sampling/pair_long.ckpt",
+      "sha256": "2581d9e210583841a3738faf2655ad6ca3692a85650a8bba82b1d7a481b2fc39",
+      "head_seed": 56002
+    }
+  ],
+  "config": "configs/sweep/a1_fm_only_s2.yaml",
+  "trainable_head_parameters": 8178,
+  "backbone_calls": 128,
+  "head_calls": 64,
+  "terminal_noise_A": 0.0,
+  "generation_energy_queries": 0,
+  "geometry_optimization": false,
+  "training": {
+    "compositions": 96,
+    "states": 384,
+    "updates": 20000,
+    "internal_validation_compositions": 32,
+    "shared_parent": true
+  },
+  "evidence": "research/evidence/published_model_confirmation_audit_v1.json",
+  "metrics": {
+    "graph_rate": 0.51171875,
+    "graph_by_seed": [
+      0.52734375,
+      0.49609375
+    ],
+    "median_valid_force": 2.8538008026292054,
+    "joint5": 0.46875,
+    "joint5_by_seed": [
+      0.484375,
+      0.453125
+    ],
+    "joint2": 0.048828125
+  },
+  "comparison_scope": "GAGA is the existing position-conditional OMol25 adaptation, at128 and its complete651 calls. Full FlowMol and EGNN systems differ in architecture, capacity, training data/history and cost. This is a common-task full-model comparison, not a matched-backbone ablation or native published GAGA reproduction. Earlier shared-EGNN comparisons remain separately reported.",
+  "scope": "Observed improvement over the frozen parent and the tested complete GAGA adaptations. The small and contextual heads have comparable observed generation; no global Boltzmann or shared-backbone GAGA-superiority claim."
+}

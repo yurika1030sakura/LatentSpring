@@ -155,3 +155,25 @@ FT, with an uncertain+1.37pp [-3.52,6.05] against the parent. Both are stated
 in the appendix. The failed correction-head candidate remains in research records;
 it has not replaced the paper's method. Actual-parent-trajectory supervision is
 a separate ongoing candidate experiment.
+
+## 2026-09-19 learned-correction and common-GAGA release
+
+Build v8 adds the learned velocity-correction method, the common-panel complete
+model comparison, parameter-matched controls, and a later training-duration
+ablation. Raw joint quality is46.88% for the small20k head versus38.87% for its
+parent and9.77%/12.11% for the tested GAGA128/651 systems. The contextual head
+passes its prespecified parent comparison but has no established advantage over
+the simpler long-fit head. The existing paired-update model gives38.09%, or
+40.04% without terminal noise. Full-system histories and the separate shared-EGNN
+comparison are kept explicit. No generic GAGA-family or global-equilibrium claim.
+
+A new vector figure separates graph-valid and graph-valid/low-force outputs on
+the same compositions. It was reviewed standalone, in grayscale, and on its
+compiled paper page at the5.5-inch figure width. Builds have9 main scientific
+pages and33 total,27 cited references and46 exported files. The robust builder
+reruns only when LaTeX requests another cross-reference pass. It still rejects
+undefined references, overfull boxes and excessive main-text length.
+
+The exact export is runs/publication_20260919/overleaf_force_correction_v5.
+publication_sync_v8.json will contain the verified remote commits. No Overleaf
+cloud compilation or OpenReview submission is implied by publication.

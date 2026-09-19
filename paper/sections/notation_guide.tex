@@ -1,7 +1,7 @@
 \section{Reader's guide to the notation}\label{app:notation}
 LatentSpring first samples starting coordinates from atomic composition, then
-learns a flow to reference structures, and finally fine-tunes the generator using
-nearby physical targets. This appendix collects the notation used in those stages.
+learns a flow to reference structures, and incorporates physical feedback through
+paired fine-tuning or an explicit velocity correction. This appendix collects the notation used in those stages.
 
 \paragraph{Inputs and outputs.}
 The condition $c$ fixes the atom identities, charge, and spin. Random starting
@@ -10,6 +10,7 @@ evaluation takes current coordinates $X_t$, flow time $t$, and $c$ and predicts
 one velocity vector per atom. Self-conditioning uses a first prediction to form
 a provisional geometry for a second pass. Integrating the velocities and adding
 the specified terminal noise gives the final coordinate matrix $X_{\rm gen}$.
+The learned-correction variant sets this terminal noise to zero.
 The input atom identities and electronic conditions do not change. Bonds are
 inferred separately for evaluation.
 
@@ -36,6 +37,10 @@ coordinate-shaped network head whose centered increment $D_\theta-X_t$ is
 trained as the velocity.\\
 $v^{(0)}$, $v^{(1)}$, $\widehat X_1$ & First and second velocity predictions,
 and the provisional endpoint passed between them during self-conditioning.\\
+$v_{\rm base}$, $H_t$ & Frozen parent velocity after both self-conditioning passes,
+and its extrapolated endpoint used to construct physical training targets.\\
+$A_\phi$, $\phi$, $v_{\rm cap}$ & Added velocity, correction-network parameters,
+and its instantaneous velocity-bound scale.\\
 $\EE$, $\|\cdot\|_F^2$ & Average over the specified random draws, and the sum
 of squared entries of a coordinate or force matrix.\\
 $\theta_{\rm base}$, $\theta_{\rm physical}$,

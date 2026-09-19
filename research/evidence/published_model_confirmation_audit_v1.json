@@ -1,30 +1,18 @@
 {
-  "status": "complete_audited",
-  "job_id": "47283816",
-  "source_commit": "fec5036e9efc1ca0d4c76e6a81075b5d4de8d888",
-  "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/published_model_confirmation_v1/source_fix1",
-  "run_root": "runs/published_model_confirmation_v1",
-  "protocol": "research/evidence/published_model_confirmation_v1.json",
-  "submission_stderr": "",
-  "failed_attempts": [
-    {
-      "job_id": "47283053",
-      "source_commit": "2b7724614951362d58c936630dab18ee19091446",
-      "reason": "Missing complete/role metadata in the original sampler condition manifest",
-      "new_neural_outputs": 0,
-      "new_physical_queries": 0,
-      "elapsed_seconds_per_task": 20
-    }
+  "complete": true,
+  "protocol_sha256": "88bc570ee7fbce6047cb436fd56ea57fb14ad859a80132aad9db97159cbbaf6e",
+  "common_audit_sha256": "473c5cdb8bf34ac022addeb021f2911f106a4d632a120ef5fa631515d39e5b53",
+  "methods": [
+    "base",
+    "pair_long",
+    "pair_wide",
+    "context",
+    "gaga",
+    "gaga_full",
+    "published",
+    "published_zero",
+    "pair_short"
   ],
-  "audit": {
-    "job_id": "47284890",
-    "source_commit": "e1d2f5631a58b475d43267555fa961a85a2a9a1f",
-    "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/published_model_confirmation_v1/audit_source",
-    "submitted": true,
-    "stderr": "",
-    "dependency": "47283816"
-  },
-  "evidence": "research/evidence/published_model_confirmation_audit_v1.json",
   "summary": {
     "base": {
       "graph_rate": 0.494140625,
@@ -264,5 +252,48 @@
         0.115234375
       ]
     }
-  }
+  },
+  "arrays_sha256": "7bbc2dc746d2ab207900f90059d2e9f636f8f791f9a3edad5702752cefc34aff",
+  "noise_rms_mean": 0.04235111105407557,
+  "provenance": [
+    {
+      "replica": 0,
+      "method": "published",
+      "generation_sha256": "abc9d5a1290ddc42c7b429b63e220fe78652b71d1f69d53ae4d42893d24eb2bb"
+    },
+    {
+      "replica": 0,
+      "method": "published_zero",
+      "generation_sha256": "121b7bf443080c17232db37a8a96ac98d8ffdc1daf75a9979713796392cd940b"
+    },
+    {
+      "replica": 0,
+      "method": "pair_short",
+      "generation_sha256": "9153655059e6bcd1560fe024d870cb4a60ca56dd005fd3c6da98358bdc0f5e8e"
+    },
+    {
+      "replica": 1,
+      "method": "published",
+      "generation_sha256": "e5242b47d3212f904bf6705f78b57ab8761e87cd3cd65bcb543d78c63fde0d8a"
+    },
+    {
+      "replica": 1,
+      "method": "published_zero",
+      "generation_sha256": "985cbb7c04e95e8214a6acf87874c40425923257ff0630ffc238ce3b41c85031"
+    },
+    {
+      "replica": 1,
+      "method": "pair_short",
+      "generation_sha256": "631a680221b372ccf464cf45b352e78231130ad99c1c3e7d12b3218225728b14"
+    }
+  ],
+  "new_neural_trajectories": 1024,
+  "additional_derived_outputs": 512,
+  "total_scored_outputs": 1536,
+  "new_gfn2_attempts": 1536,
+  "new_training_steps": 0,
+  "new_esen_queries": 0,
+  "scope": "Previously designated paper method evaluated on the SAME common panel. The additional zero-terminal-noise control reuses its exact neural trajectories. No model selection from this panel. Full-system architecture/data/history differences remain explicit; not a shared-backbone GAGA comparison.",
+  "timing": "Published-method and terminal-noise controls were designated before reading common-panel GFN2 scores. The2000-step head control is an explicitly later mechanistic ablation; no claim that this supplemental comparison was wholly preregistered.",
+  "comparison_scope": "GAGA is the existing position-conditional OMol25 adaptation, at128 and its complete651 calls. Full FlowMol and EGNN systems differ in architecture, capacity, training data/history and cost. This is a common-task full-model comparison, not a matched-backbone ablation or native published GAGA reproduction. Earlier shared-EGNN comparisons remain separately reported."
 }

@@ -10,23 +10,7 @@ their training paths and atom pairing are identical.
 Appendix~\ref{app:matched-generators} gives the full protocol, including the
 GAGA truncation setting transferred from its published configuration.
 
-\begin{table}[t]
-\centering
-\caption{Graph validity on the 64-composition set for models trained from scratch on
-the same 2.38-million-parameter EGNN. Each seed has 2,048 generation attempts at
-128 network forward passes per output. Counts are graph-valid outputs; the final
-column pools both seeds.}
-\begin{tabular}{lrrr}
-\toprule
-Method & Valid, seed 1 & Valid, seed 2 & Pooled rate (\%)\\
-\midrule
-Gaussian FM & 182 & 218 & 9.77\\
-Harmonic FM & 223 & 232 & 11.11\\
-EDM & 301 & 216 & 12.62\\
-GAGA & 321 & 249 & 13.92\\
-\bottomrule
-\end{tabular}\label{tab:matched-generators}
-\end{table}
+
 
 The harmonic source improves FM graph validity by 1.34 percentage points, with a
 composition-bootstrap 95\% interval of [0.12,2.52]. This supports a source benefit
@@ -40,3 +24,11 @@ same training forward-pass budget. The difference is $+1.86$ points with a
 composition interval of $[-0.34,4.44]$; this comparison does not establish a
 reliable ordering. Appendix~\ref{app:feedback-transfer} reports the selection,
 feedback controls, and physical-update transfer experiment.
+
+A further 16-composition comparison evaluates complete systems with their own
+architectures and training histories. The paired-update model reaches 38.09\%
+GFN2 joint yield, versus 9.77\% and 12.11\% for GAGA at 128 and 651 calls.
+Learned force correction gives 46.88\%, compared with 38.87\% for its frozen
+parent. Appendix~\ref{app:common-models} reports all variants, preparation costs,
+and the matched-size and training-duration controls. These complete-system
+results complement the architecture-controlled experiments above.

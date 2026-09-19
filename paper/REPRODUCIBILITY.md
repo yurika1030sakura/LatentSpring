@@ -1,3 +1,20 @@
+Current release (2026-09-19): publication_build_v8.json compiles the canonical
+paper and standalone package to9 scientific main pages/33 total pages, with27
+cited references. The complete-model and learned-correction evidence is in
+context_confirmation_audit_v1.json, published_model_confirmation_audit_v1.json
+and common_model_diagnostics_v1.json. Completed costs are in registry v29.
+
+The correction-model recipe is configs/research/latentspring_force_correction_v1.json;
+notes/force_correction_model_usage.md gives the inference command. Checkpoints
+remain in the HOLY workspace and their hashes are public. Generation performs
+no energy evaluation or physical optimization. Different full-system backbones,
+training histories and physical supervision are stated in the paper; the shared
+EGNN study is a separate controlled comparison.
+
+Build with scripts/research/build_submission.py and an explicit --ledger value.
+Failed intermediate builds and pre-generation manifest failures remain recorded.
+Older release details below are historical.
+
 Latest figure design uses the project skill in
 `.agents/skills/scientific-figure-design/SKILL.md`, the scripted PyMOL renderer,
 and `scripts/research/redesign_molecular_figures.py`. Main diagrams are designed

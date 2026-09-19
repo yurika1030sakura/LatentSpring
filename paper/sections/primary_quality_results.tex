@@ -1,17 +1,10 @@
 \subsection{Source and physical adaptation}\label{sec:absolute-quality}
-We next apply the same paired physical update to the Gaussian-source generator,
-completing a comparison of both sources with and without physical adaptation.
-Each source supplies its own generated anchors on the same eight training
-compositions. The maximum proposal budget and training schedule are matched.
-We evaluate the new Gaussian physical model on the existing 24-composition set
-and reuse the saved outputs for the other three settings.
-Appendix~\ref{sec:factorial-details} reports preparation costs and the protocol.
-
-We measure \emph{joint quality yield}: the fraction of all generation attempts
-that are graph-valid and have force RMS at or below a specified threshold.
-Invalid outputs and failed energy calculations remain in the denominator.
-Table~\ref{tab:absolute-quality} uses a 5 eV/\AA\ threshold under independent
-GFN2 evaluation.
+We apply paired physical training to both source families, using generated
+anchors from the same eight training compositions and matched maximum proposal
+and training budgets. Table~\ref{tab:absolute-quality} compares all four models
+on 24 compositions. Joint yield counts outputs that are graph-valid and have
+GFN2 force RMS at most 5 eV/\AA, divided by all attempts. Appendix~\ref{sec:factorial-details}
+records preparation costs and evaluation reuse.
 
 \begin{table}[t]
 \centering
