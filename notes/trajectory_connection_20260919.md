@@ -70,3 +70,38 @@ for the specific composition-only architecture and supervision, plus comparison
 to relevant prior methods. Passing mathematical/software tests alone is not such
 evidence. Current41 relevant tests pass, including exact recorder neutrality and
 analytic linear/quadratic local-work cases.
+
+## Completed comparison
+
+Teacher47257342, fits47258410_0/47258728_1 and audit47258729 all completed.
+Every parent tensor remains unchanged. All source draws, raw coordinate files,
+local-work arithmetic, physical inputs/results and denominators are checked.
+The joint metric is graph validity AND GFN2 force RMS<=5 eV/Angstrom.
+
+| Model | Graph validity | Median valid force | Joint yield |
+|---|---:|---:|---:|
+| Parent |46.88%|2.737|42.38%|
+| Physical-reference FM head |46.88%|2.822|41.21%|
+| Parent-trajectory force head |47.46%|2.603|43.55%|
+| Parent-trajectory work head |47.07%|2.624|43.55%|
+
+The force head improves on the matched FM head by2.34 percentage points,
+with composition-bootstrap95% interval[0.39,4.49] and positive changes in both
+runs. Against the parent, its gain is1.17 points[-1.17,3.32], with run-specific
+changes+0.78,+1.56. This is a positive point estimate, not an established parent
+advantage. Work-minus-force is0.00 points[-0.78,0.78]; no incremental neural
+work benefit is established. The primary gate is false. These intervals are
+conditional on two head fits from one shared pretrained parent and this panel.
+
+The teacher's median local particle ESS is1.37/8. No state requires the force
+fallback and no target reaches the declared velocity cap. The force regression
+reduces TRAIN error by only about5-6% from a zero head; work regression reduces
+it by about2-3%. These are training diagnostics, not generator-quality evidence.
+They motivate checking fit capacity/optimization before simply expanding data
+or repeating the same small head. No change to the frozen evaluation is made.
+
+The candidate is preserved as working model checkpoints in
+runs/trajectory_connection_v1/s{0,1}/connection_{force,work}/last.ckpt. It is not
+promoted into the manuscript's main method. The broad-label positive control
+has already been published with its parent-comparison uncertainty. Full completed
+costs are in registry v26, which carries forward the teacher costs from v25.

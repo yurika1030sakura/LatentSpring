@@ -1,3 +1,18 @@
+Latest2026-09-19 result: trajectory_connection_v1 is COMPLETE and audited.
+Force-head joint yield43.55% versus parent42.38%: +1.17pp [-1.17,3.32], positive
+in both fits but NOT a confirmed parent gain. Versus the matched FM head the
+improvement is+2.34pp [0.39,4.49]. Work adds no confirmed gain. Main-method
+adoption remains false. Read research/TRAJECTORY_CONNECTION_STATE_20260919.json
+and notes/trajectory_connection_20260919.md. All jobs are terminal; costs are
+complete in registry v26. There is no BGFM experiment currently queued.
+Before scaling this small head, examine its limited TRAIN fit (about5-6% error
+reduction for force supervision). Do not repeat the same recipe or call the
+positive control contrast a proven advantage over the parent or GAGA.
+The manuscript remains the published build v7: GitHub PDF and43 Overleaf files
+were verified; publication_sync_v7.json records the release. The new experimental
+head has not replaced the supported paper method. Historical running statuses
+below do not override this checkpoint.
+
 Current2026-09-19 checkpoint: physical_connection_v1 is COMPLETE, with no parent
 improvement (32.62% versus33.40% joint GFN2 force<=5 yield). Read
 research/PHYSICAL_CONNECTION_STATE_20260919.json; all costs are in registry v24.

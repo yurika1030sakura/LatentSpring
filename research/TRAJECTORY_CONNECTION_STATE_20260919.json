@@ -1,5 +1,5 @@
 {
-  "status": "all_six_fits_complete_raw_generation_running",
+  "status": "complete_audited_parent_gain_uncertain",
   "protocol": "research/evidence/trajectory_connection_v1.json",
   "run_root": "runs/trajectory_connection_v1",
   "jobs": {
@@ -75,7 +75,7 @@
     },
     "scope": "FM arm uses the reused128 empirical physically corrected references. Trajectory-force/work arms use512 provisional endpoints from256 frozen-parent TRAIN trajectories, with no chemical validity rejection. The work target is the self-normalized finite-particle mean of a local Gaussian-restrained eSEN energy tilt inside a1-Angstrom Frobenius ball; zero-support states fall back to force and are retained. This is not global Boltzmann learning."
   },
-  "completed_cost_registry": "research/evidence/generator_reference_registry_v25.json",
+  "completed_cost_registry": "research/evidence/generator_reference_registry_v26.json",
   "fit_summaries": [
     {
       "replica": "s0",
@@ -188,6 +188,323 @@
       "training_mse_after": 0.06653895492854645
     }
   ],
-  "evaluation_complete": false,
-  "cost_note": "Teacher256 FIT outputs and9216 eSEN calls already counted in registry v25. Add12000 fit updates,2048 evaluation outputs and2048 GFN2 attempts only after their respective completion; do not add teacher costs again."
+  "evaluation_complete": true,
+  "cost_note": "All study costs are complete:256 FIT parent outputs plus2048 evaluation outputs,9216 eSEN calls,2048 GFN2 attempts,12000 fitting updates. Teacher in v25; fits/evaluation in v26.",
+  "primary_gate": false,
+  "work_gain_established": false,
+  "contrasts": {
+    "force_minus_base": {
+      "mean": 0.01171875,
+      "by_seed": [
+        0.0078125,
+        0.015625
+      ],
+      "ci95": [
+        -0.01171875,
+        0.033203125
+      ]
+    },
+    "work_minus_force": {
+      "mean": 0.0,
+      "by_seed": [
+        0.0,
+        0.0
+      ],
+      "ci95": [
+        -0.0078125,
+        0.0078125
+      ]
+    },
+    "force_minus_fm_head": {
+      "mean": 0.0234375,
+      "by_seed": [
+        0.01953125,
+        0.02734375
+      ],
+      "ci95": [
+        0.00390625,
+        0.044921875
+      ]
+    },
+    "work_minus_base": {
+      "mean": 0.01171875,
+      "by_seed": [
+        0.0078125,
+        0.015625
+      ],
+      "ci95": [
+        -0.01171875,
+        0.03515625
+      ]
+    }
+  },
+  "summary": {
+    "base": {
+      "graph_rate": 0.46875,
+      "graph_counts_by_seed": [
+        121,
+        119
+      ],
+      "median_valid_force": 2.737471838066387,
+      "force_yields": [
+        {
+          "threshold": 0.1,
+          "mean": 0.0,
+          "by_seed": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "threshold": 0.5,
+          "mean": 0.0,
+          "by_seed": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "threshold": 1.0,
+          "mean": 0.0,
+          "by_seed": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "threshold": 2.0,
+          "mean": 0.07421875,
+          "by_seed": [
+            0.07421875,
+            0.07421875
+          ]
+        },
+        {
+          "threshold": 5.0,
+          "mean": 0.423828125,
+          "by_seed": [
+            0.42578125,
+            0.421875
+          ]
+        },
+        {
+          "threshold": 10.0,
+          "mean": 0.462890625,
+          "by_seed": [
+            0.46484375,
+            0.4609375
+          ]
+        },
+        {
+          "threshold": 20.0,
+          "mean": 0.46875,
+          "by_seed": [
+            0.47265625,
+            0.46484375
+          ]
+        }
+      ]
+    },
+    "connection_physical": {
+      "graph_rate": 0.46875,
+      "graph_counts_by_seed": [
+        120,
+        120
+      ],
+      "median_valid_force": 2.821948469147719,
+      "force_yields": [
+        {
+          "threshold": 0.1,
+          "mean": 0.0,
+          "by_seed": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "threshold": 0.5,
+          "mean": 0.0,
+          "by_seed": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "threshold": 1.0,
+          "mean": 0.0,
+          "by_seed": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "threshold": 2.0,
+          "mean": 0.0703125,
+          "by_seed": [
+            0.06640625,
+            0.07421875
+          ]
+        },
+        {
+          "threshold": 5.0,
+          "mean": 0.412109375,
+          "by_seed": [
+            0.4140625,
+            0.41015625
+          ]
+        },
+        {
+          "threshold": 10.0,
+          "mean": 0.462890625,
+          "by_seed": [
+            0.46484375,
+            0.4609375
+          ]
+        },
+        {
+          "threshold": 20.0,
+          "mean": 0.46875,
+          "by_seed": [
+            0.46875,
+            0.46875
+          ]
+        }
+      ]
+    },
+    "connection_force": {
+      "graph_rate": 0.474609375,
+      "graph_counts_by_seed": [
+        120,
+        123
+      ],
+      "median_valid_force": 2.6029420744119354,
+      "force_yields": [
+        {
+          "threshold": 0.1,
+          "mean": 0.0,
+          "by_seed": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "threshold": 0.5,
+          "mean": 0.0,
+          "by_seed": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "threshold": 1.0,
+          "mean": 0.0,
+          "by_seed": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "threshold": 2.0,
+          "mean": 0.08984375,
+          "by_seed": [
+            0.09375,
+            0.0859375
+          ]
+        },
+        {
+          "threshold": 5.0,
+          "mean": 0.435546875,
+          "by_seed": [
+            0.43359375,
+            0.4375
+          ]
+        },
+        {
+          "threshold": 10.0,
+          "mean": 0.470703125,
+          "by_seed": [
+            0.46875,
+            0.47265625
+          ]
+        },
+        {
+          "threshold": 20.0,
+          "mean": 0.474609375,
+          "by_seed": [
+            0.46875,
+            0.48046875
+          ]
+        }
+      ]
+    },
+    "connection_work": {
+      "graph_rate": 0.470703125,
+      "graph_counts_by_seed": [
+        119,
+        122
+      ],
+      "median_valid_force": 2.62397659241578,
+      "force_yields": [
+        {
+          "threshold": 0.1,
+          "mean": 0.0,
+          "by_seed": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "threshold": 0.5,
+          "mean": 0.0,
+          "by_seed": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "threshold": 1.0,
+          "mean": 0.0,
+          "by_seed": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "threshold": 2.0,
+          "mean": 0.08984375,
+          "by_seed": [
+            0.08984375,
+            0.08984375
+          ]
+        },
+        {
+          "threshold": 5.0,
+          "mean": 0.435546875,
+          "by_seed": [
+            0.43359375,
+            0.4375
+          ]
+        },
+        {
+          "threshold": 10.0,
+          "mean": 0.466796875,
+          "by_seed": [
+            0.46484375,
+            0.46875
+          ]
+        },
+        {
+          "threshold": 20.0,
+          "mean": 0.470703125,
+          "by_seed": [
+            0.46484375,
+            0.4765625
+          ]
+        }
+      ]
+    }
+  },
+  "evidence": "research/evidence/trajectory_connection_audit_v1.json",
+  "matched_fm_supervision_gain_established": true,
+  "adopted_as_main_method": false
 }
