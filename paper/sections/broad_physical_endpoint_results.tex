@@ -1,0 +1,83 @@
+\subsection{Learning from physically corrected references}\label{app:broad-physical-targets}
+We test a second way to supply physical training targets: correcting OMol25
+reference geometries before fine-tuning. This separates the value of physical
+labels from the effect of additional training on a small reference set.
+
+\paragraph{Matched reference sets.}
+From the existing 3,000-row training block, we select 128 distinct compositions by
+fixed metadata hashes, with 32 in each of the 8--16, 17--24, 25--32, and 33--40
+atom ranges. Each contributes one reference structure. We construct a corrected
+copy using a bounded Cartesian L-BFGS search under the inversion-averaged eSEN
+potential. All coordinates may move, while geometric validity and the inferred
+labeled graph are preserved. Each search allows at most 96 steps and 160
+energy/force evaluations, with a 0.05\,\AA\ per-atom step cap. It stops early
+when the largest atomic force is at most 0.1 eV/\AA.
+
+Every composition remains in both sets. If a search stalls or reaches its budget,
+we retain its last accepted point and record its termination status. Of the 128
+searches, 110 meet the force stopping criterion and 124 lower force RMS. Including
+inversion pairs, target preparation uses 6,576 eSEN evaluations. Independent GFN2
+single points evaluate all 256 original and corrected structures.
+
+\begin{table}[h]
+\centering
+\caption{Quality of the 128 training references before and after physical
+correction. These are training labels, not generated outputs. GFN2 scores are
+used only for evaluation.}
+\small
+\begin{tabular}{lrr}
+\toprule
+Metric & Original references & Corrected references\\
+\midrule
+Median eSEN force RMS (eV/\AA) &2.005&0.050\\
+Median GFN2 force RMS (eV/\AA) &1.756&0.397\\
+GFN2 force RMS $\leq1$ eV/\AA\ (\%) &22.66&89.84\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Direct flow-matching adaptation.}
+Two fine-tuning runs start from the same 5.90-million-parameter harmonic-source
+checkpoint. Within each run, one student learns from the original references
+and another from their corrected copies. Each receives 2,000 updates at batch
+size one. They share reference indices, source draws, rotation and atom-matching
+randomness, optimizer settings, and 0.005\,\AA\ centered endpoint smoothing.
+Composition frequencies are uniform and identical in the two target sets.
+This experiment uses direct FM training without parameter subtraction; its
+target is the specified empirical reference distribution.
+
+The confirmation panel contains 16 previously ungenerated compositions, eight
+each with 17--28 and 29--40 atoms, absent from both processed corpora and earlier
+generation panels. Each model generates 16 samples per composition and run.
+All three models use 128 backbone calls and zero terminal noise. The original
+parent is regenerated with the same settings. No checkpoint is selected using
+these outcomes, and no generated structure is physically optimized.
+
+\begin{table}[h]
+\centering
+\caption{Raw generation on the reference-target confirmation panel, with 512
+attempts per model. GFN2 joint yield requires chemical-graph validity and force
+RMS at most 5 eV/\AA, divided by all attempts. Force medians use each model's own
+graph-valid outputs with successful calculations.}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Model & Graph validity (\%) & Median force (eV/\AA) & Joint yield (\%)\\
+\midrule
+Unadapted parent &38.09&3.083&31.64\\
+Original-reference fine-tuning &30.47&2.762&27.34\\
+Corrected-reference fine-tuning &39.45&2.558&33.01\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Corrected references improve joint yield over matched original-reference
+fine-tuning by 5.66 percentage points, with a composition-bootstrap 95\% interval
+of $[2.54,8.59]$. The run-specific gains are $+8.20$ and $+3.13$ points. Relative
+to the unadapted parent, the pooled gain is smaller: $+1.37$ points
+($[-3.52,6.05]$), with run-specific changes of $-1.95$ and $+4.69$ points.
+Thus physical labels help compared with the same additional reference training,
+while an overall advantage over the parent remains uncertain. The intervals
+condition on these two fitted runs. This study adds 8,000 optimizer updates,
+1,536 raw neural outputs, and 1,536 GFN2 generation readouts, in addition to target
+preparation and its 256 GFN2 label checks.
