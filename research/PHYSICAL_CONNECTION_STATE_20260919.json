@@ -1,0 +1,61 @@
+{
+  "status": "complete_audited_no_parent_gain",
+  "protocol": "research/evidence/physical_connection_v1.json",
+  "run_root": "runs/physical_connection_v1",
+  "jobs": {
+    "fit": {
+      "job_id": "47245883",
+      "source_commit": "4cb013011da820d26313aa82ea4dc2813c7ddeec",
+      "source": "/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/iclr2027/runs/physical_connection_v1/source"
+    },
+    "audit": {
+      "job_id": "47245885",
+      "dependency": "47245883",
+      "source_commit": "4cb013011da820d26313aa82ea4dc2813c7ddeec"
+    }
+  },
+  "module": "cfm_mol/physical_connection.py",
+  "trainable_parameters": 8178,
+  "tests_passed": 9,
+  "backbone_calls_per_sample": 128,
+  "correction_calls_per_sample": 64,
+  "model_performance_established": false,
+  "teacher_reused": true,
+  "evidence": "research/evidence/physical_connection_audit_v1.json",
+  "primary_gate": false,
+  "contrasts": {
+    "connection_physical_minus_base": {
+      "mean": -0.0078125,
+      "by_seed": [
+        -0.00390625,
+        -0.01171875
+      ],
+      "ci95": [
+        -0.017578125,
+        0.001953125
+      ]
+    },
+    "connection_physical_minus_reference": {
+      "mean": 0.0,
+      "by_seed": [
+        -0.0078125,
+        0.0078125
+      ],
+      "ci95": [
+        -0.01171875,
+        0.01171875
+      ]
+    },
+    "connection_physical_minus_full_ft": {
+      "mean": 0.037109375,
+      "by_seed": [
+        0.02734375,
+        0.046875
+      ],
+      "ci95": [
+        -0.005859375,
+        0.08203125
+      ]
+    }
+  }
+}

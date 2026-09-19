@@ -1,3 +1,25 @@
+Current2026-09-19 checkpoint: physical_connection_v1 is COMPLETE, with no parent
+improvement (32.62% versus33.40% joint GFN2 force<=5 yield). Read
+research/PHYSICAL_CONNECTION_STATE_20260919.json; all costs are in registry v24.
+The next bounded candidate is trajectory_connection_v1: the same frozen-parent
+head learns from actual TRAIN parent states, with matched force and complete
+local-work targets. Protocol is frozen before generation. No thermal or useful
+neural work advantage has been established. Current local publication build v7
+adds the broad physical-target control appendix; publication sync is pending.
+Earlier running-study statements below are historical, not live status.
+
+The broad physical-target study is COMPLETE and audited. Corrected-reference
+FT improves held-out GFN2 joint yield over matched original-reference FT by5.66pp
+[2.54,8.59], positive in both runs. Its1.37pp gain over the parent is uncertain
+[-3.52,6.05] and has mixed seed signs. See broad_physical_endpoints_audit_v1.json.
+
+Next active model is an8178-parameter bounded physical-connection head on a
+FROZEN parent. Read research/PHYSICAL_CONNECTION_STATE_20260919.json and
+notes/physical_connection_20260919.md. Array47245883, audit47245885. Controls are
+parent+zero head, full FT+zero head, reference-target head, physical-target head;
+all use128 backbone +64 small-head calls. Nine relevant tests pass. Performance
+of the trained head is not yet established. Do not claim128 TOTAL neural calls.
+
 Current work (2026-09-19): read `research/BROAD_ENDPOINTS_STATE_20260919.json`.
 The128-composition Cartesian TRAIN target bank is complete and numerically replayed.
 Median eSEN force RMS2.0053 ->0.05038 eV/A;110/128 meet the max-force0.1

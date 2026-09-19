@@ -35,7 +35,12 @@ def main():
     connection=a.method.startswith('connection_')
     if connection:
         from cfm_mol.physical_connection import patch_physical_connection
-        patch_physical_connection(model,**spec['physical_connection'])
+        if 'connection_init_seed_offset' in spec:
+            with torch.random.fork_rng():
+                torch.manual_seed(a.seed+spec['connection_init_seed_offset'])
+                patch_physical_connection(model,**spec['physical_connection'])
+        else:
+            patch_physical_connection(model,**spec['physical_connection'])
         model.eval();model.vector_field.physical_connection.train()
     trainable=[p for p in model.parameters() if p.requires_grad];frozen={n:p.detach().cpu().clone() for n,p in model.named_parameters() if not p.requires_grad}
     extra=set()

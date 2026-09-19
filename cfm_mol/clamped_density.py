@@ -307,7 +307,7 @@ def log_density_clamped_flow(model, graph, node_batch_idx, upper_edge_mask,
 def sample_clamped_flow(model, graph, node_batch_idx, upper_edge_mask, *,
                         n_ode_steps=128, terminal_time=0.95, prior_std=1.0,
                         parameterization="endpoint", kT=None, x0=None,
-                        generator=None, solver='midpoint'):
+                        generator=None, solver='midpoint', midpoint_observer=None):
     """Sample the SAME memoryless COM-free ODE used by the density diagnostic.
 
     The condition is the graph's fixed discrete composition; no bonds, history
@@ -323,6 +323,8 @@ def sample_clamped_flow(model, graph, node_batch_idx, upper_edge_mask, *,
     if not math.isfinite(prior_std) or prior_std <= 0:
         raise ValueError("prior_std must be positive and finite")
     if solver not in {'midpoint','rk4'}:raise ValueError('Unknown sampling solver')
+    if midpoint_observer is not None and solver!='midpoint':
+        raise ValueError('State observation is only implemented for midpoint sampling')
     if solver=='rk4' and parameterization=='endpoint' and terminal_time==1:
         raise ValueError('RK4 endpoint-head evaluation requires terminal_time<1')
     reference = graph.ndata['x_1_true']
@@ -357,6 +359,10 @@ def sample_clamped_flow(model, graph, node_batch_idx, upper_edge_mask, *,
             midpoint = x+0.5*dt*v
             v_mid = position_velocity(model,graph,midpoint,t,node_batch_idx,upper_edge_mask,
                 parameterization=parameterization,kT=kT)
+            if midpoint_observer is not None:
+                # Copies prevent a recorder from modifying the actual trajectory.
+                midpoint_observer(step,center_by_graph(midpoint,node_batch_idx,graph.batch_size).detach().clone(),
+                                  v_mid.detach().clone(),t.detach().clone())
             x = x+dt*v_mid
         if not torch.isfinite(x).all():
             raise FloatingPointError('Non-finite clamped-flow sample')

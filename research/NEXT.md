@@ -1,20 +1,25 @@
-# Current continuation
+Current2026-09-19 checkpoint: physical_connection_v1 is COMPLETE, with no parent
+improvement (32.62% versus33.40% joint GFN2 force<=5 yield). Read
+research/PHYSICAL_CONNECTION_STATE_20260919.json; all costs are in registry v24.
+The next bounded candidate is trajectory_connection_v1: the same frozen-parent
+head learns from actual TRAIN parent states, with matched force and complete
+local-work targets. Protocol is frozen before generation. No thermal or useful
+neural work advantage has been established. Current local publication build v7
+adds the broad physical-target control appendix; publication sync is pending.
+Earlier running-study statements below are historical, not live status.
 
-Read `research/BROAD_ENDPOINTS_STATE_20260919.json` and
-`notes/broad_endpoint_learning_20260919.md`.
+# Current next steps
 
-1. Monitor array47241456 and the dependent audit from the state JSON. Every model
-   and test composition was frozen before generation. Keep all failed attempts.
-2. Judge relaxed targets against the same-reference fine-tuning control and the
-   unadapted parent on all-attempt GFN2 graph/force joint yield. Report both seeds.
-3. Better TRAIN labels alone do not establish neural or held-out improvement.
-   If the labels improve under GFN2 but the student does not, focus on learning
-   and conditioning; avoid declaring the oracle or data size the proven cause.
-4. Preserve the existing manuscript until a new generator result is supported.
-   Do not call this empirical target Boltzmann sampling or a work-weight gain.
-5. Full3D multi-basin weighting and native basin-probability evaluation remain
-   separate gaps; the old restricted two-torsion pilot does not resolve them.
-
-All former jobs before this campaign are complete. Their results remain in
-SUGGESTIONS_STATE_20260919.json and ledger_v22. The current paper is published and
-verified in publication_sync_v6.json; no need to rebuild unchanged figures.
+- Read research/PHYSICAL_CONNECTION_STATE_20260919.json. Monitor47245883 and
+  its audit47245885; preserve the frozen protocol and all controls.
+- The preceding128-composition study is complete: physical labels beat matched
+  reference-only FT, but parent superiority remains uncertain. Do not relaunch it.
+- The correction head reuses the teacher bank; it makes no new teacher calls.
+  It freezes parent tensors and learns a bounded equivariant pair residual from
+  current/parent-predicted geometry. No supplied graph or oracle at inference.
+- Inference accounting is128 backbone calls PLUS64 small-head calls for EVERY
+  comparison model, with zero heads attached to the controls.
+- New broad-target results have a scoped appendix section; build and publish it
+  once the current paper revision is ready. The previous published figures stay.
+- Preserve Jarzynski's local scope; the current empirical-reference bank is not
+  a thermally calibrated multi-basin distribution.
