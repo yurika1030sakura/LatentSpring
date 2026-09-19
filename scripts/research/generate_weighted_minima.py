@@ -71,11 +71,17 @@ def main():
             atomic_numbers=np.asarray(z,dtype=np.int64))
         rows.append(dict(condition=condition,attempted=a.samples,seconds=time.perf_counter()-start,
                          file=path.name,sha256=file_sha256(path)))
+    backbone_calls=a.midpoint_steps*2*(2 if recipe.get('geometry_self_conditioning') else 1)
+    connection_calls=a.midpoint_steps*2 if recipe.get('physical_connection') else 0
+    if connection_calls:
+        expected_batches=len(conditions)*((a.samples+a.batch_size-1)//a.batch_size)
+        assert model.vector_field.physical_connection.forward_calls==expected_batches*connection_calls
     result=dict(complete=True,rows=rows,checkpoint_sha256=file_sha256(a.checkpoint),
         config_sha256=file_sha256(a.config),condition_sha256=file_sha256(a.conditions),
         teacher_temperature_K=target['teacher_temperature_K'],model_kT_feature_eV=target['model_kT_eV'],
         geometry_refinement=False,energy_filter=False,terminal_noise_A=0.,physical_queries=0,
-        primitive_network_calls_per_attempt=a.midpoint_steps*2*(2 if recipe.get('geometry_self_conditioning') else 1),
+        primitive_network_calls_per_attempt=backbone_calls+connection_calls,
+        backbone_calls_per_attempt=backbone_calls,connection_calls_per_attempt=connection_calls,
         scientific_metrics_evaluated=False)
     (a.out/'generation.json').write_text(json.dumps(result,indent=2,allow_nan=False)+'\n')
     print(str(a.out/'generation.json'))

@@ -142,4 +142,9 @@ def prepare_research_backbone(model, protocol):
         if protocol.get('position_parameterization')!='displacement':raise ValueError('Geometry SC requires its declared displacement head')
         from cfm_mol.geometry_self_conditioning import patch_geometry_self_conditioning
         patch_geometry_self_conditioning(model,**protocol['geometry_self_conditioning'])
+    if protocol.get('physical_connection'):
+        if backbone!='flowmol' or protocol.get('position_parameterization')!='displacement':
+            raise ValueError('Physical connection requires the FlowMol displacement backbone')
+        from .physical_connection import patch_physical_connection
+        patch_physical_connection(model,**protocol['physical_connection'])
     return model

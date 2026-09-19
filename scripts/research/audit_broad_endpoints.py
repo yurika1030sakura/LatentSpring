@@ -64,20 +64,22 @@ def main():
     for key in ['project','protocol','run','out']:p.add_argument('--'+key,type=Path,required=True)
     p.add_argument('--teacher-only',action='store_true');a=p.parse_args();torch.set_num_threads(2)
     spec=json.loads(a.protocol.read_text());ph=sha(a.protocol);assert spec['frozen']
-    bank,teacher=teacher_audit(a.project,a.run,spec,ph)
+    bank,teacher=teacher_audit(a.project,a.run,spec,spec.get('teacher_protocol_sha256',ph))
     if a.teacher_only:
         write(a.out,teacher);print(json.dumps(teacher),flush=True);return
     parent=torch.load(a.project/spec['checkpoint'],map_location='cpu',weights_only=False);prior=prior_from_checkpoint(parent)
-    methods=spec['methods'];shape=(2,3,16,16)
+    methods=spec['methods'];connection_study=spec.get('format')=='physical_connection_v1';shape=(2,len(methods),16,16)
     graph=np.zeros(shape,bool);success=np.zeros(shape,bool);force=np.full(shape,np.inf);energy=np.full(shape,np.nan)
     sources=[];attempts=0
     for si,seed in enumerate(spec['training_seeds']):
         folder=a.run/f's{si}';done=json.loads((folder/'complete.json').read_text());assert done['complete'] and done['protocol_sha256']==ph and done['seed']==seed
         raw_report=json.loads((folder/'audit.json').read_text());assert sha(folder/'audit.json')==done['raw_audit_sha256']
-        for method in ['reference_ft','relaxed_ft']:
+        for method in methods[1:]:
             fit=folder/method;state=torch.load(fit/'last.ckpt',map_location='cpu',weights_only=False)
             assert state['global_step']==spec['training_steps'] and state['training_seed']==seed
             target=state['research_protocol']['direct_endpoint_training'];assert target['protocol_sha256']==ph and target['bank_sha256']==teacher['bank_sha256'] and target['method']==method
+            if method.startswith('connection_'):
+                for key,value in parent['state_dict'].items():assert torch.equal(state['state_dict'][key],value),key
             assert not target['thermal_distribution_claim'] and target['terminal_noise_std_A']==0
             log=[json.loads(l) for l in (fit/'metrics.jsonl').read_text().splitlines()];assert len(log)==2000
             rng=np.random.default_rng(seed)
@@ -88,9 +90,16 @@ def main():
         raw_positions={}
         for mi,method in enumerate(methods):
             directory=folder/(method+'_raw');report=json.loads((directory/'generation.json').read_text())
-            ckpt=folder/('base.ckpt' if method=='base' else method+'/last.ckpt')
+            ckpt=folder/'sampling'/(method+'.ckpt') if connection_study else folder/('base.ckpt' if method=='base' else method+'/last.ckpt')
             assert report['complete'] and report['checkpoint_sha256']==sha(ckpt)
-            assert report['primitive_network_calls_per_attempt']==128 and not report['geometry_refinement'] and not report['energy_filter'] and report['terminal_noise_A']==0
+            assert report['primitive_network_calls_per_attempt']==(192 if connection_study else 128) and not report['geometry_refinement'] and not report['energy_filter'] and report['terminal_noise_A']==0
+            if connection_study:
+                assert report['connection_calls_per_attempt']==64 and report['backbone_calls_per_attempt']==128
+                sampled=torch.load(ckpt,map_location='cpu',weights_only=False)
+                source=parent if method=='base' else torch.load(folder/method/'last.ckpt',map_location='cpu',weights_only=False)
+                for key,value in source['state_dict'].items():assert torch.equal(sampled['state_dict'][key],value),key
+                if method in ['base','relaxed_ft']:
+                    for key in ['weight','bias']:assert sampled['state_dict']['vector_field.physical_connection.pair_network.4.'+key].count_nonzero()==0
             rows=[r for r in raw_report['rows'] if r['arm']==method];assert len(rows)==16
             for i,row in enumerate(report['rows']):
                 c=row['condition'];expected=spec['test_rows'][i]
@@ -107,7 +116,7 @@ def main():
             sources.append(dict(seed=seed,method=method,generation_sha256=sha(directory/'generation.json')))
         xp=folder/'xtb';physical=json.loads((xp/'audit.json').read_text());assert physical['complete'] and sha(xp/'audit.json')==done['xtb_audit_sha256']
         assert sha(xp/'tasks.json')==physical['tasks_sha256'];tasks={r['task']['task_id']:r['task'] for r in json.loads((xp/'tasks.json').read_text())['tasks']}
-        assert len(physical['rows'])==768;attempts+=len(physical['rows'])
+        assert len(physical['rows'])==len(methods)*256;attempts+=len(physical['rows'])
         for row in physical['rows']:
             task=tasks[row['task_id']];mi=methods.index(task['method']);i,j=task['condition_index'],task['sample_index'];directory=xp/'details'/row['task_id']
             np.testing.assert_array_equal(task['positions'],raw_positions[task['method'],i][j])
@@ -122,7 +131,9 @@ def main():
             if row['success']:
                 success[si,mi,i,j]=True;force[si,mi,i,j]=np.sqrt(np.square(row['force_eV_A']).sum(-1).mean());energy[si,mi,i,j]=row['energy_eV']/len(task['positions'])
     yield5=graph & success & (force<=5.);rng=np.random.default_rng(52081);contrasts={}
-    for name,left,right in [('relaxed_minus_reference_ft',2,1),('relaxed_minus_base',2,0),('reference_ft_minus_base',1,0)]:
+    pairs=([('connection_physical_minus_base',3,0),('connection_physical_minus_reference',3,2),('connection_physical_minus_full_ft',3,1)] if connection_study else
+        [('relaxed_minus_reference_ft',2,1),('relaxed_minus_base',2,0),('reference_ft_minus_base',1,0)])
+    for name,left,right in pairs:
         contrasts[name]=bootstrap(yield5[:,left].mean(-1)-yield5[:,right].mean(-1),rng,20000)
     summary={}
     for mi,method in enumerate(methods):
@@ -131,11 +142,11 @@ def main():
             median_valid_force=float(np.median(force[:,mi][valid])) if valid.any() else None,
             force_yields=[dict(threshold=t,mean=float((valid & (force[:,mi]<=t)).mean()),by_seed=(valid & (force[:,mi]<=t)).mean((1,2)).tolist()) for t in spec['thresholds']])
     arrayfile=a.out.with_suffix('.npz');np.savez_compressed(arrayfile,graph=graph,success=success,force=force,energy=energy)
-    primary=contrasts['relaxed_minus_reference_ft'];baseline=contrasts['relaxed_minus_base']
+    primary=contrasts[pairs[0][0]];baseline=contrasts[pairs[1][0]]
     result=dict(complete=True,protocol_sha256=ph,teacher_audit_sha256=sha(a.run/'teacher_audit.json'),summary=summary,contrasts=contrasts,
         primary_gate=bool(primary['ci95'][0]>0 and min(primary['by_seed'])>0 and baseline['mean']>0),
         arrays_file=arrayfile.name,arrays_sha256=sha(arrayfile),sources=sources,
-        new_neural_outputs=1536,new_optimizer_steps=8000,new_esen_queries=teacher['oracle_queries'],new_gfn2_attempts=attempts,
+        new_neural_outputs=len(methods)*512,new_optimizer_steps=(12000 if connection_study else 8000),new_esen_queries=0 if connection_study else teacher['oracle_queries'],new_gfn2_attempts=attempts,
         scope=spec['scope'],interval_scope='Composition bootstrap conditional on two fine-tuning runs from one shared pretrained parent.')
     write(a.out,result);print(json.dumps(result),flush=True)
 
