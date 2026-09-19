@@ -30,6 +30,8 @@ def main():
     p.add_argument('--seed-index',type=int,choices=[0,1],required=True);a=p.parse_args();spec=json.loads(a.protocol.read_text());ph=sha(a.protocol)
     seed=spec['training_seeds'][a.seed_index];es=spec['evaluation_seeds'][a.seed_index]
     bank=a.project/spec['teacher_bank'];assert sha(bank)==spec['teacher_bank_sha256']
+    from scripts.research.audit_trajectory_teacher import audit
+    audit(a.project,(a.project/spec['trajectory_bank']).parent,spec,ph)
     a.out.mkdir(parents=True,exist_ok=False);conditions=a.out/'conditions.json';write(conditions,dict(rows=spec['test_rows']))
     for method in spec['methods'][1:]:
         if method in ['connection_force','connection_work']:

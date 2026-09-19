@@ -19,7 +19,8 @@ from scripts.research.run_matched_generators import write
 
 
 def teacher_audit(project,run,spec,ph):
-    folder=run/'teacher';completion=json.loads((folder/'complete.json').read_text())
+    folder=run/('reference_teacher' if spec.get('format')=='trajectory_connection_v1' else 'teacher')
+    completion=json.loads((folder/'complete.json').read_text())
     assert completion['complete'] and completion['protocol_sha256']==ph and sha(folder/'bank.pt')==completion['bank_sha256']
     bank=torch.load(folder/'bank.pt',map_location='cpu',weights_only=False)
     data=torch.load(project/spec['data'],map_location='cpu',weights_only=False)['training']
@@ -67,8 +68,12 @@ def main():
     bank,teacher=teacher_audit(a.project,a.run,spec,spec.get('teacher_protocol_sha256',ph))
     if a.teacher_only:
         write(a.out,teacher);print(json.dumps(teacher),flush=True);return
+    trajectory_study=spec.get('format')=='trajectory_connection_v1'
+    if trajectory_study:
+        from scripts.research.audit_trajectory_teacher import audit
+        trajectory_bank,trajectory_audit=audit(a.project,a.project/spec['trajectory_bank'].rsplit('/',1)[0],spec,ph)
     parent=torch.load(a.project/spec['checkpoint'],map_location='cpu',weights_only=False);prior=prior_from_checkpoint(parent)
-    methods=spec['methods'];connection_study=spec.get('format')=='physical_connection_v1';shape=(2,len(methods),16,16)
+    methods=spec['methods'];connection_study=spec.get('format') in ['physical_connection_v1','trajectory_connection_v1'];shape=(2,len(methods),16,16)
     graph=np.zeros(shape,bool);success=np.zeros(shape,bool);force=np.full(shape,np.inf);energy=np.full(shape,np.nan)
     sources=[];attempts=0
     for si,seed in enumerate(spec['training_seeds']):
@@ -77,15 +82,18 @@ def main():
         for method in methods[1:]:
             fit=folder/method;state=torch.load(fit/'last.ckpt',map_location='cpu',weights_only=False)
             assert state['global_step']==spec['training_steps'] and state['training_seed']==seed
-            target=state['research_protocol']['direct_endpoint_training'];assert target['protocol_sha256']==ph and target['bank_sha256']==teacher['bank_sha256'] and target['method']==method
+            target=state['research_protocol']['direct_endpoint_training'];cached=trajectory_study and method in ['connection_force','connection_work']
+            expected_bank=trajectory_audit['bank_sha256'] if cached else teacher['bank_sha256']
+            assert target['protocol_sha256']==ph and target['bank_sha256']==expected_bank and target['method']==method
             if method.startswith('connection_'):
                 for key,value in parent['state_dict'].items():assert torch.equal(state['state_dict'][key],value),key
             assert not target['thermal_distribution_claim'] and target['terminal_noise_std_A']==0
             log=[json.loads(l) for l in (fit/'metrics.jsonl').read_text().splitlines()];assert len(log)==2000
             rng=np.random.default_rng(seed)
             for step,row in enumerate(log,1):
-                index=int(rng.integers(128));c=bank['rows'][index]['condition'];rng.normal(size=(c['n_atoms'],3))
-                assert row['step']==step and row['bank_row']==index and row['training_row']==spec['training_rows'][index]
+                index=int(rng.integers(512 if cached else 128));active_bank=trajectory_bank if cached else bank;c=active_bank['rows'][index]['condition']
+                if not cached:rng.normal(size=(c['n_atoms'],3))
+                assert row['step']==step and row['bank_row']==index and row['training_row']==active_bank['rows'][index]['training_row']
                 assert np.isfinite(row['loss']) and np.isfinite(row['gradient_norm'])
         raw_positions={}
         for mi,method in enumerate(methods):
@@ -133,6 +141,7 @@ def main():
     yield5=graph & success & (force<=5.);rng=np.random.default_rng(52081);contrasts={}
     pairs=([('connection_physical_minus_base',3,0),('connection_physical_minus_reference',3,2),('connection_physical_minus_full_ft',3,1)] if connection_study else
         [('relaxed_minus_reference_ft',2,1),('relaxed_minus_base',2,0),('reference_ft_minus_base',1,0)])
+    if trajectory_study:pairs=[('force_minus_base',2,0),('work_minus_force',3,2),('force_minus_fm_head',2,1),('work_minus_base',3,0)]
     for name,left,right in pairs:
         contrasts[name]=bootstrap(yield5[:,left].mean(-1)-yield5[:,right].mean(-1),rng,20000)
     summary={}
@@ -144,10 +153,14 @@ def main():
     arrayfile=a.out.with_suffix('.npz');np.savez_compressed(arrayfile,graph=graph,success=success,force=force,energy=energy)
     primary=contrasts[pairs[0][0]];baseline=contrasts[pairs[1][0]]
     result=dict(complete=True,protocol_sha256=ph,teacher_audit_sha256=sha(a.run/'teacher_audit.json'),summary=summary,contrasts=contrasts,
-        primary_gate=bool(primary['ci95'][0]>0 and min(primary['by_seed'])>0 and baseline['mean']>0),
+        primary_gate=bool(primary['ci95'][0]>0 and min(primary['by_seed'])>0 and (trajectory_study or baseline['mean']>0)),
         arrays_file=arrayfile.name,arrays_sha256=sha(arrayfile),sources=sources,
-        new_neural_outputs=len(methods)*512,new_optimizer_steps=(12000 if connection_study else 8000),new_esen_queries=0 if connection_study else teacher['oracle_queries'],new_gfn2_attempts=attempts,
+        new_neural_outputs=len(methods)*512,new_optimizer_steps=(12000 if connection_study else 8000),new_esen_queries=trajectory_audit['oracle_queries'] if trajectory_study else (0 if connection_study else teacher['oracle_queries']),new_gfn2_attempts=attempts,
         scope=spec['scope'],interval_scope='Composition bootstrap conditional on two fine-tuning runs from one shared pretrained parent.')
+    if trajectory_study:
+        result['new_fit_generator_outputs']=256
+        result['trajectory_teacher_audit_sha256']=sha(a.project/spec['trajectory_bank'].rsplit('/',1)[0]/'audit.json')
+        result['work_gain_established']=bool(contrasts['work_minus_force']['ci95'][0]>0 and min(contrasts['work_minus_force']['by_seed'])>0)
     write(a.out,result);print(json.dumps(result),flush=True)
 
 
