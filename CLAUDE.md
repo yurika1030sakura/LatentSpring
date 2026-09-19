@@ -1,3 +1,12 @@
+Publication verified: GitHub paper release8446040 and Overleaf f58c9ec preserve
+collaborator1b64efd. Buildv5 has9 scientific pages,29 total,25 citations; all42
+export files match remotely. Native pilot independentGFN2 is complete: joint
+force<=1 yields13.80% parent,48.70% proposal-minima,55.21% complete-work minima.
+These are3 TRAIN compositions/one seed, not new main-paper claims. Two repeats
+run as47226653. GAGA calibration47221006 and dependentGFN2 audit47225156 remain
+active. Official abstract deadline wasSep18AoE; registration confirmation is
+pending from the user. Full paper deadlineSep25AoE. See requirements_v1 evidence.
+
 Current status (2026-09-19): read `research/SUGGESTIONS_STATE_20260919.json` and
 `notes/suggestions_review_20260919.md` first. All original repetitions and corrected
 matched-physics runs are COMPLETE. Five source runs average+3.89pp at3000 updates

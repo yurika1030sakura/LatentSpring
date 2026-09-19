@@ -68,6 +68,18 @@ Reusable small endpoint fixtures are under
 are restricted two-angle minima, not full Cartesian or DFT minima. The supplied
 teacher records are reused; this pilot makes no new physical queries.
 
+The independent fixed-coordinate GFN2 check is also complete (1,152 attempts).
+Median residual force among each model's graph-valid outputs is 1.3043 eV/A for
+the parent, 0.9485 for proposal minima, and 0.8375 for complete-work minima.
+At force RMS<=1 eV/A, all-attempt joint yields are13.80%,48.70%,55.21%, respectively.
+The complete-work minus proposal contrast is positive in each of the three
+compositions at this threshold. The entire frozen threshold grid is retained,
+including zero yield at0.1 eV/A for every model. This is preliminary evidence
+of useful raw physical learning, not quantum-minimum convergence or calibrated
+basin probabilities. Two further training/evaluation seeds use the same fixed
+teacher bank, parent,500-update schedule and all controls; job47226653 runs them
+and their independent GFN2 evaluations. No seed or budget is selected by outcome.
+
 ## Fair GAGA follow-up
 
 The corrected full-strength update still harms both independent EGNN families.

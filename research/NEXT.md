@@ -1,3 +1,11 @@
+Immediate next checkpoints:47221006/47225156 finish validation-selected GAGA
+comparison;47226653 repeats the promising native endpoint pilot with GFN2.
+Both have frozen protocols and all-control reporting. Publication is verified
+in publication_sync_v5.json; no need to republish unchanged paper assets.
+Do not turn the single-seed closed-set result into held-out or basin-calibration
+claims. The next scientific missing measurement is graph/symmetry-aware basin
+mass, then broader TRAIN teacher coverage, not more unclaimed rotor variants.
+
 Current status (2026-09-19): read `research/SUGGESTIONS_STATE_20260919.json` and
 `notes/suggestions_review_20260919.md` first. All original repetitions and corrected
 matched-physics runs are COMPLETE. Five source runs average+3.89pp at3000 updates
