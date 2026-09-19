@@ -4,8 +4,12 @@ research/PHYSICAL_CONNECTION_STATE_20260919.json; all costs are in registry v24.
 The next bounded candidate is trajectory_connection_v1: the same frozen-parent
 head learns from actual TRAIN parent states, with matched force and complete
 local-work targets. Protocol is frozen before generation. No thermal or useful
-neural work advantage has been established. Current local publication build v7
-adds the broad physical-target control appendix; publication sync is pending.
+neural work advantage has been established. Publication build v7 adds the broad physical-target control appendix and is
+pushed/verified on GitHub c1de73d and Overleaf9805067. See publication_sync_v7.json.
+Trajectory teacher47257342 is running; a two-seed array submission hit the
+gpu_test per-user submit limit and must be retried after teacher completion.
+The frozen fit source is runs/trajectory_connection_v1/fit_source (7835673).
+Read research/TRAJECTORY_CONNECTION_STATE_20260919.json before resuming.
 Earlier running-study statements below are historical, not live status.
 
 The broad physical-target study is COMPLETE and audited. Corrected-reference

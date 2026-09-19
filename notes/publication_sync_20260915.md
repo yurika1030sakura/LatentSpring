@@ -139,3 +139,19 @@ is publication_build_v4.json, synchronization receipt publication_sync_v4.json,
 and completed-study ledger v16. Local compilation is verified; cloud compilation
 and OpenReview submission are not claimed. Extra source repetitions and GAGA
 follow-ups remain in progress and are not presented as completed paper results.
+
+## 2026-09-19 broad-label appendix release
+
+GitHub release c1de73d and Overleaf9805067 include the matched broad-reference
+physical-label study. Canonical and standalone builds contain9 scientific main
+pages,30 total pages and25 cited references. All43 exported files were verified
+against fetched Overleaf content; GitHub's canonical PDF hash matches build v7.
+The collaborator revision1b64efd remains an ancestor. The original HOLY Overleaf
+checkout was clean and fast-forwarded. Evidence is publication_sync_v7.json.
+Cloud compilation and OpenReview submission have not been verified.
+
+The physical-label result is+5.66pp [2.54,8.59] against matched original-reference
+FT, with an uncertain+1.37pp [-3.52,6.05] against the parent. Both are stated
+in the appendix. The failed correction-head candidate remains in research records;
+it has not replaced the paper's method. Actual-parent-trajectory supervision is
+a separate ongoing candidate experiment.
