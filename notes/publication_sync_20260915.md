@@ -175,5 +175,6 @@ reruns only when LaTeX requests another cross-reference pass. It still rejects
 undefined references, overfull boxes and excessive main-text length.
 
 The exact export is runs/publication_20260919/overleaf_force_correction_v5.
-publication_sync_v8.json will contain the verified remote commits. No Overleaf
+publication_sync_v8.json records verified GitHub53d28f6 and Overleaf0b701d3,
+with46 exported files and the canonical PDF digest checked against fetched git content. No Overleaf
 cloud compilation or OpenReview submission is implied by publication.

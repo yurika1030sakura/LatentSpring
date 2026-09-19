@@ -28,8 +28,8 @@ local-work theory and controlled molecular experiments.
 
 Publication build v8 adds the model/controls, common-panel GAGA results, and a
 readable result figure. It compiles to9 main scientific pages/33 total, with27
-cited references and46 standalone files. Publication sync v8 will record verified
-remote commits. Registry v29 includes completed costs, distinguishing1024 new
+cited references and46 standalone files. Publication sync v8 verifies GitHub53d28f6 and Overleaf0b701d3; all46
+export files and the GitHub PDF hash match the build. Registry v29 includes completed costs, distinguishing1024 new
 supplemental neural trajectories from512 extra noise-derived output records.
 No BGFM experiment is currently queued. The two manifest failures occurred
 before any generation and are preserved in PUBLISHED_MODEL_CONFIRMATION_STATE.
@@ -42,7 +42,7 @@ Historical statuses below do not override this checkpoint.
 
 ## Next actions
 
-- Verify/publish build v8 and record publication_sync_v8.json. The user handles
+- Build v8 is published and verified in publication_sync_v8.json. The user handles
   authors and OpenReview submission; neither cloud compilation nor submission
   is implied by a git push.
 - If pursuing a stronger GAGA algorithm claim, evaluate learned physical
