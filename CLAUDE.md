@@ -1,3 +1,24 @@
+# Active checkpoint —2026-09-20: three additional baseline transfers
+
+User requested two or three concrete additional target baselines, not a universal
+framework claim. Job47372153 is RUNNING from immutable source fa6936d in
+runs/other_baseline_transfer_v1/source. Read
+research/evidence/other_baseline_transfer_v1.json and
+research/OTHER_BASELINE_TRANSFER_STATE_20260920.json.
+The targets are EDM, Gaussian-source FM, and one-pass harmonic FM, each with
+both archived training fits. Transfer the corresponding frozen FM head without
+retraining, strength4 unchanged. The same64-composition panel has16 attempts per
+fit/condition/arm;12288 total new outputs and GFN2 attempts are planned.
+All targets and signs must be reported. No H flow or physical teacher queries.
+EDM is an additional external diffusion baseline; the two FM targets are internal
+FM baselines, not two more unrelated published methods. Architecture/vocabulary
+are shared. The two old fits and already-used panel make this a post-development
+extension, not a new five-fit confirmation. Ten adapter tests passed; first-batch
+native/zero-strength replay passed on GPU for all three targets.
+The SLURM job audits raw GFN2 logs and coordinates per target/fit and automatically
+writes runs/other_baseline_transfer_v1/audit.json after all six runs complete.
+No new transfer result is yet qualified. Published paper v12 remains unchanged.
+
 # Current checkpoint —2026-09-20: five-fit physical correction and weight transfer confirmed
 
 ALL scientific jobs are COMPLETE. No further training or sampling is pending.
