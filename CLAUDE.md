@@ -1,3 +1,14 @@
+# Active follow-up —2026-09-19
+
+Shared-EGNN physical-head transfer is running under frozen protocol
+research/evidence/matched_connection_v1.json, source commit fd055b8.
+Array47317335 fits FM and GAGA heads with identical TRAIN conditions and
+physical-query/update budgets, then scores a separate validation panel.
+Fresh test sampling must wait for the audited cross-seed strength selection.
+Read research/MATCHED_CONNECTION_STATE_20260919.json for live campaign state.
+The published full-system evidence below remains unchanged; this new study
+has no confirmed generation result yet.
+
 # Current checkpoint —2026-09-19
 
 All new studies are COMPLETE and audited. Read
