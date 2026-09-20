@@ -1,0 +1,37 @@
+{
+  "format": "cross_generator_head_v1",
+  "frozen": true,
+  "at_utc": "2026-09-20T09:36:07.869299+00:00",
+  "parent_campaign": "research/evidence/seed_replication_v1.json",
+  "parent_campaign_sha256": "b35776f8f864c6c63c05570a42fc85c368780671471b27553916f5210f0f7c61",
+  "panel_resolution": "research/evidence/seed_replication_panel_resolution_v1.json",
+  "panel_resolution_sha256": "6ac03507a976932c0ddd159a8b9536c70703d7a514b340e28e147daa23cc2057",
+  "fits": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "primary_fit_subset": [
+    2,
+    3,
+    4
+  ],
+  "strength": 4.0,
+  "backbone_calls": 128,
+  "samples_per_condition": 16,
+  "condition_count": 64,
+  "evaluation_batch": 8,
+  "methods": {
+    "fm": "gaga-trained head on FM",
+    "gaga": "FM-trained head on GAGA"
+  },
+  "training_steps": 0,
+  "new_esen_queries": 0,
+  "planned_new_parent_trajectories": 10240,
+  "planned_new_gfn2_attempts": 10240,
+  "primary": "FM-trained head applied to a separately trained GAGA parent, without any GAGA force labels used to train that transferred head. Compare to GAGA parent and own-head GAGA on the identical initial draws. Require positive joint-yield gain in every new fit and positive composition95 interval; also report crossed fit/composition uncertainty.",
+  "secondary": "Reverse transfer from GAGA head to FM, and retained fraction of the own-head improvement. No head selection, recalibration or hydrogen readout.",
+  "scope": "Head weights are transferred verbatim within each independently trained fit pair. Parent architectures and element vocabularies match; objectives, source laws, samplers and head-training trajectories differ. Test same previously fixed64 compositions; old-fit target outcomes already exist, while all three new-fit outcomes remain ungenerated. All results retained regardless of sign; no universal transfer claim."
+}
