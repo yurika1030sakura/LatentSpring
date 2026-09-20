@@ -29,7 +29,8 @@ The paper now foregrounds the learned physical correction and reports both
 matched generators. Complete-system FlowMol results below remain valid and
 separate. Publication build v9 is verified:9 main pages/35 total,27 cited references,
 49 standalone files. Canonical and standalone PDF text match. Publication
-synchronization is the remaining release step; v8 was previously published.
+sync v9 verifies GitHub429155f and Overleaf114b275, including all49 exported
+files and the GitHub PDF. The existing HOLY Overleaf mirror is fast-forwarded.
 
 # Previous complete-system checkpoint —2026-09-19
 
@@ -75,7 +76,7 @@ Historical statuses below do not override this checkpoint.
 
 ## Next actions
 
-- Publish verified build v9 and confirm GitHub/Overleaf file hashes.
+- Build v9 is published and verified in publication_sync_v9.json.
 - The shared-EGNN physical-head transfer is now complete, including an equally
   supervised GAGA control. Do not rerun the same test or select new settings on
   its outcomes. The supported contribution is correction transfer, with no
