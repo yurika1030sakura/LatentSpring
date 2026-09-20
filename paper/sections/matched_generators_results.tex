@@ -1,16 +1,11 @@
 \subsection{Independent backbone and generator objectives}\label{sec:matched-generators}
-To test whether the source benefit depends on the pretrained backbone, we train
-Gaussian FM and harmonic FM from scratch on an independent EGNN. We also train
-position-conditional EDM and GAGA \citep{edm,qu2026gaga}. All four methods use
-the same 20,000 OMol25 structures, architecture, and initial weights within each
-of two repetitions. Each receives 30,000 updates at batch size 32. We omit
-self-conditioning and physical adaptation to compare sources and generator
-objectives on a shared backbone. The two FM models differ only in their source;
-their training paths and atom pairing are identical.
-Appendix~\ref{app:matched-generators} gives the full protocol, including the
-GAGA truncation setting transferred from its published configuration.
-
-
+We train Gaussian FM, harmonic FM, position-conditional EDM, and GAGA
+\citep{edm,qu2026gaga} from scratch on an independent EGNN. All four use the
+same 20,000 OMol25 structures, architecture, and initial weights within each of
+two repetitions, with 30,000 updates at batch size 32. This comparison omits
+self-conditioning and physical adaptation. The two FM models differ only in
+source distribution; their probability paths and atom pairing are identical.
+Appendix~\ref{app:matched-generators} gives the protocol and GAGA configuration.
 
 The harmonic source improves FM graph validity by 1.34 percentage points, with a
 composition-bootstrap 95\% interval of [0.12,2.52]. This supports a source benefit
@@ -24,6 +19,13 @@ same training forward-pass budget. The difference is $+1.86$ points with a
 composition interval of $[-0.34,4.44]$; this comparison does not establish a
 reliable ordering. Appendix~\ref{app:feedback-transfer} reports the selection,
 feedback controls, and physical-update transfer experiment.
+
+The learned physical head transfers to both EGNN generators on another 16 new
+compositions. At matched physical-supervision budgets, FM joint yield rises from
+8.01\% to 15.04\% and GAGA from 10.94\% to 17.58\%. Their paired improvements
+are $+7.03$ points ($[2.73,11.91]$) and $+6.64$ points ($[3.71,9.77]$),
+respectively, with both fits improving. The ordering between the corrected
+generators remains uncertain (Appendix~\ref{app:matched-connection}).
 
 A further 16-composition comparison evaluates complete systems with their own
 architectures and training histories. The paired-update model reaches 38.09\%

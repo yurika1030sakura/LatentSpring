@@ -1,3 +1,22 @@
+Current release: shared-backbone physical correction (2026-09-19).
+Publication build v9 compiles9 scientific main pages/35 total, with27 cited
+references and49 standalone source/figure files. The new evidence is
+matched_connection_selection_v1.json and matched_connection_audit_v1.json;
+registry v30 includes every completed preparation, validation and test cost.
+
+Same-EGNN correction improves FM joint yield8.01->15.04% (+7.03pp [2.73,11.91])
+and GAGA10.94->17.58% (+6.64pp [3.71,9.77]); both independently fitted models
+improve in each family. Corrected FM-versus-GAGA ordering remains uncertain.
+The four checkpoint recipes are in
+configs/research/latentspring_shared_egnn_correction_v1.json. Immutable experiment
+source fd055b8 and runs are in runs/matched_connection_v1. The generic native
+field adapter is cfm_mol/matched_physical_connection.py; generation has no oracle.
+Use scripts/research/run_matched_connection.py for the frozen validation/test
+protocol and scripts/research/audit_matched_connection.py for reconstruction.
+All19 relevant geometry, physics-head and sampler tests pass.
+
+Previous release records follow.
+
 Current release (2026-09-19): publication_build_v8.json compiles the canonical
 paper and standalone package to9 scientific main pages/33 total pages, with27
 cited references. The complete-model and learned-correction evidence is in

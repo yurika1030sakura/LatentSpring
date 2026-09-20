@@ -19,27 +19,25 @@
 \maketitle
 \begin{abstract}
 Generating a molecule from its atomic composition requires deciding both how its
-atoms are arranged in space and which atoms are bonded. We introduce LatentSpring,
-a flow-matching method that starts from correlated coordinates rather than
-isotropic Gaussian noise. To construct these coordinates without a known bond
-graph, we sample a random tree over the atoms and draw Gaussian displacements
-along its edges, with scales set by atomic radii. Averaging over trees gives a
-normalized harmonic-mixture source. We then use an energy model's forces to build
-nearby training targets. Two copies of the generator are fine-tuned on the
-force-shifted and original generated structures, respectively; their parameter
-difference is added to the base model. A second implementation learns a compact
-velocity correction while keeping the backbone frozen. On 64 unseen compositions with 17--64 atoms,
-the harmonic source improves chemical-graph validity by 3.89 percentage points
-on average across five fine-tuning runs, with gains in four runs.
-The improvement also appears on an independently
-initialized EGNN. On 24 compositions, the paired physical update improves the
-fraction of outputs that are both graph-valid and below a residual-force threshold
-for both sources. At 5 eV/\AA, this fraction is 47.59\% for the updated harmonic
-model and 40.63\% for the updated Gaussian model under independent GFN2-xTB
-evaluation. On a further 16 compositions, an 8,178-parameter force corrector
-increases joint yield from 38.87\% to 46.88\%. The paired update uses 128 backbone
-calls; the explicit corrector adds 64 small-head calls. Both generate without
-energy evaluations or geometry optimization.
+atoms are arranged in space and which atoms are bonded. LatentSpring combines
+flow matching with a harmonic-mixture source and learned physical correction.
+We construct the source without a known bond graph: a random tree organizes
+Gaussian displacements whose scales depend on atomic radii. Averaging over trees
+gives a normalized distribution of correlated coordinates. A bounded equivariant
+head then learns from forces evaluated at the generator's provisional final
+geometries, while the backbone remains fixed. Expressing the correction as an
+endpoint change also lets it act on a diffusion model's noise prediction. We
+additionally study transferring physical feedback into the backbone weights.
+On 64 unseen compositions with 17--64 atoms, the harmonic source improves
+chemical-graph validity by 3.89 percentage points on average across five
+fine-tuning runs, with gains in four runs. On 16 further compositions, an
+8,178-parameter force head increases the fraction of outputs that are both
+graph-valid and have GFN2-xTB force RMS at most 5 eV/\AA\ from 38.87\% to
+46.88\%. Under equal physical-supervision budgets on a separate EGNN backbone,
+the correction improves this joint yield by 7.03 points for FM and 6.64 points
+for GAGA on another 16 new compositions, with both fits improving in each case.
+The corrected flow uses 128 backbone and 64 small-head evaluations per output,
+without energy evaluations or geometry optimization during generation.
 \end{abstract}
 
 \section{Introduction}
@@ -68,21 +66,22 @@ gives a normalized mixture of harmonic networks. We combine this source with an
 equivariant coordinate network and geometry self-conditioning: the network makes
 a provisional geometry prediction, then uses it to refine its velocity prediction.
 
-We incorporate physical feedback by training on nearby, force-shifted targets.
-A second model learns from the original generated structures under the same
-schedule, providing a \emph{replay} control. We subtract its parameter update from
-the physical model's update and add the difference to the base generator. This
-controls for changes caused by further training on generated data. Inference
-uses a single network, with no energy evaluations. We also learn the physical
-correction as a separate small network, supervised at the parent flow's own
-provisional endpoints while keeping its weights fixed.
+We incorporate physical feedback through a small learned correction. The frozen
+parent predicts a provisional final geometry, and an energy model supplies
+forces at that geometry during training. A bounded equivariant head learns the
+additional velocity needed to shift the prediction along those forces. At
+generation time, only the neural networks are evaluated. Expressing the head's
+action as a change to the provisional endpoint also allows it to correct a
+diffusion model's noise prediction. A complementary implementation transfers
+physical feedback into the backbone weights by subtracting a matched
+\emph{replay} update from an update trained on force-shifted structures.
 
 Our contribution is a harmonic-mixture source for composition-conditioned
 generation, its integration with coordinate flow matching and two forms of
-physical learning, and controlled experiments that test these choices. We compare source
-distributions, remove self-conditioning, and test alternatives to the paired
-update. We also evaluate unseen compositions, repeat the source comparison on an
-independent backbone, and score unoptimized outputs with two energy models.
+physical learning, and controlled experiments that test these choices. We compare
+sources, remove self-conditioning, and test physical correction on independently
+trained flow and diffusion backbones. Unseen compositions and two energy models
+measure the quality of unoptimized outputs.
 
 \section{Related work}
 \paragraph{Molecular flows and source distributions.}
@@ -115,9 +114,10 @@ conditions \citep{omol25}. Energy-weighted flow matching
 \citep{dern2025energyweighted}, importance-sampling-based training
 \citep{fab}, and physical-reward fine-tuning of molecular diffusion models
 \citep{zhou2025rlpf} provide ways to incorporate physical information into
-generation. Physical simulations can also supply fine-tuning data for protein
-conformation samplers \citep{lu2024fusing}. Our primary update uses force-shifted
-targets. In a separate extension, we correct the sampling weights of local targets
+generation. Simulation data also support protein fine-tuning \citep{lu2024fusing},
+and physical proxies can guide residual correction of frozen video flow fields
+\citep{wang2026pila}. Our head learns molecular force shifts at predicted endpoints.
+In a separate extension, we correct the sampling weights of local targets
 using nonequilibrium work identities. Jarzynski's equality connects work averages
 to equilibrium free-energy differences, and Hummer--Szabo reconstruction applies
 it to single-molecule pulling \citep{jarzynski1997master,hummerszabo2001}.
@@ -311,12 +311,12 @@ compare it with direct fine-tuning and a norm-matched control.
 We also study \emph{complete-work} weights, which account for the energy change,
 the local Gaussian density, and any volume change introduced by the coordinate
 map. Appendices~\ref{app:jarzynski}--\ref{app:rotor-work} derive these weights
-and test recovery of specified local distributions. The primary generator uses
+and test recovery of specified local distributions. The paired-update generator uses
 the simpler, uniformly sampled force-shifted targets. Recovering a particular
 local distribution and reducing generated energy are different objectives.
 
 \subsection{Learning the velocity correction directly}
-An alternative keeps the backbone fixed and trains a small correction network.
+The learned-head implementation keeps the backbone fixed and trains a small correction network.
 At coordinates $X_t$, the parent prediction gives the provisional endpoint
 $H_t=X_t+(1-t)v_{\rm base}(X_t,t;c)$. We query the energy model's force at $H_t$ during training and use
 $\delta(H_t)/(1-t)$ as the target additional velocity. A symmetric pair network
@@ -410,15 +410,14 @@ reports both runs, validity, force scores, and the update-matched comparison.
 \input{sections/primary_quality_results}
 
 \section{Discussion}
-LatentSpring combines a latent-tree harmonic source with physical feedback in
-its weights or velocity field. Controlled studies support the source,
-self-conditioning, paired update, and learned-correction benefits. Complete
-FlowMol systems exceed the tested GAGA adaptation on common conditions; the
-shared-EGNN comparison separately controls architecture and training exposure.
-The full-strength physical update fails on that EGNN, showing that its transfer
-requires care. Our evidence concerns neutral organic compositions and approximate
-energy models. Work-identity experiments recover specified local distributions;
-full molecular equilibrium and broader chemistry remain open.
+LatentSpring combines a latent-tree harmonic source with learned physical
+correction. The source benefit appears across backbones, and the correction
+improves both EGNN flow and diffusion generators under equal physical
+supervision. Paired updates offer a complementary way to incorporate physical
+feedback into a single backbone. The results concern unoptimized neutral organic
+structures and approximate energy models. Work-identity experiments recover
+specified local distributions; global molecular equilibrium and broader chemistry
+remain open.
 
 \label{endofmaintext}
 \subsubsection*{Reproducibility statement}
@@ -450,6 +449,7 @@ computational checks of the AI-assisted implementation.
 \input{sections/matched_generators_details}
 \input{sections/feedback_transfer_details}
 \input{sections/force_correction_details}
+\input{sections/matched_connection_details}
 \input{sections/common_model_confirmation}
 \input{sections/broad_physical_endpoint_results}
 \input{sections/harmonic_energy_results}

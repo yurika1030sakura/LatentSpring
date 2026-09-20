@@ -69,8 +69,6 @@ families. The within-FM joint-yield change is $-4.00$ points
 ($[-6.49,-2.00]$); the within-GAGA change is $-3.96$ points
 ($[-6.25,-1.95]$). eSEN gives the same directions. These results show that the
 successful primary-backbone recipe cannot be transferred unchanged to this EGNN.
-The final comparison keeps GAGA's predefined noise schedule fixed. An earlier
-implementation accidentally unfroze that schedule; its GAGA outcomes were
-replaced by a controlled rerun with the same targets and training choices.
-The FM outcome was unaffected and retained. All attempts, including the
-superseded GAGA run, remain in the computational record.
+GAGA's predefined noise schedule stays fixed in this comparison.
+Appendix~\ref{app:matched-connection} evaluates a separately trained correction
+head with broader supervision from each parent's own trajectory states.

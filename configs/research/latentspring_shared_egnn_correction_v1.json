@@ -1,0 +1,56 @@
+{
+  "format": "latentspring_shared_egnn_correction_v1",
+  "protocol": "research/evidence/matched_connection_v1.json",
+  "selection": "research/evidence/matched_connection_selection_v1.json",
+  "audit": "research/evidence/matched_connection_audit_v1.json",
+  "head_parameters": 7106,
+  "backbone_calls": 128,
+  "raw_unoptimized": true,
+  "oracle_calls_during_generation": 0,
+  "models": [
+    {
+      "name": "fm_s0",
+      "parent_protocol": "research/evidence/gaga_feedback_distance_s0_v1.json",
+      "parent_checkpoint": "runs/gaga_feedback_v1/training/s0/distance/last.ckpt",
+      "parent_checkpoint_sha256": "783fba5bfe50bb7e8327414d9e60ab6f6f6370c49c0a0def84c7820b8af8bff5",
+      "parent_state_key": "ema_state_dict",
+      "head_checkpoint": "runs/matched_connection_v1/validation/s0/fm/fit/step_20000.pt",
+      "head_checkpoint_sha256": "1a62f3d67a731f8ec4017d3f4f822a3142526a25f8c96125f7f558c506ae394f",
+      "strength": 1.0,
+      "head_calls": 64
+    },
+    {
+      "name": "gaga_s0",
+      "parent_protocol": "research/evidence/matched_generators_gaga_s0_v1.json",
+      "parent_checkpoint": "runs/matched_generators_v1/training/s0/gaga/last.ckpt",
+      "parent_checkpoint_sha256": "480a54f903678b6547d76cc153878df93725d7b724522d87093215040efd3e0d",
+      "parent_state_key": "ema_state_dict",
+      "head_checkpoint": "runs/matched_connection_v1/validation/s0/gaga/fit/step_20000.pt",
+      "head_checkpoint_sha256": "6074c0061ca11e058508b9633da52b39356c1fa553d21c93c284e84a79ad0a28",
+      "strength": 1.0,
+      "head_calls": 128
+    },
+    {
+      "name": "fm_s1",
+      "parent_protocol": "research/evidence/gaga_feedback_distance_s1_v1.json",
+      "parent_checkpoint": "runs/gaga_feedback_v1/training/s1/distance/last.ckpt",
+      "parent_checkpoint_sha256": "6cecd9d57c4345e16211eb0762173fde5b7412fc7eb2baf5f16081ffede441dc",
+      "parent_state_key": "ema_state_dict",
+      "head_checkpoint": "runs/matched_connection_v1/validation/s1/fm/fit/step_20000.pt",
+      "head_checkpoint_sha256": "bb151eec0f5220c3578e0b1e0499d939c5e35c18e7d999d61ee097edcfefdc50",
+      "strength": 1.0,
+      "head_calls": 64
+    },
+    {
+      "name": "gaga_s1",
+      "parent_protocol": "research/evidence/matched_generators_gaga_s1_v1.json",
+      "parent_checkpoint": "runs/matched_generators_v1/training/s1/gaga/last.ckpt",
+      "parent_checkpoint_sha256": "4b77970c5a445a2bd7264a1054836791d92128f2684975f7e41144dda2286fea",
+      "parent_state_key": "ema_state_dict",
+      "head_checkpoint": "runs/matched_connection_v1/validation/s1/gaga/fit/step_20000.pt",
+      "head_checkpoint_sha256": "d5605b772abbbb29a1f7755f0522d37fe9a8e03f69a624b1fbfcfd47e33b1f30",
+      "strength": 1.0,
+      "head_calls": 128
+    }
+  ]
+}

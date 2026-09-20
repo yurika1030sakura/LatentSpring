@@ -1,12 +1,12 @@
 {
-  "at_utc": "2026-09-20T02:43:57.011580+00:00",
-  "status": "RUNNING_TEACHER_FIT_VALIDATION",
+  "at_utc": "2026-09-20T02:59:02.472096+00:00",
+  "status": "COMPLETE_AUDITED",
   "protocol": "research/evidence/matched_connection_v1.json",
   "source_commit": "fd055b8",
   "source_snapshot": "runs/matched_connection_v1/source",
   "validation_array": "47317335",
   "validation_run": "runs/matched_connection_v1/validation",
-  "test_status": "NOT_GENERATED_BEFORE_VALIDATION_SELECTION",
+  "test_status": "COMPLETE_AUDITED",
   "planned_fit_outputs": 1024,
   "planned_esen_teacher_queries": 4096,
   "planned_head_updates": 80000,
@@ -15,5 +15,17 @@
   "planned_test_outputs": 2048,
   "planned_test_gfn2": 2048,
   "tests": "19 passed; zero correction and passive observation preserve FM/GAGA raw sampling exactly, parent frozen, native epsilon conversion, symmetry, counts",
-  "scientific_result": null
+  "scientific_result": "FM joint yield8.01->15.04%, +7.03pp [2.73,11.91]; GAGA10.94->17.58%, +6.64pp [3.71,9.77]. Both fits improve for both methods. Corrected FM-minus-GAGA -2.54pp [-6.64,1.76]; no established ordering.",
+  "test_array": "47317610",
+  "selection": "research/evidence/matched_connection_selection_v1.json",
+  "selection_sha256": "f2f89203004c2fb44410b6660d0ce3af23174c6d6af5191ae603fbdc1ce3a4b8",
+  "selected_strengths": {
+    "fm": 1.0,
+    "gaga": 1.0
+  },
+  "validation_status": "COMPLETE_AUDITED",
+  "audit": "research/evidence/matched_connection_audit_v1.json",
+  "audit_sha256": "d801dbaafe6953aaff348becc053664fdcec08fb2bf9b1300a6fc81c9527cbcb",
+  "slurm_accounting": "47317336|COMPLETED|520|0:0|cpu=8,gres/gpu:nvidia_a100_3g.20gb=1,gres/gpu=1,mem=32G,node=1\n47317335|COMPLETED|484|0:0|cpu=8,gres/gpu:nvidia_a100_3g.20gb=1,gres/gpu=1,mem=32G,node=1\n47317611|COMPLETED|186|0:0|cpu=8,gres/gpu:nvidia_a100_3g.20gb=1,gres/gpu=1,mem=32G,node=1\n47317610|COMPLETED|192|0:0|cpu=8,gres/gpu:nvidia_a100_3g.20gb=1,gres/gpu=1,mem=32G,node=1\n",
+  "ledger": "research/evidence/generator_reference_registry_v30.json"
 }

@@ -1,15 +1,37 @@
-# Active follow-up —2026-09-19
+# Current checkpoint —2026-09-19: shared-backbone correction confirmed
 
-Shared-EGNN physical-head transfer is running under frozen protocol
-research/evidence/matched_connection_v1.json, source commit fd055b8.
-Array47317335 fits FM and GAGA heads with identical TRAIN conditions and
-physical-query/update budgets, then scores a separate validation panel.
-Fresh test sampling must wait for the audited cross-seed strength selection.
-Read research/MATCHED_CONNECTION_STATE_20260919.json for live campaign state.
-The published full-system evidence below remains unchanged; this new study
-has no confirmed generation result yet.
+The shared-EGNN physical-head study is COMPLETE and independently audited.
+Read research/evidence/matched_connection_audit_v1.json and
+research/evidence/matched_connection_selection_v1.json. On16 fresh compositions
+(512 attempts per model), FM joint graph-valid/GFN2-force<=5 yield improves
+8.01->15.04%, +7.03pp [2.73,11.91], with both fits improving. GAGA given the
+same7106-parameter architecture,128 TRAIN compositions,1024 force queries per
+parent, and20000 head updates improves10.94->17.58%, +6.64pp [3.71,9.77].
+Corrected FM-minus-GAGA is-2.54pp [-6.64,1.76]: no established ordering.
+This demonstrates correction transfer to independently trained flow and
+diffusion backbones; do not turn it into an unsupported matched GAGA win.
 
-# Current checkpoint —2026-09-19
+All four parent/head fits use identical physical supervision budgets. FM has64
+head calls and GAGA128, in addition to128 backbone calls each. The native GAGA
+schedule/observation noise and every parent tensor remain frozen. Protocol
+matched_connection_v1 is fixed before sampling; eight separate validation
+compositions select strength1 for each algorithm before any fresh test output.
+All4096 validation/test outputs received successful fixed-coordinate GFN2.
+The19 relevant tests pass. No optimization or energy queries occur in sampling.
+
+Array47317335 (teacher/fit/validation) and47317610 (fresh test) are complete.
+State: research/MATCHED_CONNECTION_STATE_20260919.json. Immutable experiment
+source: fd055b8 in runs/matched_connection_v1/source. Registry v30 counts5120
+new neural trajectories (1024 TRAIN and4096 evaluation),4096 eSEN queries,
+4096 GFN2 readouts and80000 head updates. No BGFM job is currently running.
+
+The paper now foregrounds the learned physical correction and reports both
+matched generators. Complete-system FlowMol results below remain valid and
+separate. Publication build v9 is verified:9 main pages/35 total,27 cited references,
+49 standalone files. Canonical and standalone PDF text match. Publication
+synchronization is the remaining release step; v8 was previously published.
+
+# Previous complete-system checkpoint —2026-09-19
 
 All new studies are COMPLETE and audited. Read
 research/evidence/published_model_confirmation_audit_v1.json,
@@ -53,13 +75,12 @@ Historical statuses below do not override this checkpoint.
 
 ## Next actions
 
-- Build v8 is published and verified in publication_sync_v8.json. The user handles
-  authors and OpenReview submission; neither cloud compilation nor submission
-  is implied by a git push.
-- If pursuing a stronger GAGA algorithm claim, evaluate learned physical
-  correction on the shared EGNN under matched training/physical-label budgets.
-  Do not confuse the current complete-system result with that missing evidence.
-- Replication on another parent or more compositions would strengthen the new
-  correction result; it is not evidence for global equilibrium or perfect chemistry.
-- Retain the simpler head as an efficient tested variant. Do not promote the
-  contextual architecture merely because its internal force-target MSE is lower.
+- Publish verified build v9 and confirm GitHub/Overleaf file hashes.
+- The shared-EGNN physical-head transfer is now complete, including an equally
+  supervised GAGA control. Do not rerun the same test or select new settings on
+  its outcomes. The supported contribution is correction transfer, with no
+  reliable FM-over-corrected-GAGA ordering.
+- Keep the effective small head and the original complete-system comparison.
+  The broader contextual head did not improve generation beyond the small head.
+- For the deadline, prioritize a coherent submission around harmonic source and
+  learned physical correction. User handles author details and OpenReview.
