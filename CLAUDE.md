@@ -30,9 +30,10 @@ parent trajectories. H fits add640000 training forwards and512 diagnostic forwar
 
 Paper v11 adds the H method, all controls, fresh results and an actual-coordinate
 PyMOL figure. Build verified:9 main pages,38 total,28 references,52 exported files.
-Twelve targeted tests and CPU/CUDA CLI replays pass. Publication sync v11,
-when complete, is authoritative for remote state.
-Published paper before this update was v10 (GitHub2c2acbc, Overleaf71690d7).
+Twelve targeted tests and CPU/CUDA CLI replays pass. Publication sync v11
+verifies GitHubf8e7ce5 and Overleaf91bc8f6 plus the HOLY mirror.
+All52 exported files and the GitHub PDF match the build; coauthor ancestor
+1b64efd is retained. This is a published draft, not an OpenReview submission.
 
 # Previous checkpoint —2026-09-20: calibrated correction complete
 
