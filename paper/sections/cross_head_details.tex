@@ -1,0 +1,30 @@
+\subsection{Cross-generator weight transfer}\label{app:cross-head}
+
+The transfer protocol is fixed before any cross-head outputs are generated
+and before the three new fit pairs are evaluated. Earlier target-parent outcomes
+already exist for fits 1--2. Fits 3--5 therefore provide the primary independent
+replication. Each target uses the source family's final 20,000-update head
+without changing any tensor, vocabulary, bound, or calibration strength. The
+velocity/noise conversions in Equation~\ref{eq:endpoint-native-updates} express
+its action in the target sampler. No backbone representation is supplied to
+the head; the inputs are coordinates, predicted endpoints, atom identities,
+and normalized progress.
+
+\begin{table}[h]\centering\small\caption{Joint yield of transferred heads in every fit (percent), without hydrogen readout.}\begin{tabular}{llrrrrr}\toprule Target & Head trained on & 1 & 2 & 3 & 4 & 5\\\midrule
+FM & GAGA & 29.20 & 28.81 & 13.96 & 26.17 & 29.79\\
+GAGA & FM & 28.42 & 23.54 & 27.54 & 26.95 & 19.92\\
+\bottomrule\end{tabular}\end{table}
+
+Relative to its own head, GAGA with the FM-trained head changes joint yield
+by $-0.36$ points in the three new fits (composition interval $[-1.66,0.94]$;
+crossed interval $[-2.15,1.30]$). For FM, the GAGA-trained head changes joint
+yield by $+1.50$ points ($[0.33,2.64]$; crossed interval $[0.00,3.12]$).
+The robust conclusion is improvement over the uncorrected target in both
+transfer directions. These results do not establish that transferring a head
+is always better than fitting one on the target's own trajectories.
+
+This study adds 10,240 generated trajectories and 10,240 successful GFN2
+single-point calculations, with no further head updates or force-teacher
+queries. All five fit pairs and both directions are retained. A resumed
+metadata-writing failure reuses its checksum-verified generated coordinates;
+those trajectories are counted once.

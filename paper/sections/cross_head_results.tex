@@ -1,0 +1,27 @@
+\subsection{Reusing a head across generators}\label{sec:cross-head}
+
+The head's inputs have the same geometric meaning in FM and GAGA. We test whether
+its weights can also be shared: within each of the five fit pairs, we exchange
+the trained heads verbatim and keep strength four. No target-generator force
+labels train the transferred head, and no retraining follows the swap.
+The comparison uses the same 64 compositions and initial draws as above,
+without the optional H readout.
+
+\begin{table}[t]\centering\small
+
+\caption{Joint yield (percent) with the same or the other generator's trained head. Each cell contains 5,120 attempts. The transferred head uses only its source generator's force-training records.}
+
+\begin{tabular}{lrrr}\toprule Target & No head & Own head & Other head\\\midrule
+FM & 7.21 & 24.00 & 25.59\\
+GAGA & 8.75 & 25.37 & 25.27\\
+\bottomrule\end{tabular}\label{tab:cross-head}\end{table}
+
+In the three new fit pairs, the FM-trained head improves GAGA joint yield by
+16.54 percentage points (95\% composition interval $[13.02,20.08]$;
+crossed fit/composition interval $[12.66,20.67]$). The three gains are
+16.02, 18.36, and 15.23 points. Reverse transfer, from GAGA to FM, improves
+joint yield by 17.12 points ($[13.61,20.77]$), with all three gains positive.
+Thus the learned correction remains useful when the source distribution,
+training objective, and sampling dynamics change. The experiment holds the
+EGNN architecture and element vocabulary fixed.
+Appendix~\ref{app:cross-head} gives every fit and the comparison to target-trained heads.

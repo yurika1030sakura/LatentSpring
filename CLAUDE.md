@@ -1,4 +1,52 @@
-# Active work —2026-09-20: independent training replication
+# Current checkpoint —2026-09-20: five-fit physical correction and weight transfer confirmed
+
+ALL scientific jobs are COMPLETE. No further training or sampling is pending.
+Read seed_replication_audit_v2.json (energies after uniform SCC completion),
+seed_replication_audit_v1.json (original failures), and cross_generator_head_audit_v1.json.
+On64 new compositions (20 with17--28 atoms and44 with29--40),5120 attempts per
+model across5 independent fit pairs give FM joint7.21->24.00% and GAGA8.75->25.37%
+with the learned physical head. The three NEW fits confirm FM+15.625pp,
+composition CI[12.34,19.01], crossed fit/composition CI[8.50,22.43], with every
+fit improving. GAGA's three-new-fit gain is16.89pp. One FM initialization is weak;
+retain it. With H flow FM26.33% vsGAGA25.74%; neither joint nor graph superiority
+is stable across fitted models. Do not claim comprehensive GAGA dominance.
+
+Verbatim FM-head->GAGA transfer improves new-fit joint yield16.54pp
+[13.02,20.08], crossed[12.66,20.67]; all3 gains positive. Reverse transfer gives
+17.12pp [13.61,20.77], also positive in all3. No head retraining or target-parent
+force labels train the transferred head. Architecture/vocabulary are shared;
+do not extrapolate this to every architecture or chemistry.
+
+H readout vs fixed radial rule lowers new-fit all-output energy19.31meV/atom
+[15.17,23.67]; crossed reduction interval[11.62,28.05]. Six initially unconverged
+GFN2 calculations (all graph-invalid) converge with1000 instead of250 SCC
+iterations, otherwise identical conditions and coordinates. No geometry
+optimization. Original failures retained; graph and joint arrays unchanged.
+The original first-pass H gate was incomplete; the completion audit is explicit.
+
+Registry v37:281152 evaluation parent trajectories,8960 FIT trajectories,
+290112 total parent-generation records,203706 eSEN rows,110631 GFN2 attempts.
+Derived evaluation readouts sincev34:28800. This campaign adds285000 optimizer
+updates. Inference-package verification repeats are separate from scientific
+attempts; all failed diagnostics are retained. Reserved722 outcomes unqueried.
+
+Model API: cfm_mol.latentspring_generator.LatentSpringGenerator;
+CLI: python -s -m scripts.generate_from_bundle. The10-model/5-fit bundle is in
+/n/holylabs/ryl_lab/Lab/yulili_cfm_mol/releases/latentspring_egnn_20260920.
+Cross-head selection uses head_family; only the small source head is loaded.
+CPU/CUDA replays passed. CUDA scatter-add is not bitwise deterministic in the
+archived sampler; deterministic API/direct-sampler checks match exactly, and
+archived coordinates agree within3.31e-5A with identical graph/geometry labels.
+The package includes all models, not a selected best initialization.
+
+Paper title: LatentSpring: Transferable Physical Corrections for Molecular
+Generation from Atomic Composition. The source and endpoint update are central;
+paired weight updates/Jarzynski remain in appendices. FLEXDOCK, ConfDiff and
+Lai2026 are cited: no first-endpoint/first-force-network claim. Build v12 verifies
+9 main pages,42 total,31 references,60 exported files. Publication sync v12,
+when complete, is authoritative for remote state. No OpenReview submission done.
+
+# Previous running checkpoint —2026-09-20: independent training replication
 
 User requests further work toward a strong ICLR paper. Current jobs47340136
 and47340267 run the fixed shared-EGNN comparison on64 new compositions across

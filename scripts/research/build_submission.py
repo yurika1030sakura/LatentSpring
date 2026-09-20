@@ -86,7 +86,8 @@ def main():
     source=(paper/'tree_working.tex').read_text()
     abstract=re.search(r'\\begin\{abstract\}(.*?)\\end\{abstract\}',source,re.S).group(1).strip()
     abstract=abstract.replace('\\%','%').replace('\\AA','Å').replace('--','–').replace('\\,',' ')
-    (paper/'submission_abstract.txt').write_text('LatentSpring: Physics-Informed Molecular Flow Matching from Atomic Composition\n\n'+re.sub(r'\s+',' ',abstract)+'\n')
+    title=re.search(r'\\title\{([^}]+)\}',source).group(1)
+    (paper/'submission_abstract.txt').write_text(title+'\n\n'+re.sub(r'\s+',' ',abstract)+'\n')
     receipt=dict(compiled=True,at_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         builds=dict(canonical=canonical,standalone=standalone),input_sha256=inputs,
         canonical_and_standalone_pdf_text_identical=True,export_manifest_verified=True,

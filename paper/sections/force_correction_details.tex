@@ -1,8 +1,7 @@
 \section{Learning a physical correction along the flow}\label{app:force-correction}
-The paired update incorporates physical feedback into the backbone weights. We
-also test a separate network that learns the physical correction itself. This
-separates its regression target from the backbone's flow-matching error and
-keeps every parent parameter fixed.
+The correction network learns physical changes at provisional endpoints while
+keeping every parent parameter fixed. Its regression target is separate from
+the backbone's flow-matching objective.
 
 \paragraph{States and targets.}
 The parent generates two trajectories for each of 128 training compositions,
@@ -15,7 +14,7 @@ prediction after both parent self-conditioning passes; later changes in velocity
 can change the final generated coordinates.
 
 We evaluate the mirror-averaged eSEN force at $H_t$, subtract its mean across
-atoms, and construct the force shift described in Section~\ref{sec:flow}.
+atoms, and construct the force shift defined in Equation~\ref{eq:local-force-shift}.
 The Gaussian width is at most 0.03\,\AA\ and the molecular displacement norm is
 at most 0.1\,\AA. The regression target is
 $\delta(H_t)/(1-t)$, a velocity correction whose linear endpoint extrapolation

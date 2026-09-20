@@ -24,6 +24,12 @@ output directly. The result also retains initial coordinates, the coordinates
 before the H readout, the activation mask, and measured call counts. Neither
 mode evaluates an energy model or filters outputs by validity or energy.
 
+To use an FM-trained head on GAGA, set `family="gaga", head_family="fm",
+hydrogen=False`. The target loads only the source head; it does not run or load
+the source parent. `head_family=None` uses the target's own fitted head. The
+cross-head study evaluates this transfer without the H readout; composing both
+options is available for further experiments but is not that reported recipe.
+
 The trained checkpoints cover neutral organic singlets. Inputs with incompatible
 charge/spin or electron parity are rejected. The implementation accepts up to200
 atoms, but the confirmed shared-EGNN readout studies cover17--40 atoms; the small
@@ -43,7 +49,12 @@ python -s -m scripts.generate_from_bundle \
 
 The exporter is `scripts.research.export_inference_bundle`. It creates compact
 copies from completed fit records and preserves the original checkpoint hashes.
-The two-fit development package is in
-`runs/seed_replication_v1/bundle_prototype`; a five-fit package can be exported
-only after every corresponding study has completed. These local weight packages
+The completed five-fit package contains ten parent/head model combinations
+and five shared H models. The earlier two-fit development package remains in
+`runs/seed_replication_v1/bundle_prototype`. These local weight packages
 are not stored in Git; source code and reproducibility receipts are tracked.
+
+CUDA scatter-add reductions in the original sampler are not bitwise deterministic.
+The final package check uses deterministic reductions and matches the direct
+sampler exactly in both transfer directions; archived coordinates agree within
+3.31e-5 Angstrom and retain all graph/geometry classifications.

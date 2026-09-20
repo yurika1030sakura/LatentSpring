@@ -13,25 +13,16 @@ without shared pretraining history. EDM and GAGA achieve higher validity in this
 setting. Unlike the Gaussian--harmonic FM comparison, those comparisons also
 change the probability path, training objective, and sampler.
 
-Adding distance self-conditioning to harmonic FM gives 15.63\% validity versus
-13.77\% for validation-selected GAGA on a separate 32-composition panel, at the
-same training forward-pass budget. The difference is $+1.86$ points with a
-composition interval of $[-0.34,4.44]$; this comparison does not establish a
-reliable ordering. Appendix~\ref{app:feedback-transfer} reports the selection,
-feedback controls, and physical-update transfer experiment.
-
-The learned physical head transfers to both EGNN generators on another 16 new
-compositions. At matched physical-supervision budgets, FM joint yield rises from
-8.01\% to 15.04\% and GAGA from 10.94\% to 17.58\%. Their paired improvements
-are $+7.03$ points ($[2.73,11.91]$) and $+6.64$ points ($[3.71,9.77]$),
-respectively, with both fits improving. The ordering between the corrected
-generators remains uncertain, including after a wider strength calibration
-(Appendix~\ref{app:matched-connection}).
+Distance self-conditioning provides the FM parent for the physical-head
+comparison, with matched training forward-pass budgets. The original
+feedback and two-fit correction experiments are reported in
+Appendices~\ref{app:feedback-transfer} and~\ref{app:matched-connection}.
 
 A further 16-composition comparison evaluates complete systems with their own
-architectures and training histories. The paired-update model reaches 38.09\%
-GFN2 joint yield, versus 9.77\% and 12.11\% for GAGA at 128 and 651 calls.
-Learned force correction gives 46.88\%, compared with 38.87\% for its frozen
-parent. Appendix~\ref{app:common-models} reports all variants, preparation costs,
+architectures and training histories. The 5.90-million-parameter FlowMol backbone reaches 38.87\% GFN2 joint
+yield, increasing to 46.88\% with learned force correction. GAGA reaches
+9.77\% at 128 calls and 12.11\% at 651 calls, using a 2.38-million-parameter
+backbone trained from scratch. Their inherited training and physical supervision
+differ. Appendix~\ref{app:common-models} reports all variants, preparation costs,
 and the matched-size and training-duration controls. These complete-system
 results complement the architecture-controlled experiments above.
