@@ -23,6 +23,7 @@ mkdir -p "$MPLCONFIGDIR"
 cd "$SOURCE"
 EXTRA=()
 if [[ -n "${4:-}" ]]; then EXTRA=(--selection "$4"); fi
+PROTOCOL="${5:-$SOURCE/research/evidence/extended_connection_v1.json}"
 exec "$FLOW_ENV/bin/python" -u -m scripts.research.run_extended_connection \
- --project "$PROJECT" --protocol "$SOURCE/research/evidence/extended_connection_v1.json" \
+ --project "$PROJECT" --protocol "$PROTOCOL" \
  --out "$RUN/s${SLURM_ARRAY_TASK_ID}" --seed-index "$SLURM_ARRAY_TASK_ID" "${EXTRA[@]}"
