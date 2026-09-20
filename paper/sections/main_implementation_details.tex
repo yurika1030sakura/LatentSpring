@@ -24,7 +24,7 @@ confirmation and the additional-baseline experiment.
 Generation uses 32 midpoint steps with two self-conditioning passes per field
 evaluation: 128 backbone calls and 64 small-head calls per output. No terminal
 coordinate perturbation, hydrogen readout, physical query, or geometry
-optimization is used in Table~\ref{tab:main-generators}. Head training and
+optimization is used in Figure~\ref{fig:main-generators}. Head training and
 teacher queries are additional to backbone training. The main comparison
 matches backbone training-example forward counts and backbone sampling calls;
 it does not equate total physical supervision, FLOPs, or wall time.
@@ -35,7 +35,7 @@ required inference procedure.
 \paragraph{Evaluation and repetition counts.}
 The 64-composition panel contains 20 compositions with 17--28 atoms and 44
 with 29--40 atoms, all absent from the processed training and validation
-corpora. Table~\ref{tab:main-generators} uses five fits for LatentSpring and
+corpora. Figure~\ref{fig:main-generators} uses five fits for LatentSpring and
 GAGA, and two archived fits for Gaussian FM and EDM. Each fit produces 1,024
 outputs. The extra three FM/GAGA fits were trained after freezing the method;
 Appendix~\ref{app:seed-replication} separates these from the earlier two fits
@@ -44,7 +44,7 @@ same panel in a later experiment with settings fixed before generating their
 outputs. No checkpoint or output is selected by its evaluation energy.
 
 \paragraph{Four-setting component analysis.}
-Table~\ref{tab:source-head-ablation} uses the two archived, one-pass Gaussian
+Figure~\ref{fig:source-head-ablation} uses the two archived, one-pass Gaussian
 and harmonic FM parents from Appendix~\ref{app:matched-generators}. Both omit
 self-conditioning, unlike the main LatentSpring row. Within each fit, we apply
 the identical frozen head previously learned on the distance-self-conditioned
@@ -75,6 +75,27 @@ The four-cell table therefore supports the combined method while the smaller
 source-only physical-quality difference remains uncertain. Three initially
 unsuccessful GFN2 calculations in the Gaussian arms remain in the denominator;
 they are not replaced or counted as joint successes.
+
+\paragraph{Structured diffusion in the combined-design transfer.}
+In Equation~\ref{eq:structured-diffusion}, $B_T$ is the centered tree embedding
+multiplied by the edge standard deviations, so $C_T$ has rank $N-1$. If $D_T$
+takes oriented edge differences divided by their standard deviations, the
+training loss is $\|D_T(\widehat n-B_T\Xi)\|_F^2/[3(N-1)]$, where $\widehat n$
+is the denoiser's predicted coordinate noise. This is the inverse-covariance
+weighted reconstruction error on the centered subspace. The existing second
+invariant edge channel receives $\log[1+3(C_{T,ii}+C_{T,jj}-2C_{T,ij})]$.
+The covariance adds no learned parameters and contains no observed chemical bonds.
+
+EDM starts from $B_T\Xi$. At GAGA's selected truncation, the starting Gaussian
+conditional on $T$ has covariance $\alpha_t^2vP+\sigma_t^2C_T$. Here $v$ is the
+original training-only coordinate variance and $P=I-\boldsymbol1\boldsymbol1^\top/N$
+removes translation. Thus GAGA retains its data-variance approximation while
+using harmonic corruption noise. Both structured backbones use the paired
+original random initializations, the original 20,000 references and batch
+schedules, and 30,000 one-pass updates. The two FM physical heads remain frozen.
+The target models are retrained, so this experiment transfers the two designs;
+only the physical head is reused without retraining. Pending plotted outcomes
+are filled only after the complete generation and physical-score audit.
 
 \paragraph{Released evidence.}
 The additional experiment evaluates all three target baselines (Gaussian FM,

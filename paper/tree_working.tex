@@ -13,28 +13,30 @@
 \newcommand{\HH}{\mathcal H}
 \newcommand{\EE}{\mathbb E}
 \newcommand{\RR}{\mathbb R}
-\title{LatentSpring: Transferable Physical Corrections for Molecular Generation from Atomic Composition}
+\title{LatentSpring: Harmonic Sources\\
+and Physical Corrections for\\
+Molecular Flow Matching}
 \author{Anonymous}
 \begin{document}
 \maketitle
 \begin{abstract}
-Generating a molecule from atomic composition leaves both its connectivity and
-three-dimensional geometry to be determined. LatentSpring combines a normalized
-harmonic-mixture source with learned physical correction. A random auxiliary tree
-organizes Gaussian coordinate displacements using atomic length scales, requiring
-no known chemical bonds. A small equivariant head learns force-driven changes to
-a frozen generator's predicted endpoints. Expressing these changes in coordinate
-space lets the same head act on flow velocities or diffusion noise predictions.
-On 64 new compositions and five independently trained EGNN fit pairs, physical
-correction raises the fraction of outputs that are graph-valid and have GFN2-xTB
-force RMS at most 5 eV/\AA\ from 7.21\% to 24.00\% for FM and from 8.75\%
-to 25.37\% for GAGA. Three new fit pairs confirm improvement in every case.
-Transferring the FM-trained head verbatim to GAGA improves this joint yield by
-16.54 percentage points across those three pairs, without head retraining or
-target-generator force labels. A separate source comparison improves graph
-validity by 3.89 points on average across five fine-tuning runs. An optional
-conditional hydrogen flow further improves physical geometry. Generation uses
-neural evaluations, with no energy calls or quantum geometry optimization.
+Generating a molecule from atomic composition requires determining both its
+connectivity and three-dimensional geometry. LatentSpring improves molecular
+flow matching through two designs. A normalized harmonic-mixture source uses
+random auxiliary trees and atomic length scales to organize the starting
+coordinates without known chemical bonds. A small equivariant network learns
+physical corrections to a frozen generator's predicted endpoints from force
+feedback. On 64 unseen compositions, LatentSpring reaches 24.00\% joint yield,
+the fraction of outputs that are graph-valid and have GFN2-xTB force RMS at most
+5 eV/\AA, compared with 8.75\% for GAGA and 8.15\% for EDM. An independent
+one-pass FM ablation shows that the harmonic source adds 4.35 percentage points
+to joint yield when combined with physical correction. The correction also
+improves FM in each of three new training repetitions. Expressing its action in
+coordinate space allows an FM-trained correction network to act directly on
+diffusion noise predictions: transfer to GAGA improves joint yield by 16.54
+points across those three repetitions, without retraining the correction.
+Generation uses neural evaluations, with no energy calls or quantum geometry
+optimization.
 \end{abstract}
 
 \section{Introduction}
@@ -57,7 +59,7 @@ LatentSpring uses a random tree to organize the starting coordinates. We sample
 Gaussian displacements along its edges, with scales determined by the connected
 atoms' radii, and obtain atom positions by adding these displacements along the
 tree. A new tree is drawn for every sample. Its edges are not proposed chemical
-bonds: the tree is used only for initialization, and the flow can generate a
+bonds: in the FM model, the tree is used only for initialization, and the flow can generate a
 structure with different connectivity, including rings. Averaging over the trees
 gives a normalized mixture of harmonic networks. We combine this source with an
 equivariant coordinate network and geometry self-conditioning: the network makes
@@ -72,22 +74,24 @@ forces at that geometry during training. A bounded equivariant head learns the
 additional velocity needed to shift the prediction along those forces. At
 generation time, only the neural networks are evaluated. Expressing the head's
 action as a change to the provisional endpoint also allows it to correct a
-diffusion model's noise prediction. A complementary implementation transfers
-physical feedback into the backbone weights by subtracting a matched
-\emph{replay} update from an update trained on force-shifted structures.
+diffusion model's noise prediction.
 
 We study two linked design choices: a normalized harmonic-mixture source that
 requires no known chemical bonds, and learned physical changes to a generator's
-predicted endpoints. The endpoint formulation makes the correction applicable to
-both velocity and noise prediction. Controlled source comparisons and independent
-backbones test these choices, while unseen compositions and independent physical
-evaluation measure the quality of the generated coordinates.
+predicted endpoints. Section~\ref{sec:main-comparison} compares the complete FM
+model with generative baselines. Section~\ref{sec:source-head-ablation} separates
+the two designs on an independent one-pass FM configuration.
+Section~\ref{sec:joint-transfer} examines transfer to diffusion generators and
+distinguishes combined-design adaptation from direct reuse of correction weights.
+Additional source studies, paired weight updates, and local nonequilibrium-work
+experiments provide complementary analyses.
 
 \section{Related work}
 \paragraph{Molecular flows and source distributions.}
 ConfGF and GeoDiff generate conformations for a supplied chemical graph
-\citep{shi2021confgf,xu2022geodiff}. We use FlowMol3's equivariant coordinate
-network and geometry self-conditioning modules \citep{flowmol3}. Equivariance
+\citep{shi2021confgf,xu2022geodiff}. Our main comparisons use the EGNN underlying
+EDM \citep{edm}; additional source experiments use FlowMol3's coordinate network
+and self-conditioning modules \citep{flowmol3}. Equivariance
 means that rotating the input rotates the predicted vectors, while relabeling
 identical atoms relabels their outputs. HarmonicFlow combines harmonic sources
 with self-conditioned flow matching for ligand docking; FlowSite extends this
@@ -198,7 +202,7 @@ for every sample. The resulting law is unchanged by rotations or relabelings of
 identical atoms.
 
 \paragraph{The source density.}
-The tree is unobserved after initialization. Summing over it gives the source
+For FM, the tree is unobserved after initialization. Summing over it gives the source
 density $q_0(X\mid c)$, a mixture of harmonic networks:
 \begin{proposition}[Normalized source density]
 For normalized isotropic edge densities,
@@ -244,12 +248,12 @@ structure to the displacement between its paired endpoints. The variable
 $t\in[0,1]$ measures progress along this interpolation, not physical time.
 
 \paragraph{Geometry self-conditioning.}
-We retain FlowMol3's coordinate-shaped output head $D_\theta(X_t,t;c)$ and use
-its increment $D_\theta-X_t$ as the predicted velocity, after subtracting the
-mean atom velocity to keep coordinates centered. Self-conditioning evaluates the
-same network twice. The first prediction $v^{(0)}$ gives an estimated endpoint,
-$\widehat X_1=X_t+(1-t)v^{(0)}$. The second pass receives this provisional
-geometry as an additional input and predicts $v^{(1)}$. Both passes share weights.
+The main EGNN predicts one centered velocity vector per atom. Self-conditioning
+evaluates this network twice. The first prediction $v^{(0)}$ gives a provisional
+endpoint, $\widehat X_1=X_t+(1-t)v^{(0)}$. The second pass receives its pairwise
+distances through an invariant edge channel and predicts $v^{(1)}$. Both passes
+share weights; the provisional geometry is detached before constructing the
+second-pass distance features.
 
 We supervise both velocity predictions:
 \begin{equation}
@@ -258,20 +262,20 @@ We supervise both velocity predictions:
 \end{equation}
 The expectation averages over reference structures, source samples, and training
 times. The loss averages the two passes and the $3N$ coordinate errors, giving
-each molecule equal weight. Gradients pass through both evaluations. Atom types
-and charge inputs remain fixed; edge inputs always indicate ``no bond.'' All
-FlowMol3 source comparisons use this same coordinate-only objective and two-pass
-architecture.
+each molecule equal weight. Both evaluations receive supervised gradients, while
+the distance feedback is held fixed during differentiation. Atom identities
+remain fixed and no chemical bond labels are supplied. The one-pass component
+ablation omits the second evaluation. Appendix~\ref{app:source-study-setup}
+describes the earlier FlowMol implementation.
 
 \paragraph{Sampling.}
-We use 32 midpoint integration steps, with two velocity evaluations per step. In
-the implemented scheme, the first evaluation uses the current coordinates and
-the interval's midpoint time. The second uses the resulting half-step coordinates
-at that same time. With two self-conditioning passes per velocity evaluation,
-this requires $32\times2\times2=128$ network forward passes per attempted sample.
-We then add 0.025\,\AA\ centered Gaussian noise. All FlowMol3 source comparisons
-use this sampler, with no subsequent energy-based selection or geometry
-optimization. Reported metrics use these raw outputs.
+The main FM uses 32 midpoint steps. Each step evaluates the current coordinates
+and time, advances a half-step, then evaluates the half-step coordinates at the
+midpoint time to obtain the full-step update. Two self-conditioning passes per
+velocity evaluation give $32\times2\times2=128$ backbone calls per output.
+The physical correction below acts on each final velocity prediction, adding
+64 small-network calls. The generated coordinates are returned without a
+terminal perturbation, energy-based selection, or geometry optimization.
 
 \subsection{Learning physical changes to predicted endpoints}\label{sec:endpoint-correction}
 A physical force is defined on a geometry, while a generator predicts a velocity
@@ -322,8 +326,8 @@ fixed schedule's signal and noise scales. These two parameterizations require
 \end{equation}
 Substitution into either endpoint estimate gives the same displacement
 $\eta(1-p)A_\phi$. In GAGA, $p=1-t/t_{\max}$, with diffusion noise time $t$
-and truncation $t_{\max}=0.65$. The original transitions and observation noise
-are retained. Progress is a schedule coordinate, not physical time; the two
+and truncation $t_{\max}=0.65$. In head-only transfer, the original transitions
+and observation noise are retained. Progress is a schedule coordinate, not physical time; the two
 samplers need not follow the same dynamics.
 
 The head has 8,178 parameters for FlowMol's atom vocabulary and 7,106 for the
@@ -332,6 +336,24 @@ uses 128 backbone and 64 head calls, with no terminal perturbation; the GAGA
 comparison uses 128 of each. Neither invokes an energy model during generation.
 Appendices~\ref{app:force-correction} and~\ref{app:matched-connection} give the
 architecture, bounds, fitting budgets, and strength calibration.
+
+\paragraph{Extending the source to diffusion.}
+To transfer both designs, we use the harmonic mixture as structured diffusion
+noise. For a sampled tree $T$, let $B_T$ map independent standard Gaussian edge
+vectors to centered coordinates with the scales in Equation~\ref{eq:edge-law}.
+Its coordinate covariance is $C_T=B_TB_T^\top$. A forward diffusion state is
+\begin{equation}
+ X_t=\alpha_t X_{\rm clean}+\sigma_t B_T\Xi,
+ \qquad \Xi\in\RR^{(N-1)\times3},\quad \Xi_{ij}\sim\mathcal N(0,1).
+ \label{eq:structured-diffusion}
+\end{equation}
+The tree stays fixed along a trajectory, and reverse-sampling noise uses the
+same covariance. The denoiser receives invariant pair variances from $C_T$ and
+predicts the noise $B_T\Xi$ in coordinate units. This follows the established
+non-isotropic Gaussian diffusion construction \citep{voleti2022nonisotropic}.
+The target backbone is trained for this noise process; the FM physical head
+is then reused through the same endpoint correction. Appendix~\ref{app:main-implementation}
+gives the covariance conditioning and GAGA initialization.
 
 \paragraph{Physical feedback in the backbone weights.}
 A complementary implementation fine-tunes two backbone copies on force-shifted
@@ -374,14 +396,15 @@ structural checks.
 \input{sections/source_head_ablation}
 \input{sections/combined_transfer_results}
 \section{Discussion}
-LatentSpring combines a composition-conditioned harmonic source with physical
-corrections learned in a shared coordinate space. The correction improves both
-flow and diffusion generators and remains effective when its weights are
-transferred between them. Variation across trained parents remains substantial;
-the results establish the correction's benefit without a stable ranking between
-the two augmented generators. The experiments concern unoptimized neutral organic
-structures and approximate energy models. Work-identity tests recover specified
-local distributions; global molecular equilibrium remains open.
+LatentSpring combines two ways to improve molecular flow matching: a structured
+starting distribution and learned physical changes to predicted endpoints.
+The complete model improves joint structural and physical quality over the
+evaluated baselines, while the one-pass FM ablation shows an additional source
+benefit when physical correction is present. Independent training repetitions
+and direct reuse in diffusion generators support the correction's utility.
+The experiments concern unoptimized neutral organic structures and approximate
+energy models. The separate work-identity experiments address specified local
+distributions; the generation results do not establish global equilibrium sampling.
 
 \label{endofmaintext}
 \subsubsection*{Reproducibility statement}

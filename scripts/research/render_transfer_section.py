@@ -5,6 +5,7 @@ from pathlib import Path
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--project',type=Path,required=True)
+    p.add_argument('--figure-dir',default='research/figures/experimental_story_v4')
     a=p.parse_args();root=a.project.resolve();sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
     paths=['research/evidence/joint_design_transfer_v1.json','research/evidence/seed_replication_audit_v2.json',
            'research/evidence/other_baseline_transfer_audit_v1.json','research/evidence/cross_generator_head_audit_v1.json']
@@ -104,6 +105,18 @@ head experiments, separate from the combined-design diffusion comparison in
 Table~\ref{tab:joint-transfer}.}\label{fig:seed-replication}
 \end{figure}
 '''
+    start=text.index(r'\begin{table}');end=text.index(r'\end{table}',start)+len(r'\end{table}')
+    caption=(r'Transfer and training replication. (A--B) Original diffusion baselines and the combined-design comparison on 64 compositions, with two fits and 2,048 outputs per setting. ')
+    if not finished:caption+=r'Combined-design evaluation is pending; no outcome markers or connecting lines are drawn for it. '
+    caption+=r'The GAGA baseline here uses the two paired fits, while Figure~\ref{fig:main-generators} averages five. (C--D) Every fit from the completed physical-correction and hydrogen-readout study. Gray open markers identify the two earlier fits; colored filled markers identify the three new fits. Each line follows the same parent. These lower panels use the head fitted to each parent and do not include the combined-design diffusion experiment.'
+    figure=(r'\begin{figure}[H]\centering'+'\n'+r'\includegraphics[width=\linewidth]{../'+a.figure_dir+'/transfer_and_replication.pdf}\n'+
+            r'\caption{'+caption+'}'+r'\label{fig:joint-transfer}\label{fig:seed-replication}'+'\n'+r'\end{figure}')
+    text=text[:start]+figure+text[end:]
+    start=text.index(r'\begin{figure}',text.index(r'\paragraph{Optional hydrogen readout.}'))
+    text=text[:start]
+    text=text.replace(r'Table~\ref{tab:joint-transfer}',r'Figure~\ref{fig:joint-transfer}A--B').replace(r'Table~\ref{tab:main-generators}',r'Figure~\ref{fig:main-generators}')
+    text=text.replace(r'Figure~\ref{fig:seed-replication} shows each trained model.',r'Figure~\ref{fig:seed-replication}C--D shows each trained model.')
+    text=text.rstrip()+'\n'
     out=root/'paper/sections/combined_transfer_results.tex';out.write_text(text)
     receipt=dict(complete=True,inputs={p:sha(root/p) for p in paths},output=str(out.relative_to(root)),output_sha256=sha(out),
         combined_design_results_complete=finished,pending_cells=0 if finished else 4,baseline=baseline,

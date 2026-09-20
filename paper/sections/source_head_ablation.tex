@@ -5,18 +5,10 @@ use one-pass EGNN flow models without self-conditioning. Within each training
 run, the same frozen correction head is applied to both source variants.
 This keeps the learned correction fixed while changing the source.
 
-\begin{table}[H]\centering\small
-\caption{Source and physical-correction ablation on the same 64 compositions.
-Each row contains 2,048 outputs from two training runs. All values are
-percentages; the hydrogen readout is omitted.}
-\begin{tabular}{llrr}\toprule
-Source & Physical correction & Graph validity & Joint yield\\\midrule
-Gaussian & No & 16.70 & 6.25\\
-Harmonic & No & 19.04 & 7.23\\
-Gaussian & Yes & 20.65 & 19.92\\
-\textbf{Harmonic} & \textbf{Yes} & \textbf{25.59} & \textbf{24.27}\\
-\bottomrule\end{tabular}\label{tab:source-head-ablation}
-\end{table}
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{../research/figures/experimental_story_v4/source_correction_ablation.pdf}
+\caption{Four-setting FM ablation on the same 64 compositions, without self-conditioning or hydrogen readout. Color and marker shape distinguish Gaussian and harmonic sources; the horizontal axis switches physical correction off or on. Bold lines and value labels show means; thin lines show both training fits. Each configuration contains 2,048 outputs.}\label{fig:source-head-ablation}
+\end{figure}
 
 Physical correction improves joint yield with either source: from
 6.25 to 19.92\% for Gaussian FM and from 7.23 to 24.27\% for harmonic FM.

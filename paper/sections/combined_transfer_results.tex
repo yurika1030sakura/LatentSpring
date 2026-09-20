@@ -6,24 +6,14 @@ noise and attach the physical correction learned by FM. The correction weights
 are reused without further fitting. This transfers both designs while retaining
 each target's scalar diffusion schedule.
 
-Table~\ref{tab:joint-transfer} compares each original baseline with the version
+Figure~\ref{fig:joint-transfer}A--B compares each original baseline with the version
 using both designs, on the same 64 compositions. It uses two training fits per
 target and evaluates the source and correction together.
 
-\begin{table}[H]\centering\small
-\caption{Transfer of both designs to diffusion generators. Values are percentages,
-with 2,048 outputs per row and setting. The GAGA baseline uses the two fits
-paired with this experiment; Table~\ref{tab:main-generators} averages five.
-Dashes mark combined-design results awaiting completed evaluation.
-}
-\begin{tabular}{lrrrr}\toprule
-& \multicolumn{2}{c}{Graph validity} & \multicolumn{2}{c}{Joint yield}\\
-\cmidrule(lr){2-3}\cmidrule(lr){4-5}
-Target & Original & Both designs & Original & Both designs\\\midrule
-EDM & 22.27 & \textemdash & 8.15 & \textemdash\\
-GAGA & 24.22 & \textemdash & 9.47 & \textemdash\\
-\bottomrule\end{tabular}\label{tab:joint-transfer}
-\end{table}
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{../research/figures/experimental_story_v4/transfer_and_replication.pdf}
+\caption{Transfer and training replication. (A--B) Original diffusion baselines and the combined-design comparison on 64 compositions, with two fits and 2,048 outputs per setting. Combined-design evaluation is pending; no outcome markers or connecting lines are drawn for it. The GAGA baseline here uses the two paired fits, while Figure~\ref{fig:main-generators} averages five. (C--D) Every fit from the completed physical-correction and hydrogen-readout study. Gray open markers identify the two earlier fits; colored filled markers identify the three new fits. Each line follows the same parent. These lower panels use the head fitted to each parent and do not include the combined-design diffusion experiment.}\label{fig:joint-transfer}\label{fig:seed-replication}
+\end{figure}
 
 \paragraph{Evidence across independent training runs.}\label{sec:seed-replication}
 Completed experiments establish the physical correction's benefit across five
@@ -37,7 +27,7 @@ In the three new FM fits, joint-yield gains are 8.11, 18.46, and 20.31
 percentage points. Their mean is 15.62 points, with a 95\% interval of
 $[8.50,22.43]$ when resampling both fitted models and compositions. GAGA's
 three new fits improve by 16.89 points on average (composition interval
-$[13.31,20.54]$). Figure~\ref{fig:seed-replication} shows each trained model.
+$[13.31,20.54]$). Figure~\ref{fig:seed-replication}C--D shows each trained model.
 
 \paragraph{Direct reuse of physical-correction weights.}\label{sec:cross-head}
 We also test the learned weights themselves by swapping the FM and GAGA heads
@@ -64,14 +54,4 @@ Their joint-yield difference is 0.59 points, with a composition interval of
 $[-1.04,2.21]$. For the three new FM fits, learned hydrogen placement lowers
 all-output energy by 19.31 meV/atom relative to a fixed radial rule, with a
 composition interval of $[15.17,23.67]$ for the reduction. This optional
-readout is excluded from Table~\ref{tab:joint-transfer}.
-
-\begin{figure}[H]\centering
-\includegraphics[width=\linewidth]{../research/figures/seed_replication_v1/five_fit_replication.pdf}
-\caption{Completed physical-correction and hydrogen-readout comparisons in
-each of five training fits. Gray open markers identify the two earlier fits;
-filled markers identify the three new fits. Each line follows the same parent
-through correction and hydrogen readout. This figure reports the completed
-head experiments, separate from the combined-design diffusion comparison in
-Table~\ref{tab:joint-transfer}.}\label{fig:seed-replication}
-\end{figure}
+readout is excluded from Figure~\ref{fig:joint-transfer}A--B.

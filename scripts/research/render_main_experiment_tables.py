@@ -7,6 +7,7 @@ from pathlib import Path
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--project',type=Path,required=True)
+    p.add_argument('--figure-dir',default='research/figures/experimental_story_v4')
     a=p.parse_args();root=a.project.resolve()
     paths=['research/evidence/seed_replication_audit_v2.json',
            'research/evidence/other_baseline_transfer_audit_v1.json',
@@ -82,6 +83,17 @@ when resampling both training runs and compositions. Both runs favor the
 combination over either component alone. Appendix~\ref{app:main-implementation}
 reports the individual runs and the four-setting analysis.
 '''
+    def replace_table(text,figure,caption,label):
+        start=text.index(r'\begin{table}');end=text.index(r'\end{table}',start)+len(r'\end{table}')
+        block=(r'\begin{figure}[H]\centering'+'\n'+r'\includegraphics[width=\linewidth]{../'+a.figure_dir+'/'+figure+'.pdf}\n'+
+               r'\caption{'+caption+'}'+r'\label{'+label+'}\n'+r'\end{figure}')
+        return text[:start]+block+text[end:]
+    main_text=replace_table(main_text,'main_comparison',
+        r'Complete generators on 64 unseen compositions. Bars give mean graph validity (A) and joint yield (B); open circles show every training fit. Gaussian FM and EDM use two fits (2,048 outputs each); GAGA and LatentSpring use five (5,120 each). All attempts are counted. LatentSpring uses the source and physical correction, without the optional hydrogen readout.',
+        'fig:main-generators').replace(r'Table~\ref{tab:main-generators}',r'Figure~\ref{fig:main-generators}')
+    ablation=replace_table(ablation,'source_correction_ablation',
+        r'Four-setting FM ablation on the same 64 compositions, without self-conditioning or hydrogen readout. Color and marker shape distinguish Gaussian and harmonic sources; the horizontal axis switches physical correction off or on. Bold lines and value labels show means; thin lines show both training fits. Each configuration contains 2,048 outputs.',
+        'fig:source-head-ablation')
     outputs={'paper/sections/main_generator_comparison.tex':main_text,
              'paper/sections/source_head_ablation.tex':ablation}
     for name,text in outputs.items():(root/name).write_text(text)

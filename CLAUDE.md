@@ -31,7 +31,18 @@ experimental subsection. A new original-versus-both table contains four explicit
 pending cells; two-fit baseline values are already filled. Existing repetition,
 weight-transfer, and optional H results plus the figure remain in the main text.
 The first three experimental subsections and their results are unchanged.
-Publication synchronization is recorded in publication_sync_v16.json.
+Paper build v19 replaces the main comparison, ablation, and merged-transfer
+tables with three vector figure groups in research/figures/experimental_story_v4.
+All per-fit data remain visible; pending outcomes receive no invented marks.
+The title is now LatentSpring: Harmonic Sources and Physical Corrections for
+Molecular Flow Matching. Abstract/introduction/discussion follow the two-design
+story. The main methods now describe EGNN velocity output, detached distance
+feedback, and the actual midpoint sampler without terminal noise. Earlier
+FlowMol-specific details remain documented separately. Structured-diffusion
+covariance conditioning and parent retraining are explicit. See
+notes/narrative_experiment_alignment_20260920.md and experimental_graphics_review_v1.json.
+Build v19:9 main pages,46 total,32 references; local canonical and standalone
+text match. Publication synchronization is recorded in publication_sync_v19.json.
 
 # Current checkpoint —2026-09-20: three additional baseline transfers complete
 

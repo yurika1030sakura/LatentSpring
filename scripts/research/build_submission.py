@@ -87,6 +87,7 @@ def main():
     abstract=re.search(r'\\begin\{abstract\}(.*?)\\end\{abstract\}',source,re.S).group(1).strip()
     abstract=abstract.replace('\\%','%').replace('\\AA','Å').replace('--','–').replace('\\,',' ')
     title=re.search(r'\\title\{([^}]+)\}',source).group(1)
+    title=re.sub(r'\s+',' ',title.replace(r'\\',' ')).strip()
     (paper/'submission_abstract.txt').write_text(title+'\n\n'+re.sub(r'\s+',' ',abstract)+'\n')
     receipt=dict(compiled=True,at_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         builds=dict(canonical=canonical,standalone=standalone),input_sha256=inputs,

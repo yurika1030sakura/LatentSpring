@@ -16,6 +16,15 @@ chemical-graph checks, selection requires a spanning scaffold with bounded edge
 lengths and atom degrees. This scaffold is a data-selection filter, not an input
 to the model. Appendix~\ref{app:data-evaluation} specifies it.
 
+\paragraph{Earlier FlowMol output and sampler.}
+The FlowMol implementation uses a coordinate-shaped head $D_\theta$ and interprets
+the centered increment $D_\theta-X_t$ as velocity. In its original midpoint
+scheme, the first evaluation uses the current coordinates and the interval's
+midpoint time; the second uses the half-step coordinates at that same time.
+The source-only comparisons add centered Gaussian noise of standard deviation
+0.025\,\AA\ after integration. The learned-correction model omits this terminal
+noise. These implementation details differ from the shared-EGNN main comparison.
+
 \paragraph{Evaluation sets.}
 The source study uses four composition sets: 12 for development, 10 for an additional test, 24
 for a further test, and 64 for a broader size comparison. Exact atom-count checks
@@ -43,4 +52,3 @@ resampling of generation draws, with the trained models and compositions held
 fixed. We also resample compositions to describe variation across the evaluation
 set. Physical scores are computed on saved raw coordinates, using the stated
 charge and spin and approximate energy models.
-
