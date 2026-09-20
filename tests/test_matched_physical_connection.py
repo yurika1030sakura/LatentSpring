@@ -65,3 +65,22 @@ def test_endpoint_displacement_conversion_symmetry_and_head_only_gradient(kind):
     (a-correction).square().mean().backward()
     assert any(p.grad is not None and p.grad.abs().sum()>0 for p in head.parameters())
     assert all(p.grad is None and not p.requires_grad for p in model.parameters())
+
+
+@pytest.mark.parametrize('kind',['harmonic_fm','gaga'])
+def test_declared_extended_strength_changes_endpoint_with_correct_sign_and_bound(kind):
+    model,spec,_,_=setup(kind);model.double()
+    head=PhysicalConnection(spec['atomic_numbers'],velocity_scale=2.).double()
+    with torch.no_grad():head.pair_network[-1].weight.normal_(std=.2)
+    with pytest.raises(ValueError):PhysicalFieldTransform(model,spec,head,2.)
+    for invalid in [float('nan'),float('inf'),-1.]:
+        with pytest.raises(ValueError):PhysicalFieldTransform(model,spec,head,invalid,strength_limit=4.)
+    x=base.center(torch.randn(2,5,3,dtype=torch.float64));value=base.center(torch.randn_like(x));t=x.new_tensor([[.1],[.6]])
+    z=torch.tensor([[6,6,8,1,1]]*2);h,p=endpoint_and_progress(model,x,t,value,spec)
+    one=PhysicalFieldTransform(model,spec,head,1.)(x,t,z,value)
+    four=PhysicalFieldTransform(model,spec,head,4.,strength_limit=4.)(x,t,z,value)
+    torch.testing.assert_close(four-value,4*(one-value),atol=1e-12,rtol=1e-10)
+    corrected,_=endpoint_and_progress(model,x,t,four,spec)
+    expected=4*(1-p[:,None,None])*head(*head_inputs(x,h,z,p,spec['atomic_numbers'])).reshape_as(x)
+    torch.testing.assert_close(corrected-h,expected,atol=1e-10,rtol=1e-8)
+    assert ((corrected-h).norm(dim=-1)<=8*p[:,None]**2*(1-p[:,None])+1e-10).all()

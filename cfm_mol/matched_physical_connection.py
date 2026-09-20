@@ -6,6 +6,7 @@ for GAGA it adds -alpha*(1-progress)*A/sigma to predicted noise. The latter
 changes the decoded clean coordinates by exactly the same displacement.
 This is a sampler-specific adaptation, not a common continuous-time dynamics.
 """
+import math
 import torch
 from . import matched_egnn as base
 
@@ -51,8 +52,12 @@ def head_inputs(x, endpoint, numbers, progress, atomic_numbers):
 
 class PhysicalFieldTransform:
     """Apply the head after the final parent prediction, leaving the parent frozen."""
-    def __init__(self,model,spec,head,strength=1.):
-        if not 0 <= strength <= 1:raise ValueError('Strength must be in [0,1]')
+    def __init__(self,model,spec,head,strength=1.,*,strength_limit=1.):
+        # The original protocol retains its [0,1] restriction. A separately
+        # declared calibration may raise the limit; the vector bound scales
+        # by the actual strength and is not the original unit-strength bound.
+        if not math.isfinite(strength_limit) or strength_limit<=0 or not 0 <= strength <= strength_limit:
+            raise ValueError('Strength must be finite and within the declared limit')
         self.model=model;self.spec=spec;self.head=head;self.strength=strength;self.calls=0
         model.eval().requires_grad_(False)
 
