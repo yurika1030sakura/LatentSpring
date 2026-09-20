@@ -409,12 +409,19 @@ reports both runs, validity, force scores, and the update-matched comparison.
 
 \input{sections/primary_quality_results}
 
+\paragraph{Learning hydrogen placement.}
+An optional conditional flow refines hydrogen positions while preserving heavy-atom
+geometry. On 30 new compositions, it raises shared-EGNN FM graph validity from
+25.31\% to 27.40\% and lowers energy by 15.21 meV/atom relative to a fixed
+radial repair, with similar validity. Moving all hydrogens together improves
+energy over moving only detached hydrogens. Appendix~\ref{app:hydrogen-readout}
+reports the model, controls, and equally augmented GAGA comparison.
+
 \section{Discussion}
 LatentSpring combines a latent-tree harmonic source with learned physical
 correction. The source benefit appears across backbones, and the correction
 improves both EGNN flow and diffusion generators under equal physical
-supervision. Paired updates offer a complementary way to incorporate physical
-feedback into a single backbone. The results concern unoptimized neutral organic
+supervision. The results concern unoptimized neutral organic
 structures and approximate energy models. Work-identity experiments recover
 specified local distributions; global molecular equilibrium and broader chemistry
 remain open.
@@ -450,6 +457,7 @@ computational checks of the AI-assisted implementation.
 \input{sections/feedback_transfer_details}
 \input{sections/force_correction_details}
 \input{sections/matched_connection_details}
+\input{sections/hydrogen_readout_details}
 \input{sections/common_model_confirmation}
 \input{sections/broad_physical_endpoint_results}
 \input{sections/harmonic_energy_results}

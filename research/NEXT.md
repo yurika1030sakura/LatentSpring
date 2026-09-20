@@ -1,4 +1,40 @@
-# Current checkpoint —2026-09-20: calibrated correction complete
+# Current checkpoint —2026-09-20: conditional hydrogen flow physically confirmed
+
+All scientific studies below are COMPLETE. No training or scientific evaluation
+is still running. The CLI integration replay is complete and is verification only.
+Read HYDROGEN_FLOW_STATE_20260920.json and hydrogen_physical_confirmation_audit_v1.json.
+On30 fresh compositions (960 attempts/setting), the shared-EGNN FM model plus
+conditional H flow gives graph27.40%, joint26.04%; its unchanged strength4 parent
+is25.31%/24.17%. Against the fixed radial rule, the learned readout reduces
+all-output energy15.21meV/atom [10.10,21.71], with similar graph/joint yield.
+Moving all H instead of only detached H reduces energy another10.25meV/atom
+[6.96,14.72] with identical validity. The same H decoder also improves GAGA.
+Equally augmented FM-minus-GAGA graph is+3.33pp [0.52,6.15]; joint is+2.29pp
+[-0.63,5.21]. No comprehensive or joint-quality superiority claim.
+
+Original hydrogen yield-only development screen remains failed. The separate
+physical hypothesis was frozen before the fresh30 test. Hydrogen decoration is
+established prior work (Quetzal); the contribution is the controlled conditional
+readout and demonstrated energy benefit. Do not claim global Boltzmann sampling.
+
+Recipe: configs/research/latentspring_hydrogen_flow_v1.json; entry point:
+python -m scripts.generate_hydrogen_flow. See notes/hydrogen_flow_model_20260920.md.
+This is an OPTIONAL shared-EGNN readout; the main FlowMol model has not been
+tested with it. CPU replay reproduces saved results to4.77e-7 Angstrom.
+The atom-normalization/mobility2x2 candidate fails its independent confirmation
+and is NOT promoted; preserve all variants, outcomes and240000 fitting steps.
+Registries v32--v35 include every new study: cumulative250432 evaluation parent
+trajectories,7424 FIT trajectories,197562 eSEN rows and77703 GFN2 attempts.
+8320 derived evaluation readouts and1024 TRAIN radial probes are separate from
+parent trajectories. H fits add640000 training forwards and512 diagnostic forwards.
+
+Paper v11 adds the H method, all controls, fresh results and an actual-coordinate
+PyMOL figure. Build verified:9 main pages,38 total,28 references,52 exported files.
+Twelve targeted tests and CPU/CUDA CLI replays pass. Publication sync v11,
+when complete, is authoritative for remote state.
+Published paper before this update was v10 (GitHub2c2acbc, Overleaf71690d7).
+
+# Previous checkpoint —2026-09-20: calibrated correction complete
 
 Strength4 gives shared-EGNN FM graph22.17%, joint20.80%, versus equally
 calibrated GAGA21.00% and20.02% on32 fresh compositions. FM improves its own

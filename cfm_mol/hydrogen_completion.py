@@ -1,7 +1,8 @@
 """A conditional coordinate flow for hydrogen placement with fixed heavy geometry.
 
 Training uses only OMol25 coordinates and atom identities. Hydrogen decoration
-is an established task; this module is an unqualified task-specific candidate.
+is an established task. The frozen version is tested as an optional readout of
+shared-EGNN generators; its physical benefit does not establish equilibrium.
 """
 import torch
 from scipy.optimize import linear_sum_assignment

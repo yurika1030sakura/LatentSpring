@@ -1,0 +1,26 @@
+{
+  "format": "latentspring_hydrogen_flow_v1",
+  "protocol": "research/evidence/hydrogen_physical_confirmation_v1.json",
+  "protocol_sha256": "ae2e52b1c71cb526e7a173afec2879c2d16aabcbdb31a3e38a3ec3ebf50638fd",
+  "decoder_checkpoints": {
+    "0": {
+      "file": "runs/hydrogen_completion_v1/training/s0/step_10000.pt",
+      "sha256": "e3c68af06ae9e51d20711be3340f041fbe9fd35c47eba5b417575c75697e605a"
+    },
+    "1": {
+      "file": "runs/hydrogen_completion_v1/training/s1/step_10000.pt",
+      "sha256": "87c0cf1ec7674add1d5741c129190ccf53e3efefbbd624b36ef4605e2fa67d89"
+    }
+  },
+  "strength": 4.0,
+  "mode": "molecule",
+  "start_time": 0.0,
+  "steps": 4,
+  "velocity_cap_A": 2.0,
+  "scope": "Optional conditional H coordinate readout of shared EGNN FM/GAGA. Tested neutral organic singlets with17--40 atoms, no guarantee for other sizes. Does not change the main FlowMol recipe. Not equilibrium sampling.",
+  "audit": "research/evidence/hydrogen_physical_confirmation_audit_v1.json",
+  "test_time_energy_queries": 0,
+  "test_time_geometry_optimizer_steps": 0,
+  "backbone_calls_per_output": 128,
+  "decoder_calls_per_activated_output": 8
+}

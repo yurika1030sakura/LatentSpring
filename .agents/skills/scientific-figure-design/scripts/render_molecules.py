@@ -22,7 +22,8 @@ def main():
     from chempy.models import Indexed
     from pymol.cgo import CYLINDER,CONE
     colors={'C':[.77,.81,.84],'H':[.96,.97,.98],'N':[.32,.54,.78],'O':[.87,.34,.32],
-        'S':[.87,.72,.31],'P':[.91,.59,.30],'F':[.45,.69,.48],'Cl':[.45,.69,.48]}
+        'S':[.87,.72,.31],'P':[.91,.59,.30],'F':[.45,.69,.48],'Cl':[.45,.69,.48],
+        'B':[.80,.64,.57],'I':[.56,.44,.68]}
     if args.style=='soft':colors['C']=[.42,.49,.55]
     camera_groups={}
     for s in scenes:camera_groups.setdefault(s.get('camera_group',s['name']),[]).append(s)
