@@ -43,8 +43,12 @@ Paper title: LatentSpring: Transferable Physical Corrections for Molecular
 Generation from Atomic Composition. The source and endpoint update are central;
 paired weight updates/Jarzynski remain in appendices. FLEXDOCK, ConfDiff and
 Lai2026 are cited: no first-endpoint/first-force-network claim. Build v12 verifies
-9 main pages,42 total,31 references,60 exported files. Publication sync v12,
-when complete, is authoritative for remote state. No OpenReview submission done.
+9 main pages,42 total,31 references,60 exported files. Publication sync v12
+verifies GitHubd338a05 and Overleafd844db0 plus the HOLY mirror.
+All60 source files and the GitHub PDF match the build; coauthor history retained.
+51200 per-output scores and a NumPy-only reproduction script are public in GitHub.
+The full10-model weight bundle is stored locally in HOLY releases, not uploaded
+to GitHub. No OpenReview submission has been performed.
 
 # Previous running checkpoint —2026-09-20: independent training replication
 
