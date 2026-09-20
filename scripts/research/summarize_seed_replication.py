@@ -31,7 +31,7 @@ def paired_intervals(delta,*,seed=65101,repetitions=20000,strata=None):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for key in ['project','protocol','audits','out']:p.add_argument('--'+key,type=Path,required=True)
-    a=p.parse_args();assert not a.out.exists();campaign=json.loads(a.protocol.read_text());ph=sha(a.protocol);perfit=[];provenance={};audits=[]
+    a=p.parse_args();a.project=a.project.resolve();a.audits=a.audits.resolve();assert not a.out.exists();campaign=json.loads(a.protocol.read_text());ph=sha(a.protocol);perfit=[];provenance={};audits=[]
     panel=json.loads((a.project/campaign['panel']).read_text());strata=np.array([0 if r['n_atoms']<=28 else 1 for r in panel['rows']]);assert (strata==0).sum()==20 and (strata==1).sum()==44
     for si in range(5):
         f=a.audits/f's{si}.json';d=json.loads(f.read_text());assert d['complete'] and d['fit']==si and d['campaign_sha256']==ph

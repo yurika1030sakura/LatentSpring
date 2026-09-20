@@ -9,6 +9,12 @@ The metadata-only panel amendment uses20 smaller and44 larger compositions,
 with exact zero overlap in both processed corpora and no generator-based selection.
 Read seed_replication_panel_resolution_v1.json. All settings are fixed; preserve
 all new fits and failed runs. Do not select a favorable seed or change strength.
+The old-fit64-composition runs and audits are complete; three new parent pairs
+are still training. Cross-head transfer is separately frozen in
+cross_generator_head_v1.json: old fits audited, new-fit job47342296 waits on
+47340136. Read CROSS_GENERATOR_HEAD_STATE_20260920.json. Prior-art review added
+FLEXDOCK, ConfDiff and Lai2026; no first-force-network or first-endpoint claim.
+The inference-only model bundle passes CPU and GPU replays for FM/GAGA.
 Published v11 below remains the completed evidence; subsequent text/figure edits
 must not claim results from these running jobs.
 
