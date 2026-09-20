@@ -1,23 +1,26 @@
-# Active checkpoint —2026-09-20: three additional baseline transfers
+# Current checkpoint —2026-09-20: three additional baseline transfers complete
 
-User requested two or three concrete additional target baselines, not a universal
-framework claim. Job47372153 is RUNNING from immutable source fa6936d in
-runs/other_baseline_transfer_v1/source. Read
-research/evidence/other_baseline_transfer_v1.json and
-research/OTHER_BASELINE_TRANSFER_STATE_20260920.json.
-The targets are EDM, Gaussian-source FM, and one-pass harmonic FM, each with
-both archived training fits. Transfer the corresponding frozen FM head without
-retraining, strength4 unchanged. The same64-composition panel has16 attempts per
-fit/condition/arm;12288 total new outputs and GFN2 attempts are planned.
-All targets and signs must be reported. No H flow or physical teacher queries.
-EDM is an additional external diffusion baseline; the two FM targets are internal
-FM baselines, not two more unrelated published methods. Architecture/vocabulary
-are shared. The two old fits and already-used panel make this a post-development
-extension, not a new five-fit confirmation. Ten adapter tests passed; first-batch
-native/zero-strength replay passed on GPU for all three targets.
-The SLURM job audits raw GFN2 logs and coordinates per target/fit and automatically
-writes runs/other_baseline_transfer_v1/audit.json after all six runs complete.
-No new transfer result is yet qualified. Published paper v12 remains unchanged.
+Job47372153 completed successfully. All12288 additional outputs and fixed-coordinate
+GFN2 attempts are audited; no training or teacher calls were added. Read
+research/evidence/other_baseline_transfer_audit_v1.json and
+research/evidence/source_head_factorial_v1.json. All three transfer primary contrasts
+have positive gains in both archived fits and positive three-target Bonferroni
+crossed-fit/composition intervals. Joint yields: EDM8.15->22.22%, Gaussian FM
+6.25->19.92%, one-pass harmonic FM7.23->24.27%. These all use the same original
+FM-trained heads, strength4, without retraining or H readout. Three GFN2 numerical
+failures remain in denominators. All generation checks and physical log audits pass.
+Registry v38 includes every new attempt and48 verification-only replay outputs.
+
+The four-cell FM analysis is a post-hoc interpretation of this frozen transfer
+experiment: Gaussian6.25, harmonic7.23, Gaussian+head19.92, harmonic+head24.27% joint.
+Both-vs-physical-only gain4.35pp, nominal crossed95CI[1.56,7.13]; source-only
+joint gain0.98pp CI[-0.68,2.54] is uncertain. The two parents are one-pass EGNNs
+without self-conditioning and receive the same frozen head from the previously
+trained self-conditioned FM. This is NOT a four-cell ablation of the exact final
+self-conditioned backbone with separately trained source-specific heads. Both-fit
+EDM comparison is separate from the five-fit GAGA confirmation. No universal
+or cross-architecture claim. Published paper remains v12; new results are not yet
+incorporated into the paper or synchronized to Overleaf.
 
 # Current checkpoint —2026-09-20: five-fit physical correction and weight transfer confirmed
 
