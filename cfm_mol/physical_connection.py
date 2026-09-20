@@ -101,6 +101,10 @@ class ContextualPhysicalConnection(PhysicalConnection):
 
 
 def make_physical_connection(**configuration):
+    if configuration.get('normalization')=='atomwise':
+        if configuration.get('context_layers',0):raise ValueError('Atomwise head has no contextual-layer variant')
+        from .atomwise_physical_connection import AtomwisePhysicalConnection
+        return AtomwisePhysicalConnection(**configuration)
     cls=ContextualPhysicalConnection if configuration.get('context_layers',0)>0 else PhysicalConnection
     return cls(**configuration)
 

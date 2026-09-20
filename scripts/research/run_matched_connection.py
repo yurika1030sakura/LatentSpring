@@ -99,10 +99,10 @@ def fit(spec,ph,si,rows,out):
     return head.eval()
 
 
-def generate(spec,ph,si,name,model,source,context,head,rows,seed,count,strengths,out):
+def generate(spec,ph,si,name,model,source,context,head,rows,seed,count,strengths,out,*,method_prefix=None):
     out.mkdir(parents=True,exist_ok=False);report=[];arm=spec['parents'][si][name];parent_hash=base.state_hash(model)
     for ai,strength in enumerate(strengths):
-        label=f'{name}_a{ai}';transform=PhysicalFieldTransform(model,arm['spec'],head,strength,
+        label=f'{method_prefix or name}_a{ai}';transform=PhysicalFieldTransform(model,arm['spec'],head,strength,
             strength_limit=spec.get('strength_limit',1.))
         for i,c in enumerate(rows):
             positions=[];initial=[];core=[0];before=transform.calls;head_before=head.forward_calls;tick=time.perf_counter()
