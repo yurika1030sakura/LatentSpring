@@ -128,10 +128,13 @@ def loss(model, clean, numbers, kind, spec, source, seed):
 
 
 @torch.no_grad()
-def sample(model, numbers, kind, spec, source, seed, batch, calls=128):
+def sample(model, numbers, kind, spec, source, seed, batch, calls=128, *, field_transform=None):
     device = next(model.parameters()).device
     z = torch.tensor(numbers, dtype=torch.long, device=device)[None].expand(batch, -1)
     shape = (batch, len(numbers), 3)
+    def field(x, t):
+        value = vector(model, x, t, z, spec)
+        return value if field_transform is None else field_transform(x, t, z, value)
     rng = torch.Generator(device=device).manual_seed(seed)
     if kind == 'harmonic_fm':
         nrng = np.random.default_rng(seed)
@@ -144,9 +147,9 @@ def sample(model, numbers, kind, spec, source, seed, batch, calls=128):
         steps = calls//2
         for i in range(steps):
             t = x.new_full((batch, 1), i/steps)
-            first = vector(model, x, t, z, spec)
+            first = field(x, t)
             middle = center(x+first/(2*steps))
-            x = center(x+vector(model, middle, t+.5/steps, z, spec)/steps)
+            x = center(x+field(middle, t+.5/steps)/steps)
         return x*model.norm_values[0], initial
     if kind not in ['edm', 'gaga']:
         raise ValueError(kind)
@@ -164,11 +167,11 @@ def sample(model, numbers, kind, spec, source, seed, batch, calls=128):
         gs, gt = model.gamma(s), model.gamma(t)
         variance, std, ratio = model.sigma_and_alpha_t_given_s(gt, gs, x)
         ss, st = model.sigma(gs, x), model.sigma(gt, x)
-        mean = x/ratio-variance/(ratio*st)*vector(model, x, t, z, spec)
+        mean = x/ratio-variance/(ratio*st)*field(x, t)
         x = center(mean+std*ss/st*center(torch.randn(shape, generator=rng, device=device)))
     t = x.new_zeros(batch, 1)
     gamma = model.gamma(t)
     alpha, sigma = model.alpha(gamma, x), model.sigma(gamma, x)
-    x = center((x-sigma*vector(model, x, t, z, spec))/alpha+
+    x = center((x-sigma*field(x, t))/alpha+
                sigma/alpha*center(torch.randn(shape, generator=rng, device=device)))
     return x*model.norm_values[0], initial

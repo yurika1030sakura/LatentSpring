@@ -114,8 +114,9 @@ def loss(model,clean,numbers,spec,source,context,seed):
 
 
 @torch.no_grad()
-def sample(model,numbers,spec,source,context,seed,batch,calls=128):
+def sample(model,numbers,spec,source,context,seed,batch,calls=128,*,field_transform=None):
     if spec.get('cached_feedback'):
+        if field_transform is not None:raise ValueError('Physical field transforms require the original sampler')
         from .cached_geometry_feedback import sample_cached
         return sample_cached(model,numbers,spec,source,context,seed,batch,calls)
     device=next(model.parameters()).device;z=torch.tensor(numbers,device=device)[None].expand(batch,-1)
@@ -123,7 +124,9 @@ def sample(model,numbers,spec,source,context,seed,batch,calls=128):
     if kind=='harmonic_fm':
         nrng=np.random.default_rng(seed);x=torch.stack([source.sample(numbers,nrng) for _ in range(batch)]).to(device).float()
     else:x=base.center(torch.randn((batch,len(numbers),3),generator=rng,device=device))
-    def field(x,t):return prediction(model,x,t,z,spec,context,two_pass=spec['two_pass'])
+    def field(x,t):
+        value=prediction(model,x,t,z,spec,context,two_pass=spec['two_pass'])
+        return value if field_transform is None else field_transform(x,t,z,value)
     if kind in ['harmonic_fm','gaussian_fm']:
         assert calls%(2*passes)==0;initial=x.clone();steps=calls//(2*passes)
         for i in range(steps):
