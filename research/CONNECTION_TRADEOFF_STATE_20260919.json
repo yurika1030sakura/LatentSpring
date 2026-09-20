@@ -1,0 +1,21 @@
+{
+  "at_utc": "2026-09-20T03:58:36.458900+00:00",
+  "status": "COMPLETE_AUDITED",
+  "protocol": "research/evidence/connection_tradeoff_v1.json",
+  "selection": "research/evidence/connection_tradeoff_selection_v1.json",
+  "source_commit": "974c5c1550955fa9841a316ebe84f17a9965e0e1",
+  "test_array": "47321520",
+  "test_run": "runs/connection_tradeoff_v1/test",
+  "original_graph_guard_passed": false,
+  "selected_strengths": {
+    "fm": 4.0,
+    "gaga": 4.0
+  },
+  "scope": "Explicit separate joint-yield objective after reading validation, before fresh testing. Both original strength1 models remain controls. No change to the failed strict-guard result.",
+  "audit": "research/evidence/connection_tradeoff_audit_v1.json",
+  "diagnostics": "research/evidence/connection_tradeoff_diagnostics_v2.json",
+  "scientific_result": "FM strength4 improves own joint yield15.14->20.80%, +5.66pp [2.73,9.38]. Equally calibrated GAGA20.02%. FM-minus-GAGA +0.78pp [-4.00,6.54], mixed fit ordering. Graph22.17vs21.00%. FM sampling14.6% faster, force median essentially equal, all-output energy0.0527eV/atom higher for FM. No comprehensive or stable GAGA superiority.",
+  "geometry_bottleneck": "Disconnected contact graph in533/1024 FM outputs and579/1024 GAGA outputs; overlap only2/0. Structure/valence remains the main limitation after stronger force correction.",
+  "ledger": "research/evidence/generator_reference_registry_v31.json",
+  "slurm_accounting": "47320978|COMPLETED|111|0:0|cpu=8,gres/gpu:nvidia_a100_3g.20gb=1,gres/gpu=1,mem=32G,node=1\n47320976|COMPLETED|101|0:0|cpu=8,gres/gpu:nvidia_a100_3g.20gb=1,gres/gpu=1,mem=32G,node=1\n47321524|COMPLETED|349|0:0|cpu=8,gres/gpu:nvidia_a100_3g.20gb=1,gres/gpu=1,mem=32G,node=1\n47321520|COMPLETED|354|0:0|cpu=8,gres/gpu:nvidia_a100_3g.20gb=1,gres/gpu=1,mem=32G,node=1\n"
+}

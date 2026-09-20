@@ -1,3 +1,12 @@
+Current release (2026-09-20): publication_build_v10.json, registry v31.
+The paper has9 main pages/36 total,27 cited references and50 exported files.
+Connection-strength follow-up results are independently reconstructed in
+connection_tradeoff_audit_v1.json and connection_tradeoff_diagnostics_v2.json.
+The stronger shared-EGNN recipe is
+configs/research/latentspring_shared_egnn_strength4_v1.json. It explicitly enables
+strength_limit4; the original public API still defaults to a limit of1.
+No claim of stable FM-over-GAGA ordering or comprehensive superiority follows.
+
 Current release: shared-backbone physical correction (2026-09-19).
 Publication build v9 compiles9 scientific main pages/35 total, with27 cited
 references and49 standalone source/figure files. The new evidence is

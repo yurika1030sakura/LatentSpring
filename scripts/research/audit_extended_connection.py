@@ -13,6 +13,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     for key in ['project','protocol','run','out']:p.add_argument('--'+key,type=Path,required=True)
     p.add_argument('--stage',choices=['select','audit'],required=True);p.add_argument('--selection',type=Path);a=p.parse_args();torch.set_num_threads(2)
+    a.project=a.project.resolve();a.run=a.run.resolve()
     spec=json.loads(a.protocol.read_text());ph=sha(a.protocol);assert spec['frozen'] and not a.out.exists()
     oldfile=a.project/spec['original_selection'];assert sha(oldfile)==spec['original_selection_sha256'];old=json.loads(oldfile.read_text())
     for file,digest in old['validation_provenance'].items():assert sha(a.project/file)==digest

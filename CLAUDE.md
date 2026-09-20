@@ -1,4 +1,34 @@
-# Current checkpoint —2026-09-19: shared-backbone correction confirmed
+# Current checkpoint —2026-09-20: calibrated correction complete
+
+Strength4 gives shared-EGNN FM graph22.17%, joint20.80%, versus equally
+calibrated GAGA21.00% and20.02% on32 fresh compositions. FM improves its own
+strength1 joint yield by5.66pp [2.73,9.38]. FM-minus-GAGA is only+0.78pp
+[-4.00,6.54] with mixed fit ordering: no stable/comprehensive superiority.
+FM sampling time is14.6% lower; force medians essentially tie, and its
+all-output GFN2 energy is0.0527eV/atom higher [0.0273,0.0786].
+Read connection_tradeoff_audit_v1.json and connection_tradeoff_diagnostics_v2.json.
+The earlier strict graph-retention calibration failed and stays failed. The
+separate joint-yield objective was declared before the fresh32-composition test.
+
+Both experiment arrays47320976/47321520 are COMPLETE. Registry v31 adds5120
+evaluation trajectories and5120 GFN2 attempts, with no new training/eSEN.
+One GAGA strength1 GFN2 failure remains in the denominator.
+Build v10 is verified:9 main pages/36 total,27 cited references,50 standalone
+files. GitHub/Overleaf synchronization is the remaining publication step.
+
+The user said continue. A TRAIN-only diagnosis reuses cached native trajectories
+and endpoints without new queries: training_attachment_diagnostic_v1.json.
+On512 native final outputs, FM has346 connected heavy skeletons versus314 for
+GAGA, but60 hydrogen-only fragmentations versus18. FM has128 H atoms with no
+heavy contact versus30;119/128 are within1.5 covalent-radius sums of a heavy atom.
+Next bounded candidate: atom-normalized physical messages plus balanced
+per-atom force mobility, tested in a2x2 ablation with identical displacement
+norms, parameters, TRAIN records, updates, and equal options for GAGA. This is
+not implemented or established yet. Do not repeat failed tree-manifold or
+endpoint-connectivity penalty recipes; notes/tree_manifold_brief_v1.md and
+endpoint_connectivity_audit_v1.json record their failures.
+
+# Previous checkpoint —2026-09-19: shared-backbone correction confirmed
 
 The shared-EGNN physical-head study is COMPLETE and independently audited.
 Read research/evidence/matched_connection_audit_v1.json and

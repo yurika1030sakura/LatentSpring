@@ -1,0 +1,63 @@
+\subsection{Correction strength and the quality tradeoff}\label{app:connection-strength}
+The validation study above selects the largest allowed strength for both
+generators. We extend the common grid to $\{0,1/4,1/2,1,2,4\}$, reusing the
+same eight validation compositions and random seeds. Only strengths two and
+four require new samples. Parents, heads, force labels, and fitting budgets
+are unchanged. The applied correction bound scales with the strength $\eta$;
+the bound stated for $\eta=1$ is not retained at larger strengths.
+
+We compare two validation choices. A conservative rule permits at most a
+one-point decrease in pooled graph validity and a three-point decrease in each
+fit, relative to strength one. It retains strength one for both generators.
+Selecting solely by joint yield chooses strength four for both, with validation
+joint yields of 31.64\% for FM and 28.91\% for GAGA. This second objective is
+declared after the conservative screen, before any new test generation. Both
+choices are then evaluated on the same 32 previously ungenerated compositions,
+16 each with 17--28 and 29--40 atoms, with 16 outputs per composition and fit.
+
+\begin{table}[h]
+\centering\small
+\caption{Strength confirmation on the shared EGNN, with 1,024 unoptimized outputs
+per row. Force is the median RMS over each model's graph-valid, successfully
+scored outputs. Sampling time is measured per output within the same GPU
+allocation for each fit, excluding checkpoint loading and physical assessment.}
+\begin{tabular}{lrrrr}
+\toprule
+Model & Graph (\%) & Joint (\%) & Force (eV/\AA) & Time (s)\\
+\midrule
+FM, $\eta=1$ &20.12&15.14&3.833&0.123\\
+FM, $\eta=4$ &22.17&20.80&3.159&0.122\\
+GAGA, $\eta=1$ &20.80&16.50&3.805&0.143\\
+GAGA, $\eta=4$ &21.00&20.02&3.158&0.143\\
+\bottomrule
+\end{tabular}\label{tab:connection-strength}
+\end{table}
+
+Stronger correction improves FM joint yield by 5.66 percentage points
+(95\% composition-bootstrap interval $[2.73,9.38]$), with gains of 7.23 and
+4.10 points in the two fits. The GAGA change is $+3.52$ points ($[0.00,7.52]$).
+At strength four, FM minus GAGA is $+0.78$ points in joint yield
+($[-4.00,6.54]$) and $+1.17$ points in graph validity ($[-2.93,5.86]$).
+The fit-specific joint differences are $-1.37$ and $+2.93$ points, so the
+pooled ordering is not stable across fitted models. The recorded FM sampling
+time is 14.6\% lower, with 64 head calls per output versus GAGA's 128;
+both use 128 backbone calls. These are measured sampling times, not equal
+training cost or a hardware-independent speed guarantee.
+
+Across all outputs, stronger correction lowers FM's mean GFN2 energy by
+0.0622 eV/atom, with signed-change interval $[-0.0769,-0.0479]$.
+At strength four, FM's mean energy remains 0.0527 eV/atom above GAGA's
+($[0.0273,0.0786]$). These composition-paired readouts include invalid outputs
+and different inferred connectivities; they are not equilibrium free-energy
+differences. All graph-valid outputs within each 16-draw composition/fit cell
+have distinct canonical connectivities when stereochemistry is omitted.
+
+The remaining errors are predominantly structural. At strength four, 533 of
+1,024 FM outputs and 579 GAGA outputs fail the geometric connectedness test;
+only two FM outputs and no GAGA outputs overlap at the prescribed radius
+threshold, with both overlaps among the disconnected cases. Of the graph-valid
+outputs, 213/227 for FM and 205/215 for GAGA pass the force threshold.
+The extension adds 1,024 validation outputs and 4,096 confirmation outputs,
+each receiving a GFN2 attempt, with no new fitting or eSEN calls. One GAGA
+strength-one GFN2 calculation fails and remains in the denominator; the other
+4,095 confirmation calculations succeed.
