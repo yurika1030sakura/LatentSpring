@@ -14,7 +14,8 @@ Both experiment arrays47320976/47321520 are COMPLETE. Registry v31 adds5120
 evaluation trajectories and5120 GFN2 attempts, with no new training/eSEN.
 One GAGA strength1 GFN2 failure remains in the denominator.
 Build v10 is verified:9 main pages/36 total,27 cited references,50 standalone
-files. GitHub/Overleaf synchronization is the remaining publication step.
+files. Publication sync v10 verifies GitHub2c2acbc and Overleaf71690d7; the
+existing HOLY Overleaf mirror is updated.
 
 The user said continue. A TRAIN-only diagnosis reuses cached native trajectories
 and endpoints without new queries: training_attachment_diagnostic_v1.json.
@@ -24,7 +25,8 @@ heavy contact versus30;119/128 are within1.5 covalent-radius sums of a heavy ato
 Next bounded candidate: atom-normalized physical messages plus balanced
 per-atom force mobility, tested in a2x2 ablation with identical displacement
 norms, parameters, TRAIN records, updates, and equal options for GAGA. This is
-not implemented or established yet. Do not repeat failed tree-manifold or
+implemented and running in array47326221, source7af98e5. Read
+ATOMWISE_CONNECTION_STATE_20260920.json. It is not established yet. Do not repeat failed tree-manifold or
 endpoint-connectivity penalty recipes; notes/tree_manifold_brief_v1.md and
 endpoint_connectivity_audit_v1.json record their failures.
 
