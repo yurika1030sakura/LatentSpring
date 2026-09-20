@@ -22,9 +22,10 @@ def diagnostics(model,spec,rows):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for key in ['project','protocol','out']:p.add_argument('--'+key,type=Path,required=True)
-    p.add_argument('--seed-index',type=int,choices=[0,1],required=True);a=p.parse_args();torch.set_num_threads(2)
+    p.add_argument('--seed-index',type=int,required=True);a=p.parse_args();torch.set_num_threads(2)
     torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
     spec=json.loads(a.protocol.read_text());ph=sha(a.protocol);si=a.seed_index;assert spec['frozen'] and sha(a.project/spec['data'])==spec['data_sha256']
+    assert 0<=si<len(spec['seeds']) and len(spec['batch_seeds'])==len(spec['noise_seeds'])==len(spec['seeds'])
     data=torch.load(a.project/spec['data'],map_location='cpu',weights_only=False);training=data['training'];validation=[data['validation'][i] for i in spec['reference_validation_rows']]
     assert len(training)==20000 and not {r['condition']['composition_hex'] for r in training}&{r['condition']['composition_hex'] for r in validation}
     a.out.mkdir(parents=True,exist_ok=False);net=copy.deepcopy(spec['network_spec']);net['initialization_seed']=spec['seeds'][si]

@@ -40,8 +40,9 @@ def readout(model,x,c,spec,method):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for key in ['project','protocol','training','out']:p.add_argument('--'+key,type=Path,required=True)
-    p.add_argument('--seed-index',type=int,choices=[0,1],required=True);p.add_argument('--parents',type=Path);a=p.parse_args();torch.set_num_threads(2);root=a.project.resolve();a.out=a.out.resolve();a.training=a.training.resolve()
+    p.add_argument('--seed-index',type=int,required=True);p.add_argument('--parents',type=Path);a=p.parse_args();torch.set_num_threads(2);root=a.project.resolve();a.out=a.out.resolve();a.training=a.training.resolve()
     spec=json.loads(a.protocol.read_text());ph=sha(a.protocol);si=a.seed_index;assert spec['frozen'];a.out.mkdir(parents=True,exist_ok=False)
+    assert 0<=si<len(spec['seeds'])
     if a.parents:
         manifest=json.loads(a.parents.read_text());assert manifest['complete'] and manifest['protocol_sha256']==ph and manifest['seed_index']==si
         input_sources=manifest['sources'];conditions=spec['test_rows']
