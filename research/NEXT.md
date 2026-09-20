@@ -1,3 +1,17 @@
+# Active work —2026-09-20: independent training replication
+
+User requests further work toward a strong ICLR paper. Current jobs47340136
+and47340267 run the fixed shared-EGNN comparison on64 new compositions across
+five fit pairs. Fits2/3/4 are new independent parent/head/H-model training;
+fits0/1 reuse archived weights. Read SEED_REPLICATION_STATE_20260920.json and
+seed_replication_v1.json. No new scientific claims are qualified yet.
+The metadata-only panel amendment uses20 smaller and44 larger compositions,
+with exact zero overlap in both processed corpora and no generator-based selection.
+Read seed_replication_panel_resolution_v1.json. All settings are fixed; preserve
+all new fits and failed runs. Do not select a favorable seed or change strength.
+Published v11 below remains the completed evidence; subsequent text/figure edits
+must not claim results from these running jobs.
+
 # Current checkpoint —2026-09-20: conditional hydrogen flow physically confirmed
 
 All scientific studies below are COMPLETE. No training or scientific evaluation

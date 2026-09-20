@@ -1,0 +1,40 @@
+{
+  "at_utc": "2026-09-20T08:56:08.504950+00:00",
+  "status": "RUNNING_FROZEN_FIVE_FIT_REPLICATION",
+  "protocol": "research/evidence/seed_replication_v1.json",
+  "source_commit": "51d428d855baeb6f8a2acbcc92cb264042b86499",
+  "new_fit_pipeline_job": "47340136",
+  "reused_fit_evaluation_job": "47340267",
+  "new_fit_indices": [
+    2,
+    3,
+    4
+  ],
+  "reused_fit_indices": [
+    0,
+    1
+  ],
+  "panel_resolution": "research/evidence/seed_replication_panel_resolution_v1.json",
+  "new_compositions": 64,
+  "size_counts": {
+    "17-28": 20,
+    "29-40": 44
+  },
+  "selection_after_outcomes_allowed": false,
+  "results_qualified": false,
+  "failed_launches": [
+    {
+      "kind": "array_submission",
+      "reason": "gpu_test MaxSubmitPU=2; six-element array rejected; no work started"
+    },
+    {
+      "kind": "multi_gpu_submission",
+      "reason": "partition requires explicit --gres/--gpus; no work started"
+    },
+    {
+      "job": "47339772",
+      "reason": "srun worker inherited user-site NumPy2 incompatible with Torch2.2; all workers stopped before training initialization; fixed with explicit -s and worker-local environment"
+    }
+  ],
+  "scope": "No changes to methods or hyperparameters. New metadata pool exhausted smaller bin; all20 qualified smaller and44 fixed-rank larger compositions selected before any generation. Failed balanced-panel attempt retained. Scientific results stay pending until independent audit."
+}

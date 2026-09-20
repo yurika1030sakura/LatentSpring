@@ -16,7 +16,7 @@ from scripts.research.train_electronic_fm import sha
 from scripts.research.run_matched_generators import write
 
 
-def audit_fit(root,folder,spec,ph,si,name):
+def audit_fit(root,folder,spec,ph,si,name,*,fit_subdir='fit'):
     arm=spec['parents'][si][name];checkpoint=root/arm['checkpoint'];assert sha(checkpoint)==arm['checkpoint_sha256']
     parent=make_model(arm,torch.load(checkpoint,map_location='cpu',weights_only=False)['ema_state_dict'],device='cpu').eval().requires_grad_(False)
     parent_hash=base.state_hash(parent);teacher=folder/name/'teacher';done=json.loads((teacher/'complete.json').read_text())
@@ -45,7 +45,7 @@ def audit_fit(root,folder,spec,ph,si,name):
             row=rows[slot*n+k];assert row['condition']==r['condition'] and row['record_sha256']==sha(file) and row['composition_slot']==slot and row['local_state']==k and row['training_row']==index
             for x,y in [(row['x'],xs[k]),(row['endpoint'],hs[k]),(row['t'],progress[k]),(row['force'],target[k].float())]:torch.testing.assert_close(x,y,atol=0,rtol=0)
     assert total==1024
-    fit=folder/name/'fit';done=json.loads((fit/'complete.json').read_text());assert done['complete'] and done['protocol_sha256']==ph
+    fit=folder/name/fit_subdir;done=json.loads((fit/'complete.json').read_text());assert done['complete'] and done['protocol_sha256']==ph
     train=done['fit_states'];val=done['validation_states'];assert len(train)==384 and len(val)==128
     assert train==[i for i,r in enumerate(rows) if r['composition_slot'] not in spec['validation_teacher_slots']]
     assert val==[i for i in range(512) if i not in train]
