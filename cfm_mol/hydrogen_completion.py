@@ -50,7 +50,7 @@ def loss(model,clean,numbers,spec,*,seed):
 def complete(model,x,numbers,spec,*,mode='molecule',start_time=0.,steps=4,velocity_cap=2.):
     """No oracle or optimizer. Preserve unselected structures exactly."""
     if mode not in ['molecule','atom'] or not 0<=start_time<1 or steps<1 or velocity_cap<=0:raise ValueError('Invalid completion settings')
-    original=x.clone();detached=detached_hydrogens(x,numbers);changed=detached.any(-1)
+    original=x.clone();detached=detached_hydrogens(x.double(),numbers);changed=detached.any(-1)
     active_ids=torch.where(changed)[0]
     if not len(active_ids):return original,dict(changed=changed,active_atoms=detached,network_calls=0,network_example_calls=0)
     y=x[active_ids].clone();z=numbers[active_ids];active=detached[active_ids] if mode=='atom' else z==1
