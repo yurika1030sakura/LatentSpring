@@ -26,5 +26,5 @@ srun --export=ALL --gpu-bind=single:1 --kill-on-bad-exit=0 \
  fit=$((SLURM_PROCID + LS_CROSS_OFFSET))
  exec /n/holylabs/woo_lab/Lab/yulili/bgfm/envs/flowmol/bin/python -s -u -m scripts.research.run_cross_generator_head \
  --project "$LS_CROSS_PROJECT" --protocol "$LS_CROSS_SOURCE/research/evidence/cross_generator_head_v1.json" \
- --fit "$fit" --out "$LS_CROSS_OUT/s${fit}"
+ --fit "$fit" --out "$LS_CROSS_OUT/s${fit}" --resume
  '

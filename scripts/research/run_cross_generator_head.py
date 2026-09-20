@@ -11,17 +11,24 @@ from scripts.research.train_electronic_fm import sha
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for key in ['project','protocol','out']:p.add_argument('--'+key,type=Path,required=True)
-    p.add_argument('--fit',type=int,choices=range(5),required=True);a=p.parse_args();root=a.project.resolve();si=a.fit;torch.set_num_threads(2)
+    p.add_argument('--fit',type=int,choices=range(5),required=True);p.add_argument('--resume',action='store_true');a=p.parse_args();root=a.project.resolve();si=a.fit;torch.set_num_threads(2)
     torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
     proposal=json.loads(a.protocol.read_text());assert proposal['frozen'] and sha(root/proposal['parent_campaign'])==proposal['parent_campaign_sha256']
     original=root/f'runs/seed_replication_v1/evaluation/s{si}';done=json.loads((original/'complete.json').read_text());assert done['complete'] and done['campaign_sha256']==proposal['parent_campaign_sha256']
     spec=json.loads((original/'resolved_protocol.json').read_text());spec=copy.deepcopy(spec);spec.update(format='cross_generator_head_resolved_v1',cross_protocol_sha256=sha(a.protocol),source_study_sha256=sha(original/'complete.json'))
-    a.out.mkdir(parents=True,exist_ok=False);protocol=a.out/'resolved_protocol.json';write(protocol,spec);ph=sha(protocol);source=base.HarmonicSource();reports=[];heads={}
+    a.out.mkdir(parents=True,exist_ok=a.resume);protocol=a.out/'resolved_protocol.json'
+    if protocol.exists():assert json.loads(protocol.read_text())==spec
+    else:write(protocol,spec)
+    ph=sha(protocol);source=base.HarmonicSource();reports=[];heads={}
     for family in ['fm','gaga']:
         other='gaga' if family=='fm' else 'fm';arm=spec['parents'][si][family];model=load_parent(root,arm);context=make_context(arm,source)
         info=done['heads'][other];head,_=restore_head(root,info);head_hash=base.state_hash(head);directory=a.out/'parents'/family
-        report=generate(spec,ph,si,family,model,source,context,head,spec['test_rows'],spec['evaluation_seeds'][si],16,[4.],directory,method_prefix=family+'_cross')
-        assert report['head_state_sha256']==head_hash;reports.append((directory,report));heads[family]=dict(**info,training_parent=other,head_state_sha256=head_hash)
+        if (directory/'generation.json').exists():
+            report=json.loads((directory/'generation.json').read_text());assert report['complete'] and report['protocol_sha256']==ph and len(report['rows'])==64
+            assert report['model_state_sha256']==base.state_hash(model)
+            for row in report['rows']:assert sha(directory/row['file'])==row['sha256'] and row['strength']==4.
+        else:report=generate(spec,ph,si,family,model,source,context,head,spec['test_rows'],spec['evaluation_seeds'][si],16,[4.],directory,method_prefix=family+'_cross')
+        assert report['head_state_sha256']==head_hash;reports.append((directory,report));heads[family]=dict(info,training_parent=other,head_state_sha256=head_hash)
         old=json.loads((original/'parents'/family/'generation.json').read_text())
         for i,row in enumerate(report['rows']):
             original_row=next(r for r in old['rows'] if r['method']==family+'_a0' and r['condition_index']==i)
