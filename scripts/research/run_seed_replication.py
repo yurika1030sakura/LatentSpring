@@ -17,7 +17,12 @@ def main():
     campaign=json.loads(a.protocol.read_text());assert campaign['frozen'];cp=sha(a.protocol);tick=time.perf_counter()
     panel_file=root/campaign['panel'];audit_file=root/campaign['panel_audit'];panel=json.loads(panel_file.read_text());audit=json.loads(audit_file.read_text())
     assert panel['complete'] and audit['complete'] and panel['qualification_audit_sha256']==sha(audit_file) and len(panel['rows'])==64
-    assert audit['protocol_sha256']==campaign['pool_protocol_sha256'];datafile=root/campaign['data'];assert sha(datafile)==campaign['data_sha256'];data=torch.load(datafile,map_location='cpu',weights_only=False)
+    if audit['protocol_sha256']!=campaign['pool_protocol_sha256']:
+        resolution=json.loads((root/'research/evidence/seed_replication_panel_resolution_v1.json').read_text())
+        assert resolution['complete'] and resolution['campaign_sha256']==cp and resolution['panel_sha256']==sha(panel_file)
+        assert resolution['audit_sha256']==sha(audit_file) and resolution['qualification_protocol_sha256']==audit['protocol_sha256']
+        assert resolution['before_any_new_generation']
+    datafile=root/campaign['data'];assert sha(datafile)==campaign['data_sha256'];data=torch.load(datafile,map_location='cpu',weights_only=False)
     tests=[dict(c,numbers=c['atomic_numbers']) for c in panel['rows']];keys={c['composition_hex'] for c in tests}
     assert len(keys)==64 and not keys&{r['condition']['composition_hex'] for r in data['training']+data['validation']}
     assert all(not corpus['matches'][h] for h in keys for corpus in audit['corpora'].values())
@@ -57,14 +62,14 @@ def main():
     training_file=root/('research/evidence/hydrogen_completion_v1.json' if si<2 else 'research/evidence/seed_replication_hydrogen_v1.json')
     training_spec=json.loads(training_file.read_text())
     hs.update(format='seed_replication_readout_v1',campaign_sha256=cp,test_rows=tests,methods=['base','radial','molecule_start0'],
-        seeds=campaign['fits'] and [f['hydrogen_seed'] for f in campaign['fits']],training_protocol_sha256=sha(training_file),
+        seeds=[f['hydrogen_seed'] for f in campaign['fits']],training_protocol_sha256=sha(training_file),
         network_spec=training_spec['network_spec'],batch_seeds=campaign['h_batch_seeds'],noise_seeds=campaign['h_noise_seeds'])
     hp=a.out/'readout_protocol.json';write(hp,hs);hph=sha(hp);sources={}
     for family in ['fm','gaga']:
         gf=a.out/'parents'/family/'generation.json';sources[family]=dict(generation=str(gf.relative_to(root)),generation_sha256=sha(gf),method=family+'_a1',
             condition_count=64,samples_per_condition=16,physical=str((physical/'results.json').relative_to(root)),physical_sha256=sha(physical/'results.json'))
     manifest=a.out/'parents.json';write(manifest,dict(complete=True,protocol_sha256=hph,seed_index=si,sources=sources))
-    subprocess.run([sys.executable,'-u','-m','scripts.research.evaluate_hydrogen_completion','--project',str(root),'--protocol',str(hp),
+    subprocess.run([sys.executable,'-s','-u','-m','scripts.research.evaluate_hydrogen_completion','--project',str(root),'--protocol',str(hp),
         '--training',str(h_training),'--out',str(a.out/'readouts'),'--seed-index',str(si),'--parents',str(manifest)],check=True)
     done=json.loads((a.out/'readouts/complete.json').read_text());assert done['complete']
     write(a.out/'complete.json',dict(complete=True,campaign_sha256=cp,fit=si,resolved_protocol_sha256=ph,readout_protocol_sha256=hph,

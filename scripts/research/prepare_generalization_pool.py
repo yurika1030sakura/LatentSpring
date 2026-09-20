@@ -71,7 +71,7 @@ def main():
                 break
         counts[f'{low}-{high}'] = dict(selected=accepted, scanned=scanned)
         print(json.dumps(counts), flush=True)
-        assert accepted == spec['pool_per_bin'], counts
+        assert accepted == spec['pool_per_bin'] or spec.get('allow_exhausted_bins',False), counts
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(dict(complete=True, protocol_sha256=sha(args.protocol),
         source_archive_sha256=old['validation_archive_sha256'], old_partition_seed=old['seed'],
