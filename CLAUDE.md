@@ -1,3 +1,33 @@
+# Active checkpoint —2026-09-20: both-design diffusion transfer running
+
+User requests original-baseline versus both-design transfer for EDM and GAGA,
+without additional source-only/head-only evaluation arms. Job47380645 is RUNNING
+on four GPUs from immutable source3286abd in runs/joint_design_transfer_v1/source.
+Read research/evidence/joint_design_transfer_v1.json,
+research/JOINT_DESIGN_TRANSFER_STATE_20260920.json, and
+notes/joint_design_transfer_20260920.md. Eight new tests passed; all four fits
+passed initialization/batch-schedule checks and the first250 training steps.
+
+This experiment retrains four diffusion parents (two fits each) from the paired
+original random weights for30000 one-pass updates of batch32 on the same20000
+OMol25 rows. Harmonic tree covariance is used in noising and every reverse
+innovation, and conditions the denoiser through the existing invariant edge
+channel. The source tree is an auxiliary noise variable, never a chemical bond
+label. EDM starts from the tree mixture; truncated GAGA uses its Gaussian data
+variance approximation plus the harmonic corruption covariance. The source law
+and scalar VP schedule are fixed; no claim of optimal new GAGA truncation.
+
+The two existing FM physical heads transfer unchanged at strength4. Thus this
+is design transfer with parent retraining, not zero-shot transfer of the entire
+model. No new physical-head fitting or eSEN queries. Only the combined arm is
+newly generated:4096 outputs/GFN2 attempts on the existing64-composition panel.
+Original EDM controls reuse the previous two-fit archive; GAGA controls use
+fits0/1 of the five-fit archive, not its five-fit mean. Compare only compatible
+fit subsets. No H flow or long-schedule inference. Every result is retained.
+The job automatically audits and summarizes into runs/joint_design_transfer_v1/audit.json.
+No new scientific performance result is available yet. Published paper v14 and
+its existing main/ablation tables remain unchanged until this experiment finishes.
+
 # Current checkpoint —2026-09-20: three additional baseline transfers complete
 
 Job47372153 completed successfully. All12288 additional outputs and fixed-coordinate
