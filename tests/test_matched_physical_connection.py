@@ -9,7 +9,7 @@ from cfm_mol.matched_physical_connection import (PhysicalFieldTransform,endpoint
 
 
 def setup(kind):
-    name='gaga_feedback_distance' if kind=='harmonic_fm' else 'matched_generators_gaga'
+    name='gaga_feedback_distance' if kind=='harmonic_fm' else 'matched_generators_'+kind
     spec=json.loads(Path(f'research/evidence/{name}_s0_v1.json').read_text())
     model=base.initialize(spec,'cpu').eval();source=base.HarmonicSource()
     context=None
@@ -18,7 +18,7 @@ def setup(kind):
     return model,spec,source,context
 
 
-@pytest.mark.parametrize('kind',['harmonic_fm','gaga'])
+@pytest.mark.parametrize('kind',['harmonic_fm','gaussian_fm','gaga','edm'])
 def test_zero_residual_and_passive_observation_preserve_actual_sampler_and_rng(kind):
     torch.set_num_threads(2)
     model,spec,source,context=setup(kind)
@@ -44,7 +44,7 @@ def test_zero_residual_and_passive_observation_preserve_actual_sampler_and_rng(k
     assert all(p.grad is None for p in model.parameters())
 
 
-@pytest.mark.parametrize('kind',['harmonic_fm','gaga'])
+@pytest.mark.parametrize('kind',['harmonic_fm','gaussian_fm','gaga','edm'])
 def test_endpoint_displacement_conversion_symmetry_and_head_only_gradient(kind):
     model,spec,_,_=setup(kind);model.double();model.requires_grad_(False)
     x=base.center(torch.randn(3,5,3,dtype=torch.float64));value=base.center(torch.randn_like(x))
@@ -53,7 +53,7 @@ def test_endpoint_displacement_conversion_symmetry_and_head_only_gradient(kind):
     correction=base.center(torch.randn_like(x))*.02
     new,_=endpoint_and_progress(model,x,t,value+native_correction(model,x,t,correction,spec),spec)
     torch.testing.assert_close(new,endpoint+(1-progress[:,None,None])*correction,atol=1e-9,rtol=1e-8)
-    if kind=='gaga':assert torch.equal(native_correction(model,x,t,correction,spec)[0],torch.zeros_like(x[0]))
+    if kind in ('gaga','edm'):assert torch.equal(native_correction(model,x,t,correction,spec)[0],torch.zeros_like(x[0]))
     head=PhysicalConnection(spec['atomic_numbers'],velocity_scale=2.).double()
     with torch.no_grad():head.pair_network[-1].weight.normal_(std=.1)
     z=torch.tensor([[6,6,8,1,1]]*3);r=torch.linalg.qr(torch.randn(3,3,dtype=x.dtype))[0];p=torch.tensor([4,1,3,2,0])

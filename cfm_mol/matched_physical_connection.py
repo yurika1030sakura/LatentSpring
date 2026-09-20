@@ -17,10 +17,11 @@ def endpoint_and_progress(model, x, t, value, spec):
     if spec['kind'] in ('harmonic_fm', 'gaussian_fm'):
         progress=t[:, 0]
         endpoint=x+(1-progress[:, None, None])*value
-    elif spec['kind']=='gaga':
+    elif spec['kind'] in ('gaga', 'edm'):
         gamma=model.gamma(t)
         endpoint=(x-model.sigma(gamma,x)*value)/model.alpha(gamma,x)
-        progress=1-t[:, 0]/(spec['gaga_max_t']/model.T)
+        maximum=spec['gaga_max_t']/model.T if spec['kind']=='gaga' else 1.
+        progress=1-t[:, 0]/maximum
     else:
         raise ValueError(spec['kind'])
     if not torch.isfinite(endpoint).all() or (progress < -1e-6).any() or (progress > 1+1e-6).any():
@@ -31,9 +32,10 @@ def endpoint_and_progress(model, x, t, value, spec):
 def native_correction(model, x, t, correction, spec):
     if spec['kind'] in ('harmonic_fm', 'gaussian_fm'):
         return correction
-    if spec['kind']!='gaga':raise ValueError(spec['kind'])
+    if spec['kind'] not in ('gaga', 'edm'):raise ValueError(spec['kind'])
     gamma=model.gamma(t)
-    remaining=t[...,None]/(spec['gaga_max_t']/model.T)
+    maximum=spec['gaga_max_t']/model.T if spec['kind']=='gaga' else 1.
+    remaining=t[...,None]/maximum
     return -model.alpha(gamma,x)*remaining*correction/model.sigma(gamma,x)
 
 
