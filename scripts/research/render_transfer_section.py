@@ -1,0 +1,116 @@
+"""Merge transfer studies while keeping unfinished combined-design cells explicit."""
+import argparse,hashlib,json
+from pathlib import Path
+
+
+def main():
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--project',type=Path,required=True)
+    a=p.parse_args();root=a.project.resolve();sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+    paths=['research/evidence/joint_design_transfer_v1.json','research/evidence/seed_replication_audit_v2.json',
+           'research/evidence/other_baseline_transfer_audit_v1.json','research/evidence/cross_generator_head_audit_v1.json']
+    protocol,replication,other,cross=[json.loads((root/p).read_text()) for p in paths]
+    assert protocol['frozen'] and all(v['complete'] for v in [replication,other,cross])
+    baseline=dict(edm=dict(graph=other['summary']['edm']['parent']['graph'],joint=other['summary']['edm']['parent']['joint']),
+        gaga={k:sum(replication['summary']['gaga_parent'][k+'_by_fit'][:2])/2 for k in ['graph','joint']})
+    result=root/'runs/joint_design_transfer_v1/audit.json';finished=False;combined={}
+    if result.exists():
+        value=json.loads(result.read_text())
+        if value['complete']:
+            assert value['protocol_sha256']==sha(root/paths[0]);assert value['arrays_sha256']==sha(result.with_suffix('.npz'))
+            for target in protocol['targets']:
+                assert all(abs(value['summary'][target]['baseline'][k]-baseline[target][k])<1e-12 for k in ['graph','joint'])
+                combined[target]=value['summary'][target]['both']
+            finished=True
+    f=lambda value:f'{100*value:.2f}'
+    text=r'''\subsection{Transfer of the source and physical correction}\label{sec:joint-transfer}
+We examine whether the two designs can also improve diffusion generators.
+For EDM and GAGA, the auxiliary-tree covariance defines the structured noise
+used in training and reverse sampling. We train each target backbone with this
+noise and attach the physical correction learned by FM. The correction weights
+are reused without further fitting. This transfers both designs while retaining
+each target's scalar diffusion schedule.
+
+Table~\ref{tab:joint-transfer} compares each original baseline with the version
+using both designs, on the same 64 compositions. It uses two training fits per
+target and evaluates the source and correction together.
+
+\begin{table}[H]\centering\small
+\caption{Transfer of both designs to diffusion generators. Values are percentages,
+with 2,048 outputs per row and setting. The GAGA baseline uses the two fits
+paired with this experiment; Table~\ref{tab:main-generators} averages five.
+'''
+    if not finished:text+=r'''Dashes mark combined-design results awaiting completed evaluation.
+'''
+    text+=r'''}
+\begin{tabular}{lrrrr}\toprule
+& \multicolumn{2}{c}{Graph validity} & \multicolumn{2}{c}{Joint yield}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Target & Original & Both designs & Original & Both designs\\\midrule
+'''
+    for target in protocol['targets']:
+        new=[f(combined[target][k]) if finished else r'\textemdash' for k in ['graph','joint']]
+        text+=' & '.join([target.upper(),f(baseline[target]['graph']),new[0],f(baseline[target]['joint']),new[1]])+r'\\'+'\n'
+    text+=r'''\bottomrule\end{tabular}\label{tab:joint-transfer}
+\end{table}
+
+\paragraph{Evidence across independent training runs.}\label{sec:seed-replication}
+Completed experiments establish the physical correction's benefit across five
+FM/GAGA fit pairs: two earlier pairs and three trained after fixing the method.
+All five pairs use the same 64 compositions, with 5,120 outputs per setting.
+For FM, correction changes graph validity from 20.12 to 24.86\% and joint yield
+from 7.21 to 24.00\%. For GAGA, the corresponding changes are 22.60 to 26.25\%
+and 8.75 to 25.37\%. These heads are fitted on their respective parent generators.
+
+In the three new FM fits, joint-yield gains are 8.11, 18.46, and 20.31
+percentage points. Their mean is 15.62 points, with a 95\% interval of
+$[8.50,22.43]$ when resampling both fitted models and compositions. GAGA's
+three new fits improve by 16.89 points on average (composition interval
+$[13.31,20.54]$). Figure~\ref{fig:seed-replication} shows each trained model.
+
+\paragraph{Direct reuse of physical-correction weights.}\label{sec:cross-head}
+We also test the learned weights themselves by swapping the FM and GAGA heads
+without retraining, while preserving the target's original source distribution.
+Across five fit pairs, the FM-trained head raises GAGA joint yield from
+8.75 to 25.27\%, close to 25.37\% with a head trained on GAGA. Conversely, the
+GAGA-trained head raises FM joint yield from 7.21 to 25.59\%, compared with
+24.00\% for its own head. These experiments hold the EGNN architecture and
+element vocabulary fixed and omit the hydrogen readout.
+
+For the three new pairs, FM-to-GAGA weight transfer improves joint yield by
+16.54 points, with a crossed fit/composition 95\% interval of $[12.66,20.67]$.
+All three gains are positive: 16.02, 18.36, and 15.23 points. Reverse transfer
+improves joint yield by 17.12 points (composition interval $[13.61,20.77]$),
+also positive in each new fit. The head therefore retains its benefit when
+the target generator's objective and sampling dynamics change. These completed
+weight-transfer results complement the combined-design comparison above.
+
+\paragraph{Optional hydrogen readout.}
+The same five-fit study also evaluates the conditional hydrogen flow.
+With this readout, corrected FM reaches 27.40\% graph validity and 26.33\%
+joint yield; corrected GAGA reaches 26.62\% and 25.74\%, respectively.
+Their joint-yield difference is 0.59 points, with a composition interval of
+$[-1.04,2.21]$. For the three new FM fits, learned hydrogen placement lowers
+all-output energy by 19.31 meV/atom relative to a fixed radial rule, with a
+composition interval of $[15.17,23.67]$ for the reduction. This optional
+readout is excluded from Table~\ref{tab:joint-transfer}.
+
+\begin{figure}[H]\centering
+\includegraphics[width=\linewidth]{../research/figures/seed_replication_v1/five_fit_replication.pdf}
+\caption{Completed physical-correction and hydrogen-readout comparisons in
+each of five training fits. Gray open markers identify the two earlier fits;
+filled markers identify the three new fits. Each line follows the same parent
+through correction and hydrogen readout. This figure reports the completed
+head experiments, separate from the combined-design diffusion comparison in
+Table~\ref{tab:joint-transfer}.}\label{fig:seed-replication}
+\end{figure}
+'''
+    out=root/'paper/sections/combined_transfer_results.tex';out.write_text(text)
+    receipt=dict(complete=True,inputs={p:sha(root/p) for p in paths},output=str(out.relative_to(root)),output_sha256=sha(out),
+        combined_design_results_complete=finished,pending_cells=0 if finished else 4,baseline=baseline,
+        existing_studies_retained_in_main=['independent_training_replication','verbatim_weight_transfer','optional_hydrogen_readout'],
+        scope='Merged fourth experimental subsection; pending combined-design outcomes are never filled from physical-head-only results.')
+    if finished:receipt['combined_audit_sha256']=sha(result)
+    (root/'research/evidence/combined_transfer_section_v1.json').write_text(json.dumps(receipt,indent=2)+'\n')
+
+
+if __name__=='__main__':main()

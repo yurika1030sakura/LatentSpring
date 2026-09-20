@@ -25,8 +25,13 @@ Original EDM controls reuse the previous two-fit archive; GAGA controls use
 fits0/1 of the five-fit archive, not its five-fit mean. Compare only compatible
 fit subsets. No H flow or long-schedule inference. Every result is retained.
 The job automatically audits and summarizes into runs/joint_design_transfer_v1/audit.json.
-No new scientific performance result is available yet. Published paper v14 and
-its existing main/ablation tables remain unchanged until this experiment finishes.
+No new scientific performance result is available yet. Paper build v16 merges
+the previous repetition and direct-head-transfer subsections into one fourth
+experimental subsection. A new original-versus-both table contains four explicit
+pending cells; two-fit baseline values are already filled. Existing repetition,
+weight-transfer, and optional H results plus the figure remain in the main text.
+The first three experimental subsections and their results are unchanged.
+Publication synchronization is recorded in publication_sync_v16.json.
 
 # Current checkpoint —2026-09-20: three additional baseline transfers complete
 
