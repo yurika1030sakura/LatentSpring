@@ -1,0 +1,88 @@
+\section{Implementation and analysis of the main experiments}\label{app:main-implementation}
+\paragraph{LatentSpring configuration.}
+The main model uses the shared EGNN with four message-passing layers, 256 hidden
+features, and 2,381,566 backbone parameters. It conditions on fixed atom
+identities and uses the harmonic-mixture source and distance self-conditioning.
+Training uses AdamW, a learning rate of $10^{-4}$, batch size 32, and 15,000
+updates with two supervised forward passes per example. The final exponential
+moving average is used, with maximum decay 0.999. The source edge log-width
+is 0.2. The implementation supports up to 200 atoms; the main evaluation
+contains 17--40 atoms. The shared training set contains 20,000 OMol25 structures
+with 8--64 atoms, as specified in Appendix~\ref{app:matched-generators}.
+
+The physical head contains 7,106 parameters, a 16-dimensional atom embedding,
+and a pair network with hidden width 64. Its velocity bound is $2p^2$\,\AA\
+per unit progress. For each fit, 256 native trajectories on 128 training
+compositions provide 512 late provisional endpoints. Mirror-paired eSEN
+evaluations use 1,024 force queries. Of the 128 compositions, 96 fit the head
+and 32 measure target-prediction error. Head training uses AdamW at learning
+rate $3\cdot10^{-4}$ for 20,000 updates. Force targets use $T_{\rm phys}=300$ K,
+a maximum local width of 0.03\,\AA, and a maximum molecular displacement norm
+of 0.1\,\AA. The correction strength is fixed at four before the five-fit
+confirmation and the additional-baseline experiment.
+
+Generation uses 32 midpoint steps with two self-conditioning passes per field
+evaluation: 128 backbone calls and 64 small-head calls per output. No terminal
+coordinate perturbation, hydrogen readout, physical query, or geometry
+optimization is used in Table~\ref{tab:main-generators}. Head training and
+teacher queries are additional to backbone training. The main comparison
+matches backbone training-example forward counts and backbone sampling calls;
+it does not equate total physical supervision, FLOPs, or wall time.
+Archived zero-strength controls execute unused head calls to verify sampler
+behavior; those diagnostic calls are not part of an unaugmented baseline's
+required inference procedure.
+
+\paragraph{Evaluation and repetition counts.}
+The 64-composition panel contains 20 compositions with 17--28 atoms and 44
+with 29--40 atoms, all absent from the processed training and validation
+corpora. Table~\ref{tab:main-generators} uses five fits for LatentSpring and
+GAGA, and two archived fits for Gaussian FM and EDM. Each fit produces 1,024
+outputs. The extra three FM/GAGA fits were trained after freezing the method;
+Appendix~\ref{app:seed-replication} separates these from the earlier two fits
+that informed development. The Gaussian FM and EDM evaluations reuse the
+same panel in a later experiment with settings fixed before generating their
+outputs. No checkpoint or output is selected by its evaluation energy.
+
+\paragraph{Four-setting component analysis.}
+Table~\ref{tab:source-head-ablation} uses the two archived, one-pass Gaussian
+and harmonic FM parents from Appendix~\ref{app:matched-generators}. Both omit
+self-conditioning, unlike the main LatentSpring row. Within each fit, we apply
+the identical frozen head previously learned on the distance-self-conditioned
+FM, with strength four and no additional target-specific training. Each output
+uses 128 backbone calls and, when active, 128 head calls. The parent and corrected
+trajectory share source draws and sampler randomness. This compares the two
+sources under one fixed learned correction. It is not a four-cell retraining
+of the final self-conditioned model. The four-cell contrasts were specified
+after the frozen transfer experiment and are reported as a follow-up analysis.
+
+\begin{table}[h]\centering\small
+\caption{Joint yield in the four-setting analysis, by training fit (percent).}
+\begin{tabular}{llrr}\toprule
+Source & Physical correction & Fit 1 & Fit 2\\\midrule
+Gaussian & No & 5.57 & 6.93\\
+Harmonic & No & 6.93 & 7.52\\
+Gaussian & Yes & 19.73 & 20.12\\
+Harmonic & Yes & 23.24 & 25.29\\
+\bottomrule\end{tabular}
+\end{table}
+
+Paired bootstrap intervals use 20,000 resamples. Resampling both fit indices
+and compositions gives a nominal 95\% interval of $[1.56,7.13]$ percentage
+points for the combination relative to Gaussian FM with correction, and
+$[13.09,21.19]$ relative to harmonic FM without correction. The source-only
+joint-yield change is $+0.98$ points, with interval $[-0.68,2.54]$.
+The four-cell table therefore supports the combined method while the smaller
+source-only physical-quality difference remains uncertain. Three initially
+unsuccessful GFN2 calculations in the Gaussian arms remain in the denominator;
+they are not replaced or counted as joint successes.
+
+\paragraph{Released evidence.}
+The additional experiment evaluates all three target baselines (Gaussian FM,
+harmonic FM, and EDM), with and without the same transferred FM head, in both
+archived fits. It adds 12,288 generated outputs and fixed-coordinate GFN2
+attempts, with no new training or eSEN queries. Raw-coordinate hashes,
+independently parsed physical logs, all-output score arrays, and numerical
+summaries are archived in the released evidence. A separate 48-output replay
+check verifies that zero-strength correction reproduces native sampling.
+The main-table renderer reads the audited summaries directly; the four-setting
+analysis script reconstructs its contrasts from the released score arrays.

@@ -2,7 +2,7 @@
 \documentclass{article}
 \usepackage{iclr2027_conference,times}
 \usepackage{amsmath,amssymb,amsthm,graphicx,booktabs,microtype,xcolor}
-\usepackage{etoolbox}
+\usepackage{etoolbox,float,flafter}
 \usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=green!45!black,urlcolor=blue!70!black]{hyperref}
 % Internal draft labels; the shared conference style is unchanged.
 \makeatletter
@@ -349,90 +349,31 @@ hydrogens together while preserving relative heavy-atom positions. This adds
 eight small-network calls per activated output. Appendix~\ref{app:hydrogen-readout}
 compares it with a fixed radial attachment rule and a detached-hydrogen-only flow.
 
-\section{Experimental design}\label{sec:experiments}
-\paragraph{Task and training.}
-Our main experiments adapt a pretrained molecular flow to neutral singlet organic
-compositions. Every composition contains C and H, with elements drawn from
-H/B/C/N/O/F/Si/P/S/Cl/Br/I. Training covers 8--40 atoms and evaluation extends
-to 64; the implementation supports up to 200 atoms. The initial two fine-tuning
-runs start from the same pretrained checkpoint. Each uses 3,000 distinct
-OMol25 structures and 3,000 optimizer updates. Within a run, source variants share
-the training data and initial weights. The network has 5,904,369 parameters.
-Learning rates are $2\cdot10^{-5}$ for the backbone and $3\cdot10^{-4}$ for
-self-conditioning modules. Three additional source runs repeat these two data
-blocks with new random seeds and report all 1,000-, 3,000-, and 6,000-update checkpoints.
+\section{Experiments}\label{sec:experiments}
+\subsection{Experimental setup}\label{sec:experimental-setup}
+We study molecular generation conditioned on atomic composition, total charge,
+and spin multiplicity. The main comparison uses an EGNN backbone trained on
+20,000 OMol25 structures and evaluates 64 unseen neutral organic singlet
+compositions with 17--40 atoms. Each trained model generates 16 structures per
+composition. We compare Gaussian-source FM, EDM \citep{edm}, GAGA
+\citep{qu2026gaga}, and LatentSpring. The latter combines the harmonic-mixture
+source with learned physical correction; the optional hydrogen readout is
+excluded from the main comparison and component ablation.
 
-All source variants use the same filtered training subset. In addition to the
-chemical-graph checks, selection requires a spanning scaffold with bounded edge
-lengths and atom degrees. This scaffold is a data-selection filter, not an input
-to the model. Appendix~\ref{app:data-evaluation} specifies it.
+We report two measures. \emph{Graph validity} is the fraction of outputs for
+which bond inference produces a connected, sanitized chemical graph with the
+requested charge. \emph{Joint yield} additionally requires a GFN2-xTB atomic
+force RMS of at most 5 eV/\AA. Both denominators include every generation
+attempt. All physical evaluations use the generated coordinates, with no
+geometry optimization or energy-based filtering. Confidence intervals resample
+compositions and, where specified, fitted models. Appendix~\ref{app:main-implementation}
+gives implementation details and Appendix~\ref{app:data-evaluation} specifies the
+structural checks.
 
-\paragraph{Evaluation sets.}
-The source study uses four composition sets: 12 for development, 10 for an additional test, 24
-for a further test, and 64 for a broader size comparison. Exact atom-count checks
-confirm that the latter three sets are absent from both processed OMol25 corpora.
-Their reference coordinates are used only to determine eligibility, not for
-training. Initial comparisons reuse two fine-tuned models, and the wider source
-study adds three training repetitions. Shared-EGNN experiments train from scratch;
-the final correction study includes five paired initializations. Physical studies
-compare models on common compositions and identify the panel alongside each result.
-Selection and source-control details are in Appendix~\ref{app:source-panels}.
-
-\paragraph{Metrics and uncertainty.}
-The 12- and 10-composition sets use 64 samples per composition, and the
-24-composition set uses 32. Geometric validity requires a connected contact graph
-and no severe atom overlap, with distance thresholds of 1.25 and 0.6 times the
-summed covalent radii, respectively. Chemical-graph validity additionally requires
-RDKit to infer a connected, sanitized bond graph with the requested total charge.
-We divide valid outputs by \emph{all attempts}, including failures and validator
-exceptions. Graph diversity counts distinct inferred connectivities within each
-composition. Timings include the full generation procedure.
-Appendix~\ref{app:data-evaluation} gives the detailed checks.
-
-Unless stated otherwise, 95\% confidence intervals come from paired bootstrap
-resampling of generation draws, with the trained models and compositions held
-fixed. We also resample compositions to describe variation across the evaluation
-set. Physical scores are computed on saved raw coordinates, using the stated
-charge and spin and approximate energy models.
-
-\section{Results}
-\subsection{Effect of the latent spring source}
-Replacing the isotropic Gaussian source with the harmonic source improves
-chemical-graph validity by 5.86 percentage points on the 12 development
-compositions, 8.83 points on the 10 additional compositions, and 8.20 points on
-the 24-composition set. These comparisons hold the backbone, initialization, and
-training data fixed. A Gaussian with approximately matched covariance also
-performs worse. This supports a benefit beyond the tested covariance approximation,
-without isolating every property of the mixture. Appendix~\ref{app:source-panels}
-reports the source, shell-tree, and covariance controls.
-
-\input{sections/wide_generalization_results}
-
-
-
-\input{sections/matched_generators_results}
+\input{sections/main_generator_comparison}
+\input{sections/source_head_ablation}
 \input{sections/seed_replication_results}
 \input{sections/cross_head_results}
-\paragraph{Independent physical evaluation of weight updates.}
-On 24 new compositions, paired physical training lowers energy and force RMS
-under both the eSEN teacher and the independent GFN2 evaluator. Graph validity
-remains similar. Appendix~\ref{sec:fresh-physics} gives all-attempt counts,
-paired valid-output comparisons, and the complete-work control.
-\paragraph{Learning physical feedback in weights.}
-The paired update also lowers energy and force relative to a direct update of
-the same parameter norm. Both fitted models favor the paired direction.
-Appendix~\ref{sec:update-ablation} reports this control, and
-Appendix~\ref{sec:absolute-quality} compares physical adaptation under both
-source distributions.
-
-\paragraph{Component controls.}
-At matched training-forward budgets, self-conditioning improves validity by
-12.43 points ($[9.70,15.23]$). Removing the force displacement raises energy by
-0.01939 eV/atom on paired graph-valid outputs. Appendix~\ref{app:components}
-reports both runs, validity, force scores, and the update-matched comparison.
-
-
-
 \section{Discussion}
 LatentSpring combines a composition-conditioned harmonic source with physical
 corrections learned in a shared coordinate space. The correction improves both
@@ -447,8 +388,8 @@ local distributions; global molecular equilibrium remains open.
 \subsubsection*{Reproducibility statement}
 Code and manifests record seeds, checkpoint hashes, evaluation settings, and all
 attempted outputs. Training, target preparation, and generation costs are reported
-separately. Released per-output scores and a NumPy script reproduce the main
-tables and confidence intervals. Tests cover source normalization, symmetry,
+separately. Released per-output scores, numerical arrays, and audit summaries reproduce the
+reported tables and confidence intervals. Tests cover source normalization, symmetry,
 density gradients, and work identities. Original data and backbone licenses and
 access requirements apply.
 
@@ -465,11 +406,14 @@ computational checks of the AI-assisted implementation.
 \bibliographystyle{iclr2027_conference}
 \appendix
 \input{sections/notation_guide}
+\input{sections/main_implementation_details}
+\input{sections/earlier_experimental_setup}
 \input{sections/data_evaluation_details}
 \section{Source-development and covariance comparisons}\label{app:source-panels}
 \input{sections/source_development_results}
 \input{sections/wide_size_details}
 \input{sections/source_replication_details}
+\input{sections/additional_source_results}
 \section{Additional generator evaluations}\label{app:earlier-readouts}
 \input{sections/conditional_edm_results}
 \input{sections/matched_generators_details}

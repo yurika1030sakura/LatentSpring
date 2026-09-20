@@ -19,8 +19,13 @@ without self-conditioning and receive the same frozen head from the previously
 trained self-conditioned FM. This is NOT a four-cell ablation of the exact final
 self-conditioned backbone with separately trained source-specific heads. Both-fit
 EDM comparison is separate from the five-fit GAGA confirmation. No universal
-or cross-architecture claim. Published paper remains v12; new results are not yet
-incorporated into the paper or synchronized to Overleaf.
+or cross-architecture claim. Paper build v14 reorganizes Experiments into setup, a four-method/two-metric
+main table, and a four-cell source/head ablation. Main text contains result
+comparisons; detailed training/sampling settings are in Appendix B. The one-pass
+ablation is explicitly distinguished from the self-conditioned main generator.
+Canonical and standalone builds match:8 main pages,45 total,31 references.
+PDF pages6--7 were visually checked; tables stay with their subsections.
+Publication synchronization is recorded separately in publication_sync_v14.json.
 
 # Current checkpoint —2026-09-20: five-fit physical correction and weight transfer confirmed
 

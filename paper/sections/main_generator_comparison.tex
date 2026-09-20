@@ -1,0 +1,27 @@
+\subsection{Comparison with generative baselines}\label{sec:main-comparison}
+We compare LatentSpring with Gaussian-source flow matching, EDM, and GAGA.
+LatentSpring combines the harmonic-mixture source and learned physical
+correction; the baselines use their own generators without these additions.
+Table~\ref{tab:main-generators} reports both measures on the same compositions.
+
+\begin{table}[H]\centering\small
+\caption{Generation from 64 unseen compositions. All values are percentages;
+higher is better. Gaussian FM and EDM average two training runs (2,048 outputs
+per row); GAGA and LatentSpring average five (5,120 outputs per row). The
+LatentSpring row uses the source and physical correction, without the optional
+hydrogen readout.}
+\begin{tabular}{lrr}\toprule
+Method & Graph validity & Joint yield\\\midrule
+Gaussian FM & 16.70 & 6.25\\
+EDM & 22.27 & 8.15\\
+GAGA & 22.60 & 8.75\\
+\textbf{LatentSpring (ours)} & \textbf{24.86} & \textbf{24.00}\\
+\bottomrule\end{tabular}\label{tab:main-generators}
+\end{table}
+
+LatentSpring has the highest mean graph validity and joint yield in this
+comparison. Its joint yield is 24.00\%, compared with 8.75\% for GAGA,
+8.15\% for EDM, and 6.25\% for Gaussian FM. The gains over GAGA and
+EDM are 15.25 and 15.85 percentage points, respectively. The separation is larger
+for joint yield than for graph validity: more generated structures satisfy
+both the chemical-graph checks and the physical force threshold.

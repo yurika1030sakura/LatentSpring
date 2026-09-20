@@ -1,0 +1,29 @@
+\subsection{Ablation of the source and physical correction}\label{sec:source-head-ablation}
+We separate the two design choices in a four-setting comparison: a Gaussian
+or harmonic source, each with or without physical correction. These experiments
+use one-pass EGNN flow models without self-conditioning. Within each training
+run, the same frozen correction head is applied to both source variants.
+This keeps the learned correction fixed while changing the source.
+
+\begin{table}[H]\centering\small
+\caption{Source and physical-correction ablation on the same 64 compositions.
+Each row contains 2,048 outputs from two training runs. All values are
+percentages; the hydrogen readout is omitted.}
+\begin{tabular}{llrr}\toprule
+Source & Physical correction & Graph validity & Joint yield\\\midrule
+Gaussian & No & 16.70 & 6.25\\
+Harmonic & No & 19.04 & 7.23\\
+Gaussian & Yes & 20.65 & 19.92\\
+\textbf{Harmonic} & \textbf{Yes} & \textbf{25.59} & \textbf{24.27}\\
+\bottomrule\end{tabular}\label{tab:source-head-ablation}
+\end{table}
+
+Physical correction improves joint yield with either source: from
+6.25 to 19.92\% for Gaussian FM and from 7.23 to 24.27\% for harmonic FM.
+The harmonic source alone gives smaller changes. Its contribution is clearer
+when combined with physical correction: graph validity rises from
+20.65 to 25.59\%, and joint yield rises from 19.92 to 24.27\%.
+The 4.35-point joint-yield gain has a 95\% interval of $[1.56,7.13]$
+when resampling both training runs and compositions. Both runs favor the
+combination over either component alone. Appendix~\ref{app:main-implementation}
+reports the individual runs and the four-setting analysis.
