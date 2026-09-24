@@ -48,7 +48,7 @@ class GeometryMomentContext(nn.Module):
         self.amplitude = float(amplitude)
         self.mode = mode
 
-    def forward(self, coordinates, numbers):
+    def pair_features(self, coordinates, numbers):
         # Match detached provisional-geometry self-conditioning while allowing
         # gradients through the learned context parameters.
         x = coordinates.detach()
@@ -83,6 +83,10 @@ class GeometryMomentContext(nn.Module):
             scalars = torch.cat([scalars[..., :3], radial, scalars[..., -1:]], -1)
         features = torch.cat([nodes[:, :, None] + nodes[:, None, :],
             nodes[:, :, None] * nodes[:, None, :], scalars], -1)
+        return d2, lengths, unit, contacts, degree, first, second, offdiag, features
+
+    def forward(self, coordinates, numbers):
+        d2, lengths, _, _, _, _, _, offdiag, features = self.pair_features(coordinates, numbers)
         residual = torch.tanh(self.network(features)[..., 0])
         window = torch.sigmoid((2.0 - (d2 + 1e-12).sqrt() / lengths) / .30)
         value = d2 + self.amplitude * lengths.square() * window * offdiag * residual

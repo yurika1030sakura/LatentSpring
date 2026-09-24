@@ -31,6 +31,7 @@ def main():
     missing=[];provenance={};summaries={}
     for fi,fit in enumerate(fits):
         initializations=[]
+        physical_head_hashes=set();baseline_model_hash=None
         for mi,method in enumerate(methods):
             folder=a.run/f's{fit}'/method
             evaluation=folder if method=='frozen' else folder/'evaluation'
@@ -39,6 +40,8 @@ def main():
             done=json.loads(complete.read_text())
             expected_ph=protocol.get('baseline_protocol_sha256',ph) if method=='frozen' else ph
             assert done['complete'] and done['protocol_sha256']==expected_ph
+            physical_head_hashes.add(done['head_state_sha256'])
+            if method=='frozen':baseline_model_hash=done['model_state_sha256']
             assert done['attempted']==len(protocol['conditions'])*count
             for name,key in [('geometry.json','geometry_sha256'),('xtb/results.json','physical_sha256'),('generation/generation.json','generation_sha256')]:
                 assert sha(evaluation/name)==done[key]
@@ -69,6 +72,12 @@ def main():
                 initializations.append(json.loads((folder/'initialization.json').read_text()))
                 training=json.loads((folder/'training.json').read_text());assert training['complete'] and training['protocol_sha256']==ph
                 assert training['steps']==protocol['steps'] and sha(folder/'last.ckpt')==training['checkpoint_sha256']
+                if 'geometry_head_state_sha256' in done:
+                    assert done['geometry_head_state_sha256']==training['ema_state_sha256']
+                    if baseline_model_hash is not None:assert done['model_state_sha256']==baseline_model_hash
+                if training.get('frozen_parent_tensors_identical') and baseline_model_hash is not None:
+                    assert training['original_parent_state_sha256']==baseline_model_hash
+        assert len(physical_head_hashes)<=1
         if len(initializations)==len(protocol['variants']):
             assert len({r['initial_state_sha256'] for r in initializations})==1
             assert len({r['batch_schedule_sha256'] for r in initializations})==1
