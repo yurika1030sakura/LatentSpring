@@ -90,6 +90,7 @@ def main():
     for key in ['project','protocol','out']:p.add_argument('--'+key,type=Path,required=True)
     p.add_argument('--fit',type=int,choices=[0,1],required=True)
     p.add_argument('--variant',choices=['replay','recovery','recovery_local'],required=True)
+    p.add_argument('--train-only',action='store_true')
     a=p.parse_args();root=a.project.resolve();out=a.out.resolve();protocol=json.loads(a.protocol.read_text());ph=sha(a.protocol)
     assert protocol['frozen'];torch.set_num_threads(2)
     torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
@@ -99,7 +100,7 @@ def main():
     assert not {r['condition']['composition_hex'] for r in data}&{r['condition']['composition_hex'] for r in protocol['conditions']}
     arm=protocol['parents'][a.fit];model=load_parent(root,arm);initial=base.state_hash(model)
     source=base.HarmonicSource(arm['spec']['edge_log_width']);context=make_context(arm,source)
-    if a.variant=='replay':evaluate(root,protocol,ph,a.fit,'frozen',model,source,context,out.parent/'frozen')
+    if a.variant=='replay' and not a.train_only:evaluate(root,protocol,ph,a.fit,'frozen',model,source,context,out.parent/'frozen')
     model.train().requires_grad_(True);ema=copy.deepcopy(model).eval().requires_grad_(False)
     optimizer=torch.optim.AdamW(model.parameters(),lr=protocol['learning_rate'],amsgrad=True,weight_decay=1e-12)
     schedule=batches(data,protocol['steps'],protocol['batch_size'],protocol['batch_seeds'][a.fit])
@@ -149,6 +150,7 @@ def main():
         training_seconds=seconds,training_forward_examples=protocol['steps']*protocol['batch_size']*2,
         new_optimizer_steps=protocol['steps'],new_esen_queries=0)
     write(out/'training.json',done)
+    if a.train_only:return
     evaluate(root,protocol,ph,a.fit,a.variant,ema,source,context,out/'evaluation')
     write(out/'complete.json',dict(**done,evaluation_complete_sha256=sha(out/'evaluation/complete.json')))
 

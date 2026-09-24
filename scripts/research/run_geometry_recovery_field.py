@@ -67,6 +67,7 @@ def main():
     for key in ['project','protocol','references','out']:p.add_argument('--'+key,type=Path,required=True)
     p.add_argument('--fit',type=int,choices=[0,1],required=True)
     p.add_argument('--variant',choices=['radial_geometry','moment_geometry'],required=True)
+    p.add_argument('--train-only',action='store_true')
     a=p.parse_args();root=a.project.resolve();out=a.out.resolve();spec=json.loads(a.protocol.read_text());ph=sha(a.protocol)
     torch.set_num_threads(2);torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
     references=json.loads(a.references.read_text());assert references['complete'] and references['protocol_sha256']==ph
@@ -115,7 +116,9 @@ def main():
     done=dict(complete=True,protocol_sha256=ph,fit=a.fit,variant=a.variant,steps=spec['steps'],initial_state_sha256=initial,
         ema_state_sha256=base.state_hash(ema),checkpoint_sha256=sha(out/'last.ckpt'),training_seconds=seconds,new_optimizer_steps=spec['steps'],
         new_backbone_training_example_forwards=0,geometry_head_training_example_forwards=spec['steps']*spec['batch_size'],new_esen_queries=0)
-    write(out/'training.json',done);evaluate(root,spec,ph,a.fit,a.variant,ema,out/'evaluation')
+    write(out/'training.json',done)
+    if a.train_only:return
+    evaluate(root,spec,ph,a.fit,a.variant,ema,out/'evaluation')
     write(out/'complete.json',dict(**done,evaluation_complete_sha256=sha(out/'evaluation/complete.json')))
 
 
