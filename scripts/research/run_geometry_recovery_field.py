@@ -21,6 +21,8 @@ from scripts.research.train_electronic_fm import sha
 def evaluate(root,spec,ph,fit,variant,geometry,out,*,geometry_strength=1.,physical_strength=4.):
     out.mkdir(parents=True,exist_ok=True);arm=spec['parents'][fit]
     model=load_parent(root,arm);source=base.HarmonicSource();context=make_context(arm,source)
+    passes=2 if context is not None and arm['spec'].get('two_pass',False) else 1
+    correction_calls=128//passes
     head,_=restore_head(root,spec['physical_heads'][fit]);parent_hash=base.state_hash(model);geo_hash=base.state_hash(geometry)
     if (out/'complete.json').exists():
         done=json.loads((out/'complete.json').read_text());assert done['protocol_sha256']==ph and done['geometry_head_state_sha256']==geo_hash;return
@@ -34,11 +36,11 @@ def evaluate(root,spec,ph,fit,variant,geometry,out,*,geometry_strength=1.,physic
             x,x0=sample(model,arm,source,context,c,seed,8,128,transform)
             positions.append(x.cpu().double());starts.append(x0.cpu().double())
         hook.remove();x=torch.cat(positions)
-        assert core[0]==256 and transform.calls==physical.calls==geometry.forward_calls-geo_before==128
+        assert core[0]==256 and transform.calls==physical.calls==geometry.forward_calls-geo_before==2*correction_calls
         file=folder/f'{variant}_c{ci}.pt'
         atomic_save(dict(positions=x,initial_positions=torch.cat(starts),condition=c,protocol_sha256=ph,
             model_state_sha256=parent_hash,head_state_sha256=base.state_hash(head),geometry_head_state_sha256=geo_hash,
-            backbone_calls_per_trajectory=128,geometry_calls_per_trajectory=64,physical_calls_per_trajectory=64,
+            backbone_calls_per_trajectory=128,geometry_calls_per_trajectory=correction_calls,physical_calls_per_trajectory=correction_calls,
             geometry_strength=geometry_strength,physical_strength=physical_strength),file)
         quality=assess(x,c,list(range(16)));rows.append(dict(method=variant,condition_index=ci,file=file.name,sha256=sha(file),**quality))
         print(json.dumps(dict(phase='generation',fit=fit,variant=variant,condition=ci,graph=quality['graph_supported'],attempted=16)),flush=True)
