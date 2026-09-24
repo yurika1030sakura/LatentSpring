@@ -26,9 +26,17 @@ radial geometric field trained10000 updates;7106-param physical head reused.
 Main inference128 backbone+64 geometric+64 physical calls, no sampling energy queries.
 Zero new eSEN queries. Registry v42 includes323520 evaluation outputs,332480
 neural generation records and152999 GFN2 attempts over the whole project.
-Manuscript build v31 incorporates these results:9 main pages,50 total,33 cited
+Manuscript build v32 incorporates these results:9 main pages,50 total,33 cited
 references; canonical and standalone text match. All21 geometry-module tests pass.
-Publication synchronization is recorded separately in publication_sync_v31.json.
+Publication synchronization is recorded separately in publication_sync_v32.json.
+
+Figure1 now uses research/figures/figure1_redesign_v1/figure1.pdf. The same
+verified C7H15N sample is shown larger with balanced PyMOL shading, three
+panels (generation, shared sequential endpoint correction, offline learning),
+and explicit FM/diffusion endpoint inputs. Five rendering styles were compared.
+Use scripts/research/compose_figure1_redesign.py and the balanced paired crops
+in research/figures/figure1_molecule_study_v1. No coordinates or scientific
+results changed. See figure1_redesign_verification_v1.json.
 
 # Earlier checkpoint —2026-09-24: paired geometry-recovery pilot running
 

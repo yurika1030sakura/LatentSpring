@@ -107,14 +107,19 @@ molecular rotors and subsequent neural training.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{../research/figures/geometric_method_v1/geometric_method.pdf}
+\includegraphics[width=\linewidth]{../research/figures/figure1_redesign_v1/figure1.pdf}
 \caption{LatentSpring generates coordinates from atomic composition.
-(A) A sampled source and a raw $\mathrm{C_7H_{15}N}$ output share camera and scale.
-Dashed links are auxiliary springs; the inset shows coordinate-inferred connectivity.
-The example comes from the common-element panel in Appendix~\ref{app:chemical-geometry}.
-At each sampling step, a geometric correction $g$ and then a physical correction
-$f$ act on the flow's provisional endpoint. (B) Perturbed references train the
-geometric field; forces at generated endpoints train the physical field.}
+(a) A replayed harmonic source and its raw $\mathrm{C_7H_{15}N}$ output share
+camera and scale. Dashed links are auxiliary springs; the inset shows the
+output's inferred connectivity (Appendix~\ref{app:chemical-geometry}).
+(b) At each sampling step, the generator predicts endpoint coordinates $H$.
+The geometric field produces $g$ and updates this estimate to $H_g=H+(1-p)g$;
+the physical field then predicts $f$. Both contribute to the endpoint
+change $\Delta H$, with progress $p$ and physical strength $\eta=4$.
+Element and progress inputs are omitted from the head labels.
+(c) Perturbed references train geometric recovery; eSEN forces at endpoints
+from the initial flow train the physical correction. Generation uses neural
+networks without energy queries or geometry optimization.}
 \label{fig:method}
 \end{figure}
 
