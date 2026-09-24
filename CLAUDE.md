@@ -26,9 +26,9 @@ radial geometric field trained10000 updates;7106-param physical head reused.
 Main inference128 backbone+64 geometric+64 physical calls, no sampling energy queries.
 Zero new eSEN queries. Registry v42 includes323520 evaluation outputs,332480
 neural generation records and152999 GFN2 attempts over the whole project.
-Manuscript build v30 incorporates these results:9 main pages,50 total,33 cited
+Manuscript build v31 incorporates these results:9 main pages,50 total,33 cited
 references; canonical and standalone text match. All21 geometry-module tests pass.
-Publication synchronization is recorded separately in publication_sync_v30.json.
+Publication synchronization is recorded separately in publication_sync_v31.json.
 
 # Earlier checkpoint —2026-09-24: paired geometry-recovery pilot running
 
