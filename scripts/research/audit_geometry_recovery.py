@@ -36,7 +36,9 @@ def main():
             evaluation=folder if method=='frozen' else folder/'evaluation'
             complete=evaluation/'complete.json'
             if not complete.exists():missing.append(str(complete));continue
-            done=json.loads(complete.read_text());assert done['complete'] and done['protocol_sha256']==ph
+            done=json.loads(complete.read_text())
+            expected_ph=protocol.get('baseline_protocol_sha256',ph) if method=='frozen' else ph
+            assert done['complete'] and done['protocol_sha256']==expected_ph
             assert done['attempted']==len(protocol['conditions'])*count
             for name,key in [('geometry.json','geometry_sha256'),('xtb/results.json','physical_sha256'),('generation/generation.json','generation_sha256')]:
                 assert sha(evaluation/name)==done[key]
@@ -79,26 +81,31 @@ def main():
             rate=float(arrays[metric][:,mi].mean()),by_fit=arrays[metric][:,mi].mean((1,2)).tolist()) for metric in metrics}
         summaries[method]['attempted']=len(fits)*shape[2]*count
     stats=protocol['statistics'];contrasts={};advance={}
-    for method in ['recovery','recovery_local']:
+    candidates=protocol.get('candidates',['recovery','recovery_local'])
+    controls=protocol.get('controls',['frozen','replay'])
+    interval_key='composition_ci95' if len(candidates)==1 else 'composition_ci97_5_two_candidates'
+    for method in candidates:
         mi=methods.index(method);contrasts[method]={}
-        for control in ['frozen','replay']:
+        for control in controls:
             ci=methods.index(control)
             contrasts[method][control]={metric:contrast(arrays[metric][:,mi],arrays[metric][:,ci],
                 stats['bootstrap_seed'],stats['bootstrap_repetitions']) for metric in metrics}
         advance[method]=all(
             min(contrasts[method][control]['geometry']['by_fit'])>0 and
             min(contrasts[method][control]['geometry_force']['by_fit'])>0 and
-            contrasts[method][control]['geometry']['composition_ci97_5_two_candidates'][0]>0 and
+            contrasts[method][control]['geometry'][interval_key][0]>0 and
             contrasts[method][control]['unique_graph']['mean']>=-.02
-            for control in ['frozen','replay'])
+            for control in controls)
     eligible=[method for method,value in advance.items() if value]
     selected=max(eligible,key=lambda method:summaries[method]['geometry_force']['rate']) if eligible else None
     np.savez_compressed(a.run/'audit.npz',**arrays)
     result=dict(complete=True,protocol_sha256=ph,methods=methods,summary=summaries,contrasts=contrasts,
         development_advance=advance,selected=selected,arrays_sha256=sha(a.run/'audit.npz'),
-        provenance=provenance,new_optimizer_steps=protocol['budget']['new_backbone_updates'],
+        provenance=provenance,new_optimizer_steps=protocol['budget'].get('new_optimizer_steps',protocol['budget']['new_backbone_updates']),
         new_backbone_training_example_forwards=protocol['budget']['backbone_training_example_forwards'],
-        new_generation_outputs=int(np.prod(shape)),new_gfn2_attempts=int(np.prod(shape)),new_esen_queries=0,
+        new_generation_outputs=protocol['budget']['new_generation_outputs'],
+        new_gfn2_attempts=protocol['budget']['new_gfn2_attempts'],new_esen_queries=0,
+        reused_generation_outputs=int(np.prod(shape))-protocol['budget']['new_generation_outputs'],
         all_attempts_retained=True,geometry_optimized=False,scope=protocol['scope'])
     write(a.run/'audit.json',result)
     print(json.dumps(dict(complete=True,summary=summaries,advance=advance,selected=selected),indent=2),flush=True)
