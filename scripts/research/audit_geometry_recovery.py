@@ -69,7 +69,9 @@ def main():
                     arrays['unique_geometry'][slot]=smiles not in seen_geometry[ci];seen_geometry[ci].add(smiles)
             provenance[str(complete)]=sha(complete)
             if method!='frozen' and protocol.get('evaluation_only'):
-                if baseline_model_hash is not None:assert done['model_state_sha256']==baseline_model_hash
+                if protocol.get('same_parent_across_methods',True):
+                    if baseline_model_hash is not None:assert done['model_state_sha256']==baseline_model_hash
+                else:assert done['model_state_sha256']==protocol['method_parent_hashes'][method][fi]
                 assert done['geometry_head_state_sha256']==protocol['geometry_heads'][fi]['ema_state_sha256']
             if method!='frozen' and not protocol.get('evaluation_only'):
                 initializations.append(json.loads((folder/'initialization.json').read_text()))

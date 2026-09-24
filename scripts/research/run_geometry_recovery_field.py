@@ -43,7 +43,8 @@ def evaluate(root,spec,ph,fit,variant,geometry,out,*,geometry_strength=1.,physic
         quality=assess(x,c,list(range(16)));rows.append(dict(method=variant,condition_index=ci,file=file.name,sha256=sha(file),**quality))
         print(json.dumps(dict(phase='generation',fit=fit,variant=variant,condition=ci,graph=quality['graph_supported'],attempted=16)),flush=True)
     assert base.state_hash(model)==parent_hash and base.state_hash(geometry)==geo_hash
-    report=dict(complete=True,protocol_sha256=ph,rows=rows,new_neural_outputs=384,model_state_sha256=parent_hash,
+    attempted=len(rows)*16
+    report=dict(complete=True,protocol_sha256=ph,rows=rows,new_neural_outputs=attempted,model_state_sha256=parent_hash,
         head_state_sha256=base.state_hash(head),geometry_head_state_sha256=geo_hash,new_oracle_queries=0)
     write(folder/'generation.json',report);checks=review_geometry(folder,report,out/'geometry.json')
     scoring=json.loads((root/spec['parent_protocol']).read_text());scoring.update(strength_limit=4.)
@@ -56,7 +57,7 @@ def evaluate(root,spec,ph,fit,variant,geometry,out,*,geometry_strength=1.,physic
         heavy_disconnected=sum(r['heavy_components']>1 for r in checks),model_state_sha256=parent_hash,
         head_state_sha256=report['head_state_sha256'],geometry_head_state_sha256=geo_hash,
         generation_sha256=sha(folder/'generation.json'),geometry_sha256=sha(out/'geometry.json'),physical_sha256=sha(out/'xtb/results.json'),
-        new_generation_outputs=384,new_gfn2_attempts=384,new_esen_queries=0,geometry_optimized=False,
+        new_generation_outputs=attempted,new_gfn2_attempts=attempted,new_esen_queries=0,geometry_optimized=False,
         geometry_strength=geometry_strength,physical_strength=physical_strength)
     write(out/'complete.json',done);print(json.dumps(dict(phase='evaluated',**done)),flush=True)
 
