@@ -1,5 +1,5 @@
 {
-  "status": "SUBMITTED",
+  "status": "COMPLETE",
   "job_id": "48253413",
   "at_utc": "2026-09-24T19:33:50.148966+00:00",
   "source_commit": "f0f751eeaa58ad94f30cdec32cf32c96eaf03a55",
@@ -7,6 +7,10 @@
   "protocol_sha256": "cda2fae000917553805a8e40b83428a97fade0b3964debc30eb2f7adda72e02e",
   "output": "runs/geometry_resolution_probe_v1",
   "submission_stderr": "",
-  "partition": "gpu_requeue",
-  "initial_gpu_test_rejection": "sbatch: error: QOSMaxSubmitJobPerUserLimit\nsbatch: error: Batch job submission failed: Job violates accounting/QOS policy (job submit limit, user's size and/or time limits)\n"
+  "partition": "gpu_test",
+  "initial_gpu_test_rejection": "sbatch: error: QOSMaxSubmitJobPerUserLimit\nsbatch: error: Batch job submission failed: Job violates accounting/QOS policy (job submit limit, user's size and/or time limits)\n",
+  "migration_reason": "Pending job moved with explicit GPU/CPU resources and cleared hardware constraints to an available gpu_test slot.",
+  "audit": "research/evidence/geometry_resolution_audit_v1.json",
+  "audit_sha256": "8c6a357df6ad499f77ecf63a824ede9dd90e3b85ce88d903d14e30bb45f3e01b",
+  "candidate_results_available": true
 }

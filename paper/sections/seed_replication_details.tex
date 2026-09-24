@@ -1,5 +1,7 @@
 \subsection{Frozen-method training replication}\label{app:seed-replication}
 
+This study repeats the initial physical-head-only models;
+Appendix~\ref{app:geometric-recovery} reports their subsequent geometric refinement.
 We freeze all architectures, checkpoint schedules, physical strength four, and hydrogen-flow settings before the new fits. Each new FM parent receives 15,000 two-pass updates of batch size 32; GAGA receives 30,000 one-pass updates. Initialization tensors and the batch-schedule prefix match within each pair. This matches backbone training-example forward passes, while optimizer steps, data presentations, and measured runtime differ. All newly trained parents, heads, and H flows use their prescribed final checkpoints.
 
 The new metadata pool excludes every composition in the previous pool. Exhaustive qualification leaves only 20 previously unused compositions with 17--28 atoms. Before any generation, we therefore fix these 20 and the first 44 eligible compositions with 29--40 atoms under the previously specified metadata ranking. The planned 32-per-bin selection and its failed qualification are retained. The final 64 compositions occur in neither processed generator corpus nor the prepared training/validation rows. Reference geometry and overlap checks use no generated outcomes or energy ranks.

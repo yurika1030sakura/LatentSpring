@@ -1,4 +1,36 @@
-# Active checkpoint —2026-09-24: paired geometry-recovery pilot running
+# Active checkpoint —2026-09-24: five-fit geometry improvement and transfers complete
+
+All geometric-recovery jobs are COMPLETE. Final five-fit graph validity is35.49%,
+graph-and-force yield35.35%, geometry-and-force yield9.63%, versus4.43% for the
+initial physical-head-only model. Three additional fits all improve; their mean
+geometry-and-force gain5.08pp has crossed95CI[3.09,7.52]. The matched first-two-fit
+continuation control gives5.76% versus10.25% for the complete candidate.
+Read geometry_candidate_five_fit_audit_v1.json and geometry_primary_audit_v1.json.
+
+Both frozen correction heads transfer to native EDM and GAGA: joint yield
+8.15->29.69% and9.47->31.54%; geometric yield2.83->9.96% and3.03->10.45%.
+These two-fit transfers preserve target sources. They do not overwrite the earlier
+unsuccessful harmonic-noise diffusion adaptation. Source ablation with both heads
+is Gaussian25.20 versus harmonic29.79% joint, difference4.59pp CI[2.00,7.13].
+See geometric_correction_transfer_audit_v1.json, job48292157.
+
+The12-composition common-element application panel (384 outputs/method) gives
+geometry-and-force yield35.42% for full model,20.57% initial corrected FM,
+17.71% GAGA,14.84% EDM,16.41% Gaussian FM. Zero-assigned-charge geometry-and-force
+yield improves8.59->14.06%; this descriptive filter is not universal chemical
+validity. Main64-composition outputs still overproduce unusual inferred charges.
+See organic_geometry_audit_v1.json, job48304014. No geometry was optimized.
+
+Selected recipe: recovery_local backbone continuation4000 updates plus7747-param
+radial geometric field trained10000 updates;7106-param physical head reused.
+Main inference128 backbone+64 geometric+64 physical calls, no sampling energy queries.
+Zero new eSEN queries. Registry v42 includes323520 evaluation outputs,332480
+neural generation records and152999 GFN2 attempts over the whole project.
+Manuscript build v30 incorporates these results:9 main pages,50 total,33 cited
+references; canonical and standalone text match. All21 geometry-module tests pass.
+Publication synchronization is recorded separately in publication_sync_v30.json.
+
+# Earlier checkpoint —2026-09-24: paired geometry-recovery pilot running
 
 An independent architecture pipeline, job48239292, tests the7,489-parameter
 GeometryMomentContext against an equal-parameter radial-feature control on the

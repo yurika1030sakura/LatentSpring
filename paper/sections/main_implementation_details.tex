@@ -1,11 +1,13 @@
 \section{Implementation and analysis of the main experiments}\label{app:main-implementation}
 \paragraph{LatentSpring configuration.}
 The main model uses the shared EGNN with four message-passing layers, 256 hidden
-features, and 2,381,566 backbone parameters. It conditions on fixed atom
-identities and uses the harmonic-mixture source and distance self-conditioning.
+features, and 2,381,566 backbone parameters. All experiments fix charge zero and spin multiplicity one; the learned
+conditioning varies only with atom identities. The model uses the harmonic-mixture source and distance self-conditioning.
 Training uses AdamW, a learning rate of $10^{-4}$, batch size 32, and 15,000
-updates with two supervised forward passes per example. The final exponential
-moving average is used, with maximum decay 0.999. The source edge log-width
+updates with two supervised forward passes per example. The initial exponential
+moving average uses maximum decay 0.999. The final model then receives the
+4,000-update recovery continuation and 10,000-update geometric-field training
+in Appendix~\ref{app:geometric-recovery}. The source edge log-width
 is 0.2. The implementation supports up to 200 atoms; the main evaluation
 contains 17--40 atoms. The shared training set contains 20,000 OMol25 structures
 with 8--64 atoms, as specified in Appendix~\ref{app:matched-generators}.
@@ -22,12 +24,13 @@ of 0.1\,\AA. The correction strength is fixed at four before the five-fit
 confirmation and the additional-baseline experiment.
 
 Generation uses 32 midpoint steps with two self-conditioning passes per field
-evaluation: 128 backbone calls and 64 small-head calls per output. No terminal
+evaluation: 128 backbone calls, 64 geometric-head calls and 64 physical-head calls per output. No terminal
 coordinate perturbation, hydrogen readout, physical query, or geometry
-optimization is used in Figure~\ref{fig:main-generators}. Head training and
-teacher queries are additional to backbone training. The main comparison
-matches backbone training-example forward counts and backbone sampling calls;
-it does not equate total physical supervision, FLOPs, or wall time.
+optimization is used in Figure~\ref{fig:main-generators}. The initial backbone fits match training-example forward counts. LatentSpring
+adds recovery continuation, geometric-head fitting, physical-head fitting and
+teacher queries. All methods use 128 backbone sampling calls; total training,
+FLOPs and wall time are not equated. The matched continuation experiment
+measures the effect of the additional backbone updates.
 Archived zero-strength controls execute unused head calls to verify sampler
 behavior; those diagnostic calls are not part of an unaugmented baseline's
 required inference procedure.
@@ -47,34 +50,30 @@ outputs. No checkpoint or output is selected by its evaluation energy.
 Figure~\ref{fig:source-head-ablation} uses the two archived, one-pass Gaussian
 and harmonic FM parents from Appendix~\ref{app:matched-generators}. Both omit
 self-conditioning, unlike the main LatentSpring row. Within each fit, we apply
-the identical frozen head previously learned on the distance-self-conditioned
-FM, with strength four and no additional target-specific training. Each output
-uses 128 backbone calls and, when active, 128 head calls. The parent and corrected
-trajectory share source draws and sampler randomness. This compares the two
-sources under one fixed learned correction. It is not a four-cell retraining
-of the final self-conditioned model. The four-cell contrasts were specified
-after the frozen transfer experiment and are reported as a follow-up analysis.
+the identical geometric and physical heads learned with the self-conditioned
+FM, with strengths one and four and no target-specific training. Each corrected
+output uses 128 backbone, 128 geometric-head and 128 physical-head calls.
+The parent and corrected trajectories share source draws and sampler randomness.
+The archived one-pass parents are used without recovery continuation; this
+four-setting study measures source and correction effects on those fixed parents.
 
 \begin{table}[h]\centering\small
-\caption{Joint yield in the four-setting analysis, by training fit (percent).}
+\caption{Joint graph-and-force yield in the four-setting analysis (percent).}
 \begin{tabular}{llrr}\toprule
-Source & Physical correction & Fit 1 & Fit 2\\\midrule
+Source & Both corrections & Fit 1 & Fit 2\\\midrule
 Gaussian & No & 5.57 & 6.93\\
 Harmonic & No & 6.93 & 7.52\\
-Gaussian & Yes & 19.73 & 20.12\\
-Harmonic & Yes & 23.24 & 25.29\\
-\bottomrule\end{tabular}
-\end{table}
+Gaussian & Yes & 24.51 & 25.88\\
+Harmonic & Yes & 29.30 & 30.27\\
+\bottomrule\end{tabular}\end{table}
 
-Paired bootstrap intervals use 20,000 resamples. Resampling both fit indices
-and compositions gives a nominal 95\% interval of $[1.56,7.13]$ percentage
-points for the combination relative to Gaussian FM with correction, and
-$[13.09,21.19]$ relative to harmonic FM without correction. The source-only
-joint-yield change is $+0.98$ points, with interval $[-0.68,2.54]$.
-The four-cell table therefore supports the combined method while the smaller
-source-only physical-quality difference remains uncertain. Three initially
-unsuccessful GFN2 calculations in the Gaussian arms remain in the denominator;
-they are not replaced or counted as joint successes.
+Paired intervals use 10,000 resamples, retaining the two composition-size strata.
+The crossed fit/composition interval for the harmonic-source gain with both
+corrections is $[2.00,7.13]$ joint-yield points. The corresponding geometric
+interval is $[-1.46,4.69]$. All failed physical calculations remain in the
+denominators. The two-head transfer adds 8,192 raw outputs and fixed-coordinate
+GFN2 attempts across Gaussian FM, harmonic FM, EDM and GAGA. Physical-head-only
+transfer is a separate earlier experiment, described below.
 
 \paragraph{Structured diffusion in the combined-design transfer.}
 In Equation~\ref{eq:structured-diffusion}, $B_T$ is the centered tree embedding
@@ -98,7 +97,7 @@ only the physical head is reused without retraining. Appendix~\ref{app:joint-des
 reports the completed generation and physical-score results.
 
 \paragraph{Released evidence.}
-The additional experiment evaluates all three target baselines (Gaussian FM,
+The earlier physical-head-only experiment evaluates all three target baselines (Gaussian FM,
 harmonic FM, and EDM), with and without the same transferred FM head, in both
 archived fits. It adds 12,288 generated outputs and fixed-coordinate GFN2
 attempts, with no new training or eSEN queries. Raw-coordinate hashes,

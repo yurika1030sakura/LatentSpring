@@ -18,7 +18,7 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-Generating a molecule from atomic composition requires determining both its connectivity and three-dimensional coordinates. In this paper, we propose LatentSpring, which improves molecular generation through two designs. A normalized harmonic-mixture source uses random auxiliary trees and atomic length scales to organize the starting coordinates without known chemical bonds. A small equivariant network learns physical corrections to a frozen flow matching (FM) model's predicted endpoints from force feedback. On 64 unseen compositions, LatentSpring reaches 24.00\% joint yield, the fraction of outputs that are graph-valid and have GFN2-xTB force RMS at most 5 eV/\AA, compared with 8.75\% for GAGA and 8.15\% for EDM. A component study using one network evaluation per velocity prediction shows that the harmonic source adds 4.35 percentage points to joint yield when combined with physical correction. The correction also improves the flow matching model in each of three new training repetitions. Expressing its action in coordinate space allows a physical correction head trained using FM-generated trajectory states to act directly on diffusion noise predictions: transfer to GAGA improves joint yield by 16.54 points across those three repetitions, without retraining the correction. Generation uses neural evaluations, with no energy calls or quantum geometry optimization.
+Generating a molecule from atomic composition leaves both its chemical connectivity and three-dimensional geometry to be determined. We present LatentSpring, which combines a harmonic-mixture source with learned geometric and physical endpoint corrections. Random auxiliary trees and atomic length scales organize the starting coordinates without known bonds. Recovery training teaches the flow to correct geometric perturbations, and two small networks refine its provisional endpoint using reference geometry and force feedback. On 64 unseen compositions, five fitted models achieve 35.35\% graph-valid yield with force RMS at most 5 eV/\AA, compared with 8.75\% for GAGA and 8.15\% for EDM. Requiring local geometry checks as well gives a 9.63\% yield, up from 4.43\% for the initial force-corrected flow. Three additional training repetitions reproduce this geometric improvement. A matched continuation control separates the benefit of geometric recovery from extra training. Both corrections act in coordinate space and connect to flow velocities or diffusion noise predictions through the same endpoint displacement. Generation uses neural evaluations, with no energy calls or geometry optimization.
 \end{abstract}
 
 \section{Introduction}
@@ -41,30 +41,21 @@ gives a normalized mixture of harmonic networks. We combine this source with an
 equivariant coordinate network and geometry self-conditioning: the network makes
 a provisional geometry prediction, then uses it to refine its velocity prediction.
 
-Learning physical geometry poses a second challenge when the chemical graph is
-unknown. An atomic potential can provide forces directly from coordinates, but
-evaluating it at every sampling step adds repeated cost. We learn a small
-correction from these forces offline. The frozen parent predicts a provisional
-final geometry, and an energy model supplies
-forces at that geometry during training. A bounded equivariant head learns the
-additional velocity needed to shift the prediction along those forces. At
-generation time, only the neural networks are evaluated. Expressing the head's
-action as a change to the provisional endpoint also allows it to correct a
-diffusion model's noise prediction.
+Learning physically plausible geometry poses a second challenge when the chemical graph is unknown. An atomic potential can provide forces directly from coordinates, but evaluating it at every sampling step adds repeated cost. We learn a small force-based correction offline. Geometric checks reveal a separate gap: many outputs with valid inferred graphs and reduced forces still have distorted local arrangements. We address these errors with recovery training and a second small network that learns to restore perturbed reference structures.
+
+The two corrections act on a provisional endpoint, the generator's current estimate of its final coordinates. The geometric network first changes this estimate; the physical network then supplies a force-informed adjustment. At generation time, only neural networks are evaluated. Expressing both actions as coordinate displacements also provides an interface to a diffusion model's noise prediction.
 
 In summary, our contributions are threefold:
 \begin{itemize}
 \item We construct a normalized harmonic-mixture source from atomic composition.
 Random auxiliary trees introduce atom-dependent geometric correlations while
-leaving the generated chemical connectivity to the learned flow.
-\item We learn a bounded equivariant correction from forces at predicted
-endpoints. The coordinate-space interface connects this correction to flow
-velocities and diffusion noise predictions, with the backbone fixed during
-correction training and neural-network evaluations during sampling.
-\item We evaluate generation quality, the contribution of each design, and reuse
-of learned correction weights across generative objectives. Three new training
-pairs confirm the correction's benefit, and the FM-trained heads improve GAGA
-joint yield by 16.54 percentage points without target-specific head training.
+leaving chemical connectivity to the learned flow.
+\item We learn geometric and physical corrections in endpoint coordinates.
+Recovery from reference perturbations complements force feedback, and a common
+coordinate interface connects the corrections to flow or diffusion sampling.
+\item We evaluate generation quality, component benefits, and correction reuse.
+Five fits show improved raw geometry-and-force yield, including three additional
+training repetitions; all generated coordinates are evaluated before optimization.
 \end{itemize}
 
 \section{Related work}
@@ -116,15 +107,14 @@ molecular rotors and subsequent neural training.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{../research/figures/round2_method_v1/method.pdf}
+\includegraphics[width=\linewidth]{../research/figures/geometric_method_v1/geometric_method.pdf}
 \caption{LatentSpring generates coordinates from atomic composition.
-(A) A sampled source and a raw $\mathrm{C_9H_9NO_2}$ output share camera and scale.
-Dashed links are auxiliary springs; the 2D inset shows inferred connectivity.
-The example is selected from the validation illustration panel in
-Appendix~\ref{app:chemical-geometry}. (B) Endpoint forces provide offline
-regression targets. (C) Each sampler defines its own endpoint, and the head
-specifies a coordinate displacement. The head receives current coordinates,
-endpoint coordinates, atom identities and progress.}
+(A) A sampled source and a raw $\mathrm{C_7H_{15}N}$ output share camera and scale.
+Dashed links are auxiliary springs; the inset shows coordinate-inferred connectivity.
+The example comes from the common-element panel in Appendix~\ref{app:chemical-geometry}.
+At each sampling step, a geometric correction $g$ and then a physical correction
+$f$ act on the flow's provisional endpoint. (B) Perturbed references train the
+geometric field; forces at generated endpoints train the physical field.}
 \label{fig:method}
 \end{figure}
 
@@ -242,27 +232,50 @@ remain fixed and no chemical bond labels are supplied. The one-pass component
 ablation omits the second evaluation. Appendix~\ref{app:source-study-setup}
 describes the earlier FlowMol implementation.
 
+\paragraph{Learning to recover geometry.}
+Sampling can produce structures that differ from the training interpolation.
+We continue training with perturbed late interpolants: some atoms receive local
+noise, and a spatial region may be displaced as a group. The network learns to
+recover the original reference coordinates. This endpoint loss also compares
+local distances and angles with the reference, and alternates with the original
+FM objective. It uses coordinates and element identities as supervision.
+Training-time distortion has also improved molecular flow models
+\citep{flowmol3}; our continuation study separates recovery training from the
+effect of additional updates (Appendix~\ref{app:geometric-recovery}).
+
 \paragraph{Sampling.}
 The main FM uses 32 midpoint steps. Each step evaluates the current coordinates
 and time, advances a half-step, then evaluates the half-step coordinates at the
 midpoint time to obtain the full-step update. Two self-conditioning passes per
 velocity evaluation give $32\times2\times2=128$ backbone calls per output.
-The physical correction below acts on each final velocity prediction, adding
-64 small-network calls. The generated coordinates are returned without a
+The two corrections below act on each final velocity prediction, adding
+64 geometry-head and 64 physical-head calls. The generated coordinates are returned without a
 terminal perturbation, energy-based selection, or geometry optimization.
 
-\subsection{Learning physical changes to predicted endpoints}\label{sec:endpoint-correction}
-A physical force is defined on a geometry, while a generator predicts a velocity
-or a noise vector. We connect these quantities through the generator's
-\emph{provisional endpoint}: its current estimate of the final coordinates.
-The backbone remains fixed, and a small network learns how physical feedback
-should change this estimate (Figure~\ref{fig:method}).
+\subsection{Geometric and physical endpoint corrections}\label{sec:endpoint-correction}
+A generated structure needs both a plausible arrangement of atoms and favorable
+physical forces. We learn these two corrections separately and apply them to
+the generator's \emph{provisional endpoint}, its current estimate of the final
+coordinates (Figure~\ref{fig:method}). For current coordinates $X$ and generation
+progress $p$, a flow predicts velocity $v$ and endpoint $H=X+(1-p)v$.
+Progress is the fraction of the sampling schedule completed; for FM, $p=t$.
+
+\paragraph{Geometric recovery.}
+We perturb training references that pass the geometric checks and teach a small
+network to restore their coordinates. For a reference $X_{\rm ref}$ and its
+noisy version $\widetilde H$, the velocity target is
+$(X_{\rm ref}-\widetilde H)/(1-p)$. A common rescaling bounds every atom's
+target norm by $4p^2$\,\AA\ per unit progress. Unperturbed references also
+receive zero targets. The network $G_\psi(H,p;c)$ uses element identities,
+distances, local coordination and neighboring element embeddings to predict
+one restoring vector per atom. Symmetric pair features and opposite vector
+messages give rotation/permutation equivariance and zero total velocity.
+It requires no input chemical graph. Appendix~\ref{app:geometric-recovery}
+specifies the reference screen, perturbations and network.
 
 \paragraph{From forces to a regression target.}
-Let $X$ be the current coordinates and $p$ the fraction of the generation
-schedule completed. For a flow, $p$ is its interpolation time and the endpoint
-estimate is $H=X+(1-p)v$, where $v$ is the parent velocity. We evaluate the
-centered, mirror-averaged eSEN force $F_+(H)$ during training and form
+We collect provisional endpoints from the initial flow and evaluate the centered,
+mirror-averaged eSEN force $F_+(H)$ during training. The local displacement target is
 \begin{equation}
  \delta(H)=\frac{\sigma_H^2}{k_BT_{\rm phys}}F_+(H),
  \qquad T_{\rm phys}=300\ {\rm K}.
@@ -275,7 +288,7 @@ We choose $\sigma_H\leq0.03$\,\AA\ so the molecular displacement norm is at
 most 0.1\,\AA. Appendix~\ref{app:local-work} gives the derivation.
 The local shift supplies the regression target for physical correction.
 
-The correction network $A_\phi(X,H,p;c)$ receives current and predicted final
+The physical network $A_\phi(X,H,p;c)$ receives current and predicted final
 coordinates, atom identities, and progress. Symmetric pair coefficients multiply
 opposite relative vectors, giving an equivariant correction with zero total
 velocity. Its per-atom norm is bounded by $2p^2$\,\AA\ per unit progress.
@@ -283,23 +296,32 @@ We fit $A_\phi$ by squared error to $\delta(H)/(1-p)$, uniformly rescaling
 this target if necessary to satisfy the same bound. All recorded training
 states are retained, including invalid provisional geometries. The final layer
 starts at zero, so the initial model reproduces the parent. Only the small
-correction network is trained; no gradients update the backbone.
+physical network is trained in this stage. Its weights are then reused after
+geometric refinement of the backbone and in the transfer experiments.
 
-\paragraph{The same endpoint change for flow and diffusion.}
-A strength $\eta$ sets the intended endpoint change to $\eta(1-p)A_\phi$.
+\paragraph{Combining the two corrections.}
+The geometric field first predicts $g=G_\psi(H,p;c)$ and updates the endpoint
+estimate to $H_g=H+(1-p)g$. The physical field then predicts
+$f=A_\phi(X,H_g,p;c)$ at this updated geometry. A strength $\eta$ scales the
+physical contribution. Thus geometry recovery and physical feedback enter
+the same coordinate update while providing different training signals.
+
+\paragraph{The same coordinate action for flow and diffusion.}
 For diffusion, the parent predicts noise $\epsilon$ and its endpoint estimate
 is $H=(X-\sigma_t\epsilon)/\alpha_t$, where $\alpha_t$ and $\sigma_t$ are the
 fixed schedule's signal and noise scales. These two parameterizations require
 \begin{equation}
- v^{\rm corr}=v+\eta A_\phi,
+ v^{\rm corr}=v+g+\eta f,
  \qquad
  \epsilon^{\rm corr}=\epsilon-
-       \eta\frac{\alpha_t(1-p)}{\sigma_t}A_\phi.
+       \frac{\alpha_t(1-p)}{\sigma_t}(g+\eta f).
  \label{eq:endpoint-native-updates}
 \end{equation}
 Substitution into either endpoint estimate gives the same displacement
-$\eta(1-p)A_\phi$. In GAGA, $p=1-t/t_{\max}$, with diffusion noise time $t$
-and truncation $t_{\max}=0.65$. The head-only transfer retains each sampler's transitions and observation noise. Progress indexes the generation schedule.
+$(1-p)(g+\eta f)$. In GAGA, $p=1-t/t_{\max}$, with diffusion noise time $t$
+and truncation $t_{\max}=0.65$. Transfer retains each target's source,
+transitions and observation noise. During generation both corrections are
+neural evaluations; the energy model is used only to prepare training targets.
 
 The head architecture, bounds and fitting protocol are given in
 Appendices~\ref{app:force-correction} and~\ref{app:matched-connection}.
@@ -320,7 +342,7 @@ and spin multiplicity. The main comparison uses an EGNN backbone trained on
 compositions with 17--40 atoms. Each trained model generates 16 structures per
 composition. We compare Gaussian-source FM, EDM \citep{edm}, GAGA
 \citep{qu2026gaga}, and LatentSpring. The latter combines the harmonic-mixture
-source with learned physical correction; the optional hydrogen readout is
+source, geometric recovery and learned physical correction; the optional hydrogen readout is
 excluded from the main comparison and component ablation.
 
 We report two measures. \emph{Graph validity} is the fraction of outputs for
@@ -328,8 +350,10 @@ which bond inference produces a connected, sanitized chemical graph with the
 requested charge. \emph{Joint yield} additionally requires a GFN2-xTB atomic
 force RMS of at most 5 eV/\AA. Both denominators include every generation
 attempt. All physical evaluations use the generated coordinates, with no
-geometry optimization or energy-based filtering. Confidence intervals resample
-compositions and, where specified, fitted models. Appendix~\ref{app:main-implementation}
+geometry optimization or energy-based filtering. We additionally report \emph{geometry-and-force yield}, which requires zero
+assigned radicals and the declared checks of bond lengths, angles, internal
+distances and planarity as well as the force criterion. Confidence intervals
+resample compositions and, where specified, fitted models. Appendix~\ref{app:main-implementation}
 gives implementation details and Appendix~\ref{app:data-evaluation} specifies the
 structural checks.
 
@@ -337,13 +361,13 @@ structural checks.
 \input{sections/source_head_ablation}
 \input{sections/combined_transfer_results}
 \section{Discussion}
-LatentSpring combines a composition-based harmonic source with a correction
-learned from endpoint forces. The complete flow model improves joint yield over
-the evaluated baselines, and its correction weights retain their benefit when
-reused by diffusion generators. The component study locates the source's
-additional gain in the corrected flow. Detailed geometry checks show that
-correction reduces overlaps and force outliers, while heavy-atom connectivity
-and planarity remain the main structural defects in raw generation.
+LatentSpring combines a composition-based harmonic source with learned geometric
+and physical corrections. Recovery training improves connectivity, while the
+small geometric field complements force feedback at the predicted endpoint.
+The complete model improves raw graph, geometry and force criteria across five
+fits and exceeds a matched continuation control. Remaining errors include
+fragmentation, nonplanarity and unusual inferred charge patterns, motivating
+further work on global chemical connectivity.
 
 \label{endofmaintext}
 \subsubsection*{Reproducibility statement}
@@ -363,6 +387,7 @@ analysis, figure preparation, and manuscript writing.
 \appendix
 \input{sections/notation_guide}
 \input{sections/main_implementation_details}
+\input{sections/geometric_recovery_details}
 \input{sections/chemical_geometry_review}
 \input{sections/joint_design_transfer_details}
 \input{sections/earlier_experimental_setup}

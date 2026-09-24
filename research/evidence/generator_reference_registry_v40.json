@@ -1,0 +1,74 @@
+{
+  "previous_registry": "research/evidence/generator_reference_registry_v39.json",
+  "previous_registry_sha256": "509aeb114b52835cf910953b7a89a5b2a1ca5a0240b6d8e1b6ab0184f511660a",
+  "at_utc": "2026-09-24T21:13:41.891356+00:00",
+  "studies": {
+    "geometry_recovery_v1": {
+      "new_eval_neural_trajectories": 3072,
+      "optimizer_steps": 24000,
+      "backbone_training_example_forwards": 1536000,
+      "small_module_training_example_forwards": 0,
+      "esen": 0,
+      "xtb_generator": 3072
+    },
+    "geometry_context_recovery_v1": {
+      "new_eval_neural_trajectories": 1536,
+      "optimizer_steps": 16000,
+      "backbone_training_example_forwards": 1024000,
+      "small_module_training_example_forwards": 1024000,
+      "esen": 0,
+      "xtb_generator": 1536
+    },
+    "geometry_recovery_field_v1": {
+      "new_eval_neural_trajectories": 1536,
+      "optimizer_steps": 40000,
+      "backbone_training_example_forwards": 0,
+      "small_module_training_example_forwards": 1280000,
+      "esen": 0,
+      "xtb_generator": 1536
+    },
+    "geometry_combination_v1": {
+      "new_eval_neural_trajectories": 2304,
+      "optimizer_steps": 0,
+      "backbone_training_example_forwards": 0,
+      "small_module_training_example_forwards": 0,
+      "esen": 0,
+      "xtb_generator": 2304
+    },
+    "geometry_resolution_probe_v1": {
+      "new_eval_neural_trajectories": 128,
+      "optimizer_steps": 0,
+      "backbone_training_example_forwards": 0,
+      "esen": 0,
+      "xtb_generator": 128,
+      "backbone_calls_per_trajectory": 512
+    }
+  },
+  "new_neural_generation_outputs": 8576,
+  "new_evaluation_generator_outputs": 8576,
+  "new_fit_generator_outputs": 0,
+  "cumulative_tree_architecture_evaluation_outputs": 306240,
+  "cumulative_fit_generator_outputs": 8960,
+  "cumulative_neural_generation_records": 315200,
+  "new_raw_esen_queries": 0,
+  "cumulative_source_teacher_raw_physical_rows": 203706,
+  "new_gfn2_attempts": 8576,
+  "cumulative_gfn2_confirmation_and_followup_attempts": 135719,
+  "new_optimizer_steps": 80000,
+  "new_derived_evaluation_outputs": 0,
+  "cumulative_derived_evaluation_outputs_since_v34": 28800,
+  "reserved_outcomes_unqueried": 722,
+  "reference_only_checks": 4096,
+  "qualified_reference_rows": 3783,
+  "ongoing_studies_not_yet_in_completed_totals": [
+    "geometry_primary_confirmation_v1"
+  ],
+  "evidence": {
+    "research/evidence/geometry_recovery_audit_v1.json": "fd3e68c3f123c1c2a95cd819aad1462d8213ee1a2dac95827476019dc6b41aea",
+    "research/evidence/geometry_context_audit_v1.json": "87aefd160a697c21e52b7e2b10eb864f01d366f8802c65f86fd6e3005f4920d4",
+    "research/evidence/geometry_field_audit_v1.json": "62d1b4f1cae2479ea46faabe311bd52e1d24bde3d6bacd1b98885f691fc1bf65",
+    "research/evidence/geometry_combination_audit_v1.json": "cf320a2bbbdcb5b09f74ff2cf3893e4d4e513b401be236852b00285860a69fa3",
+    "research/evidence/geometry_resolution_audit_v1.json": "8c6a357df6ad499f77ecf63a824ede9dd90e3b85ce88d903d14e30bb45f3e01b"
+  },
+  "scope": "All completed recovery, context, direct-field and combination arms are included. Reused baselines are not counted twice. Main64-composition re-evaluation is still pending and excluded from completed totals. Scientific optimizer totals exclude synthetic unit-test fitting."
+}

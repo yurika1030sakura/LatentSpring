@@ -5,7 +5,7 @@ import torch
 from cfm_mol.geometry_recovery_field import GeometryRecoveryField,denoising_targets,GeometryThenPhysical
 from cfm_mol import matched_egnn as base
 from cfm_mol.physical_connection import PhysicalConnection
-from cfm_mol.matched_physical_connection import PhysicalFieldTransform
+from cfm_mol.matched_physical_connection import PhysicalFieldTransform,endpoint_and_progress
 
 
 @pytest.mark.parametrize('mode',['radial','moments'])
@@ -36,17 +36,37 @@ def test_recovery_labels_are_centered_bounded_and_reproducible():
     assert a[2]['identity'].any() and a[1][a[2]['identity']].eq(0).all()
 
 
-def test_zero_geometry_field_preserves_the_real_physical_adapter():
+@pytest.mark.parametrize('kind',['harmonic_fm','gaussian_fm','gaga','edm'])
+def test_zero_geometry_field_preserves_the_real_physical_adapter(kind):
     torch.set_num_threads(1)
-    spec=json.loads(Path('research/evidence/gaga_feedback_distance_s0_v1.json').read_text())
+    name='gaga_feedback_distance' if kind=='harmonic_fm' else 'matched_generators_'+kind
+    spec=json.loads(Path(f'research/evidence/{name}_s0_v1.json').read_text())
     model=base.initialize(spec,'cpu').double();physical_head=PhysicalConnection(spec['atomic_numbers'],velocity_scale=2.).double()
     with torch.no_grad():physical_head.pair_network[-1].weight.normal_(std=.1)
     physical=PhysicalFieldTransform(model,spec,physical_head,4.,strength_limit=4.)
     geometry=GeometryRecoveryField(spec['atomic_numbers']).double();combined=GeometryThenPhysical(physical,geometry)
-    x=base.center(torch.randn(2,5,3,dtype=torch.float64));v=base.center(torch.randn_like(x));t=x.new_tensor([[.2],[.8]])
+    x=base.center(torch.randn(2,5,3,dtype=torch.float64));v=base.center(torch.randn_like(x));maximum=spec['gaga_max_t']/model.T if kind=='gaga' else 1.;t=x.new_tensor([[.2*maximum],[.8*maximum]])
     z=torch.tensor([[6,6,8,1,1]]*2)
     torch.testing.assert_close(combined(x,t,z,v),physical(x,t,z,v),atol=0,rtol=0)
     assert combined.calls==1 and geometry.forward_calls==1
+
+
+@pytest.mark.parametrize('kind',['harmonic_fm','gaussian_fm','gaga','edm'])
+def test_nonzero_geometry_field_has_the_same_endpoint_action_in_each_sampler(kind):
+    torch.set_num_threads(1)
+    name='gaga_feedback_distance' if kind=='harmonic_fm' else 'matched_generators_'+kind
+    spec=json.loads(Path(f'research/evidence/{name}_s0_v1.json').read_text())
+    model=base.initialize(spec,'cpu').double();physical_head=PhysicalConnection(spec['atomic_numbers'],velocity_scale=2.).double()
+    physical=PhysicalFieldTransform(model,spec,physical_head,4.,strength_limit=4.)
+    geometry=GeometryRecoveryField(spec['atomic_numbers']).double()
+    with torch.no_grad():geometry.network[-1].weight.normal_(std=.1)
+    combined=GeometryThenPhysical(physical,geometry)
+    x=base.center(torch.randn(3,5,3,dtype=torch.float64));value=base.center(torch.randn_like(x));z=torch.tensor([[6,6,8,1,1]]*3)
+    maximum=spec['gaga_max_t']/model.T if kind=='gaga' else 1.;t=x.new_tensor([[0.],[.2*maximum],[.8*maximum]])
+    h,progress=endpoint_and_progress(model,x,t,value,spec)
+    shift=(1-progress[:,None,None])*geometry(h,z,progress)
+    corrected=combined(x,t,z,value);new,_=endpoint_and_progress(model,x,t,corrected,spec)
+    torch.testing.assert_close(new,h+shift,atol=1e-10,rtol=1e-10)
 
 
 def test_geometry_training_can_reduce_a_fixed_recovery_error():

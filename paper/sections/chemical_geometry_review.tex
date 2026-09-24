@@ -22,13 +22,14 @@ radicals, and the geometric tests described above.}
 \begin{tabular}{lrrr}\toprule
 Method & Graph validity & Geometry & Geometry + force\\\midrule
 FM parent &20.12&3.48&1.64\\
-FM + correction &24.86&4.61&4.43\\
+Initial FM + physics &24.86&4.61&4.43\\
 GAGA parent &22.60&4.71&2.40\\
-GAGA + correction &26.25&6.64&6.45\\
+GAGA + physics &26.25&6.64&6.45\\
+LatentSpring &35.49&9.65&9.63\\
 \bottomrule\end{tabular}\label{tab:chemical-geometry}
 \end{table}
 
-For FM, correction reduces contact-disconnected outputs from 3,092 to 2,702,
+For the initial FM, physical correction reduces contact-disconnected outputs from 3,092 to 2,702,
 heavy-atom-disconnected outputs from 2,527 to 2,325, and severe overlaps from
 126 to nine. Among the 1,273 graph-valid corrected outputs, 674 fail a planarity
 check, 340 fail a bond-angle check, 237 fail a bond-length check, and 296 fail
@@ -37,28 +38,55 @@ validation references, 470 pass the same closed-shell geometric screen.
 The comparison identifies connectivity and detailed geometry as remaining
 generation errors even after the force criterion improves.
 
+\paragraph{Inferred charge patterns.}
+Geometric and force checks do not characterize every aspect of chemical
+plausibility. Among the 494 geometry-passing LatentSpring outputs on the main
+panel, 466 contain assigned formal charges and 378 contain charged carbon
+atoms. The corresponding counts among the 64 panel reference graphs are eight
+and two. Legitimate functional groups can carry formal charges, but this large
+difference identifies charge assignment and connectivity as remaining errors.
+We therefore also examine common-element compositions and report charge filters
+as descriptive diagnostics, separately from the declared geometry metric.
+
+\paragraph{Common-element organic compositions.}
+We select validation references with 17--28 atoms, elements in CHONF, zero
+assigned formal charges, and passing geometric checks. A fixed hash order gives
+12 distinct compositions, excluding the 24 development compositions and the
+four earlier illustration compositions. Thirteen compositions met the rule;
+we fixed the first 12 before generating outputs. They are disjoint from the
+20,000 training structures and belong to the existing validation corpus.
+The panel characterizes this selected application domain.
+
+Five unchanged generators each produce 16 outputs per composition from each
+of two fitted models: 384 attempts per method and 1,920 in total. The full
+model gives 136 geometry-and-force successes, compared with 79 for initial
+FM with physical correction, 68 for GAGA, 57 for EDM and 63 for Gaussian FM.
+The paired full-versus-initial FM gain is 14.84 percentage points, with crossed
+fit/composition interval $[7.81,25.52]$.
+
+\begin{figure}[!htbp]\centering
+\includegraphics[width=\linewidth]{../research/figures/geometric_followups_v1/organic_geometry.pdf}
+\caption{Raw generation on 12 common-element organic compositions. Each full
+bar shows geometry-and-force yield; the darker portion additionally requires
+zero assigned atom charges. All 384 attempts per method remain in the denominator.}
+\label{fig:organic-geometry}\end{figure}
+
+Requiring zero assigned formal charges as well gives 54 successes for the full
+model and 33 for the initial FM, or 14.06\% versus 8.59\% of all attempts.
+Requiring no charged carbon atoms gives 20.31\% versus 13.02\%. Charge filters
+are not comprehensive validity rules: they may exclude reasonable ionic or
+charge-separated functional groups.
+
 \paragraph{The molecular illustration.}
-Figure~\ref{fig:method} uses an additional validation-composition panel chosen
-from reference structures before generation. The selection takes the first four
-distinct compositions, in original validation-row order, whose references have
-17--28 atoms, CHONF elements, uncharged atoms, five- or six-membered rings, and
-pass the geometric checks. Each composition receives 32 raw outputs from the
-unchanged main-model fit 1, with correction strength four and the hydrogen
-readout disabled. All 128 outputs are preserved and evaluated: 79 pass graph
-inference and 15 pass the closed-shell geometric screen.
+Figure~\ref{fig:method} uses the first full-model output in fit/composition/draw
+order passing geometry and force checks with zero assigned atom charges.
+It is fit 1, composition 1, draw 1 (one-based), with formula
+$\mathrm{C_7H_{15}N}$, inferred connectivity \texttt{CCC(C)CC=NC}, and GFN2 force
+RMS 1.856 eV/\AA. This is a raw output from the application panel above.
 
-The displayed $\mathrm{C_9H_9NO_2}$ structure is condition index 2, draw 27
-(zero-based), with inferred connectivity \texttt{N=Cc1ccccc1C1OC1O}. It is the
-first output in condition/draw order with an aromatic ring, uncharged atoms,
-zero assigned radicals, passing geometry checks, and force RMS at most
-5 eV/\AA. Its force RMS is 2.886 eV/\AA. An earlier illustration screen that
-excluded every three- and four-membered ring had no eligible output; the
-displayed example contains a saturated epoxide. This panel supplies an
-illustration and is separate from the 64-composition benchmark.
-
-We replay the source random numbers exactly and use the stored output coordinates.
+We replay its source random numbers exactly and use the stored output coordinates.
 The 3D source and output share camera and scale. The 2D inset depicts the inferred
 connectivity, with hydrogens implicit in the usual chemical notation. Bond
-orders are rendered from an explicit Kekul\'e representation, and the PyMOL
-round-trip check verifies atom identities, bond orders and coordinate precision.
-No molecular geometry optimization is used in preparing the illustration.
+orders are rendered explicitly, and the PyMOL round-trip check verifies atom
+identities, bond orders and coordinate precision. No geometry optimization or
+alteration of the generation outcomes is used in preparing the illustration.
