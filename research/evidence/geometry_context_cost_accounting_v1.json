@@ -1,0 +1,21 @@
+{
+  "protocol": "research/evidence/geometry_context_recovery_v1.json",
+  "protocol_sha256": "8cd9bd2dad4af6a7ba2383d6b07effba4d22459665ef5fd77bd63e0137eb3d00",
+  "basis": "The verified two-pass FM prediction calls the context once before each backbone call. Shared generation asserts128 backbone and64 physical-head calls per attempted output.",
+  "per_output": {
+    "backbone": 128,
+    "geometry_context": 128,
+    "physical_head": 64,
+    "total_neural_module_calls": 320
+  },
+  "new_outputs": 1536,
+  "new_geometry_context_example_forwards_sampling": 196608,
+  "new_geometry_context_example_forwards_training": 1024000,
+  "new_backbone_example_forwards_training": 1024000,
+  "old_backbone_optimizer_updates": 0,
+  "new_context_optimizer_updates": 16000,
+  "reused_frozen_outputs": 768,
+  "new_esen_queries": 0,
+  "new_gfn2_attempts": 1536,
+  "scope": "Architecture costs are additional to the original system. No equal-FLOP or equal-wall-time claim."
+}

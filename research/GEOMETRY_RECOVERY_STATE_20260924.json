@@ -13,7 +13,7 @@
   "output": "runs/geometry_recovery_v1",
   "completed_scientific_outcomes_available": false,
   "submission_stderr": "",
-  "checked_at_utc": "2026-09-24T18:47:28.275116+00:00",
+  "checked_at_utc": "2026-09-24T19:17:51.920086+00:00",
   "live_scheduler": "48231033 RUNNING 7:13 holygpu7c26206",
   "initial_baseline_completed": {
     "complete": true,
@@ -43,5 +43,63 @@
     "new_esen_queries": 0,
     "geometry_optimized": false
   },
-  "availability_note": "Frozen fit0 control completed; no candidate comparison yet."
+  "availability_note": "Fit0 frozen/replay/recovery completed; local-geometry and fit1 outcomes still required. No qualified candidate conclusion.",
+  "completed_fit0_controls_and_first_candidate": {
+    "replay": {
+      "complete": true,
+      "protocol_sha256": "1020cb787ba32623c5057782a1abd9cc441359ec23bf7253ccea687feeb543ee",
+      "fit": 0,
+      "variant": "replay",
+      "model_state_sha256": "aca21960869bf17728b91f06147c7c9c42c5dd2f4c161dcaf817c23950db45b3",
+      "head_state_sha256": "254e6ba3ef5ef79783585b15d6663edc1bcfea6a2bf54d9ba3d8ec4f19a29cc8",
+      "generation_sha256": "4cc8fe1b993ef9a8c5145ad0f06bcf311d86406b4bf564c9453419a819d3d6fd",
+      "geometry_sha256": "d6ba6a7b4d3f09e12f4cb98ab70159fa294e1332dcb0a2916bd725d5336c4a7f",
+      "physical_sha256": "0debdd28214f5a069680cd989eb13805ae3548f2d1c3e2d56de80f18165dc8a6",
+      "attempted": 384,
+      "graph": 152,
+      "geometry": 46,
+      "geometry_force": 44,
+      "heavy_disconnected": 108,
+      "physical_summary": {
+        "replay_a0": {
+          "attempted": 384,
+          "graph": 152,
+          "joint": 149,
+          "failures": 0
+        }
+      },
+      "new_generation_outputs": 384,
+      "new_gfn2_attempts": 384,
+      "new_esen_queries": 0,
+      "geometry_optimized": false
+    },
+    "recovery": {
+      "complete": true,
+      "protocol_sha256": "1020cb787ba32623c5057782a1abd9cc441359ec23bf7253ccea687feeb543ee",
+      "fit": 0,
+      "variant": "recovery",
+      "model_state_sha256": "d85059be344d3a8e065bc56663bcf24b66698753a0077507b4f5b0a2bf5cbf66",
+      "head_state_sha256": "254e6ba3ef5ef79783585b15d6663edc1bcfea6a2bf54d9ba3d8ec4f19a29cc8",
+      "generation_sha256": "79a1a62512ca1ad0dbf28782fedd05045030ee885a2ffbc965e6cedea5a403c0",
+      "geometry_sha256": "7688b3856b4f90381b42baf0260942b6812958656b43c4c25e396ed84fea2c4c",
+      "physical_sha256": "ea9bab7e31e37e0c69fd6bce21ec26c5ddae7cef63622dce156aa54b2f6abfb6",
+      "attempted": 384,
+      "graph": 160,
+      "geometry": 47,
+      "geometry_force": 46,
+      "heavy_disconnected": 89,
+      "physical_summary": {
+        "recovery_a0": {
+          "attempted": 384,
+          "graph": 160,
+          "joint": 157,
+          "failures": 1
+        }
+      },
+      "new_generation_outputs": 384,
+      "new_gfn2_attempts": 384,
+      "new_esen_queries": 0,
+      "geometry_optimized": false
+    }
+  }
 }

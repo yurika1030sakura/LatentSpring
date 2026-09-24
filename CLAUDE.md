@@ -1,5 +1,17 @@
 # Active checkpoint —2026-09-24: paired geometry-recovery pilot running
 
+An independent architecture pipeline, job48239292, tests the7,489-parameter
+GeometryMomentContext against an equal-parameter radial-feature control on the
+same development panel. Both start from the original frozen parents and reuse
+the physical heads; only the new context encoder trains. Source db45585 is in
+runs/geometry_context_recovery_v1/source. Its768 baseline outputs are symlinked
+from the recovery pilot and must not be counted twice. Five module tests pass,
+including gradients through a frozen real EGNN. See geometry_context_recovery_v1.json,
+geometry_context_cost_accounting_v1.json, and GEOMETRY_CONTEXT_STATE_20260924.json.
+Sampling adds128 small-context calls to128 backbone and64 physical-head calls.
+The contexts study is independent of which continuation candidate wins. Both
+pipelines retain their immutable source snapshots. Main-paper results are unchanged.
+
 User authorized substantive improvement of raw chemical validity. Job48231033
 is the single-GPU pipeline for runs/geometry_recovery_v1. Re-query its live
 state; research/GEOMETRY_RECOVERY_STATE_20260924.json records submission and
