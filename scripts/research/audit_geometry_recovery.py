@@ -68,7 +68,10 @@ def main():
                 if row['closed_shell_geometry_pass'] and smiles:
                     arrays['unique_geometry'][slot]=smiles not in seen_geometry[ci];seen_geometry[ci].add(smiles)
             provenance[str(complete)]=sha(complete)
-            if method!='frozen':
+            if method!='frozen' and protocol.get('evaluation_only'):
+                if baseline_model_hash is not None:assert done['model_state_sha256']==baseline_model_hash
+                assert done['geometry_head_state_sha256']==protocol['geometry_heads'][fi]['ema_state_sha256']
+            if method!='frozen' and not protocol.get('evaluation_only'):
                 initializations.append(json.loads((folder/'initialization.json').read_text()))
                 training=json.loads((folder/'training.json').read_text());assert training['complete'] and training['protocol_sha256']==ph
                 assert training['steps']==protocol['steps'] and sha(folder/'last.ckpt')==training['checkpoint_sha256']
@@ -93,6 +96,7 @@ def main():
     candidates=protocol.get('candidates',['recovery','recovery_local'])
     controls=protocol.get('controls',['frozen','replay'])
     interval_key='composition_ci95' if len(candidates)==1 else 'composition_ci97_5_two_candidates'
+    primary_metric=protocol.get('primary_metric','geometry')
     for method in candidates:
         mi=methods.index(method);contrasts[method]={}
         for control in controls:
@@ -100,9 +104,9 @@ def main():
             contrasts[method][control]={metric:contrast(arrays[metric][:,mi],arrays[metric][:,ci],
                 stats['bootstrap_seed'],stats['bootstrap_repetitions']) for metric in metrics}
         advance[method]=all(
-            min(contrasts[method][control]['geometry']['by_fit'])>0 and
+            (not protocol.get('require_geometry_point_gains',True) or min(contrasts[method][control]['geometry']['by_fit'])>0) and
             min(contrasts[method][control]['geometry_force']['by_fit'])>0 and
-            contrasts[method][control]['geometry'][interval_key][0]>0 and
+            contrasts[method][control][primary_metric][interval_key][0]>0 and
             contrasts[method][control]['unique_graph']['mean']>=-.02
             for control in controls)
     eligible=[method for method,value in advance.items() if value]

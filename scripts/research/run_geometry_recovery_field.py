@@ -18,7 +18,7 @@ from scripts.research.run_gaga_feedback import atomic_save
 from scripts.research.train_electronic_fm import sha
 
 
-def evaluate(root,spec,ph,fit,variant,geometry,out):
+def evaluate(root,spec,ph,fit,variant,geometry,out,*,geometry_strength=1.,physical_strength=4.):
     out.mkdir(parents=True,exist_ok=True);arm=spec['parents'][fit]
     model=load_parent(root,arm);source=base.HarmonicSource();context=make_context(arm,source)
     head,_=restore_head(root,spec['physical_heads'][fit]);parent_hash=base.state_hash(model);geo_hash=base.state_hash(geometry)
@@ -26,8 +26,8 @@ def evaluate(root,spec,ph,fit,variant,geometry,out):
         done=json.loads((out/'complete.json').read_text());assert done['protocol_sha256']==ph and done['geometry_head_state_sha256']==geo_hash;return
     folder=out/'generation';folder.mkdir(exist_ok=False);rows=[]
     for ci,entry in enumerate(spec['conditions']):
-        c=entry['condition'];physical=PhysicalFieldTransform(model,arm['spec'],head,4.,strength_limit=4.)
-        transform=GeometryThenPhysical(physical,geometry);positions=[];starts=[];core=[0];geo_before=geometry.forward_calls
+        c=entry['condition'];physical=PhysicalFieldTransform(model,arm['spec'],head,physical_strength,strength_limit=4.)
+        transform=GeometryThenPhysical(physical,geometry,geometry_strength);positions=[];starts=[];core=[0];geo_before=geometry.forward_calls
         hook=model.dynamics.egnn.register_forward_hook(lambda *_:core.__setitem__(0,core[0]+1))
         for begin in [0,8]:
             seed=spec['evaluation_seeds'][fit]*1000003+ci*100003+begin
@@ -38,7 +38,8 @@ def evaluate(root,spec,ph,fit,variant,geometry,out):
         file=folder/f'{variant}_c{ci}.pt'
         atomic_save(dict(positions=x,initial_positions=torch.cat(starts),condition=c,protocol_sha256=ph,
             model_state_sha256=parent_hash,head_state_sha256=base.state_hash(head),geometry_head_state_sha256=geo_hash,
-            backbone_calls_per_trajectory=128,geometry_calls_per_trajectory=64,physical_calls_per_trajectory=64),file)
+            backbone_calls_per_trajectory=128,geometry_calls_per_trajectory=64,physical_calls_per_trajectory=64,
+            geometry_strength=geometry_strength,physical_strength=physical_strength),file)
         quality=assess(x,c,list(range(16)));rows.append(dict(method=variant,condition_index=ci,file=file.name,sha256=sha(file),**quality))
         print(json.dumps(dict(phase='generation',fit=fit,variant=variant,condition=ci,graph=quality['graph_supported'],attempted=16)),flush=True)
     assert base.state_hash(model)==parent_hash and base.state_hash(geometry)==geo_hash
@@ -55,7 +56,8 @@ def evaluate(root,spec,ph,fit,variant,geometry,out):
         heavy_disconnected=sum(r['heavy_components']>1 for r in checks),model_state_sha256=parent_hash,
         head_state_sha256=report['head_state_sha256'],geometry_head_state_sha256=geo_hash,
         generation_sha256=sha(folder/'generation.json'),geometry_sha256=sha(out/'geometry.json'),physical_sha256=sha(out/'xtb/results.json'),
-        new_generation_outputs=384,new_gfn2_attempts=384,new_esen_queries=0,geometry_optimized=False)
+        new_generation_outputs=384,new_gfn2_attempts=384,new_esen_queries=0,geometry_optimized=False,
+        geometry_strength=geometry_strength,physical_strength=physical_strength)
     write(out/'complete.json',done);print(json.dumps(dict(phase='evaluated',**done)),flush=True)
 
 

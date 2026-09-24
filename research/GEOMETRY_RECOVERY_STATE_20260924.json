@@ -1,5 +1,5 @@
 {
-  "status": "RUNNING",
+  "status": "COMPLETE",
   "at_utc": "2026-09-24T18:39:58.471447+00:00",
   "job_id": "48231033",
   "initial_array_submission": "Rejected: QOSMaxSubmitJobPerUserLimit; no array tasks launched.",
@@ -11,9 +11,9 @@
   "protocol": "research/evidence/geometry_recovery_v1.json",
   "protocol_sha256": "1020cb787ba32623c5057782a1abd9cc441359ec23bf7253ccea687feeb543ee",
   "output": "runs/geometry_recovery_v1",
-  "completed_scientific_outcomes_available": false,
+  "completed_scientific_outcomes_available": true,
   "submission_stderr": "",
-  "checked_at_utc": "2026-09-24T19:17:51.920086+00:00",
+  "checked_at_utc": "2026-09-24T20:16:36.500748+00:00",
   "live_scheduler": "48231033 RUNNING 7:13 holygpu7c26206",
   "initial_baseline_completed": {
     "complete": true,
@@ -43,7 +43,6 @@
     "new_esen_queries": 0,
     "geometry_optimized": false
   },
-  "availability_note": "Fit0 frozen/replay/recovery completed; local-geometry and fit1 outcomes still required. No qualified candidate conclusion.",
   "completed_fit0_controls_and_first_candidate": {
     "replay": {
       "complete": true,
@@ -101,5 +100,13 @@
       "new_esen_queries": 0,
       "geometry_optimized": false
     }
-  }
+  },
+  "audit": "research/evidence/geometry_recovery_audit_v1.json",
+  "audit_sha256": "fd3e68c3f123c1c2a95cd819aad1462d8213ee1a2dac95827476019dc6b41aea",
+  "development_advance": {
+    "recovery": false,
+    "recovery_local": false
+  },
+  "selected": null,
+  "candidate_results_available": true
 }
