@@ -37,8 +37,11 @@ cfm_mol/chemical_geometry_review.py. All existing primary benchmark rates are un
 Registry v39 accounts for 4,096 completed diffusion-adaptation outputs, 128 new
 illustration outputs, all GFN2 attempts, and 120,000 diffusion parent updates.
 No new physical-head fitting or eSEN queries. Final paper build and synchronization
-are recorded in publication_build_v28.json and publication_sync_v28.json once
-publication completes. The manuscript remains a submission draft.
+are recorded in publication_build_v28.json and publication_sync_v28.json.
+GitHub paper commit 016295c and Overleaf commit 40f0b9b are synchronized; the
+HOLY Overleaf mirror is also current. Local canonical and standalone builds
+pass at 9 main pages, 47 total, 33 references. Cloud compilation and OpenReview
+submission were not performed. The manuscript remains a submission draft.
 
 # Historical checkpoint —2026-09-20: both-design diffusion transfer running
 
