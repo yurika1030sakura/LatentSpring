@@ -1,4 +1,31 @@
-# Active checkpoint —2026-09-24: round2 revision and chemical geometry audit
+# Active checkpoint —2026-09-24: paired geometry-recovery pilot running
+
+User authorized substantive improvement of raw chemical validity. Job48231033
+is the single-GPU pipeline for runs/geometry_recovery_v1. Re-query its live
+state; research/GEOMETRY_RECOVERY_STATE_20260924.json records submission and
+subsequent status. The initial six-task array was rejected by gpu_test's submit
+limit, so the same scientific experiment runs sequentially within one job.
+No other project job was changed. Training uses immutable source a57c0c2 in
+runs/geometry_recovery_v1/source; launcher6765bd5 was copied by Slurm.
+
+Read research/evidence/geometry_recovery_v1.json and
+notes/geometry_recovery_20260924.md. Fits0/1 each receive4000 matched continuation
+updates for replay, perturbed-endpoint recovery, and recovery with local
+distance/angle supervision. Same20k references, batches, original architecture,
+source, and sampler; existing force heads stay frozen at strength4. Four
+targeted tests pass, including actual two-pass EGNN gradients. No bond labels
+or test-time geometry optimization are introduced. This pilot changes backbone
+training; it is not yet the proposed additional geometry-network architecture.
+
+The24-composition development panel (12 per size bin,16 draws each) is separate
+from the primary64. It is not represented as historically untouched. Frozen
+and continued controls are both included;3072 attempted outputs are scored at
+fixed coordinates. Candidate advancement checks raw geometry, geometry-plus-force,
+both fits, composition intervals, and graph-valid distinct-connectivity yield.
+The pipeline invokes audit_geometry_recovery automatically at completion.
+No new improvement result is available yet; manuscript v28 stays unchanged.
+
+# Previous checkpoint —2026-09-24: round2 revision and chemical geometry audit
 
 The following checkpoint supersedes the dated records below. The combined-design
 diffusion job 47380645 and illustration job 48184024 are COMPLETE. No experiment
