@@ -1,0 +1,64 @@
+\section{Chemical geometry and illustrative structures}\label{app:chemical-geometry}
+We supplement graph inference and the GFN2 force criterion with geometric checks
+from PoseBusters 0.4.4 \citep{buttenschoen2024posebusters}. The checks use distance
+bounds for heavy-atom bond lengths and angles, internal steric distances, planar
+aromatic rings and double bonds, and nonplanarity of saturated six-membered
+rings. We use the package's molecule-configuration tolerances: 25\% for bond and
+angle bounds, 30\% for internal distances, 0.25\,\AA\ for planar groups, and
+0.05\,\AA\ for nonplanar rings. A structure must also have zero assigned radical
+electrons. The check is a geometric subset of PoseBusters; it omits conformer
+ensemble energy ratios and reference-identity comparisons.
+
+Every generated coordinate remains fixed. We evaluate all 5,120 attempts per
+setting, using the same inferred graph as the original benchmark. This includes
+outputs with failed graph inference in the denominator. Table~\ref{tab:chemical-geometry}
+reports the geometric subset alone and its conjunction with the original
+GFN2 force threshold of 5 eV/\AA.
+
+\begin{table}[h]\centering\small
+\caption{Additional geometric checks on the five-fit panel. Percentages use all
+5,120 attempts per row. ``Geometry'' includes graph validity, zero assigned
+radicals, and the geometric tests described above.}
+\begin{tabular}{lrrr}\toprule
+Method & Graph validity & Geometry & Geometry + force\\\midrule
+FM parent &20.12&3.48&1.64\\
+FM + correction &24.86&4.61&4.43\\
+GAGA parent &22.60&4.71&2.40\\
+GAGA + correction &26.25&6.64&6.45\\
+\bottomrule\end{tabular}\label{tab:chemical-geometry}
+\end{table}
+
+For FM, correction reduces contact-disconnected outputs from 3,092 to 2,702,
+heavy-atom-disconnected outputs from 2,527 to 2,325, and severe overlaps from
+126 to nine. Among the 1,273 graph-valid corrected outputs, 674 fail a planarity
+check, 340 fail a bond-angle check, 237 fail a bond-length check, and 296 fail
+the internal-distance check. These categories overlap. On all 512 prepared
+validation references, 470 pass the same closed-shell geometric screen.
+The comparison identifies connectivity and detailed geometry as remaining
+generation errors even after the force criterion improves.
+
+\paragraph{The molecular illustration.}
+Figure~\ref{fig:method} uses an additional validation-composition panel chosen
+from reference structures before generation. The selection takes the first four
+distinct compositions, in original validation-row order, whose references have
+17--28 atoms, CHONF elements, uncharged atoms, five- or six-membered rings, and
+pass the geometric checks. Each composition receives 32 raw outputs from the
+unchanged main-model fit 1, with correction strength four and the hydrogen
+readout disabled. All 128 outputs are preserved and evaluated: 79 pass graph
+inference and 15 pass the closed-shell geometric screen.
+
+The displayed $\mathrm{C_9H_9NO_2}$ structure is condition index 2, draw 27
+(zero-based), with inferred connectivity \texttt{N=Cc1ccccc1C1OC1O}. It is the
+first output in condition/draw order with an aromatic ring, uncharged atoms,
+zero assigned radicals, passing geometry checks, and force RMS at most
+5 eV/\AA. Its force RMS is 2.886 eV/\AA. An earlier illustration screen that
+excluded every three- and four-membered ring had no eligible output; the
+displayed example contains a saturated epoxide. This panel supplies an
+illustration and is separate from the 64-composition benchmark.
+
+We replay the source random numbers exactly and use the stored output coordinates.
+The 3D source and output share camera and scale. The 2D inset depicts the inferred
+connectivity, with hydrogens implicit in the usual chemical notation. Bond
+orders are rendered from an explicit Kekul\'e representation, and the PyMOL
+round-trip check verifies atom identities, bond orders and coordinate precision.
+No molecular geometry optimization is used in preparing the illustration.

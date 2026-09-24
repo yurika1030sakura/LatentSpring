@@ -1,4 +1,46 @@
-# Active checkpoint —2026-09-20: both-design diffusion transfer running
+# Active checkpoint —2026-09-24: round2 revision and chemical geometry audit
+
+The following checkpoint supersedes the dated records below. The combined-design
+diffusion job 47380645 and illustration job 48184024 are COMPLETE. No experiment
+is pending. The diffusion adaptation did not improve either target: EDM joint
+8.15 -> 0.00%, GAGA 9.47 -> 0.05% on the paired two-fit subsets. Frozen-head-only
+transfer remains positive; do not conflate these experiments or claim both
+designs transfer successfully. Read joint_design_transfer_audit_v1.json and the
+updated research/JOINT_DESIGN_TRANSFER_STATE_20260920.json.
+
+Round2 accepts Overleaf coauthor commit 2bfca98: Molecular Generation title,
+formal introductory prose, and a filled three-item contribution list. The
+coordinate operation is centering, not scale normalization; the FM network
+predicts velocity. Preserve these scientific corrections when merging prose.
+See notes/ROUND2_RESPONSE_20260924_ZH.md for every adopted/adapted suggestion.
+
+Main figures are now research/figures/round2_method_v1 and round2_results_v4.
+Use scripts/research/compose_round2_method.py and render_round2_results.py;
+historical section-rendering scripts may overwrite the new completed results.
+The PyMOL renderer now preserves aromatic bond orders and checks its round trip.
+The method illustration uses raw C9H9NO2 coordinates and a 2D inferred graph.
+It comes from a separate, fully recorded 128-output validation illustration
+panel, not the primary 64-composition benchmark. No geometry was optimized.
+The older gallery and generation animation remain archived but are superseded
+in the current paper. Three of four old gallery structures fail geometry checks.
+
+All 20,480 main FM/GAGA parent/corrected outputs were reassessed with the declared
+PoseBusters geometry subset plus zero assigned radicals. This is not the full
+PoseBusters validity suite. Geometry-plus-force yield is FM 1.64 -> 4.43% and
+GAGA 2.40 -> 6.45%, versus the original graph-plus-force metric's FM 7.21 -> 24.00%.
+These definitions must remain distinct. Connectivity and planarity are material
+remaining weaknesses; presentation improvements do not establish solved chemistry.
+The 512 validation references yield 470 geometry passes. Code, per-output records,
+reference records, and all denominators are in round2_* evidence and
+cfm_mol/chemical_geometry_review.py. All existing primary benchmark rates are unchanged.
+
+Registry v39 accounts for 4,096 completed diffusion-adaptation outputs, 128 new
+illustration outputs, all GFN2 attempts, and 120,000 diffusion parent updates.
+No new physical-head fitting or eSEN queries. Final paper build and synchronization
+are recorded in publication_build_v28.json and publication_sync_v28.json once
+publication completes. The manuscript remains a submission draft.
+
+# Historical checkpoint —2026-09-20: both-design diffusion transfer running
 
 User requests original-baseline versus both-design transfer for EDM and GAGA,
 without additional source-only/head-only evaluation arms. Job47380645 is RUNNING

@@ -6,6 +6,13 @@ from pathlib import Path
 import numpy as np
 
 
+def pymol_bond_order(value):
+    """Chempy uses4 for aromatic bonds; never round1.5 to a double bond."""
+    mapping={1.:1,1.5:4,2.:2,3.:3}
+    if float(value) not in mapping:raise ValueError('Unsupported explicit bond order')
+    return mapping[float(value)]
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--scenes',type=Path,required=True)
@@ -54,7 +61,7 @@ def main():
                 atom.coord=pos.tolist();atom.resn='MOL';atom.resi='1';mol.atom.append(atom)
             for i,j,order in s['bonds']:
                 assert 0<=i<len(x) and 0<=j<len(x) and i!=j
-                bond=Bond();bond.index=[int(i),int(j)];bond.order=max(1,int(round(order)));mol.bond.append(bond)
+                bond=Bond();bond.index=[int(i),int(j)];bond.order=pymol_bond_order(order);mol.bond.append(bond)
             cmd.load_model(mol,'molecule');cmd.hide('everything')
             cmd.show('spheres','molecule')
             if s['bonds']:cmd.show('sticks','molecule')
@@ -86,11 +93,15 @@ def main():
             for atom in model.atom:
                 index=identities[atom.name];assert atom.symbol==s['symbols'][index]
                 restored[index]=atom.coord
+            restored_bonds=sorted((min(identities[model.atom[b.index[0]].name],identities[model.atom[b.index[1]].name]),
+                                  max(identities[model.atom[b.index[0]].name],identities[model.atom[b.index[1]].name]),int(b.order)) for b in model.bond)
+            expected_bonds=sorted((min(int(i),int(j)),max(int(i),int(j)),pymol_bond_order(order)) for i,j,order in s['bonds'])
+            assert restored_bonds==expected_bonds,'Rendered bonds differ from supplied connectivity'
             error=float(abs(restored-x).max());assert error<1e-5
             view=list(cmd.get_view())
             cmd.png(str(out),width=args.pixels,height=args.pixels,dpi=400,ray=1)
             receipts.append(dict(name=s['name'],camera_group=group,view=view,atoms=len(x),bonds=len(s['bonds']),
-                max_pymol_coordinate_roundoff_A=error,sha256=hashlib.sha256(out.read_bytes()).hexdigest()))
+                max_pymol_coordinate_roundoff_A=error,bond_orders_verified=True,sha256=hashlib.sha256(out.read_bytes()).hexdigest()))
             print(s['name'],args.style,flush=True)
     receipt=dict(renderer='PyMOL',version=list(cmd.get_version()),style=args.style,settings=settings,
         scene_sha256=hashlib.sha256(args.scenes.read_bytes()).hexdigest(),images=receipts,

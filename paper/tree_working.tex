@@ -13,53 +13,29 @@
 \newcommand{\HH}{\mathcal H}
 \newcommand{\EE}{\mathbb E}
 \newcommand{\RR}{\mathbb R}
-\title{LatentSpring: Harmonic Sources\\
-and Physical Corrections for\\
-Molecular Flow Matching}
+\title{LatentSpring: Harmonic Sources\\and Physical Corrections for\\Molecular Generation}
 \author{Anonymous}
 \begin{document}
 \maketitle
 \begin{abstract}
-Generating a molecule from atomic composition requires determining both its
-connectivity and three-dimensional geometry. LatentSpring improves molecular
-flow matching through two designs. A normalized harmonic-mixture source uses
-random auxiliary trees and atomic length scales to organize the starting
-coordinates without known chemical bonds. A small equivariant network learns
-physical corrections to a frozen generator's predicted endpoints from force
-feedback. On 64 unseen compositions, LatentSpring reaches 24.00\% joint yield,
-the fraction of outputs that are graph-valid and have GFN2-xTB force RMS at most
-5 eV/\AA, compared with 8.75\% for GAGA and 8.15\% for EDM. An independent
-one-pass FM ablation shows that the harmonic source adds 4.35 percentage points
-to joint yield when combined with physical correction. The correction also
-improves FM in each of three new training repetitions. Expressing its action in
-coordinate space allows an FM-trained correction network to act directly on
-diffusion noise predictions: transfer to GAGA improves joint yield by 16.54
-points across those three repetitions, without retraining the correction.
-Generation uses neural evaluations, with no energy calls or quantum geometry
-optimization.
+Generating a molecule from atomic composition requires determining both its connectivity and three-dimensional coordinates. In this paper, we propose LatentSpring, which improves molecular generation through two designs. A normalized harmonic-mixture source uses random auxiliary trees and atomic length scales to organize the starting coordinates without known chemical bonds. A small equivariant network learns physical corrections to a frozen flow matching (FM) model's predicted endpoints from force feedback. On 64 unseen compositions, LatentSpring reaches 24.00\% joint yield, the fraction of outputs that are graph-valid and have GFN2-xTB force RMS at most 5 eV/\AA, compared with 8.75\% for GAGA and 8.15\% for EDM. A component study using one network evaluation per velocity prediction shows that the harmonic source adds 4.35 percentage points to joint yield when combined with physical correction. The correction also improves the flow matching model in each of three new training repetitions. Expressing its action in coordinate space allows a physical correction head trained using FM-generated trajectory states to act directly on diffusion noise predictions: transfer to GAGA improves joint yield by 16.54 points across those three repetitions, without retraining the correction. Generation uses neural evaluations, with no energy calls or quantum geometry optimization.
 \end{abstract}
 
 \section{Introduction}
-An atomic composition tells us which atoms a molecule contains, but not how they
-are connected or arranged in three dimensions. We study generation from this
-input, together with the molecule's total charge and spin multiplicity. The model
-returns atomic coordinates. We then infer bonds from those coordinates to evaluate
-the generated structure. Unlike conformation generation with a known molecular
-graph, this task leaves both connectivity and geometry to be determined.
+An atomic composition tells us which atoms a molecule contains, but not how they are connected or arranged in three spatial dimensions. In this paper, we investigate the task of molecular generation from this input, together with the molecule's total charge and spin multiplicity. The model returns atomic coordinates. We then infer bonds from those coordinates to evaluate the generated structure. Unlike conformation generation with a known molecular graph, this task leaves both connectivity and geometry to be determined.
 
-Flow matching learns to transform samples from a starting, or \emph{source},
-distribution into molecular structures \citep{lipman2023flowmatching}. An isotropic
+Flow matching learns to transform samples from a source distribution into a target distribution \citep{lipman2023flowmatching}. An isotropic
 Gaussian is a simple choice, but it places all atoms on a common spatial scale
 without using atom-specific geometric information. Harmonic sources instead
 correlate atom positions through virtual springs. Existing graph-conditioned
 methods can construct these springs from known chemical bonds. The question here
 is how to obtain a useful structured source when those bonds are not given.
 
-LatentSpring uses a random tree to organize the starting coordinates. We sample
+In this paper, we propose LatentSpring, which uses a random tree to organize the starting coordinates. We sample
 Gaussian displacements along its edges, with scales determined by the connected
 atoms' radii, and obtain atom positions by adding these displacements along the
 tree. A new tree is drawn for every sample. Its edges are not proposed chemical
-bonds: in the FM model, the tree is used only for initialization, and the flow can generate a
+bonds: in the flow matching model, the tree is used only for initialization, and the flow can generate a
 structure with different connectivity, including rings. Averaging over the trees
 gives a normalized mixture of harmonic networks. We combine this source with an
 equivariant coordinate network and geometry self-conditioning: the network makes
@@ -76,15 +52,20 @@ generation time, only the neural networks are evaluated. Expressing the head's
 action as a change to the provisional endpoint also allows it to correct a
 diffusion model's noise prediction.
 
-We study two linked design choices: a normalized harmonic-mixture source that
-requires no known chemical bonds, and learned physical changes to a generator's
-predicted endpoints. Section~\ref{sec:main-comparison} compares the complete FM
-model with generative baselines. Section~\ref{sec:source-head-ablation} separates
-the two designs on an independent one-pass FM configuration.
-Section~\ref{sec:joint-transfer} examines transfer to diffusion generators and
-distinguishes combined-design adaptation from direct reuse of correction weights.
-Additional source studies, paired weight updates, and local nonequilibrium-work
-experiments provide complementary analyses.
+In summary, our contributions are threefold:
+\begin{itemize}
+\item We construct a normalized harmonic-mixture source from atomic composition.
+Random auxiliary trees introduce atom-dependent geometric correlations while
+leaving the generated chemical connectivity to the learned flow.
+\item We learn a bounded equivariant correction from forces at predicted
+endpoints. The coordinate-space interface connects this correction to flow
+velocities and diffusion noise predictions, with the backbone fixed during
+correction training and neural-network evaluations during sampling.
+\item We evaluate generation quality, the contribution of each design, and reuse
+of learned correction weights across generative objectives. Three new training
+pairs confirm the correction's benefit, and the FM-trained heads improve GAGA
+joint yield by 16.54 percentage points without target-specific head training.
+\end{itemize}
 
 \section{Related work}
 \paragraph{Molecular flows and source distributions.}
@@ -135,33 +116,27 @@ molecular rotors and subsequent neural training.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{../research/figures/endpoint_method_v1/endpoint_method.pdf}
-\caption{LatentSpring learns physical corrections to predicted endpoints.
-(a) A recorded harmonic source and corrected FM output for neutral singlet
-$\mathrm{C_{10}H_5FN_2O_2}$, shown with the same camera and scale. Dashed source
-edges are the actual sampled auxiliary tree; output bonds are inferred from
-coordinates. Composition, charge, and spin are the inputs; coordinates are the
-output. (b) A separate saved training endpoint and its force-shifted target.
-Sticks here are distance contacts. Arrows show recorded force directions with
-a common display scale; coordinate shifts are not exaggerated. The correction
-network learns from current coordinates, predicted endpoints, atom identities,
-and progress. Every backbone parameter remains fixed during this stage.
-Carbon, hydrogen, nitrogen, oxygen, and fluorine are gray, white, blue, red,
-and green.}\label{fig:method}
+\includegraphics[width=\linewidth]{../research/figures/round2_method_v1/method.pdf}
+\caption{LatentSpring generates coordinates from atomic composition.
+(A) A sampled source and a raw $\mathrm{C_9H_9NO_2}$ output share camera and scale.
+Dashed links are auxiliary springs; the 2D inset shows inferred connectivity.
+The example is selected from the validation illustration panel in
+Appendix~\ref{app:chemical-geometry}. (B) Endpoint forces provide offline
+regression targets. (C) Each sampler defines its own endpoint, and the head
+specifies a coordinate displacement. The head receives current coordinates,
+endpoint coordinates, atom identities and progress.}
+\label{fig:method}
 \end{figure}
 
 \section{A harmonic source with latent connectivity}
-The input is $c=((z_i)_{i=1}^{N},Q,S)$: the atomic number $z_i$ of every atom,
-total charge $Q$ in elementary-charge units, and spin multiplicity $S$. Repeated
+We represent the input as $c=((z_i)_{i=1}^{N},Q,S)$, where $z_i$ is the atomic number of each atom, $Q$ is the total charge in elementary-charge units, and $S$ is the spin multiplicity. Repeated
 elements appear once per atom. A neutral singlet has $Q=0$ and $S=1$. For example,
 $\mathrm{C_2H_6O}$ specifies two carbon atoms, six hydrogens, and one oxygen, but
 allows different bond connectivities. Bonds are inferred from coordinates for
 evaluation, not supplied as training labels.
 
 The output coordinates form $X\in\RR^{N\times3}$, where row $x_i$ is atom $i$'s
-position in angstroms. We remove absolute translation by subtracting the mean
-position. The coordinates therefore lie in
-$\HH_N=\{X:\sum_i x_i=0\}$, a space with $3(N-1)$ independent coordinates.
+position in angstroms. We subtract the mean atom position to remove translation. The centered coordinates lie in $\HH_N=\{X:\sum_i x_i=0\}$, a space with $3(N-1)$ independent coordinates.
 
 \paragraph{Sampling a tree.}
 We first sample a spanning tree $T$ over the atoms: a connected graph with $N-1$
@@ -226,9 +201,8 @@ to a quadratic spring energy. These virtual springs organize the initial random
 coordinates; the learned flow determines the final molecular geometry.
 
 \section{Integration with molecular flow matching}\label{sec:flow}
-Given $c$, the flow transforms $X_0\sim q_0(\cdot\mid c)$ into
-$X_{\rm gen}\in\HH_N$. The network takes the current coordinates $X_t$, flow
-time $t$, and $c$, and predicts $v_\theta(X_t,t;c)\in\RR^{N\times3}$: one
+Given the input $c$, the flow matching model transforms $X_0\sim q_0(\cdot\mid c)$ into
+$X_{\rm gen}\in\HH_N$. The velocity network takes the current coordinates $X_t$, an embedding of flow time $t$, and $c$ to predict $v_\theta(X_t,t;c)\in\RR^{N\times3}$: one
 velocity vector per atom. Integrating this field from $t=0$ to $t=1$ produces
 the coordinates. The latent tree is used only to sample $X_0$ and is not passed
 to the network as a bond graph. Energy and force evaluations are used during
@@ -299,8 +273,7 @@ Under a first-order energy approximation, multiplying a Gaussian centered at
 $H$ by a Boltzmann factor shifts its mean by exactly $\delta(H)$.
 We choose $\sigma_H\leq0.03$\,\AA\ so the molecular displacement norm is at
 most 0.1\,\AA. Appendix~\ref{app:local-work} gives the derivation.
-This local construction supplies a learning target; it does not assume the
-parent samples an equilibrium molecular distribution.
+The local shift supplies the regression target for physical correction.
 
 The correction network $A_\phi(X,H,p;c)$ receives current and predicted final
 coordinates, atom identities, and progress. Symmetric pair coefficients multiply
@@ -326,50 +299,18 @@ fixed schedule's signal and noise scales. These two parameterizations require
 \end{equation}
 Substitution into either endpoint estimate gives the same displacement
 $\eta(1-p)A_\phi$. In GAGA, $p=1-t/t_{\max}$, with diffusion noise time $t$
-and truncation $t_{\max}=0.65$. In head-only transfer, the original transitions
-and observation noise are retained. Progress is a schedule coordinate, not physical time; the two
-samplers need not follow the same dynamics.
+and truncation $t_{\max}=0.65$. The head-only transfer retains each sampler's transitions and observation noise. Progress indexes the generation schedule.
 
-The head has 8,178 parameters for FlowMol's atom vocabulary and 7,106 for the
-shared EGNN vocabulary. Each fit uses 20,000 updates. Corrected FM sampling
-uses 128 backbone and 64 head calls, with no terminal perturbation; the GAGA
-comparison uses 128 of each. Neither invokes an energy model during generation.
-Appendices~\ref{app:force-correction} and~\ref{app:matched-connection} give the
-architecture, bounds, fitting budgets, and strength calibration.
-
-\paragraph{Extending the source to diffusion.}
-To transfer both designs, we use the harmonic mixture as structured diffusion
-noise. For a sampled tree $T$, let $B_T$ map independent standard Gaussian edge
-vectors to centered coordinates with the scales in Equation~\ref{eq:edge-law}.
-Its coordinate covariance is $C_T=B_TB_T^\top$. A forward diffusion state is
-\begin{equation}
- X_t=\alpha_t X_{\rm clean}+\sigma_t B_T\Xi,
- \qquad \Xi\in\RR^{(N-1)\times3},\quad \Xi_{ij}\sim\mathcal N(0,1).
- \label{eq:structured-diffusion}
-\end{equation}
-The tree stays fixed along a trajectory, and reverse-sampling noise uses the
-same covariance. The denoiser receives invariant pair variances from $C_T$ and
-predicts the noise $B_T\Xi$ in coordinate units. This follows the established
-non-isotropic Gaussian diffusion construction \citep{voleti2022nonisotropic}.
-The target backbone is trained for this noise process; the FM physical head
-is then reused through the same endpoint correction. Appendix~\ref{app:main-implementation}
-gives the covariance conditioning and GAGA initialization.
-
-\paragraph{Physical feedback in the backbone weights.}
-A complementary implementation fine-tunes two backbone copies on force-shifted
-structures and original anchors, then adds the difference between their updates
-to the parent. This produces a single adapted network. Appendix~\ref{app:paired-training}
-describes the paired update and its controls. We also study work-based weighting
-for specified local distributions (Appendices~\ref{app:jarzynski}--\ref{app:rotor-work}).
+The head architecture, bounds and fitting protocol are given in
+Appendices~\ref{app:force-correction} and~\ref{app:matched-connection}.
+Paired backbone updates and work-weighted local targets are studied separately
+in Appendices~\ref{app:paired-training} and~\ref{app:jarzynski}.
 
 \paragraph{Conditional hydrogen readout.}
-We optionally follow generation with a short flow over hydrogen coordinates,
-conditioned on the generated heavy-atom geometry. It learns from reference
-structures with perturbed hydrogens. A geometric contact test activates the
-readout only when a hydrogen is detached; four midpoint steps then move the
-hydrogens together while preserving relative heavy-atom positions. This adds
-eight small-network calls per activated output. Appendix~\ref{app:hydrogen-readout}
-compares it with a fixed radial attachment rule and a detached-hydrogen-only flow.
+An optional flow adjusts hydrogen coordinates while holding relative heavy-atom
+positions fixed. It learns from perturbed reference hydrogens and is activated
+by a detached-hydrogen contact test. Four midpoint steps add eight network calls
+(Appendix~\ref{app:hydrogen-readout}).
 
 \section{Experiments}\label{sec:experiments}
 \subsection{Experimental setup}\label{sec:experimental-setup}
@@ -396,15 +337,13 @@ structural checks.
 \input{sections/source_head_ablation}
 \input{sections/combined_transfer_results}
 \section{Discussion}
-LatentSpring combines two ways to improve molecular flow matching: a structured
-starting distribution and learned physical changes to predicted endpoints.
-The complete model improves joint structural and physical quality over the
-evaluated baselines, while the one-pass FM ablation shows an additional source
-benefit when physical correction is present. Independent training repetitions
-and direct reuse in diffusion generators support the correction's utility.
-The experiments concern unoptimized neutral organic structures and approximate
-energy models. The separate work-identity experiments address specified local
-distributions; the generation results do not establish global equilibrium sampling.
+LatentSpring combines a composition-based harmonic source with a correction
+learned from endpoint forces. The complete flow model improves joint yield over
+the evaluated baselines, and its correction weights retain their benefit when
+reused by diffusion generators. The component study locates the source's
+additional gain in the corrected flow. Detailed geometry checks show that
+correction reduces overlaps and force outliers, while heavy-atom connectivity
+and planarity remain the main structural defects in raw generation.
 
 \label{endofmaintext}
 \subsubsection*{Reproducibility statement}
@@ -416,19 +355,16 @@ density gradients, and work identities. Original data and backbone licenses and
 access requirements apply.
 
 \subsubsection*{AI use statement}
-OpenAI Codex and Claude Code assisted literature review, hypothesis and method
-development, experimental design, mathematical analysis and proof drafting,
-code implementation, data preprocessing, testing, result interpretation, figure
-construction, and manuscript drafting and editing. Reported numerical results
-come from executed programs and saved model outputs; the molecular figures use
-recorded coordinates. The accompanying code tests and result audits document
-computational checks of the AI-assisted implementation.
+OpenAI Codex and Claude Code assisted method and experiment development, code,
+analysis, figure preparation, and manuscript writing.
 
 \bibliography{refs,tree_refs}
 \bibliographystyle{iclr2027_conference}
 \appendix
 \input{sections/notation_guide}
 \input{sections/main_implementation_details}
+\input{sections/chemical_geometry_review}
+\input{sections/joint_design_transfer_details}
 \input{sections/earlier_experimental_setup}
 \input{sections/data_evaluation_details}
 \section{Source-development and covariance comparisons}\label{app:source-panels}

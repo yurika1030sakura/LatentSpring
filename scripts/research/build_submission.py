@@ -66,14 +66,15 @@ def main():
     sources['refs.bib']='\n'.join(path.read_text() for path in bibliographies)
     for path in bibliographies:inputs[str(path.relative_to(root))]=sha(path)
     for name in ['iclr2027_conference.sty','iclr2027_conference.bst','fancyhdr.sty','natbib.sty']:files[name]=paper/name
-    for name,src in [('generation.gif','research/figures/molecular_overview_v2/generation.gif'),
-            ('rotor_scan.gif','research/figures/molecular_rotor_v2/rotor_scan.gif')]:files['supplement/'+name]=root/src
+    # The historical paired-update generation animation stays in its archived
+    # experiment; it does not depict the current main generator.
+    files['supplement/rotor_scan.gif']=root/'research/figures/molecular_rotor_v2/rotor_scan.gif'
     for target,text in sources.items():
         dst=export/target;dst.parent.mkdir(exist_ok=True,parents=True);dst.write_text(text)
     for target,src in files.items():
         dst=export/target;dst.parent.mkdir(exist_ok=True,parents=True);shutil.copy2(src,dst)
         inputs[str(src.relative_to(root))]=sha(src)
-    (export/'README.md').write_text('LatentSpring submission draft. Compile main.tex with pdfLaTeX, BibTeX, then pdfLaTeX twice.\nAnimations show generation or prescribed rotations, not molecular dynamics.\n')
+    (export/'README.md').write_text('LatentSpring submission draft. Compile main.tex with pdfLaTeX, BibTeX, then pdfLaTeX twice.\nThe rotor animation shows prescribed rotations, not molecular dynamics. The current method illustration uses fixed raw generated coordinates with inferred connectivity.\n')
     exported={str(p.relative_to(export)):sha(p) for p in sorted(export.rglob('*')) if p.is_file()}
     (export/'MANIFEST.json').write_text(json.dumps(dict(files=exported,canonical_inputs=inputs),indent=2)+'\n')
     standalone=build(export,'main',logdir)

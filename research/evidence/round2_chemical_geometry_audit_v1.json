@@ -1,0 +1,114 @@
+{
+  "complete": true,
+  "posebusters_version": "0.4.4",
+  "rdkit_version": "2025.03.2",
+  "summary": {
+    "fm_parent": {
+      "attempted": 5120,
+      "graph": 1030,
+      "closed_shell_geometry": 178,
+      "closed_shell_geometry_force5": 84,
+      "disconnected": 3092,
+      "heavy_disconnected": 2527,
+      "hydrogen_only_fragmentation": 576,
+      "overlap": 126,
+      "graph_valid_diagnostic_failures": {
+        "planar_groups_pass": 516,
+        "no_internal_clash": 252,
+        "bond_angles_within_bounds": 313,
+        "bond_lengths_within_bounds": 264,
+        "nonaromatic_rings_nonflat": 1
+      }
+    },
+    "fm_physical": {
+      "attempted": 5120,
+      "graph": 1273,
+      "closed_shell_geometry": 236,
+      "closed_shell_geometry_force5": 227,
+      "disconnected": 2702,
+      "heavy_disconnected": 2325,
+      "hydrogen_only_fragmentation": 391,
+      "overlap": 9,
+      "graph_valid_diagnostic_failures": {
+        "planar_groups_pass": 674,
+        "bond_angles_within_bounds": 340,
+        "no_internal_clash": 296,
+        "bond_lengths_within_bounds": 237
+      }
+    },
+    "gaga_parent": {
+      "attempted": 5120,
+      "graph": 1157,
+      "closed_shell_geometry": 241,
+      "closed_shell_geometry_force5": 123,
+      "disconnected": 2891,
+      "heavy_disconnected": 2748,
+      "hydrogen_only_fragmentation": 147,
+      "overlap": 126,
+      "graph_valid_diagnostic_failures": {
+        "no_internal_clash": 250,
+        "bond_lengths_within_bounds": 234,
+        "planar_groups_pass": 555,
+        "bond_angles_within_bounds": 334
+      }
+    },
+    "gaga_physical": {
+      "attempted": 5120,
+      "graph": 1344,
+      "closed_shell_geometry": 340,
+      "closed_shell_geometry_force5": 330,
+      "disconnected": 2482,
+      "heavy_disconnected": 2413,
+      "hydrogen_only_fragmentation": 76,
+      "overlap": 14,
+      "graph_valid_diagnostic_failures": {
+        "no_internal_clash": 278,
+        "planar_groups_pass": 662,
+        "bond_lengths_within_bounds": 176,
+        "bond_angles_within_bounds": 325
+      }
+    }
+  },
+  "references": {
+    "attempted": 512,
+    "graph": 512,
+    "closed_shell_geometry": 470
+  },
+  "old_method_figure_example": {
+    "bond_lengths_within_bounds": false,
+    "bond_angles_within_bounds": true,
+    "no_internal_clash": false,
+    "planar_groups_pass": true,
+    "nonaromatic_rings_nonflat": true,
+    "geometry_subset_pass": false,
+    "closed_shell_geometry_pass": false,
+    "radical_electrons": 0,
+    "charged_atoms": 4,
+    "ring_sizes": [
+      10
+    ],
+    "aromatic_atoms": 0,
+    "small_sp_rings": 0,
+    "smiles": "O=[N+]1C(N=[OH+])=C=C=CC=CC=[C-]C1=[C-]F",
+    "checked_planar_groups": 1,
+    "max_planar_deviation": 0.24327729140833124
+  },
+  "display_candidates": [],
+  "records_sha256": "fabfccfb9a740f622d698ac4227d3b4e3cfb2b7b6180cf4611d0a8f0880294c7",
+  "provenance": {
+    "runs/seed_replication_v1/evaluation/s0/parents/fm/generation.json": "eef4bc69adc5fb48b95f6d3bc89710271c36e92f27e0e4c072369a54ec25786d",
+    "runs/seed_replication_v1/evaluation/s0/parents/gaga/generation.json": "7c46ae8ea81d13703fac7c446466ea290b2f089d210466bb51383ab31c1ad7d8",
+    "runs/seed_replication_v1/evaluation/s1/parents/fm/generation.json": "b5b53b9270c77d9fae165faafa3d568b0fdeab954cfdaa23d25ea50e26b608b0",
+    "runs/seed_replication_v1/evaluation/s1/parents/gaga/generation.json": "62251527819c8c1d24d57403a9585c198a43141aab6bcc92f1fa03e420410ef1",
+    "runs/seed_replication_v1/evaluation/s2/parents/fm/generation.json": "d19fbadf0e5a60378b5d7b2d8c2b0aad75aab2d02bb4d9ed2a88e633fd048fa3",
+    "runs/seed_replication_v1/evaluation/s2/parents/gaga/generation.json": "0e7eba65e231ce23230dfffceb99249fe5b20a09b5d2db598b98b6fc16819d01",
+    "runs/seed_replication_v1/evaluation/s3/parents/fm/generation.json": "0671b3bc960be238eccafda96902367d338cca64e1301bd8949120620dcdc11d",
+    "runs/seed_replication_v1/evaluation/s3/parents/gaga/generation.json": "a3d601012348bd1886d26fe89c012268dbbb2b587551b6c6fb8c333f43b2d6c7",
+    "runs/seed_replication_v1/evaluation/s4/parents/fm/generation.json": "5bd7cebaae2a0d69cace5373b9df2b413b554e7229aa5c3c69f352786feb1821",
+    "runs/seed_replication_v1/evaluation/s4/parents/gaga/generation.json": "95a3e802b997f277b752348f27885ae78b07a1cff69a7c73c358f8898798fdca"
+  },
+  "diagnostic_definition": "Graph validation followed by zero assigned radicals and PoseBusters0.4.4 mol-config geometry/flatness checks. No internal-energy ensemble, InChI or reference-identity test: not a full PB-valid certification. Existing primary metrics unchanged. Every original attempt remains in denominators.",
+  "example_rule": "First hash-ranked eligible raw corrected-FM example with17--32 atoms, common elements, uncharged atoms, a5--7-membered ring and no small sp ring, passing geometry checks and force<=5. This selects an illustration, not benchmark outputs.",
+  "new_energy_queries": 0,
+  "geometry_optimization": false
+}

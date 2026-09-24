@@ -1,14 +1,18 @@
 \subsection{Ablation of the source and physical correction}\label{sec:source-head-ablation}
 We separate the two design choices in a four-setting comparison: a Gaussian
 or harmonic source, each with or without physical correction. These experiments
-use one-pass EGNN flow models without self-conditioning. Within each training
+use EGNN flow models with one network pass per velocity prediction. Within each training
 run, the same frozen correction head is applied to both source variants.
 This keeps the learned correction fixed while changing the source.
 
-\begin{figure}[H]\centering
-\includegraphics[width=\linewidth]{../research/figures/experimental_story_v4/source_correction_ablation.pdf}
-\caption{Four-setting FM ablation on the same 64 compositions, without self-conditioning or hydrogen readout. Color and marker shape distinguish Gaussian and harmonic sources; the horizontal axis switches physical correction off or on. Bold lines and value labels show means; thin lines show both training fits. Each configuration contains 2,048 outputs.}\label{fig:source-head-ablation}
-\end{figure}
+\begin{figure}[!htbp]\centering
+\includegraphics[width=\linewidth]{../research/figures/round2_results_v4/components.pdf}
+\caption{Contributions of the source and physical correction. (A) Mean joint yield
+for the four configurations; faint lines retain both training fits. (B)
+Harmonic-minus-Gaussian joint-yield gains, with nominal 95\% intervals from
+resampling fits and compositions. Each configuration uses 2,048 outputs on the
+same 64 compositions and one network evaluation per velocity prediction.}
+\label{fig:source-head-ablation}\end{figure}
 
 Physical correction improves joint yield with either source: from
 6.25 to 19.92\% for Gaussian FM and from 7.23 to 24.27\% for harmonic FM.

@@ -1,0 +1,49 @@
+\section{Combined source and correction transfer to diffusion}\label{app:joint-design-transfer}
+\paragraph{Extending the source to diffusion.}
+To transfer both designs, we use the harmonic mixture as structured diffusion
+noise. For a sampled tree $T$, let $B_T$ map independent standard Gaussian edge
+vectors to centered coordinates with the scales in Equation~\ref{eq:edge-law}.
+Its coordinate covariance is $C_T=B_TB_T^\top$. A forward diffusion state is
+\begin{equation}
+ X_t=\alpha_t X_{\rm clean}+\sigma_t B_T\Xi,
+ \qquad \Xi\in\RR^{(N-1)\times3},\quad \Xi_{ij}\sim\mathcal N(0,1).
+ \label{eq:structured-diffusion}
+\end{equation}
+The tree stays fixed along a trajectory, and reverse-sampling noise uses the
+same covariance. The denoiser receives invariant pair variances from $C_T$ and
+predicts the noise $B_T\Xi$ in coordinate units. This follows the established
+non-isotropic Gaussian diffusion construction \citep{voleti2022nonisotropic}.
+The target backbone is trained for this noise process; the FM physical head
+is then reused through the same endpoint correction. Appendix~\ref{app:main-implementation}
+gives the covariance conditioning and GAGA initialization.
+
+
+The combined-design experiment trains tree-conditioned diffusion models using
+Equation~\ref{eq:structured-diffusion}, then attaches the frozen FM correction
+head. EDM and GAGA each use two original initialization seeds, the same 20,000
+OMol25 rows and batch schedules as their baselines, and 30,000 updates per fit.
+The source covariance is held fixed along each trajectory and supplied through
+an invariant edge channel. Every model uses its final EMA checkpoint, 128
+backbone evaluations per sample, correction strength four, and no hydrogen
+readout. The baselines reuse their audited original outputs on the same
+64 compositions. Each setting contains 2,048 attempts.
+
+\begin{table}[h]\centering\small
+\caption{Original diffusion baselines and combined-design adaptations (percent).}
+\begin{tabular}{llrr}\toprule
+Target & Setting & Graph validity & Joint yield\\\midrule
+EDM & Original &22.27&8.15\\
+EDM & Harmonic noise + FM head &0.00&0.00\\
+GAGA & Original &24.22&9.47\\
+GAGA & Harmonic noise + FM head &0.24&0.05\\
+\bottomrule\end{tabular}\label{tab:joint-design-completed}
+\end{table}
+
+The adaptation reduces generation quality in both target families. Its two
+GAGA fits produce one and four graph-valid outputs, respectively; only one
+also passes the force threshold. The EDM fits produce no graph-valid outputs.
+There are 36 unsuccessful GFN2 calculations for EDM and 21 for GAGA; all remain
+in the denominators. The experiment contributes 120,000 backbone updates,
+3.84 million training-example forwards, 4,096 generated trajectories and GFN2
+attempts, with no new head training or force-teacher queries. The released
+protocol, training logs, arrays and audit retain every fit.

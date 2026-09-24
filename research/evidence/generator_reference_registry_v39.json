@@ -1,0 +1,51 @@
+{
+  "previous_registry": "research/evidence/generator_reference_registry_v38.json",
+  "previous_registry_sha256": "309a1401589e08ebce51220c70314868fae2522b01cb7a7e698fc67e5d9f44fe",
+  "at_utc": "2026-09-24T16:41:23.167463+00:00",
+  "studies": {
+    "joint_design_transfer": {
+      "new_eval_neural_trajectories": 4096,
+      "optimizer_steps": 120000,
+      "training_example_forwards": 3840000,
+      "esen": 0,
+      "xtb_generator": 4096
+    },
+    "round2_illustration": {
+      "new_eval_neural_trajectories": 128,
+      "optimizer_steps": 0,
+      "esen": 0,
+      "xtb_generator": 128
+    },
+    "chemical_geometry_audit": {
+      "archived_outputs_reassessed": 20480,
+      "validation_references": 512,
+      "esen": 0,
+      "xtb_generator": 0,
+      "historical_gallery_outputs_reassessed": 4
+    }
+  },
+  "new_neural_generation_outputs": 4224,
+  "new_evaluation_generator_outputs": 4224,
+  "new_fit_generator_outputs": 0,
+  "cumulative_tree_architecture_evaluation_outputs": 297664,
+  "cumulative_fit_generator_outputs": 8960,
+  "cumulative_neural_generation_records": 306624,
+  "new_raw_esen_queries": 0,
+  "cumulative_source_teacher_raw_physical_rows": 203706,
+  "new_gfn2_attempts": 4224,
+  "cumulative_gfn2_confirmation_and_followup_attempts": 127143,
+  "new_optimizer_steps": 120000,
+  "new_derived_evaluation_outputs": 0,
+  "cumulative_derived_evaluation_outputs_since_v34": 28800,
+  "verification_parent_trajectory_replays_this_release": 64,
+  "ongoing_studies_not_yet_in_completed_totals": [],
+  "reserved_outcomes_unqueried": 722,
+  "evidence": {
+    "research/evidence/joint_design_transfer_audit_v1.json": "729298506e7ef76baecd6ccb97eead2e4eb142270a89957133b7930a5f06d762",
+    "research/evidence/round2_chemical_geometry_audit_v1.json": "2465e59f97308713897c21720b6dc4869365afbaed26d0ad4ac06eb3e4968662",
+    "research/evidence/round2_illustration_chemistry_v1.json": "5d7dbb40df8792670f08a205adbac0738cba7ab173309f619dd5d66edff6f65e",
+    "research/evidence/round2_archived_gallery_review_v1.json": "b57bb91b7461defe2b754a37e50d75bd87ad3d624c073212a7fc322765379cd6"
+  },
+  "scope": "Both unsuccessful structured-diffusion adaptations and all128 illustration draws are included. Geometry audit reuses raw coordinates and adds no physical calls. Illustration panel is separate from the main benchmark.",
+  "verification_scope": "64 zero-head/native structured-sampler replay outputs; one analytic aromatic-bond render checks depiction only and adds no neural or physical evaluations."
+}

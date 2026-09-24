@@ -4,9 +4,15 @@ LatentSpring combines the harmonic-mixture source and learned physical
 correction; the baselines use their own generators without these additions.
 Figure~\ref{fig:main-generators} reports both measures on the same compositions.
 
-\begin{figure}[H]\centering
-\includegraphics[width=\linewidth]{../research/figures/experimental_story_v4/main_comparison.pdf}
-\caption{Complete generators on 64 unseen compositions. Bars give mean graph validity (A) and joint yield (B); open circles show every training fit. Gaussian FM and EDM use two fits (2,048 outputs each); GAGA and LatentSpring use five (5,120 each). All attempts are counted. LatentSpring uses the source and physical correction, without the optional hydrogen readout.}\label{fig:main-generators}
+\begin{figure}[!htbp]\centering
+\includegraphics[width=\linewidth]{../research/figures/round2_results_v4/quality_gap.pdf}
+\caption{Generation quality on 64 unseen compositions. (A) Open markers show graph
+validity; filled markers show joint yield at the 5 eV/\AA\ force threshold. The
+connecting segment counts graph-valid outputs above that threshold. (B) Empirical
+joint-yield curves computed from every saved force score; the dashed line marks
+5 eV/\AA. Colors and line styles identify the same methods in both panels. Gaussian FM and EDM
+use two fits (2,048 outputs per method); GAGA and LatentSpring use five (5,120).
+The hydrogen readout is disabled.}\label{fig:main-generators}
 \end{figure}
 
 LatentSpring has the highest mean graph validity and joint yield in this
@@ -15,3 +21,8 @@ comparison. Its joint yield is 24.00\%, compared with 8.75\% for GAGA,
 EDM are 15.25 and 15.85 percentage points, respectively. The separation is larger
 for joint yield than for graph validity: more generated structures satisfy
 both the chemical-graph checks and the physical force threshold.
+
+A stricter screen of bond lengths, angles, steric distances and planarity raises
+the fraction satisfying both that screen and the force criterion from 1.64\%
+for the FM parent to 4.43\% after correction. Appendix~\ref{app:chemical-geometry}
+reports the complete geometric diagnostics.
