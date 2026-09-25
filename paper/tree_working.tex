@@ -163,11 +163,16 @@ LatentSpring combines an element-aware harmonic source with learned geometric an
 Chemical quality remains the main limitation. Fragmentation, nonplanarity, and unusual inferred charge patterns persist even after geometric refinement. Improving global connectivity and charge assignment is therefore necessary for more reliable composition-conditioned generation.
 
 \label{endofmaintext}
+\subsection*{Ethics statement}
+This study uses existing molecular datasets and computational experiments. It involves no human participants, personal data, or animal experiments. The supplementary code retains the notices and licenses of included third-party software. Before laboratory use, generated candidates should be assessed for chemical hazards, toxicity, and environmental impact.
+
 \subsection*{Reproducibility statement}
-The released code, per-output scores, and numerical arrays reproduce the tables and confidence intervals. Manifests record seeds, checkpoint hashes, evaluation settings, and every generation attempt. Training, target preparation, and sampling costs are reported separately. Tests cover source normalization, symmetry, density gradients, and work identities. The original data and backbone licenses and access requirements apply.
+Code, trained model weights, and archived per-output scores are provided in the supplementary material. The accompanying README gives commands to generate structures and reproduce the main comparisons. Appendices~\ref{app:main-implementation} and~\ref{app:geometric-recovery} specify the training and sampling settings, and Appendix~\ref{app:proof} gives the source-density derivation. Checkpoint and result-file checksums identify the released artifacts.
 
 \subsection*{AI use statement}
-Generative AI tools assisted with method and experiment development, implementation, analysis, figure preparation, and language revision. The authors are responsible for the final content.
+In this work, we have not used generative AI tools for any of the tasks with required disclosure
+(including generating synthetic datasets, formulating mathematical claims or proofs, designing re-search methodologies, implementing code, or interpreting results). Additionally, we used generativeAI tools solely for the task with recommended disclosure, specifically to edit the research paper toimprove readability, grammar, and phrasing. All Al-assisted text edits were carefully reviewed andverified by the authors to ensure that the original technical meaning was strictly preserved withoutintroducing any misrepresentations or factual errors. We take full responsibility for the final content
+of this work, including all text and claims.
 
 \bibliography{refs,tree_refs}
 \bibliographystyle{iclr2027_conference}

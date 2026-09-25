@@ -1,19 +1,4 @@
-# ── Heavy / external / generated (never push) ───────────────────────────
-# On UMass Unity these are symlinks into ~/scratch_workspace/bgfm/ (see README
-# "Storage layout"). They hold model weights, datasets, and logs — never push.
-envs/                 # conda environments (symlink -> scratch)
-runs/                 # training outputs + checkpoints (symlink -> scratch)
-data/                 # raw data (symlink -> scratch)
-processed_data/       # preprocessed tensors (symlink -> scratch)
-checkpoints/          # model weights (symlink -> scratch)
-logs/                 # SLURM / training logs (symlink -> scratch)
-baselines/            # forked external repos (own licenses)
-# notes/ is now TRACKED (project doc, theory, eval tables live here). The
-# FlowMol3 fork patch that baselines/ would otherwise carry is captured under
-# scripts/flowmol3_patch/ so it travels with the repo.
-
-# The same names as bare symlinks (a symlink is not matched by a trailing-slash
-# dir pattern, so anchor them explicitly to keep scratch links out of git).
+# Local environments, datasets, checkpoints, and job outputs
 /envs
 /runs
 /data
@@ -21,14 +6,20 @@ baselines/            # forked external repos (own licenses)
 /checkpoints
 /logs
 /baselines
+/research/hf_index_cache/
+/research/data_recovery/
+/research/paper_build/
 
-# ── Python ──────────────────────────────────────────────────────────────
+# Python and editor files
 __pycache__/
 *.py[cod]
 *.egg-info/
 .ipynb_checkpoints/
+.DS_Store
+*.swp
+.qoder
 
-# ── ML artifacts ────────────────────────────────────────────────────────
+# Generated model and data files
 *.ckpt
 *.pt
 *.pth
@@ -37,14 +28,3 @@ __pycache__/
 *.npy
 wandb/
 lightning_logs/
-
-# ── OS / editor ─────────────────────────────────────────────────────────
-.DS_Store
-*.swp
-.qoder
-
-# Local research data caches and recovery downloads
-/research/hf_index_cache/
-/research/data_recovery/
-
-/research/paper_build/
