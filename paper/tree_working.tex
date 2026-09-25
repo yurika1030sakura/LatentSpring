@@ -8,7 +8,7 @@
 \newcommand{\HH}{\mathcal H}
 \newcommand{\EE}{\mathbb E}
 \newcommand{\RR}{\mathbb R}
-\title{LatentSpring: Harmonic Sources\\and Physical Corrections for\\Molecular Generation}
+\title{LatentSpring: Harmonic Sources and Physical Corrections for Molecular Generation}
 \author{Anonymous}
 \begin{document}
 \maketitle
@@ -54,7 +54,7 @@ We also examine local target reweighting through nonequilibrium work identities 
 \end{figure}
 
 \section{A harmonic source with latent connectivity}
-The condition $c=((z_i)_{i=1}^{N},Q,S)$ specifies each atom's atomic number $z_i$, the total charge $Q$ in elementary-charge units, and spin multiplicity $S$. For example, neutral singlet $\mathrm{C_2H_6O}$ has $Q=0$ and $S=1$, but permits several connectivities. Chemical bonds are inferred for evaluation and are not training labels.
+In our task, the input condition $c=((z_i)_{i=1}^{N},Q,S)$ specifies each atom's atomic number $z_i$, the total charge $Q$ in elementary-charge units, and spin multiplicity $S$. For example, neutral singlet $\mathrm{C_2H_6O}$ has $Q=0$ and $S=1$, but permits several connectivities. Chemical bonds are inferred for evaluation and are not training labels.
 
 The output is a coordinate matrix $X\in\RR^{N\times3}$, with positions $x_i$ in angstroms. Subtracting the mean position removes translation and places $X$ in the $3(N-1)$-dimensional centered space $\HH_N=\{X:\sum_i x_i=0\}$.
 

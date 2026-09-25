@@ -14,6 +14,8 @@ AI声明按实际辅助范围简写，未写成“仅语言润色”。官方政
 文件树及原作者/提交者/时间戳均保持不变，原始出处由provenance标签与提交映射保留。
 只改变共同署名元数据，不删除实验记录、不重写过去的协议哈希。
 
-最终构建v35为8页主文/45页总计/33项引用，本地和独立Overleaf源的PDF文本一致。
-格式记录iclr2027_submission_format_v1.json；同步记录publication_sync_v35.json。
+最终构建v36为8页主文/45页总计/33项引用，本地和独立Overleaf源的PDF文本一致。
+格式记录iclr2027_submission_format_v2.json；同步记录publication_sync_v36.json。
 正式上传文件为paper/latentspring.pdf。尚未代用户上传OpenReview。
+
+同步前发现朋友追加提交4c1d441，已保留自然标题换行和任务输入说明，重新构建v36。

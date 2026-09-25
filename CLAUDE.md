@@ -1,14 +1,15 @@
 # Active checkpoint —2026-09-25: anonymous submission formatting and repository rename
 
 GitHub repository is now yurika1030sakura/LatentSpring; remote `github` points to
-that SSH URL. Current paper build v35:8 main pages,45 total,33 references;
+that SSH URL. Current paper build v36:8 main pages,45 total,33 references;
 appendix starts on page12 after references. Official2027 .sty/.bst and support
 files were downloaded from the ICLR Author Guidelines and byte-match ours.
 Standard anonymous review headers replace the internal draft overrides.
-Read iclr2027_submission_format_v1.json and publication_build_v35.json;
-publication_sync_v35.json records final synchronization.
+Read iclr2027_submission_format_v2.json and publication_build_v36.json;
+publication_sync_v36.json records final synchronization.
 
-Coauthor Overleaf commit f09901e is preserved, including new citations,
+Coauthor Overleaf commits f09901e and4c1d441 are preserved, including title wrapping,
+explicit task-input phrasing, new citations,
 training/inference explanation and appendix page break. Only implementation
 precision, citation command formatting, official headers/headings and table
 caption placement were repaired. AI disclosure remains a concise factual
