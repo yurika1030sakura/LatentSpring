@@ -1,26 +1,11 @@
 \subsection{Geometry feedback and physical transfer on the EGNN}\label{app:feedback-transfer}
-We test geometry feedback on the independent EGNN using the same 20,000 training
-rows and two initializations. The first pass predicts provisional coordinates;
-the second uses their pairwise distances in an existing invariant edge channel.
-The provisional geometry is detached, and both passes are supervised. Thus this
-experiment uses 15,000 updates at batch size 32 and two forward passes per example,
-matching the 960,000 training forward passes of the original one-pass models.
-The total parameter count is 2,381,566, including 1,001 frozen noise-schedule
-entries. Optimizer-update counts and wall time are not matched.
+The feedback experiment uses the same 20,000 training rows and two EGNN initializations. A first pass predicts provisional coordinates; their detached pair distances enter an invariant edge channel in the supervised second pass. Training uses 15,000 updates at batch size 32, matching the one-pass models' 960,000 example-forwards. The network contains 2,381,566 parameters, including 1,001 fixed schedule entries. Update counts and runtime differ.
 
-An alternative replaces distances with edge-inclusion probabilities from a
-regularized auxiliary tree distribution. On 32 internal validation compositions,
-we select distance or tree feedback by pooled graph validity, with one choice for
-both seeds. GAGA separately selects its maximum sampling timestep from
-350, 500, and 650. Validation selects distance feedback and timestep 650.
-We then evaluate 32 previously ungenerated compositions, eight in each of the
-four size ranges, with 32 draws per composition and seed. Each output uses
-128 network calls, without physical refinement.
+We compare distance feedback with edge-inclusion probabilities from a regularized auxiliary tree distribution. Pooled graph validity on 32 internal-validation compositions selects one feedback type for both seeds. GAGA independently selects its maximum timestep from 350, 500, and 650. Validation chooses distances and timestep 650. We then generate 32 draws per seed for each of 32 previously ungenerated compositions, eight per size range, using 128 network calls and no physical refinement.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
-\caption{Raw graph validity on the feedback-confirmation panel. Each model has
-1,024 attempts per initialization. All tested feedback choices are shown.}
+\caption{Raw graph validity for every tested feedback configuration, with 1,024 attempts per initialization.}
 \begin{tabular}{lrrr}
 \toprule
 Model & Valid, seed 1 & Valid, seed 2 & Pooled (\%)\\
@@ -33,25 +18,14 @@ GAGA, selected timestep 650 &151&131&13.77\\
 \end{tabular}
 \end{table}
 
-Distance feedback exceeds GAGA by 1.86 points, with a composition-bootstrap
-95\% interval of $[-0.34,4.44]$. The seed-specific differences are $+0.39$
-and $+3.32$ points. Tree feedback reduces validity relative to distance feedback
-by 5.96 points ($[-8.11,-3.96]$), so it is not part of the proposed method.
+Distance feedback exceeds GAGA by 1.86 points (composition 95\% interval $[-0.34,4.44]$), with seed-specific differences $+0.39$ and $+3.32$. Tree feedback is 5.96 points worse than distance feedback ($[-8.11,-3.96]$), and is excluded from the method.
 
-\paragraph{Transferring the fixed physical-update recipe.}
-Each selected parent generates 512 candidate anchors on eight training
-compositions. We apply the same local force-target procedure, then fit physical
-and replay students. Each FM student uses 1,000 two-pass updates; each GAGA
-student uses 2,000 one-pass updates. The learning rate is $10^{-4}$ and the
-parameter-difference coefficient is one. This is a follow-up on the same
-32-composition panel. It tests this fixed recipe, without selecting its strength
-on validation.
+\paragraph{Fixed-recipe physical adaptation.}
+Each selected parent generates 512 candidate anchors on eight training compositions. The same force-target procedure trains physical and replay students: 1,000 two-pass updates for FM or 2,000 one-pass updates for GAGA, at learning rate $10^{-4}$. We apply parameter subtraction with coefficient one and evaluate the same 32-composition panel without calibrating this strength on validation.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
-\caption{Fixed-strength physical adaptation on the EGNN. Joint yield requires
-graph validity and GFN2 force RMS at most 5 eV/\AA, with all 2,048 attempts per
-model in the denominator.}
+\caption{Fixed-strength physical adaptation on the EGNN. Joint yield counts graph-valid outputs with GFN2 force RMS at most 5 eV/\AA\ over all 2,048 attempts per model.}
 \begin{tabular}{lrr}
 \toprule
 Model & Graph validity (\%) & Joint yield (\%)\\
@@ -64,11 +38,4 @@ GAGA + paired physical update &4.79&1.90\\
 \end{tabular}
 \end{table}
 
-The full-strength update lowers both graph validity and joint quality for both
-families. The within-FM joint-yield change is $-4.00$ points
-($[-6.49,-2.00]$); the within-GAGA change is $-3.96$ points
-($[-6.25,-1.95]$). eSEN gives the same directions. These results show that the
-successful primary-backbone recipe cannot be transferred unchanged to this EGNN.
-GAGA's predefined noise schedule stays fixed in this comparison.
-Appendix~\ref{app:matched-connection} evaluates a separately trained correction
-head with broader supervision from each parent's own trajectory states.
+The unchanged recipe reduces both graph validity and joint yield. FM loses 4.00 joint-yield points ($[-6.49,-2.00]$), and GAGA loses 3.96 ($[-6.25,-1.95]$); eSEN gives the same directions. GAGA retains its fixed noise schedule. These results motivate the separately trained correction head in Appendix~\ref{app:matched-connection}, which uses broader supervision from each parent's trajectory states.

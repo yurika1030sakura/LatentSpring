@@ -1,37 +1,17 @@
 \section{Physical quality of the matched generators}\label{app:generator-quality}
-We evaluate physical scores for the 16,384 saved outputs from the independent
-EGNN comparison in Section~\ref{sec:matched-generators}. These are the original
-128-call outputs; no models are retrained and no coordinates are changed. We fix
-the physical-evaluation protocol before computing these scores. eSEN evaluates
-every output and its reflection. GFN2 evaluates every graph-valid output and
-both inversions of each reference. All 2,198 GFN2 calculations succeed, including
-256 reference checks that pass inversion tests. eSEN uses 33,024 evaluations.
+We score the 16,384 saved 128-call outputs from Section~\ref{sec:matched-generators}, without retraining or changing coordinates. The evaluation protocol is fixed before scoring. eSEN evaluates every output and its reflection, requiring 33,024 calls. GFN2 evaluates graph-valid outputs and both reference inversions; all 2,198 calculations succeed, including 256 reference checks.
 
-Joint quality yield divides outputs that pass both graph validity and a physical
-threshold by \emph{all generation attempts}. Graph-invalid structures therefore
-remain in the denominator. Figure~\ref{fig:generator-quality} sweeps the
-force-RMS threshold instead of treating one cutoff as a universal definition of
-physical validity. Passing a threshold does not certify a stationary geometry.
-These models share the architecture and training budget in
-Appendix~\ref{app:matched-generators}; none receives a physical update in this
-source/objective comparison.
+Joint yield counts outputs passing graph validity and a force threshold over all attempts. Figure~\ref{fig:generator-quality} varies the threshold to show sensitivity to this choice. A force cutoff measures residual-force quality, not stationarity. These models share the architecture and training budget in Appendix~\ref{app:matched-generators} and receive no physical updates.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{../research/figures/generator_quality_v1/quality_yield.pdf}
-\caption{Fraction of all attempts that are graph-valid and have force RMS below
-the indicated threshold. Curves pool both independent initializations and all
-64 compositions. GAGA has the highest pooled yield at most nontrivial thresholds
-under both potentials.}\label{fig:generator-quality}
+\includegraphics[width=\linewidth]{../research/figures/final_complete_v1/figures/quality_yield.pdf}
+\caption{Joint yield versus force threshold, pooling two initializations and 64 compositions. All attempts contribute to the denominator. GAGA has the highest pooled yield at most nontrivial thresholds under both potentials.}\label{fig:generator-quality}
 \end{figure}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
-\caption{GFN2 scores for the matched generators. Energy and force are medians
-across each method's own graph-valid outputs; yield uses all 4,096 attempts per
-method. Energy excess is relative to one OMol25 geometry of the same composition.
-The generated bond graph may differ from that reference, so this is not a
-same-graph strain-energy measurement.}
+\caption{GFN2 scores of matched generators. Energy and force are medians over each method's graph-valid outputs; yield uses all 4,096 attempts. Energy excess is relative to one same-composition OMol25 reference, whose connectivity may differ from the generated graph.}
 \small
 \begin{tabular}{lrrr}
 \toprule
@@ -45,7 +25,4 @@ GAGA & 0.6604 & 5.2785 & 6.15\\
 \end{tabular}
 \end{table}
 
-Higher graph validity from the harmonic source does not, by itself, imply better
-physical scores among valid outputs. GAGA has stronger pooled physical results
-in this matched setting. The separate physical-adaptation experiments test the
-effect of local physical targets on trained generators.
+GAGA has the stronger pooled physical scores in this matched comparison. The harmonic source improves graph validity without improving physical scores among valid outputs. The physical-adaptation studies separately test whether local force targets address this gap.

@@ -1,37 +1,18 @@
 \section{Complete generators on common compositions}\label{app:common-models}
-We evaluate the complete systems on the same 16 new compositions, eight each with
-17--28 and 29--40 atoms. The panel is fixed by metadata hashes, excludes prior
-confirmation panels, and is absent from both processed generator corpora. All
-conditions are neutral organic singlets within the GAGA adaptation's element
-vocabulary. Each system generates 16 raw structures per composition and run,
-for 512 scored outputs per row of Table~\ref{tab:common-models}.
+We compare complete systems on 16 new neutral organic singlet compositions within GAGA's element vocabulary, eight each with 17--28 and 29--40 atoms. Metadata hashes fix the panel, excluding earlier confirmation panels and both processed generator corpora. Sixteen draws per composition and run give 512 outputs per row of Table~\ref{tab:common-models}.
 
-This comparison answers a different question from the shared-EGNN experiment.
-The FlowMol variants use a 5.90-million-parameter inherited backbone; the GAGA
-models use the 2.38-million-parameter EGNN trained from scratch on 20,000 OMol25
-structures. Their architectures, training histories, physical supervision, and
-costs differ. GAGA uses its validation-selected truncation at 650, evaluated at
-both 128 calls and the complete 651-call schedule. The paired-update model keeps
-its two original continuations. The correction-head study uses two head-fitting
-seeds on one shared parent. Intervals condition on these fitted systems and
-resample the 16 compositions.
+FlowMol variants inherit a 5.90-million-parameter backbone; GAGA uses the 2.38-million-parameter EGNN trained from scratch on 20,000 OMol25 structures. This comparison includes differences in architecture, training, physical supervision, and cost. GAGA uses its validation-selected truncation at 650 with 128-call and full 651-call samplers. The paired-update model retains its two original continuations; head comparisons use two fitting seeds on one shared parent. Intervals resample the 16 compositions conditional on these systems.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{../research/figures/common_model_v2/common_model_quality.pdf}
-\caption{Graph support and physical quality on the same compositions. Open
-circles count graph-valid outputs; filled circles also require GFN2 force RMS
-at most 5 eV/\AA. The gap shows graph-valid outputs above that force threshold.
-Every denominator includes all 512 attempts. The models have the distinct
-training histories and inference costs described in the text.}
+\includegraphics[width=\linewidth]{../research/figures/final_complete_v1/figures/common_model_quality.pdf}
+\caption{Graph validity and joint yield on the common panel. Open circles show graph validity; filled circles also require GFN2 force RMS at most 5 eV/\AA. Connecting segments show the gap between the two criteria. Rates use all 512 attempts. Training histories and inference costs differ across systems, as described in the text.}
 \label{fig:common-model-quality}
 \end{figure}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering\small
-\caption{Raw outputs in the common-panel study. Force medians use each model's
-own graph-valid outputs with successful GFN2 calculations. Joint yield uses all
-attempts. ``Calls'' separates backbone and correction-head evaluations.}
+\caption{Common-panel results on raw coordinates. Force medians use each model's graph-valid outputs with successful GFN2 calculations; joint yield uses all attempts. ``Calls'' lists backbone and head evaluations separately.}
 \begin{tabular}{lrrrr}
 \toprule
 Model & Calls & Graph (\%) & Force (eV/\AA) & Joint (\%)\\
@@ -49,59 +30,18 @@ Contextual correction, 20,000 updates &128+64&50.78&2.864&46.68\\
 \end{tabular}\label{tab:common-models}
 \end{table}
 
-The contextual head was the prespecified primary challenger. It improves joint
-yield over its parent by 7.81 percentage points, with a 95\% interval of
-$[4.88,10.94]$; the run-specific gains are 7.03 and 8.59 points. Its differences
-from the small and wide 20,000-update heads are $-0.20$ points
-($[-1.95,1.56]$) and $+0.59$ points ($[-1.17,2.34]$). Thus the better internal
-force-target prediction of the contextual architecture does not produce an
-established generation advantage over either simpler control.
+The prespecified contextual head improves joint yield over its parent by 7.81 points (95\% interval $[4.88,10.94]$), with gains of 7.03 and 8.59 across fits. Its differences from the small and wide 20,000-update heads are $-0.20$ ($[-1.95,1.56]$) and $+0.59$ ($[-1.17,2.34]$). Thus lower internal target error does not yield a resolved advantage over the simpler heads.
 
-Relative to GAGA at 128 and 651 calls, the contextual complete system gains
-36.91 points ($[26.56,46.09]$) and 34.57 points ($[24.80,43.95]$). The original
-paired-update system also exceeds both GAGA settings, by 28.32 points
-($[20.70,35.74]$) and 25.98 points ($[18.75,33.40]$). These are complete-system
-results on common conditions. The shared-backbone results in
-Appendices~\ref{app:feedback-transfer} and~\ref{app:matched-connection} control
-architecture and training exposure. Learned correction improves both EGNN
-generators under equal physical supervision, with uncertain ordering between them.
+The contextual system exceeds GAGA at 128 and 651 calls by 36.91 points ($[26.56,46.09]$) and 34.57 ($[24.80,43.95]$). The paired-update system exceeds them by 28.32 ($[20.70,35.74]$) and 25.98 ($[18.75,33.40]$). Appendices~\ref{app:feedback-transfer} and~\ref{app:matched-connection} provide architecture-controlled comparisons: both EGNN generators benefit from equal physical supervision, without a resolved ordering between them.
 
-\paragraph{Training duration and terminal noise.}
-The published-model and terminal-noise controls were designated before reading
-the new GFN2 comparison. The zero-noise output is captured from the same neural
-trajectory as the published sampler, before its final 0.025\,\AA\ perturbation.
-Removing that noise increases joint yield by 1.95 points ($[0.39,3.71]$).
-The small learned correction exceeds the paired-update model by 8.79 points
-($[3.91,13.67]$), and its zero-noise version by 6.84 points ($[1.95,11.72]$).
-Their physical-training sets and parent histories differ, so this comparison
-combines those choices with the adaptation mechanism.
+\paragraph{Terminal noise and fitting duration.}
+The original-model and terminal-noise controls were specified before examining the new GFN2 results. We capture the zero-noise output from the same trajectory before the final 0.025\,\AA\ perturbation. Removing this noise adds 1.95 joint-yield points ($[0.39,3.71]$). The small head exceeds the paired-update model by 8.79 points ($[3.91,13.67]$) and its zero-noise variant by 6.84 ($[1.95,11.72]$), although their physical-training sets and parent histories differ.
 
-After inspecting the main confirmation, we add a training-duration ablation
-using the already-saved 2,000-update prefix of each small-head fit. All targets,
-initial weights, training-state choices, and generation settings match the
-20,000-update model. Longer fitting adds 3.71 points ($[1.76,5.86]$), with
-positive changes in both runs. This supplemental ablation is a later diagnostic,
-not an independently chosen confirmation panel.
+A later duration diagnostic reuses the saved 2,000-update prefixes of the small-head fits. Targets, initialization, training states, and sampling match the 20,000-update versions. Longer fitting adds 3.71 points ($[1.76,5.86]$), with both fits improving. This comparison was added after inspecting the confirmation panel.
 
-Across all unoptimized outputs, the small 20,000-update head also lowers GFN2
-energy by a mean 0.0951 eV/atom relative to its matched parent. The signed-change
-95\% interval is $[-0.2022,-0.0364]$ eV/atom, and both runs decrease. This readout
-includes invalid outputs and measures the change across paired generator
-attempts, rather than equilibrium energy differences between isomers.
+The small 20,000-update head also lowers all-output GFN2 energy relative to its parent by 0.0951 eV/atom (signed-change 95\% interval $[-0.2022,-0.0364]$), with reductions in both runs. The paired averages include invalid outputs and different connectivities.
 
-\paragraph{Additional graph diagnostics.}
-Requiring RDKit to assign zero radical electrons gives joint yields of 46.29\%
-for the small correction, 46.09\% for the contextual correction, and 9.57\% and
-11.52\% for the two GAGA budgets. The relative result therefore also appears
-under this stricter graph-assignment check. Within each composition and run,
-all graph-valid outputs have distinct inferred labeled connectivity graphs.
-This 16-draw diagnostic measures observed duplication, not coverage of the
-possible isomers or their equilibrium probabilities.
+\paragraph{Graph diagnostics and cost.}
+Requiring zero assigned radical electrons gives joint yields of 46.29\% for the small head, 46.09\% for the contextual head, and 9.57\%/11.52\% for GAGA at its two budgets. No graph-valid output duplicates another inferred connectivity within a 16-draw composition/run cell; this measures observed duplication rather than isomer coverage.
 
-The six-system confirmation contributes 3,072 neural trajectories and GFN2
-readouts. Its parameter-matched control adds 40,000 head updates; the preceding
-small/contextual capacity study used 80,000 updates. The supplemental published
-and short-fit study adds 1,024 neural trajectories and 512 further outputs
-obtained by sharing the published model's trajectory across the two noise
-settings, with 1,536 GFN2 readouts. The physical teacher is reused throughout.
-No generated coordinates are optimized.
+The six-system confirmation uses 3,072 trajectories and GFN2 readouts. The parameter-matched control adds 40,000 head updates, following 80,000 updates in the earlier capacity study. Supplemental original-model and short-fit comparisons add 1,024 trajectories, 512 shared-trajectory noise variants, and 1,536 GFN2 readouts. All reuse the physical teacher and evaluate unoptimized coordinates.

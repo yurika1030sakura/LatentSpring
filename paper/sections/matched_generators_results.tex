@@ -1,28 +1,6 @@
 \subsection{Independent backbone and generator objectives}\label{sec:matched-generators}
-We train Gaussian FM, harmonic FM, position-conditional EDM, and GAGA
-\citep{edm,qu2026gaga} from scratch on an independent EGNN. All four use the
-same 20,000 OMol25 structures, architecture, and initial weights within each of
-two repetitions, with 30,000 updates at batch size 32. This comparison omits
-self-conditioning and physical adaptation. The two FM models differ only in
-source distribution; their probability paths and atom pairing are identical.
-Appendix~\ref{app:matched-generators} gives the protocol and GAGA configuration.
+Gaussian FM, harmonic FM, position-conditional EDM, and GAGA \citep{edm,qu2026gaga} train from scratch on the same EGNN and 20,000 OMol25 structures. Two repetitions share initialization within each comparison, with 30,000 updates at batch size 32. Neither self-conditioning nor physical adaptation is used. The FM models differ only in source, sharing interpolation and atom pairing (Appendix~\ref{app:matched-generators}).
 
-The harmonic source improves FM graph validity by 1.34 percentage points, with a
-composition-bootstrap 95\% interval of [0.12,2.52]. This supports a source benefit
-without shared pretraining history. EDM and GAGA achieve higher validity in this
-setting. Unlike the Gaussian--harmonic FM comparison, those comparisons also
-change the probability path, training objective, and sampler.
+Harmonic improves FM graph validity by 1.34 points (composition 95\% interval [0.12,2.52]). EDM and GAGA achieve higher validity in this setting, with different paths, objectives, and samplers. Distance self-conditioning subsequently supplies the FM parent for physical-head comparisons at matched training-forward budgets (Appendices~\ref{app:feedback-transfer} and~\ref{app:matched-connection}).
 
-Distance self-conditioning provides the FM parent for the physical-head
-comparison, with matched training forward-pass budgets. The original
-feedback and two-fit correction experiments are reported in
-Appendices~\ref{app:feedback-transfer} and~\ref{app:matched-connection}.
-
-A further 16-composition comparison evaluates complete systems with their own
-architectures and training histories. The 5.90-million-parameter FlowMol backbone reaches 38.87\% GFN2 joint
-yield, increasing to 46.88\% with learned force correction. GAGA reaches
-9.77\% at 128 calls and 12.11\% at 651 calls, using a 2.38-million-parameter
-backbone trained from scratch. Their inherited training and physical supervision
-differ. Appendix~\ref{app:common-models} reports all variants, preparation costs,
-and the matched-size and training-duration controls. These complete-system
-results complement the architecture-controlled experiments above.
+A separate 16-composition complete-system comparison gives 38.87\% GFN2 joint yield for the inherited 5.90-million-parameter FlowMol backbone and 46.88\% with force correction. The 2.38-million-parameter GAGA trained from scratch gives 9.77\% at 128 calls and 12.11\% at 651. Appendix~\ref{app:common-models} details the differing training histories and physical supervision, costs, capacity controls, and fitting-duration study.

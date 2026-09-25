@@ -1,38 +1,13 @@
 \subsection{Comparison with generative baselines}\label{sec:main-comparison}
-We compare LatentSpring with Gaussian-source flow matching, EDM, and GAGA.
-LatentSpring combines the harmonic-mixture source, geometric recovery, and
-learned endpoint corrections; the baselines use their own generators without these additions.
-Figure~\ref{fig:main-generators} reports graph, force and geometric criteria on the same compositions.
+Figure~\ref{fig:main-generators} compares raw outputs from LatentSpring, Gaussian-source FM, EDM, and GAGA on the same compositions. The latter three are evaluated without LatentSpring's recovery training or endpoint corrections.
 
 \begin{figure}[!htbp]\centering
-\includegraphics[width=\linewidth]{../research/figures/geometric_results_v1/main_comparison.pdf}
-\caption{Generation quality on 64 unseen compositions. (A) Open markers show graph
-validity; filled markers show joint yield at the 5 eV/\AA\ force threshold. The
-connecting segment counts graph-valid outputs above that threshold. (B) Empirical
-geometry-and-force yield curves computed from all attempts; the dashed line marks
-5 eV/\AA. Colors and line styles identify the same methods in both panels. Gaussian FM and EDM
-use two fits (2,048 outputs per method); GAGA and LatentSpring use five (5,120).
-The hydrogen readout is disabled.}\label{fig:main-generators}
+\includegraphics[width=\linewidth]{../research/figures/final_complete_v1/figures/main_comparison.pdf}
+\caption{Generation on 64 unseen compositions. (a) Paired horizontal bars show graph validity (pale) and graph-and-force yield (solid) at a force-RMS threshold of 5 eV/\AA. (b) Geometry-and-force yield versus force threshold, with a vertical reference at 5 eV/\AA. Method colors match across panels. Gaussian FM and EDM have two fits and 2,048 outputs each; GAGA and LatentSpring have five fits and 5,120 outputs. All rates include every attempt, without hydrogen readout.}\label{fig:main-generators}
 \end{figure}
 
-LatentSpring reaches 35.49\% graph validity and 35.35\% joint graph-and-force
-yield. The latter compares with 8.75\% for GAGA, 8.15\% for EDM, and 6.25\%
-for Gaussian FM. The corresponding gains are 26.60, 27.20, and 29.10 percentage
-points. Requiring the additional geometric checks gives 9.63\% geometry-and-force
-yield, compared with 2.40\% for GAGA, 2.83\% for EDM, and 1.51\% for Gaussian FM.
+LatentSpring achieves 35.49\% graph validity and 35.35\% graph-and-force yield. Joint yields for GAGA, EDM, and Gaussian FM are 8.75\%, 8.15\%, and 6.25\%, giving gains of 26.60, 27.20, and 29.10 percentage points. Under the stricter geometry-and-force criterion, LatentSpring reaches 9.63\%, compared with 2.40\%, 2.83\%, and 1.51\%, respectively.
 
-Across all five fits, geometry-and-force yield rises from 4.43\% for the
-initial force-corrected FM to 9.63\% for the complete model. The three additional
-fits each improve, with a mean gain of 5.08 points and crossed fit/composition
-95\% interval $[3.09,7.52]$. In the two-fit matched-training comparison, the
-complete model gives 10.25\%, versus 5.76\% for a continuation control with
-the same number of backbone updates. The 4.49-point difference has crossed
-interval $[2.44,6.45]$. Appendix~\ref{app:geometric-recovery} gives the controls
-and Appendix~\ref{app:chemical-geometry} reports the geometric criteria.
+Geometric refinement raises the five-fit geometry-and-force yield from 4.43\% for the initial force-corrected FM to 9.63\%. All three additional fits improve, with a mean gain of 5.08 points and a crossed fit/composition 95\% interval of $[3.09,7.52]$. In the two-fit control, the complete method reaches 10.25\%, compared with 5.76\% for unperturbed endpoint continuation with matched backbone updates: a 4.49-point gain, with crossed interval $[2.44,6.45]$. The control tests the complete refinement procedure, including its geometric head (Appendix~\ref{app:geometric-recovery}).
 
-On a complementary panel of 12 common-element organic compositions, the same
-model reaches 35.42\% geometry-and-force yield, versus 20.57\% for the initial
-force-corrected FM, 17.71\% for GAGA, 14.84\% for EDM, and 16.41\% for Gaussian
-FM. The gain over the initial FM is 14.84 points, with crossed interval
-$[7.81,25.52]$. Appendix~\ref{app:chemical-geometry} gives the selection rule,
-all 384 attempts per method, and inferred-charge diagnostics.
+On the complementary 12-composition common-element organic panel, geometry-and-force yield is 35.42\% for LatentSpring, 20.57\% for the initial force-corrected FM, 17.71\% for GAGA, 14.84\% for EDM, and 16.41\% for Gaussian FM. The 14.84-point improvement over the initial FM has crossed interval $[7.81,25.52]$. Appendix~\ref{app:chemical-geometry} reports the panel selection, all 384 attempts per method, geometric checks, and charge-assignment diagnostics.

@@ -1,16 +1,9 @@
 \subsection{Source and physical adaptation}\label{sec:absolute-quality}
-We apply paired physical training to both source families, using generated
-anchors from the same eight training compositions and matched maximum proposal
-and training budgets. Table~\ref{tab:absolute-quality} compares all four models
-on 24 compositions. Appendix~\ref{sec:factorial-details} records preparation
-costs and evaluation reuse.
+We train paired physical updates for both source families using the same eight training compositions and matched maximum proposal and training budgets. Table~\ref{tab:absolute-quality} compares the four models on 24 compositions; Appendix~\ref{sec:factorial-details} details preparation costs and evaluation reuse.
 
 \begin{table}[t]
 \centering
-\caption{Source and physical-update comparison under GFN2-xTB, with 1,536 raw
-attempts per model. Median force RMS uses each model's own graph-valid outputs
-with successful calculations. Joint yield uses all attempts and requires both
-graph validity and force RMS at most 5 eV/\AA.}
+\caption{Source and paired-update comparison under GFN2, with 1,536 raw attempts per model. Force medians use graph-valid, successfully scored outputs. Joint yield requires graph validity and force RMS at most 5 eV/\AA, with all attempts in the denominator.}
 \small
 \begin{tabular}{lrrr}
 \toprule
@@ -24,17 +17,6 @@ Harmonic + paired update &53.45&3.037&47.59\\
 \end{tabular}\label{tab:absolute-quality}
 \end{table}
 
-The paired update improves GFN2 joint yield for both sources: by 4.95 percentage
-points for Gaussian (composition-bootstrap 95\% interval [2.86,7.10]) and
-3.06 points for harmonic ([1.04,5.14]). Both runs improve for both sources.
-On paired, jointly valid outputs, the Gaussian update also lowers energy by
-0.01465 eV/atom and force RMS by 0.4618 eV/\AA.
+GFN2 joint yield increases by 4.95 points for Gaussian (composition 95\% interval [2.86,7.10]) and 3.06 for harmonic ([1.04,5.14]), with both runs improving for each source. On jointly valid pairs, Gaussian adaptation also lowers energy by 0.01465 eV/atom and force RMS by 0.4618 eV/\AA.
 
-After physical adaptation, harmonic exceeds Gaussian by 6.84 points in pooled
-graph validity ([4.23,9.51]) and 6.97 points in joint yield ([3.26,10.61]).
-The validity difference is positive in both runs, but the joint-yield differences
-are +16.28 and $-2.34$ points. Thus the pooled advantage coexists with substantial
-variation between fine-tuning runs. eSEN also shows the within-source benefits of
-physical adaptation and the pooled harmonic-source advantage.
-Figure~\ref{fig:primary-quality} in Appendix~\ref{app:components} plots the
-results across force thresholds.
+After adaptation, harmonic exceeds Gaussian by 6.84 graph-validity points ([4.23,9.51]) and 6.97 joint-yield points ([3.26,10.61]). Graph validity improves in both runs, but joint-yield differences are +16.28 and $-2.34$, showing substantial run variation. eSEN likewise favors adaptation within each source and harmonic in the pooled comparison. Figure~\ref{fig:primary-quality} in Appendix~\ref{app:components} shows the threshold dependence.

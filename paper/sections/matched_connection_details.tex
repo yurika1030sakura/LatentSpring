@@ -1,26 +1,8 @@
 \section{Physical correction on a shared backbone}\label{app:matched-connection}
-This initial physical-head-only study precedes geometric recovery.
-We test whether the learned physical correction transfers to the independent
-EGNN, and give GAGA the same correction architecture and physical-supervision
-budget. Both parents have 2,381,566 parameters and use the same 20,000 OMol25
-training rows. The FM parent uses distance self-conditioning. Its 15,000
-two-pass updates match the 960,000 training-example forward passes of GAGA's
-30,000 one-pass updates, as described in Appendix~\ref{app:feedback-transfer}.
-Two independent parent initializations each receive a separately fitted head.
+This physical-head-only study precedes geometric recovery. FM and GAGA use the same 2,381,566-parameter EGNN, 20,000 OMol25 rows, head architecture, and physical-supervision budget. Distance-self-conditioned FM receives 15,000 two-pass updates, matching the 960,000 example-forwards of GAGA's 30,000 one-pass updates (Appendix~\ref{app:feedback-transfer}). Each of two independent parents per method receives a separately fitted head.
 
-\paragraph{A common predicted endpoint change.}
-FM predicts a velocity, whereas GAGA predicts noise. We express the head's
-action through the change it induces in the parent's provisional final
-geometry. Write $p$ for the fraction of the sampling schedule already completed.
-For FM, $p$ is the flow time; for GAGA, $p=1-t/t_{\max}$, where $t$ is diffusion
-noise time and $t_{\max}=0.65$ is the selected truncation. These are normalized
-schedule positions, not a shared physical time.
-
-The head $A_\phi$ takes the current coordinates $X$, provisional final geometry
-$H$, atom identities, and progress $p$. It predicts the same bounded vector
-correction as in Appendix~\ref{app:force-correction}. A strength $\eta$ scales
-its implied endpoint displacement to $\eta(1-p)A_\phi$. The corresponding
-updates to the two parent outputs are
+\paragraph{Endpoint interface.}
+Let $p$ denote schedule progress: flow time for FM and $1-t/t_{\max}$ for GAGA, with diffusion noise time $t$ and $t_{\max}=0.65$. The head takes $X$, predicted endpoint $H$, atom identities, and $p$, and predicts the bounded correction from Appendix~\ref{app:force-correction}. At strength $\eta$, the desired endpoint displacement is $\eta(1-p)A_\phi$. The native-output updates are
 \begin{align}
  H=X+(1-p)v,
  &\qquad v^{\rm corr}=v+\eta A_\phi,
@@ -30,48 +12,16 @@ updates to the two parent outputs are
        -\eta\frac{\alpha_t(1-p)}{\sigma_t}A_\phi.
  \label{eq:matched-gaga-correction}
 \end{align}
-Here $v$ is the FM velocity, $\epsilon$ is GAGA's predicted noise, and
-$\alpha_t,\sigma_t$ are the signal and noise scales of its fixed schedule.
-Substitution shows that both equations change the provisional endpoint by
-$\eta(1-p)A_\phi$. The native GAGA transitions and final observation noise are
-preserved. Every parent tensor, including its noise schedule, remains frozen.
-With the common 16-element embedding vocabulary, each head has 7,106
-parameters; its hidden pair network is the same as the small FlowMol correction.
+Here $v$ is velocity, $\epsilon$ is predicted noise, and $\alpha_t,\sigma_t$ are signal and noise scales. Both updates induce the stated displacement. All parent tensors, native GAGA transitions, and observation noise remain fixed. With the common 16-element vocabulary, the head has 7,106 parameters and the same hidden pair network as the small FlowMol head.
 
-\paragraph{Physical supervision and selection.}
-Each parent generates two trajectories for each of the same 128 TRAIN
-compositions, balanced across the four atom-count ranges in
-Appendix~\ref{app:force-correction}. Two late field evaluations per trajectory
-give 512 provisional endpoints. FM records progress 0.734375 and 0.921875;
-GAGA records the nearest reverse-sampling evaluations, at progress
-$1-174/650$ and $1-51/650$. All states are retained. Mirror-paired eSEN queries
-provide centered forces, and the same bounded displacement rule gives the
-regression target $\delta(H)/(1-p)$ for $A_\phi$. No target requires capping by
-the per-atom velocity bound. Each head uses 20,000 AdamW updates on 96 TRAIN
-compositions; the other 32 measure target-prediction transfer. The four fits
-reduce this internal prediction error by 29.7--32.1\% relative to zero correction.
+\paragraph{Supervision and calibration.}
+Each parent generates two trajectories on each of the same 128 training compositions, balanced across four atom-count ranges. Two late evaluations give 512 endpoints: FM progress 0.734375 and 0.921875, and the nearest GAGA progress values $1-174/650$ and $1-51/650$. All states receive mirror-paired, centered eSEN force labels and target $\delta(H)/(1-p)$. No target reaches the per-atom cap. Each head trains for 20,000 AdamW updates on 96 compositions; the other 32 assess prediction transfer. The four fits lower this error by 29.7--32.1\% relative to zero correction.
 
-Eight separate validation compositions select one strength per algorithm
-across both fits from $\{0,1/4,1/2,1\}$. Selection maximizes graph-valid yield
-with GFN2 force RMS at most 5 eV/\AA, including every attempt in the denominator;
-ties choose the smaller strength. Both algorithms select $\eta=1$.
-Only after this choice is audited and frozen do we generate the new test panel:
-16 compositions, eight each with 17--28 and 29--40 atoms, with 16 outputs per
-composition and fit. None occurs in the prepared training or validation corpus,
-or in earlier generator evaluation panels.
+Eight separate validation compositions select one strength per algorithm across both fits from $\{0,1/4,1/2,1\}$. The criterion is joint yield at force RMS at most 5 eV/\AA, with ties favoring smaller strength. Both select $\eta=1$. We then fix the choice and evaluate 16 new compositions, eight each with 17--28 and 29--40 atoms, drawing 16 outputs per composition and fit. They are absent from the prepared training/validation corpora and earlier evaluation panels.
 
 \input{sections/matched_connection_results}
 
 \paragraph{Cost and verification.}
-The study uses 1,024 TRAIN trajectories, 4,096 eSEN teacher queries, and 80,000
-head updates in total. Validation and test each contribute 2,048 raw outputs
-and the same number of fixed-coordinate GFN2 calculations. Each output uses
-128 backbone calls; FM uses 64 additional head calls and GAGA uses 128.
-The zero-strength controls execute the same head operations as their corrected
-counterparts. Supervision and head-update budgets match; total FLOPs and wall
-time are not equated. Generation uses no physical queries, geometry optimization,
-or energy-based selection. Zero heads and passive trajectory observers reproduce
-the native samplers exactly. Auditing reconstructs the targets, checks fitted
-head errors, re-evaluates all raw graphs, and independently parses xTB gradients.
+Preparation uses 1,024 training trajectories, 4,096 eSEN queries, and 80,000 head updates. Validation and test each add 2,048 outputs and GFN2 calculations. Sampling uses 128 backbone calls plus 64 head calls for FM or 128 for GAGA. Zero-strength controls execute the same head operations. Head-supervision budgets match; FLOPs and runtime are not equated. Replay tests verify native sampling with zero heads and passive observers. Further checks reconstruct targets, measure fitted errors, reevaluate raw graphs, and independently parse xTB gradients. All reported outputs are generated without physical queries or optimization.
 
 \input{sections/connection_strength_results}

@@ -1,91 +1,29 @@
 \section{Geometric recovery training and correction}\label{app:geometric-recovery}
 \paragraph{Backbone continuation.}
-Starting from each initial FM fit, we run 4,000 further AdamW updates with batch
-size 32, learning rate $10^{-5}$, gradient-norm limit one, and EMA decay capped
-at 0.999. Odd updates use the original two-pass FM loss. Even updates sample
-progress uniformly from $[0.60,0.95]$ and regress both provisional endpoints to
-the paired OMol25 reference. The continuation control uses these same updates,
-batches and progress values without extra perturbations or local geometry terms.
+Each initial FM fit receives 4,000 additional AdamW updates at learning rate $10^{-5}$ and batch size 32, with gradient-norm limit one and EMA decay capped at 0.999. Odd updates use the original two-pass FM loss. Even updates draw progress uniformly from $[0.60,0.95]$ and regress both endpoint predictions to the paired OMol25 reference. The continuation control shares these batches, progress values, and update counts but omits added perturbations and local geometry losses.
 
-Recovery training adds centered perturbations to the late interpolant. Each
-atom is independently selected with probability 0.25 for Gaussian noise, whose
-standard deviation is chosen uniformly from 0.05, 0.15 and 0.30\,\AA\ per molecule.
-With probability 0.5, a random spatial half of the molecule receives a shared
-Gaussian displacement with standard deviation 0.35\,\AA. Centering removes the
-mean displacement. The reference coordinates remain the regression target.
+Recovery updates perturb the late interpolant. Each atom receives Gaussian noise independently with probability 0.25; its standard deviation is chosen uniformly from 0.05, 0.15, and 0.30\,\AA\ per molecule. With probability 0.5, a random spatial half of the molecule also receives a shared Gaussian displacement with standard deviation 0.35\,\AA. We subtract the mean displacement and retain the original reference as the target.
 
-The even-update objective is four times the mean squared endpoint-coordinate
-error, plus 0.5 times a local distance loss and 0.1 times a local angle loss.
-For reference distance $d_{ij}$ and radius sum $\ell_{ij}$, the local weight is
-$w_{ij}=\operatorname{sigmoid}[(1.30-d_{ij}/\ell_{ij})/0.10]$ for distinct atoms.
-The distance loss compares predicted and reference distances after division by
-$\ell_{ij}$. The angle loss compares the cosines of pairs of neighbor directions,
-weighted by $w_{ij}w_{ik}$ for distinct $i,j,k$. Each loss is normalized by its
-weight sum within each molecule and averaged over molecules and both passes.
-These terms use reference coordinates, with no chemical-bond targets.
+The recovery loss weights endpoint mean squared error by four, local distance error by 0.5, and local angle error by 0.1. For reference distance $d_{ij}$ and radius sum $\ell_{ij}$, distinct-atom pairs have weight $w_{ij}=\operatorname{sigmoid}[(1.30-d_{ij}/\ell_{ij})/0.10]$. Distance errors use distances normalized by $\ell_{ij}$; angle errors compare neighbor-direction cosines with weight $w_{ij}w_{ik}$ for distinct $i,j,k$. Each local loss is normalized by its weight sum within a molecule, then averaged over molecules and both passes. All targets are derived from reference coordinates rather than bond labels.
 
-\paragraph{Reference selection for the geometric head.}
-A fixed hash order selects 4,096 rows from the same 20,000 training structures.
-Of these, 3,783 pass the declared graph, contact-connectivity, overlap,
-closed-shell and geometry checks. Every selection outcome is retained. The
-inferred graphs serve this reference screen; the geometric network receives
-only coordinates, element identities and progress. Evaluation compositions
-are excluded from the training references.
+\paragraph{Geometric-head targets.}
+A fixed hash order selects 4,096 of the 20,000 training rows; 3,783 pass the graph, connectivity, overlap, zero-assigned-radical, and geometry screen. Selection outcomes are recorded, and evaluation compositions are excluded. Inferred graphs are used for screening only; network inputs are coordinates, elements, and progress.
 
-We sample $p$ uniformly from $[0.4,0.95]$ and add centered Gaussian noise with
-per-coordinate scale $s(p)=0.06+0.30(1-p)$\,\AA. Fifteen percent of examples
-instead use the unperturbed reference and a zero target. For the other examples,
-the target is $(X_{\rm ref}-\widetilde H)/(1-p)$. A common molecular scale caps
-the largest per-atom target norm at $4p^2$\,\AA\ per unit progress. This preserves
-zero total target velocity. Squared vector errors receive weight 0.25 on
-hydrogens and one on heavy atoms, normalized by the sum of weights within each
-molecule. The network uses AdamW at learning rate $10^{-3}$ for 10,000 updates
-of batch 32, gradient-norm limit one, and EMA decay capped at 0.995. The final
-EMA is used without checkpoint selection.
+We draw $p$ uniformly from $[0.4,0.95]$ and perturb the reference with centered Gaussian noise of scale $s(p)=0.06+0.30(1-p)$\,\AA\ per coordinate. Fifteen percent of examples retain the original coordinates and receive zero targets. The remaining targets are $(X_{\rm ref}-\widetilde H)/(1-p)$, uniformly rescaled to cap the largest atomic norm at $4p^2$\,\AA\ per unit progress while preserving zero total velocity. Squared vector errors have weight 0.25 for hydrogen and one for heavy atoms, normalized by the molecular weight sum. Training uses 10,000 AdamW updates at learning rate $10^{-3}$ and batch size 32, gradient-norm limit one, and EMA decay capped at 0.995. Sampling uses the final EMA.
 
-\paragraph{Geometric-field architecture.}
-The head has 7,747 parameters: a 16-dimensional element embedding, a learned
-linear neighbor-embedding update, and two width-64 hidden layers with SiLU
-activations. A smooth contact weight is obtained from the current endpoint
-distance as $\operatorname{sigmoid}[(1.30-d_{ij}/\ell_{ij})/0.20]$.
-Node features combine the atom embedding with its contact-weighted neighboring
-element embeddings. Pair features are symmetric sums and products of these
-node features, distances, coordination summaries, six radial basis functions,
-the radius sum, and $p,p^2$.
+\paragraph{Geometric-head architecture.}
+The 7,747-parameter head contains a 16-dimensional element embedding, a learned linear neighbor-embedding update, and two width-64 SiLU layers. Contact weights are $\operatorname{sigmoid}[(1.30-d_{ij}/\ell_{ij})/0.20]$. Each node combines its element embedding with contact-weighted neighbor embeddings. Symmetric pair sums and products are concatenated with distances, coordination summaries, six radial basis functions, the radius sum, and $p,p^2$.
 
-Three bounded coefficients multiply the normalized relative vector and two
-bounded radial rescalings of it. Each pair contributes opposite vectors to its
-two atoms. Dividing by three times the molecule's maximum weighted degree
-(floored at one), and multiplying by $4p^2$, bounds every atom's correction
-norm by $4p^2$. The final layer is initialized to zero. Rotation, reflection,
-permutation and centering checks exercise the complete module. A same-size
-variant supplied directional-moment features and nonradial vector directions;
-it did not improve over the radial version in the development study.
+Three bounded coefficients scale the normalized relative vector and two bounded radial variants. Each pair contributes opposite vectors to its endpoints. Normalizing by three times the maximum weighted degree, floored at one, and multiplying by $4p^2$ bounds each atomic correction by $4p^2$. The final layer starts at zero. Tests check rotation, reflection, permutation, and centering. A parameter-matched variant with directional moments and nonradial vectors did not outperform the radial head during development.
 
-\paragraph{Combining geometric and physical feedback.}
-The geometric head acts first on the provisional endpoint. The physical head
-then uses that updated endpoint, together with the current trajectory state,
-to predict its correction. The geometric strength is one and physical strength
-is four. Both small networks and the backbone remain fixed during generation.
-There are 128 backbone, 64 geometry-head and 64 physical-head calls per main-model
-output. The 7,106-parameter physical head is reused from the initial FM fit;
-geometric refinement adds no eSEN queries. Geometry-head fitting uses no backbone
-forward evaluations. The four thousand backbone updates contribute 256,000
-additional backbone training-example forwards per fit, and geometric-head
-fitting contributes 320,000 small-network training-example forwards.
+\paragraph{Combined correction and cost.}
+The geometric head first updates the endpoint at strength one. The physical head then uses that endpoint and the current trajectory state at strength four. Sampling fixes both heads and the backbone, using 128 backbone calls and 64 calls to each head. We reuse the original 7,106-parameter physical head, so geometric refinement requires no additional eSEN labels. Per fit, recovery adds 256,000 backbone example-forwards, while geometric-head training adds 320,000 small-network example-forwards and no backbone evaluations.
 
-\paragraph{Development and fixed-benchmark evaluation.}
-The recovery and geometric-field variants were compared on 24 training-disjoint
-validation compositions, 12 in each of the 17--28 and 29--40 atom strata.
-Each of two fitted models generated 16 samples per composition. Table~\ref{tab:geometry-development}
-reports the complete selected development sequence. The radial geometric field
-and recovery with local geometry supervision were selected for combination.
-All choices were then fixed before new outputs were generated on the existing
-64-composition benchmark. That benchmark had been used in earlier project work.
+\paragraph{Development.}
+We compare recovery and geometric-head variants on 24 training-disjoint validation compositions, split equally between 17--28 and 29--40 atoms. Each of two fits generates 16 samples per composition. Table~\ref{tab:geometry-development} reports the development sequence. We select the radial head and recovery with local geometry supervision, then fix all choices before generating new outputs on the existing 64-composition benchmark. That benchmark had already been used in earlier project work.
 
-\begin{table}[h]\centering\small
-\caption{Development of geometric recovery. Each row contains 768 raw outputs.
-The last column also requires GFN2 force RMS at most 5 eV/\AA.}
+\begin{table}[htbp]\centering\small
+\caption{Geometric-recovery development results, with 768 raw outputs per row. The last column additionally requires GFN2 force RMS at most 5 eV/\AA.}
 \begin{tabular}{p{.49\linewidth}rrr}\toprule
 Setting & Graph & Geometry & Geom. + force\\\midrule
 Initial FM + physical head &32.55&9.11&8.85\\
@@ -97,15 +35,10 @@ Initial FM + moment geometry + physical head &36.98&10.94&10.94\\
 Recovery with local geometry + both heads &44.40&14.45&14.32\\\bottomrule
 \end{tabular}\label{tab:geometry-development}\end{table}
 
-The combined model improves geometry-and-force yield over the original model
-by 5.47 percentage points on this development panel. The two fit-specific gains
-are 4.43 and 6.51 points. The descriptive composition interval is $[1.82,9.38]$
-and the crossed fit/composition interval is $[1.04,10.03]$. The incremental
-comparisons with individual components have wider intervals that include zero.
+On the development panel, the combined method adds 5.47 geometry-and-force points over the original model, with fit-specific gains of 4.43 and 6.51. The descriptive composition interval is $[1.82,9.38]$ and the crossed fit/composition interval is $[1.04,10.03]$. Incremental comparisons against the individual components have wider intervals containing zero.
 
-\begin{table}[h]\centering\small
-\caption{The two correction fields on the same recovery-trained parents.
-Percentages use all 768 attempts per row.}
+\begin{table}[htbp]\centering\small
+\caption{Geometric and physical corrections on shared recovery-trained parents. Percentages count all 768 attempts per row.}
 \begin{tabular}{lrrr}\toprule
 Correction & Geometry & Geom. + force $\leq2$ & Geom. + force $\leq5$\\\midrule
 None &10.68&0.13&6.77\\
@@ -114,23 +47,7 @@ Geometric &14.19&1.82&13.54\\
 Geometric + physical &14.45&3.13&14.32\\\bottomrule
 \end{tabular}\label{tab:geometric-physical-fields}\end{table}
 
-On the 64-composition benchmark, the first two fits improve geometry-and-force
-yield from 4.88\% to 10.25\%, compared with 5.76\% for the same-update
-continuation control. Each row has 2,048 attempts. The gain over the original
-model is 5.37 points, with crossed fit/composition interval $[3.56,7.13]$;
-the gain over continuation is 4.49 points, with interval $[2.44,6.45]$.
-Both fitted models improve in both comparisons. The original and continued
-controls use their physical head, and the complete candidate also uses the
-geometric head. A separate fixed-noise diagnostic increased backbone calls
-from 128 to 512 on 128 outputs: graph validity changed from 38 to 39 successes,
-while geometry-and-force successes stayed at 13.
+On the 64-composition benchmark, the first two fits improve geometry-and-force yield from 4.88\% to 10.25\%, compared with 5.76\% for matched-update continuation. Each row contains 2,048 attempts. Gains over the original and continued models are 5.37 points ($[3.56,7.13]$) and 4.49 points ($[2.44,6.45]$), respectively, with both fits improving. The controls retain their physical head; the complete method additionally uses the geometric head. These comparisons therefore evaluate the full refinement procedure. In a separate 128-output fixed-noise diagnostic, increasing backbone calls from 128 to 512 changed graph-valid successes from 38 to 39 and left geometry-and-force successes at 13.
 
-\paragraph{Three additional fits.}
-We repeated the selected continuation and geometric-field recipe for three
-additional original FM parents, retaining each paired physical head. Their
-geometry-and-force successes were 61, 101 and 121 out of 1,024, versus 22, 54
-and 51 for the respective initial force-corrected generators. The paired gains
-are 3.81, 4.59 and 6.84 points, averaging 5.08 points, with crossed 95\% interval
-$[3.09,7.52]$. Across all five fits, 493 of 5,120 outputs pass geometry and force,
-compared with 227 for the initial model. Geometry alone passes 494 outputs,
-with distinct inferred connectivities within each composition and fit.
+\paragraph{Additional fits.}
+We apply the selected recovery and geometric-head procedure to three additional FM parents, retaining their physical heads. Geometry-and-force successes rise from 22, 54, and 51 to 61, 101, and 121 out of 1,024 per fit. The gains are 3.81, 4.59, and 6.84 points, with mean 5.08 and crossed 95\% interval $[3.09,7.52]$. Across five fits, 493 of 5,120 outputs pass geometry and force, compared with 227 for the initial model. Geometry alone accepts 494 outputs, all with distinct inferred connectivities within each composition and fit.

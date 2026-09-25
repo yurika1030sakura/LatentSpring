@@ -1,44 +1,12 @@
 \subsection{Complete-work correction on molecular rotors}\label{sec:rotor-work}
-For this test, one angle $\phi$ specifies a family of three-dimensional structures:
-the three hydrogens of a methyl group rotate around its bond axis while the other
-internal coordinates remain fixed. We select three such rotors from training
-molecules in fixed data order using geometry alone. A periodic interpolation of
-512 GFN2 energies defines $U(\phi)$ for each rotor, with $U(0)$ as the reference
-energy. The target is
-$\rho(\phi)\propto q_0(\phi)\exp[-(U(\phi)-U(0))/kT]$, where $q_0$ is a
-normalized von Mises distribution with concentration one. It favors angles near
-zero; the energy factor reweights those angles while retaining this restraint.
-Here $kT=k_B T_{\rm phys}$ at 300 K.
+For each of the three rotors above, a 512-point GFN2 interpolation defines $U(\phi)$. At 300 K, the target is $\rho(\phi)\propto q_0(\phi)\exp[-(U(\phi)-U(0))/kT]$, where $kT=k_B T_{\rm phys}$ and $q_0$ is the concentration-one von Mises reference. The target retains this angular restraint while reweighting by energy.
 
-We apply three fixed angle maps, including the identity map, to the starting
-samples. For each map, we compare complete-work weighting, energy-only weighting,
-weighting without the Jacobian correction, and no weighting. Complete work
-accounts for both the reference-density change and the expansion or compression
-of angle intervals. Each setting uses 128 repetitions at sample counts from
-8 to 2,048. The maps and work formula are specified above in
-Appendix~\ref{app:rotor-work}.
+For each of the three maps, we compare complete-work, energy-only, no-Jacobian, and unweighted estimates. Complete work accounts for both reference-density change and interval volume. Each setting uses 128 repetitions at sample counts from 8 to 2,048 (Appendix~\ref{app:rotor-work}).
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{../research/figures/molecular_rotor_v2/rotor_work.pdf}
-\caption{Work correction on controlled molecular rotors at 300 K. (a) Reference
-structures and the prescribed methyl rotations. (b,c) Angular-distribution and
-normalizer errors averaged over three molecules and two nonidentity maps, with
-128 repetitions per case. Complete weights account for the proposal bias left
-by energy-only and incomplete weights. Unweighted samples have no free-energy
-estimator. Each target retains its angular reference restraint.}\label{fig:rotor-work}
+\includegraphics[width=\linewidth]{../research/figures/final_complete_v1/figures/rotor_work.pdf}
+\caption{Work correction for restrained molecular rotors at 300 K. (a) Reference structures and methyl rotations. (b,c) Angular-distribution and normalizer errors averaged over three molecules and two nonidentity maps, with 128 repetitions per case. Unweighted samples have no free-energy estimator; all targets retain their angular reference restraint.}\label{fig:rotor-work}
 \end{figure}
 
-Total variation measures the discrepancy between estimated and target angular
-probabilities; zero indicates agreement. Free-energy RMSE measures error in the
-logarithm of the target normalizer, expressed in energy units.
-
-At 2,048 samples, complete work has lower mean total-variation error than both
-incomplete-weight controls in all six nonidentity cases. The average error is
-0.0636 for complete work, 0.1532 for energy-only weights, and 0.1134 without the
-Jacobian. Complete work therefore reduces this error by 58.5\% relative to
-energy-only weighting. Its free-energy RMSE ranges from 0.158 to 0.734 meV.
-Independent density-ratio quadrature also recovers the target normalizer in all
-nine molecule/map cases. With the identity map, the three weighted methods
-coincide. These results test the full work correction on restrained molecular
-energy curves, rather than equilibrium sampling by the neural generator.
+At 2,048 samples, complete work gives lower mean total-variation error than either incomplete weighting in all six nonidentity cases. Mean errors are 0.0636, 0.1532, and 0.1134 for complete work, energy-only, and no-Jacobian weighting, respectively: a 58.5\% reduction relative to energy-only weights. Free-energy RMSE ranges from 0.158 to 0.734 meV. Independent density-ratio quadrature recovers the normalizer in all nine molecule/map cases. For the identity map, all three weighted methods coincide. These tests establish recovery of the specified restrained rotor distributions.

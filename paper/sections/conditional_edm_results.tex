@@ -1,19 +1,9 @@
 \subsection{An independently adapted diffusion baseline}\label{sec:edm}
-We also adapt the official EGNN/EDM backbone \citep{edm} to composition-conditioned
-coordinate generation. Atom categories are fixed conditions during training and
-sampling, while positions follow EDM's variance-preserving diffusion schedule.
-Starting from its GEOM-pretrained checkpoint, we train for 30,000 updates on the
-same 3,000 OMol25 structures used in each source-model run, retaining the original
-learning rate of $10^{-4}$. We evaluate all 24 new compositions with both a
-128-call sampler and the full 1,001-call sampler, including the final observation
-step.
+We adapt the official EGNN/EDM backbone \citep{edm} to coordinate generation with atom categories fixed as conditions. Positions follow its variance-preserving schedule. Starting from the GEOM-pretrained checkpoint, each run uses the same 3,000 OMol25 references as the source-model comparison, 30,000 updates, and the original $10^{-4}$ learning rate. We evaluate the 24 new compositions using 128-call and full 1,001-call samplers, including the final observation step.
 
 \begin{table}[t]
 \centering
-\caption{Graph validity of the separately adapted conditional EDM, before
-geometry optimization. Each run has 768 attempts. For context, the harmonic and
-force-updated harmonic models in Table~\ref{tab:fresh-graph} reach 52.73\% and
-53.45\% at 128 calls, but use a different pretrained backbone.}
+\caption{Raw graph validity of independently adapted conditional EDM, with 768 attempts per run. The different-backbone harmonic and force-updated models reach 52.73\% and 53.45\% at 128 calls (Table~\ref{tab:fresh-graph}).}
 \begin{tabular}{lrrr}
 \toprule
 Sampler & Run 1 & Run 2 & Pooled rate\\
@@ -24,13 +14,4 @@ EDM, 1,001 calls &93&106&12.96\%\\
 \end{tabular}\label{tab:edm}
 \end{table}
 
-This baseline uses the same task and adaptation data but a different pretrained
-architecture and objective. EDM has 2.38 million parameters and one denoiser pass
-per update; LatentSpring has 5.90 million parameters and two passes. The longer
-EDM fine-tuning runs take 481.51 and 463.61 seconds, compared with about 570--590
-seconds for the source-model runs. For 768 outputs, EDM's 128-call sampler takes
-48.54 and 47.94 seconds; its 1,001-call sampler takes 377.65 and 374.12 seconds.
-Matching network-call counts is therefore not the same as matching computational
-cost. Pretraining histories also differ, and the composition-overlap checks cover
-only the processed OMol25 corpora. We use the matched Gaussian--harmonic
-experiments, rather than this baseline, to isolate the effect of source choice.
+The task and adaptation data match, but architectures and pretraining differ: EDM has 2.38 million parameters and one pass per update, versus 5.90 million and two passes for LatentSpring. EDM fine-tuning takes 481.51 and 463.61 seconds, compared with approximately 570--590 seconds for the source models. Generating 768 outputs takes 48.54/47.94 seconds at 128 calls and 377.65/374.12 seconds at 1,001 calls. Thus call counts do not equate runtime. Composition-overlap checks cover the processed OMol25 corpora only. The matched Gaussian--harmonic comparisons provide the controlled source test.

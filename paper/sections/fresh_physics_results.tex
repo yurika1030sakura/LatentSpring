@@ -1,16 +1,9 @@
 \subsection{New compositions and independent physical evaluation}\label{sec:fresh-physics}
-We evaluate four frozen models on 24 new compositions: Gaussian, harmonic,
-harmonic with the force-only update, and harmonic with the complete-work update.
-The force-only model was selected as the primary physical model before this test.
-Eight compositions fall in each of the 17--20, 21--24, and 25--28 atom ranges;
-none appears in either processed corpus. There are 6,144 raw outputs in total.
-Appendix~\ref{app:data-evaluation} describes the fixed metadata-based selection.
+We evaluate frozen Gaussian, harmonic, force-updated harmonic, and complete-work-updated harmonic models on 24 new compositions. The force-only update was designated primary before the test. Fixed metadata ranks select eight compositions each with 17--20, 21--24, and 25--28 atoms, absent from both processed corpora (Appendix~\ref{app:data-evaluation}). The four methods produce 6,144 raw outputs.
 
 \begin{table}[t]
 \centering
-\caption{Graph validity on 24 new compositions, before geometry optimization.
-Each run has 768 attempts per model, using 128 network forward passes per attempt.
-The middle columns count valid outputs; the last column pools both runs.}
+\caption{Raw graph validity on 24 new compositions. Each run generates 768 outputs per model at 128 network calls each. Counts are per run; the final rate pools both runs.}
 \begin{tabular}{lrrr}
 \toprule
 Model & Run 1 & Run 2 & Pooled rate\\
@@ -23,28 +16,14 @@ With complete-work update &426&383&52.67\%\\
 \end{tabular}\label{tab:fresh-graph}
 \end{table}
 
-The harmonic source improves graph validity over Gaussian by 8.20 percentage
-points (95\% CI $[5.08,11.33]$), with gains in both runs. Adding the force update
-changes harmonic validity by $+0.72$ points, with interval $[-0.98,2.34]$.
-Thus the measured validity rate remains similar after physical fine-tuning.
-Every accepted output has a distinct inferred connectivity within its composition
-in these draws.
+Harmonic improves graph validity over Gaussian by 8.20 points (95\% CI $[5.08,11.33]$), with both runs improving. The force update changes harmonic validity by $+0.72$ points ($[-0.98,2.34]$). All accepted outputs have distinct inferred connectivities within composition.
 
-\paragraph{Energy and force scores.}
-We evaluate every output at its saved coordinates using eSEN and gas-phase
-GFN2-xTB single-point energies and gradients \citep{gfn2xtb}. GFN2 is used only
-for evaluation, independently of the eSEN teacher. Four of the 6,144 generated
-structures have failed GFN2 calculations; all four are graph-invalid. Calculations
-succeed for every graph-valid output, and reference inversion checks pass.
-eSEN uses the mirror averages described in Section~\ref{sec:flow}.
-Force RMS is the root mean squared magnitude of the atomic force vectors.
+\paragraph{Physical scores.}
+We evaluate saved coordinates with mirror-averaged eSEN and independent gas-phase GFN2-xTB single-point energies and gradients \citep{gfn2xtb}. GFN2 is used only for evaluation. Four calculations fail among the 6,144 outputs, all graph-invalid; every graph-valid calculation and reference inversion check succeeds. Force RMS is the root mean squared atomic force magnitude.
 
 \begin{table}[t]
 \centering
-\caption{Effect of the primary force update relative to the frozen harmonic model.
-The comparison uses paired outputs that are graph-valid under both models.
-Negative values indicate lower energy or residual force. Both fine-tuning runs
-improve under both potentials; brackets show paired 95\% confidence intervals.}
+\caption{Force-update changes relative to the frozen harmonic model on jointly graph-valid pairs. Negative values indicate lower energy or residual force. Brackets give paired 95\% intervals; both fits improve under both potentials.}
 \small
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{lrr}
@@ -57,15 +36,6 @@ GFN2 & $-0.01168\;[-0.01616,-0.00724]$ & $-0.35620\;[-0.42983,-0.28714]$\\
 \end{tabular}\label{tab:fresh-physical}
 \end{table}
 
-The force update lowers energy and force RMS among paired, jointly valid outputs
-under both potentials; every composition contributes pairs in both runs. The
-directions also hold across all eSEN outputs and all paired successful GFN2
-calculations, regardless of graph validity. Without physical updates, harmonic
-also lowers aggregate energy relative to Gaussian, predominantly in one run.
+The force update lowers energy and force RMS under both potentials on jointly valid pairs, with every composition contributing in both runs. The same directions hold over all eSEN outputs and all paired successful GFN2 calculations. Without physical adaptation, harmonic also lowers aggregate energy relative to Gaussian, mainly in one run.
 
-Complete-work and force-only updates have similar measured scores. On paired,
-jointly valid outputs, the complete-work-minus-force energy difference is
-$-0.00413$ eV/atom under eSEN (interval $[-0.00903,0.00078]$) and $-0.00363$
-under GFN2 ($[-0.00792,0.00075]$). Force and graph-validity intervals also include
-zero. We therefore use the cheaper force-only teacher as the primary method;
-these comparisons do not resolve an additional benefit from work weighting.
+Complete-work minus force-only energy is $-0.00413$ eV/atom under eSEN ($[-0.00903,0.00078]$) and $-0.00363$ under GFN2 ($[-0.00792,0.00075]$). Force and graph-validity intervals also include zero. We retain the cheaper force-only teacher because this comparison resolves no additional gain from work weighting.

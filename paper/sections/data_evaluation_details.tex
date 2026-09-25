@@ -1,38 +1,11 @@
 \section{Data selection and structural evaluation}\label{app:data-evaluation}
-We traverse the processed OMol25 training corpus in a fixed shuffled order and
-exclude evaluation compositions. The first 3,000 eligible structures form the
-training set for each fine-tuning run. Eligibility requires the atom-count,
-element, and electronic-state conditions of the source study in Appendix~\ref{app:source-study-setup}, the
-structural checks below, and a geometric scaffold filter.
+For each source fine-tuning run, we traverse the processed OMol25 training corpus in a fixed shuffled order, exclude evaluation compositions, and retain the first 3,000 eligible structures. Eligibility combines the composition and electronic-state requirements in Appendix~\ref{app:source-study-setup} with the structural and scaffold checks below.
 
-\paragraph{Training-only scaffold filter.}
-For each atom pair, we divide its distance by the sum of the atoms' covalent radii.
-Only pairs with normalized distance strictly between 0.6501 and 1.1999 can be
-scaffold edges. Kruskal's algorithm builds a minimum normalized-distance spanning
-tree by adding short edges without creating cycles. We accept a structure only
-if the tree is connected and its atom degrees are at most 1 for H/F/Cl/Br/I,
-4 for B/C/N/Si, 3 for O, and 6 for P/S. This tree filters training coordinates;
-it is not the random tree used to sample the model's source.
+\paragraph{Training scaffold.}
+Candidate scaffold edges have pair distance, divided by summed covalent radii, strictly between 0.6501 and 1.1999. Kruskal's algorithm constructs a minimum normalized-distance spanning tree. A reference is accepted when the tree is connected and degrees are at most 1 for H/F/Cl/Br/I, 4 for B/C/N/Si, 3 for O, and 6 for P/S. This screening tree is separate from the random source tree.
 
-\paragraph{Inferring and checking bonds.}
-We use RDKit 2025.03.2 for bond inference and chemical-consistency checks.
-After testing contact connectivity and atom overlap, \texttt{DetermineBonds}
-assigns bonds at the requested total charge with \texttt{covFactor=1.25},
-\texttt{useVdw=True}, \texttt{allowChargedFragments=True}, and
-\texttt{embedChiral=False}. RDKit sanitization checks valence and related graph
-rules. An output passes only if sanitization succeeds, formal charges sum to the
-requested charge, and the inferred graph has one connected component.
-To measure graph diversity, we remove stereochemical tags and explicit hydrogens
-and count distinct canonical SMILES, which encode molecular connectivity.
-Validator errors and rejected structures remain in the generation-attempt denominator.
+\paragraph{Bond inference.}
+After contact and overlap checks, we call RDKit 2025.03.2 \texttt{DetermineBonds} at the requested charge, using \texttt{covFactor=1.25} and \texttt{useVdw=True}. We set \texttt{allowChargedFragments=True} and \texttt{embedChiral=False}, then explicitly sanitize the inferred graph. Acceptance requires successful sanitization, the requested sum of formal charges, and a single connected component. For diversity, we remove stereochemical tags and explicit hydrogens and count distinct canonical SMILES. Rejections and validator errors remain in the attempt denominator.
 
-\paragraph{The 24-composition confirmation set.}
-Before this evaluation, we freeze the Gaussian, harmonic, and two physically
-updated harmonic models and designate the force-only update as the primary
-physical model. We start from 256 distinct compositions outside the earlier
-candidate sets; checking their reference structures leaves 121 eligible
-compositions. Fixed metadata ranks select eight from each of the 17--20,
-21--24, and 25--28 atom ranges. None of the 24 appears in either processed OMol25
-training or validation corpus. Reference coordinates are used only to determine
-eligibility. With 32 samples per composition in each run, the four models produce
-6,144 raw outputs.
+\paragraph{24-composition confirmation panel.}
+We freeze the Gaussian, harmonic, and two physically updated harmonic models and designate the force-only update as primary before evaluation. Of 256 candidate compositions outside the earlier sets, 121 pass reference-structure checks. Fixed metadata ranks select eight each with 17--20, 21--24, and 25--28 atoms. All 24 are absent from both processed OMol25 corpora; references are used only for eligibility. Four models, two runs, and 32 draws per composition give 6,144 raw outputs.

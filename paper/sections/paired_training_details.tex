@@ -1,45 +1,14 @@
 \section{Physical feedback through paired training targets}\label{app:paired-training}
-We next fine-tune the generator using nearby structures constructed from physical
-forces. A frozen harmonic generator produces training structures, called
-\emph{anchors} $A$, on compositions excluded from evaluation. For each graph-valid
-anchor, we draw nearby coordinates from
-$q_A=\mathcal N_{\HH_N}(A,\sigma_A^2I)$. The width $\sigma_A$ controls the size
-of the perturbations within the centered coordinate space.
+A frozen harmonic generator supplies graph-valid anchors $A$ on training compositions excluded from evaluation. Around each anchor, we sample $X\sim q_A=\mathcal N_{\HH_N}(A,\sigma_A^2I)$ in centered coordinate space.
 
-The teacher is a target-construction procedure based on the learned eSEN energy
-model. We average energies and forces over mirror-related coordinates, giving
-$E_+$ and $F_+$ (Appendix~\ref{app:local-work}). Each perturbed structure is
-shifted by the same anchor force:
-$Y=X+\delta_A$, where
-$\delta_A=\sigma_A^2F_+(A)/(k_B T_{\rm phys})$ and $T_{\rm phys}=300$ K.
-Here $k_B$ is Boltzmann's constant. This \emph{force escort} is motivated by a
-local approximation: if energy is linear near $A$, weighting the Gaussian by a
-Boltzmann factor shifts its mean by exactly $\delta_A$. We bound the displacement
-by choosing $\sigma_A$ before drawing candidates. We retain only candidates that
-pass the geometric checks and preserve the anchor's inferred labeled graph, then
-sample uniformly from them. Appendix~\ref{app:local-work} gives the bounds,
-restriction, and derivation.
+The eSEN teacher supplies mirror-averaged energy $E_+$ and force $F_+$ (Appendix~\ref{app:local-work}). We translate each candidate by $Y=X+\delta_A$, with $\delta_A=\sigma_A^2F_+(A)/(k_B T_{\rm phys})$ at $T_{\rm phys}=300$ K. Under a locally linear energy, this \emph{force escort} exactly shifts the Gaussian to its Boltzmann-reweighted mean. The width $\sigma_A$ is fixed before candidate sampling to bound the displacement. We then sample uniformly from candidates that pass geometric checks and preserve the anchor's inferred labeled graph.
 
-We fine-tune two copies of the base weights $\theta_{\rm base}$. The physical
-copy learns from the force-shifted targets, producing $\theta_{\rm physical}$.
-The replay copy learns from the original anchors, producing $\theta_{\rm replay}$.
-Both also train on the same OMol25 references and follow the same schedule. Replay
-provides a control for further training on generated structures without the
-physical displacement. We form the final weights as
+Two copies of $\theta_{\rm base}$ follow the same fine-tuning schedule and share OMol25 references. The physical student learns from shifted targets, while the replay student learns from the original anchors. Their difference removes the matched replay update:
 \begin{equation}
  \theta_{\rm final} = \theta_{\rm base} + (\theta_{\rm physical}-\theta_{\rm replay}).
  \label{eq:physical-transfer}
 \end{equation}
-This parameter arithmetic \citep{ilharco2023arithmetic} is applied elementwise
-with coefficient one. It changes the update direction rather than simply
-retaining the directly fine-tuned physical model. The result is one network, not
-an ensemble. Section~\ref{sec:update-ablation} and Appendix~\ref{app:local-work}
-compare it with direct fine-tuning and a norm-matched control.
+The elementwise parameter arithmetic \citep{ilharco2023arithmetic}, with coefficient one, produces a single adapted network. Section~\ref{sec:update-ablation} and Appendix~\ref{app:local-work} compare it with direct fine-tuning and a norm-matched update.
 
-\paragraph{Distributional extensions.}
-We also study \emph{complete-work} weights, which account for the energy change,
-the local Gaussian density, and any volume change introduced by the coordinate
-map. Appendices~\ref{app:jarzynski}--\ref{app:rotor-work} derive these weights
-and test recovery of specified local distributions. The paired-update generator uses
-the simpler, uniformly sampled force-shifted targets. Recovering a particular
-local distribution and reducing generated energy are different objectives.
+\paragraph{Work-weighted targets.}
+Complete-work weights account for energy, local Gaussian density, and coordinate-map volume change. Appendices~\ref{app:jarzynski}--\ref{app:rotor-work} derive the weights and test recovery of specified local distributions. The primary paired-update model instead uses the less expensive uniformly sampled force-shifted targets.

@@ -1,19 +1,9 @@
-\paragraph{Physical evaluation of the frozen source models.}
-This evaluation concerns the pretrained source models on the 10-composition
-additional test set. We score every generated output and its original reference
-with the same conservative eSEN checkpoint at the original charge and spin.
-Energies and forces are averaged over inversions as
-$E_+(X)=[E(X)+E(-X)]/2$ and $F_+(X)=[F(X)-F(-X)]/2$.
-We pair differences within composition before averaging. Per-atom energies also
-subtract the composition's reference energy; that reference cancels in a paired
-model difference. The evaluation uses 5,160 raw energy/force queries, including
-both inversions of references in each fine-tuning run.
+\paragraph{Physical scores of frozen source models.}
+We evaluate every output and reference on the 10-composition additional panel with the same conservative eSEN checkpoint, preserving charge and spin. Inversion averages are $E_+(X)=[E(X)+E(-X)]/2$ and $F_+(X)=[F(X)-F(-X)]/2$. Differences are paired within composition. Subtracting each composition's reference energy per atom leaves the paired model difference unchanged. Evaluation requires 5,160 energy/force queries, including both reference inversions in each run.
 
 \begin{table}[t]
 \centering
-\caption{Harmonic-minus-Gaussian eSEN scores on the frozen models' 10-composition
-test. Negative values favor harmonic. Rows distinguish all attempts from paired
-outputs that are both graph-valid. Brackets give paired 95\% confidence intervals.}
+\caption{Harmonic-minus-Gaussian eSEN changes on the 10-composition panel. Negative values favor harmonic. Rows distinguish all attempts from jointly graph-valid pairs; brackets give paired 95\% intervals.}
 \begin{tabular}{llrr}
 \toprule
 Metric & Outputs & Difference & Interval\\
@@ -26,13 +16,4 @@ Force RMS (eV/\AA) & All attempts & $-0.4635$ & $[-0.6782,-0.2512]$\\
 \end{tabular}\label{tab:physical}
 \end{table}
 
-For each sample, force RMS is the square root of the mean squared atomic force
-norm; we then average this value over samples. The jointly valid comparison
-retains only pairs accepted under both models, with 3--35 pairs in each
-composition/run combination. The all-attempt comparison also includes graph-invalid
-outputs. Reporting both distinguishes overall scores from scores on pairs that
-remain valid under both methods.
-
-Most of the aggregate improvement comes from run 1. The all-attempt energy
-differences are $-0.08049$ and $-0.00070$ eV/atom in runs 1 and 2, respectively;
-the force-RMS differences are $-1.21996$ and $+0.29302$ eV/\AA.
+We average per-structure force RMS over outputs. Jointly valid comparisons contain 3--35 accepted pairs per composition/run cell; all-attempt comparisons also include invalid structures. Most of the pooled improvement comes from run 1. All-attempt energy changes are $-0.08049$ and $-0.00070$ eV/atom in runs 1 and 2, with force-RMS changes $-1.21996$ and $+0.29302$ eV/\AA.

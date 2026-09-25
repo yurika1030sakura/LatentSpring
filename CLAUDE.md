@@ -1,4 +1,29 @@
-# Active checkpoint —2026-09-24: five-fit geometry improvement and transfers complete
+# Active checkpoint —2026-09-25: reviewed Final Complete manuscript adopted
+
+User supplied ~/bgfm/LatentSpring_Final_Complete.zip. The immutable264-entry
+archive is extracted in runs/final_complete_review_v1/LatentSpring_Complete;
+SHA256 is2cb71a4e2882b0b4407213b04ef611216b34a511234d84b9b9cb325b4aa4dc70.
+Read notes/FINAL_COMPLETE_PACKAGE_REVIEW_ZH.md and final_complete_package_audit_v1.json.
+All263 manifest entries, all34 table data blocks and appendix equations verify.
+Figure2 means and every empirical CDF point match original arrays exactly.
+Template and bibliographies unchanged; no new scientific runs or score changes.
+
+Adopted47 TeX files and14 figures, retaining coauthor title/contribution style.
+Fixed remaining continuation-control terminology, explicit Q0/S1 fixed task
+conditions, obsolete inset reference, and inferred-radical terminology.
+The new bundle research/figures/final_complete_v1 contains reviewed figures and
+standalone source/data scripts. Restored rotor logarithmic tick glyphs, coherent
+method colors and gray-readable CDF styles; moved one annotation inward.
+Figure1 now uses the package's compact two-panel layout with unchanged real
+C7H15N coordinates. The earlier enlarged rendering remains archived below.
+
+Build v33 passes at8 main pages,44 total,33 references; canonical and standalone
+text match, no overfull boxes or unresolved references. CPU build48348437
+completed0:0 after the initial login-node build was interrupted by SIGTERM.
+Publication synchronization is recorded in publication_sync_v33.json.
+This is a reviewed submission draft, not an OpenReview submission or acceptance.
+
+# Previous checkpoint —2026-09-24: five-fit geometry improvement and transfers complete
 
 All geometric-recovery jobs are COMPLETE. Final five-fit graph validity is35.49%,
 graph-and-force yield35.35%, geometry-and-force yield9.63%, versus4.43% for the

@@ -1,22 +1,6 @@
 \subsection{Generalization across molecular sizes}\label{sec:wide}
-We test whether the source advantage persists for larger molecules without
-further training. The evaluation set contains 64 new compositions, with 16 in
-each of four size ranges spanning 17--64 atoms. None appears in either processed
-OMol25 corpus or in the earlier evaluation sets. We select them by fixed metadata
-ranks after the same reference-validity checks, then generate 32 samples per
-composition in each fine-tuning run.
+Without further training, we evaluate 64 new compositions, 16 in each of four ranges spanning 17--64 atoms. All are absent from both processed OMol25 corpora and earlier panels. Fixed metadata ranks select eligible references; each fit generates 32 draws per composition.
 
-Across all 64 compositions, graph validity is 24.85\% with the Gaussian source
-and 31.76\% with the harmonic source. The pooled harmonic result is higher in
-every size range (Appendix~\ref{app:wide-size}). The overall gain is 6.91
-percentage points, with a 95\% interval of [4.74,9.03] from resampling compositions
-within size ranges. The two fine-tuning runs improve by 11.18 and 2.64 points,
-respectively. Validity decreases as molecules become larger, but the aggregate
-source advantage remains positive beyond the original 17--28-atom test range.
+Pooled graph validity is 24.85\% for Gaussian and 31.76\% for harmonic. Harmonic is higher in every size range (Appendix~\ref{app:wide-size}), with overall gain 6.91 points and size-stratified composition 95\% interval [4.74,9.03]. The two runs gain 11.18 and 2.64 points. Absolute validity decreases with size, but the pooled source advantage persists beyond the original 17--28-atom range.
 
-Three further fine-tuning runs bring the 3,000-update comparison to five runs.
-The average improvement is 3.89 points, positive in four runs, with a
-between-run standard deviation of 5.27 points. For the three new runs, the average
-advantage changes from $-1.66$ points at 1,000 updates to $+1.87$ at 3,000 and
-$+3.94$ at 6,000. All three favor the harmonic source at 6,000 updates.
-Appendix~\ref{app:source-replication} reports every run and training budget.
+Adding three runs gives a five-run 3,000-update mean gain of 3.89 points, positive in four runs, with standard deviation 5.27. For the new runs, the mean advantage is $-1.66$ at 1,000 updates, $+1.87$ at 3,000, and $+3.94$ at 6,000; all three favor harmonic at the final budget. Appendix~\ref{app:source-replication} reports all checkpoints.

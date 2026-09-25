@@ -1,16 +1,13 @@
 \subsection{Frozen-method training replication}\label{app:seed-replication}
+We repeat the initial physical-head-only models; their later geometric refinement is reported in Appendix~\ref{app:geometric-recovery}. Architecture, final-checkpoint schedules, strength four, and hydrogen-flow settings are fixed before the new fits. Each FM parent receives 15,000 two-pass updates at batch size 32, and GAGA receives 30,000 one-pass updates. Within a pair, initialization tensors and the batch-schedule prefix match. Backbone example-forward counts match, while optimizer steps, data presentations, and runtime differ. Every model uses its prescribed final checkpoint.
 
-This study repeats the initial physical-head-only models;
-Appendix~\ref{app:geometric-recovery} reports their subsequent geometric refinement.
-We freeze all architectures, checkpoint schedules, physical strength four, and hydrogen-flow settings before the new fits. Each new FM parent receives 15,000 two-pass updates of batch size 32; GAGA receives 30,000 one-pass updates. Initialization tensors and the batch-schedule prefix match within each pair. This matches backbone training-example forward passes, while optimizer steps, data presentations, and measured runtime differ. All newly trained parents, heads, and H flows use their prescribed final checkpoints.
+The new metadata pool excludes all compositions from the previous pool. Only 20 previously unused 17--28-atom compositions pass qualification, rather than the planned 32. We therefore select these 20 and the first 44 eligible 29--40-atom compositions by the fixed metadata ranking before generation. The original selection plan and qualification results are archived. All 64 compositions are absent from the processed generator corpora and prepared training/validation rows. Eligibility uses reference geometry and overlap checks, not generated outcomes or energies.
 
-The new metadata pool excludes every composition in the previous pool. Exhaustive qualification leaves only 20 previously unused compositions with 17--28 atoms. Before any generation, we therefore fix these 20 and the first 44 eligible compositions with 29--40 atoms under the previously specified metadata ranking. The planned 32-per-bin selection and its failed qualification are retained. The final 64 compositions occur in neither processed generator corpus nor the prepared training/validation rows. Reference geometry and overlap checks use no generated outcomes or energy ranks.
+Strength-zero and strength-four trajectories share source draws and sampler randomness. Recorded zero-strength budgets include head calls multiplied by zero. Each corrected structure is evaluated unchanged, after the fixed radial readout, and after the learned hydrogen readout. The hydrogen readout leaves graph-valid parent outputs unchanged. Identical coordinates reuse their physical calculation; failures remain in rate denominators.
 
-For each parent, the strength-zero and strength-four trajectories share source draws and sampler randomness. The zero-strength control evaluates the head but multiplies its output by zero; its recorded call budget therefore includes these unused head calls. Each corrected output also receives the unchanged, fixed radial, and learned hydrogen readouts. Original graph-valid outputs are preserved exactly by the H readout. Identical coordinates reuse their original physical calculation, and all failed calculations remain in graph/force denominators.
+The three new pairs form the primary independent-training analysis. A separate five-pair summary includes the two development fits. Composition intervals resample the 64 compositions conditional on fitted models; crossed intervals also resample fit indices. Equal-weight size-stratum averages supplement the pooled 20:44 mixture. Training-variation estimates are based on only three new or five total fits.
 
-The primary independent-training analysis uses the three new pairs. The two earlier pairs participated in method development and are included in the separate five-pair summary. Composition intervals resample the 64 compositions while retaining all fitted models. Crossed intervals resample both fit indices and composition indices; only three new fits, or five total fits, are available to estimate training variation. We additionally give equal-weight averages of the two size bins, so the 20:44 composition mix is explicit.
-
-\begin{table}[h]\centering\small\caption{Joint yield in every fit (percent). Fits 1--2 reuse earlier weights; fits 3--5 are newly trained.}\begin{tabular}{llrrrrr}\toprule Parent & Module & 1 & 2 & 3 & 4 & 5\\\midrule
+\begin{table}[htbp]\centering\small\caption{Joint yield in every fit (percent). Fits 1--2 reuse earlier weights; fits 3--5 are newly trained.}\begin{tabular}{llrrrrr}\toprule Parent & Module & 1 & 2 & 3 & 4 & 5\\\midrule
 FM & None & 9.96 & 7.52 & 3.61 & 6.25 & 8.69\\
 FM & Physical & 28.22 & 26.37 & 11.72 & 24.71 & 29.00\\
 FM & Physical + radial & 30.18 & 27.83 & 12.70 & 27.15 & 32.42\\
@@ -21,24 +18,10 @@ GAGA & Physical + radial & 27.93 & 24.22 & 29.20 & 27.83 & 19.73\\
 GAGA & Physical + H flow & 27.93 & 24.22 & 29.00 & 27.83 & 19.73\\
 \bottomrule\end{tabular}\end{table}
 
-\begin{figure}[h]\centering\includegraphics[width=\linewidth]{../research/figures/seed_replication_v1/force_thresholds.pdf}\caption{Joint yield as the force threshold varies, averaged over all five fits. The vertical reference marks the prespecified 5 eV/\AA\ endpoint. These curves are descriptive; no threshold is selected from them.}\end{figure}
+\begin{figure}[htbp]\centering\includegraphics[width=\linewidth]{../research/figures/final_complete_v1/figures/force_thresholds.pdf}\caption{Joint yield versus force threshold, averaged over all five fits. The vertical line marks the prespecified 5 eV/\AA\ criterion; the curves do not select a new threshold.}\end{figure}
 
-fm physical minus parent: pooled change +16.80 points, crossed interval $[11.50,21.93]$; equal-stratum change +19.34 points, crossed interval $[13.85,24.69]$.
+For FM, physical correction adds 16.80 pooled joint-yield points (crossed interval $[11.50,21.93]$) and 19.34 equal-stratum points ($[13.85,24.69]$). GAGA gains 16.62 pooled points ($[12.95,20.47]$) and 18.46 equal-stratum points ($[14.32,22.72]$). After hydrogen readout, FM minus GAGA is 0.59 pooled points ($[-8.59,8.59]$) and 0.95 equal-stratum points ($[-8.93,9.63]$).
 
-gaga physical minus parent: pooled change +16.62 points, crossed interval $[12.95,20.47]$; equal-stratum change +18.46 points, crossed interval $[14.32,22.72]$.
+The study adds 20,480 evaluation parent trajectories, 20,480 derived readout outputs, and 22,688 GFN2 attempts. New teachers use 1,536 training trajectories and 6,144 eSEN queries. The three new pairs add 135,000 parent, 120,000 head, and 30,000 hydrogen-model updates. Reused calculations are counted only once.
 
-fm minus gaga hydrogen: pooled change +0.59 points, crossed interval $[-8.59,8.59]$; equal-stratum change +0.95 points, crossed interval $[-8.93,9.63]$.
-
-The study adds 20,480 evaluation parent trajectories, 20,480 derived readout outputs, and 22,688 GFN2 attempts. New physical teachers use 1,536 TRAIN trajectories and 6,144 eSEN calls. The three new pairs add 135,000 parent updates, 120,000 head updates, and 30,000 hydrogen-model updates. Reused parent and readout calculations are not counted as new oracle calls.
-
-
-Six GFN2 single-point calculations initially fail to converge electronically,
-all on graph-invalid geometries. A uniform numerical-completion rule increases
-the SCC iteration limit from 250 to 1,000 while preserving coordinates, charge,
-spin, electronic temperature, Hamiltonian, and convergence accuracy. All six
-then converge at this first recovery stage. The original failures remain
-archived; completing their energies changes no graph or joint count. The
-all-output energy differences use these completed scores. Among 1,384 paired
-FM outputs that are graph-valid under both hydrogen readouts, 111 are newly
-repaired under both. On those 111 descriptive pairs, the learned readout lowers
-mean energy by 83.42 meV/atom relative to the radial rule.
+Six GFN2 calculations initially fail electronic convergence, all on graph-invalid coordinates. Increasing the SCC limit from 250 to 1,000 resolves all six while preserving coordinates, charge, spin, electronic temperature, Hamiltonian, and accuracy. Original failures are archived; completion changes no graph or joint count. All-output energy analyses use the completed scores. Of 1,384 FM pairs valid under both hydrogen readouts, 111 are newly repaired under both. On this descriptive subset, the learned readout lowers energy by 83.42 meV/atom relative to the radial rule.

@@ -1,88 +1,39 @@
 \section{Curvature-aware local work sampling}\label{app:curvature-work}
-The force escort translates every local candidate by the same vector. It does
-not change the shape of the proposal cloud. Molecular energy can vary more
-sharply in some directions, such as bond stretching, than in softer collective
-motions. We test whether estimating this local curvature produces better
-importance weights at a fixed candidate-query budget, without changing the
-target distribution.
+Force translation changes the proposal mean but leaves its shape fixed. To account for stiff and soft molecular directions, we fit local curvature and adjust the proposal covariance. The target distribution and maximum candidate-query budget remain unchanged.
 
-\paragraph{Fitting local curvature.}
-Flatten the anchor into $3N$ coordinates. Let the columns of
-$Q_N\in\mathbb R^{3N\times d}$ form an orthonormal basis for the centered
-space, with $d=3(N-1)$. A displacement $u\in\mathbb R^d$ is expressed in
-angstroms in this basis, and $Q_Nu$ gives the corresponding atom-coordinate
-displacement. Let $f_A$ be the anchor force in the same basis.
-
-We draw eight independent pilot candidates. Their displacements form columns
-of $D$, and the negative changes in force form columns of $G$. We approximate
-$G\approx B_A D$ by fitting a symmetric matrix:
+\paragraph{Curvature fit.}
+Let $Q_N\in\mathbb R^{3N\times d}$ have orthonormal columns spanning centered coordinate space, with $d=3(N-1)$. A displacement $u\in\mathbb R^d$ in angstroms corresponds to $Q_Nu$ in atomic coordinates, and $f_A$ is the anchor force in this basis. Eight independent pilot displacements form the columns of $D$; their negative force changes form $G$. We fit a symmetric $B_A$ to $G\approx B_A D$:
 \begin{equation}
  \|BD-G\|_F^2+\lambda\|B-\kappa I\|_F^2,
  \qquad
  \kappa=\max\!\left(0,\frac{\langle D,G\rangle_F}{\|D\|_F^2}\right),
  \qquad \lambda=0.01\,\|D\|_F^2/K.
 \end{equation}
-Here $K$ counts pilot columns that satisfy the graph restriction. If no pilot
-survives, we set $B_A=0$ and recover the original force translation. For a nonempty
-pilot we floor $\|D\|_F^2$ at $10^{-20}$ in the scalar and ridge calculations;
-exactly zero displacements also give zero fitted curvature. The scalar
-$\kappa$ estimates an average nonnegative stiffness. The second term shrinks
-poorly determined directions toward this isotropic estimate. We replace negative
-eigenvalues of the fitted matrix by zero to obtain a positive semidefinite
-$B_A$. The isotropic control uses $B_A=\kappa I$ directly. Pilot information
-and the fitted map are fixed before drawing production candidates.
+Here $K$ counts admissible pilot columns. With none, or with exactly zero displacements, we set $B_A=0$ and recover force translation. Otherwise, $\|D\|_F^2$ is floored at $10^{-20}$ in scalar and ridge calculations. The nonnegative stiffness $\kappa$ provides an isotropic shrinkage target. We clip negative fitted eigenvalues to zero; an isotropic control uses $B_A=\kappa I$. The map is fixed before drawing production candidates.
 
-\paragraph{Changing the proposal mean and covariance.}
-The fitted quadratic energy is
-$E_+(A+Q_Nu)-E_+(A)\approx-f_A^\top u+u^\top B_Au/2$.
-Multiplying its Boltzmann factor by the original Gaussian reference gives another
-Gaussian with a shifted mean and adjusted covariance. Define
-$P_A=I+\sigma_A^2B_A/(k_B T_{\rm phys})$, a dimensionless positive-definite
-precision matrix. We map the source displacement $u$ to
+\paragraph{Proposal transformation.}
+The fitted energy is $E_+(A+Q_Nu)-E_+(A)\approx-f_A^\top u+u^\top B_Au/2$. Reweighting the original Gaussian by this quadratic Boltzmann factor changes both its mean and covariance. With dimensionless precision $P_A=I+\sigma_A^2B_A/(k_B T_{\rm phys})$, define
 \begin{equation}
  v=P_A^{-1/2}u+b_A,\qquad
  b_A=P_A^{-1}\frac{\sigma_A^2f_A}{k_B T_{\rm phys}},\qquad
  \log J_A=-\tfrac12\log\det P_A.
 \end{equation}
-The factor $P_A^{-1/2}$ contracts perturbations more in stiff directions, while
-$b_A$ adjusts the force-guided mean shift for curvature. The Jacobian $J_A$
-measures volume change in the $d$ independent coordinates. We keep the original
-reference width and temperature, so only the proposal changes, not the restrained
-target. With $X=A+Q_Nu$ and $Y=A+Q_Nv$, complete work is
+The factor $P_A^{-1/2}$ contracts stiff directions, $b_A$ adjusts the mean shift, and $J_A$ is the intrinsic volume factor. Reference width and temperature stay fixed. For $X=A+Q_Nu$ and $Y=A+Q_Nv$, the work is
 \begin{equation}
  W_A=E_+(Y)-E_+(A)+k_B T_{\rm phys}
  [\log q_A(X)-\log q_A(Y)-\log J_A].
 \end{equation}
-Candidates outside the original same-graph support receive zero weight. This is
-a local use of targeted and escorted work reweighting
-\citep{jarzynski2002targeted,escorted2008}.
+Candidates outside the original same-graph support receive zero weight. This applies targeted and escorted reweighting to the local proposal \citep{jarzynski2002targeted,escorted2008}.
 
-\paragraph{Why curvature can improve the weights.}
-Write the actual energy as the fitted quadratic plus a remainder $R_A(v)$.
-Substitution gives $W_A=-k_B T_{\rm phys}\log Z_{\rm quad}+R_A(v)$, where
-$Z_{\rm quad}$ is the integral of the Gaussian reference times the quadratic
-Boltzmann factor. The fitted quadratic cancels from the varying part of the
-work; only the approximation error changes across allowed candidates. If energy
-is exactly that quadratic, all allowed candidates have equal weights. Tests
-verify this constant-work identity for an anisotropic quadratic energy and check
-rotation equivariance of the fitted map.
+\paragraph{Weight variation.}
+Writing the true energy as the fitted quadratic plus remainder $R_A(v)$ gives $W_A=-k_B T_{\rm phys}\log Z_{\rm quad}+R_A(v)$, where $Z_{\rm quad}$ integrates the reference Gaussian times the quadratic Boltzmann factor. Only the remainder varies across allowed candidates. An exact quadratic therefore gives equal weights. Tests verify this identity for anisotropic quadratic energy and check rotation equivariance of the fitted map.
 
-\paragraph{Pilot comparison at equal query budgets.}
-For each of eight existing training compositions in each run, we take the first
-four eligible anchors without ranking by energy or ESS. The translation baseline
-uses 24 fresh production candidates per anchor. Each curvature-fitted map uses
-at most eight pilot energy/force queries and 16 fresh production candidates.
-The maximum particle-query budget is therefore the same. Common anchor queries
-and reflection evaluations are counted separately. We evaluate all production
-energies, including those of graph-invalid candidates, and do not reuse pilot
-samples as production samples for the fitted maps.
+\paragraph{Equal-query comparison.}
+In each run, we select the first four eligible anchors from each of eight training compositions, without energy or ESS ranking. Translation uses 24 fresh production particles; curvature methods use at most eight pilot queries and 16 fresh production particles. Common anchor queries and reflection evaluations are counted separately. All production energies are evaluated, including graph-invalid candidates, and pilot samples are not reused in production.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
-\caption{Local ESS with complete-work weights at a maximum of 24 particle
-queries per anchor. Each run uses 32 anchors. Curvature methods reserve eight
-queries for fitting and use 16 production candidates; translation uses all 24
-for production.}
+\caption{Complete-work ESS at a maximum of 24 particle queries per anchor, with 32 anchors per run. Curvature methods use eight pilot and 16 production queries; translation uses 24 production queries.}
 \begin{tabular}{lrrr}
 \toprule
 Escort & Production particles & ESS, run 1 & ESS, run 2\\
@@ -94,34 +45,14 @@ Directional curvature &16&6.69&6.70\\
 \end{tabular}
 \end{table}
 
-Directional curvature improves ESS over translation on 61 of 64 anchors.
-The mean increase is 4.66 effective samples, with composition-bootstrap 95\%
-interval $[3.81,5.46]$. Same-graph retention is 99.51\%, compared with 99.54\%
-for translation. Independent multivariate-Gaussian density calculations reproduce
-the stored complete-work weights. We then construct full teacher pools for all
-349 original eligible anchors using fresh production draws. Translation versus
-curvature gives mean ESS of 2.32 versus 6.71 in run 1 and 2.33 versus 6.37 in
-run 2. These results concern the local teacher; the next experiment tests whether
-they improve the trained generator.
+Directional curvature increases ESS on 61 of 64 anchors, with mean gain 4.66 effective samples and composition 95\% interval $[3.81,5.46]$. Same-graph retention is 99.51\%, versus 99.54\% for translation. Independent Gaussian density calculations reproduce the weights. Fresh full pools for all 349 eligible anchors give translation/curvature ESS of 2.32/6.71 in run 1 and 2.33/6.37 in run 2.
 
-\paragraph{Does the teacher improvement transfer to generation?}
-We train three physical students: uniform sampling of 24 force-translated
-candidates, complete-work weighting of those same 24 candidates, and complete-work
-weighting of 16 curvature-adjusted candidates. Each uses the original
-1,000-update schedule and reference/anchor choices. We reuse the matched replay
-model and add the physical-minus-replay parameter difference with coefficient
-one. All 349 original anchors remain eligible. The two work-weighted methods
-have equal maximum particle-query budgets; uniform force targets can omit
-candidate-energy queries. This follow-up changes the candidate-pool size and
-curvature fit. The main experiments continue to use the original, preselected
-eight-candidate force model.
+\paragraph{Effect on generation.}
+We train students using uniform sampling of 24 translated candidates, complete-work weighting of those same 24, or complete-work weighting of 16 curvature-adjusted candidates. All use the original 1,000-update schedule, reference/anchor selection, replay model, and coefficient-one parameter subtraction. All 349 anchors remain eligible. Work-weighted methods have equal maximum query budgets; uniform targets can omit candidate-energy queries. These larger pools form a follow-up, while the primary model retains its preselected eight-candidate force teacher.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
-\caption{Generated outputs after training with the three teachers, evaluated on
-24 compositions with 1,536 attempts per method across both runs. Energy changes
-compare a work-weighted student with the uniform-force student on paired, jointly
-valid outputs. All methods use 128 network evaluations and no geometry optimization.}
+\caption{Generation after training with three local teachers: 1,536 attempts per method on 24 compositions. Energy changes compare weighted and uniform-force students on jointly valid pairs. All methods use 128 neural calls and raw output coordinates.}
 \small
 \begin{tabular}{lrrr}
 \toprule
@@ -135,11 +66,4 @@ Curvature work, 16 candidates &53.32&$+0.00793$&$+0.00783$\\
 \end{tabular}
 \end{table}
 
-Curvature work minus translation work changes energy by $-0.00184$ eV/atom under
-eSEN (95\% interval $[-0.00654,0.00289]$) and $-0.00068$ under GFN2
-($[-0.00484,0.00341]$). The two runs have opposite signs. The higher teacher
-ESS therefore does not establish an additional generation benefit. Uniform force
-targets give lower energy and force RMS than either work-weighted student under
-both potentials. Relative to the frozen harmonic generator, this 24-candidate
-uniform-force model lowers energy by $0.02088$ eV/atom under eSEN and $0.01918$
-under GFN2. The primary method retains the inexpensive force-only recipe.
+Curvature minus translation work changes energy by $-0.00184$ eV/atom under eSEN (95\% interval $[-0.00654,0.00289]$) and $-0.00068$ under GFN2 ($[-0.00484,0.00341]$), with opposite signs across runs. Better teacher ESS does not translate into a resolved generation gain. Uniform force targets give lower energy and force RMS than both weighted alternatives. Relative to the frozen parent, the 24-candidate uniform model lowers energy by $0.02088$ eV/atom under eSEN and $0.01918$ under GFN2. These results favor retaining the inexpensive force-only recipe.

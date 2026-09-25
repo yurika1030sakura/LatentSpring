@@ -1,18 +1,9 @@
-\paragraph{Composition sets.}
-Checking reference structures leaves 31 eligible compositions out of 78 that pass
-the metadata conditions. Of these, 21 had appeared in earlier development
-experiments. We use a fixed subset of 12 for source development and all 10
-remaining compositions for a subsequent test. These 10 have 17--28 atoms and
-are absent from 3,902,107 processed training rows and 39,415 validation rows,
-verified by exact atomic-count vectors. Reference geometries only determine
-eligibility. Both sets use the same two fine-tuning runs; the further
-24-composition test is described in Section~\ref{sec:fresh-physics}.
+\paragraph{Composition panels.}
+Reference checks retain 31 of 78 metadata-eligible compositions, including 21 used in earlier development. We select 12 for source development and use the remaining 10 for the subsequent test. The latter contain 17--28 atoms and are absent from all 3,902,107 processed training and 39,415 validation rows, as checked by exact atom-count vectors. References determine eligibility only. Both panels use the same two fine-tuning runs; Section~\ref{sec:fresh-physics} describes the further 24-composition test.
 
 \begin{table}[t]
 \centering
-\caption{Valid outputs divided by all generation attempts. All variants use the
-same geometry self-conditioning backbone and 128 network forward passes per
-output. The additional set evaluates models frozen after the development comparison.}
+\caption{Valid outputs over all attempts for source variants sharing a self-conditioned backbone and 128 sampling calls. The additional panel evaluates checkpoints fixed after development.}
 \begin{tabular}{llrrr}
 \toprule
 Set & Run & Gaussian & Shell tree & Harmonic tree\\
@@ -25,27 +16,14 @@ Additional (10)  & 1 &326/640&---&413/640\\
 \end{tabular}\label{tab:main}
 \end{table}
 
-On the development set, the harmonic source improves graph validity over the
-isotropic Gaussian by 5.86 percentage points (paired 95\% CI [2.67,8.98];
-composition-bootstrap interval [0.52,12.17]). Both runs improve, with a larger
-gain in run 1. Harmonic also exceeds the narrow shell-tree source by 4.23 points;
-the shell-minus-harmonic interval is [-7.29,-1.11].
+On the development panel, harmonic improves graph validity over isotropic Gaussian by 5.86 points (paired 95\% CI [2.67,8.98]; composition interval [0.52,12.17]). Both runs improve, especially run 1. Harmonic also exceeds the shell-tree control by 4.23 points; shell minus harmonic has interval [-7.29,-1.11].
 
-On the 10-composition test, harmonic improves graph validity from 52.73\% to
-61.56\%, a gain of 8.83 points (paired 95\% CI [5.08,12.50]; composition-bootstrap
-interval [4.84,12.66]). Geometric validity improves by 9.69 points [6.33,12.89].
-Every graph-valid output has distinct inferred connectivity within its composition,
-and no validator exceptions occur. Generation time is nearly unchanged:
-harmonic/Gaussian take 175.73/175.43 seconds for 640 samples in run 1 and
-178.20/177.74 seconds in run 2.
+On the 10-composition test, graph validity rises from 52.73\% to 61.56\%, a gain of 8.83 points (paired CI [5.08,12.50]; composition interval [4.84,12.66]). Contact-geometric validity gains 9.69 points [6.33,12.89]. All graph-valid outputs have distinct connectivities within composition, and no validator errors occur. Sampling time for 640 outputs is nearly identical: harmonic/Gaussian take 175.73/175.43 seconds in run 1 and 178.20/177.74 in run 2.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{../research/figures/harmonic_paper_v1/composition_effects.pdf}
-\caption{Harmonic-minus-Gaussian graph-validity differences for each composition.
-Points show the two individual fine-tuning runs, and bars show their mean. Gains
-vary across compositions and runs. Both evaluation sets use the same trained
-models.}\label{fig:effects}
+\includegraphics[width=\linewidth]{../research/figures/final_complete_v1/figures/composition_effects.pdf}
+\caption{Per-composition harmonic-minus-Gaussian graph validity. Points show individual fine-tuning runs and bars their mean. Both panels use the same fitted models.}\label{fig:effects}
 \end{figure}
 
 \input{sections/harmonic_sc_covariance_results}

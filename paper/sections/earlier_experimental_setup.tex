@@ -1,54 +1,16 @@
 \section{Earlier source-study setup}\label{app:source-study-setup}
 \paragraph{Task and training.}
-The earlier source experiments adapt a pretrained molecular flow to neutral singlet organic
-compositions. Every composition contains C and H, with elements drawn from
-H/B/C/N/O/F/Si/P/S/Cl/Br/I. Training covers 8--40 atoms and evaluation extends
-to 64; the implementation supports up to 200 atoms. The initial two fine-tuning
-runs start from the same pretrained checkpoint. Each uses 3,000 distinct
-OMol25 structures and 3,000 optimizer updates. Within a run, source variants share
-the training data and initial weights. The network has 5,904,369 parameters.
-Learning rates are $2\cdot10^{-5}$ for the backbone and $3\cdot10^{-4}$ for
-self-conditioning modules. Three additional source runs repeat these two data
-blocks with new random seeds and report all 1,000-, 3,000-, and 6,000-update checkpoints.
+The source studies adapt a pretrained flow to neutral organic singlets containing C and H, with elements from H/B/C/N/O/F/Si/P/S/Cl/Br/I. Training covers 8--40 atoms and evaluation extends to 64, within the implementation limit of 200. The first two runs share a pretrained checkpoint. Each uses 3,000 distinct OMol25 structures and 3,000 updates, with identical data and initial weights across source variants. The network has 5,904,369 parameters; learning rates are $2\cdot10^{-5}$ for the backbone and $3\cdot10^{-4}$ for self-conditioning modules. Three further runs reuse the two data blocks with new seeds and evaluate all 1,000-, 3,000-, and 6,000-update checkpoints.
 
-All source variants use the same filtered training subset. In addition to the
-chemical-graph checks, selection requires a spanning scaffold with bounded edge
-lengths and atom degrees. This scaffold is a data-selection filter, not an input
-to the model. Appendix~\ref{app:data-evaluation} specifies it.
+All sources use the same training subset, screened for chemical-graph validity and a spanning scaffold with bounded lengths and degrees. The scaffold is a training-data filter (Appendix~\ref{app:data-evaluation}), not a model input.
 
-\paragraph{Earlier FlowMol output and sampler.}
-The FlowMol implementation uses a coordinate-shaped head $D_\theta$ and interprets
-the centered increment $D_\theta-X_t$ as velocity. In its original midpoint
-scheme, the first evaluation uses the current coordinates and the interval's
-midpoint time; the second uses the half-step coordinates at that same time.
-The source-only comparisons add centered Gaussian noise of standard deviation
-0.025\,\AA\ after integration. The learned-correction model omits this terminal
-noise. These implementation details differ from the shared-EGNN main comparison.
+\paragraph{FlowMol sampler.}
+The coordinate-shaped output $D_\theta$ defines velocity through the centered increment $D_\theta-X_t$. In the original midpoint implementation, both field evaluations use the interval midpoint time: the first at the current coordinates and the second at the half-step coordinates. Source-only comparisons add centered Gaussian terminal noise of standard deviation 0.025\,\AA; learned-correction sampling omits it. These settings apply to the earlier FlowMol studies rather than the main shared-EGNN sampler.
 
-\paragraph{Evaluation sets.}
-The source study uses four composition sets: 12 for development, 10 for an additional test, 24
-for a further test, and 64 for a broader size comparison. Exact atom-count checks
-confirm that the latter three sets are absent from both processed OMol25 corpora.
-Their reference coordinates are used only to determine eligibility, not for
-training. Initial comparisons reuse two fine-tuned models, and the wider source
-study adds three training repetitions. Shared-EGNN experiments train from scratch;
-the final correction study includes five paired initializations. Physical studies
-compare models on common compositions and identify the panel alongside each result.
-Selection and source-control details are in Appendix~\ref{app:source-panels}.
+\paragraph{Evaluation panels.}
+The source study uses 12 development compositions, 10 additional-test compositions, a further 24-composition test, and a 64-composition size panel. Exact atom-count checks exclude the latter three panels from both processed OMol25 corpora. Their reference coordinates determine eligibility only. Initial studies use two fine-tuning runs, and the wider source study adds three repetitions. The shared-EGNN models train from scratch; the final correction study uses five paired initializations. Each physical comparison identifies its panel. Appendix~\ref{app:source-panels} gives selection and source-control details.
 
-\paragraph{Metrics and uncertainty.}
-The 12- and 10-composition sets use 64 samples per composition, and the
-24-composition set uses 32. Geometric validity requires a connected contact graph
-and no severe atom overlap, with distance thresholds of 1.25 and 0.6 times the
-summed covalent radii, respectively. Chemical-graph validity additionally requires
-RDKit to infer a connected, sanitized bond graph with the requested total charge.
-We divide valid outputs by \emph{all attempts}, including failures and validator
-exceptions. Graph diversity counts distinct inferred connectivities within each
-composition. Timings include the full generation procedure.
-Appendix~\ref{app:data-evaluation} gives the detailed checks.
+\paragraph{Evaluation and uncertainty.}
+The 12- and 10-composition panels use 64 draws per composition; the 24-composition panel uses 32. Contact connectivity and overlap thresholds are 1.25 and 0.6 times the summed covalent radii. Chemical-graph validity additionally requires a connected, sanitized RDKit graph with the requested charge. Rates count all attempts, including failures and validator exceptions. Diversity counts distinct inferred connectivities within composition, and timings cover the full sampling procedure (Appendix~\ref{app:data-evaluation}).
 
-Unless stated otherwise, 95\% confidence intervals come from paired bootstrap
-resampling of generation draws, with the trained models and compositions held
-fixed. We also resample compositions to describe variation across the evaluation
-set. Physical scores are computed on saved raw coordinates, using the stated
-charge and spin and approximate energy models.
+Unless specified otherwise, paired 95\% bootstrap intervals resample generation draws conditional on the fitted models and compositions. Additional composition-bootstrap intervals describe variation across the evaluation panel. Physical scores use saved raw coordinates, the stated charge and spin, and the specified approximate potential.

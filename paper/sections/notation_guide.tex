@@ -1,21 +1,10 @@
-\section{Reader's guide to the notation}\label{app:notation}
-LatentSpring samples starting coordinates from atomic composition, transports
-them with a learned flow, and adds geometric and physical corrections. This
-appendix collects the notation used in those stages and the related studies.
+\section{Notation and evaluation terminology}\label{app:notation}
+LatentSpring samples initial coordinates from composition, transports them with a learned flow, and applies geometric and physical endpoint corrections. The table below collects the notation for these stages and the supplementary studies.
 
 \paragraph{Inputs and outputs.}
-The condition $c$ fixes the atom identities, charge, and spin. Random starting
-coordinates $X_0$ provide variation between generated structures. Each network
-evaluation takes current coordinates $X_t$, flow time $t$, and $c$ and predicts
-one velocity vector per atom. Self-conditioning uses a first prediction to form
-a provisional geometry for a second pass. Integrating the corrected velocities
-gives the final coordinate matrix $X_{\rm gen}$. The main FM sampler has no
-terminal coordinate perturbation; earlier sampling variants are described in
-their own experimental sections.
-The input atom identities and electronic conditions do not change. Bonds are
-inferred separately for evaluation.
+The condition $c$ fixes atom identities, charge, and spin. In the experiments, charge and multiplicity are fixed at $Q=0$ and $S=1$. At state $X_t$, the network takes $t$ and encoded atom identities and predicts one velocity per atom. Self-conditioning passes a provisional endpoint from the first evaluation to the second. Integrating the corrected field from a random $X_0$ gives $X_{\rm gen}$, with no terminal perturbation in the main FM model. Earlier samplers specify their own terminal-noise settings. Atom identities and electronic conditions are unchanged; bonds are inferred afterward for evaluation.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \small
 \begin{tabular}{p{0.22\linewidth}p{0.71\linewidth}}
@@ -54,24 +43,10 @@ generalized work used to weight local candidate structures.\\
 $\Phi$, $J$, $Z$ & Coordinate map, its local volume-change factor, and a target-density normalizing integral.\\
 \bottomrule
 \end{tabular}
-\caption{Notation for the source, flow model, and physical update. The tree $T$
-and teacher temperature $T_{\rm phys}$ are different quantities.}
+\caption{Notation for the source, flow, endpoint corrections, and supplementary physical-update studies.}
 \end{table}
 
-\paragraph{Structural and physical metrics.}
-Contact support requires one connected contact structure with no excessive atom
-overlap. Graph validity additionally requires a sanitized bond graph inferred
-from the coordinates. The main paper's stricter geometry screen also checks
-bond lengths, angles, internal distances, planarity and assigned radicals
-(Appendix~\ref{app:chemical-geometry}). Joint graph-and-force yield requires
-graph validity and force RMS at most 5 eV/\AA; geometry-and-force yield applies
-the stricter screen at the same force threshold. In the earlier paired-update
-experiments, \emph{jointly valid} instead describes a pair whose two members
-pass contact and graph checks. A teacher's \emph{same-graph} restriction preserves
-an anchor's labeled bonds, formal charges and radical counts.
+\paragraph{Evaluation terminology.}
+\emph{Contact support} requires a connected contact graph without excessive overlap. \emph{Graph validity} additionally requires a sanitized inferred chemical graph. \emph{Geometry-and-force yield} applies the bond-length, angle, internal-distance, planarity, and radical screen in Appendix~\ref{app:chemical-geometry}, together with force RMS at most 5 eV/\AA. \emph{Joint graph-and-force yield} uses the same force threshold without the stricter geometry screen. In the paired-update studies, \emph{jointly valid} instead denotes a pair of outputs that both pass contact and graph checks. The teacher's \emph{same-graph} restriction preserves an anchor's labeled bonds, formal charges, and radical counts.
 
-We compare energy within the same atomic composition and report changes per atom.
-Force RMS is $[N^{-1}\sum_{i=1}^N\|F_i\|_2^2]^{1/2}$, the root mean squared
-magnitude of the atomic force vectors. Lower force RMS means smaller residual
-forces. Lower energy means greater energetic preference under the chosen
-potential. These are different measurements from graph validity.
+Energy differences are compared within composition and reported per atom. Force RMS is $[N^{-1}\sum_{i=1}^N\|F_i\|_2^2]^{1/2}$. It measures residual atomic forces, whereas energy measures preference under the chosen potential and graph validity measures consistency of inferred connectivity.

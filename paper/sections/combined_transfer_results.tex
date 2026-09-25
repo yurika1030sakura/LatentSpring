@@ -1,37 +1,15 @@
 \subsection{Transfer across generative models}\label{sec:joint-transfer}
-We attach both FM-trained correction networks to EDM and GAGA without
-retraining. Their weights and strengths remain fixed, while each target keeps
-its source, backbone and sampling schedule. The endpoint relation converts the
-coordinate correction into the target's native noise prediction.
+We transfer both FM-trained correction networks to EDM and GAGA, fixing the correction weights and strengths. Each target retains its native source, backbone, and sampling schedule. Equation~\eqref{eq:endpoint-native-updates} converts the endpoint displacement into a noise-prediction correction.
 
 \begin{figure}[!htbp]\centering
-\includegraphics[width=\linewidth]{../research/figures/geometric_followups_v1/geometric_transfer.pdf}
-\caption{Transfer of both correction networks. Bold lines show the two-fit means;
-faint lines show each paired fit. Each setting uses 2,048 attempts on 64
-compositions. The target retains its original source and backbone, and the
-hydrogen readout is disabled. (A) Graph-and-force yield. (B) The stricter
-geometry-and-force yield.}\label{fig:joint-transfer}\label{fig:seed-replication}
+\includegraphics[width=\linewidth]{../research/figures/final_complete_v1/figures/geometric_transfer.pdf}
+\caption{Direct transfer of both correction networks: (A) graph-and-force yield and (B) geometry-and-force yield. Bold lines show two-fit means and faint lines show individual fits. Each setting contains 2,048 attempts on 64 compositions, with the target source and backbone fixed and hydrogen readout disabled.}\label{fig:joint-transfer}\label{fig:seed-replication}
 \end{figure}
 
-Joint yield rises from 8.15 to 29.69\% for EDM and from 9.47 to 31.54\% for
-GAGA. Geometry-and-force yield rises from 2.83 to 9.96\% and from 3.03 to
-10.45\%, respectively. Both fits improve for both targets and both metrics.
-Gaussian and harmonic one-pass FM also improve, as shown in
-Figure~\ref{fig:source-head-ablation}. These experiments reuse the correction
-block across generative objectives within the shared EGNN architecture.
+Joint yield increases from 8.15 to 29.69\% for EDM and from 9.47 to 31.54\% for GAGA. Geometry-and-force yield increases from 2.83 to 9.96\% and from 3.03 to 10.45\%, respectively. Both metrics improve in both fits for each target. Together with the one-pass FM results in Figure~\ref{fig:source-head-ablation}, these experiments show direct correction-weight reuse across generative objectives within the shared EGNN architecture.
 
-\paragraph{Physical-head transfer and repetitions.}\label{sec:cross-head}\label{sec:seed-replication}
-An earlier five-pair study transferred the physical head alone. FM-trained
-heads raised GAGA joint yield from 8.75 to 25.27\%, close to 25.37\% for
-GAGA-trained heads. In three additional pairs, the mean gain was 16.54 points
-(crossed 95\% interval $[12.66,20.67]$). The reverse transfer raised initial
-FM yield from 7.21 to 25.59\%. Appendix~\ref{app:seed-replication} gives all fits.
+\paragraph{Physical-head transfer.}\label{sec:cross-head}\label{sec:seed-replication}
+In the earlier five-pair study, transferring the physical head alone raised GAGA joint yield from 8.75 to 25.27\%, compared with 25.37\% using GAGA-trained heads. Across the three additional pairs, the mean transferred-head gain was 16.54 points (crossed 95\% interval $[12.66,20.67]$). Reverse transfer raised initial FM yield from 7.21 to 25.59\%. Appendix~\ref{app:seed-replication} reports all fits.
 
-\paragraph{Source adaptation and hydrogen placement.}
-A separate source-transfer experiment retrained EDM and GAGA with harmonic
-corruption noise and attached the physical head alone. It gave 0.00\% and
-0.05\% joint yield, versus 8.15\% and 9.47\% for the corresponding parents
-(Appendix~\ref{app:joint-design-transfer}). The successful transfers above
-preserve the target's source. An optional hydrogen flow on the initial
-force-corrected generators gave 26.33\% joint yield for FM and 25.74\% for GAGA;
-the main experiments use the raw outputs before this readout.
+\paragraph{Source transfer and hydrogen readout.}
+Retraining EDM and GAGA with harmonic corruption noise and adding the physical head alone gave joint yields of 0.00\% and 0.05\%, compared with native-parent yields of 8.15\% and 9.47\% (Appendix~\ref{app:joint-design-transfer}). In contrast, the successful weight transfers above preserve the target source. The optional hydrogen readout raised joint yield of the initial force-corrected generators to 26.33\% for FM and 25.74\% for GAGA; it is excluded from the main experiments.

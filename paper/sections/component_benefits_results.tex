@@ -1,16 +1,9 @@
-\subsection{What self-conditioning contributes}\label{sec:sc-ablation}
-We remove self-conditioning from the harmonic-source model while keeping its
-initialization, 3,000 training structures, source distribution, and pairing
-procedure unchanged. One single-pass model receives 3,000 optimizer updates.
-A second receives 6,000, matching the self-conditioned model's number of
-backbone training evaluations. Both single-pass models use 64 midpoint steps at
-generation, so every model uses 128 network calls per output.
+\subsection{Self-conditioning}\label{sec:sc-ablation}
+We remove self-conditioning while retaining the harmonic model's initialization, 3,000 references, source, and pairing procedure. One single-pass model receives 3,000 updates; another receives 6,000 to match the self-conditioned training-forward count. Both use 64 midpoint steps, so all variants sample with 128 network calls.
 
 \begin{table}[t]
 \centering
-\caption{Self-conditioning ablation on 24 compositions. Each run has 768 raw
-attempts; the valid-output column lists runs 1 and 2. The self-conditioned model
-outperforms both single-pass training budgets.}
+\caption{Self-conditioning on 24 compositions, with 768 attempts per run. The valid-output column reports runs 1 and 2; the self-conditioned model exceeds both single-pass training budgets.}
 \begin{tabular}{lrrrr}
 \toprule
 Model & Updates & Training passes & Valid outputs & Rate (\%)\\
@@ -22,22 +15,7 @@ Self-conditioned &3,000&6,000&435;375&52.73\\
 \end{tabular}\label{tab:sc-ablation}
 \end{table}
 
-Self-conditioning improves graph validity by 7.23 percentage points at equal
-optimizer updates (95\% interval [4.69,9.77]) and by 12.43 points at equal
-training forward passes ([9.70,15.23]). Both runs improve in both comparisons.
-Matching pass counts does not match every operation or wall-clock cost. This
-control asks whether additional single-pass training recovers the validity gain;
-it does not in these runs. The update-direction control is reported in
-Section~\ref{sec:update-ablation}.
+Self-conditioning adds 7.23 graph-validity points at matched updates (95\% interval [4.69,9.77]) and 12.43 at matched forward counts ([9.70,15.23]), with both runs improving. Additional single-pass training therefore does not recover the gain in these runs. Forward counts are matched rather than runtime. Section~\ref{sec:update-ablation} gives the update-direction control.
 
-\paragraph{Contribution of the force displacement.}
-We also remove only the force shift from local training targets. Gaussian
-perturbations, candidate indices, widths, training schedule, and the paired
-parameter update remain unchanged. Relative to this control, force-shifted
-targets lower energy on paired, jointly valid outputs by $0.01939$ eV/atom
-(95\% interval [-0.02417,-0.01455] for the signed difference) and force RMS by
-$0.3926$ eV/\AA\ ([-0.4696,-0.3263]). Both runs improve. Graph validity remains
-similar: force minus control is $+0.39$ percentage points, with interval
-[-1.33,2.19]. Because the original force-dependent widths and candidate-selection
-rule remain fixed, this ablation tests the displacement itself, not the removal
-of all force information.
+\paragraph{Force displacement.}
+We remove the force shift while retaining Gaussian perturbations, candidate indices, force-dependent widths, selection, training schedule, and paired parameter update. Relative to this control, shifted targets lower jointly valid paired energy by $0.01939$ eV/atom (signed-change 95\% interval [-0.02417,-0.01455]) and force RMS by $0.3926$ eV/\AA\ ([-0.4696,-0.3263]). Both runs improve. Graph validity changes by $+0.39$ points ([-1.33,2.19]). The comparison isolates the displacement, with other force-dependent target-construction choices retained.

@@ -1,20 +1,14 @@
-\paragraph{Applying the paired physical update.}
-Instead of deploying the directly fine-tuned student, we use parameter arithmetic
-\citep{ilharco2023arithmetic} to subtract its matched replay update:
+\paragraph{Paired physical update.}
+For both uniform-escort and complete-work students, we subtract the replay update through parameter arithmetic \citep{ilharco2023arithmetic}:
 \begin{equation}
  \theta_{\rm final}=\theta_{\rm base}
    +(\theta_{\rm physical}-\theta_{\rm replay}),
 \end{equation}
-for both unweighted-escort and complete-work students. The coefficient is fixed
-at one. We change parameter tensors only; buffers and the source distribution
-remain fixed.
+The coefficient is one, and buffers and the source distribution remain fixed.
 
 \begin{table}[t]
 \centering
-\caption{Paired updates evaluated after the direct fine-tuning experiment.
-Energy changes use paired, jointly valid outputs and are relative to the frozen
-model, with paired 95\% confidence intervals. Counts show the two generation
-streams.}
+\caption{Paired-update results following direct fine-tuning. Energy changes are relative to the frozen model on jointly valid pairs, with paired 95\% intervals. Counts report the two generation streams.}
 \begin{tabular}{lrr}
 \toprule
 Model & Graph-valid outputs (two streams) & Energy change (eV/atom)\\
@@ -26,20 +20,8 @@ Paired work update &406/640; 382/640&$-0.01604\;[-0.02188,-0.01013]$\\
 \end{tabular}\label{tab:thermal-transfer}
 \end{table}
 
-Both paired variants lower energy and force RMS in both runs. For complete work,
-force RMS on paired, jointly valid outputs falls by 0.38403 eV/\AA\ (interval
-$[-0.48124,-0.28932]$); all-attempt energy and force scores also improve. Its
-graph-validity difference from the frozen model is $-0.55$ percentage points,
-with interval $[-2.58,1.56]$.
+Both paired variants lower energy and force RMS in both runs. Complete work reduces jointly valid force RMS by 0.38403 eV/\AA\ ($[-0.48124,-0.28932]$), also improving all-output energy and force. Its graph-validity change is $-0.55$ points ($[-2.58,1.56]$).
 
-The complete-work and unweighted paired variants have similar scores. Complete
-work minus unweighted gives $-0.00243$ eV/atom on jointly valid pairs
-($[-0.00756,0.00264]$) and $+0.00022$ eV/atom over all attempts
-($[-0.00557,0.00649]$). Force and graph-validity intervals also include zero.
-Teacher preparation requires 702 anchor queries for the unweighted variant
-versus 6,232 for complete work. Both retain the 128-call neural sampler.
+Differences between the two paired teachers are small: complete work minus uniform escort gives $-0.00243$ eV/atom on jointly valid pairs ($[-0.00756,0.00264]$) and $+0.00022$ over all attempts ($[-0.00557,0.00649]$). Force and validity intervals also include zero. Uniform escort requires 702 anchor queries versus 6,232 for complete work; both sample with 128 neural calls. We therefore select force-only targets for the new-composition test in Section~\ref{sec:fresh-physics}.
 
-Evaluating these two paired variants adds 2,560 generated outputs and 5,120
-physical queries. Combining parameters requires no optimizer steps. Based on
-these development results, we select the force-only update for the
-new-composition evaluation in Section~\ref{sec:fresh-physics}.
+Evaluation adds 2,560 outputs and 5,120 physical queries. Parameter combination requires no optimizer updates.

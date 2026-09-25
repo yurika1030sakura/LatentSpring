@@ -18,162 +18,71 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-Generating a molecule from atomic composition leaves both its chemical connectivity and three-dimensional geometry to be determined. We present LatentSpring, which combines a harmonic-mixture source with learned geometric and physical endpoint corrections. Random auxiliary trees and atomic length scales organize the starting coordinates without known bonds. Recovery training teaches the flow to correct geometric perturbations, and two small networks refine its provisional endpoint using reference geometry and force feedback. On 64 unseen compositions, five fitted models achieve 35.35\% graph-valid yield with force RMS at most 5 eV/\AA, compared with 8.75\% for GAGA and 8.15\% for EDM. Requiring local geometry checks as well gives a 9.63\% yield, up from 4.43\% for the initial force-corrected flow. Three additional training repetitions reproduce this geometric improvement. A matched continuation control separates the benefit of geometric recovery from extra training. Both corrections act in coordinate space and connect to flow velocities or diffusion noise predictions through the same endpoint displacement. Generation uses neural evaluations, with no energy calls or geometry optimization.
+Generating three-dimensional molecules from atomic composition requires learning both connectivity and geometry. We present LatentSpring, a flow-matching model that combines a harmonic-mixture source with learned geometric and physical corrections. The source samples atom positions along random auxiliary trees using element-dependent length scales, without requiring a chemical bond graph. Recovery training teaches the flow to restore perturbed geometries, while two small equivariant networks refine its predicted endpoints using reference structures and force feedback. On 64 unseen compositions, LatentSpring achieves a graph-and-force yield of 35.35\% across five fits, compared with 8.75\% for GAGA and 8.15\% for EDM, at a GFN2-xTB force-RMS threshold of 5 eV/\AA. Adding local geometry checks gives a yield of 9.63\%, compared with 4.43\% for the initial force-corrected flow. This improvement holds in all three additional training repetitions, and the complete method outperforms a continuation control with matched backbone updates. The endpoint formulation also allows the trained correction networks to improve EDM and GAGA without retraining. Sampling requires only neural-network evaluations, with no energy queries or geometry optimization.
 \end{abstract}
 
 \section{Introduction}
-An atomic composition tells us which atoms a molecule contains, but not how they are connected or arranged in three spatial dimensions. In this paper, we investigate the task of molecular generation from this input, together with the molecule's total charge and spin multiplicity. The model returns atomic coordinates. We then infer bonds from those coordinates to evaluate the generated structure. Unlike conformation generation with a known molecular graph, this task leaves both connectivity and geometry to be determined.
+Molecular generation from atomic composition requires a model to determine how the atoms connect and how they are arranged in three dimensions. Unlike graph-conditioned conformer generation, the input provides no chemical connectivity. We study this task conditioned on atom identities, total charge, and spin multiplicity, generating coordinates from which bonds are subsequently inferred for evaluation.
 
-Flow matching learns to transform samples from a source distribution into a target distribution \citep{lipman2023flowmatching}. An isotropic
-Gaussian is a simple choice, but it places all atoms on a common spatial scale
-without using atom-specific geometric information. Harmonic sources instead
-correlate atom positions through virtual springs. Existing graph-conditioned
-methods can construct these springs from known chemical bonds. The question here
-is how to obtain a useful structured source when those bonds are not given.
+Flow matching transports samples from a source distribution to a target distribution \citep{lipman2023flowmatching}. The usual isotropic Gaussian source treats all atoms on a common spatial scale. Harmonic sources introduce geometric correlations through virtual springs, but existing graph-conditioned methods construct these springs from known bonds. Composition-conditioned generation therefore calls for a structured source that does not rely on an input molecular graph.
 
-In this paper, we propose LatentSpring, which uses a random tree to organize the starting coordinates. We sample
-Gaussian displacements along its edges, with scales determined by the connected
-atoms' radii, and obtain atom positions by adding these displacements along the
-tree. A new tree is drawn for every sample. Its edges are not proposed chemical
-bonds: in the flow matching model, the tree is used only for initialization, and the flow can generate a
-structure with different connectivity, including rings. Averaging over the trees
-gives a normalized mixture of harmonic networks. We combine this source with an
-equivariant coordinate network and geometry self-conditioning: the network makes
-a provisional geometry prediction, then uses it to refine its velocity prediction.
+LatentSpring addresses this problem with a mixture of random auxiliary trees. Each tree supplies independent Gaussian edge displacements whose scales depend on the atoms' covalent radii. Adding these displacements along tree paths gives the initial coordinates; averaging over trees defines a normalized harmonic mixture. The tree is discarded after initialization, leaving the flow free to generate a different connectivity, including rings. An equivariant velocity network with geometry self-conditioning then transforms the source into molecular coordinates.
 
-Learning physically plausible geometry poses a second challenge when the chemical graph is unknown. An atomic potential can provide forces directly from coordinates, but evaluating it at every sampling step adds repeated cost. We learn a small force-based correction offline. Geometric checks reveal a separate gap: many outputs with valid inferred graphs and reduced forces still have distorted local arrangements. We address these errors with recovery training and a second small network that learns to restore perturbed reference structures.
+A structured source alone does not ensure accurate local geometry. In our experiments, many outputs pass chemical-graph checks and a residual-force threshold yet retain distorted local arrangements. We address these errors through geometric recovery training and two endpoint-correction networks. Recovery training teaches the backbone to restore perturbed reference geometries. A geometric network then corrects the predicted endpoint, followed by a physical network trained on force feedback. Learning the force correction offline avoids evaluating an atomic potential at every sampling step.
 
-The two corrections act on a provisional endpoint, the generator's current estimate of its final coordinates. The geometric network first changes this estimate; the physical network then supplies a force-informed adjustment. At generation time, only neural networks are evaluated. Expressing both actions as coordinate displacements also provides an interface to a diffusion model's noise prediction.
+Both networks operate on the generator's predicted final coordinates rather than its internal features. Their coordinate displacements can therefore be converted into either a flow-velocity correction or a diffusion-noise correction. We test this interface by directly reusing FM-trained correction weights in EDM and GAGA.
 
-In summary, our contributions are threefold:
+Our contributions are:
 \begin{itemize}
-\item We construct a normalized harmonic-mixture source from atomic composition.
-Random auxiliary trees introduce atom-dependent geometric correlations while
-leaving chemical connectivity to the learned flow.
-\item We learn geometric and physical corrections in endpoint coordinates.
-Recovery from reference perturbations complements force feedback, and a common
-coordinate interface connects the corrections to flow or diffusion sampling.
-\item We evaluate generation quality, component benefits, and correction reuse.
-Five fits show improved raw geometry-and-force yield, including three additional
-training repetitions; all generated coordinates are evaluated before optimization.
+\item A normalized harmonic-mixture source that introduces element-dependent geometric correlations without requiring chemical bonds. We derive its density and compare it with isotropic, shell-tree, and covariance-matched sources.
+\item A geometric--physical refinement method that combines recovery training with two small equivariant endpoint-correction networks. A common coordinate interface applies the learned corrections to flow matching and diffusion.
+\item Improved raw molecular geometry across five fits, with gains in all three additional training repetitions and over a continuation control with matched backbone updates. The correction networks also improve EDM and GAGA without target-specific retraining.
 \end{itemize}
 
 \section{Related work}
 \paragraph{Molecular flows and source distributions.}
-ConfGF and GeoDiff generate conformations for a supplied chemical graph
-\citep{shi2021confgf,xu2022geodiff}. Our main comparisons use the EGNN underlying
-EDM \citep{edm}; additional source experiments use FlowMol3's coordinate network
-and self-conditioning modules \citep{flowmol3}. Equivariance
-means that rotating the input rotates the predicted vectors, while relabeling
-identical atoms relabels their outputs. HarmonicFlow combines harmonic sources
-with self-conditioned flow matching for ligand docking; FlowSite extends this
-approach to binding-site design \citep{stark2024harmonicflow}. ET-Flow also builds
-a harmonic source from a supplied molecular graph \citep{etflow}. These methods
-know the chemical connectivity at the input. Our source instead averages over
-auxiliary spatial trees and requires only atomic composition. Other approaches to
-source adaptation include guidance with a frozen vector field
-\citep{wang2026sourceguided} and learned condition-dependent sources
-\citep{kim2026bettersource}.
+ConfGF and GeoDiff generate conformations conditioned on a chemical graph \citep{shi2021confgf,xu2022geodiff}. HarmonicFlow combines harmonic sources with self-conditioned flow matching for ligand docking, and FlowSite extends the approach to binding-site design \citep{stark2024harmonicflow}. ET-Flow likewise constructs its harmonic source from a supplied molecular graph \citep{etflow}. Our source instead averages over auxiliary trees conditioned only on atomic composition. Other source-adaptation methods guide a frozen vector field \citep{wang2026sourceguided} or learn a condition-dependent source \citep{kim2026bettersource}. Our main experiments use the EGNN underlying EDM \citep{edm}; the earlier source experiments use FlowMol3's coordinate network and self-conditioning modules \citep{flowmol3}.
 
 \paragraph{Distributions over trees.}
-Factored tree distributions allow tractable probabilities and learning over trees
-\citep{meila2000trees,duan2023spanning}. Gaussian mixtures defined through
-random spanning-tree differences have also been used for imaging inverse problems
-\citep{everink2026random}. We use isotropic edge displacements and atomic length
-scales to define a distribution over centered molecular coordinates. Our source
-experiments compare this mixture with isotropic Gaussian, shell-tree, and
-covariance-matched Gaussian alternatives.
+Factored tree distributions support tractable probabilities and learning \citep{meila2000trees,duan2023spanning}. Random spanning-tree differences have also been used to define Gaussian mixtures for imaging inverse problems \citep{everink2026random}. We use isotropic edge displacements with atomic length scales to define a distribution on centered molecular coordinates. Isotropic Gaussian, shell-tree, and covariance-matched Gaussian controls test the effect of this source construction.
 
 \paragraph{Physical feedback and nonequilibrium work.}
-OMol25 provides molecular structures, energies, and forces across electronic
-conditions \citep{omol25}. Energy-weighted flow matching
-\citep{dern2025energyweighted}, importance-sampling-based training
-\citep{fab}, and physical-reward fine-tuning of molecular diffusion models
-\citep{zhou2025rlpf} provide ways to incorporate physical information into
-generation. Simulation data also support protein fine-tuning \citep{lu2024fusing},
-and physical proxies can guide residual correction of frozen video flow fields
-\citep{wang2026pila}. FLEXDOCK regularizes predicted docking endpoints with a
-geometry-based potential \citep{corso2025flexdock}. ConfDiff learns a force-guidance
-network for protein conformations \citep{wang2024confdiff}, while
-\citet{lai2026forceguidance} apply MMFF94 guidance during molecular flow and
-diffusion sampling. We learn bounded equivariant corrections from bond-free
-forces at generated provisional endpoints, keeping the parent fixed and using
-neural evaluations during generation.
-A separate extension uses nonequilibrium work identities to reweight local
-physical targets \citep{jarzynski1997master,hummerszabo2001,escorted2008,jarzynski2002targeted}.
-Related learned escorting supports multistate free-energy estimation
-\citep{holdijk2026escorted}. We test local distribution recovery with controlled
-molecular rotors and subsequent neural training.
+OMol25 provides molecular structures, energies, and forces across electronic conditions \citep{omol25}. Physical information can enter generative training through energy-weighted flow matching \citep{dern2025energyweighted}, importance sampling \citep{fab}, physical-reward fine-tuning \citep{zhou2025rlpf}, or simulation-based protein fine-tuning \citep{lu2024fusing}. Residual physical correction has also been studied for frozen video flow fields \citep{wang2026pila}. In molecular modeling, FLEXDOCK regularizes predicted docking endpoints with a geometric potential \citep{corso2025flexdock}; ConfDiff learns force guidance for protein conformations \citep{wang2024confdiff}; and \citet{lai2026forceguidance} apply MMFF94 guidance during flow and diffusion sampling. Our physical network learns bounded coordinate corrections from forces at generated endpoints while the backbone is fixed.
+
+We also examine local target reweighting through nonequilibrium work identities \citep{jarzynski1997master,hummerszabo2001,escorted2008,jarzynski2002targeted}. Learned escorting has been used for multistate free-energy estimation \citep{holdijk2026escorted}. Our supplementary studies test local distribution recovery on controlled molecular rotors and its effect on subsequent neural training.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{../research/figures/figure1_redesign_v1/figure1.pdf}
-\caption{LatentSpring generates coordinates from atomic composition.
-(a) A replayed harmonic source and its raw $\mathrm{C_7H_{15}N}$ output share
-camera and scale. Dashed links are auxiliary springs; the inset shows the
-output's inferred connectivity (Appendix~\ref{app:chemical-geometry}).
-(b) At each sampling step, the generator predicts endpoint coordinates $H$.
-The geometric field produces $g$ and updates this estimate to $H_g=H+(1-p)g$;
-the physical field then predicts $f$. Both contribute to the endpoint
-change $\Delta H$, with progress $p$ and physical strength $\eta=4$.
-Element and progress inputs are omitted from the head labels.
-(c) Perturbed references train geometric recovery; eSEN forces at endpoints
-from the initial flow train the physical correction. Generation uses neural
-networks without energy queries or geometry optimization.}
+\includegraphics[width=\linewidth]{../research/figures/final_complete_v1/figures/figure1.pdf}
+\caption{LatentSpring architecture and training. (a) Replayed harmonic source and raw neutral-singlet $\mathrm{C_7H_{15}N}$ output, with the same camera and scale. The example comes from the 12-composition common-element validation panel, separately from the main 64-composition benchmark (Appendix~\ref{app:chemical-geometry}). Dashed links are the sampled auxiliary tree; output bonds are the recorded, coordinate-inferred graph. (b) The geometric head changes the predicted endpoint $H$ to $H_g=H+(1-p)g$. The physical head then receives $(X,H_g)$, giving the total displacement $\Delta H=(1-p)(g+\eta f)$ with $\eta=4$. Reference geometry trains backbone recovery and the geometric head; eSEN forces at initial-flow endpoints train the physical head. All networks are fixed during sampling, with no energy queries or geometry optimization.}
 \label{fig:method}
 \end{figure}
 
 \section{A harmonic source with latent connectivity}
-We represent the input as $c=((z_i)_{i=1}^{N},Q,S)$, where $z_i$ is the atomic number of each atom, $Q$ is the total charge in elementary-charge units, and $S$ is the spin multiplicity. Repeated
-elements appear once per atom. A neutral singlet has $Q=0$ and $S=1$. For example,
-$\mathrm{C_2H_6O}$ specifies two carbon atoms, six hydrogens, and one oxygen, but
-allows different bond connectivities. Bonds are inferred from coordinates for
-evaluation, not supplied as training labels.
+The condition $c=((z_i)_{i=1}^{N},Q,S)$ specifies each atom's atomic number $z_i$, the total charge $Q$ in elementary-charge units, and spin multiplicity $S$. For example, neutral singlet $\mathrm{C_2H_6O}$ has $Q=0$ and $S=1$, but permits several connectivities. Chemical bonds are inferred for evaluation and are not training labels.
 
-The output coordinates form $X\in\RR^{N\times3}$, where row $x_i$ is atom $i$'s
-position in angstroms. We subtract the mean atom position to remove translation. The centered coordinates lie in $\HH_N=\{X:\sum_i x_i=0\}$, a space with $3(N-1)$ independent coordinates.
+The output is a coordinate matrix $X\in\RR^{N\times3}$, with positions $x_i$ in angstroms. Subtracting the mean position removes translation and places $X$ in the $3(N-1)$-dimensional centered space $\HH_N=\{X:\sum_i x_i=0\}$.
 
-\paragraph{Sampling a tree.}
-We first sample a spanning tree $T$ over the atoms: a connected graph with $N-1$
-edges and no cycles. This tree tells us how to place the starting coordinates; it
-does not specify the final chemical bonds. Each possible edge $(i,j)$ has a
-positive weight, or affinity, $a_{ij}=a_{ji}$. We sample a tree with probability
-proportional to the product of its edge weights:
+\paragraph{Tree distribution.}
+We sample a spanning tree $T$ over the atoms, assigning each possible edge a positive symmetric affinity $a_{ij}=a_{ji}$. The probability of a tree is proportional to the product of its affinities:
 \begin{equation}
  p(T\mid c)=\frac{\prod_{(i,j)\in T}a_{ij}}{\tau(a)},\qquad
  \tau(a)=\sum_T\prod_{(i,j)\in T}a_{ij}.
  \label{eq:tree-law}
 \end{equation}
-The sum $\tau(a)$ normalizes this distribution over all spanning trees. We use
-$a_{ij}=u_i u_j$, where $u_i=0.05$ for H and F/Cl/Br/I, and
-$u_i=\max(1,\text{default valence}(z_i)-1)$ otherwise. Larger $u_i$ favors more
-tree edges incident to atom $i$. Small weights for hydrogen and halogens favor
-terminal positions. Default valence is an element-level bonding capacity,
-counting bond order; these weights require no molecule-specific bonds.
+Here $\tau(a)$ sums the weights of all spanning trees. We use $a_{ij}=u_i u_j$, with $u_i=0.05$ for H and F/Cl/Br/I and $u_i=\max(1,\text{default valence}(z_i)-1)$ otherwise. Higher values favor more incident edges, while the small hydrogen and halogen weights favor terminal positions. These affinities use element-level valences rather than molecule-specific connectivity.
 
-\paragraph{Placing atoms along the tree.}
-For each tree edge, we independently sample a three-dimensional Gaussian
-displacement. Its scale depends on $\ell_{ij}$, the sum of the two atoms' covalent
-radii, which estimates a typical single-bond separation. We set
-$\sigma_{ij}^2=\ell_{ij}^2\exp(s^2)/3$ with $s=0.2$. The edge displacement
-$d\in\RR^3$ has density
+\paragraph{Coordinate sampling.}
+Each edge has an independent Gaussian displacement $d\in\RR^3$. Let $\ell_{ij}$ be the sum of the two atoms' covalent radii and set $\sigma_{ij}^2=\ell_{ij}^2\exp(s^2)/3$, with $s=0.2$. The edge density is
 \begin{equation}
  h_{ij}(d)=(2\pi\sigma_{ij}^2)^{-3/2}
  \exp\!\left[-\frac{\|d\|^2}{2\sigma_{ij}^2}\right].
  \label{eq:edge-law}
 \end{equation}
-Here $\sigma_{ij}$ is the standard deviation along each axis. All directions are
-equally likely, and the radius-based scale determines the typical separation.
-This choice also matches the edge covariance of the lognormal shell control.
-The FlowMol implementation samples trees with weighted Wilson walks; the shared
-EGNN uses weighted Pr\"ufer sequences for the same factorized tree law. We add
-edge vectors along tree paths and subtract the mean position. We draw a new tree
-for every sample. The resulting law is unchanged by rotations or relabelings of
-identical atoms.
+Thus $\sigma_{ij}$ is the standard deviation along each axis, and the covariance matches that of the lognormal shell control. We add edge vectors along tree paths and center the resulting coordinates. The FlowMol implementation uses weighted Wilson walks; the shared EGNN uses weighted Pr\"ufer sequences to sample the same factorized tree law. Drawing a new tree for each sample yields a source invariant to rotations and permutations of identical atoms.
 
-\paragraph{The source density.}
-For FM, the tree is unobserved after initialization. Summing over it gives the source
-density $q_0(X\mid c)$, a mixture of harmonic networks:
+\paragraph{Normalized mixture density.}
+Marginalizing the auxiliary tree gives a mixture of harmonic networks:
 \begin{proposition}[Normalized source density]
 For normalized isotropic edge densities,
 \begin{equation}
@@ -183,138 +92,49 @@ For normalized isotropic edge densities,
 \end{equation}
 integrates to one over the centered coordinate space $\HH_N$.
 \end{proposition}
-The numerator sums tree weights after multiplying each edge affinity by its
-displacement density. The factor $N^{3/2}$ converts independent edge vectors into
-centered atom coordinates. The matrix-tree theorem evaluates each sum through a
-determinant rather than enumerating trees; Appendix~\ref{app:proof} derives the
-normalization. Training only needs samples from the tree-and-edge procedure. It
-does not evaluate this determinant. Physical learning uses a separate local
-Gaussian neighborhood around each predicted endpoint.
-
-We call the source \emph{harmonic} because each Gaussian edge density corresponds
-to a quadratic spring energy. These virtual springs organize the initial random
-coordinates; the learned flow determines the final molecular geometry.
+The numerator weights each tree edge by its displacement density. The Jacobian factor $N^{3/2}$ converts edge vectors to centered atom coordinates. Both tree sums can be evaluated by the matrix-tree theorem; Appendix~\ref{app:proof} derives the normalization. Training requires only the tree-and-edge sampler, not determinant evaluation. The Gaussian edge densities correspond to quadratic spring energies, hence the term \emph{harmonic source}.
 
 \section{Integration with molecular flow matching}\label{sec:flow}
-Given the input $c$, the flow matching model transforms $X_0\sim q_0(\cdot\mid c)$ into
-$X_{\rm gen}\in\HH_N$. The velocity network takes the current coordinates $X_t$, an embedding of flow time $t$, and $c$ to predict $v_\theta(X_t,t;c)\in\RR^{N\times3}$: one
-velocity vector per atom. Integrating this field from $t=0$ to $t=1$ produces
-the coordinates. The latent tree is used only to sample $X_0$ and is not passed
-to the network as a bond graph. Energy and force evaluations are used during
-physical training, not during generation.
+Starting from $X_0\sim q_0(\cdot\mid c)$, we integrate $v_\theta(X_t,t;c)\in\RR^{N\times3}$ from $t=0$ to $t=1$ to obtain $X_{\rm gen}\in\HH_N$. The network receives current coordinates, a time embedding, and encoded atom identities. The experiments fix charge $Q=0$ and spin multiplicity $S=1$; the sampled tree serves only to initialize $X_0$.
 
-\paragraph{Training pairs and velocity targets.}
-We draw $X_0$ from the harmonic source and take a reference structure $X_1$ from
-OMol25. We align the structures by matching atoms of the same type and rotating
-them to reduce their coordinate displacement. We then apply the same random
-rotation and the same random relabeling of identical atoms to both structures.
-The rotation is uniform over orientations. This shared augmentation preserves
-the source marginal (Appendix~\ref{app:symmetry}).
-
-We use the linear path $X_t=(1-t)X_0+tX_1$, with velocity target
-$V^*=X_1-X_0$. Thus training is supervised regression from an intermediate
-structure to the displacement between its paired endpoints. The variable
-$t\in[0,1]$ measures progress along this interpolation, not physical time.
+\paragraph{Training pairs.}
+We pair a source sample $X_0$ with an OMol25 reference $X_1$, matching atoms of the same type and aligning the coordinates by rotation. A shared uniform random rotation and random permutation of identical atoms then preserve the source marginal (Appendix~\ref{app:symmetry}). Along the linear interpolation $X_t=(1-t)X_0+tX_1$, the regression target is $V^*=X_1-X_0$. Here $t\in[0,1]$ denotes interpolation progress.
 
 \paragraph{Geometry self-conditioning.}
-The main EGNN predicts one centered velocity vector per atom. Self-conditioning
-evaluates this network twice. The first prediction $v^{(0)}$ gives a provisional
-endpoint, $\widehat X_1=X_t+(1-t)v^{(0)}$. The second pass receives its pairwise
-distances through an invariant edge channel and predicts $v^{(1)}$. Both passes
-share weights; the provisional geometry is detached before constructing the
-second-pass distance features.
-
-We supervise both velocity predictions:
+The EGNN is evaluated twice with shared weights. Its first velocity prediction $v^{(0)}$ defines a provisional endpoint $\widehat X_1=X_t+(1-t)v^{(0)}$. Pairwise distances from this detached geometry enter an invariant edge channel in the second pass, which predicts $v^{(1)}$. Both predictions are supervised:
 \begin{equation}
  \mathcal L_{\rm FM}=\frac12\EE\left[
  \frac{\|v^{(0)}-V^*\|_F^2+\|v^{(1)}-V^*\|_F^2}{3N}\right].
 \end{equation}
-The expectation averages over reference structures, source samples, and training
-times. The loss averages the two passes and the $3N$ coordinate errors, giving
-each molecule equal weight. Both evaluations receive supervised gradients, while
-the distance feedback is held fixed during differentiation. Atom identities
-remain fixed and no chemical bond labels are supplied. The one-pass component
-ablation omits the second evaluation. Appendix~\ref{app:source-study-setup}
-describes the earlier FlowMol implementation.
+The expectation is over reference structures, source samples, and interpolation times. Normalization by $3N$ gives each molecule equal weight. Gradients train both passes but do not propagate through the distance feedback. The one-pass ablation omits the second evaluation; Appendix~\ref{app:source-study-setup} describes the earlier FlowMol implementation.
 
-\paragraph{Learning to recover geometry.}
-Sampling can produce structures that differ from the training interpolation.
-We continue training with perturbed late interpolants: some atoms receive local
-noise, and a spatial region may be displaced as a group. The network learns to
-recover the original reference coordinates. This endpoint loss also compares
-local distances and angles with the reference, and alternates with the original
-FM objective. It uses coordinates and element identities as supervision.
-Training-time distortion has also improved molecular flow models
-\citep{flowmol3}; our continuation study separates recovery training from the
-effect of additional updates (Appendix~\ref{app:geometric-recovery}).
+\paragraph{Geometric recovery training.}
+To improve recovery from sampling errors, we continue backbone training on perturbed late interpolants. Perturbations add local atom noise or displace a spatial region as a group. The recovery objective compares the predicted endpoint coordinates, local distances, and angles with the original reference, alternating with the FM loss. Supervision uses coordinates and element identities. Training-time geometric distortion has also benefited molecular flow models \citep{flowmol3}. Appendix~\ref{app:geometric-recovery} compares the complete recovery procedure with unperturbed endpoint continuation using the same number of backbone updates.
 
 \paragraph{Sampling.}
-The main FM uses 32 midpoint steps. Each step evaluates the current coordinates
-and time, advances a half-step, then evaluates the half-step coordinates at the
-midpoint time to obtain the full-step update. Two self-conditioning passes per
-velocity evaluation give $32\times2\times2=128$ backbone calls per output.
-The two corrections below act on each final velocity prediction, adding
-64 geometry-head and 64 physical-head calls. The generated coordinates are returned without a
-terminal perturbation, energy-based selection, or geometry optimization.
+We use 32 midpoint steps. Each step evaluates the velocity at the current state and again at the half-step state; two self-conditioning passes per evaluation give $32\times2\times2=128$ backbone calls. Applying the two endpoint corrections below adds 64 calls to each small network. We return the raw coordinates without terminal noise, energy-based selection, or geometry optimization.
 
 \subsection{Geometric and physical endpoint corrections}\label{sec:endpoint-correction}
-A generated structure needs both a plausible arrangement of atoms and favorable
-physical forces. We learn these two corrections separately and apply them to
-the generator's \emph{provisional endpoint}, its current estimate of the final
-coordinates (Figure~\ref{fig:method}). For current coordinates $X$ and generation
-progress $p$, a flow predicts velocity $v$ and endpoint $H=X+(1-p)v$.
-Progress is the fraction of the sampling schedule completed; for FM, $p=t$.
+We train separate networks for geometric recovery and force-based refinement (Figure~\ref{fig:method}). Both act on the provisional endpoint: the generator's current prediction of its final coordinates. For a flow with current state $X$, velocity $v$, and schedule progress $p=t$, this estimate is $H=X+(1-p)v$.
 
-\paragraph{Geometric recovery.}
-We perturb training references that pass the geometric checks and teach a small
-network to restore their coordinates. For a reference $X_{\rm ref}$ and its
-noisy version $\widetilde H$, the velocity target is
-$(X_{\rm ref}-\widetilde H)/(1-p)$. A common rescaling bounds every atom's
-target norm by $4p^2$\,\AA\ per unit progress. Unperturbed references also
-receive zero targets. The network $G_\psi(H,p;c)$ uses element identities,
-distances, local coordination and neighboring element embeddings to predict
-one restoring vector per atom. Symmetric pair features and opposite vector
-messages give rotation/permutation equivariance and zero total velocity.
-It requires no input chemical graph. Appendix~\ref{app:geometric-recovery}
-specifies the reference screen, perturbations and network.
+\paragraph{Geometric correction.}
+For a reference $X_{\rm ref}$ that passes the geometric checks, we construct a perturbed endpoint $\widetilde H$ and train $G_\psi(\widetilde H,p;c)$ toward $(X_{\rm ref}-\widetilde H)/(1-p)$. Uniform rescaling caps each atom's target norm at $4p^2$\,\AA\ per unit progress; unperturbed references receive zero targets. The network uses element identities, pair distances, local coordination, and neighboring element embeddings. Symmetric pair features and opposite vector messages ensure rotation/permutation equivariance and zero total velocity. Appendix~\ref{app:geometric-recovery} gives the reference screen, perturbations, and architecture.
 
-\paragraph{From forces to a regression target.}
-We collect provisional endpoints from the initial flow and evaluate the centered,
-mirror-averaged eSEN force $F_+(H)$ during training. The local displacement target is
+\paragraph{Physical correction.}
+We collect predicted endpoints from the initial flow and evaluate their centered, mirror-averaged eSEN forces $F_+(H)$. The target coordinate shift is
 \begin{equation}
  \delta(H)=\frac{\sigma_H^2}{k_BT_{\rm phys}}F_+(H),
  \qquad T_{\rm phys}=300\ {\rm K}.
  \label{eq:local-force-shift}
 \end{equation}
-Here $\sigma_H$ is a local coordinate width, distinct from diffusion noise.
-Under a first-order energy approximation, multiplying a Gaussian centered at
-$H$ by a Boltzmann factor shifts its mean by exactly $\delta(H)$.
-We choose $\sigma_H\leq0.03$\,\AA\ so the molecular displacement norm is at
-most 0.1\,\AA. Appendix~\ref{app:local-work} gives the derivation.
-The local shift supplies the regression target for physical correction.
+Under a first-order energy approximation, Boltzmann reweighting of a Gaussian centered at $H$ shifts its mean by $\delta(H)$. We choose its local width $\sigma_H\leq0.03$\,\AA\ to keep the molecular displacement norm within 0.1\,\AA\ (Appendix~\ref{app:local-work}). This local width is independent of the diffusion-noise scale.
 
-The physical network $A_\phi(X,H,p;c)$ receives current and predicted final
-coordinates, atom identities, and progress. Symmetric pair coefficients multiply
-opposite relative vectors, giving an equivariant correction with zero total
-velocity. Its per-atom norm is bounded by $2p^2$\,\AA\ per unit progress.
-We fit $A_\phi$ by squared error to $\delta(H)/(1-p)$, uniformly rescaling
-this target if necessary to satisfy the same bound. All recorded training
-states are retained, including invalid provisional geometries. The final layer
-starts at zero, so the initial model reproduces the parent. Only the small
-physical network is trained in this stage. Its weights are then reused after
-geometric refinement of the backbone and in the transfer experiments.
+The physical network $A_\phi(X,H,p;c)$ predicts a velocity correction from the current coordinates, endpoint estimate, atom identities, and progress. As in the geometric network, symmetric coefficients and opposite pair vectors give an equivariant, zero-sum field. We minimize squared error to $\delta(H)/(1-p)$, with both targets and predictions bounded by $2p^2$\,\AA\ per atom per unit progress. Training includes every recorded state, including invalid endpoints, and initializes the final layer to zero. The backbone is fixed during this stage. We subsequently reuse the physical weights with the geometrically refined backbone and in transfer experiments.
 
-\paragraph{Combining the two corrections.}
-The geometric field first predicts $g=G_\psi(H,p;c)$ and updates the endpoint
-estimate to $H_g=H+(1-p)g$. The physical field then predicts
-$f=A_\phi(X,H_g,p;c)$ at this updated geometry. A strength $\eta$ scales the
-physical contribution. Thus geometry recovery and physical feedback enter
-the same coordinate update while providing different training signals.
+\paragraph{Sequential endpoint refinement.}
+The geometric network predicts $g=G_\psi(H,p;c)$, giving $H_g=H+(1-p)g$. The physical network then evaluates $f=A_\phi(X,H_g,p;c)$. With physical strength $\eta$, the total endpoint displacement is $(1-p)(g+\eta f)$.
 
-\paragraph{The same coordinate action for flow and diffusion.}
-For diffusion, the parent predicts noise $\epsilon$ and its endpoint estimate
-is $H=(X-\sigma_t\epsilon)/\alpha_t$, where $\alpha_t$ and $\sigma_t$ are the
-fixed schedule's signal and noise scales. These two parameterizations require
+For a diffusion model, $H=(X-\sigma_t\epsilon)/\alpha_t$, where $\epsilon$ is the predicted noise and $\alpha_t,\sigma_t$ are the schedule's signal and noise scales. The corresponding native-output corrections are
 \begin{equation}
  v^{\rm corr}=v+g+\eta f,
  \qquad
@@ -322,70 +142,33 @@ fixed schedule's signal and noise scales. These two parameterizations require
        \frac{\alpha_t(1-p)}{\sigma_t}(g+\eta f).
  \label{eq:endpoint-native-updates}
 \end{equation}
-Substitution into either endpoint estimate gives the same displacement
-$(1-p)(g+\eta f)$. In GAGA, $p=1-t/t_{\max}$, with diffusion noise time $t$
-and truncation $t_{\max}=0.65$. Transfer retains each target's source,
-transitions and observation noise. During generation both corrections are
-neural evaluations; the energy model is used only to prepare training targets.
+Both produce the specified endpoint displacement. GAGA uses $p=1-t/t_{\max}$ with $t_{\max}=0.65$. Transfer preserves the target's source distribution, reverse transitions, and final observation noise. All sampling-time corrections are neural evaluations.
 
-The head architecture, bounds and fitting protocol are given in
-Appendices~\ref{app:force-correction} and~\ref{app:matched-connection}.
-Paired backbone updates and work-weighted local targets are studied separately
-in Appendices~\ref{app:paired-training} and~\ref{app:jarzynski}.
+Appendices~\ref{app:force-correction} and~\ref{app:matched-connection} detail the architectures, bounds, and fitting protocol. Separate studies examine paired backbone updates (Appendix~\ref{app:paired-training}) and work-weighted local targets (Appendix~\ref{app:jarzynski}).
 
-\paragraph{Conditional hydrogen readout.}
-An optional flow adjusts hydrogen coordinates while holding relative heavy-atom
-positions fixed. It learns from perturbed reference hydrogens and is activated
-by a detached-hydrogen contact test. Four midpoint steps add eight network calls
-(Appendix~\ref{app:hydrogen-readout}).
+\paragraph{Optional hydrogen readout.}
+A conditional flow trained on perturbed reference hydrogens adjusts hydrogen coordinates while preserving relative heavy-atom positions. A detached-hydrogen contact test activates the readout, which uses four midpoint steps and eight network calls (Appendix~\ref{app:hydrogen-readout}).
 
 \section{Experiments}\label{sec:experiments}
 \subsection{Experimental setup}\label{sec:experimental-setup}
-We study molecular generation conditioned on atomic composition, total charge,
-and spin multiplicity. The main comparison uses an EGNN backbone trained on
-20,000 OMol25 structures and evaluates 64 unseen neutral organic singlet
-compositions with 17--40 atoms. Each trained model generates 16 structures per
-composition. We compare Gaussian-source FM, EDM \citep{edm}, GAGA
-\citep{qu2026gaga}, and LatentSpring. The latter combines the harmonic-mixture
-source, geometric recovery and learned physical correction; the optional hydrogen readout is
-excluded from the main comparison and component ablation.
+We train the main EGNN on 20,000 OMol25 structures and evaluate 64 unseen neutral organic singlet compositions with 17--40 atoms. Each fit generates 16 structures per composition. The comparison includes Gaussian-source FM, EDM \citep{edm}, GAGA \citep{qu2026gaga}, and LatentSpring, which combines the harmonic source, geometric recovery, and endpoint corrections. The main comparison and component ablation exclude the optional hydrogen readout.
 
-We report two measures. \emph{Graph validity} is the fraction of outputs for
-which bond inference produces a connected, sanitized chemical graph with the
-requested charge. \emph{Joint yield} additionally requires a GFN2-xTB atomic
-force RMS of at most 5 eV/\AA. Both denominators include every generation
-attempt. All physical evaluations use the generated coordinates, with no
-geometry optimization or energy-based filtering. We additionally report \emph{geometry-and-force yield}, which requires a valid inferred graph, zero
-assigned radicals and the declared checks of bond lengths, angles, internal
-distances and planarity as well as the force criterion. Confidence intervals
-resample compositions and, where specified, fitted models. Appendix~\ref{app:main-implementation}
-gives implementation details and Appendix~\ref{app:data-evaluation} specifies the
-structural checks.
+We report three nested criteria. \emph{Graph validity} requires an inferred connected, sanitized chemical graph with the requested total charge. \emph{Graph-and-force yield}, abbreviated \emph{joint yield}, additionally requires GFN2-xTB atomic force RMS at most 5 eV/\AA. \emph{Geometry-and-force yield} also requires zero assigned radicals and the specified bond-length, angle, internal-distance, and planarity checks. Every rate uses all generation attempts as its denominator, and all structures are evaluated at their raw coordinates. Confidence intervals resample compositions and, where stated, fitted models. Appendices~\ref{app:main-implementation} and~\ref{app:data-evaluation} give implementation and evaluation details.
 
 \input{sections/main_generator_comparison}
 \input{sections/source_head_ablation}
 \input{sections/combined_transfer_results}
 \section{Discussion}
-LatentSpring combines a composition-based harmonic source with learned geometric
-and physical corrections. Recovery training improves connectivity, while the
-small geometric field complements force feedback at the predicted endpoint.
-The complete model improves raw graph, geometry and force criteria across five
-fits and exceeds a matched continuation control. Remaining errors include
-fragmentation, nonplanarity and unusual inferred charge patterns, motivating
-further work on global chemical connectivity.
+LatentSpring combines an element-aware harmonic source with learned geometric and physical endpoint corrections. Across five fits, the complete method improves raw graph-and-force and geometry-and-force yields; it also outperforms unperturbed endpoint continuation with matched backbone updates. Direct weight reuse in EDM and GAGA shows that endpoint corrections can remain useful across generative objectives within the shared architecture.
+
+Chemical quality remains the main limitation. Fragmentation, nonplanarity, and unusual inferred charge patterns persist even after geometric refinement. Improving global connectivity and charge assignment is therefore necessary for more reliable composition-conditioned generation.
 
 \label{endofmaintext}
 \subsubsection*{Reproducibility statement}
-Code and manifests record seeds, checkpoint hashes, evaluation settings, and all
-attempted outputs. Training, target preparation, and generation costs are reported
-separately. Released per-output scores, numerical arrays, and audit summaries reproduce the
-reported tables and confidence intervals. Tests cover source normalization, symmetry,
-density gradients, and work identities. Original data and backbone licenses and
-access requirements apply.
+The released code, per-output scores, and numerical arrays reproduce the tables and confidence intervals. Manifests record seeds, checkpoint hashes, evaluation settings, and every generation attempt. Training, target preparation, and sampling costs are reported separately. Tests cover source normalization, symmetry, density gradients, and work identities. The original data and backbone licenses and access requirements apply.
 
 \subsubsection*{AI use statement}
-OpenAI Codex and Claude Code assisted method and experiment development, code,
-analysis, figure preparation, and manuscript writing.
+OpenAI Codex and Claude Code assisted method and experiment development, code, analysis, figure preparation, and manuscript writing.
 
 \bibliography{refs,tree_refs}
 \bibliographystyle{iclr2027_conference}
@@ -422,114 +205,42 @@ analysis, figure preparation, and manuscript writing.
 \input{sections/harmonic_native_results}
 
 \section{Normalization of the harmonic mixture}\label{app:proof}
-We first compute the density for one tree, then average over trees. The key is
-the change of coordinates from independent edge vectors to centered atom positions.
-For a tree $T$, let $B_T\in\RR^{(N-1)\times N}$ be its edge-incidence matrix.
-Each row has $+1$ and $-1$ at the endpoints of one edge, so $B_TX$ contains the
-edge displacements. Let $U\in\RR^{N\times(N-1)}$ have orthonormal columns that
-span the centered subspace for one spatial dimension.
+For a tree $T$, let $B_T\in\RR^{(N-1)\times N}$ be its oriented edge-incidence matrix, so that $B_TX$ contains the edge displacements. Let $U\in\RR^{N\times(N-1)}$ have orthonormal columns spanning the centered subspace in one spatial dimension. We compute the Jacobian from independent edge vectors to centered positions and then average the resulting density over trees.
 
-Because $B_T\mathbf1=0$, we have
-$(B_TU)(B_TU)^\top=B_TB_T^\top$. By Cauchy--Binet,
-$\det(B_TB_T^\top)$ is the sum of the squares of its $N$ maximal minors. Every
-maximal minor of a tree incidence matrix is $\pm1$, so this determinant is $N$.
-The absolute Jacobian is therefore $\sqrt N$ in one spatial dimension and
-$N^{3/2}$ in three dimensions. The density for a fixed tree is consequently
-$q(X\mid T,c)=N^{3/2}\prod_{e\in T}h_e(B_TX)$, with each edge density evaluated
-at its corresponding row of $B_TX$. It integrates to one. Averaging these
-normalized components with Equation~\eqref{eq:tree-law} gives
-Equation~\eqref{eq:source} and preserves normalization.
+Since $B_T\mathbf1=0$, $(B_TU)(B_TU)^\top=B_TB_T^\top$. Cauchy--Binet expresses $\det(B_TB_T^\top)$ as the sum of squares of the $N$ maximal minors. Each minor of a tree incidence matrix is $\pm1$, giving determinant $N$ and absolute Jacobian $\sqrt N$ per spatial dimension. The three-dimensional density is therefore $q(X\mid T,c)=N^{3/2}\prod_{e\in T}h_e(B_TX)$, with each factor evaluated at its edge displacement. It integrates to one. Averaging with the tree law in Equation~\eqref{eq:tree-law} gives the normalized mixture in Equation~\eqref{eq:source}.
 
 \section{Source invariance under symmetry coupling}\label{app:symmetry}
-Alignment chooses a rotation and atom relabeling using the reference structure.
-We show why a subsequent shared random augmentation restores the source marginal,
-even when the source is not Gaussian.
+The alignment used to pair source and reference structures depends on both endpoints. A shared random symmetry restores the source marginal after this alignment.
 
-Let $G$ be the compact group of proper rotations and permutations of identical
-conditioning labels. Assume that $q_0$ is invariant under $G$ and $X\sim q_0$.
-The pairing procedure selects $g(X,Y)\in G$ using the target $Y$. Independently
-draw $H$ from the uniform, or Haar, distribution on $G$. Conditional on the orbit
-of $X$ and the selected $g$, the transformed source $HgX$ has the same uniform
-orbit distribution as $HX$, by Haar invariance. An orbit here is the set of
-configurations obtained by applying these symmetries to one configuration.
-Alignment changes neither the orbit nor its probability. Averaging over source
-orbits therefore recovers $q_0$.
-
-The paired endpoints can still be correlated. The training objective uses their
-conditional displacement target directly; this argument establishes the source
-marginal, not independence of the endpoints.
+Let $G$ be the compact group of proper rotations and permutations of identical conditioning labels, and let $X\sim q_0$ with $q_0$ invariant under $G$. Alignment selects $g(X,Y)\in G$ using the reference $Y$. Draw an independent Haar-uniform $H\in G$. Conditional on the orbit of $X$ and on $g$, Haar invariance gives $HgX$ the same uniform orbit distribution as $HX$. Alignment preserves the orbit, and averaging over source orbits recovers $q_0$. The paired endpoints may remain correlated; the result establishes the marginal required for the conditional-displacement training objective.
 
 \section{Covariance controls}
-The shell-tree control uses the same radius-based edge scale but concentrates
-edge lengths around it. For each edge, it samples a length
-$R=\ell\exp(sZ-s^2/2)$, where $Z\sim N(0,1)$ and $s=0.2$, then samples a
-uniform direction. Since $\EE R^2=\ell^2\exp(s^2)$ and the direction has second
-moment $I/3$, the edge covariance is $vI=\ell^2\exp(s^2)I/3$.
+The shell-tree control samples an edge length $R=\ell\exp(sZ-s^2/2)$, with $Z\sim N(0,1)$ and $s=0.2$, and an independent uniform direction. Since $\EE R^2=\ell^2\exp(s^2)$ and the directional second moment is $I/3$, the edge covariance is $vI=\ell^2\exp(s^2)I/3$.
 
-Let $A_T$ map edge coordinates to centered atom coordinates. Independence of
-edges gives $C_T=A_T\operatorname{diag}(v_e)A_T^\top$, where $C_T$ is the
-atom-position covariance for one spatial axis and the diagonal matrix contains
-edge variances. Replacing the shell vectors by independent Gaussians with
-covariance $v_eI$ leaves $C_T$ unchanged. All tree components have zero mean,
-so the mixture covariance $\EE_TC_T$ is also unchanged.
+Let $A_T$ map edge vectors to centered atom coordinates. Edge independence gives $C_T=A_T\operatorname{diag}(v_e)A_T^\top$ for the atom-position covariance along one axis. Gaussian edge vectors with covariance $v_eI$ produce the same $C_T$. All component means are zero, so the shell-tree and harmonic mixtures also share covariance $\EE_TC_T$.
 
-The single-Gaussian control estimates this mixture covariance by averaging a
-finite number of tree covariances, with randomness seeded by composition. We then
-average over permutations within each atom species. This preserves positive
-definiteness on the centered subspace and makes the covariance invariant to
-relabeling identical atoms. The resulting Gaussian is exactly normalized for its
-chosen covariance, but the covariance only approximates that of the full tree
-mixture.
+The single-Gaussian control approximates this mixture covariance by averaging a finite number of tree covariances, seeded by composition, and then averaging over permutations within each element. This construction preserves positive definiteness on the centered subspace and invariance to identical-atom relabeling. The Gaussian is normalized exactly for the resulting estimated covariance.
 
 \section{Jarzynski identity for escorted transport}\label{app:jarzynski}
-This appendix states the change-of-variables identity behind our work-corrected
-local targets. Jarzynski's relation connects exponential work averages to
-free-energy differences, including in single-molecule pulling
-\citep{jarzynski1997master,hummerszabo2001}. Escorted transport adds an imposed
-coordinate flow and accounts for its volume change \citep{escorted2008}. Here,
-``work'' denotes the corrected energy-like quantity whose exponential supplies an
-importance weight.
+The work correction follows from a change-of-variables identity. Jarzynski's relation links exponential work averages to free-energy differences \citep{jarzynski1997master,hummerszabo2001}; escorted transport includes an imposed coordinate map and its volume change \citep{escorted2008}.
 
-Fix a composition and use volume measure on its centered coordinate space. Let
-$x$ collect the independent coordinates and let
-$\beta=1/(k_B T_{\rm phys})$. The unnormalized target is
-$\rho_1(x)=\mathbf1_\Omega(x)\exp[-\beta E(x)]$, with finite, nonzero
-$Z_1=\int_{\HH_N}\rho_1(x)\,dx$. The allowed region $\Omega$ can, for example,
-confine the molecule so that this integral is finite. The indicator is one inside
-this region and zero outside it; the normalized target is $\rho_1/Z_1$.
+Fix a composition and use intrinsic volume measure on its centered coordinate space. Let $x$ denote independent coordinates and $\beta=1/(k_B T_{\rm phys})$. Consider $\rho_1(x)=\mathbf1_\Omega(x)\exp[-\beta E(x)]$ with finite, nonzero $Z_1=\int_{\HH_N}\rho_1(x)\,dx$. The region $\Omega$ specifies the allowed configurations and can provide the confinement needed for a finite normalizer. The target density is $\rho_1/Z_1$.
 
-Let $q_0>0$ be the normalized source in Equation~\eqref{eq:source} and let
-$\Phi:\HH_N\to\HH_N$ be a differentiable, invertible map with nonzero intrinsic
-Jacobian. Its absolute determinant $|\det D\Phi|$ measures local expansion or
-compression in the independent coordinates. For $\Phi(x_0)\in\Omega$, define
+Let $q_0>0$ be the normalized source in Equation~\eqref{eq:source}, and let $\Phi:\HH_N\to\HH_N$ be differentiable and invertible with nonzero intrinsic Jacobian. For $\Phi(x_0)\in\Omega$, define
 \begin{equation}
  W_\Phi(x_0)=E(\Phi(x_0))+
  \beta^{-1}\log q_0(x_0)-
  \beta^{-1}\log|\det D\Phi(x_0)|,
 \end{equation}
-and set $W_\Phi=+\infty$ outside the allowed region, giving zero weight there.
-The source-density and Jacobian terms correct for where the mapped samples came
-from. Multiplying the exponential weight by the source density and changing
-variables gives
+Set $W_\Phi=+\infty$ outside the allowed region. The source-density and Jacobian terms account for the proposal distribution and local volume change. Changing variables gives
 \begin{align}
  \EE_{q_0}[e^{-\beta W_\Phi}]
  &=\int_{\HH_N}\rho_1(\Phi(x_0))|\det D\Phi(x_0)|\,dx_0\\
  &=Z_1.
 \end{align}
-Equivalently, the auxiliary source energy $E_0=-\beta^{-1}\log q_0$ has
-$Z_0=1$ in this measure, yielding a Jarzynski-type normalizer identity.
-For an observable $f$, we estimate the target mean with
-$\sum_j w_j f(\Phi(x_j))/\sum_j w_j$, where $w_j=e^{-\beta W_\Phi(x_j)}$.
-This is self-normalized importance sampling. Its finite-sample variance depends
-on how well the mapped proposals cover the target.
+The auxiliary source energy $E_0=-\beta^{-1}\log q_0$ has $Z_0=1$, yielding the Jarzynski-type normalizer identity. For an observable $f$, self-normalized importance sampling estimates its target mean by $\sum_j w_j f(\Phi(x_j))/\sum_j w_j$, with $w_j=e^{-\beta W_\Phi(x_j)}$. Its finite-sample variance depends on proposal coverage of the target.
 
-For an exact, sufficiently regular ordinary differential equation (ODE) flow,
-the intrinsic log determinant equals the integrated velocity divergence.
-Our implemented work corrections instead use explicit maps with tractable local
-densities: Gaussian translations in Appendix~\ref{app:local-work} and periodic
-rotor maps with analytic Jacobians in Appendix~\ref{app:rotor-work}. We do not
-use an exact neural-flow likelihood to evaluate the reported generator. Its
-outputs use the midpoint solver and terminal noise in Section~\ref{sec:flow}.
+For a sufficiently regular exact ODE flow, the intrinsic log determinant is the integrated velocity divergence. The implemented local-work studies instead use Gaussian translations (Appendix~\ref{app:local-work}) and periodic rotor maps with analytic Jacobians (Appendix~\ref{app:rotor-work}). They evaluate the densities of these explicit local maps, not an exact likelihood of the discretized neural generator.
 
 \input{sections/local_work_distillation}
 \input{sections/rotor_work_details}

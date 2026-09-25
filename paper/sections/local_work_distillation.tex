@@ -1,108 +1,48 @@
 \section{Local force-escorted work distillation}\label{app:local-work}
-The physical teacher constructs nearby candidate structures and determines how
-often each is used as a flow-matching target. We compare uniform sampling of
-force-shifted candidates with energy-weighted training
-\citep{dern2025energyweighted,fab}. A normalized Gaussian around each anchor
-makes the complete escorted-work weights explicit \citep{escorted2008}.
+The physical teacher constructs nearby structures and assigns their sampling weights as FM targets. We compare uniform sampling of force-shifted candidates with energy-weighted training \citep{dern2025energyweighted,fab}. A normalized Gaussian around each anchor makes the complete escorted-work weights tractable \citep{escorted2008}.
 
-\paragraph{Energy, force, and mirror symmetry.}
-The energy model gives a scalar $E(X)$ and forces $F(X)=-\nabla_X E(X)$.
-Each atom's force points toward decreasing energy. To treat mirror-related
-structures consistently, we evaluate both $X$ and its inversion $-X$ and use
-$E_+(X)=[E(X)+E(-X)]/2$ and $F_+(X)=[F(X)-F(-X)]/2$.
-The minus sign in the force average ensures $F_+=-\nabla E_+$. Inverted
-structures thus receive equal energies and opposite forces. Before constructing
-a displacement, we subtract the mean atom force so the displacement stays in
-the centered coordinate space.
+\paragraph{Mirror-symmetric energy and force.}
+Given $E(X)$ and $F(X)=-\nabla_X E(X)$, we define $E_+(X)=[E(X)+E(-X)]/2$ and $F_+(X)=[F(X)-F(-X)]/2$. This construction gives $F_+=-\nabla E_+$, equal energies for inverted structures, and opposite forces. Subtracting the mean atomic force keeps subsequent displacements in the centered subspace.
 
 \paragraph{Local reference and target.}
-For a graph-valid generated anchor $A$, let $G_A$ be its inferred labeled graph
-and define $q_A(X)=\mathcal N_{\HH_N}(A,\sigma_A^2I)$. We use thermal energy
-$kT=k_B T_{\rm phys}=0.0258519998$ eV at 300 K and set
+For a graph-valid anchor $A$ with inferred labeled graph $G_A$, define $q_A(X)=\mathcal N_{\HH_N}(A,\sigma_A^2I)$. At 300 K, $kT=k_B T_{\rm phys}=0.0258519998$ eV. Set
 \begin{equation}
  \sigma_A=\min\left(0.03\,\text{\AA},
  \sqrt{\frac{0.10\,\text{\AA}\,kT}{\|F_+(A)\|}}\right),\qquad
  \delta_A=\frac{\sigma_A^2}{kT}F_+(A).
 \end{equation}
-The norm is the Frobenius norm across all atom-force components. These choices
-bound the displacement norm by $0.10$\,\AA\ and the Gaussian width by
-$0.03$\,\AA. At zero force, we use the maximum width. Both quantities are fixed
-before sampling $X\sim q_A$. We then translate each candidate to $Y=X+\delta_A$.
-This map stays within the centered subspace and has determinant one.
+The Frobenius force norm determines a width at most $0.03$\,\AA\ and displacement norm at most $0.10$\,\AA. At zero force, the maximum width is used. These quantities are fixed before drawing $X\sim q_A$. Translation to $Y=X+\delta_A$ has determinant one and preserves centering.
 
-The unnormalized local target is
+The unnormalized target is
 \begin{equation}
  \rho_A(Y)=q_A(Y)\exp\!\left[-\frac{E_+(Y)-E_+(A)}{kT}\right]
  \mathbf1_{G_A}(Y).
 \end{equation}
-The Gaussian keeps structures near the anchor, while the energy factor favors
-lower-energy structures. The indicator restricts candidates to the anchor's
-inferred labeled bond orders, formal charges, and radical counts, together with
-the connected/nonoverlap checks. Thus this is a restrained local distribution,
-not an unrestricted equilibrium distribution over molecules.
+The Gaussian restrains the neighborhood around $A$, the energy factor favors lower-energy configurations, and the indicator preserves inferred labeled bond orders, charges, and radicals while enforcing connectivity and nonoverlap. The target is therefore a restrained, same-graph local distribution.
 
-\paragraph{Why the force displacement has this form.}
-Approximate energy near the anchor by
-$E_+(Y)-E_+(A)\simeq-\langle F_+(A),Y-A\rangle_F$.
-The inner product sums force times displacement over all atoms and coordinates.
-Multiplying this linearized Boltzmann factor by the Gaussian and completing the
-square gives
+\paragraph{Force-shift derivation.}
+Linearizing energy gives $E_+(Y)-E_+(A)\simeq-\langle F_+(A),Y-A\rangle_F$. Completing the square in the Gaussian times this Boltzmann factor yields
 \begin{equation}
  q_A(Y)\exp\!\left[\frac{\langle F_+(A),Y-A\rangle_F}{kT}\right]
  \ \propto\
  \mathcal N_{\HH_N}\!\left(Y;A+\frac{\sigma_A^2}{kT}F_+(A),\sigma_A^2I\right).
  \label{eq:linear-boltzmann-escort}
 \end{equation}
-Before applying the graph restriction, the force translation therefore samples
-the energy-weighted Gaussian exactly under the linear approximation. Equivalently,
-the Gaussian restraint is a virtual harmonic spring with stiffness
-$kT/\sigma_A^2$, and the force shifts its mean by force divided by stiffness.
-The same-graph check then truncates this distribution.
+Thus force translation exactly samples the linearly reweighted Gaussian before graph restriction. Equivalently, the Gaussian has spring stiffness $kT/\sigma_A^2$ and its mean shifts by force divided by stiffness. Applying the same-graph screen truncates this distribution.
 
-\paragraph{Complete local work.}
-Uniform weighting uses the linear approximation above. Complete-work weighting
-instead evaluates the nonlinear energy to correct departures from that
-approximation. With reference Hamiltonian $H_0=-kT\log q_A$ and target
-Hamiltonian $H_1=H_0+E_+-E_+(A)$ plus the hard support restriction, the
-work is
+\paragraph{Complete work.}
+To correct the linear approximation, we evaluate the nonlinear energy. With $H_0=-kT\log q_A$ and $H_1=H_0+E_+-E_+(A)$ on the allowed support, the work is
 \begin{equation}
  W_A(X)=E_+(Y)-E_+(A)+kT[\log q_A(X)-\log q_A(Y)]
 \end{equation}
-on allowed candidates, and $+\infty$ otherwise. The log-density terms correct
-for the shift from the proposal $X$ to $Y$. Change of variables gives
-$\mathbb E_{q_A}[\exp(-W_A/kT)]=\int\rho_A(Y)\,dY$.
-Analytic checks recover constant work for a constant-force translation, and the
-normalizer and weighted mean for a quadratic energy. Substituting the linearized
-energy in Equation~\eqref{eq:linear-boltzmann-escort} gives
-$W_A=-\sigma_A^2\|F_+(A)\|_F^2/(2kT)$ for every allowed candidate. Their
-weights are therefore equal in that approximation, explaining the less expensive
-force-only teacher.
+and is $+\infty$ outside it. The density ratio accounts for translation from $X$ to $Y$, giving $\mathbb E_{q_A}[\exp(-W_A/kT)]=\int\rho_A(Y)\,dY$. Analytic tests recover the constant-force identity and the quadratic-energy normalizer and weighted mean. Under Equation~\eqref{eq:linear-boltzmann-escort}, every allowed candidate has $W_A=-\sigma_A^2\|F_+(A)\|_F^2/(2kT)$, so uniform weights recover the linear approximation.
 
-\paragraph{Training pools and controls.}
-Each fine-tuning run selects eight distinct training compositions with 17--28
-atoms using a fixed metadata hash, then generates 32 anchors per composition.
-These compositions are excluded from evaluation. Invalid anchors count as
-generation attempts but do not enter the teacher pool. Each valid anchor produces
-eight force-shifted candidates; candidates outside its support receive zero
-weight. The complete-work model samples training endpoints with self-normalized
-$\exp(-W_A/kT)$ weights. The unweighted-escort model samples uniformly from the
-same allowed candidates. The replay model uses the original retained anchors,
-while the frozen model receives no further training. Anchors with no allowed
-candidate are recorded and excluded from all student pools in the same way.
+\paragraph{Training pools.}
+Each run selects eight 17--28-atom training compositions by metadata hash and generates 32 anchors per composition. Evaluation compositions are excluded. Invalid anchors remain in generation counts but not teacher pools. Each valid anchor produces eight shifted candidates. Complete-work training uses self-normalized $\exp(-W_A/kT)$ weights, with zero weight outside the support; the unweighted teacher samples uniformly from the same admissible candidates. Replay uses original retained anchors. Anchors without an admissible candidate are recorded and excluded consistently from all students.
 
-Each student alternates between 500 FM updates on original references and
-500 updates on generated endpoints. Initialization, anchor draws, optimization,
-and sampling budgets are shared. Replay needs no force queries; the unweighted
-escort needs anchor forces; complete work additionally needs energies at valid
-candidate endpoints. We distinguish the queries used in the shared research
-experiment from those required by each method on its own. Generation uses only
-the final network. Its temperature feature is fixed during training and
-evaluation; 300 K sets the local teacher weights.
+Each student receives 500 reference FM updates alternating with 500 generated-target updates, sharing initialization, anchor draws, optimization, and sampling budgets. Replay needs no physical labels; uniform escort requires anchor forces; complete work also requires candidate energies. Actual shared-experiment queries and standalone method requirements are reported separately. Sampling uses the final network, with a fixed temperature feature; 300 K determines the local teacher weights.
 
-Self-normalized weights introduce finite-particle bias. We report effective
-sample size (ESS) over each anchor's eight candidates:
-$(\sum_j w_j)^2/\sum_j w_j^2$. Equal weights give ESS equal to the candidate
-count, while a single dominant candidate gives ESS close to one.
+Self-normalized weighting has finite-particle bias. We report ESS as $(\sum_j w_j)^2/\sum_j w_j^2$, ranging from one for a dominant candidate to eight for equal weights.
 
 \input{sections/local_work_results}
 \input{sections/thermal_transfer_results}

@@ -1,17 +1,9 @@
 \section{Independent-backbone comparison}\label{app:matched-generators}
-This experiment tests the source without pretraining on a second architecture.
-All methods use the official EDM equivariant graph neural network (EGNN)
-\citep{edm}, with four message-passing layers, 256 hidden features, and
-2,381,566 parameters. We repeat training from two independent initializations.
-Within each repetition, all methods start from identical weights and receive the
-same minibatches. Atom types are fixed inputs throughout training and generation.
+We train all methods from scratch on the official EDM EGNN \citep{edm}: four message-passing layers, 256 hidden features, and 2,381,566 parameters. Two independent initializations are used. Within each repetition, methods share initial weights and minibatches, with atom types fixed throughout.
 
 \begin{table}[t]
 \centering
-\caption{Graph validity on the 64-composition set for models trained from scratch on
-the same 2.38-million-parameter EGNN. Each seed has 2,048 generation attempts at
-128 network forward passes per output. Counts are graph-valid outputs; the final
-column pools both seeds.}
+\caption{Graph validity on 64 compositions after training from scratch on the shared 2.38-million-parameter EGNN. Each seed generates 2,048 outputs at 128 calls. The final rate pools the per-seed valid-output counts.}
 \begin{tabular}{lrrr}
 \toprule
 Method & Valid, seed 1 & Valid, seed 2 & Pooled rate (\%)\\
@@ -25,57 +17,23 @@ GAGA & 321 & 249 & 13.92\\
 \end{table}
 
 \paragraph{Data.}
-The shared data contain 20,000 OMol25 training structures from 8,323 compositions
-and 512 internal validation structures from 299 other compositions. Both sets
-contain neutral organic singlets with 8--64 atoms. A hash of composition assigns
-structures to training or internal validation. Selection requires the geometric
-and chemical-graph checks, but not the additional scaffold-tree filter used in
-the pretrained-model experiments. None of the 64 evaluation compositions occurs
-in either selected subset or either full processed corpus.
+The shared dataset contains 20,000 OMol25 training structures from 8,323 compositions and 512 internal-validation structures from 299 other compositions. All are neutral organic singlets with 8--64 atoms. Composition hashes assign the split. Selection applies contact-geometric and chemical-graph checks, without the pretrained study's scaffold filter. The 64 evaluation compositions are absent from both selected subsets and both full processed corpora.
 
 \paragraph{Optimization.}
-Each model receives 30,000 AdamW updates at learning rate $10^{-4}$ and batch
-size 32, for 960,000 training presentations. Each batch contains molecules with
-the same atom count. We sample atom-count groups in proportion to their sizes,
-so each training row has the same marginal sampling probability. We clip the
-gradient norm at one. Generation uses an exponential moving average of weights
-at the final update, with decay $\min(0.999,(1+s)/(10+s))$ at optimizer step
-$s$. Internal validation at 5,000, 15,000, and 30,000 updates monitors learning;
-it is not used to choose a checkpoint.
+Each model receives 30,000 AdamW updates at learning rate $10^{-4}$ and batch size 32, totaling 960,000 training presentations. Batches have a common atom count; sampling count groups proportional to their sizes gives every row equal marginal probability. Gradients are clipped at norm one. Sampling uses the final EMA, whose decay at update $s$ is $\min(0.999,(1+s)/(10+s))$. Validation at 5,000, 15,000, and 30,000 updates monitors training without selecting checkpoints.
 
-\paragraph{Flow-matching models.}
-Gaussian and harmonic FM share the linear interpolation, atom matching, and
-rotation alignment. Both predict velocity in one EGNN pass and use 64 midpoint
-steps, giving 128 network evaluations. Neither uses self-conditioning. The
-harmonic distribution is the same as in the main model, but its factorized edge
-weights permit a different exact tree sampler. We draw the $N-2$ entries of a
-Pr\"ufer sequence independently with probabilities $u_i/\sum_j u_j$ and decode
-the sequence into a tree. This samples the same tree law used to place atoms.
+\paragraph{Flow matching.}
+Gaussian and harmonic FM share linear interpolation, atom matching, and rotation alignment. Both use one-pass velocity prediction without self-conditioning and 64 midpoint steps, totaling 128 network evaluations. Factorized affinities permit exact tree sampling by drawing $N-2$ independent Pr\"ufer entries with probabilities $u_i/\sum_j u_j$ and decoding the sequence. This gives the same harmonic source law as the main model.
 
-\paragraph{Diffusion models.}
-EDM predicts Gaussian coordinate noise under its original variance-preserving
-schedule. Position-conditional GAGA \citep{qu2026gaga} truncates this schedule at
-650 of 1,000 steps, using the published GEOM setting. Its initial Gaussian has
-variance $\alpha_t^2 v+\sigma_t^2$, where $\alpha_t$ and $\sigma_t$ are the
-signal and noise coefficients. The training-only estimate
-$v=3.0232257866$\,\AA$^2$ is the mean squared centered coordinate per independent
-coordinate. We transfer the truncation setting from GEOM without optimizing it
-on OMol25 evaluation results.
+\paragraph{Diffusion.}
+EDM predicts Gaussian coordinate noise under its variance-preserving schedule. Position-conditional GAGA \citep{qu2026gaga} uses the published GEOM truncation at 650 of 1,000 steps. Its starting Gaussian has variance $\alpha_t^2 v+\sigma_t^2$, where the training-only estimate $v=3.0232257866$\,\AA$^2$ is mean squared centered position per independent coordinate. The truncation is transferred from GEOM rather than selected on OMol25 evaluation results.
 
-\paragraph{Generation and compute.}
-Every model generates 32 raw structures per evaluation composition at 128 network
-evaluations. We also evaluate the complete EDM and GAGA reverse schedules at
-1,001 and 651 calls, including their final observation steps. This experiment
-uses no physical energy labels, bond supervision, energy-based selection, or
-geometry optimization. Scheduler metadata record the A100, H200, and A100 MIG
-allocations. Equal training presentations and network-call counts do not imply
-equal wall-clock time.
+\paragraph{Sampling and compute.}
+Each model produces 32 raw structures per evaluation composition using 128 network calls. Full EDM and GAGA schedules are also evaluated at 1,001 and 651 calls, including the observation step. No model in this comparison receives physical or bond labels, output selection, or geometry optimization. Scheduler records identify A100, H200, and A100 MIG allocations. Training presentations and call counts are matched, but runtime depends on the implementation and hardware.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
-\caption{Diffusion results at the shared 128-call budget and the full reverse
-schedules. Each independent initialization generates 2,048 outputs. Counts give
-graph-valid outputs; the final rate pools both initializations.}
+\caption{Diffusion sampling at 128 calls and at the full reverse schedules. Each initialization generates 2,048 outputs; the final rate pools graph-valid counts across both initializations.}
 \begin{tabular}{lrrrr}
 \toprule
 Method & Evaluations & Valid, seed 1 & Valid, seed 2 & Rate (\%)\\

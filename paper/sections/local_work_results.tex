@@ -1,15 +1,9 @@
-\paragraph{Direct fine-tuning results.}
-We train three students for 1,000 updates in each run. Across 512 generated
-anchors, 351 pass the graph checks and 349 have at least one allowed force-shifted
-candidate. Composition-level mean ESS is about 1.27--1.87 out of 8. The weights
-are therefore concentrated on few candidates, limiting resolution of the local
-target with this pool size.
+\paragraph{Direct fine-tuning.}
+Each run trains three students for 1,000 updates. Of 512 anchors, 351 pass graph checks and 349 admit at least one shifted candidate. Composition-level mean ESS is 1.27--1.87 of eight, indicating concentrated weights and limited local-target resolution.
 
 \begin{table}[t]
 \centering
-\caption{Graph-valid outputs after direct physical fine-tuning, out of 640
-attempts per run. The frozen model receives no updates; all other variants have
-the same additional training budget.}
+\caption{Graph-valid outputs after direct fine-tuning, out of 640 attempts per run. All students share the additional training budget; the frozen parent receives no updates.}
 \begin{tabular}{lrrrr}
 \toprule
 Run & Frozen & Replay & Unweighted escort & Complete work\\
@@ -20,20 +14,8 @@ Run & Frozen & Replay & Unweighted escort & Complete work\\
 \end{tabular}\label{tab:local-work-direct}
 \end{table}
 
-Among paired outputs that are both graph-valid, complete-work training gives
-lower energy than unweighted-escort training by 0.00758 eV/atom (paired 95\%
-interval $[-0.01424,-0.00113]$ for the signed difference). Force RMS is lower by
-0.16174 eV/\AA\ ($[-0.27660,-0.05590]$). Both runs favor complete work, and
-the all-output comparison has the same direction.
+On jointly valid pairs, complete-work training lowers energy relative to uniform escort by 0.00758 eV/atom (signed-change 95\% interval $[-0.01424,-0.00113]$) and force RMS by 0.16174 eV/\AA\ ($[-0.27660,-0.05590]$). Both runs and the all-output comparison favor complete work.
 
-However, all three directly fine-tuned students perform worse than the frozen
-model. Complete work has 55.16\% graph validity versus 62.11\% for the frozen
-model, and energy on paired, jointly valid outputs is \emph{higher} by
-0.10587 eV/atom ($[0.09009,0.12168]$). Replay also worsens performance after
-training on the mixed targets. These results motivate subtracting the matched
-replay update rather than using the physical student directly.
+Nevertheless, all three direct students underperform the frozen parent. Complete work gives 55.16\% graph validity versus 62.11\%, and raises jointly valid paired energy by 0.10587 eV/atom ($[0.09009,0.12168]$). Replay also degrades performance, motivating subtraction of its matched update.
 
-Teacher preparation uses 6,232 raw energy/force queries: 702 at anchors and
-5,530 at allowed candidates. The unweighted escort could omit candidate-energy
-queries, and replay could omit all physical queries. Scoring the outputs of the
-four models uses a further 10,240 queries, separate from generation cost.
+Teacher preparation uses 6,232 queries: 702 at anchors and 5,530 at allowed candidates. Uniform escort can omit candidate energies; replay requires no physical queries. Evaluation of the four models adds 10,240 queries, separate from sampling.

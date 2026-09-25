@@ -1,84 +1,26 @@
 \section{Learning a physical correction along the flow}\label{app:force-correction}
-This section describes the earlier FlowMol physical-head study. The final
-EGNN uses the same pair construction with the smaller element vocabulary in
-Appendix~\ref{app:matched-connection}. The correction network learns physical changes at provisional endpoints while
-keeping every parent parameter fixed. Its regression target is separate from
-the backbone's flow-matching objective.
+The earlier FlowMol study trains a physical head on predicted endpoints with the backbone fixed. The final EGNN uses the same pair construction with a smaller element vocabulary (Appendix~\ref{app:matched-connection}).
 
 \paragraph{States and targets.}
-The parent generates two trajectories for each of 128 training compositions,
-with 32 compositions in each of the 8--16, 17--24, 25--32, and 33--40 atom ranges.
-We record the second velocity evaluation at midpoint steps 23 and 29, corresponding
-to flow times 0.734375 and 0.921875. These 256 trajectories yield 512 states.
-At a recorded state, the parent velocity defines the provisional endpoint
-$H_t=X_t+(1-t)v_{\rm base}(X_t,t;c)$. This is an extrapolation from the current
-prediction after both parent self-conditioning passes; later changes in velocity
-can change the final generated coordinates.
+The parent generates two trajectories for each of 128 training compositions, with 32 in each of the 8--16, 17--24, 25--32, and 33--40 atom ranges. We record the second field evaluation at midpoint steps 23 and 29, or times 0.734375 and 0.921875. The resulting 512 states define endpoints $H_t=X_t+(1-t)v_{\rm base}(X_t,t;c)$ after both self-conditioning passes. These are instantaneous endpoint estimates rather than completed trajectories.
 
-We evaluate the mirror-averaged eSEN force at $H_t$, subtract its mean across
-atoms, and construct the force shift defined in Equation~\ref{eq:local-force-shift}.
-The Gaussian width is at most 0.03\,\AA\ and the molecular displacement norm is
-at most 0.1\,\AA. The regression target is
-$\delta(H_t)/(1-t)$, a velocity correction whose linear endpoint extrapolation
-has displacement $\delta(H_t)$. All recorded states are retained, including
-states whose provisional geometry fails the chemical-graph check. Compositions
-are separated by metadata hashes: 96 train the head, and 32 provide internal
-validation, with four recorded states per composition. These are subsets of the
-parent's training compositions, separate from generator confirmation conditions.
+Mirror-averaged, centered eSEN forces at $H_t$ give the displacement in Equation~\ref{eq:local-force-shift}, with width at most 0.03\,\AA\ and molecular displacement norm at most 0.1\,\AA. The velocity target is $\delta(H_t)/(1-t)$. We retain all states, including graph-invalid endpoints. Metadata hashes split the parent-training compositions into 96 for fitting and 32 for internal validation, with four states per composition; generator-confirmation compositions are separate.
 
-\paragraph{Equivariant pair correction.}
-The small model has 8,178 parameters. For each unordered atom pair, it computes
-symmetric scalar features from atomic embeddings, the two pair distances in
-$X_t$ and $H_t$, their directional alignment, time, atom count, and covalent
-radii. A two-hidden-layer network, each layer containing 64 units with SiLU
-activations, predicts two coefficients $\alpha_{ij}$ and $\beta_{ij}$. A hyperbolic tangent
-bounds both coefficients between $-1$ and $1$.
+\paragraph{Equivariant pair network.}
+The small head has 8,178 parameters. Symmetric pair features combine atom embeddings, distances in $X_t$ and $H_t$, directional alignment, time, atom count, and covalent radii. Two width-64 SiLU layers predict $\alpha_{ij}$ and $\beta_{ij}$, each bounded to $[-1,1]$ by a hyperbolic tangent.
 
-Write $r_{ij}=X_{t,i}-X_{t,j}$ and $\widehat r_{ij}=H_{t,i}-H_{t,j}$. We normalize these
-vectors as $\bar r_{ij}=r_{ij}/\sqrt{\|r_{ij}\|^2+\ell_{ij}^2}$ and likewise
-for $\overline{\widehat r}_{ij}$, using the covalent-radius sum $\ell_{ij}$. The contact weight
-$w_{ij}=\operatorname{sigmoid}((1.25-\|\widehat r_{ij}\|/\ell_{ij})/0.2)$ decreases as the
-predicted atoms move apart. It is a geometric weight, not a supplied bond label.
-Let $d_i=\sum_{j\ne i}w_{ij}$ and $d_{\max}=\max(1,\max_i d_i)$. The correction
-for atom $i$ is
+Let $r_{ij}=X_{t,i}-X_{t,j}$ and $\widehat r_{ij}=H_{t,i}-H_{t,j}$. Define $\bar r_{ij}=r_{ij}/\sqrt{\|r_{ij}\|^2+\ell_{ij}^2}$ and similarly $\overline{\widehat r}_{ij}$, with covalent-radius sum $\ell_{ij}$. Contact weights are $w_{ij}=\operatorname{sigmoid}((1.25-\|\widehat r_{ij}\|/\ell_{ij})/0.2)$. With $d_i=\sum_{j\ne i}w_{ij}$ and $d_{\max}=\max(1,\max_i d_i)$, the correction is
 \begin{equation}
  A_{\phi,i}=v_{\rm cap}\,t^2\sum_{j\ne i}
  \frac{w_{ij}}{2d_{\max}}
  \left(\alpha_{ij}\bar r_{ij}+\beta_{ij}\overline{\widehat r}_{ij}\right),
  \qquad v_{\rm cap}=2\text{ \AA\ per unit flow time}.
 \end{equation}
-The symmetric coefficients and opposite pair vectors give zero total correction.
-Rotating the coordinates rotates the correction, and relabeling atoms relabels
-its outputs. These pair constructions follow standard equivariant-network
-practice \citep{satorras2021egnn}. The triangle inequality gives
-$\|A_{\phi,i}\|\leq v_{\rm cap}t^2$ for every atom. This bounds the instantaneous velocity
-addition, not the final displacement after interaction with the parent flow.
-The final layer starts at zero, reproducing the parent field before training.
+Symmetric coefficients and opposite pair vectors give zero total correction and rotation/permutation equivariance \citep{satorras2021egnn}. The triangle inequality gives $\|A_{\phi,i}\|\leq v_{\rm cap}t^2$, a bound on instantaneous velocity addition. Its cumulative effect also depends on the parent flow. Zero initialization of the final layer reproduces the parent before fitting.
 
-We fit the correction with mean squared velocity error, AdamW at learning rate
-$3\times10^{-4}$, batch size one, and gradient clipping at one. Two seeds use
-20,000 updates each. Only the head is optimized. We compare a 37,540-parameter
-pair network with wider layers and a 37,586-parameter alternative with two
-rounds of neighborhood message passing and invariant angular summaries. All
-receive the same training-state sequence and target vectors within a seed.
+Two seeds train for 20,000 AdamW updates using mean squared velocity error, learning rate $3\times10^{-4}$, batch size one, and gradient clipping at one. We also test a 37,540-parameter wider pair network and a 37,586-parameter contextual network with two message-passing rounds and invariant angular summaries. All share the state sequence and targets within each seed.
 
-On the internally withheld compositions, the contextual model has about 15\%
-lower target-prediction error than the small pair model and about 11\% lower
-error than the nearly parameter-matched wide model at 20,000 updates. The
-confirmation experiment below tests whether this predictive difference improves
-actual generation. Physics-based residual correction of frozen flow fields has
-also been studied for video generation \citep{wang2026pila}; here supervision is
-provided by molecular forces at predicted atomic geometries.
+At 20,000 updates, the contextual head lowers internal-validation target error by approximately 15\% relative to the small head and 11\% relative to the wide head. The common-panel study tests whether this translates to generation quality. Physical residual correction has also been studied for video flows \citep{wang2026pila}; our supervision uses molecular forces at predicted coordinates.
 
-\paragraph{Sampling and preparation cost.}
-Generation integrates $v_{\rm base}+A_\phi$ with the same 32 midpoint steps.
-Each attempted structure uses 128 backbone evaluations and 64 head evaluations,
-with no terminal noise, energy call, output filtering, or geometry optimization.
-The parent control carries a zero-output head so its sampling operations match.
-The training-state collection uses 256 parent trajectories. Mirror-paired force
-labels for the 512 recorded endpoints require 1,024 eSEN queries. The study also
-queries eight translated Gaussian particles per state for a complete-work
-control, bringing the actual preparation expenditure to 9,216 queries. The
-force-target heads do not use those particle energies. The local-work teacher
-has median particle effective sample size 1.37 out of eight; its earlier
-2,000-update student comparison did not establish an additional generation gain.
+\paragraph{Sampling and preparation.}
+We integrate $v_{\rm base}+A_\phi$ for 32 midpoint steps, using 128 backbone and 64 head calls per output without terminal noise or physical queries. A zero-output head matches the parent control's operations. Collecting 512 endpoints uses 256 trajectories and 1,024 mirror-paired eSEN force queries. The shared experiment also evaluates eight translated Gaussian particles per state for a complete-work control, bringing preparation to 9,216 queries; force-target heads do not use those particle energies. Median local-work ESS is 1.37 of eight, and the earlier 2,000-update student comparison found no resolved additional generation gain.

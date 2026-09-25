@@ -1,17 +1,9 @@
-\paragraph{Control for source covariance.}
-To test whether the source benefit is explained by its covariance, we compare
-against a single Gaussian with approximately the same covariance as the harmonic
-mixture. We estimate that covariance from 128 trees and average over permutations
-of identical atom species. An independent 8,192-tree estimate gives a relative
-Frobenius error of 1.85--6.25\% across the 22 compositions. We match the training
-data, optimizer, network, and sampling budgets. This follow-up compares the new
-Gaussian models with the already frozen harmonic checkpoints.
+\paragraph{Covariance-matched control.}
+We approximate the harmonic mixture covariance with 128 sampled trees and average over permutations of identical elements. Relative Frobenius error against an independent 8,192-tree estimate is 1.85--6.25\% across the 22 compositions. New single-Gaussian models use this covariance with matched data, optimization, architecture, and sampling budgets, and are compared with the frozen harmonic models.
 
 \begin{table}[t]
 \centering
-\caption{Covariance-matched Gaussian versus harmonic source. Entries count
-valid outputs over all attempts. Training and inference budgets are matched;
-the Gaussian uses the calibrated covariance estimate from 128 trees.}
+\caption{Covariance-matched Gaussian and harmonic sources at matched training and inference budgets. Entries give valid outputs over all attempts. The Gaussian covariance is estimated from 128 trees.}
 \begin{tabular}{llrr}
 \toprule
 Set & Run & Covariance Gaussian & Harmonic tree\\
@@ -24,12 +16,4 @@ Additional  & 1 &286/640&413/640\\
 \end{tabular}\label{tab:covariance}
 \end{table}
 
-Harmonic improves graph validity over this Gaussian by 11.65 percentage points
-on development (paired 95\% interval [8.59,14.78]; descriptive composition interval
-[8.07,15.43]) and 15.39 points on the additional set (paired [11.64,19.06];
-composition [11.95,18.98]). The difference is positive in both runs on both sets.
-The covariance-matched Gaussian also performs worse than the isotropic Gaussian.
-These results support a benefit beyond this calibrated second-moment approximation,
-consistent with a contribution from the mixture structure. The comparison adds
-2,816 outputs while holding parameter count, initial self-conditioning weights,
-training structures, and optimization fixed.
+Harmonic exceeds this Gaussian by 11.65 graph-validity points on development (paired 95\% interval [8.59,14.78]; descriptive composition interval [8.07,15.43]) and 15.39 on the additional panel ([11.64,19.06]; [11.95,18.98]). Both runs favor harmonic on both panels. The covariance-matched Gaussian also underperforms the isotropic source. Thus this calibrated second-moment approximation does not account for the harmonic advantage. The comparison adds 2,816 outputs with parameter count, initial self-conditioning weights, references, and optimization fixed.

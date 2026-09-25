@@ -1,20 +1,13 @@
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=\linewidth]{../research/figures/matched_connection_v1/matched_connection.pdf}
-\caption{Physical correction transfers to independently trained EGNN generators.
-(a) Joint yield requires an inferred valid graph and GFN2 force RMS at most
-5 eV/\AA. Large circles show pooled rates; small crosses show the two fits.
-(b) Within-parent improvements with paired composition-bootstrap 95\% intervals.
-Both algorithms receive the same TRAIN compositions, force-query budget, head
-architecture, and fitting schedule. All generated coordinates are unoptimized.}
+\includegraphics[width=\linewidth]{../research/figures/final_complete_v1/figures/matched_connection.pdf}
+\caption{Physical-head training on independent EGNN parents. (a) Pooled joint yields (large circles) and individual fits (crosses) at the 5 eV/\AA\ GFN2 threshold. (b) Within-parent gains with paired composition-bootstrap 95\% intervals. Both methods share training compositions, force-query budgets, head architectures, and fitting schedules. Coordinates are unoptimized.}
 \label{fig:matched-connection}
 \end{figure}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering\small
-\caption{Fresh shared-EGNN confirmation. Each row contains 512 attempts on the
-same 16 compositions. The last two columns give joint yield in each independent
-parent/head fit. Every GFN2 single-point calculation completed successfully.}
+\caption{Shared-EGNN confirmation on 16 new compositions, with 512 attempts per row. The final columns report joint yield for each parent/head fit. All GFN2 calculations succeed.}
 \begin{tabular}{lrrrr}
 \toprule
 Model & Graph (\%) & Joint (\%) & Fit 1 (\%) & Fit 2 (\%)\\
@@ -27,15 +20,6 @@ GAGA + physical head &20.31&17.58&23.83&11.33\\
 \end{tabular}\label{tab:matched-connection}
 \end{table}
 
-The primary FM comparison improves joint yield by 7.03 percentage points
-(95\% interval $[2.73,11.91]$), with gains of 6.25 and 7.81 points in the two
-fits. GAGA also benefits, gaining 6.64 points ($[3.71,9.77]$), with both fits
-improving. Thus the learned correction transfers beyond the pretrained FlowMol
-backbone and works with both velocity and noise prediction.
+Physical correction improves FM joint yield by 7.03 points (95\% interval $[2.73,11.91]$), with gains of 6.25 and 7.81 in the two fits. GAGA gains 6.64 points ($[3.71,9.77]$), also improving in both fits. Thus the method benefits both velocity and noise predictors on the independently trained EGNN.
 
-After identical physical supervision, FM minus GAGA is $-2.54$ points
-($[-6.64,1.76]$). The difference between their within-parent improvements is
-$+0.39$ points ($[-4.30,5.47]$). The experiment supports physical-head transfer
-to both generators, while their ordering remains uncertain. Intervals resample
-compositions and condition on the two fitted parents and heads; validation
-strengths are fixed before test generation.
+After matched physical supervision, FM minus GAGA is $-2.54$ points ($[-6.64,1.76]$), and the difference between their within-parent gains is $+0.39$ ($[-4.30,5.47]$). Neither comparison resolves an ordering between the generators. Intervals resample compositions conditional on the two fitted parents and heads, with strengths selected before test generation.
