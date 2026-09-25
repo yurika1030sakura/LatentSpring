@@ -1,3 +1,30 @@
+# Active checkpoint —2026-09-25: anonymous submission formatting and repository rename
+
+GitHub repository is now yurika1030sakura/LatentSpring; remote `github` points to
+that SSH URL. Current paper build v35:8 main pages,45 total,33 references;
+appendix starts on page12 after references. Official2027 .sty/.bst and support
+files were downloaded from the ICLR Author Guidelines and byte-match ours.
+Standard anonymous review headers replace the internal draft overrides.
+Read iclr2027_submission_format_v1.json and publication_build_v35.json;
+publication_sync_v35.json records final synchronization.
+
+Coauthor Overleaf commit f09901e is preserved, including new citations,
+training/inference explanation and appendix page break. Only implementation
+precision, citation command formatting, official headers/headings and table
+caption placement were repaired. AI disclosure remains a concise factual
+statement of method/experiment development, implementation, analysis, figures
+and language revision; do not falsely reduce it to language editing only.
+
+User requested Claude contributor removal.21 automated Co-authored-by trailers
+were removed from default-branch commit messages. All562 commit trees and
+human author/committer identities and timestamps are unchanged. Original
+commit hashes remain reachable through tag
+provenance/before-claude-coauthor-cleanup-20260925. Old-to-new mapping is
+research/evidence/claude_coauthor_commit_map_v1.tsv. Historical scientific
+protocols and receipts retain their original hashes; do not rewrite them.
+Old clones must synchronize to the rewritten GitHub main before pushing.
+Local working-tree files were retained throughout the metadata-only rewrite.
+
 # Active checkpoint —2026-09-25: reviewed Final Complete manuscript adopted
 
 User supplied ~/bgfm/LatentSpring_Final_Complete.zip. The immutable264-entry

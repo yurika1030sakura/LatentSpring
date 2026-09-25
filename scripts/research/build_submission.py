@@ -86,6 +86,8 @@ def main():
         for name in sorted(list(exported)+['MANIFEST.json']):z.write(export/name,name)
     source=(paper/'tree_working.tex').read_text()
     abstract=re.search(r'\\begin\{abstract\}(.*?)\\end\{abstract\}',source,re.S).group(1).strip()
+    # OpenReview's abstract field has no BibTeX context; keep citations in the PDF.
+    abstract=re.sub(r'~?\\cite[a-zA-Z]*\{[^}]+\}', '', abstract)
     abstract=abstract.replace('\\%','%').replace('\\AA','Å').replace('--','–').replace('\\,',' ')
     title=re.search(r'\\title\{([^}]+)\}',source).group(1)
     title=re.sub(r'\s+',' ',title.replace(r'\\',' ')).strip()

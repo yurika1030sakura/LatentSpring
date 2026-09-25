@@ -2,13 +2,8 @@
 \documentclass{article}
 \usepackage{iclr2027_conference,times}
 \usepackage{amsmath,amssymb,amsthm,graphicx,booktabs,microtype,xcolor}
-\usepackage{etoolbox,float,flafter}
+\usepackage{float,flafter}
 \usepackage[colorlinks=true,linkcolor=blue!55!black,citecolor=green!45!black,urlcolor=blue!70!black]{hyperref}
-% Internal draft labels; the shared conference style is unchanged.
-\makeatletter
-\patchcmd{\@maketitle}{Under review as a conference paper at ICLR 2027}{Submission draft for ICLR 2027}{}{\errmessage{Draft header patch failed}}
-\patchcmd{\@maketitle}{Paper under double-blind review}{Anonymous submission draft}{}{\errmessage{Draft title patch failed}}
-\makeatother
 \newtheorem{proposition}{Proposition}
 \newcommand{\HH}{\mathcal H}
 \newcommand{\EE}{\mathbb E}
@@ -18,7 +13,7 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-Generating three-dimensional molecules from atomic composition requires learning both connectivity and geometry. We present LatentSpring, a flow-matching model that combines a harmonic-mixture source with learned geometric and physical corrections. The source samples atom positions along random auxiliary trees using element-dependent length scales, without requiring a chemical bond graph. Recovery training teaches the flow to restore perturbed geometries, while two small equivariant networks refine its predicted endpoints using reference structures and force feedback. On 64 unseen compositions, LatentSpring achieves a graph-and-force yield of 35.35\% across five fits, compared with 8.75\% for GAGA and 8.15\% for EDM, at a GFN2-xTB force-RMS threshold of 5 eV/\AA. Adding local geometry checks gives a yield of 9.63\%, compared with 4.43\% for the initial force-corrected flow. This improvement holds in all three additional training repetitions, and the complete method outperforms a continuation control with matched backbone updates. The endpoint formulation also allows the trained correction networks to improve EDM and GAGA without retraining. Sampling requires only neural-network evaluations, with no energy queries or geometry optimization.
+Generating three-dimensional molecules from atomic composition requires learning both connectivity and geometry. We present LatentSpring, a flow-matching model that combines a harmonic-mixture source with learned geometric and physical corrections. The source samples atom positions along random auxiliary trees using element-dependent length scales, without requiring a chemical bond graph. Recovery training teaches the flow to restore perturbed geometries, while two small equivariant networks refine its predicted endpoints using reference structures and force feedback. On 64 unseen compositions, LatentSpring achieves a graph-and-force yield of 35.35\% across five fits, compared with 8.75\% for GAGA~\citep{qu2026gaga} and 8.15\% for EDM~\citep{edm}, at a GFN2-xTB force-RMS threshold of 5 eV/\AA. Adding local geometry checks gives a yield of 9.63\%, compared with 4.43\% for the initial force-corrected flow. This improvement holds in all three additional training repetitions, and the complete method outperforms a continuation control with matched backbone updates. The endpoint formulation also allows the trained correction networks to improve EDM and GAGA without retraining. Sampling requires only neural-network evaluations, with no energy queries or geometry optimization.
 \end{abstract}
 
 \section{Introduction}
@@ -30,13 +25,13 @@ LatentSpring addresses this problem with a mixture of random auxiliary trees. Ea
 
 A structured source alone does not ensure accurate local geometry. In our experiments, many outputs pass chemical-graph checks and a residual-force threshold yet retain distorted local arrangements. We address these errors through geometric recovery training and two endpoint-correction networks. Recovery training teaches the backbone to restore perturbed reference geometries. A geometric network then corrects the predicted endpoint, followed by a physical network trained on force feedback. Learning the force correction offline avoids evaluating an atomic potential at every sampling step.
 
-Both networks operate on the generator's predicted final coordinates rather than its internal features. Their coordinate displacements can therefore be converted into either a flow-velocity correction or a diffusion-noise correction. We test this interface by directly reusing FM-trained correction weights in EDM and GAGA.
+Both networks operate on the generator's predicted final coordinates rather than its internal features. Their coordinate displacements can therefore be converted into either a flow-velocity correction or a diffusion-noise correction. We test this interface by directly reusing FM-trained correction weights in EDM~\citep{edm} and GAGA~\citep{qu2026gaga}.
 
 Our contributions are:
 \begin{itemize}
 \item A normalized harmonic-mixture source that introduces element-dependent geometric correlations without requiring chemical bonds. We derive its density and compare it with isotropic, shell-tree, and covariance-matched sources.
 \item A geometric--physical refinement method that combines recovery training with two small equivariant endpoint-correction networks. A common coordinate interface applies the learned corrections to flow matching and diffusion.
-\item Improved raw molecular geometry across five fits, with gains in all three additional training repetitions and over a continuation control with matched backbone updates. The correction networks also improve EDM and GAGA without target-specific retraining.
+\item Improved raw molecular geometry across five fits, with gains in all three additional training repetitions and over a continuation control with matched backbone updates. The correction networks also improve EDM~\citep{edm} and GAGA~\citep{qu2026gaga} without target-specific retraining.
 \end{itemize}
 
 \section{Related work}
@@ -95,7 +90,11 @@ integrates to one over the centered coordinate space $\HH_N$.
 The numerator weights each tree edge by its displacement density. The Jacobian factor $N^{3/2}$ converts edge vectors to centered atom coordinates. Both tree sums can be evaluated by the matrix-tree theorem; Appendix~\ref{app:proof} derives the normalization. Training requires only the tree-and-edge sampler, not determinant evaluation. The Gaussian edge densities correspond to quadratic spring energies, hence the term \emph{harmonic source}.
 
 \section{Integration with molecular flow matching}\label{sec:flow}
-Starting from $X_0\sim q_0(\cdot\mid c)$, we integrate $v_\theta(X_t,t;c)\in\RR^{N\times3}$ from $t=0$ to $t=1$ to obtain $X_{\rm gen}\in\HH_N$. The network receives current coordinates, a time embedding, and encoded atom identities. The experiments fix charge $Q=0$ and spin multiplicity $S=1$; the sampled tree serves only to initialize $X_0$.
+For each reference molecule $X_1$, we sample a starting configuration $X_0\sim q_0(\cdot\mid c)$ from the harmonic-mixture source and draw $t\sim\mathcal U(0,1)$. We construct an intermediate configuration $X_t=(1-t)X_0+tX_1$ and train the equivariant network $v_\theta(X_t,t;c)\in\mathbb R^{N\times3}$ to predict the displacement $V^\ast=X_1-X_0$. The network receives the current coordinates $X_t$, the time embedding $t$, and encoded atom identities from the molecular condition $c$. The experiments fix total charge $Q=0$ and spin multiplicity $S=1$. It outputs one three-dimensional velocity vector per atom.
+
+At inference time, no reference structure is available. We first sample $X_0\sim q_0(\cdot\mid c)$ using a new auxiliary tree, then integrate $\frac{dX_t}{dt}=v_\theta^{\rm corr}(X_t,t;c)$ from $t=0$ to $t=1$, where the corrected velocity includes the geometric and physical endpoint updates defined below. The final coordinates $X_{\mathrm{gen}}$ are the generated three-dimensional structure. The auxiliary tree is used only to sample $X_0$; it is not passed to the network and does not constrain the generated chemical connectivity.
+
+% Starting from $X_0\sim q_0(\cdot\mid c)$, we integrate $v_\theta(X_t,t;c)\in\RR^{N\times3}$ from $t=0$ to $t=1$ to obtain $X_{\rm gen}\in\HH_N$. The network receives current coordinates, a time embedding, and encoded atom identities. The experiments fix charge $Q=0$ and spin multiplicity $S=1$; the sampled tree serves only to initialize $X_0$.
 
 \paragraph{Training pairs.}
 We pair a source sample $X_0$ with an OMol25 reference $X_1$, matching atoms of the same type and aligning the coordinates by rotation. A shared uniform random rotation and random permutation of identical atoms then preserve the source marginal (Appendix~\ref{app:symmetry}). Along the linear interpolation $X_t=(1-t)X_0+tX_1$, the regression target is $V^*=X_1-X_0$. Here $t\in[0,1]$ denotes interpolation progress.
@@ -164,15 +163,19 @@ LatentSpring combines an element-aware harmonic source with learned geometric an
 Chemical quality remains the main limitation. Fragmentation, nonplanarity, and unusual inferred charge patterns persist even after geometric refinement. Improving global connectivity and charge assignment is therefore necessary for more reliable composition-conditioned generation.
 
 \label{endofmaintext}
-\subsubsection*{Reproducibility statement}
+\subsection*{Reproducibility statement}
 The released code, per-output scores, and numerical arrays reproduce the tables and confidence intervals. Manifests record seeds, checkpoint hashes, evaluation settings, and every generation attempt. Training, target preparation, and sampling costs are reported separately. Tests cover source normalization, symmetry, density gradients, and work identities. The original data and backbone licenses and access requirements apply.
 
-\subsubsection*{AI use statement}
-OpenAI Codex and Claude Code assisted method and experiment development, code, analysis, figure preparation, and manuscript writing.
+\subsection*{AI use statement}
+Generative AI tools assisted with method and experiment development, implementation, analysis, figure preparation, and language revision. The authors are responsible for the final content.
 
 \bibliography{refs,tree_refs}
 \bibliographystyle{iclr2027_conference}
+
+\clearpage
 \appendix
+\section*{Appendix}
+\label{app:start}
 \input{sections/notation_guide}
 \input{sections/main_implementation_details}
 \input{sections/geometric_recovery_details}

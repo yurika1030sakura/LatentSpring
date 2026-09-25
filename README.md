@@ -3,8 +3,9 @@
 **Physics-Informed Molecular Flow Matching from Atomic Composition**
 
 LatentSpring generates molecular coordinates from atomic composition using a
-harmonic source with latent spatial connectivity. Physical feedback enters through
-training targets, while generation uses a single neural model.
+harmonic source with latent spatial connectivity. Recovery training and learned
+geometric and physical endpoint corrections improve the raw structures. Sampling
+uses neural networks without energy queries or coordinate optimization.
 
 - [Current manuscript (PDF)](paper/latentspring.pdf)
 - [LaTeX entrypoint](paper/main.tex)
@@ -14,16 +15,15 @@ training targets, while generation uses a single neural model.
 ## Method and evidence
 
 The source marginalizes over random harmonic trees, giving a normalized density
-without supplied chemical bonds. Matched OMol25 continuations improve raw graph
-support over Gaussian sources across three composition panels. A physical training
-update lowers raw energy and force under eSEN and independent GFN2-xTB evaluation.
-A controlled molecular-rotor study tests complete escorted-work correction against
-resolved local target distributions.
+without supplied chemical bonds. The main experiments train on 20,000 OMol25
+structures and evaluate 64 unseen compositions. Five fitted models reach 35.35%
+graph-and-force yield and 9.63% geometry-and-force yield; every generation attempt
+remains in the denominator. Frozen correction networks also improve EDM and GAGA
+under the shared evaluation setup.
 
-The experiments use pretrained backbones and selected OMol25 training subsets.
-Generator quality, local work correction, and full molecular equilibrium are
-separate evaluation questions. The paper states the task and comparison settings
-for each reported result.
+A separate molecular-rotor study examines local nonequilibrium work correction.
+The manuscript distinguishes raw structural quality, force criteria, and local
+distribution recovery. Detailed protocols, costs and limitations are included.
 
 ## Build the paper
 
